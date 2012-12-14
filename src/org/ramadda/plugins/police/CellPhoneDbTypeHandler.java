@@ -31,6 +31,10 @@ import org.ramadda.repository.*;
 
 import org.w3c.dom.*;
 
+import org.ramadda.repository.type.*;
+import ucar.unidata.util.StringUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -56,6 +60,44 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                                   Element tableNode, String desc)
             throws Exception {
         super(dbAdmin, repository, tableName, tableNode, desc);
+    }
+
+
+    public Result handleBulkUpload(Request request, Entry entry, String bulk)
+            throws Exception {
+        System.err.println("bulk");
+        List<Object[]> valueList = new ArrayList<Object[]>();
+        for (String line : StringUtil.split(bulk, "\n", true, true)) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+            List<String> toks   = StringUtil.split(line, ",", false, false);
+            Object[]     values = tableHandler.makeEntryValueArray();
+            initializeValueArray(request, null, values);
+            if (toks.size() != columnsToUse.size()) {
+                throw new IllegalArgumentException(
+                    "Wrong number of values. Given line has: " + toks.size()
+                    + " Expected:" + columnsToUse.size() + "<br>" + line);
+            }
+            for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
+                Column column = columnsToUse.get(colIdx);
+                String value  = toks.get(colIdx).trim();
+                value = value.replaceAll("_COMMA_", ",");
+                value = value.replaceAll("_NEWLINE_", "\n");
+                column.setValue(entry, values, value);
+            }
+            valueList.add(values);
+        }
+        for (Object[] tuple : valueList) {
+            doStore(entry, tuple, true);
+        }
+        //Remove these so any links that get made with the request don't point to the BULK upload
+        request.remove(ARG_DB_NEWFORM);
+        request.remove(ARG_DB_BULK_TEXT);
+        request.remove(ARG_DB_BULK_FILE);
+
+        return handleListTable(request, entry, valueList, false, false);
+
     }
 
 }

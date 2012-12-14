@@ -1,49 +1,11 @@
 
 <tables>
 
-<!--
-
-   The RAMADDA database facility looks for any file that ends with "db.xml", e.g., 
-   testdb.xml
-   in the plugins directory. So, for example, you can easily add your own kind of database by
-   writing your own xml file and putting it into your plugins directory.
-
-    Each  database table is defined with a table tag. You need to specify a unique id and a name.
-    Contained in the table tag are a set of column definitions. Each column has a name which ends 
-    up being the database column name so this should be legal sql. There is also a label and some flags,
-    e.g. cansearch, canlist, that determine whether the column is shown in the list and in the search form.
-    
-    The column also has a type, e.g.:
-    string, enumeration, enumerationplus, date, datetime, double, int, latlon, latlonbbox, clob, email
-
-    If its an enumeration then you also have to specify a column separated list of values.
-    See the prioriity example below.
-
-    enumerationplus allows the user to enter their own value and/or use values that have already been created.
-
-    If there is an email type then there will be a mailto link. !!!This isn't working yet!!!!
-
-    If its a string or a clob then you also need to specify a size (byte size)
-
-
-    Column tags can also contain property tags
-
-    If a column tag has a property tag iscategory then the categorical views are shown, e.g.:
-   <column ...>
-       <property name="iscategory" value="true"/>
-   </column>
-
-
-   If  a column has a "label=true" property, e.g.:
-       <property name="label" value="true"/>
-   then that column value is used as the label for the entry
-
-        
--->
-
-
-<table id="XXXX_case_cellphonelog" name="Cell Phone Log" category="Case" icon="/case/phone.png" xxxhandler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
-   <column name="number" type="string" label="Quantity"   canlist="true"/>
+<table id="xxx_case_cellphonelog" name="Cell Phone Log" category="Case" icon="/case/phone.png" handler="org.ramadda.plugins.police.CellPhoneDbTypeHandler">
+   <column name="from_number" type="string" label="From Number"   canlist="true"/>
+   <column name="to_number" type="string" label="To Number"   canlist="true"/>
+   <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" />
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
 </table>
 
 
