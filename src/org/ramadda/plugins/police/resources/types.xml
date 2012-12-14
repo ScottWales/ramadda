@@ -1,0 +1,49 @@
+<types>
+
+  <type name="police_case"  description="Police Case" handler="org.ramadda.plugins.police.CaseTypeHandler" category="Police Case">
+     <property name="icon" value="/case/briefcase.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/plugins/case/resources/statuses.txt" label="Status"/>
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+==Information==
+<table>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
+</table>
+
+==Data==
+{{tree title="Data" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350"}}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+<block open="false" title="Click to view Properties">
+{{properties}}
+</block>
+
+<p>
+]]>
+</wiki>
+
+   </type>
+
+
+
+</types>
