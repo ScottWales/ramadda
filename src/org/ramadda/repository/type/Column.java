@@ -35,8 +35,10 @@ import org.w3c.dom.*;
 
 import ucar.unidata.data.gis.KmlUtil;
 
+
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -74,15 +76,15 @@ public class Column implements DataTypes, Constants {
     public static final String OUTPUT_CSV = "csv";
 
     /** _more_ */
-    private static SimpleDateFormat dateTimeFormat =
+    private  SimpleDateFormat dateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /** _more_ */
-    private static SimpleDateFormat fullDateTimeFormat =
+    private  SimpleDateFormat fullDateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
     /** _more_ */
-    private static SimpleDateFormat dateFormat =
+    private  SimpleDateFormat dateFormat =
         new SimpleDateFormat("yyyy-MM-dd");
 
     /** _more_ */
@@ -1712,7 +1714,7 @@ public class Column implements DataTypes, Constants {
             values[offset + 3] = new Double(toks.get(3));
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
-            values[offset] = fullDateTimeFormat.parse(value);
+            values[offset] = parseDate(value);
         } else if (isType(DATATYPE_BOOLEAN)) {
             values[offset] = new Boolean(value);
         } else if (isType(DATATYPE_ENUMERATION)
@@ -1730,7 +1732,10 @@ public class Column implements DataTypes, Constants {
     }
 
 
-
+    private Date parseDate(String value) throws Exception {
+        //fullDateTimeFormat.parse(value);
+        return DateUtil.parse(value);
+    }
 
     /**
      * _more_

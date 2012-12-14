@@ -319,7 +319,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     private DbAdminHandler dbAdmin;
 
     /** _more_ */
-    private GenericTypeHandler tableHandler;
+    protected GenericTypeHandler tableHandler;
 
     /** _more_ */
     private Hashtable<String, Column> columnMap = new Hashtable<String,
@@ -362,7 +362,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     private List<Column> columns;
 
     /** _more_ */
-    private List<Column> columnsToUse;
+    protected List<Column> columnsToUse;
 
     /** _more_ */
     private Column dfltSortColumn;
@@ -1930,7 +1930,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param dbid _more_
      * @param values _more_
      */
-    private void initializeValueArray(Request request, String dbid,
+    protected void initializeValueArray(Request request, String dbid,
                                       Object[] values) {
         //The first entry is the db_id
         values[IDX_DBID] = ((dbid == null)
@@ -1953,7 +1953,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void doStore(Entry entry, Object[] values, boolean isNew)
+    protected void doStore(Entry entry, Object[] values, boolean isNew)
             throws Exception {
         String            dbid = (String) values[IDX_DBID];
         String            sql  = makeInsertOrUpdateSql(entry, (isNew
