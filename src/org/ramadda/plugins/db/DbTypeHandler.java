@@ -643,7 +643,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 hasLocation  = true;
                 latLonColumn = column;
             }
-            if (column.getType().equals(Column.DATATYPE_DATE)) {
+            if ( column.getType().equals(Column.DATATYPE_DATE) || column.getType().equals(Column.DATATYPE_DATETIME)) {
                 hasDate = true;
                 dateColumns.add(column);
             }
@@ -1408,7 +1408,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 iconMap = new Hashtable<String, String>();
             }
             StringBuffer sb = new StringBuffer("");
-            for (String value : getEnumValues(request, entry, col)) {
+            for (TwoFacedObject tfo : getEnumValues(request, entry, col)) {
+                String value = tfo.getId().toString();
                 String currentColor = colorMap.get(value);
                 String currentIcon  = iconMap.get(value);
                 if (currentColor == null) {
@@ -1521,8 +1522,9 @@ public class DbTypeHandler extends BlobTypeHandler {
             if (iconMap == null) {
                 iconMap = new Hashtable<String, String>();
             }
-            List<String> enumValues = getEnumValues(request, entry, col);
-            for (String value : enumValues) {
+            List<TwoFacedObject> enumValues = getEnumValues(request, entry, col);
+            for (TwoFacedObject tfo: enumValues) {
+                String value = tfo.getId().toString();
                 String iconArg   = iconID + "." + value;
                 String iconValue = request.getString(iconArg, "");
                 if (iconValue.equals("")) {
@@ -1532,7 +1534,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 }
 
             }
-            for (String value : enumValues) {
+            for (TwoFacedObject tfo: enumValues) {
+                String value = tfo.getId().toString();
                 String colorArg   = colorID + "." + value;
                 String colorValue = request.getString(colorArg, "");
                 if (colorValue.equals("")) {
@@ -2251,7 +2254,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   List<Object[]> valueList,
                                   boolean fromSearch, boolean showHeaderLinks)
             throws Exception {
-        StringBuffer sb    = new StringBuffer();
+        return handleListTable(request, entry, valueList, fromSearch, showHeaderLinks, new StringBuffer());
+    }
+
+    public Result handleListTable(Request request, Entry entry,
+                                  List<Object[]> valueList,
+                                  boolean fromSearch, boolean showHeaderLinks, StringBuffer sb)
+            throws Exception {
         List<String> links = new ArrayList<String>();
 
         if (showHeaderLinks) {
@@ -3051,7 +3060,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
 
-        List<String> enumValues = getEnumValues(request, entry, gridColumn);
+        List<TwoFacedObject> enumValues = getEnumValues(request, entry, gridColumn);
 
 
         sb.append(
@@ -3066,7 +3075,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width + "%")
                 + HtmlUtils.cssClass("dbtableheader")));
         String key = tableHandler.getTableName() + "." + gridColumn.getName();
-        for (String value : enumValues) {
+        for (TwoFacedObject tfo : enumValues) {
+            String value = tfo.getId().toString();
             String searchUrl =
                 HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                               new String[] {
@@ -3095,7 +3105,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                                     HtmlUtils.id(rowId) + event
                                     + HtmlUtils.cssClass("dbcategoryrow")));
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
-            for (String value : enumValues) {
+            for (TwoFacedObject tfo : enumValues) {
+                String value = tfo.getId().toString();
                 if (Misc.equals(value, rowValue)) {
                     sb.append(HtmlUtils.col("&nbsp;",
                                             HtmlUtils.cssClass("dbgridon")));
@@ -3123,14 +3134,14 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<String> getEnumValues(Request request, Entry entry,
+    private List<TwoFacedObject> getEnumValues(Request request, Entry entry,
                                        Column column)
             throws Exception {
         if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
-            return (List<String>) column.getValues();
+            return column.getValues();
         } else {
-            return (List<String>) tableHandler.getEnumValues(request, column,
-                    entry);
+            return  tableHandler.getEnumValues(request, column,
+                                               entry);
         }
     }
 
@@ -3979,6 +3990,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
             bulk.append(bulkButtons);
             bulk.append(HtmlUtils.p());
+            addToBulkUploadForm(request, bulk);
             List colIds = new ArrayList();
             for (Column column : columnsToUse) {
                 colIds.add(new TwoFacedObject(column.getLabel(),
@@ -4023,6 +4035,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
+    public void addToBulkUploadForm(Request request, StringBuffer bulk) {
+    }
 
     /**
      * _more_

@@ -87,8 +87,9 @@ public class Column implements DataTypes, Constants {
     private  SimpleDateFormat dateFormat =
         new SimpleDateFormat("yyyy-MM-dd");
 
-    /** _more_ */
+    private  SimpleDateFormat dateParser = null;
 
+    /** _more_ */
     public static final String EXPR_EQUALS = "=";
 
     /** _more_ */
@@ -124,6 +125,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_NAME = "name";
+
+    public static final String ATTR_FORMAT = "format";
 
     /** _more_ */
     public static final String ATTR_CHANGETYPE = "changetype";
@@ -229,7 +232,7 @@ public class Column implements DataTypes, Constants {
     private boolean canList;
 
     /** _more_ */
-    private List enumValues;
+    private List<TwoFacedObject> enumValues;
 
     /** _more_ */
     private Hashtable<String, String> enumMap = new Hashtable<String,
@@ -299,6 +302,7 @@ public class Column implements DataTypes, Constants {
             throws Exception {
         this.typeHandler = typeHandler;
         this.offset      = offset;
+
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
         oldNames         = StringUtil.split(XmlUtil.getAttribute(element,
@@ -310,6 +314,11 @@ public class Column implements DataTypes, Constants {
         propertiesFile = XmlUtil.getAttribute(element, ATTR_PROPERTIES,
                 (String) null);
 
+        String dttmFormat = XmlUtil.getAttribute(element, ATTR_FORMAT, (String)null);
+        if(dttmFormat !=null) {
+            dateParser =
+                new SimpleDateFormat(dttmFormat);
+        }
         description = XmlUtil.getAttribute(element, ATTR_DESCRIPTION, label);
         type = XmlUtil.getAttribute(element, ATTR_TYPE, DATATYPE_STRING);
         changeType  = XmlUtil.getAttribute(element, ATTR_CHANGETYPE, false);
@@ -340,7 +349,7 @@ public class Column implements DataTypes, Constants {
                             valueString.substring("file:".length()));
                     List<String> tmp = StringUtil.split(valueString, "\n",
                                            true, true);
-                    enumValues = new ArrayList();
+                    enumValues = new ArrayList<TwoFacedObject>();
                     for (String tok : tmp) {
                         if (tok.startsWith("#")) {
                             continue;
@@ -358,10 +367,15 @@ public class Column implements DataTypes, Constants {
                     }
 
                 } else {
-                    enumValues = new ArrayList();
+                    enumValues = new ArrayList<TwoFacedObject>();
                     for(String tok:StringUtil.split(valueString, ",", true,
                                                     true)) {
-                        enumValues.add(new TwoFacedObject(tok,tok));
+                        int index = tok.indexOf(":");
+                        if(index>0) {
+                            enumValues.add(new TwoFacedObject(tok.substring(index),tok.substring(0,index)));
+                        } else {
+                            enumValues.add(new TwoFacedObject(tok,tok));
+                        }
                     }
                 }
             }
@@ -1733,7 +1747,8 @@ public class Column implements DataTypes, Constants {
 
 
     private Date parseDate(String value) throws Exception {
-        //fullDateTimeFormat.parse(value);
+        if(dateParser!=null)
+            return dateParser.parse(value);
         return DateUtil.parse(value);
     }
 
@@ -2184,7 +2199,7 @@ public class Column implements DataTypes, Constants {
      *
      * @param value The new value for Values
      */
-    public void setValues(List value) {
+    public void setValues(List<TwoFacedObject> value) {
         enumValues = value;
     }
 
@@ -2193,7 +2208,7 @@ public class Column implements DataTypes, Constants {
      *
      * @return The Values
      */
-    public List getValues() {
+    public List<TwoFacedObject> getValues() {
         return enumValues;
     }
 

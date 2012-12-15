@@ -4569,13 +4569,16 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List getEnumValues(Request request, Column column, Entry entry)
+    public List<TwoFacedObject> getEnumValues(Request request, Column column, Entry entry)
             throws Exception {
         HashSet set = getEnumValuesInner(request, column, entry);
+        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         List    tmp = new ArrayList();
         tmp.addAll(set);
-
-        return Misc.sort(tmp);
+        for(String s: (List<String>)Misc.sort(tmp)) {
+            tfos.add(new TwoFacedObject(s));
+        }
+        return tfos;
     }
 
     /**

@@ -322,7 +322,9 @@ public class StorageManager extends RepositoryManager {
     }
 
 
-
+    public File getResourceDir() {
+        return new File(IOUtil.joinDir(repositoryDir, DIR_RESOURCES));
+    }
 
 
     /**

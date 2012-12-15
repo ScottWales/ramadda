@@ -1,13 +1,19 @@
 
 <tables>
 
-<table id="xxx_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.police.CellPhoneDbTypeHandler">
+<table id="zzz_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.police.CellPhoneDbTypeHandler">
    <column name="from_number" type="string" label="From Number"   cansearch="true" canlist="true"/>
    <column name="to_number" type="string" label="To Number"   cansearch="true" canlist="true"/>
-   <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" >
+   <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true">
        <property name="label" value="true"/>
    </column>
-   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
+   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="true" />
+   <column name="type" type="enumeration"   label="Direction" values="inbound:In Bound,outbound:Outbound,voice:Voice Mail,mobiletomobile:Mobile to mobile" cansearch="true" canlist="true" />
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="false" />
+   <column name="tower_address" type="string"   label="Address"  cansearch="true" canlist="false" />
+   <column name="tower_city"    type="string"   label="City"  cansearch="true" canlist="true" />
+   <column name="tower_state"    type="string"   label="State"  cansearch="true" canlist="true" />
+   <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" />
 </table>
 
 
