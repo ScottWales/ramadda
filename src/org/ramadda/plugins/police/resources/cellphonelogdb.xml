@@ -14,6 +14,10 @@
    <column name="tower_city"    type="string"   label="City"  cansearch="true" canlist="true" />
    <column name="tower_state"    type="string"   label="State"  cansearch="true" canlist="true" />
    <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" />
+
+   <column name="tag"    type="enumerationplus"   label="Tag"  cansearch="true" canlist="true" values="default,important"/>
+   <column name="notes"    type="string"   label="Notes"  cansearch="true" canlist="true" rows="5"/>
+
 </table>
 
 

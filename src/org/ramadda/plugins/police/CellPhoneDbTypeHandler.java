@@ -533,6 +533,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             site.getCity(),
             site.getState(),
             site.getZipCode(),
+            "default",
+            ""
         };
 
         return fields;
