@@ -702,6 +702,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     }
 
+    /*
+
+<iframe width="425" height="240" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=4760+28th+St.,Boulder,CO,80301&amp;sll=40.02931,-105.239977&amp;sspn=0.160098,0.363579&amp;ie=UTF8&amp;hq=&amp;hnear=4760+28th+St,+Boulder,+Colorado+80301&amp;t=m&amp;layer=c&amp;cbll=40.059955,-105.273588&amp;panoid=tTmpYutz3sCD-UhVYGFm-w&amp;cbp=13,23.82,,0,8.81&amp;ll=40.05541,-105.273614&amp;spn=0.015767,0.036478&amp;z=14&amp;output=svembed"></iframe><br /><small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=4760+28th+St.,Boulder,CO,80301&amp;sll=40.02931,-105.239977&amp;sspn=0.160098,0.363579&amp;ie=UTF8&amp;hq=&amp;hnear=4760+28th+St,+Boulder,+Colorado+80301&amp;t=m&amp;layer=c&amp;cbll=40.059955,-105.273588&amp;panoid=tTmpYutz3sCD-UhVYGFm-w&amp;cbp=13,23.82,,0,8.81&amp;ll=40.05541,-105.273614&amp;spn=0.015767,0.036478&amp;z=14" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+    */
 
     /**
      * _more_
