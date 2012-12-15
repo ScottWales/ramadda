@@ -72,7 +72,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     public static final String TYPE_VERIZON_V1 = CellSite.CARRIER_VERIZON+"." + "v1";
 
 
-    public static final String VIEW_CALL_ANALYSIS = "call.analysis";
+    public static final String VIEW_CALL_LISTING = "call.listing";
 
     public static final int IDX_FROM = 0;
     public static final int IDX_TO = 1;
@@ -115,7 +115,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     public void init(List<Element> columnNodes) throws Exception {
         super.init(columnNodes);
-        viewList.add(1, new TwoFacedObject("Call Analysis", VIEW_CALL_ANALYSIS));
+        viewList.add(1, new TwoFacedObject("Call Listing", VIEW_CALL_LISTING));
         fromColumn =  columnsToUse.get(IDX_FROM);
         toColumn =  columnsToUse.get(IDX_TO);
         dateColumn =  columnsToUse.get(IDX_DATE);
@@ -127,17 +127,18 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                                boolean[] addNext) {
 
         super.addHeaderItems(request, entry, view, headerToks, baseUrl, addNext);
-        if (view.equals(VIEW_CALL_ANALYSIS)) {
+        if (view.equals(VIEW_CALL_LISTING)) {
             addNext[0] = true;
-            headerToks.add(HtmlUtils.b(msg("Call Analysis")));
+            headerToks.add(HtmlUtils.b(msg("Call Listing")));
         } else {
             headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
-                                          + "=" + VIEW_CALL_ANALYSIS, msg("Call Analysis")));
+                                          + "=" + VIEW_CALL_LISTING, msg("Call Listing")));
         }
     }
 
 
     private String formatNumber(String n) {
+        n = n.trim();
         if(n.length()!=10) return n;
         return n.substring(0,3) +"-" + n.substring(3,6) +"-" +n.substring(6);
     }
@@ -146,8 +147,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
             throws Exception {
-        if (view.equals(VIEW_CALL_ANALYSIS)) {
-            return handleAnalysis(request, entry, valueList, fromSearch);
+        if (view.equals(VIEW_CALL_LISTING)) {
+            return handleListing(request, entry, valueList, fromSearch);
         }
         return  super.makeListResults(request,  entry,  view,
                                 action,  fromSearch,
@@ -269,14 +270,14 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         }
     }
 
-    public Result handleAnalysis(Request request, Entry entry,
+    public Result handleListing(Request request, Entry entry,
                                 List<Object[]> valueList, boolean fromSearch)
             throws Exception {
 
         Hashtable<String,Number> numberMap = new Hashtable<String,Number>();
         List<Number> numbers = new ArrayList<Number>();
         StringBuffer sb         = new StringBuffer();
-        addViewHeader(request, entry, sb, VIEW_CALL_ANALYSIS, valueList.size(),
+        addViewHeader(request, entry, sb, VIEW_CALL_LISTING, valueList.size(),
                       fromSearch);
         
         for(Object[] tuple : valueList) {
