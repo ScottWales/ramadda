@@ -809,7 +809,6 @@ public class DbTypeHandler extends BlobTypeHandler {
                 throw new AccessException("You cannot edit this database",
                                           request);
             }
-
             return handleForm(request, entry, null, true);
         }
 
@@ -2777,7 +2776,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         msg("View entry"))));
             rightSide.append(" ");
             rightSide.append(map.getHiliteHref(dbid,
-                    getLabel(entry, values)));
+                    getMapLabel(entry, values)));
 
 
             rightSide.append(HtmlUtils.br());
@@ -3539,7 +3538,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String       dbid  = (String) values[IDX_DBID];
             Date         date  = (Date) values[theColumn.getOffset()];
             String       url   = getViewUrl(request, entry, dbid);
-            String       label = getLabel(entry, values).trim();
+            String       label = getCalendarLabel(entry, values).trim();
             StringBuffer html  = new StringBuffer();
             if (label.length() == 0) {
                 label = "NA";
@@ -3988,6 +3987,15 @@ public class DbTypeHandler extends BlobTypeHandler {
             bulk.append(bulkButtons);
             bulk.append(HtmlUtils.p());
             addToBulkUploadForm(request, bulk);
+            bulk.append(HtmlUtils.p());
+            bulk.append(msgLabel("Upload a file"));
+            bulk.append(HtmlUtils.br());
+            bulk.append(msgLabel("File"));
+            bulk.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
+                                            HtmlUtils.SIZE_60));
+
+
+            bulk.append(msgLabel("Or enter text"));
             List colIds = new ArrayList();
             for (Column column : columnsToUse) {
                 colIds.add(new TwoFacedObject(column.getLabel(),
@@ -4005,14 +4013,6 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             bulk.append(HtmlUtils.br());
             bulk.append(HtmlUtils.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
-            bulk.append(HtmlUtils.p());
-            bulk.append(msgLabel("Or upload a file"));
-            bulk.append(HtmlUtils.br());
-            bulk.append(msgLabel("File"));
-            bulk.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
-                                            HtmlUtils.SIZE_60));
-
-
             bulk.append(HtmlUtils.p());
             bulk.append(bulkButtons);
             bulk.append(HtmlUtils.formClose());
@@ -4109,13 +4109,21 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private String getLabel(Entry entry, Object[] values) throws Exception {
+    public String getLabel(Entry entry, Object[] values) throws Exception {
         String lbl = getLabelInner(entry, values);
         if ((lbl == null) || (lbl.trim().length() == 0)) {
             lbl = "---";
         }
 
         return lbl;
+    }
+
+    public String getMapLabel(Entry entry, Object[] values) throws Exception {
+        return getLabel(entry, values);
+    }
+
+    public String getCalendarLabel(Entry entry, Object[] values) throws Exception {
+        return getLabel(entry, values);
     }
 
     /**
@@ -4128,12 +4136,11 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private String getLabelInner(Entry entry, Object[] values)
+    public String getLabelInner(Entry entry, Object[] values)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         if (labelColumn != null) {
             labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
-
             return sb.toString();
         }
         for (Column column : columns) {

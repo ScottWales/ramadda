@@ -82,6 +82,30 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     }
 
 
+    /**
+     */
+    @Override
+    public String getMapLabel(Entry entry, Object[] values)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        columnsToUse.get(2).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        sb.append(" -- ");
+        columnsToUse.get(0).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        sb.append(" -&gt; ");
+        columnsToUse.get(1).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        return sb.toString();
+    }
+
+    public String getCalenderLabel(Entry entry, Object[] values)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        columnsToUse.get(0).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        sb.append(" -&gt; ");
+        columnsToUse.get(1).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        return sb.toString();
+    }
+
+
     public void addToBulkUploadForm(Request request, StringBuffer bulk) {
         super.addToBulkUploadForm(request,  bulk);
         //TODO: add file type list when we have more than one type
