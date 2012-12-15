@@ -643,7 +643,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 hasLocation  = true;
                 latLonColumn = column;
             }
-            if ( column.getType().equals(Column.DATATYPE_DATE) || column.getType().equals(Column.DATATYPE_DATETIME)) {
+            if ( column.isDate()) {
                 hasDate = true;
                 dateColumns.add(column);
             }
@@ -3344,11 +3344,10 @@ public class DbTypeHandler extends BlobTypeHandler {
             if ( !isDataColumn(column)) {
                 continue;
             }
-            if (column.getType().equals(Column.DATATYPE_DATE)) {
+            if (column.isDate()) {
                 if (dateColumn == null) {
                     dateColumn = column;
                 }
-
                 continue;
             }
             String varName = column.getName();
@@ -3400,7 +3399,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                               + HtmlUtils.squote(""
                                   + values[column.getOffset()]) + ");\n");
                     columnCnt++;
-                } else if (column.getType().equals(Column.DATATYPE_DATE)) {
+                } else if (column.isDate()) {
                     columnCnt++;
                 }
             }
@@ -3440,9 +3439,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         Column theColumn = null;
         for (Column column : columns) {
-            if (column.getType().equals(Column.DATATYPE_DATE)) {
+            if (column.isDate()) {
                 theColumn = column;
-
                 break;
             }
         }
@@ -3529,9 +3527,8 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         Column theColumn = null;
         for (Column column : columns) {
-            if (column.getType().equals(Column.DATATYPE_DATE)) {
+            if (column.isDate()) {
                 theColumn = column;
-
                 break;
             }
         }
