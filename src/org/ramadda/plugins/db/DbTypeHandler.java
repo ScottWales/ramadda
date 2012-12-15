@@ -383,7 +383,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     private Column latLonColumn;
 
     /** _more_ */
-    private List<TwoFacedObject> viewList;
+    protected List<TwoFacedObject> viewList;
 
     /** _more_ */
     private String tableIcon = "";
@@ -697,7 +697,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private String getTitle() {
+    public String getTitle() {
         return getDescription();
 
     }
@@ -892,7 +892,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void addViewHeader(Request request, Entry entry, StringBuffer sb,
+    public void addViewHeader(Request request, Entry entry, StringBuffer sb,
                                String view, int numValues, boolean fromSearch)
             throws Exception {
 
@@ -912,7 +912,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void addViewHeader(Request request, Entry entry, StringBuffer sb,
+    public void addViewHeader(Request request, Entry entry, StringBuffer sb,
                                String view, int numValues,
                                boolean fromSearch, String extraLinks)
             throws Exception {
@@ -2717,7 +2717,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                           width, height, false);
         boolean      makeRectangles = valueList.size() <= 20;
 
-        String       icon           = getRepository().getUrlBase() + tableIcon;
+        String       icon           = getMapIcon(request, entry);
         StringBuffer rightSide      = new StringBuffer();
         for (Object[] values : valueList) {
             String dbid  = (String) values[IDX_DBID];
@@ -2812,6 +2812,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     }
 
+    public String getMapIcon(Request request, Entry entry) {
+        return getRepository().getUrlBase() + tableIcon;
+    } 
 
 
     /**

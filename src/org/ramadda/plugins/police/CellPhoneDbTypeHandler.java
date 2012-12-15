@@ -35,11 +35,17 @@ import org.w3c.dom.*;
 
 import org.ramadda.repository.type.*;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.TwoFacedObject;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Hashtable;
@@ -48,8 +54,12 @@ import java.util.Hashtable;
 
 import org.ramadda.util.Utils;
 import org.apache.commons.lang.text.StrTokenizer;
-import ucar.unidata.util.StringUtil;
+
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
+
+
 
 /**
  *
@@ -60,6 +70,25 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     public static final String ARG_FILE_TYPE = "filetype";
 
     public static final String TYPE_VERIZON_V1 = CellSite.CARRIER_VERIZON+"." + "v1";
+
+
+    public static final String VIEW_CALL_ANALYSIS = "call.analysis";
+
+    public static final int IDX_FROM = 0;
+    public static final int IDX_TO = 1;
+    public static final int IDX_DATE = 2;
+    public static final int IDX_MINUTES = 3;
+    public static final int IDX_DIRECTION = 4;
+    public static final int IDX_LOCATION = 5;
+    public static final int IDX_ADDRESS = 6;
+    public static final int IDX_CITY = 7;
+    public static final int IDX_STATE = 8;
+    public static final int IDX_ZIPCODE = 9;
+
+
+    private Column fromColumn;
+    private    Column toColumn;
+    private Column dateColumn;
 
 
     /**
@@ -82,26 +111,293 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     }
 
 
+
+
+    public void init(List<Element> columnNodes) throws Exception {
+        super.init(columnNodes);
+        viewList.add(1, new TwoFacedObject("Call Analysis", VIEW_CALL_ANALYSIS));
+        fromColumn =  columnsToUse.get(IDX_FROM);
+        toColumn =  columnsToUse.get(IDX_TO);
+        dateColumn =  columnsToUse.get(IDX_DATE);
+    }
+
+
+    public void addHeaderItems(Request request, Entry entry, String view,
+                               List<String> headerToks, String baseUrl,
+                               boolean[] addNext) {
+
+        super.addHeaderItems(request, entry, view, headerToks, baseUrl, addNext);
+        if (view.equals(VIEW_CALL_ANALYSIS)) {
+            addNext[0] = true;
+            headerToks.add(HtmlUtils.b(msg("Call Analysis")));
+        } else {
+            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                                          + "=" + VIEW_CALL_ANALYSIS, msg("Call Analysis")));
+        }
+    }
+
+
+    private String formatNumber(String n) {
+        if(n.length()!=10) return n;
+        return n.substring(0,3) +"-" + n.substring(3,6) +"-" +n.substring(6);
+    }
+
+    public Result makeListResults(Request request, Entry entry, String view,
+                                  String action, boolean fromSearch,
+                                  List<Object[]> valueList)
+            throws Exception {
+        if (view.equals(VIEW_CALL_ANALYSIS)) {
+            return handleAnalysis(request, entry, valueList, fromSearch);
+        }
+        return  super.makeListResults(request,  entry,  view,
+                                action,  fromSearch,
+                                valueList);
+    }
+
+
+    private static class Number implements Comparable {
+        String number;
+        int count = 0;
+        Hashtable<Number,List<String>> outboundCalls  = new Hashtable<Number,List<String>>();
+        Hashtable<Number,List<String>> inboundCalls  = new Hashtable<Number,List<String>>();
+
+        List<Number>outbound = new ArrayList<Number>();
+        List<Number>inbound = new ArrayList<Number>();
+
+
+        public Number(String number) {
+            this.number= number;
+        }
+        
+        public void addOutbound(Number n, String date) {
+            count++;
+            List<String> calls = outboundCalls.get(n);
+            if(calls==null) {
+                outbound.add(n);
+                outboundCalls.put(n,calls = new ArrayList<String>());
+            }
+            calls.add(date);
+        }
+
+        public void addInbound(Number n, String date) {
+            count++;
+            List<String> calls = inboundCalls.get(n);
+            if(calls==null) {
+                inbound.add(n);
+                inboundCalls.put(n,calls = new ArrayList<String>());
+            }
+            calls.add(date);
+        }
+
+
+
+        public List<String> getOutboundCalls(Number n) {
+            return outboundCalls.get(n);
+        }
+        public List<String> getInboundCalls(Number n) {
+            return inboundCalls.get(n);
+        }
+
+        public int getOutboundCount(Number n) {
+            return outboundCalls.get(n).size();
+        }
+
+        public int getInboundCount(Number n) {
+            return inboundCalls.get(n).size();
+        }
+
+        public List<Number> getSortedOutbound() {
+            Comparator comp = new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        Number e1 = (Number) o1;
+                        Number e2 = (Number) o2;
+                        int c1 = getOutboundCount(e1);
+                        int c2 = getOutboundCount(e2);
+                        if (c1 < c2) {
+                            return 1;
+                        }
+                        if (c1 > c2) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                };
+            Object[] array = outbound.toArray();
+            Arrays.sort(array, comp);
+            return (List<Number>) Misc.toList(array);
+        }
+
+        public List<Number> getSortedInbound() {
+            Comparator comp = new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        Number e1 = (Number) o1;
+                        Number e2 = (Number) o2;
+                        int c1 = getInboundCount(e1);
+                        int c2 = getInboundCount(e2);
+                        if (c1 < c2) {
+                            return 1;
+                        }
+                        if (c1 > c2) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                };
+            Object[] array = inbound.toArray();
+            Arrays.sort(array, comp);
+            return (List<Number>) Misc.toList(array);
+        }
+
+
+
+        public int compareTo(Object o) {
+            Number that = (Number) o;
+            if(this.count<that.count) return  -1;
+            if(this.count>that.count) return  1;
+            return 0;
+        }
+
+        @Override
+         public int hashCode() {
+            return number.hashCode();
+        }
+
+        @Override
+         public boolean equals(Object o) {
+            if(!(o instanceof Number)) return false;
+            return number.equals(((Number)o).number);
+        }
+    }
+
+    public Result handleAnalysis(Request request, Entry entry,
+                                List<Object[]> valueList, boolean fromSearch)
+            throws Exception {
+
+        Hashtable<String,Number> numberMap = new Hashtable<String,Number>();
+        List<Number> numbers = new ArrayList<Number>();
+        StringBuffer sb         = new StringBuffer();
+        addViewHeader(request, entry, sb, VIEW_CALL_ANALYSIS, valueList.size(),
+                      fromSearch);
+        
+        for(Object[] tuple : valueList) {
+            String fromNumber = fromColumn.getString(tuple);
+            String date = dateColumn.getString(tuple);
+            Number from = numberMap.get(fromNumber);
+            if(from==null)  {
+                from = new Number(fromNumber);
+                numbers.add(from);
+                numberMap.put(from.number, from);
+            }
+            String toNumber = toColumn.getString(tuple);
+            Number to = numberMap.get(toNumber);
+            if(to==null)  {
+                to = new Number(toNumber);
+                numbers.add(to);
+                numberMap.put(to.number, to);
+            }
+            from.addOutbound(to, date);
+            to.addInbound(from, date);
+        }
+
+        Collections.sort(numbers);
+        for(Number n: numbers) {
+            //Only show numbers with outbounds
+            if(n.outbound.size()<=1 && n.inbound.size()<=1) continue;
+            sb.append(HtmlUtils.p());
+            sb.append(HtmlUtils.b(formatNumber(n.number)));
+
+            if(n.outbound.size()>0) { 
+                sb.append("<div style=\"margin-top:0px;margin-left:20px;\">Outbound:<table cellspacing=5 width=100%>");
+                for(Number outbound:n.getSortedOutbound()) {
+                    sb.append("<tr valign=top><td width=10%>");
+                    String searchUrl =
+                        HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
+                                      new String[] {
+                                          ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
+                                          fromColumn.getFullName(), n.number,
+                                          toColumn.getFullName(), outbound.number,
+                                      });
+
+                    sb.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
+                    sb.append("</td>");
+                    List<String> calls = n.getOutboundCalls(outbound);
+                    StringBuffer callSB  = new StringBuffer();
+                    for(String call: calls) {
+                        callSB.append(call);
+                        callSB.append(HtmlUtils.br());
+                    }
+                    sb.append("<td width=5% align=right>");
+                    sb.append(calls.size());
+                    sb.append("</td><td width=85%>");
+                    sb.append(HtmlUtils.makeShowHideBlock("Details", callSB.toString(), false));
+                    sb.append("</td></tr>");
+                }
+                sb.append("</table></div>");
+            }
+
+            if(n.inbound.size()>0) { 
+                sb.append("<div style=\"margin-top:0px;margin-left:20px;\">Inbound:<table cellspacing=5 width=100%>");
+                for(Number inbound:n.getSortedInbound()) {
+                    sb.append("<tr valign=top><td width=10%>");
+                    String searchUrl =
+                        HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
+                                      new String[] {
+                                          ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
+                                          fromColumn.getFullName(), n.number,
+                                          toColumn.getFullName(), inbound.number,
+                                      });
+
+                    sb.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
+                    sb.append("</td>");
+
+                    List<String> calls = n.getInboundCalls(inbound);
+                    StringBuffer callSB  = new StringBuffer();
+                    for(String call: calls) {
+                        callSB.append(call);
+                        callSB.append(HtmlUtils.br());
+                    }
+                    sb.append("<td width=5% align=right>");
+                    sb.append(calls.size());
+                    sb.append("</td><td width=85%>");
+                    sb.append(HtmlUtils.makeShowHideBlock("Details", callSB.toString(), false));
+                    sb.append("</td></tr>");
+                }
+                sb.append("</table></div>");
+            }
+
+
+
+
+        }
+        return new Result(getTitle(), sb);
+    }
+
+
+    public String getMapIcon(Request request, Entry entry) {
+        return getRepository().getUrlBase() + "/case/building.png";
+    } 
+
+
     /**
      */
     @Override
     public String getMapLabel(Entry entry, Object[] values)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        columnsToUse.get(2).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         sb.append(" -- ");
-        columnsToUse.get(0).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         sb.append(" -&gt; ");
-        columnsToUse.get(1).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        toColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         return sb.toString();
     }
 
     public String getCalenderLabel(Entry entry, Object[] values)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        columnsToUse.get(0).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         sb.append(" -&gt; ");
-        columnsToUse.get(1).formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        toColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         return sb.toString();
     }
 
