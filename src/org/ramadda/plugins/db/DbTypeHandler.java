@@ -2174,6 +2174,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_CHANNEL));
         sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_TITLE, "",
                               entry.getName()));
+        SimpleDateFormat sdf = getDateFormat(entry);
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
             String   label  = getLabel(entry, values, null);
@@ -2185,7 +2186,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             String dbid = (String) values[IDX_DBID];
 
-            String info = getHtml(request, entry, dbid, columns, values);
+            String info = getHtml(request, entry, dbid, columns, values, sdf);
             sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_ITEM));
             sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_PUBDATE, "",
                                   rssSdf.format(date)));
@@ -2808,7 +2809,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
             rightSide.append(HtmlUtils.br());
-            String info = getHtml(request, entry, dbid, columns, values);
+            String info = getHtml(request, entry, dbid, columns, values, sdf);
             info = info.replace("\r", " ");
             info = info.replace("\n", " ");
             info = info.replace("\"", "\\\"");
@@ -2919,8 +2920,12 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
+    public String getDefaultDateFormatString() {
+        return  "yyyy/MM/dd HH:mm:ss z";
+    }
+
     public SimpleDateFormat getDateFormat(Entry entry) {
-        return getDateFormat(entry, "yyyy/MM/dd HH:mm:ss z");
+        return getDateFormat(entry, getDefaultDateFormatString());
     }
 
     public SimpleDateFormat getDateFormat(Entry entry, String format) {
@@ -3576,6 +3581,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             String href = HtmlUtils.href(url, label);
 
+            /*
             if (canEdit) {
                 String editUrl = getEditUrl(request, entry, dbid);
                 href = HtmlUtils.href(
@@ -3585,6 +3591,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + "/db/database_edit.png", msg("Edit entry"))) + " "
                             + href;
             }
+            */
             //            html.append(href);
             String rowId = "row_" + values[IDX_DBID];
             String event = getEventJS(request, entry, values, rowId, rowId);
@@ -3668,7 +3675,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if ((props == null) || (props.get("posx") == null)) {
                 poscnt++;
             }
-            String info     = getHtml(request, entry, dbid, columns, values);
+            String info     = getHtml(request, entry, dbid, columns, values, sdf);
             String contents = href
                               + HtmlUtils.makeShowHideBlock("...", info,
                                   false);
@@ -4124,7 +4131,6 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer tmpSb = new StringBuffer();
             formatTableValue(request, entry, tmpSb, column, values, sdf);
-            //            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":",
@@ -4216,7 +4222,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     private String getHtml(Request request, Entry entry, String dbid,
-                           List<Column> columns, Object[] values)
+                           List<Column> columns, Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.formTable());
@@ -4232,7 +4238,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 continue;
             }
             StringBuffer tmpSb = new StringBuffer();
-            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            formatTableValue(request, entry, tmpSb, column, values, sdf);
+            //            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp  = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":",

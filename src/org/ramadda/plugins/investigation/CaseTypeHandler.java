@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.police;
+package org.ramadda.plugins.investigation;
 
 
 import org.ramadda.repository.*;

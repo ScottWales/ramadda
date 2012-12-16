@@ -74,6 +74,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     public static final String VIEW_CALL_LISTING = "call.listing";
 
+    private static final String ARROW = " &rarr; ";
     public static final int IDX_FROM = 0;
     public static final int IDX_TO = 1;
     public static final int IDX_DATE = 2;
@@ -136,7 +137,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         }
     }
 
-@Override
+    @Override
     public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values, SimpleDateFormat sdf) throws Exception {
         if(column.equals(fromColumn) || column.equals(toColumn)) {
             sb.append(formatNumber(column.getString(values)));
@@ -390,7 +391,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     @Override
     public String getMapIcon(Request request, Entry entry) {
-        return getRepository().getUrlBase() + "/case/building.png";
+        return getRepository().getUrlBase() + "/investigation/tower.png";
     } 
 
 
@@ -401,14 +402,19 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
-        sb.append(" -- ");
-        fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
-        sb.append(" -&gt; ");
-        toColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        sb.append(": ");
+        sb.append(formatNumber(fromColumn.getString(values)));
+        sb.append(ARROW);
+        sb.append(formatNumber(toColumn.getString(values)));
         return sb.toString();
     }
 
 
+
+    @Override
+    public String getDefaultDateFormatString() {
+        return  "yyyy/MM/dd HH:mm z";
+    }
 
     @Override
     public String getCalendarLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
@@ -418,10 +424,9 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         StringBuffer sb = new StringBuffer();
         dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, timesdf);
         sb.append(": ");
-        fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
-        sb.append(" -&gt; ");
-        toColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
-
+        sb.append(formatNumber(fromColumn.getString(values)));
+        sb.append(ARROW);
+        sb.append(formatNumber(toColumn.getString(values)));
         return sb.toString();
     }
 

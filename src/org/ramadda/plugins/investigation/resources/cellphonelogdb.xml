@@ -17,7 +17,6 @@
    <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" editable="false" columns="10"/>
 
    <column name="tag"    type="enumerationplus"   label="Tag"  cansearch="true" canlist="true" values="default,important">
-       <property name="iscategory" value="true"/>
    </column>
    <column name="notes"    type="string"   label="Notes"  cansearch="true" canlist="true" rows="5"/>
 </table>
