@@ -284,7 +284,6 @@ public class MapInfo {
      * @return  the corresponding code
      */
     public String makeSelector(String arg, boolean popup, String[] nwse) {
-
         return makeSelector(arg, popup, nwse, "", "");
     }
 

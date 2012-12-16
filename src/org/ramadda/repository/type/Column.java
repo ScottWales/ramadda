@@ -29,6 +29,7 @@ import org.ramadda.repository.output.OutputType;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -602,6 +603,13 @@ public class Column implements DataTypes, Constants {
     public void formatValue(Entry entry, StringBuffer sb, String output,
                             Object[] values)
             throws Exception {
+        formatValue(entry, sb, output, values,null);
+    }
+
+
+    public void formatValue(Entry entry, StringBuffer sb, String output,
+                            Object[] values, SimpleDateFormat sdf)
+            throws Exception {
 
         String delimiter = (Misc.equals(OUTPUT_CSV, output)
                             ? "|"
@@ -628,9 +636,15 @@ public class Column implements DataTypes, Constants {
                 sb.append((int) (percent * 100) + "");
             }
         } else if (isType(DATATYPE_DATETIME)) {
-            sb.append(dateTimeFormat.format((Date) values[offset]));
+            if(sdf!=null)
+                sb.append(sdf.format((Date) values[offset]));
+            else
+                sb.append(dateTimeFormat.format((Date) values[offset]));
         } else if (isType(DATATYPE_DATE)) {
-            sb.append(dateFormat.format((Date) values[offset]));
+            if(sdf!=null)
+                sb.append(sdf.format((Date) values[offset]));
+            else
+                sb.append(dateFormat.format((Date) values[offset]));
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = toString(values, offset);
             Entry  theEntry = null;
@@ -1194,7 +1208,7 @@ public class Column implements DataTypes, Constants {
             }
         } else {
             String value = request.getString(id, null);
-            if (value != null) {
+            if (Utils.stringDefined(value)) {
                 where.add(Clause.like(getFullName(), "%" + value + "%"));
             }
             //            typeHandler.addOrClause(getFullName(),
@@ -1796,14 +1810,21 @@ public class Column implements DataTypes, Constants {
         List<Clause> tmp    = new ArrayList<Clause>(where);
         String       widget = "";
         if (isType(DATATYPE_LATLON)) {
-            //TODO: Use point selector
+            String[] nwse = new String[]{request.getString(id+"_north",""),
+                                         request.getString(id+"_west",""),
+                                         request.getString(id+"_south",""),
+                                         request.getString(id+"_east",""),};
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            widget = map.makeSelector(id, true, null, "", "");
+            widget = map.makeSelector(id, true, nwse, "", "");
         } else if (isType(DATATYPE_LATLONBBOX)) {
+            String[] nwse = new String[]{request.getString(id+"_north",""),
+                                         request.getString(id+"_west",""),
+                                         request.getString(id+"_south",""),
+                                         request.getString(id+"_east",""),};
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            widget = map.makeSelector(id, true, null, "", "");
+            widget = map.makeSelector(id, true, nwse, "", "");
         } else if (isDate()) {
             List dateSelect = new ArrayList();
             dateSelect.add(new TwoFacedObject(msg("Relative Date"), "none"));

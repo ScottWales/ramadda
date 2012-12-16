@@ -137,11 +137,11 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     }
 
 @Override
-    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values) throws Exception {
+    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values, SimpleDateFormat sdf) throws Exception {
         if(column.equals(fromColumn) || column.equals(toColumn)) {
             sb.append(formatNumber(column.getString(values)));
         } else {
-            super.formatTableValue(request, entry,  sb, column, values);
+            super.formatTableValue(request, entry,  sb, column, values,sdf);
         }
     }
 

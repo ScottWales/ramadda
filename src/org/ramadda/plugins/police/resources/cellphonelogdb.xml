@@ -1,4 +1,3 @@
-
 <tables>
 
 <table id="zzz_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.police.CellPhoneDbTypeHandler">
@@ -12,16 +11,15 @@
        <property name="iscategory" value="true"/>
    </column>
    <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="false" editable="false"/>
-   <column name="tower_address" type="string"   label="Address"  cansearch="true" canlist="false" editable="false"/>
+   <column name="tower_address" type="string"   label="Address"  cansearch="false" canlist="false" editable="false"/>
    <column name="tower_city"    type="string"   label="City"  cansearch="true" canlist="true" editable="false"/>
-   <column name="tower_state"    type="string"   label="State"  cansearch="true" canlist="true" editable="false"/>
-   <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" editable="false"/>
+   <column name="tower_state"    type="enumeration"   label="State"  cansearch="true" canlist="true" editable="false" columns="5" values="file:/org/ramadda/plugins/police/resources/states.txt"/>
+   <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" editable="false" columns="10"/>
 
    <column name="tag"    type="enumerationplus"   label="Tag"  cansearch="true" canlist="true" values="default,important">
        <property name="iscategory" value="true"/>
    </column>
    <column name="notes"    type="string"   label="Notes"  cansearch="true" canlist="true" rows="5"/>
-
 </table>
 
 

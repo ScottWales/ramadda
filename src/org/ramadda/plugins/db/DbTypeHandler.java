@@ -61,6 +61,8 @@ import java.sql.Statement;
 
 import java.text.SimpleDateFormat;
 
+import java.util.TimeZone;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -151,6 +153,8 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
     public static final String ARG_DB_BULKCOL = "db.bulkcol";
+
+    public static final String ARG_DB_OR = "db.search.or";
 
     /** _more_ */
     public static final String ARG_DB_BULK_TEXT = "db.bulk.text";
@@ -352,6 +356,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private List<Column> dateColumns = new ArrayList<Column>();
 
+    private Column dateColumn;
+
     /** _more_ */
     private List<Column> categoryColumns = new ArrayList<Column>();
 
@@ -390,7 +396,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
     SimpleDateFormat rssSdf =
-        new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
+        new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss z");
 
     /** _more_ */
     XmlEncoder xmlEncoder = new XmlEncoder();
@@ -609,7 +615,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
         }
 
-        for (Column column : columns) {
+        for (Column column : columnsToUse) {
             doSums[cnt] = Misc.equals(column.getProperty("dosum"), "true");
 
             if (Misc.equals(column.getProperty("label"), "true")) {
@@ -646,6 +652,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if ( column.isDate()) {
                 hasDate = true;
                 dateColumns.add(column);
+                if(dateColumn == null) dateColumn = column;
             }
             if (column.isNumeric()) {
                 numberColumns.add(column);
@@ -1173,7 +1180,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             int               month = request.get(ARG_MONTH, 0) + 1;
             GregorianCalendar cal   =
                 new GregorianCalendar(DateUtil.TIMEZONE_GMT);
-            SimpleDateFormat sdf   = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat  sdf        = new SimpleDateFormat("yyyy/MM/dd");
             Date             date1 = sdf.parse(year + "/" + month + "/1");
             cal.setTime(date1);
             cal.add(GregorianCalendar.MONTH, 1);
@@ -1577,6 +1584,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         for (Column column : columns) {
             column.addToSearchForm(request, sb, where, entry);
         }
+
+        sb.append(formEntry(request, msgLabel("Search Type"),
+                            HtmlUtils.checkbox(ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) +" " + msg("Use OR logic")));
+
+
         sb.append(formEntry(request, msgLabel("View Results As"),
                             HtmlUtils.select(ARG_DB_VIEW, viewList,
                                              request.getString(ARG_DB_VIEW,
@@ -1638,7 +1650,13 @@ public class DbTypeHandler extends BlobTypeHandler {
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-        return handleList(request, entry, Clause.and(where), "", true);
+        Clause mainClause;
+        if(request.get(ARG_DB_OR,false)) {
+            mainClause= Clause.or(where);
+        } else {
+            mainClause= Clause.and(where);
+        }                
+        return handleList(request, entry, mainClause, "", true);
     }
 
 
@@ -2161,7 +2179,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String   label  = getLabel(entry, values);
             Date     date   = null;
             if (dateColumns.size() > 0) {
-                date = (Date) values[dateColumns.get(0).getOffset()];
+                date = (Date) values[dateColumn.getOffset()];
             } else {
                 date = (Date) values[IDX_DBCREATEDATE];
             }
@@ -2310,6 +2328,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                           boolean showHeaderLinks)
             throws Exception {
 
+        SimpleDateFormat sdf = getDateFormat(entry);
         Hashtable entryProps = getProperties(entry);
 
         if (doForm) {
@@ -2353,10 +2372,11 @@ public class DbTypeHandler extends BlobTypeHandler {
             sb.append("<tr>");
             sb.append("<td class=dbtableheader>&nbsp;</td>");
             for (int i = 1; i < columns.size(); i++) {
-                if ( !columns.get(i).getCanList()) {
+                Column column = columns.get(i);
+                if ( !column.getCanList()) {
                     continue;
                 }
-                String label = columns.get(i).getLabel();
+                String label = column.getLabel();
                 if ( !showHeaderLinks) {
                     sb.append(
                         HtmlUtils.col(
@@ -2364,7 +2384,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
                     continue;
                 }
-                String sortColumn = columns.get(i).getName();
+                String sortColumn = column.getName();
                 String extra;
                 if (sortColumn.equals(sortBy)) {
                     if (asc) {
@@ -2448,10 +2468,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
             for (int i = 1; i < columns.size(); i++) {
-                if ( !columns.get(i).getCanList()) {
+                Column column = columns.get(i);
+                if ( !column.getCanList()) {
                     continue;
                 }
-                Column column = columns.get(i);
                 if (doSums[i]) {
                     Double d = sums.get(column.getName());
                     if (d == null) {
@@ -2508,8 +2528,9 @@ public class DbTypeHandler extends BlobTypeHandler {
                     }
                 }
 
+
                 sb.append("&nbsp;");
-                formatTableValue(request, entry, sb, column, values);
+                formatTableValue(request, entry, sb, column, values, sdf);
                 sb.append("</td>\n");
             }
             sb.append("</tr>");
@@ -2555,8 +2576,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
-    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values) throws Exception  {
-        column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values, SimpleDateFormat sdf) throws Exception  {
+        column.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
     }
 
     /**
@@ -2897,6 +2918,18 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
+    public SimpleDateFormat getDateFormat(Entry entry) {
+        return getDateFormat(entry, "yyyy/MM/dd HH:mm:ss z");
+    }
+
+    public SimpleDateFormat getDateFormat(Entry entry, String format) {
+        SimpleDateFormat sdf  = new SimpleDateFormat(format);
+        String            timezone = getEntryManager().getTimezone(entry);
+        if(timezone!=null) {
+            sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+        }
+        return sdf;
+    }
 
 
     /**
@@ -2921,10 +2954,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         addViewHeader(request, entry, sb, VIEW_CHART, valueList.size(),
                       fromSearch);
 
-        String            dateFormat = "yyyy/MM/dd HH:mm:ss";
         GregorianCalendar cal = new GregorianCalendar(DateUtil.TIMEZONE_GMT);
-        SimpleDateFormat  sdf        = new SimpleDateFormat(dateFormat);
-
+        SimpleDateFormat  sdf        = getDateFormat(entry);
 
         sb.append("\n\n");
         int    height     = valueList.size() * 30;
@@ -3343,12 +3374,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         init.append("data.addColumn('string', 'Name');\n");
         init.append("data.addColumn('date', 'Date');\n");
 
-        String            dateFormat = "yyyy/MM/dd HH:mm:ss";
         GregorianCalendar cal = new GregorianCalendar(DateUtil.TIMEZONE_GMT);
-        SimpleDateFormat  sdf        = new SimpleDateFormat(dateFormat);
+        SimpleDateFormat  sdf        = getDateFormat(entry);
 
         Column            dateColumn = null;
-        for (Column column : columns) {
+        for (Column column : columnsToUse) {
             if ( !isDataColumn(column)) {
                 continue;
             }
@@ -3391,7 +3421,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                       + ", theDate);\n");
             columnCnt++;
 
-            for (Column column : columns) {
+            for (Column column : columnsToUse) {
                 if ( !isDataColumn(column)) {
                     continue;
                 }
@@ -3445,14 +3475,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                                      List<Object[]> valueList,
                                      boolean fromSearch)
             throws Exception {
-        Column theColumn = null;
-        for (Column column : columns) {
-            if (column.isDate()) {
-                theColumn = column;
-                break;
-            }
-        }
-        if (theColumn == null) {
+
+        if (dateColumn == null) {
             throw new IllegalStateException("No date data found");
         }
 
@@ -3469,7 +3493,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         List labels = new ArrayList();
         List ids    = new ArrayList();
         for (Object[] values : valueList) {
-            times.add(SqlUtil.format((Date) values[theColumn.getOffset()]));
+            times.add(SqlUtil.format((Date) values[dateColumn.getOffset()]));
             String label = getLabel(entry, values).trim();
             if (label.length() == 0) {
                 label = "NA";
@@ -3533,19 +3557,12 @@ public class DbTypeHandler extends BlobTypeHandler {
         List<CalendarOutputHandler.CalendarEntry> calEntries =
             new ArrayList<CalendarOutputHandler.CalendarEntry>();
 
-        Column theColumn = null;
-        for (Column column : columns) {
-            if (column.isDate()) {
-                theColumn = column;
-                break;
-            }
-        }
-        if (theColumn == null) {
+        if (dateColumn == null) {
             throw new IllegalStateException("No date data found");
         }
         for (Object[] values : valueList) {
             String       dbid  = (String) values[IDX_DBID];
-            Date         date  = (Date) values[theColumn.getOffset()];
+            Date         date  = (Date) values[dateColumn.getOffset()];
             String       url   = getViewUrl(request, entry, dbid);
             String       label = getCalendarLabel(entry, values).trim();
             StringBuffer html  = new StringBuffer();
@@ -3573,7 +3590,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String block = HtmlUtils.makeShowHideBlock(href, html.toString(),
                                false);
             calEntries.add(new CalendarOutputHandler.CalendarEntry(date,
-                    href, href));
+                                                                   href, href));
         }
 
         calendarOutputHandler.outputCalendar(request, calEntries, sb, false);
@@ -3753,7 +3770,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append("METHOD:PUBLISH\n");
         for (Object[] values : valueList) {
             String dbid        = (String) values[IDX_DBID];
-            Date   date1       = (Date) values[dateColumns.get(0).getOffset()];
+            Date   date1       = (Date) values[dateColumn.getOffset()];
             Date   date2       = (Date) values[(dateColumns.size() > 1)
                     ? dateColumns.get(1).getOffset()
                     : dateColumns.get(0).getOffset()];
@@ -4094,12 +4111,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                          Object[] values)
             throws Exception {
         sb.append(HtmlUtils.formTable());
+        SimpleDateFormat sdf = getDateFormat(entry);
         for (Column column : columns) {
             if ( !isDataColumn(column)) {
                 continue;
             }
             StringBuffer tmpSb = new StringBuffer();
-            formatTableValue(request, entry, tmpSb, column, values);
+            formatTableValue(request, entry, tmpSb, column, values, sdf);
             //            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");

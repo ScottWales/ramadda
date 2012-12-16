@@ -59,6 +59,10 @@ public class Utils {
         return results;
     }
 
+    public static boolean stringDefined(String s) {
+        if(s==null || s.trim().length()==0) return false;
+        return true;
+    }
 
 }
 

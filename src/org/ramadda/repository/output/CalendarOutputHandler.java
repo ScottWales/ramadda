@@ -1041,6 +1041,9 @@ public class CalendarOutputHandler extends OutputHandler {
                 Date entryDate = entry.date;
                 mapCal.setTime(entryDate);
                 int[]  entryDay = getDayMonthYear(mapCal);
+
+                //                System.err.println("entry:" + entryDate + " -- "  + entryDay[IDX_YEAR] +" " + selected[IDX_YEAR] +" " + entryDay[IDX_MONTH] + " " + selected[IDX_MONTH]);
+
                 String key = entryDay[IDX_YEAR] + "/" + entryDay[IDX_MONTH]
                              + "/" + entryDay[IDX_DAY];
                 if (tries == 0) {
