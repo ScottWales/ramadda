@@ -1,7 +1,7 @@
 <types>
 
-  <type name="investigation_case"  description="Police Case" handler="org.ramadda.plugins.investigation.CaseTypeHandler" category="Police Case">
-     <property name="icon" value="/case/briefcase.png"/>
+  <type name="investigation_case"  description="Investigation" handler="org.ramadda.plugins.investigation.CaseTypeHandler" category="Investigation">
+     <property name="icon" value="/investigation/briefcase.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>

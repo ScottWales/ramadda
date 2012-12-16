@@ -1,6 +1,6 @@
 <tables>
 
-<table id="zzz_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.investigation.CellPhoneDbTypeHandler">
+<table id="investigation_cellphonelog" name="Cell Phone Log" category="Investigation" icon="/investigation/phone.png" handler="org.ramadda.plugins.investigation.CellPhoneDbTypeHandler">
    <column name="from_number" type="string" label="From Number"   cansearch="true" canlist="true" editable="false"/>
    <column name="to_number" type="string" label="To Number"   cansearch="true" canlist="true" editable="false"/>
    <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
 
-  <handler category="Police Case">
+  <handler category="Investigation">
 
     <type id="investigation_person" name="Person">
       <element id="name" name="Name"/>
