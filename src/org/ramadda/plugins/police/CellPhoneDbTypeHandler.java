@@ -136,6 +136,16 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         }
     }
 
+@Override
+    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values) throws Exception {
+        if(column.equals(fromColumn) || column.equals(toColumn)) {
+            sb.append(formatNumber(column.getString(values)));
+        } else {
+            super.formatTableValue(request, entry,  sb, column, values);
+        }
+    }
+
+
 
     private String formatNumber(String n) {
         n = n.trim();
@@ -159,8 +169,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     private static class Number implements Comparable {
         String number;
         int count = 0;
-        Hashtable<Number,List<String>> outboundCalls  = new Hashtable<Number,List<String>>();
-        Hashtable<Number,List<String>> inboundCalls  = new Hashtable<Number,List<String>>();
+        Hashtable<Number,List<Object[]>> outboundCalls  = new Hashtable<Number,List<Object[]>>();
+        Hashtable<Number,List<Object[]>> inboundCalls  = new Hashtable<Number,List<Object[]>>();
 
         List<Number>outbound = new ArrayList<Number>();
         List<Number>inbound = new ArrayList<Number>();
@@ -170,32 +180,32 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             this.number= number;
         }
         
-        public void addOutbound(Number n, String date) {
+        public void addOutbound(Number n, Object[]tuple) {
             count++;
-            List<String> calls = outboundCalls.get(n);
+            List<Object[]> calls = outboundCalls.get(n);
             if(calls==null) {
                 outbound.add(n);
-                outboundCalls.put(n,calls = new ArrayList<String>());
+                outboundCalls.put(n,calls = new ArrayList<Object[]>());
             }
-            calls.add(date);
+            calls.add(tuple);
         }
 
-        public void addInbound(Number n, String date) {
+        public void addInbound(Number n, Object[]tuple) {
             count++;
-            List<String> calls = inboundCalls.get(n);
+            List<Object[]> calls = inboundCalls.get(n);
             if(calls==null) {
                 inbound.add(n);
-                inboundCalls.put(n,calls = new ArrayList<String>());
+                inboundCalls.put(n,calls = new ArrayList<Object[]>());
             }
-            calls.add(date);
+            calls.add(tuple);
         }
 
 
 
-        public List<String> getOutboundCalls(Number n) {
+        public List<Object[]> getOutboundCalls(Number n) {
             return outboundCalls.get(n);
         }
-        public List<String> getInboundCalls(Number n) {
+        public List<Object[]> getInboundCalls(Number n) {
             return inboundCalls.get(n);
         }
 
@@ -253,8 +263,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
         public int compareTo(Object o) {
             Number that = (Number) o;
-            if(this.count<that.count) return  -1;
-            if(this.count>that.count) return  1;
+            if(this.count<that.count) return  1;
+            if(this.count>that.count) return  -1;
             return 0;
         }
 
@@ -282,7 +292,6 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         
         for(Object[] tuple : valueList) {
             String fromNumber = fromColumn.getString(tuple);
-            String date = dateColumn.getString(tuple);
             Number from = numberMap.get(fromNumber);
             if(from==null)  {
                 from = new Number(fromNumber);
@@ -296,19 +305,19 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                 numbers.add(to);
                 numberMap.put(to.number, to);
             }
-            from.addOutbound(to, date);
-            to.addInbound(from, date);
+            String date = dateColumn.getString(tuple);
+            from.addOutbound(to, tuple);
+            to.addInbound(from, tuple);
         }
 
         Collections.sort(numbers);
         for(Number n: numbers) {
             //Only show numbers with outbounds
             if(n.outbound.size()<=1 && n.inbound.size()<=1) continue;
-            sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.b(formatNumber(n.number)));
+            sb.append(HtmlUtils.div(formatNumber(n.number), HtmlUtils.cssClass("ramadda-heading-1")));
 
             if(n.outbound.size()>0) { 
-                sb.append("<div style=\"margin-top:0px;margin-left:20px;\">Outbound:<table cellspacing=5 width=100%>");
+                sb.append("<div style=\"margin-top:0px;margin-left:20px;\"><b>Outbound:</b><br><table cellspacing=5 width=100%>");
                 for(Number outbound:n.getSortedOutbound()) {
                     sb.append("<tr valign=top><td width=10%>");
                     String searchUrl =
@@ -321,23 +330,26 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
                     sb.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
                     sb.append("</td>");
-                    List<String> calls = n.getOutboundCalls(outbound);
+
+                    List<Object[]> calls = n.getOutboundCalls(outbound);
                     StringBuffer callSB  = new StringBuffer();
-                    for(String call: calls) {
-                        callSB.append(call);
-                        callSB.append(HtmlUtils.br());
+                    for(Object[]values: calls) {
+                        String date = dateColumn.getString(values);
+                        StringBuffer html = new StringBuffer();
+                        getHtml(request, html,entry,values);
+                        callSB.append(HtmlUtils.makeShowHideBlock(date, HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
                     }
                     sb.append("<td width=5% align=right>");
                     sb.append(calls.size());
                     sb.append("</td><td width=85%>");
-                    sb.append(HtmlUtils.makeShowHideBlock("Details", callSB.toString(), false));
+                    sb.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
                     sb.append("</td></tr>");
                 }
                 sb.append("</table></div>");
             }
 
             if(n.inbound.size()>0) { 
-                sb.append("<div style=\"margin-top:0px;margin-left:20px;\">Inbound:<table cellspacing=5 width=100%>");
+                sb.append("<div style=\"margin-top:0px;margin-left:20px;\"><b>Inbound:</b><br><table cellspacing=5 width=100%>");
                 for(Number inbound:n.getSortedInbound()) {
                     sb.append("<tr valign=top><td width=10%>");
                     String searchUrl =
@@ -351,16 +363,18 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                     sb.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
                     sb.append("</td>");
 
-                    List<String> calls = n.getInboundCalls(inbound);
+                    List<Object[]> calls = n.getInboundCalls(inbound);
                     StringBuffer callSB  = new StringBuffer();
-                    for(String call: calls) {
-                        callSB.append(call);
-                        callSB.append(HtmlUtils.br());
+                    for(Object[]values: calls) {
+                        String date = dateColumn.getString(values);
+                        StringBuffer html = new StringBuffer();
+                        getHtml(request, html,entry,values);
+                        callSB.append(HtmlUtils.makeShowHideBlock(date, HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
                     }
                     sb.append("<td width=5% align=right>");
                     sb.append(calls.size());
                     sb.append("</td><td width=85%>");
-                    sb.append(HtmlUtils.makeShowHideBlock("Details", callSB.toString(), false));
+                    sb.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
                     sb.append("</td></tr>");
                 }
                 sb.append("</table></div>");
@@ -498,6 +512,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         boolean outbound = true;
         String  tmpDirection = toks.get(3).trim();
         String  direction = "";
+        String from = toks.get(10);
+        String to = toks.get(2);
         if(tmpDirection.equals("0") || 
            tmpDirection.equals("6")) {
             direction = "inbound";
@@ -507,14 +523,16 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             direction = "outbound";
         } else if(tmpDirection.equals("F")) {
             direction = "voice";
+            to = "voice";
         } else if(tmpDirection.equals("2")) {
             direction = "mobiletomobile";
         }  else  {
             return null;
         }
 
-        String from = toks.get(outbound?1:2);
-        String to = toks.get(outbound?2:1);
+        //Pleasanton_2,7076715244,7076715244,6,8/17/2011 15:25,58,335,2,335,2,4439263852
+        //0           , 1         , 2       ,3,4              ,5 ,6  ,7,8  ,9,10
+
         String time = toks.get(4);
         //duration is in seconds in the file but minutes in the db
         int seconds = Integer.parseInt(toks.get(5));
@@ -525,7 +543,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         Date date = sdf.parse(time);
 
         String[] fields = new String[]{
-            from,to,
+            from,
+            to,
             formatDate(date), 
             minutesFormat.format(minutes),
             direction,

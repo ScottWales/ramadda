@@ -164,6 +164,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
 
+    public static final String ATTR_EDITABLE = "editable";
+
     /** _more_ */
     public static final String ATTR_VALUES = "values";
 
@@ -227,6 +229,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canSearch;
+
+    private boolean editable;
 
     /** _more_ */
     private boolean canList;
@@ -325,6 +329,7 @@ public class Column implements DataTypes, Constants {
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
         canSearch   = XmlUtil.getAttribute(element, ATTR_CANSEARCH, false);
+        editable   = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
         addToForm   = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
         canShow     = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
         canList     = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
@@ -372,7 +377,7 @@ public class Column implements DataTypes, Constants {
                                                     true)) {
                         int index = tok.indexOf(":");
                         if(index>0) {
-                            enumValues.add(new TwoFacedObject(tok.substring(index),tok.substring(0,index)));
+                            enumValues.add(new TwoFacedObject(tok.substring(index+1),tok.substring(0,index)));
                         } else {
                             enumValues.add(new TwoFacedObject(tok,tok));
                         }
@@ -2267,6 +2272,23 @@ public class Column implements DataTypes, Constants {
     }
 
 
+    /**
+       Set the Editable property.
+
+       @param value The new value for Editable
+    **/
+    public void setEditable (boolean value) {
+	editable = value;
+    }
+
+    /**
+       Get the Editable property.
+
+       @return The Editable
+    **/
+    public boolean getEditable () {
+	return editable;
+    }
 
 
 }

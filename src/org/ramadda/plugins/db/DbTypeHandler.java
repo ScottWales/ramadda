@@ -1889,6 +1889,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             dbid = null;
         }
 
+        boolean isNew = dbid == null;
         if (request.exists(ARG_DB_BULK_TEXT)
                 || request.exists(ARG_DB_BULK_FILE)) {
             String bulkContent;
@@ -1915,6 +1916,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                  : tableHandler.makeEntryValueArray());
         initializeValueArray(request, dbid, values);
         for (Column column : columns) {
+            if(!isNew && !column.getEditable()) continue;
             column.setValue(request, entry, values);
         }
 
@@ -2507,7 +2509,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 }
 
                 sb.append("&nbsp;");
-                column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+                formatTableValue(request, entry, sb, column, values);
                 sb.append("</td>\n");
             }
             sb.append("</tr>");
@@ -2552,6 +2554,10 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(HtmlUtils.formClose());
     }
 
+
+    public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values) throws Exception  {
+        column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+    }
 
     /**
      * _more_
@@ -3998,6 +4004,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                             HtmlUtils.SIZE_60));
 
 
+            bulk.append(HtmlUtils.p());
             bulk.append(msgLabel("Or enter text"));
             List colIds = new ArrayList();
             for (Column column : columnsToUse) {
@@ -4083,7 +4090,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void getHtml(Request request, StringBuffer sb, Entry entry,
+    public void getHtml(Request request, StringBuffer sb, Entry entry,
                          Object[] values)
             throws Exception {
         sb.append(HtmlUtils.formTable());
@@ -4092,7 +4099,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 continue;
             }
             StringBuffer tmpSb = new StringBuffer();
-            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            formatTableValue(request, entry, tmpSb, column, values);
+            //            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
             String tmp = tmpSb.toString();
             tmp = tmp.replaceAll("'", "&apos;");
             sb.append(formEntry(request, column.getLabel() + ":",

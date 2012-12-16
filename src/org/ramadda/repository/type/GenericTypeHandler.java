@@ -1136,7 +1136,15 @@ public class GenericTypeHandler extends TypeHandler {
                                      StringBuffer formBuffer, Entry entry,
                                      Object[] values, Hashtable state)
             throws Exception {
-        column.addToEntryForm(request, entry, formBuffer, values, state);
+        boolean hasValue = column.getString(values)!=null;
+
+        if(entry!=null && hasValue && !column.getEditable()) {
+            StringBuffer tmpSb = new StringBuffer();
+            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            formBuffer.append(HtmlUtils.formEntry(column.getLabel(), tmpSb.toString()));
+        } else {
+            column.addToEntryForm(request, entry, formBuffer, values, state);
+        }
     }
 
 
