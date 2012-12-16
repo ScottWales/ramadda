@@ -19,7 +19,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package org.ramadda.plugins.police;
+package org.ramadda.plugins.investigation;
 
 
 import org.ramadda.plugins.db.*;
@@ -446,7 +446,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             throw new IllegalArgumentException("Unknown file type:" + fileType);
         }
 
-        File sitesDir = new File(getStorageManager().getResourceDir() +"/police/sites");
+        File sitesDir = new File(getStorageManager().getResourceDir() +"/investigation/sites");
         Hashtable<String,CellSite>   sites = CellSite.getSites(sitesDir, carrier);
         List<Object[]> valueList = new ArrayList<Object[]>();
         for(List<String>toks: tokenize(request, fileType, contents)) {

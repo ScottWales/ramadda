@@ -1,6 +1,6 @@
 <tables>
 
-<table id="zzz_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.police.CellPhoneDbTypeHandler">
+<table id="zzz_case_cellphonelog" name="Cell Phone Log" category="Police Case" icon="/case/phone.png" handler="org.ramadda.plugins.investigation.CellPhoneDbTypeHandler">
    <column name="from_number" type="string" label="From Number"   cansearch="true" canlist="true" editable="false"/>
    <column name="to_number" type="string" label="To Number"   cansearch="true" canlist="true" editable="false"/>
    <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false">
@@ -13,7 +13,7 @@
    <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="false" editable="false"/>
    <column name="tower_address" type="string"   label="Address"  cansearch="false" canlist="false" editable="false"/>
    <column name="tower_city"    type="string"   label="City"  cansearch="true" canlist="true" editable="false"/>
-   <column name="tower_state"    type="enumeration"   label="State"  cansearch="true" canlist="true" editable="false" columns="5" values="file:/org/ramadda/plugins/police/resources/states.txt"/>
+   <column name="tower_state"    type="enumeration"   label="State"  cansearch="true" canlist="true" editable="false" columns="5" values="file:/org/ramadda/plugins/investigation/resources/states.txt"/>
    <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" editable="false" columns="10"/>
 
    <column name="tag"    type="enumerationplus"   label="Tag"  cansearch="true" canlist="true" values="default,important">

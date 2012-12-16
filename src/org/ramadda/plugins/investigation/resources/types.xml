@@ -1,6 +1,6 @@
 <types>
 
-  <type name="police_case"  description="Police Case" handler="org.ramadda.plugins.police.CaseTypeHandler" category="Police Case">
+  <type name="investigation_case"  description="Police Case" handler="org.ramadda.plugins.investigation.CaseTypeHandler" category="Police Case">
      <property name="icon" value="/case/briefcase.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -11,12 +11,12 @@
      <property name="form.time.show" value="false"/>
 
      <column  name="case_number"  type="string" label="Case Number"/>
-     <column  name="case_type"  type="enumerationplus" label="Case Type" values="file:/org/ramadda/plugins/police/resources/casetypes.txt"/>
-     <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/plugins/police/resources/statuses.txt" label="Status"/>
+     <column  name="case_type"  type="enumerationplus" label="Case Type" values="file:/org/ramadda/plugins/investigation/resources/casetypes.txt"/>
+     <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/plugins/investigation/resources/statuses.txt" label="Status"/>
      <column  name="ncic_number"  type="string" label="NCIC Number"/>
      <column  name="city"  type="string" label="City"/>
      <column  name="county"  type="string" label="County"/>
-     <column  name="state"  type="enumerationplus"  values="file:/org/ramadda/plugins/police/resources/states.txt"  label="State"/>
+     <column  name="state"  type="enumerationplus"  values="file:/org/ramadda/plugins/investigation/resources/states.txt"  label="State"/>
      <wiki><![CDATA[
 {{noheading}}
 <table width="100%">
