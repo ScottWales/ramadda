@@ -388,6 +388,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     }
 
 
+    @Override
     public String getMapIcon(Request request, Entry entry) {
         return getRepository().getUrlBase() + "/case/building.png";
     } 
@@ -396,10 +397,10 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     /**
      */
     @Override
-    public String getMapLabel(Entry entry, Object[] values)
+     public String getMapLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+        dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
         sb.append(" -- ");
         fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         sb.append(" -&gt; ");
@@ -407,16 +408,25 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         return sb.toString();
     }
 
-    public String getCalenderLabel(Entry entry, Object[] values)
+
+
+    @Override
+    public String getCalendarLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
+        SimpleDateFormat timesdf = new SimpleDateFormat("HH:mm");
+        timesdf.setTimeZone(sdf.getTimeZone());
         StringBuffer sb = new StringBuffer();
+        dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, timesdf);
+        sb.append(": ");
         fromColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
         sb.append(" -&gt; ");
         toColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+
         return sb.toString();
     }
 
 
+    @Override
     public void addToBulkUploadForm(Request request, StringBuffer bulk) {
         super.addToBulkUploadForm(request,  bulk);
         //TODO: add file type list when we have more than one type

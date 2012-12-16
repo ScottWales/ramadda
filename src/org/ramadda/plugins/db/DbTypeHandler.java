@@ -2176,7 +2176,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                               entry.getName()));
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
-            String   label  = getLabel(entry, values);
+            String   label  = getLabel(entry, values, null);
             Date     date   = null;
             if (dateColumns.size() > 0) {
                 date = (Date) values[dateColumn.getOffset()];
@@ -2746,6 +2746,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         String       icon           = getMapIcon(request, entry);
         StringBuffer rightSide      = new StringBuffer();
+        SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             String dbid  = (String) values[IDX_DBID];
             double lat   = 0;
@@ -2803,7 +2804,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         msg("View entry"))));
             rightSide.append(" ");
             rightSide.append(map.getHiliteHref(dbid,
-                    getMapLabel(entry, values)));
+                                               getMapLabel(entry, values, sdf)));
 
 
             rightSide.append(HtmlUtils.br());
@@ -2903,7 +2904,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 lat = ll[2];
                 lon = ll[3];
             }
-            String label   = getLabel(entry, values);
+            String label   = getLabel(entry, values,null);
             String viewUrl = request.getAbsoluteUrl(getViewUrl(request,
                                  entry, dbid));
             String       href = HtmlUtils.href(viewUrl, label);
@@ -3019,7 +3020,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                      (String) values[IDX_DBID]);
 
                     String href = HtmlUtils.href(url,
-                                      getLabel(entry, values));
+                                                 getLabel(entry, values, sdf));
                     String rowId = "row_" + values[IDX_DBID];
                     String divId = "div_" + values[IDX_DBID];
                     String event = getEventJS(request, entry, values, rowId,
@@ -3076,6 +3077,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                  List<Object[]> valueList, boolean fromSearch)
             throws Exception {
 
+        SimpleDateFormat sdf = getDateFormat(entry);
         boolean      canEdit = getAccessManager().canEditEntry(request, entry);
         StringBuffer sb         = new StringBuffer();
         String       view       = request.getString(ARG_DB_VIEW, "");
@@ -3138,7 +3140,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String rowId = "row_" + valuesArray[IDX_DBID];
             String event = getEventJS(request, entry, valuesArray, rowId,
                                       rowId);
-            String href = HtmlUtils.href(url, getLabel(entry, valuesArray));
+            String href = HtmlUtils.href(url, getLabel(entry, valuesArray, sdf));
             //            href= HtmlUtils.span(href,HtmlUtils.cssClass("xdbcategoryrow")+);
             sb.append(HtmlUtils.col("&nbsp;" + href,
                                     HtmlUtils.id(rowId) + event
@@ -3263,6 +3265,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                      List<Object[]> valueList,
                                      boolean fromSearch)
             throws Exception {
+        SimpleDateFormat sdf = getDateFormat(entry);
         boolean      canEdit = getAccessManager().canEditEntry(request, entry);
         StringBuffer sb         = new StringBuffer();
         String       view       = request.getString(ARG_DB_VIEW, "");
@@ -3295,7 +3298,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                       (String) valuesArray[IDX_DBID])
                          : getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
-            String href = HtmlUtils.href(url, getLabel(entry, valuesArray));
+            String href = HtmlUtils.href(url, getLabel(entry, valuesArray, sdf));
             String rowValue     = (String) valuesArray[gridColumn.getOffset()];
             StringBuffer buffer = map.get(rowValue);
             if (buffer == null) {
@@ -3400,9 +3403,10 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append("data.addRows(" + valueList.size() + ");\n");
         sb.append(init);
         int row = 0;
+
         for (Object[] values : valueList) {
             columnCnt = 0;
-            String label = getLabel(entry, values);
+            String label = getLabel(entry, values,sdf);
             sb.append("data.setValue(" + row + ", " + columnCnt + ","
                       + HtmlUtils.squote(label) + ");\n");
             columnCnt++;
@@ -3494,7 +3498,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         List ids    = new ArrayList();
         for (Object[] values : valueList) {
             times.add(SqlUtil.format((Date) values[dateColumn.getOffset()]));
-            String label = getLabel(entry, values).trim();
+            String label = getLabel(entry, values, null).trim();
             if (label.length() == 0) {
                 label = "NA";
             }
@@ -3560,11 +3564,12 @@ public class DbTypeHandler extends BlobTypeHandler {
         if (dateColumn == null) {
             throw new IllegalStateException("No date data found");
         }
+        SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             String       dbid  = (String) values[IDX_DBID];
             Date         date  = (Date) values[dateColumn.getOffset()];
             String       url   = getViewUrl(request, entry, dbid);
-            String       label = getCalendarLabel(entry, values).trim();
+            String       label = getCalendarLabel(entry, values, sdf).trim();
             StringBuffer html  = new StringBuffer();
             if (label.length() == 0) {
                 label = "NA";
@@ -3637,11 +3642,12 @@ public class DbTypeHandler extends BlobTypeHandler {
         int poscnt = 0;
         sb.append(
             HtmlUtils.importJS(getRepository().fileUrl("/db/dom-drag.js")));
+        SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             Hashtable props = getProps(values);
             String    dbid  = (String) values[IDX_DBID];
             String    url   = getViewUrl(request, entry, dbid);
-            String    label = getLabel(entry, values).trim();
+            String    label = getLabel(entry, values, sdf).trim();
             if (label.length() == 0) {
                 label = "NA";
             }
@@ -3778,7 +3784,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String dateString2 = sdf.format(date2) + "Z";
             String url         = getViewUrl(request, entry, dbid);
             url = request.getAbsoluteUrl(url);
-            String label = getLabel(entry, values).trim();
+            String label = getLabel(entry, values, null).trim();
 
             if (label.length() == 0) {
                 label = "NA";
@@ -4138,8 +4144,8 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getLabel(Entry entry, Object[] values) throws Exception {
-        String lbl = getLabelInner(entry, values);
+    public String getLabel(Entry entry, Object[] values, SimpleDateFormat sdf) throws Exception {
+        String lbl = getLabelInner(entry, values, sdf);
         if ((lbl == null) || (lbl.trim().length() == 0)) {
             lbl = "---";
         }
@@ -4147,12 +4153,13 @@ public class DbTypeHandler extends BlobTypeHandler {
         return lbl;
     }
 
-    public String getMapLabel(Entry entry, Object[] values) throws Exception {
-        return getLabel(entry, values);
+    public String getMapLabel(Entry entry, Object[] values, SimpleDateFormat sdf) throws Exception {
+        return getLabel(entry, values, sdf);
     }
 
-    public String getCalendarLabel(Entry entry, Object[] values) throws Exception {
-        return getLabel(entry, values);
+
+    public String getCalendarLabel(Entry entry, Object[] values, SimpleDateFormat sdf) throws Exception {
+        return getLabel(entry, values, sdf);
     }
 
     /**
@@ -4165,11 +4172,11 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getLabelInner(Entry entry, Object[] values)
+    public String getLabelInner(Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         if (labelColumn != null) {
-            labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+            labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
             return sb.toString();
         }
         for (Column column : columns) {
