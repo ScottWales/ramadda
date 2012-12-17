@@ -180,7 +180,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
         List     tmp      = new ArrayList();
         for(TypeHandler th: getRepository().getTypeHandlers()) { 
             if(typeHandlerClass.isAssignableFrom(th.getClass())) {
-                tmp.add(new TwoFacedObject(th.getType(), th.getLabel()));
+                tmp.add(new TwoFacedObject(th.getLabel(), th.getType()));
             }
         }
         return HtmlUtils.select(ARG_TYPE, tmp, selected);

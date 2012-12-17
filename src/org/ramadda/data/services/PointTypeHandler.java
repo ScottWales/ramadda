@@ -89,7 +89,6 @@ public   class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-        Misc.printStack("initializeNewEntry:" + entry, 10);
         //        System.err.println ("initializeNewEntry:" + entry);
 
         log("initializeNewEntry:" + entry.getResource());

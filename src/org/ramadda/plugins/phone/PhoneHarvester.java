@@ -66,13 +66,36 @@ public class PhoneHarvester extends Harvester  {
     public static final String []CMDS_LOGIN = {"pass","password","login"};
     public static final String []CMDS_CD = {"cd", "go"};
     public static final String []CMDS_CLEAR = {"clear"};
-    public static final String []CMDS_DELETE = {"delete","rm"};
+
+
     public static final String []CMDS_LS = {"ls","list", "dir"};
     public static final String []CMDS_URL = {"url","link"};
     public static final String []CMDS_GET = {"get"};
     public static final String []CMDS_COMMENTS = {"comments"};
     public static final String []CMDS_APPEND = {"+","append","add"};
     public static final String []CMDS_PWD= {"pwd","where","ur"};
+
+    //TODO:
+    //tags <entry>
+    //comments
+
+    //edit_line := + (<create_line> | <tag_line> | <comment_line>)
+    //create_line := (wiki|blog|folder|note|sms|mkdir) entry name _newline_ <text>
+    //tag_line := entry name _newline_ <text>
+
+    //entryid := this is always relative to the current working directory
+    //it can be a child entry name or a path (e.g., child1/child2/child3
+    //or a relatve path:
+    // ../../child_name
+
+    //tag <entry>
+    //hello
+    //there
+
+    public static final String []CMDS_COPY = {"copy","cp"};
+    public static final String []CMDS_TAG = {"tag"};
+    public static final String []CMDS_DELETE = {"delete","rm"};
+
 
     /** _more_          */
     public static final String ATTR_TYPE = "type";
@@ -483,8 +506,8 @@ public class PhoneHarvester extends Harvester  {
 
 
             if(type == null) {
-                String[]cmds = {"folder","mkdir","wiki","sms","note"};
-                String[]types = {TypeHandler.TYPE_GROUP,TypeHandler.TYPE_GROUP,"wikipage","phone_sms","notes_note"};
+                String[]cmds = {"folder","mkdir","wiki","blog", "sms","note"};
+                String[]types = {TypeHandler.TYPE_GROUP,TypeHandler.TYPE_GROUP,"wikipage","blogentry", "phone_sms","notes_note"};
                 boolean didOne = false;
                 for(int i=0;i<cmds.length;i++) {
                     if(tline.startsWith(cmds[i] +" ")) {
@@ -862,7 +885,7 @@ public class PhoneHarvester extends Harvester  {
             "ls,go,ur,url,get <path>\n"+
             "append\n" +
             "new:\n" +
-            "folder,note <name>\n" +
+            "folder,note, blog <name>\n" +
             "<text>\n\n" +
             "http://ramadda.org/repository/phone/index.html";
     }
