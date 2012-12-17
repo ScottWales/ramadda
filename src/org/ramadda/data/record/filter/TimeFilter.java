@@ -80,8 +80,12 @@ public class TimeFilter implements RecordFilter {
     public boolean isRecordOk(Record record, VisitInfo visitInfo) {
         long time = record.getRecordTime();
         if(time==Record.UNDEFINED_TIME) return false;
-        if(minTime != Record.UNDEFINED_TIME && time<minTime) return false;
-        if(maxTime != Record.UNDEFINED_TIME && time>maxTime) return false;
+        if(minTime != Record.UNDEFINED_TIME && time<minTime) {
+            return false;
+        }
+        if(maxTime != Record.UNDEFINED_TIME && time>maxTime) {
+            return false;
+        }
         return true;
 
     }

@@ -100,9 +100,9 @@ public   class PointTypeHandler extends RecordTypeHandler {
         RecordFile        pointFile    = pointEntry.getRecordFile();
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         pointEntries.add(pointEntry);
-        PointMetadataHarvester metadata = doMakeMetadataHarvester(pointEntry);
-        System.err.println("metadata: " + metadata.getClass().getName());
-        visitorGroup.addVisitor(metadata);
+        PointMetadataHarvester metadataHarvester = doMakeMetadataHarvester(pointEntry);
+        System.err.println("metadataHarvester: " + metadataHarvester.getClass().getName());
+        visitorGroup.addVisitor(metadataHarvester);
         Request          request       = getRepository().getTmpRequest();
         final File       quickScanFile = pointEntry.getQuickScanFile();
 
@@ -117,8 +117,8 @@ public   class PointTypeHandler extends RecordTypeHandler {
         log("initializeNewEntry: visting file");
         pointFile.visit(visitorGroup, new VisitInfo(true), null);
         dos.close();
-        log("init new entry: count=" + metadata.getCount());
-        handleHarvestedMetadata(pointEntry, metadata);
+        log("init new entry: count=" + metadataHarvester.getCount());
+        handleHarvestedMetadata(pointEntry, metadataHarvester);
         log("initializeNewEntry: done");
     }
 
@@ -270,7 +270,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
             entry.setEndDate(metadata.getMaxTime());
             System.err.println("has time:" + new Date(entry.getStartDate()) +"  --  " + new Date(entry.getEndDate()));
         } else {
-            System.err.println("no time in metadta");
+            System.err.println("no time in metadata");
         }
     }
 
