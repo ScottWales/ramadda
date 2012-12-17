@@ -276,6 +276,11 @@ function RepositoryMap(mapId, params) {
             //            this.map.zoomToMaxExtent(); 
         }
 
+        if (this.initialCircles) {
+            this.map.addLayer(this.initialCircles);
+            this.initialCircles = null;
+        }
+
         if (this.markers) {
             this.map.addLayer(this.markers);
             var sf = new OpenLayers.Control.SelectFeature(this.markers);
@@ -585,6 +590,8 @@ function RepositoryMap(mapId, params) {
         }
     }
 
+
+
     this.hiliteMarker = function(id) {
         var mymarker = this.findMarker(id);
         if (!mymarker) {
@@ -637,7 +644,12 @@ function RepositoryMap(mapId, params) {
         this.initialZoom = zoomLevel;
     }
 
+
     this.addMarker = function(id, location, iconUrl, text) {
+        var offset = 0.2;
+
+
+
         if (!this.markers) {
             this.markers = new OpenLayers.Layer.Markers("Markers");
             // Added this because I was getting an unknown method error
@@ -655,12 +667,14 @@ function RepositoryMap(mapId, params) {
         if (!iconUrl) {
             iconUrl = 'http://www.openlayers.org/dev/img/marker.png';
         }
-        var sz = new OpenLayers.Size(21, 25);
+        var sz = new OpenLayers.Size(18, 18);
         var calculateOffset = function(size) {
             return new OpenLayers.Pixel(-(size.w / 2), -size.h);
         };
         var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
         projPoint = this.transformLLPoint(location);
+
+
         var marker = new OpenLayers.Marker(projPoint, icon);
         marker.id = id;
         marker.text = text;
@@ -673,6 +687,10 @@ function RepositoryMap(mapId, params) {
         this.markers.addMarker(marker);
         return marker;
     }
+
+    //        this.addLine(id,location.lat-offset,location.lon,location.lat+offset,location.lon,"");
+    //        this.addLine(id,location.lat,location.lon-offset,location.lat,location.lon+offset,"");
+
 
     this.initBoxes = function(theBoxes) {
         if (!this.map) {

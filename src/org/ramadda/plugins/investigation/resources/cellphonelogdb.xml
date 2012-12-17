@@ -6,7 +6,7 @@
    <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false">
        <property name="label" value="true"/>
    </column>
-   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="true" editable="false"/>
+   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="true" editable="false" suffix="minutes"/>
    <column name="type" type="enumeration"   label="Direction" values="inbound:In Bound,outbound:Outbound,voice:Voice Mail,mobiletomobile:Mobile to mobile" cansearch="true" canlist="true" editable="false">
        <property name="iscategory" value="true"/>
    </column>

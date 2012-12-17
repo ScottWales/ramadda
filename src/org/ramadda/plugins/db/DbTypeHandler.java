@@ -2747,6 +2747,8 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         String       icon           = getMapIcon(request, entry);
         StringBuffer rightSide      = new StringBuffer();
+        rightSide.append(HtmlUtils.cssBlock("\n.db-map-list {max-height: 500px; overflow-y: auto; border:  1px #888888 solid;"));
+        rightSide.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("db-map-list")));
         SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             String dbid  = (String) values[IDX_DBID];
@@ -2787,7 +2789,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 iconToUse = getIconUrl(attrIcon);
                 rightSide.append(HtmlUtils.img(iconToUse));
             }
-            if (canEdit) {
+            if (false && canEdit) {
                 String editUrl = getEditUrl(request, entry, dbid);
                 rightSide.append(
                     HtmlUtils.href(
@@ -2827,6 +2829,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 }
             }
         }
+
+        rightSide.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
         sb.append(
             "<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\"><td width="
@@ -3109,8 +3113,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         List<TwoFacedObject> enumValues = getEnumValues(request, entry, gridColumn);
 
 
-        sb.append(
-            "\n<style type=\"text/css\">\n.gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}</style>\n");
+        sb.append(HtmlUtils.cssBlock(".gridtable td {padding:5px;padding-bottom:0px;padding-top:8px;}\n.gridon {background: #88C957;}\n.gridoff {background: #eee;}"));
         sb.append(
             "<table cellspacing=0 cellpadding=0 border=1 width=100% class=\"gridtable\">\n");
         sb.append("<tr>");

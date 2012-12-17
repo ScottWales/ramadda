@@ -311,16 +311,21 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             to.addInbound(from, tuple);
         }
 
+        SimpleDateFormat sdf = getDateFormat(entry);
+
         Collections.sort(numbers);
         for(Number n: numbers) {
             //Only show numbers with outbounds
             if(n.outbound.size()<=1 && n.inbound.size()<=1) continue;
+
+            sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.div(formatNumber(n.number), HtmlUtils.cssClass("ramadda-heading-1")));
 
             if(n.outbound.size()>0) { 
-                sb.append("<div style=\"margin-top:0px;margin-left:20px;\"><b>Outbound:</b><br><table cellspacing=5 width=100%>");
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.style("margin-top:0px;margin-left:20px;")));
+                StringBuffer numberSB = new StringBuffer("<table cellspacing=5 width=100%>");
                 for(Number outbound:n.getSortedOutbound()) {
-                    sb.append("<tr valign=top><td width=10%>");
+                    numberSB.append("<tr valign=top><td width=10%>");
                     String searchUrl =
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
@@ -329,30 +334,35 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                                           toColumn.getFullName(), outbound.number,
                                       });
 
-                    sb.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
-                    sb.append("</td>");
+                    numberSB.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
+                    numberSB.append("</td>");
 
                     List<Object[]> calls = n.getOutboundCalls(outbound);
                     StringBuffer callSB  = new StringBuffer();
                     for(Object[]values: calls) {
-                        String date = dateColumn.getString(values);
+                        StringBuffer dateSB = new StringBuffer();
+                        dateColumn.formatValue(entry, dateSB, Column.OUTPUT_HTML, values, sdf);
                         StringBuffer html = new StringBuffer();
                         getHtml(request, html,entry,values);
-                        callSB.append(HtmlUtils.makeShowHideBlock(date, HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
+                        callSB.append(HtmlUtils.makeShowHideBlock(dateSB.toString(), HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
                     }
-                    sb.append("<td width=5% align=right>");
-                    sb.append(calls.size());
-                    sb.append("</td><td width=85%>");
-                    sb.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
-                    sb.append("</td></tr>");
+                    numberSB.append("<td width=5% align=right>");
+                    numberSB.append(calls.size());
+                    numberSB.append("</td><td width=85%>");
+                    numberSB.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
+                    numberSB.append("</td></tr>");
                 }
-                sb.append("</table></div>");
+                numberSB.append("</table>");
+                sb.append(HtmlUtils.makeShowHideBlock("Outbound", HtmlUtils.insetLeft(numberSB.toString(), 10), true));
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             }
 
+
             if(n.inbound.size()>0) { 
-                sb.append("<div style=\"margin-top:0px;margin-left:20px;\"><b>Inbound:</b><br><table cellspacing=5 width=100%>");
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.style("margin-top:0px;margin-left:20px;")));
+                StringBuffer numberSB = new StringBuffer("<table cellspacing=5 width=100%>");
                 for(Number inbound:n.getSortedInbound()) {
-                    sb.append("<tr valign=top><td width=10%>");
+                    numberSB.append("<tr valign=top><td width=10%>");
                     String searchUrl =
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
@@ -361,25 +371,29 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                                           toColumn.getFullName(), inbound.number,
                                       });
 
-                    sb.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
-                    sb.append("</td>");
+                    numberSB.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
+                    numberSB.append("</td>");
 
                     List<Object[]> calls = n.getInboundCalls(inbound);
                     StringBuffer callSB  = new StringBuffer();
                     for(Object[]values: calls) {
-                        String date = dateColumn.getString(values);
+                        StringBuffer dateSB = new StringBuffer();
+                        dateColumn.formatValue(entry, dateSB, Column.OUTPUT_HTML, values, sdf);
                         StringBuffer html = new StringBuffer();
                         getHtml(request, html,entry,values);
-                        callSB.append(HtmlUtils.makeShowHideBlock(date, HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
+                        callSB.append(HtmlUtils.makeShowHideBlock(dateSB.toString(), HtmlUtils.insetLeft(HtmlUtils.div(html.toString(),HtmlUtils.cssClass("ramadda-popup-box")), 10), false));
                     }
-                    sb.append("<td width=5% align=right>");
-                    sb.append(calls.size());
-                    sb.append("</td><td width=85%>");
-                    sb.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
-                    sb.append("</td></tr>");
+                    numberSB.append("<td width=5% align=right>");
+                    numberSB.append(calls.size());
+                    numberSB.append("</td><td width=85%>");
+                    numberSB.append(HtmlUtils.makeShowHideBlock("Details", HtmlUtils.insetLeft(callSB.toString(),10), false));
+                    numberSB.append("</td></tr>");
                 }
-                sb.append("</table></div>");
+                numberSB.append("</table>");
+                sb.append(HtmlUtils.makeShowHideBlock("Inbound", HtmlUtils.insetLeft(numberSB.toString(), 10), true));
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             }
+
 
 
 
@@ -391,7 +405,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     @Override
     public String getMapIcon(Request request, Entry entry) {
-        return getRepository().getUrlBase() + "/investigation/tower.png";
+        return getRepository().getUrlBase() + "/investigation/building.png";
     } 
 
 

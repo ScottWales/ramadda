@@ -138,6 +138,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_GROUP = "group";
 
+    public static final String ATTR_UNIT = "unit";
+
     /** _more_ */
     public static final String ATTR_OLDNAMES = "oldnames";
 
