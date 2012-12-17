@@ -259,7 +259,7 @@ public class WmsImageOutputHandler extends OutputHandler {
             throws Exception {
         if (wmsTemplate == null) {
             wmsTemplate = getRepository().getResource(
-                "/org.ramadda.geodata.cdmdata/resources/wmstemplate.xml");
+                "/org/ramadda/geodata/cdmdata/resources/wmstemplate.xml");
         }
         String url = request.getAbsoluteUrl(
                          request.entryUrl(
