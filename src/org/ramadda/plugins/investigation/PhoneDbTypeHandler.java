@@ -333,7 +333,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                     seen.add(otherNumber);
                 }
                 sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, fromNumber,
+                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, number,
                                                     ATTR_FROM, otherNumber)));
             }
 
