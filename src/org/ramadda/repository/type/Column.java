@@ -163,6 +163,7 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
+    public static final String ATTR_ADVANCED = "advanced";
 
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
@@ -232,6 +233,7 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canSearch;
+    private boolean advancedSearch;
 
     private boolean editable;
 
@@ -333,6 +335,7 @@ public class Column implements DataTypes, Constants {
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
         canSearch   = XmlUtil.getAttribute(element, ATTR_CANSEARCH, false);
+        advancedSearch   = XmlUtil.getAttribute(element, ATTR_ADVANCED, false);
         editable   = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
         addToForm   = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
         canShow     = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
@@ -387,6 +390,9 @@ public class Column implements DataTypes, Constants {
                         }
                     }
                 }
+            }
+            if(enumValues == null) {
+                enumValues = new ArrayList<TwoFacedObject>();
             }
         }
     }
@@ -491,6 +497,20 @@ public class Column implements DataTypes, Constants {
         return isType(DATATYPE_STRING) || isType(DATATYPE_ENUMERATION)
                || isType(DATATYPE_ENUMERATIONPLUS) || isType(DATATYPE_ENTRY)
                || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL);
+    }
+
+    public Object getObject(Object[] values) {
+        if (values == null) {
+            return null;
+        }
+        int idx = getOffset();
+        if (idx >= values.length) {
+            return null;
+        }
+        if (values[idx] == null) {
+            return null;
+        }
+        return values[idx];
     }
 
 
@@ -2202,6 +2222,18 @@ public class Column implements DataTypes, Constants {
     public boolean getCanSearch() {
         return canSearch;
     }
+
+    /**
+     * Get the IsSearchable property.
+     *
+     * @return The IsSearchable
+     */
+    public boolean getAdvancedSearch() {
+        return advancedSearch;
+    }
+
+
+
 
     /**
      * Set the IsListable property.

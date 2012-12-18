@@ -1145,11 +1145,17 @@ a.toggleblocklabellink:visited {
 
 
 
+.formtable  {
+   padding-top: 8px;
+   padding-bottom: 8px;
+}
+
 .formtable td {
-//vertical-align: middle;
-      padding-top: 4;
-      padding-left: 4;
-      padding-right: 4;
+      vertical-align: middle;
+      padding-top: 6px;
+      padding-bottom: 2px;
+      padding-left: 4px;
+      padding-right: 4px;
 }
 
 .formlabel, .formlabeltop {

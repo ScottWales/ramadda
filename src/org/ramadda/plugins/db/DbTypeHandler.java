@@ -142,6 +142,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
 
+    public static final String ARG_DB_ALL = "db.all";
+
 
 
     /** _more_ */
@@ -684,7 +686,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
         if (hasLocation) {
             viewList.add(new TwoFacedObject("Map", VIEW_MAP));
-            viewList.add(new TwoFacedObject("KML", VIEW_KML));
+            //            viewList.add(new TwoFacedObject("KML", VIEW_KML));
         }
         if (numberColumns.size() > 0) {
             viewList.add(new TwoFacedObject("Chart", VIEW_CHART));
@@ -1074,6 +1076,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                             + "=" + VIEW_MAP, msg("Map")));
                 }
             }
+            /*
             if (showInHeader(VIEW_KML)) {
                 if (view.equals(VIEW_KML)) {
                     //                addNext[0] = true;
@@ -1090,6 +1093,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                             + "=" + VIEW_KML, msg("KML")));
                 }
             }
+            */
         }
 
         if (hasNumber) {
@@ -1420,7 +1424,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer sb = new StringBuffer("");
             List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
-            if(tfos.size()<15) {
+            if(tfos!=null && tfos.size()<15) {
                 for (TwoFacedObject tfo : tfos) {
                     String value = tfo.getId().toString();
                     String currentColor = colorMap.get(value);
@@ -1537,25 +1541,27 @@ public class DbTypeHandler extends BlobTypeHandler {
                 iconMap = new Hashtable<String, String>();
             }
             List<TwoFacedObject> enumValues = getEnumValues(request, entry, col);
-            for (TwoFacedObject tfo: enumValues) {
-                String value = tfo.getId().toString();
-                String iconArg   = iconID + "." + value;
-                String iconValue = request.getString(iconArg, "");
-                if (iconValue.equals("")) {
-                    iconMap.remove(value);
-                } else {
-                    iconMap.put(value, iconValue);
+            if(enumValues!=null) {
+                for (TwoFacedObject tfo: enumValues) {
+                    String value = tfo.getId().toString();
+                    String iconArg   = iconID + "." + value;
+                    String iconValue = request.getString(iconArg, "");
+                    if (iconValue.equals("")) {
+                        iconMap.remove(value);
+                    } else {
+                        iconMap.put(value, iconValue);
+                    }
                 }
 
-            }
-            for (TwoFacedObject tfo: enumValues) {
-                String value = tfo.getId().toString();
-                String colorArg   = colorID + "." + value;
-                String colorValue = request.getString(colorArg, "");
-                if (colorValue.equals("")) {
-                    colorMap.remove(value);
-                } else {
-                    colorMap.put(value, colorValue);
+                for (TwoFacedObject tfo: enumValues) {
+                    String value = tfo.getId().toString();
+                    String colorArg   = colorID + "." + value;
+                    String colorValue = request.getString(colorArg, "");
+                    if (colorValue.equals("")) {
+                        colorMap.remove(value);
+                    } else {
+                        colorMap.put(value, colorValue);
+                    }
                 }
             }
             props.put(colorID, colorMap);
@@ -1583,29 +1589,48 @@ public class DbTypeHandler extends BlobTypeHandler {
     public StringBuffer getSearchForm(Request request, Entry entry)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
+
+        StringBuffer advanced = new StringBuffer(HtmlUtils.formTable());
         String       formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.form(formUrl));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
+        sb.append(formEntry(request, "",
+                            HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
+                            + HtmlUtils.space(2)
+                            + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST)));
 
         List<Clause> where = new ArrayList<Clause>();
         for (Column column : columns) {
-            column.addToSearchForm(request, sb, where, entry);
+            if(column.getCanSearch()) {
+                if(column.getAdvancedSearch()) {
+                    column.addToSearchForm(request, advanced, where, entry);
+                } else {
+                    column.addToSearchForm(request, sb, where, entry);
+                }
+            }
         }
 
-        sb.append(formEntry(request, msgLabel("Search Type"),
-                            HtmlUtils.checkbox(ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) +" " + msg("Use OR logic")));
-
-
-        sb.append(formEntry(request, msgLabel("View Results As"),
+        advanced.append(HtmlUtils.formEntry(msgLabel("Search Type"),
+                                            HtmlUtils.checkbox(ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) +" " + msg("Use OR logic")));
+        advanced.append(formEntry(request, msgLabel("View Results As"),
                             HtmlUtils.select(ARG_DB_VIEW, viewList,
                                              request.getString(ARG_DB_VIEW,
                                                  ""))));
 
-        sb.append(formEntry(request, msgLabel("Count"),
+        advanced.append(formEntry(request, msgLabel("Count"),
                             HtmlUtils.input(ARG_MAX,
                                             getMax(request),
                                             HtmlUtils.SIZE_5)));
+        if(false && request.getUser().getAdmin()) {
+            advanced.append(formEntry(request, "",
+                                      HtmlUtils.checkbox(ARG_DB_ALL,"true", false) + " " + msg("Search across all databases")));
+        }
+        advanced.append(HtmlUtils.formTableClose());
+        sb.append("<tr><td colspan=2>");
+        sb.append(HtmlUtils.makeShowHideBlock(msg("Advanced..."),  advanced.toString(), false));
+        sb.append("</tr>");
+
         sb.append(formEntry(request, "",
                             HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
                             + HtmlUtils.space(2)
@@ -1652,7 +1677,11 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         StringBuffer sb    = new StringBuffer();
         List<Clause> where = new ArrayList<Clause>();
-        where.add(Clause.eq(COL_ID, entry.getId()));
+        if(request.get(ARG_DB_ALL,false) && request.getUser().getAdmin()) {
+            System.err.println ("searching all");
+        } else {
+            where.add(Clause.eq(COL_ID, entry.getId()));
+        }
         StringBuffer searchCriteria = new StringBuffer();
         for (Column column : columns) {
             column.assembleWhereClause(request, where, searchCriteria);
@@ -2725,8 +2754,13 @@ public class DbTypeHandler extends BlobTypeHandler {
         Hashtable    entryProps = getProperties(entry);
         boolean      canEdit = getAccessManager().canEditEntry(request, entry);
         StringBuffer sb         = new StringBuffer();
+
+        String       links   = getHref(request, entry, VIEW_KML,
+                                       msg("Google Earth KML"));
+
         addViewHeader(request, entry, sb, VIEW_MAP, valueList.size(),
-                      fromSearch);
+                      fromSearch, links);
+
         Column  theColumn = null;
         boolean bbox      = true;
         for (Column column : tableHandler.getColumns()) {
@@ -2917,14 +2951,20 @@ public class DbTypeHandler extends BlobTypeHandler {
                 lat = ll[2];
                 lon = ll[3];
             }
-            String label   = getLabel(entry, values,null);
+            String label   = getKmlLabel(entry, values,null);
             String viewUrl = request.getAbsoluteUrl(getViewUrl(request,
                                  entry, dbid));
             String       href = HtmlUtils.href(viewUrl, label);
             StringBuffer desc = new StringBuffer(href + "<br>");
             getHtml(request, desc, entry, values);
-            KmlUtil.placemark(folder, label, desc.toString(), lat, lon, 0,
-                              null);
+            Element placemark =  KmlUtil.placemark(folder, label, desc.toString(), lat, lon, 0,
+                                                   null);
+            if(dateColumn!=null) {
+                Date date = (Date) dateColumn.getObject(values);
+                if(date!=null) {
+                    KmlUtil.timestamp(placemark, date);
+                }
+            }
         }
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
 
@@ -3672,7 +3712,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             String href = HtmlUtils.href(url, label);
 
 
-            if (canEdit) {
+            if (false && canEdit) {
                 String editUrl = getEditUrl(request, entry, dbid);
                 href = HtmlUtils.href(
                     editUrl,
@@ -3681,8 +3721,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + "/db/database_edit.png", msg("Edit entry"))) + " "
                             + href;
             }
-            int top  = Misc.getProperty(props, "posy", 150 + poscnt * 20);
-            int left = Misc.getProperty(props, "posx", 150 + poscnt * 20);
+            int top  = Misc.getProperty(props, "posy", 150 + poscnt * 40);
+            int left = Misc.getProperty(props, "posx", 50);
             if ((props == null) || (props.get("posx") == null)) {
                 poscnt++;
             }
@@ -4167,6 +4207,10 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
         return lbl;
+    }
+
+    public String getKmlLabel(Entry entry, Object[] values, SimpleDateFormat sdf) throws Exception {
+        return getLabel(entry, values, sdf);
     }
 
     public String getMapLabel(Entry entry, Object[] values, SimpleDateFormat sdf) throws Exception {

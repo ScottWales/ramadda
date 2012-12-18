@@ -75,14 +75,10 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
     public static final String TYPE_VERIZON_V1 = CellSite.CARRIER_VERIZON+"." + "v1";
 
 
-
-
-
     public static final int IDX_FROM_NAME = 0;
     public static final int IDX_FROM_NUMBER = 1;
     public static final int IDX_TO_NAME = 2;
     public static final int IDX_TO_NUMBER = 3;
-
     public static final int IDX_DATE = 4;
     public static final int IDX_MINUTES = 5;
     public static final int IDX_DIRECTION = 6;

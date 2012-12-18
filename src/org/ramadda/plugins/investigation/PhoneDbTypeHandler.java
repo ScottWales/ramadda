@@ -348,13 +348,26 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     /**
      */
     @Override
-        public String getMapLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
+    public String getMapLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
         throws Exception {
         StringBuffer sb = new StringBuffer();
         dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
         sb.append(": ");
         sb.append(formatNumber(fromNumberColumn.getString(values)));
         sb.append(ARROW);
+        sb.append(formatNumber(toNumberColumn.getString(values)));
+        return sb.toString();
+    }
+
+
+    @Override
+    public String getKmlLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
+        throws Exception {
+        StringBuffer sb = new StringBuffer();
+        //        dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
+        //        sb.append(": ");
+        sb.append(formatNumber(fromNumberColumn.getString(values)));
+        sb.append(" - ");
         sb.append(formatNumber(toNumberColumn.getString(values)));
         return sb.toString();
     }

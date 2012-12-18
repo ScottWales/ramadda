@@ -245,7 +245,17 @@ public class GeoUtils {
      *
      * @param args _more_
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        for(String arg: args) {
+            double[] loc = getLocationFromAddress(arg);
+            if(loc==null) {
+
+            } else {
+                System.out.println(loc[0]+"," + loc[1]);
+            }
+        }
+        if(true) return;
+
         double[][] xyz = {
             { -2307792.824, -4160678.918, 4235698.873 }
         };

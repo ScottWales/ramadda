@@ -153,9 +153,9 @@ public class RepositoryManager implements RepositorySource, Constants,
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
                    + contents + "</td></tr>";
         } else {
-            return "<tr><td><div class=\"formlabel\">" + label
-                   + "</div></td><td>" + contents + "</td></tr>";
-            //            return HtmlUtils.formEntry(label, contents);
+            //            return "<tr><td><div class=\"formlabel\">" + label
+            //                   + "</div></td><td>" + contents + "</td></tr>";
+            return HtmlUtils.formEntry(label, contents);
         }
     }
 
@@ -174,9 +174,9 @@ public class RepositoryManager implements RepositorySource, Constants,
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
                    + contents + "</td></tr>";
         } else {
-            return "<tr valign=top><td><div class=\"formlabel\">" + label
-                   + "</div></td><td>" + contents + "</td></tr>";
-            //            return HtmlUtils.formEntryTop(label, contents);
+            //            return "<tr valign=top><td><div class=\"formlabel\">" + label
+            //                   + "</div></td><td>" + contents + "</td></tr>";
+            return HtmlUtils.formEntryTop(label, contents);
         }
     }
 
