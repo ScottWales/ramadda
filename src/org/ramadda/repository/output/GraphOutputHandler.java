@@ -468,7 +468,7 @@ public class GraphOutputHandler extends OutputHandler {
         xml = StringUtil.replace(xml, "${root}",
                                  getRepository().getUrlBase());
 
-        //        System.err.println(xml);
+        System.err.println(xml);
         return new Result(BLANK, new StringBuffer(xml),
                           getRepository().getMimeTypeFromSuffix(".xml"));
 

@@ -36,6 +36,7 @@ import org.w3c.dom.*;
 
 import org.ramadda.repository.type.*;
 import ucar.unidata.sql.*;
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import java.text.DecimalFormat;
@@ -51,6 +52,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Hashtable;
+import java.util.HashSet;
 
 
 
@@ -70,11 +72,14 @@ import ucar.unidata.util.StringUtil;
 public class PhoneDbTypeHandler extends DbTypeHandler {
 
     public static final String VIEW_CALL_LISTING = "call.listing";
+    public static final String VIEW_CALL_GRAPH = "call.graph";
+    public static final String VIEW_CALL_GRAPH_DATA = "call.graphdata";
 
     private static final String ARROW = " &rarr; ";
 
 
     public static final String ARG_DB_NAMES = "db.names";
+    public static final String ARG_IDS = "ids";
 
     Column fromNumberColumn;
     Column toNumberColumn;
@@ -106,6 +111,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     public void init(List<Element> columnNodes) throws Exception {
         super.init(columnNodes);
         viewList.add(1, new TwoFacedObject("Call Listing", VIEW_CALL_LISTING));
+        viewList.add(1, new TwoFacedObject("Call Graph", VIEW_CALL_GRAPH));
     }
 
 
@@ -120,6 +126,14 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         } else {
             headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
                                           + "=" + VIEW_CALL_LISTING, msg("Call Listing")));
+        }
+
+        if (view.equals(VIEW_CALL_GRAPH)) {
+            addNext[0] = true;
+            headerToks.add(HtmlUtils.b(msg("Call Graph")));
+        } else {
+            headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                                          + "=" + VIEW_CALL_GRAPH, msg("Call Graph")));
         }
     }
 
@@ -208,12 +222,145 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     }
 
 
+    public Result getHtmlDisplay(Request request, Entry entry)
+            throws Exception {
+        String       view     = request.getString(ARG_DB_VIEW, VIEW_TABLE);
+
+        if (view.equals(VIEW_CALL_GRAPH_DATA)) {
+            return handleCallGraphData(request, entry);
+        }
+        return super.getHtmlDisplay(request, entry);
+    }
+
+    private int cnt = 0;
+
+    public Result handleCallGraphPage(Request request, Entry entry, List<Object[]> valueList, boolean fromSearch) throws Exception  {
+        String graphAppletTemplate = getRepository().getResource("/org/ramadda/plugins/investigation/resources/graphapplet.html");
+        String counter = "" + (cnt++);
+        graphAppletTemplate = graphAppletTemplate.replace("${counter}",
+                                                          counter);
+        String html = StringUtil.replace(graphAppletTemplate, "${id}",
+                                         HtmlUtils.urlEncode(entry.getId()));
+        html = StringUtil.replace(html, "${root}",
+                                  getRepository().getUrlBase());
+
+        StringBuffer ids = new StringBuffer();
+        HashSet seen = new HashSet();
+        for(int i=0;i<valueList.size();i++) {
+            Object[] values  = valueList.get(i);
+
+            String fromNumber = fromNumberColumn.getString(values);
+            if(seen.contains(fromNumber)) continue;
+            seen.add(fromNumber);
+            if(ids.length()>0) ids.append(",");
+            ids.append(fromNumber);
+
+
+
+            String toNumber = toNumberColumn.getString(values);
+            if(seen.contains(toNumber)) continue;
+            seen.add(toNumber);
+            if(ids.length()>0) ids.append(",");
+            ids.append(toNumber);
+
+            //for now just get the first ID
+            if(i>10) break;
+        }
+        html = StringUtil.replace(html, "${ids}", ids.toString());
+        System.err.println (html);
+
+        StringBuffer sb = new StringBuffer();
+        addViewHeader(request, entry, sb, VIEW_CALL_GRAPH, valueList.size(),
+                      fromSearch);
+        sb.append(html);
+        Result result = new Result(msg("Graph"), sb);
+        return result;
+    }
+
+
+
+
+    private String makeXml(Request request, Entry entry, String fromNumber) throws Exception   {
+        String id = fromNumber;
+        //        String fromNumber = fromNumberColumn.getString(values);
+        
+        String imageAttr =
+            XmlUtil.attrs("imagepath",
+                          getEntryIcon(request, entry));
+        String attrs = imageAttr
+            + XmlUtil.attrs(ATTR_TYPE, "entry", 
+                            ATTR_ID,
+                            id, ATTR_TOOLTIP,
+                            fromNumber, ATTR_TITLE,
+                            fromNumber);
+        return XmlUtil.tag(TAG_NODE, attrs);
+    }
+    
+    public Result handleCallGraphData(Request request, Entry entry) throws Exception  {
+        StringBuffer sb = new StringBuffer();
+        List<String> ids = StringUtil.split(request.getString(ARG_IDS,""));
+        HashSet seen = new HashSet();
+        for(String number: ids) {
+            sb.append(makeXml(request, entry,number));
+            sb.append("\n");
+            List<Clause> where;
+
+
+            where = new ArrayList<Clause>();
+            where.add(Clause.eq(COL_ID, entry.getId()));
+            where.add(Clause.eq(fromNumberColumn.getFullName(), number));
+            for(Object []tuple: readValues(request, entry, Clause.and(where))) {
+                String otherNumber = toNumberColumn.getString(tuple);
+                if(!seen.contains(otherNumber)) {
+                    sb.append(makeXml(request, entry,otherNumber));
+                    sb.append("\n");
+                    seen.add(otherNumber);
+                }
+                sb.append(XmlUtil.tag(TAG_EDGE,
+                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, otherNumber,
+                                                    ATTR_FROM, number)));
+            }
+
+
+            where = new ArrayList<Clause>();
+            where.add(Clause.eq(COL_ID, entry.getId()));
+            where.add(Clause.eq(toNumberColumn.getFullName(), number));
+            for(Object []tuple: readValues(request, entry, Clause.and(where))) {
+                String otherNumber = fromNumberColumn.getString(tuple);
+                if(!seen.contains(otherNumber)) {
+                    sb.append(makeXml(request, entry,otherNumber));
+                    sb.append("\n");
+                    seen.add(otherNumber);
+                }
+                sb.append(XmlUtil.tag(TAG_EDGE,
+                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, fromNumber,
+                                                    ATTR_FROM, otherNumber)));
+            }
+
+            
+        }
+
+        String graphXmlTemplate =
+            getRepository().getResource(PROP_HTML_GRAPHTEMPLATE);
+
+        String xml = StringUtil.replace(graphXmlTemplate, "${content}",
+                                        sb.toString());
+        xml = StringUtil.replace(xml, "${root}",
+                                 getRepository().getUrlBase());
+        return new Result(BLANK, new StringBuffer(xml),
+                          getRepository().getMimeTypeFromSuffix(".xml"));
+
+    }
+
     public Result makeListResults(Request request, Entry entry, String view,
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
         throws Exception {
         if (view.equals(VIEW_CALL_LISTING)) {
-            return handleListing(request, entry, valueList, fromSearch);
+            return handleCallListing(request, entry, valueList, fromSearch);
+        }
+        if (view.equals(VIEW_CALL_GRAPH)) {
+            return handleCallGraphPage(request, entry, valueList,fromSearch);
         }
         return  super.makeListResults(request,  entry,  view,
                                       action,  fromSearch,
@@ -222,8 +369,8 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
 
 
 
-    public Result handleListing(Request request, Entry entry,
-                                List<Object[]> valueList, boolean fromSearch)
+    public Result handleCallListing(Request request, Entry entry,
+                                    List<Object[]> valueList, boolean fromSearch)
         throws Exception {
 
         Hashtable<String,Number> numberMap = new Hashtable<String,Number>();

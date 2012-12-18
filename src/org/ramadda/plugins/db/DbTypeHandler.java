@@ -2051,7 +2051,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private Clause makeClause(Entry entry, String dbid) {
+    public Clause makeClause(Entry entry, String dbid) {
         return Clause.and(Clause.eq(COL_ID, entry.getId()),
                           Clause.eq(COL_DBID, dbid));
 
@@ -2888,8 +2888,12 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     }
 
-    public String getMapIcon(Request request, Entry entry) {
+    public String getEntryIcon(Request request, Entry entry) {
         return getRepository().getUrlBase() + tableIcon;
+    } 
+
+    public String getMapIcon(Request request, Entry entry) {
+        return getEntryIcon(request, entry);
     } 
 
 
