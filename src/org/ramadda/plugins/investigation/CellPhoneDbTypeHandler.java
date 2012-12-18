@@ -24,6 +24,7 @@ package org.ramadda.plugins.investigation;
 
 import org.ramadda.plugins.db.*;
 
+import org.ramadda.repository.output.*;
 
 
 import org.ramadda.repository.*;
@@ -34,6 +35,7 @@ import org.w3c.dom.*;
 
 
 import org.ramadda.repository.type.*;
+import ucar.unidata.sql.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import java.text.DecimalFormat;
@@ -68,27 +70,34 @@ import ucar.unidata.util.StringUtil;
 public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     public static final String ARG_FILE_TYPE = "filetype";
+    public static final String ARG_DB_NAMES = "db.names";
 
     public static final String TYPE_VERIZON_V1 = CellSite.CARRIER_VERIZON+"." + "v1";
 
 
     public static final String VIEW_CALL_LISTING = "call.listing";
 
+
     private static final String ARROW = " &rarr; ";
-    public static final int IDX_FROM = 0;
-    public static final int IDX_TO = 1;
-    public static final int IDX_DATE = 2;
-    public static final int IDX_MINUTES = 3;
-    public static final int IDX_DIRECTION = 4;
-    public static final int IDX_LOCATION = 5;
-    public static final int IDX_ADDRESS = 6;
-    public static final int IDX_CITY = 7;
-    public static final int IDX_STATE = 8;
-    public static final int IDX_ZIPCODE = 9;
+    public static final int IDX_FROM_NAME = 0;
+    public static final int IDX_FROM_NUMBER = 1;
+    public static final int IDX_TO_NAME = 2;
+    public static final int IDX_TO_NUMBER = 3;
+
+    public static final int IDX_DATE = 4;
+    public static final int IDX_MINUTES = 5;
+    public static final int IDX_DIRECTION = 6;
+    public static final int IDX_LOCATION = 7;
+    public static final int IDX_ADDRESS = 8;
+    public static final int IDX_CITY = 9;
+    public static final int IDX_STATE = 10;
+    public static final int IDX_ZIPCODE = 11;
 
 
-    private Column fromColumn;
-    private    Column toColumn;
+    private Column fromNumberColumn;
+    private Column toNumberColumn;
+    private Column fromNameColumn;
+    private Column toNameColumn;
     private Column dateColumn;
 
 
@@ -117,8 +126,10 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     public void init(List<Element> columnNodes) throws Exception {
         super.init(columnNodes);
         viewList.add(1, new TwoFacedObject("Call Listing", VIEW_CALL_LISTING));
-        fromColumn =  columnsToUse.get(IDX_FROM);
-        toColumn =  columnsToUse.get(IDX_TO);
+        fromNameColumn =  columnsToUse.get(IDX_FROM_NAME);
+        fromNumberColumn =  columnsToUse.get(IDX_FROM_NUMBER);
+        toNameColumn =  columnsToUse.get(IDX_TO_NAME);
+        toNumberColumn =  columnsToUse.get(IDX_TO_NUMBER);
         dateColumn =  columnsToUse.get(IDX_DATE);
     }
 
@@ -139,7 +150,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
 
     @Override
     public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values, SimpleDateFormat sdf) throws Exception {
-        if(column.equals(fromColumn) || column.equals(toColumn)) {
+        if(column.equals(fromNumberColumn) || column.equals(toNumberColumn)) {
             sb.append(formatNumber(column.getString(values)));
         } else {
             super.formatTableValue(request, entry,  sb, column, values,sdf);
@@ -152,6 +163,59 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         n = n.trim();
         if(n.length()!=10) return n;
         return n.substring(0,3) +"-" + n.substring(3,6) +"-" +n.substring(6);
+    }
+
+
+
+    @Override
+    public void addToEditForm(Request request, Entry entry, StringBuffer formBuffer) {
+        super.addToEditForm(request, entry, formBuffer);
+        formBuffer.append(
+                          HtmlUtils.row(
+                                        HtmlUtils.colspan(
+                                                          "Enter numbers and names", 2)));
+        formBuffer.append(HtmlUtils.formEntry(msgLabel("Numbers and names"),
+                                              HtmlUtils.textArea(ARG_DB_NAMES,"#number=name\n#e.g.:\n#303-555-1212= some name\n", 8, 50)));
+    }
+
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+            throws Exception {
+        super.initializeEntryFromForm(request,  entry, parent,  newEntry);
+        if(newEntry) return;
+        List<String[]> numberToName = new ArrayList<String[]>();
+        for(String line: StringUtil.split(request.getString(ARG_DB_NAMES,""), "\n", true, true)) {
+            line  = line.trim();
+            if(line.startsWith("#")) continue;
+            List<String> numberAndName =  StringUtil.splitUpTo(line,"=", 2);
+            if(numberAndName.size()<2) continue;
+            String number = numberAndName.get(0).trim();
+            String name = numberAndName.get(1).trim();
+            number = number.replaceAll("-","").trim();
+            if(number.length()>0 && name.length()>0) {
+                numberToName.add(new String[]{number, name});
+            }
+        }
+        if(numberToName.size()>0) {
+            for(String[] pair: numberToName) {
+                String number = pair[0];
+                String name = pair[1];
+                List<Clause> fromWhere = new ArrayList<Clause>();
+                fromWhere.add(Clause.eq(COL_ID, entry.getId()));
+                fromWhere.add(Clause.eq(fromNumberColumn.getName(), number));
+                Clause fromClause= Clause.and(fromWhere);
+                getDatabaseManager().update(tableHandler.getTableName(), fromClause,new String[]{"from_name"},
+                                            new Object[]{ name});
+
+
+                List<Clause> toWhere = new ArrayList<Clause>();
+                toWhere.add(Clause.eq(COL_ID, entry.getId()));
+                toWhere.add(Clause.eq(toNumberColumn.getName(), number));
+                Clause toClause= Clause.and(toWhere);
+                getDatabaseManager().update(tableHandler.getTableName(), toClause,new String[]{"to_name"},
+                                            new Object[]{ name});
+            }
+        }
     }
 
     public Result makeListResults(Request request, Entry entry, String view,
@@ -292,14 +356,14 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                       fromSearch);
         
         for(Object[] tuple : valueList) {
-            String fromNumber = fromColumn.getString(tuple);
+            String fromNumber = fromNumberColumn.getString(tuple);
             Number from = numberMap.get(fromNumber);
             if(from==null)  {
                 from = new Number(fromNumber);
                 numbers.add(from);
                 numberMap.put(from.number, from);
             }
-            String toNumber = toColumn.getString(tuple);
+            String toNumber = toNumberColumn.getString(tuple);
             Number to = numberMap.get(toNumber);
             if(to==null)  {
                 to = new Number(toNumber);
@@ -330,8 +394,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
                                           ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                          fromColumn.getFullName(), n.number,
-                                          toColumn.getFullName(), outbound.number,
+                                          fromNumberColumn.getFullName(), n.number,
+                                          toNumberColumn.getFullName(), outbound.number,
                                       });
 
                     numberSB.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
@@ -367,8 +431,8 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
                                           ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                          fromColumn.getFullName(), n.number,
-                                          toColumn.getFullName(), inbound.number,
+                                          fromNumberColumn.getFullName(), n.number,
+                                          toNumberColumn.getFullName(), inbound.number,
                                       });
 
                     numberSB.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
@@ -417,9 +481,9 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         StringBuffer sb = new StringBuffer();
         dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
         sb.append(": ");
-        sb.append(formatNumber(fromColumn.getString(values)));
+        sb.append(formatNumber(fromNumberColumn.getString(values)));
         sb.append(ARROW);
-        sb.append(formatNumber(toColumn.getString(values)));
+        sb.append(formatNumber(toNumberColumn.getString(values)));
         return sb.toString();
     }
 
@@ -438,19 +502,40 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         StringBuffer sb = new StringBuffer();
         dateColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values, timesdf);
         sb.append(": ");
-        sb.append(formatNumber(fromColumn.getString(values)));
+        sb.append(formatNumber(fromNumberColumn.getString(values)));
         sb.append(ARROW);
-        sb.append(formatNumber(toColumn.getString(values)));
+        sb.append(formatNumber(toNumberColumn.getString(values)));
         return sb.toString();
     }
 
 
+
     @Override
-    public void addToBulkUploadForm(Request request, StringBuffer bulk) {
-        super.addToBulkUploadForm(request,  bulk);
-        //TODO: add file type list when we have more than one type
-        //        bulk.append
+    public void createBulkForm(Request request, Entry entry, StringBuffer sb, StringBuffer formBuffer) {
+        StringBuffer bulkSB = new StringBuffer();
+        makeForm(request, entry, bulkSB);
+        StringBuffer bulkButtons = new StringBuffer();
+        bulkButtons.append(HtmlUtils.submit(msg("Create entries"),
+                                            ARG_DB_CREATE));
+        bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(header("Upload a call log file"));
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(msgLabel("File"));
+        bulkSB.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
+                                          HtmlUtils.SIZE_60));
+
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(msgLabel("Enter names for the numbers"));
+        bulkSB.append(HtmlUtils.br());
+        bulkSB.append(HtmlUtils.textArea(ARG_DB_NAMES,"#number=name\n#e.g.:\n#303-555-1212= some name\n", 8, 50));
+        bulkSB.append(HtmlUtils.br());
+        bulkSB.append(bulkButtons);
+        bulkSB.append(HtmlUtils.formClose());
+        sb.append(bulkSB);
     }
+
+
 
 
     public Result handleBulkUpload(Request request, Entry entry, String contents)
@@ -509,13 +594,13 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
     private String[]  getFields(Request request, String fileType, Hashtable<String,CellSite>   sites,
                                 List<String>toks, StringBuffer msg) throws Exception {
         if(fileType.equals(TYPE_VERIZON_V1)) {
-            return getVerizonFields(sites,toks, msg);
+            return getVerizonFields(request, sites,toks, msg);
         }
         throw new IllegalArgumentException("Unknown file type:" + fileType);
     }
 
 
-    private String[]  getVerizonFields(Hashtable<String,CellSite>   sites,
+    private String[]  getVerizonFields(Request request, Hashtable<String,CellSite>   sites,
                                        List<String>toks, StringBuffer msg) throws Exception {
         if(toks.size()!=11) {
             msg.append("wrong number of tokens:" + StringUtil.join(",",toks)+"<br>");
@@ -538,11 +623,29 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         //Last Serving Cell Face
         //Calling Party Number
 
+        Hashtable<String,String> numberToName = new Hashtable<String,String>();
+        for(String line: StringUtil.split(request.getString(ARG_DB_NAMES,""), "\n", true, true)) {
+            line  = line.trim();
+            if(line.startsWith("#")) continue;
+            List<String> numberAndName =  StringUtil.splitUpTo(line,"=", 2);
+            if(numberAndName.size()<2) continue;
+            String number = numberAndName.get(0);
+            String name = numberAndName.get(1);
+            number = number.replaceAll("-","").trim();
+            numberToName.put(number, name);
+        }
+
+
         boolean outbound = true;
         String  tmpDirection = toks.get(3).trim();
         String  direction = "";
-        String from = toks.get(10);
-        String to = toks.get(2);
+
+        String fromNumber = toks.get(10);
+        String toNumber = toks.get(2);
+        String fromName = numberToName.get(fromNumber);
+        String toName = numberToName.get(toNumber);
+        if(fromName == null) fromName = "";
+        if(toName == null) toName = "";
         if(tmpDirection.equals("0") || 
            tmpDirection.equals("6")) {
             direction = "inbound";
@@ -552,7 +655,7 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
             direction = "outbound";
         } else if(tmpDirection.equals("F")) {
             direction = "voice";
-            to = "voice";
+            toNumber = "voice";
         } else if(tmpDirection.equals("2")) {
             direction = "mobiletomobile";
         }  else  {
@@ -572,8 +675,10 @@ public class CellPhoneDbTypeHandler extends DbTypeHandler {
         Date date = sdf.parse(time);
 
         String[] fields = new String[]{
-            from,
-            to,
+            fromName,
+            fromNumber,
+            toName,
+            toNumber,
             formatDate(date), 
             minutesFormat.format(minutes),
             direction,

@@ -1,12 +1,14 @@
 <tables>
 
 <table id="investigation_cellphonelog" name="Cell Phone Log" category="Investigation" icon="/investigation/phone.png" handler="org.ramadda.plugins.investigation.CellPhoneDbTypeHandler">
+   <column name="from_name" type="enumerationplus" label="From Name"   cansearch="true" canlist="true" editable="true"/>
    <column name="from_number" type="string" label="From Number"   cansearch="true" canlist="true" editable="false"/>
+   <column name="to_name" type="enumerationplus" label="To Name"   cansearch="true" canlist="true" editable="true"/>
    <column name="to_number" type="string" label="To Number"   cansearch="true" canlist="true" editable="false"/>
    <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false">
        <property name="label" value="true"/>
    </column>
-   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="true" editable="false" suffix="minutes"/>
+   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="false" editable="false" suffix="minutes"/>
    <column name="type" type="enumeration"   label="Direction" values="inbound:In Bound,outbound:Outbound,voice:Voice Mail,mobiletomobile:Mobile to mobile" cansearch="true" canlist="true" editable="false">
        <property name="iscategory" value="true"/>
    </column>

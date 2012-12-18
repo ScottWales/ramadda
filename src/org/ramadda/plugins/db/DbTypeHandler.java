@@ -1343,6 +1343,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         super.addToEntryForm(request, formBuffer, entry);
         Hashtable props = getProperties(entry);
         if (entry != null) {
+            addToEditForm(request, entry, formBuffer);
             addEnumerationAttributes(request, entry, formBuffer);
         }
 
@@ -1364,6 +1365,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
     }
+
+    public void addToEditForm(Request request, Entry entry, StringBuffer formBuffer) {
+    }
+
 
     /**
      * _more_
@@ -3948,7 +3953,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param entry _more_
      * @param sb _more_
      */
-    private void makeForm(Request request, Entry entry, StringBuffer sb) {
+    public void makeForm(Request request, Entry entry, StringBuffer sb) {
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.uploadForm(formUrl, ""));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -4009,7 +4014,6 @@ public class DbTypeHandler extends BlobTypeHandler {
         buttons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
 
 
-
         formBuffer.append(buttons);
         formBuffer.append(HtmlUtils.formTable());
         tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
@@ -4020,53 +4024,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         formBuffer.append(HtmlUtils.formClose());
 
         if (forEdit && (dbid == null)) {
-            StringBuffer bulk = new StringBuffer();
-            makeForm(request, entry, bulk);
-            StringBuffer bulkButtons = new StringBuffer();
-            bulkButtons.append(HtmlUtils.submit(msg("Create entries"),
-                    ARG_DB_CREATE));
-            bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
-            bulk.append(bulkButtons);
-            bulk.append(HtmlUtils.p());
-            addToBulkUploadForm(request, bulk);
-            bulk.append(HtmlUtils.p());
-            bulk.append(msgLabel("Upload a file"));
-            bulk.append(HtmlUtils.br());
-            bulk.append(msgLabel("File"));
-            bulk.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
-                                            HtmlUtils.SIZE_60));
-
-
-            bulk.append(HtmlUtils.p());
-            bulk.append(msgLabel("Or enter text"));
-            List colIds = new ArrayList();
-            for (Column column : columnsToUse) {
-                colIds.add(new TwoFacedObject(column.getLabel(),
-                        column.getName()));
-            }
-            int cnt = 0;
-            for (Column column : columnsToUse) {
-                //                bulk.append(HtmlUtils.select(ARG_DB_BULKCOL + cnt, colIds,
-                //                                            columns.get(cnt).getName()));
-                if (cnt > 0) {
-                    bulk.append(", ");
-                }
-                bulk.append(column.getLabel());
-                cnt++;
-            }
-            bulk.append(HtmlUtils.br());
-            bulk.append(HtmlUtils.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
-            bulk.append(HtmlUtils.p());
-            bulk.append(bulkButtons);
-            bulk.append(HtmlUtils.formClose());
-            List<String> tabTitles = (List<String>) Misc.newList(msg("Form"),
-                                         msg("Bulk Create"));
-            List<String> tabContents =
-                (List<String>) Misc.newList(formBuffer.toString(),
-                                            bulk.toString());
-            String contents = OutputHandler.makeTabs(tabTitles, tabContents,
-                                  true);
-            sb.append(contents);
+            createBulkForm(request, entry, sb, formBuffer);
         } else {
             sb.append(formBuffer);
         }
@@ -4074,9 +4032,55 @@ public class DbTypeHandler extends BlobTypeHandler {
         return new Result(getTitle(), sb);
     }
 
+    public void createBulkForm(Request request, Entry entry, StringBuffer sb, StringBuffer formBuffer) {
+        StringBuffer bulkSB = new StringBuffer();
+        makeForm(request, entry, bulkSB);
+        StringBuffer bulkButtons = new StringBuffer();
+        bulkButtons.append(HtmlUtils.submit(msg("Create entries"),
+                                            ARG_DB_CREATE));
+        bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
+        bulkSB.append(bulkButtons);
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(msgLabel("Upload a file"));
+        bulkSB.append(HtmlUtils.br());
+        bulkSB.append(msgLabel("File"));
+        bulkSB.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
+                                          HtmlUtils.SIZE_60));
 
-    public void addToBulkUploadForm(Request request, StringBuffer bulk) {
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(msgLabel("Or enter text"));
+        List colIds = new ArrayList();
+        for (Column column : columnsToUse) {
+            colIds.add(new TwoFacedObject(column.getLabel(),
+                                          column.getName()));
+        }
+        int cnt = 0;
+        for (Column column : columnsToUse) {
+            //                bulkSB.append(HtmlUtils.select(ARG_DB_BULKCOL + cnt, colIds,
+            //                                            columns.get(cnt).getName()));
+            if (cnt > 0) {
+                bulkSB.append(", ");
+            }
+            bulkSB.append(column.getLabel());
+            cnt++;
+        }
+        bulkSB.append(HtmlUtils.br());
+        bulkSB.append(HtmlUtils.textArea(ARG_DB_BULK_TEXT, "", 10, 80));
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(bulkButtons);
+        bulkSB.append(HtmlUtils.formClose());
+        List<String> tabTitles = (List<String>) Misc.newList(msg("Form"),
+                                                             msg("Bulk Create"));
+        List<String> tabContents =
+            (List<String>) Misc.newList(formBuffer.toString(),
+                                        bulkSB.toString());
+        String contents = OutputHandler.makeTabs(tabTitles, tabContents,
+                                                 true);
+        sb.append(contents);
     }
+
+
 
     /**
      * _more_
