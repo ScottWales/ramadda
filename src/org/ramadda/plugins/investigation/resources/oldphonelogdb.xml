@@ -1,6 +1,6 @@
 <tables>
 
-<table id="investigation_oldphonelog" name="Old Phone Log" category="Investigation" icon="/investigation/telephone.png" xxxxhandler="org.ramadda.plugins.investigation.OldphoneDbTypeHandler">
+<table id="investigation_oldphonelog" name="Old Phone Log" category="Investigation" icon="/investigation/telephone.png" handler="org.ramadda.plugins.investigation.OldPhoneDbTypeHandler">
    <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false" format="MMM d yyyy h:mm a">
    </column>
 

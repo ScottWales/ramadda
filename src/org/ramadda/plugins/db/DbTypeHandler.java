@@ -1419,64 +1419,67 @@ public class DbTypeHandler extends BlobTypeHandler {
                 iconMap = new Hashtable<String, String>();
             }
             StringBuffer sb = new StringBuffer("");
-            for (TwoFacedObject tfo : getEnumValues(request, entry, col)) {
-                String value = tfo.getId().toString();
-                String currentColor = colorMap.get(value);
-                String currentIcon  = iconMap.get(value);
-                if (currentColor == null) {
-                    currentColor = "";
-                }
-                if (currentIcon == null) {
-                    currentIcon = "";
-                }
-                String       colorArg = colorID + "." + value;
-                String       iconArg  = iconID + "." + value;
-                StringBuffer colorSB  = new StringBuffer();
-                colorSB.append(HtmlUtils.radio(colorArg, "",
-                        currentColor.equals("")));
-                colorSB.append(msg("None"));
-                colorSB.append(" ");
-                for (String c : colors) {
-                    colorSB.append(
-                        HtmlUtils.span(
-                            HtmlUtils.radio(
-                                colorArg, c,
-                                currentColor.equals(c)), HtmlUtils.style(
-                                    "margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:"
-                                    + c)));
-                }
-                StringBuffer iconSB = new StringBuffer();
-                iconSB.append(HtmlUtils.radio(iconArg, "",
-                        currentIcon.equals("")));
-                iconSB.append(msg("None"));
-                iconSB.append(" ");
-                for (String icon : icons) {
-                    if (icon.startsWith("#")) {
-                        continue;
+            List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
+            if(tfos.size()<15) {
+                for (TwoFacedObject tfo : tfos) {
+                    String value = tfo.getId().toString();
+                    String currentColor = colorMap.get(value);
+                    String currentIcon  = iconMap.get(value);
+                    if (currentColor == null) {
+                        currentColor = "";
                     }
-                    if (icon.equals("br")) {
-                        iconSB.append("<br>");
+                    if (currentIcon == null) {
+                        currentIcon = "";
+                    }
+                    String       colorArg = colorID + "." + value;
+                    String       iconArg  = iconID + "." + value;
+                    StringBuffer colorSB  = new StringBuffer();
+                    colorSB.append(HtmlUtils.radio(colorArg, "",
+                                                   currentColor.equals("")));
+                    colorSB.append(msg("None"));
+                    colorSB.append(" ");
+                    for (String c : colors) {
+                        colorSB.append(
+                                       HtmlUtils.span(
+                                                      HtmlUtils.radio(
+                                                                      colorArg, c,
+                                                                      currentColor.equals(c)), HtmlUtils.style(
+                                                                                                               "margin-left:2px; margin-right:2px; padding-left:5px; padding-right:7px; border:1px solid #000; background-color:"
+                                                                                                               + c)));
+                    }
+                    StringBuffer iconSB = new StringBuffer();
+                    iconSB.append(HtmlUtils.radio(iconArg, "",
+                                                  currentIcon.equals("")));
+                    iconSB.append(msg("None"));
+                    iconSB.append(" ");
+                    for (String icon : icons) {
+                        if (icon.startsWith("#")) {
+                            continue;
+                        }
+                        if (icon.equals("br")) {
+                            iconSB.append("<br>");
 
-                        continue;
+                            continue;
+                        }
+                        iconSB.append(HtmlUtils.radio(iconArg, icon,
+                                                      currentIcon.equals(icon)));
+                        iconSB.append(HtmlUtils.img(getIconUrl(icon),
+                                                    IOUtil.getFileTail(icon)));
                     }
-                    iconSB.append(HtmlUtils.radio(iconArg, icon,
-                            currentIcon.equals(icon)));
-                    iconSB.append(HtmlUtils.img(getIconUrl(icon),
-                            IOUtil.getFileTail(icon)));
+                    formBuffer.append(HtmlUtils.formEntry(msgLabel("Value"),
+                                                          value));
+                    formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Color"),
+                                                             colorSB.toString()));
+                    String iconMsg = "";
+                    if (currentIcon.length() > 0) {
+                        iconMsg = HtmlUtils.img(getIconUrl(currentIcon));
+                    }
+                    formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Icon"),
+                                                             HtmlUtils.makeShowHideBlock(iconMsg,
+                                                                                         iconSB.toString(), false)));
                 }
-                formBuffer.append(HtmlUtils.formEntry(msgLabel("Value"),
-                        value));
-                formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Color"),
-                        colorSB.toString()));
-                String iconMsg = "";
-                if (currentIcon.length() > 0) {
-                    iconMsg = HtmlUtils.img(getIconUrl(currentIcon));
-                }
-                formBuffer.append(HtmlUtils.formEntryTop(msgLabel("Icon"),
-                        HtmlUtils.makeShowHideBlock(iconMsg,
-                            iconSB.toString(), false)));
+                formBuffer.append(HtmlUtils.formEntry("", sb.toString()));
             }
-            formBuffer.append(HtmlUtils.formEntry("", sb.toString()));
         }
 
     }
