@@ -114,6 +114,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String VIEW_MAP = "map";
 
+
     /** _more_ */
     public static final String VIEW_SEARCH = "search";
 
