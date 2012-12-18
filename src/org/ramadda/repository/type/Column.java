@@ -373,6 +373,13 @@ public class Column implements DataTypes, Constants {
                             enumValues.add(new TwoFacedObject(toks.get(1),
                                     toks.get(0)));
                             enumMap.put(toks.get(0), toks.get(1));
+                        } else  if (tok.indexOf("=") >= 0) {
+                            List<String> toks = StringUtil.splitUpTo(tok,
+                                                    "=", 2);
+
+                            enumValues.add(new TwoFacedObject(toks.get(1),
+                                    toks.get(0)));
+                            enumMap.put(toks.get(0), toks.get(1));
                         } else {
                             enumValues.add(new TwoFacedObject(tok,tok));
                         }
