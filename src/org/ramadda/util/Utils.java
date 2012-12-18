@@ -64,6 +64,14 @@ public class Utils {
         return true;
     }
 
+    public static void main(String[]args) throws Exception {
+        String date = "APR 8 1987 4:53 PM";
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy h:mm a");
+        System.err.println("date:" + date);
+        System.err.println("parsed:" + sdf.parse(date));
+    }
+
+
 }
 
 

@@ -323,6 +323,7 @@ public class Column implements DataTypes, Constants {
 
         String dttmFormat = XmlUtil.getAttribute(element, ATTR_FORMAT, (String)null);
         if(dttmFormat !=null) {
+            System.err.println("FORMAT:" + dttmFormat);
             dateParser =
                 new SimpleDateFormat(dttmFormat);
         }
