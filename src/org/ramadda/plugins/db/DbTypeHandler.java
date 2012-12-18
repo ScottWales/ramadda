@@ -1417,7 +1417,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
             StringBuffer sb = new StringBuffer("");
             List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
-            if(tfos!=null && tfos.size()<15) {
+            if(tfos!=null && tfos.size()<15 && tfos.size()>0) {
                 formBuffer.append(
                                   HtmlUtils.row(
                                                 HtmlUtils.colspan(
