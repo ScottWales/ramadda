@@ -750,10 +750,15 @@ public class EntryManager extends RepositoryManager {
         if ( !isEntryTop && (group == null)) {
             group = findGroup(request);
         }
+
         if (type == null) {
             type = request.getString(ARG_TYPE, (String) null);
         }
 
+        System.err.println ("type:" + type);
+        if(type!=null) {
+            getSessionManager().putSessionProperty(request, ARG_TYPE, type);
+        }
 
         if ((entry != null) && entry.getIsLocalFile()) {
             sb.append(msg("This is a local file and cannot be edited"));
@@ -2633,6 +2638,9 @@ public class EntryManager extends RepositoryManager {
         //        exclude.add(TYPE_FILE);
         //        exclude.add(TYPE_GROUP);
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
+
+        String sessionType = (String) getSessionManager().getSessionProperty(request, ARG_TYPE);
+
         for (TypeHandler typeHandler : typeHandlers) {
             if ( !typeHandler.getForUser()) {
                 continue;
@@ -2662,8 +2670,16 @@ public class EntryManager extends RepositoryManager {
             if (buffer == null) {
                 catMap.put(typeHandler.getCategory(),
                            buffer = new StringBuffer());
-                categories.add(typeHandler.getCategory());
+                if(sessionType!=null && typeHandler.getType().equals(sessionType)) {
+                    categories.add(0, typeHandler.getCategory());
+                } else {
+                    categories.add(typeHandler.getCategory());
+                }
+            } else if(sessionType!=null && typeHandler.getType().equals(sessionType)) {
+                categories.remove(typeHandler.getCategory());
+                categories.add(0, typeHandler.getCategory());
             }
+
             buffer.append(HtmlUtils
                 .href(request
                     .url(getRepository().URL_ENTRY_FORM, ARG_GROUP, group
