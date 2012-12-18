@@ -1403,13 +1403,6 @@ public class DbTypeHandler extends BlobTypeHandler {
         //        }
 
         for (Column col : enumColumns) {
-            formBuffer.append(
-                HtmlUtils.row(
-                    HtmlUtils.colspan(
-                        HtmlUtils.div(
-                            msg("Settings for") + " " + col.getName(),
-                            HtmlUtils.cssClass("formgroupheader")), 2)));
-
             String colorID = PROP_CAT_COLOR + "." + col.getName();
             String iconID = PROP_CAT_ICON + "." + col.getName();
             Hashtable<String, String> colorMap =
@@ -1425,6 +1418,13 @@ public class DbTypeHandler extends BlobTypeHandler {
             StringBuffer sb = new StringBuffer("");
             List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
             if(tfos!=null && tfos.size()<15) {
+                formBuffer.append(
+                                  HtmlUtils.row(
+                                                HtmlUtils.colspan(
+                                                                  HtmlUtils.div(
+                                                                                msg("Settings for") + " " + col.getName(),
+                                                                                HtmlUtils.cssClass("formgroupheader")), 2)));
+
                 for (TwoFacedObject tfo : tfos) {
                     String value = tfo.getId().toString();
                     String currentColor = colorMap.get(value);
@@ -1628,8 +1628,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
         advanced.append(HtmlUtils.formTableClose());
         sb.append("<tr><td colspan=2>");
-        sb.append(HtmlUtils.makeShowHideBlock(msg("Advanced..."),  advanced.toString(), false));
-        sb.append("</tr>");
+        sb.append(HtmlUtils.makeShowHideBlock(HtmlUtils.div(msg("Advanced..."), HtmlUtils.cssClass("formgroupheader")),  advanced.toString(), false));
+        sb.append("</td></tr>");
 
         sb.append(formEntry(request, "",
                             HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
