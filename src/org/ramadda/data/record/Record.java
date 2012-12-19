@@ -84,6 +84,8 @@ public abstract class Record implements Cloneable {
     /** Are we in quick scan mode */
     private boolean quickScan = false;
 
+    private long recordTime =  UNDEFINED_TIME;
+
     /**
      * Ctor
      *
@@ -1472,7 +1474,7 @@ public abstract class Record implements Cloneable {
      * @return _more_
      */
     public long getRecordTime() {
-        return UNDEFINED_TIME;
+        return recordTime;
     }
 
     /**
@@ -1480,7 +1482,9 @@ public abstract class Record implements Cloneable {
      *
      * @param time _more_
      */
-    public void setRecordTime(long time) {}
+    public void setRecordTime(long time) {
+        this.recordTime = time;
+    }
 
 
     /**
@@ -1489,7 +1493,7 @@ public abstract class Record implements Cloneable {
      * @return _more_
      */
     public boolean hasRecordTime() {
-        return false;
+        return recordTime != UNDEFINED_TIME;
     }
 
 

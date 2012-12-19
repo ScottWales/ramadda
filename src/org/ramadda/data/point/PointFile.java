@@ -61,6 +61,8 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
 
 
+
+
     /** _more_          */
     public static final String CRS_GEOGRAPHIC = "geographic";
 

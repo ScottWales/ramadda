@@ -114,7 +114,6 @@ public   class PointTypeHandler extends RecordTypeHandler {
         pointFile.visit(visitorGroup, new VisitInfo(true), null);
         dos.close();
         log("init new entry: count=" + metadataHarvester.getCount());
-        System.err.println("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
         log("initializeNewEntry: done");
     }
@@ -265,9 +264,9 @@ public   class PointTypeHandler extends RecordTypeHandler {
         if (metadata.hasTimeRange()) {
             entry.setStartDate(metadata.getMinTime());
             entry.setEndDate(metadata.getMaxTime());
-            System.err.println("has time:" + new Date(entry.getStartDate()) +"  --  " + new Date(entry.getEndDate()));
+            //            System.err.println("has time:" + new Date(entry.getStartDate()) +"  --  " + new Date(entry.getEndDate()));
         } else {
-            System.err.println("no time in metadata");
+            //            System.err.println("no time in metadata");
         }
     }
 

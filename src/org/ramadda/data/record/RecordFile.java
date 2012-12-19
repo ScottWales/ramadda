@@ -29,6 +29,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Hashtable;
@@ -619,6 +621,9 @@ public abstract class RecordFile {
                     }
                     record.index = visitInfo.getRecordIndex();
                     if (status == Record.ReadStatus.OK) {
+                        if(!processAfterReading(visitInfo, record)) {
+                            continue;
+                        }
                         if ((filter == null)
                                 || filter.isRecordOk(record, visitInfo)) {
                             cnt++;
@@ -664,6 +669,10 @@ public abstract class RecordFile {
         }
     }
 
+
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        return true;
+    }
 
     public void visitorFinished(RecordVisitor visitor, VisitInfo visitInfo) {
         visitor.finished(this, visitInfo);
@@ -934,6 +943,12 @@ public abstract class RecordFile {
      */
     public String getHtmlDescription() {
         return "";
+    }
+
+    public static SimpleDateFormat makeDateFormat(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf;
     }
 
 

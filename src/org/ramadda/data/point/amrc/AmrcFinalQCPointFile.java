@@ -2,6 +2,8 @@
 package org.ramadda.data.point.amrc;
 
 
+import java.text.SimpleDateFormat;
+
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
@@ -14,6 +16,7 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -23,10 +26,32 @@ import java.util.List;
  */
 public class AmrcFinalQCPointFile extends CsvFile  {
 
+
+
+    public static final int IDX_SITE_ID = 1;
+    public static final int IDX_LATITUDE = 2;
+    public static final int IDX_LONGITUDE = 3;
+    public static final int IDX_ELEVATION = 4;
+    public static final int IDX_YEAR = 5;
+    public static final int IDX_JULIAN_DAY = 6;
+    public static final int IDX_MONTH = 7;
+    public static final int IDX_DAY = 8;
+    public static final int IDX_TIME = 9;
+    public static final int IDX_TEMPERATURE =10;
+    public static final int IDX_PRESSURE = 11;
+    public static final int IDX_WIND_SPEED = 12;
+    public static final int IDX_WIND_DIRECTION = 13;
+    public static final int IDX_RELATIVE_HUMIDITY = 14;
+    public static final int IDX_DELTA_T = 15;
+
+    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
+
+
     /**
      * _more_
      */
-    public AmrcFinalQCPointFile() {}
+    public AmrcFinalQCPointFile() {
+    }
 
     /**
      * ctor
@@ -49,12 +74,22 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      *
      * @throws IOException _more_
      */
-    public AmrcFinalQCPointFile(String filename, Hashtable properties)
+    public AmrcFinalQCPointFile(String filename,
+                                Hashtable properties)
             throws IOException {
         super(filename, properties);
     }
 
-
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        //Site_Id,Latitude,Longitude,Elevation,Year,Julian_Day,Month,Day,Time,Temperature,Pressure, Wind_Speed,Wind_Direction,Relative_Humidity,Delta_T
+        if(!super.processAfterReading(visitInfo, record)) return false;
+        TextRecord textRecord = (TextRecord) record;
+        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
+           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
+        Date date = sdf.parse(dttm);
+        record.setRecordTime(date.getTime());
+        return true;
+    }
 
 
 
@@ -117,7 +152,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
             });
 
 
-        String fields = "Site_Id[type=string value=\"" + siteId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time,Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
+        String fields = "Site_Id[type=string value=\"" + siteId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time[type=string],Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }
