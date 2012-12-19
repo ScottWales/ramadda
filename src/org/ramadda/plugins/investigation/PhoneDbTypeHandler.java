@@ -298,6 +298,20 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     
     public Result handleCallGraphData(Request request, Entry entry) throws Exception  {
         StringBuffer sb = new StringBuffer();
+
+
+        sb.append("<nodetype    name=\"phonenumber\" parent=\"Node\" fillcolor=\"#37FDFC\" imagepath=\"${root}/icons/file.gif\">");
+        //        sb.append("  <command doubleclick=\"true\"  label=\"View entry\" command=\"url(,${root}/entry/show?entryid=${entryid}&dbid=%id%)\"/>");
+        sb.append("  <shape><shape>");
+        sb.append("     <image id=\"image\" url=\"%imagepath%\" from=\"c\" to=\"c\" alt=\"Tag\"/>");
+        sb.append("     <text fillcolor=\"#dedede\" src=\"image\" from=\"s\" to=\"n\" fontstyle=\"bold\" id=\"label\"   text=\"%title%\" color=\"black\" />");
+        sb.append("   </shape></shape></nodetype>");
+
+
+
+
+
+
         List<String> ids = StringUtil.split(request.getString(ARG_IDS,""));
         HashSet seen = new HashSet();
         for(String number: ids) {

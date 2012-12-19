@@ -3038,7 +3038,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             if (hilite != null) {
                 hilite.setIsHilite(true);
             }
-            repaint();
+            //            repaint();
             if (hilite != null) {
                 xmlUi.setLabel("message2", getTooltip(hilite));
                 String msg = containsShape.getAttr("message");
