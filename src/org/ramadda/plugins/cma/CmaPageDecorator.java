@@ -65,6 +65,10 @@ public class CmaPageDecorator extends PageDecorator {
             return null;
         }
 
+        if(!entry.getResource().getPath().endsWith(".nc")) {
+            return null;
+        }
+
         //Here we use the CdmManager from the cdmdata plugin to determine what kind of entry we have
         try  {
             if(cdmManager == null) {
