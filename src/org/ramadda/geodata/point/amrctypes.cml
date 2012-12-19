@@ -1,18 +1,17 @@
 <types>
 
-  <type name="type_point"  description="IDV Point File" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
+<!--
+all point types need to have numberoofpoints and properties fields
+--> 
+  <type name="type_point_amrc"  description="" handler="org.ramadda.data.services.PointTypeHandler" super="type_point" category="Point Data" foruser="false">
      <property name="icon" value="/points/pointdata.gif"/>
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="true"/>
      <column name="properties" type="string" size="1024" columns="80" rows="5"  label="Properties"  showinhtml="false" canlist="fa\
 lse"/>
   </type>
 
-  <type name="type_point_idv"  description="IDV Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.idv.IdvPointFile"/>
-  </type>
 
-
-  <type name="type_point_amrc_final"  description="AMRC Final QC Data" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_amrc_final"  super="type_point_amrc" description="AMRC Final QC Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.file.class" value="org.ramadda.data.point.amrc.AmrcPointFile"/>
   </type>
 
