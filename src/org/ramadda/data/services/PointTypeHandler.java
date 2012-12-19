@@ -89,8 +89,6 @@ public   class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-        //        System.err.println ("initializeNewEntry:" + entry);
-
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
         PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
@@ -100,7 +98,6 @@ public   class PointTypeHandler extends RecordTypeHandler {
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         pointEntries.add(pointEntry);
         PointMetadataHarvester metadataHarvester = doMakeMetadataHarvester(pointEntry);
-        System.err.println("metadataHarvester: " + metadataHarvester.getClass().getName());
         visitorGroup.addVisitor(metadataHarvester);
         Request          request       = getRepository().getTmpRequest();
         final File       quickScanFile = pointEntry.getQuickScanFile();
@@ -117,6 +114,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
         pointFile.visit(visitorGroup, new VisitInfo(true), null);
         dos.close();
         log("init new entry: count=" + metadataHarvester.getCount());
+        System.err.println("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
         log("initializeNewEntry: done");
     }
@@ -234,7 +232,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
                 throw new IllegalArgumentException("Bad file metadata count:" + fileMetadata +" was expecting:" + (values.length-2));
             }
             for(int i=0;i<fileMetadata.length;i++) {
-                values[i+1] = fileMetadata[i];
+                values[i+2] = fileMetadata[i];
             }
         }
 

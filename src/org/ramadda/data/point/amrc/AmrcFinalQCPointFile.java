@@ -19,15 +19,14 @@ import java.util.List;
 
 
 
-
 /**
  */
-public class AmrcPointFile extends CsvFile  {
+public class AmrcFinalQCPointFile extends CsvFile  {
 
     /**
      * _more_
      */
-    public AmrcPointFile() {}
+    public AmrcFinalQCPointFile() {}
 
     /**
      * ctor
@@ -38,7 +37,7 @@ public class AmrcPointFile extends CsvFile  {
      *
      * @throws IOException _more_
      */
-    public AmrcPointFile(String filename) throws IOException {
+    public AmrcFinalQCPointFile(String filename) throws IOException {
         super(filename);
     }
 
@@ -50,17 +49,13 @@ public class AmrcPointFile extends CsvFile  {
      *
      * @throws IOException _more_
      */
-    public AmrcPointFile(String filename, Hashtable properties)
+    public AmrcFinalQCPointFile(String filename, Hashtable properties)
             throws IOException {
         super(filename, properties);
     }
 
 
 
-
-    public Object[] getFileMetadata() {
-        return null;
-    }
 
 
     /**
@@ -86,7 +81,7 @@ public class AmrcPointFile extends CsvFile  {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
         List<String>headerLines = getHeaderLines();
-        if(headerLines.size()!=2) {
+        if(headerLines.size()!=getSkipLines(visitInfo)) {
             throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
         }
         //        Year: 2012  Month: 01  ID: AG4  ARGOS:  8927  Name: AGO-4               
@@ -113,6 +108,8 @@ public class AmrcPointFile extends CsvFile  {
         double elevation = Misc.decodeLatLon(elevString);
 
         setLocation(lat,lon,elevation);
+
+        //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
                 siteId,
                 siteName,
@@ -129,10 +126,10 @@ public class AmrcPointFile extends CsvFile  {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
             try {
-            RecordIO recordIO = doMakeInputIO(true);
-            VisitInfo visitInfo = new VisitInfo();
-            visitInfo.setRecordIO(recordIO);
-            visitInfo = prepareToVisit(visitInfo);
+                RecordIO recordIO = doMakeInputIO(true);
+                VisitInfo visitInfo = new VisitInfo();
+                visitInfo.setRecordIO(recordIO);
+                visitInfo = prepareToVisit(visitInfo);
             } catch(Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -167,7 +164,7 @@ public class AmrcPointFile extends CsvFile  {
     }
 
     public static void main(String[]args) {
-        PointFile.test(args, AmrcPointFile.class);
+        PointFile.test(args, AmrcFinalQCPointFile.class);
     }
 
 }

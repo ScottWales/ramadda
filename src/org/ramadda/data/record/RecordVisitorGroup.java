@@ -75,7 +75,8 @@ public class RecordVisitorGroup extends RecordVisitor {
                                Record record) {
         count++;
         for (RecordVisitor visitor : visitors) {
-            if ( !visitor.visitRecord(file, visitInfo, record)) {
+            boolean visitorOK = visitor.visitRecord(file, visitInfo, record);
+            if (!visitorOK) {
                 return false;
             }
         }

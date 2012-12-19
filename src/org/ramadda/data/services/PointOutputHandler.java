@@ -1134,10 +1134,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
+            @Override
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record) {
                 try {
-                    if ( !jobOK(jobId)) {
+                    if (!jobOK(jobId)) {
                         return false;
                     }
                     GeoRecord geoRecord = (GeoRecord) record;
@@ -1156,6 +1157,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                     throw new RuntimeException(exc);
                 }
             }
+            public String toString() {
+                 return "LatLonAltBin visitor";
+           }
         };
 
         return visitor;
@@ -2091,6 +2095,12 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
     }
+
+    public boolean canHandleEntry(Entry entry) {
+        return entry.getTypeHandler().isType("lidar") || entry.getTypeHandler().isType("lidar_collection") || 
+            entry.getTypeHandler().isType("type_point");
+    }
+
 
 
     /**

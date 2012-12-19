@@ -604,7 +604,6 @@ public abstract class RecordFile {
             int  cnt = 0;
             long t1  = System.currentTimeMillis();
 
-            //            System.err.println("RecordFile:start visit");
             while (true) {
                 if ((visitInfo.getStop() > 0)
                         && (visitInfo.getRecordIndex()
@@ -614,7 +613,7 @@ public abstract class RecordFile {
                 try {
                     //This sets the record index
                     Record.ReadStatus status = readNextRecord(visitInfo,
-                                                   record);
+                                                              record);
                     if (status == Record.ReadStatus.EOF) {
                         break;
                     }
@@ -644,10 +643,12 @@ public abstract class RecordFile {
                     }
                 } catch (java.io.EOFException oef) {
                     //Bad form to catch an exception as logic but...
+                    oef.printStackTrace();
                     break;
+                } catch (Exception exc) {
+                    throw exc;
                 }
             }
-            //            System.err.println("RecordFile:done visiting");
             if (ok) {
                 visitorFinished(visitor, visitInfo);
             }

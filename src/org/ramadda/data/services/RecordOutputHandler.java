@@ -313,8 +313,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return is job running and ok
      */
     public boolean jobOK(Object jobId) {
-        if (jobManager == null) {
-            return false;
+        if(jobId == null || jobManager == null) {
+            return true;
         }
         return jobManager.jobOK(jobId);
     }
