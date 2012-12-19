@@ -939,6 +939,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
 
+        //initialize the plugin manager with the properties
+        getPluginManager().init(properties);
+
+        //create the log dir
+        getStorageManager().getLogDir();
+
+
         try {
             //Now load in the local properties file
             //First load in the repository.properties file
@@ -966,11 +973,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         } catch (Exception exc) {}
 
-        //create the log dir
-        getStorageManager().getLogDir();
-
-        //initialize the plugin manager with the properties
-        getPluginManager().init(properties);
 
 
 

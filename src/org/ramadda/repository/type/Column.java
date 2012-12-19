@@ -1233,13 +1233,22 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isEnumeration()) {
             String value = request.getString(id, null);
-            if ((value != null) && (value.length() > 0)) {
-                where.add(Clause.eq(getFullName(), value));
+            if (Utils.stringDefined(value)) {
+                if(value.startsWith("!")) {
+                    where.add(Clause.neq(getFullName(), value.substring(1)));
+                } else {
+                    where.add(Clause.eq(getFullName(), value));
+                }
             }
         } else {
             String value = request.getString(id, null);
             if (Utils.stringDefined(value)) {
-                where.add(Clause.like(getFullName(), "%" + value + "%"));
+                if(value.startsWith("!")) {
+                    value  = value.substring(1);
+                    where.add(Clause.notLike(getFullName(), "%" + value + "%"));
+                } else {
+                    where.add(Clause.like(getFullName(), "%" + value + "%"));
+                }
             }
             //            typeHandler.addOrClause(getFullName(),
             //                                    value, where);

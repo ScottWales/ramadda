@@ -7891,13 +7891,14 @@ public class EntryManager extends RepositoryManager {
             //xxxx
             if(currentEntry.getTypeHandler().isSynthType()) {
                 List<String> subset = toks.subList(i+1, toks.size());
+                if(subset.size()==0) {
+                    break;
+                }
                 return currentEntry.getTypeHandler().makeSynthEntry(request,  currentEntry, subset);
             }
-
-
         }
         if (currentEntry == null) {
-            return currentEntry;
+            return null;
         }
 
         return getAccessManager().filterEntry(request, currentEntry);

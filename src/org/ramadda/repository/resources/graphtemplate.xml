@@ -34,12 +34,14 @@
 
 </nodetype>
 
-<nodetype    name="entry" parent="Node" fillcolor="255,255,153" imagepath="${root}/icons/file.gif">
+<nodetype    name="entry" parent="Node" fillcolor="#37FDFC" imagepath="${root}/icons/file.gif">
   <command doubleclick="true"  label="View entry" command="url(,${root}/entry/show?entryid=%id%)"/>
   <shape>
-    <image id="image" url="%imagepath%" from="c" to="c" alt="Tag"/>
-    <text fillcolor="#ffffff" src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
-  </shape>
+  <shape>
+     <image id="image" url="%imagepath%" from="c" to="c" alt="Tag"/>
+     <text fillcolor="#dedede" src="image" from="s" to="n" fontstyle="bold" id="label"   text="%title%" color="black" />
+   </shape>
+</shape>
 </nodetype>
 
 

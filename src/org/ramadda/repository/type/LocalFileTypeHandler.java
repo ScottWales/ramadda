@@ -45,6 +45,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import java.sql.PreparedStatement;
 
@@ -70,6 +71,22 @@ import java.util.Properties;
  * @version $Revision: 1.3 $
  */
 public class LocalFileTypeHandler extends GenericTypeHandler {
+
+    /** _more_ */
+    public static final int COL_PATH = 0;
+
+    /** _more_ */
+    public static final int COL_AGE = 1;
+
+    /** _more_ */
+    public static final int COL_INCLUDES = 2;
+
+    /** _more_ */
+    public static final int COL_EXCLUDES = 3;
+
+    /** _more_ */
+    public static final int COL_NAMES = 4;
+
 
 
     /**
@@ -151,20 +168,6 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         return file;
     }
 
-    /** _more_ */
-    public static final int COL_PATH = 0;
-
-    /** _more_ */
-    public static final int COL_AGE = 1;
-
-    /** _more_ */
-    public static final int COL_INCLUDES = 2;
-
-    /** _more_ */
-    public static final int COL_EXCLUDES = 3;
-
-    /** _more_ */
-    public static final int COL_NAMES = 4;
 
     /**
      * _more_
@@ -415,11 +418,17 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      */
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
+        String subId = getFileComponentOfSynthId(rootDirPath, childFile);
+
+        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
+    }
+
+
+    private String getFileComponentOfSynthId(String rootDirPath, File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
         subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n",
                                             "");
-
-        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
+        return subId;
     }
 
 
@@ -458,8 +467,10 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             throw new IllegalArgumentException("File cannot be accessed");
         }
 
-        String synthId = Repository.ID_PREFIX_SYNTH + parentEntry.getId()
-                         + ":" + id;
+        String synthId = id.startsWith(Repository.ID_PREFIX_SYNTH)?id:Repository.ID_PREFIX_SYNTH + parentEntry.getId()
+                          + ":" + id;
+
+
         TypeHandler handler = (targetFile.isDirectory()
                                ? getRepository().getTypeHandler(
                                    TypeHandler.TYPE_GROUP)
@@ -532,47 +543,44 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     }
 
 
-    public Entry makeSynthEntry(Request request, Entry parentEntry, List<String> entryNames)
-            throws Exception {
-        return null;
-        /*****
 
-        Object[] values = parentEntry.getValues();
+
+
+    public Entry makeSynthEntry(Request request, Entry mainEntry, List<String> entryNames)
+            throws Exception {
+
+        Object[]     values = mainEntry.getValues();
         if (values == null) {
             return null;
         }
-        File dir  = new File((String) values[0]);
+        File rootDir = new File((String) values[0]);
+        if ( !rootDir.exists()) {
+            throw new RepositoryUtil.MissingEntryException(
+                "Could not find entry: " + rootDir);
+        }
 
-        for(int i=0;i<entryNames.size();i++) {
-            String dirName = entryNames.get(i);
-            File[] files     = 
-            File nextDir = null;
-            for(File child:dir.listFiles()) {
-                if(child.getName().equals(dirName)) {
-                    if(child.
-
-                    nextDir = child;
-                    break;
+        File file = rootDir;
+        final String[] nameHolder = {""};
+        FilenameFilter fnf= new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return nameHolder[0].equals(name);
                 }
-            }
-            if(nextDir!=null) {
-                dir = nextDir;
-            }
+            };
+
+        for(String filename: entryNames) {
+            nameHolder[0] = filename;
+            File[] files = file.listFiles(fnf);
+            if(files.length==0) return null;
+            file = files[0];
         }
 
 
-
-        public Entry makeSynthEntry(Request request, Entry parentEntry, File dir, List<String> entryNames, int index) 
-            throws Exception {
-            
+        if ( !IOUtil.isADescendent(rootDir, file)) {
+            throw new IllegalArgumentException("Bad file path:" + entryNames);
         }
-
-
-
-        xxxxxxx
-        System.err.println("LocalFile:" + entryNames);
-        return  null;
-        ***/
+        String subId = getFileComponentOfSynthId(rootDir.toString(), file);
+        Entry entry =   makeSynthEntry(request,  mainEntry,  subId);
+        return entry;
     }
 
 
