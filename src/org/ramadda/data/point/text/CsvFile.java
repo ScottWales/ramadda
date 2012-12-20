@@ -180,9 +180,12 @@ public class CsvFile extends TextFile {
             RecordField field = new RecordField(name, name, "", paramId++,
                                                 getProperty(properties, "unit", ""));
             String fmt = getProperty(properties, "fmt", (String) null);
+            if(fmt==null) {
+                fmt = getProperty(properties, "format", (String) null);
+            }
+
             if(fmt!=null) {
                 field.setType(field.TYPE_DATE);
-                System.err.println ("FORMAT:" + fmt);
                 field.setDateFormat(new SimpleDateFormat(fmt));
             }
 
