@@ -15,4 +15,14 @@ this gets it from the type_point super class
      <column  name="argos_id"  type="enumerationplus" label="Argos ID" cansearch="true"/>
   </type>
 
+
+  <type name="type_point_amrc_freewave"  super="type_point_amrc" description="AMRC Freewave  Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.amrc.FreewavePointFile"/>
+     <column  name="station_name"  type="enumerationplus" label="Station Name" cansearch="true"/>
+     <column  name="format"  type="string" label="File Format" cansearch="true"/>
+     <column  name="datalogger_model"  type="enumerationplus" label="Data Logger Model" cansearch="true"/>
+     <column  name="datalogger_serial"  type="enumerationplus" label="Data Logger Serial" cansearch="true"/>
+
+  </type>
+
 </types>

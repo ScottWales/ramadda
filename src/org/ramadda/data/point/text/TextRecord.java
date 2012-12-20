@@ -214,6 +214,7 @@ public class TextRecord extends PointRecord {
 
 
 
+
         tokens      = new String[numTokens];
 
 
@@ -340,8 +341,6 @@ public class TextRecord extends PointRecord {
                 break;
             }
             if(!split(line)) {
-                if(skipCnt++<10)
-                    System.err.println ("bad token cnt:" + line + " tokens.length=" + tokens.length);
                 return ReadStatus.SKIP;
             }
             int tokenCnt = 0;
@@ -364,6 +363,7 @@ public class TextRecord extends PointRecord {
                     continue;
                 }
                 if(field.isTypeDate()) {
+                    tok = tok.replaceAll("\"", "");
                     objectValues[fieldCnt] = field.getDateFormat().parse(tok);
                     continue;
                 }
@@ -422,9 +422,12 @@ public class TextRecord extends PointRecord {
                 break;
             }
         }
-        //        System.err.println ("token
-        //        System.exit(0);
-        if(tokenCnt!=tokens.length) return false;
+        if(tokenCnt!=tokens.length) {
+            if(skipCnt++<5) {
+                System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +"\nLine:" + line);
+            }
+            return false;
+        }
         return true;
         
         /*

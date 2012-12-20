@@ -10,7 +10,6 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -25,8 +24,6 @@ import java.util.List;
 /**
  */
 public class AmrcFinalQCPointFile extends CsvFile  {
-
-
 
     public static final int IDX_SITE_ID = 1;
     public static final int IDX_LATITUDE = 2;
@@ -80,17 +77,17 @@ public class AmrcFinalQCPointFile extends CsvFile  {
         super(filename, properties);
     }
 
-    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
-        //Site_Id,Latitude,Longitude,Elevation,Year,Julian_Day,Month,Day,Time,Temperature,Pressure, Wind_Speed,Wind_Direction,Relative_Humidity,Delta_T
-        if(!super.processAfterReading(visitInfo, record)) return false;
-        TextRecord textRecord = (TextRecord) record;
-        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
-           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
-        return true;
+
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
+        if(action.equals(ACTION_GRID)) return false;
+        return super.isCapable(action);
     }
 
+
+    public String getDelimiter() {
+        return " ";
+    }
 
 
     /**
@@ -157,46 +154,17 @@ public class AmrcFinalQCPointFile extends CsvFile  {
         return visitInfo;
     }
 
-    public List<RecordField>doMakeFields() {
-        String fieldString = getProperty(PROP_FIELDS, null);
-        if (fieldString == null) {
-            try {
-                RecordIO recordIO = doMakeInputIO(true);
-                VisitInfo visitInfo = new VisitInfo();
-                visitInfo.setRecordIO(recordIO);
-                visitInfo = prepareToVisit(visitInfo);
-            } catch(Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-        return super.doMakeFields();
 
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        if(!super.processAfterReading(visitInfo, record)) return false;
+        TextRecord textRecord = (TextRecord) record;
+        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
+           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
+        Date date = sdf.parse(dttm);
+        record.setRecordTime(date.getTime());
+        return true;
     }
 
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
-    }
-
-
-    public String getDelimiter() {
-        return " ";
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public PointRecord getRecord(int index) throws Exception {
-        throw new IllegalArgumentException("Not implemented");
-    }
 
     public static void main(String[]args) {
         PointFile.test(args, AmrcFinalQCPointFile.class);

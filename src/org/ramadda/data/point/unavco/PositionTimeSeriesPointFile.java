@@ -46,6 +46,16 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
     }
 
 
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
+        if(action.equals(ACTION_GRID)) return false;
+        return super.isCapable(action);
+    }
+
+
+    public String getDelimiter() {
+        return ",";
+    }
 
     /**
      * How many lines in the header
@@ -123,45 +133,6 @@ Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std.
         return visitInfo;
     }
 
-    public List<RecordField>doMakeFields() {
-        String fieldString = getProperty(PROP_FIELDS, null);
-        if (fieldString == null) {
-            try {
-                RecordIO recordIO = doMakeInputIO(true);
-                VisitInfo visitInfo = new VisitInfo();
-                visitInfo.setRecordIO(recordIO);
-                visitInfo = prepareToVisit(visitInfo);
-            } catch(Exception exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-        return super.doMakeFields();
-    }
-
-
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
-    }
-
-
-    public String getDelimiter() {
-        return ",";
-    }
-
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public PointRecord getRecord(int index) throws Exception {
-        throw new IllegalArgumentException("Not implemented");
-    }
 
     public static void main(String[]args) {
         PointFile.test(args, PositionTimeSeriesPointFile.class);

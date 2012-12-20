@@ -143,10 +143,15 @@ public class CsvFile extends TextFile {
     public List<RecordField>doMakeFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
-            Record            record = makeRecord(new VisitInfo());
-            List<RecordField> fields = record.getFields();
-            System.err.println ("no fields property:" + fields);
-            return fields;
+            try {
+                RecordIO recordIO = doMakeInputIO(true);
+                VisitInfo visitInfo = new VisitInfo();
+                visitInfo.setRecordIO(recordIO);
+                visitInfo = prepareToVisit(visitInfo);
+            } catch(Exception exc) {
+                throw new RuntimeException(exc);
+            }
+            fieldString = getProperty(PROP_FIELDS, null);
         }
 
         if (fieldString == null) {
@@ -176,7 +181,7 @@ public class CsvFile extends TextFile {
                 attrs = attrs.substring(0, attrs.length() - 1);
             }
             Hashtable properties = parseAttributes(attrs);
-            //            System.err.println("   attrs:" + attrs  + " " + properties);
+            //            System.err.println ("props:" + properties);
             RecordField field = new RecordField(name, name, "", paramId++,
                                                 getProperty(properties, "unit", ""));
             String fmt = getProperty(properties, "fmt", (String) null);
@@ -213,6 +218,13 @@ public class CsvFile extends TextFile {
             if(getProperty(properties,"value","false").equals("true")) {
                 field.setSearchable(true);
             }                
+            String label =  (String)properties.get("label");
+            if(label==null) {
+                label = (String)properties.get("description");
+            }
+            if(label!=null) {
+                field.setDescription(label);
+            }
             fields.add(field);
         }
         return fields;
@@ -296,6 +308,9 @@ public class CsvFile extends TextFile {
                   break;
               }
             }
+        }
+        if(attrName.length()>0) {
+            ht.put(attrName.toLowerCase().trim(), attrValue.trim());
         }
         return ht;
     }

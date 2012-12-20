@@ -1,0 +1,4 @@
+CapeBird=77.217S 166.439E    38
+MinnaBluff=78.554S 166.691E   895 
+WillieField=77.866S 166.983E    14
+MarblePoint=77.439S 163.759E   111
