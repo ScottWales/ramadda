@@ -1,4 +1,3 @@
-
 package org.ramadda.data.point.unavco;
 
 import org.ramadda.data.record.*;
@@ -12,8 +11,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class PositionTimeSeriesPointFile extends CsvFile  {
 
     /**
@@ -24,7 +21,6 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
 
     /**
      * ctor
-     *
      *
      * @param filename _more_
      * @throws Exception On badness
@@ -113,9 +109,7 @@ Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std.
 
         //Station name,RandolphLLUT2005
         String stationName =  StringUtil.split(headerLines.get(3), ",",true,true).get(1);
-
         setLocation(lat,lon,elevation);
-
         //LOOK: this needs to be in the same order as the unavcotypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
                 fourCharId,
@@ -123,10 +117,6 @@ Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std.
                 referenceFrame,
                 formatVersion,
             });
-
-
-        //Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std. Deviation (mm), Vertical Std. Deviation (mm), Quality,
-        //2005-09-03,22.68, 42.87, 15.8, 1.5, 1.31, 5.23, final,
 
         String fields = "Four_Char_ID[type=string value=\"" + fourCharId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevation+"],Date[type=date format=yyyy-MM-dd], North [unit=mm chartable=true], East [unit=mm chartable=true], Vertical [unit=mm chartable=true], North_Std_Deviation [unit=mm chartable=true], East_Std_Deviation [unit=mm chartable=true], Vertical_Std_Deviation [unit=mm chartable=true], Quality[type=string chartable=true],skip";
         putProperty(PROP_FIELDS, fields);
@@ -146,8 +136,8 @@ Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std.
             }
         }
         return super.doMakeFields();
-
     }
+
 
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
@@ -159,7 +149,6 @@ Date, North (mm), East (mm), Vertical (mm), North Std. Deviation (mm), East Std.
     public String getDelimiter() {
         return ",";
     }
-
 
     /**
      * _more_
