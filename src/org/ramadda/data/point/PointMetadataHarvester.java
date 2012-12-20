@@ -6,6 +6,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.grid.LatLonGrid;
 
 import java.io.*;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -162,7 +163,7 @@ public class PointMetadataHarvester extends RecordVisitor {
      */
     public String toString() {
         return "latitude:" + minLatitude + " - " + maxLatitude
-               + "  longitude:" + minLongitude + " - " + maxLongitude;
+            + "  longitude:" + minLongitude + " - " + maxLongitude +" has time:" + hasTimeRange() + " " + new Date(getMinTime());
     }
 
 

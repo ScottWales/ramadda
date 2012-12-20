@@ -214,7 +214,6 @@ public class TextRecord extends PointRecord {
 
 
 
-
         tokens      = new String[numTokens];
 
 
@@ -227,6 +226,13 @@ public class TextRecord extends PointRecord {
                 "Could not find y index, e.g., latitude, lat, y, etc.");
         }
     }
+
+
+    @Override
+    public boolean hasRecordTime() {
+        return idxTime>=0;
+    }
+
 
     @Override
     public long getRecordTime() {
@@ -375,6 +381,11 @@ public class TextRecord extends PointRecord {
                                                      ? values[idxZ]
                                                      : 0));
             convertedXYZToLatLonAlt = true;
+
+            if(idxTime>=0) {
+                setRecordTime(getRecordTime());
+            }
+
             return ReadStatus.OK;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
