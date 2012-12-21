@@ -1547,11 +1547,13 @@ public class TypeHandler extends RepositoryManager {
     public void getEntryLinks(Request request, Entry entry, List<Link> links)
             throws Exception {
 
+
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
 
             return;
         }
+
 
         boolean isGroup  = entry.isGroup();
         boolean canDoNew = isGroup
@@ -1575,6 +1577,8 @@ public class TypeHandler extends RepositoryManager {
                         TYPE_FILE), getRepository().iconUrl(ICON_ENTRY_ADD),
                                     "New File", OutputType.TYPE_FILE));
 
+
+
             links.add(
                 new Link(
                     request.url(
@@ -1586,6 +1590,33 @@ public class TypeHandler extends RepositoryManager {
             Link hr = new Link(true);
             hr.setLinkType(OutputType.TYPE_FILE);
             links.add(hr);
+
+            List<String> pastTypes = (List<String>) getSessionManager().getSessionProperty(request, ARG_TYPE);
+            if(pastTypes!=null) {
+                boolean didone = false;
+                for(String pastType: pastTypes) {
+                    if(pastType.equals(TYPE_FILE) || pastType.equals(TYPE_GROUP)) continue;
+                    didone = true;
+                    TypeHandler pastTypeHandler  = getRepository().getTypeHandler(pastType);
+                    String icon = pastTypeHandler.getProperty("icon", (String) null);
+                    if (icon == null) {
+                        icon = getRepository().iconUrl(ICON_ENTRY_ADD);
+                    } else {
+                        icon = pastTypeHandler.iconUrl(icon);
+                    }
+                    
+                    links.add(
+                              new Link(
+                                       request.url(
+                                                   getRepository().URL_ENTRY_FORM, ARG_GROUP,
+                                                   entry.getId(), ARG_TYPE,
+                                                   pastType), icon,
+                                       "New " + pastTypeHandler.getDescription(), OutputType.TYPE_FILE));
+                }
+                if(didone)
+                    links.add(hr);
+            }
+
 
         }
         if (request.getUser().getAdmin()) {

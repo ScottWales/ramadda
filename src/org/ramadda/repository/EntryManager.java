@@ -755,9 +755,18 @@ public class EntryManager extends RepositoryManager {
             type = request.getString(ARG_TYPE, (String) null);
         }
 
-        System.err.println ("type:" + type);
         if(type!=null) {
-            getSessionManager().putSessionProperty(request, ARG_TYPE, type);
+            if(!type.equals(TYPE_FILE) && !type.equals(TYPE_GROUP)) {
+                List<String> pastTypes = (List<String>) getSessionManager().getSessionProperty(request, ARG_TYPE);
+                if(pastTypes == null) {
+                    pastTypes = new ArrayList<String>();
+                    getSessionManager().putSessionProperty(request, ARG_TYPE, pastTypes);
+                }
+                pastTypes.remove(type);
+                pastTypes.add(0, type);
+                //cap it at 3 types
+                if(pastTypes.size()>3) pastTypes.remove(3);
+            }
         }
 
         if ((entry != null) && entry.getIsLocalFile()) {
@@ -2639,7 +2648,7 @@ public class EntryManager extends RepositoryManager {
         //        exclude.add(TYPE_GROUP);
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
 
-        String sessionType = (String) getSessionManager().getSessionProperty(request, ARG_TYPE);
+        String[] sessionType = (String[]) getSessionManager().getSessionProperty(request, ARG_TYPE);
 
         for (TypeHandler typeHandler : typeHandlers) {
             if ( !typeHandler.getForUser()) {
@@ -2670,12 +2679,12 @@ public class EntryManager extends RepositoryManager {
             if (buffer == null) {
                 catMap.put(typeHandler.getCategory(),
                            buffer = new StringBuffer());
-                if(sessionType!=null && typeHandler.getType().equals(sessionType)) {
+                if(sessionType!=null && typeHandler.getType().equals(sessionType[0])) {
                     categories.add(0, typeHandler.getCategory());
                 } else {
                     categories.add(typeHandler.getCategory());
                 }
-            } else if(sessionType!=null && typeHandler.getType().equals(sessionType)) {
+            } else if(sessionType!=null && typeHandler.getType().equals(sessionType[0])) {
                 categories.remove(typeHandler.getCategory());
                 categories.add(0, typeHandler.getCategory());
             }
