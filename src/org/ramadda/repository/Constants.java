@@ -1857,9 +1857,6 @@ public interface Constants {
     /** _more_ */
     public static final String TYPE_GROUP = "group";
 
-    /** _more_ */
-    public static final String TYPE_TAG = "tag";
-
 
 
     /** _more_ */

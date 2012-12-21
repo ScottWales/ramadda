@@ -34,6 +34,11 @@ import org.ramadda.repository.*;
  */
 public class EnumeratedMetadataHandler extends MetadataHandler {
 
+    /** _more_ */
+    public static final String TYPE_TAG = "enum_tag";
+
+
+
     /**
      * _more_
      *

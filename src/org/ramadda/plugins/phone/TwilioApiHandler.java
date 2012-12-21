@@ -148,7 +148,9 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
     private boolean callOK(Request request) {
         String appId = getRepository().getProperty(PROP_APPID,null);
-        if(appId == null) return false;
+        if(appId == null) {
+            return false;
+        }
         return request.getString(ARG_ACCOUNTSID, "").equals(appId);
     }
 
