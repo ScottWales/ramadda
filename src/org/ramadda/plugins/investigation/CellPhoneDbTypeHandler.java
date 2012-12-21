@@ -73,6 +73,7 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
 
     public static final String TYPE_VERIZON_V1 = CARRIER_VERIZON+"." + "v1";
 
+
     public static final String ARG_FILE_TYPE = "filetype";
 
     public static final int IDX_FROM_NAME = 0;
@@ -241,8 +242,12 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
         String fromNumber = toks.get(10);
         String toNumber = toks.get(2);
 
-        fromNumber = anonNumber(fromNumber);
-        toNumber = anonNumber(toNumber);
+
+        boolean anonymize = request.get(ARG_ANONYMIZE,false);
+        if(anonymize) {
+            fromNumber = anonNumber(fromNumber);
+            toNumber = anonNumber(toNumber);
+        }
 
 
         String fromName = numberToName.get(fromNumber);

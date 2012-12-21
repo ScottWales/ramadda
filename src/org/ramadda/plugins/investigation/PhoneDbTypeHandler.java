@@ -80,6 +80,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
 
     public static final String ARG_DB_NAMES = "db.names";
     public static final String ARG_IDS = "ids";
+    public static final String ARG_ANONYMIZE = "anonymize";
 
     Column fromNumberColumn;
     Column toNumberColumn;
@@ -166,6 +167,9 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                                                           "Enter numbers and names", 2)));
         formBuffer.append(HtmlUtils.formEntry(msgLabel("Numbers and names"),
                                               HtmlUtils.textArea(ARG_DB_NAMES,"#number=name\n#e.g.:\n#303-555-1212= some name\n", 8, 50)));
+
+
+
     }
 
     public void initializeEntryFromForm(Request request, Entry entry,
@@ -567,6 +571,8 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         bulkSB.append(HtmlUtils.p());
         bulkSB.append(header("Upload a call log file"));
         bulkSB.append(HtmlUtils.p());
+        bulkSB.append(bulkButtons);
+        bulkSB.append(HtmlUtils.p());
         bulkSB.append(msgLabel("File"));
         bulkSB.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
                                           HtmlUtils.SIZE_60));
@@ -575,7 +581,9 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         bulkSB.append(msgLabel("Enter names for the numbers"));
         bulkSB.append(HtmlUtils.br());
         bulkSB.append(HtmlUtils.textArea(ARG_DB_NAMES,"#number=name\n#e.g.:\n#303-555-1212= some name\n", 8, 50));
-        bulkSB.append(HtmlUtils.br());
+        bulkSB.append(HtmlUtils.p());
+        bulkSB.append(HtmlUtils.formEntry("",HtmlUtils.checkbox(ARG_ANONYMIZE,"true",false)+" " + "Anonymize numbers"));
+        bulkSB.append(HtmlUtils.p());
         bulkSB.append(bulkButtons);
         bulkSB.append(HtmlUtils.formClose());
         sb.append(bulkSB);
