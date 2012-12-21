@@ -72,7 +72,7 @@ public class PhoneHarvester extends Harvester  {
     public static final String []CMDS_URL = {"url","link"};
     public static final String []CMDS_GET = {"get"};
     public static final String []CMDS_COMMENTS = {"comments"};
-    public static final String []CMDS_APPEND = {"+","append","add"};
+    public static final String []CMDS_APPEND = {"+","append","add","cat"};
     public static final String []CMDS_PWD= {"pwd","where","ur"};
 
     //TODO:
@@ -81,7 +81,7 @@ public class PhoneHarvester extends Harvester  {
 
     //edit_line := + (<create_line> | <tag_line> | <comment_line>)
     //create_line := (wiki|blog|folder|note|sms|mkdir) entry name _newline_ <text>
-    //tag_line := entry name _newline_ <text>
+    //tag_line := tag <optional entry name> _newline_ <text>
 
     //entryid := this is always relative to the current working directory
     //it can be a child entry name or a path (e.g., child1/child2/child3
@@ -383,6 +383,26 @@ public class PhoneHarvester extends Harvester  {
                 getEntryManager().insertEntries(entries, true, true);
                 processedACommand = true;
                 continue;
+            }
+
+
+            if((remainder = checkCommand(CMDS_TAG, line))!=null) {
+                if(!session.getCanEdit()) {
+                    msg.append("clear is not allowed\nYou need edit access");
+                    return true;
+                }
+                currentEntry =  getEntry(request, remainder, currentEntry, msg);
+                if(currentEntry == null) return true;
+                lineIdx++;
+                for(;lineIdx<lines.size();lineIdx++) {
+                    String tag = lines.get(lineIdx);
+                    Metadata metadata = new Metadata(getRepository().getGUID(),
+                                                     currentEntry.getId(), EnumeratedMetadataHandler.TYPE_TAG,
+                                                     false, tag, "", "", "",null);
+                    currentEntry.addMetadata(metadata);
+                    getMetadataManager().insertMetadata(metadata);
+                }
+                return true;
             }
 
 
