@@ -29,6 +29,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Site;
 
 
 import org.w3c.dom.*;
@@ -68,11 +69,11 @@ import ucar.unidata.util.StringUtil;
 
 public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
 
+    public static final String CARRIER_VERIZON = "verizon";
+
+    public static final String TYPE_VERIZON_V1 = CARRIER_VERIZON+"." + "v1";
+
     public static final String ARG_FILE_TYPE = "filetype";
-
-
-    public static final String TYPE_VERIZON_V1 = CellSite.CARRIER_VERIZON+"." + "v1";
-
 
     public static final int IDX_FROM_NAME = 0;
     public static final int IDX_FROM_NUMBER = 1;
@@ -136,14 +137,14 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
 
         String fileType = request.getString(ARG_FILE_TYPE, TYPE_VERIZON_V1);
         String carrier = null;
-        if(fileType.startsWith(CellSite.CARRIER_VERIZON)) {
-            carrier = CellSite.CARRIER_VERIZON;
+        if(fileType.startsWith(CARRIER_VERIZON)) {
+            carrier = CARRIER_VERIZON;
         } else {
             throw new IllegalArgumentException("Unknown file type:" + fileType);
         }
 
         File sitesDir = new File(getStorageManager().getResourceDir() +"/investigation/sites");
-        Hashtable<String,CellSite>   sites = CellSite.getSites(sitesDir, carrier);
+        Hashtable<String,Site>   sites = getSites(sitesDir, carrier);
         List<Object[]> valueList = new ArrayList<Object[]>();
         for(List<String>toks: tokenize(request, fileType, contents)) {
             String[] fields = getFields(request, fileType, sites, toks, msg);
@@ -188,7 +189,7 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
         throw new IllegalArgumentException("Unknown file type:" + fileType);
     }
 
-    private String[]  getFields(Request request, String fileType, Hashtable<String,CellSite>   sites,
+    private String[]  getFields(Request request, String fileType, Hashtable<String,Site>   sites,
                                 List<String>toks, StringBuffer msg) throws Exception {
         if(fileType.equals(TYPE_VERIZON_V1)) {
             return getVerizonFields(request, sites,toks, msg);
@@ -197,13 +198,13 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
     }
 
 
-    private String[]  getVerizonFields(Request request, Hashtable<String,CellSite>   sites,
+    private String[]  getVerizonFields(Request request, Hashtable<String,Site>   sites,
                                        List<String>toks, StringBuffer msg) throws Exception {
         if(toks.size()!=11) {
             msg.append("wrong number of tokens:" + StringUtil.join(",",toks)+"<br>");
             return null;
         }
-        CellSite site =  sites.get(toks.get(6));
+        Site site =  sites.get(toks.get(6));
         if(site==null) {
             msg.append("No location for site:" +toks.get(6) +"\nline:" + StringUtil.join(",", toks)+"<br>");
             return null;
@@ -239,6 +240,11 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
 
         String fromNumber = toks.get(10);
         String toNumber = toks.get(2);
+
+        fromNumber = anonNumber(fromNumber);
+        toNumber = anonNumber(toNumber);
+
+
         String fromName = numberToName.get(fromNumber);
         String toName = numberToName.get(toNumber);
         if(fromName == null) fromName = "";
@@ -289,6 +295,79 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
 
         return fields;
     }
+
+
+    private Hashtable<String,String> numberMap = new Hashtable<String,String>();
+
+    private String anonNumber(String n) {
+        String newNumber = numberMap.get(n);
+        if(newNumber==null) {
+            newNumber = "303555";
+            for(int i=0;i<4;i++) {
+                newNumber+= (int)(Math.random()*10);
+            }
+            numberMap.put(n,newNumber);
+        }
+        return newNumber;
+    }
+
+
+    private static Hashtable<String,Hashtable<String,Site>> carrierSites = new Hashtable<String, Hashtable<String,Site>>();
+
+
+    public  static Hashtable<String,Site> getSites(File resourceDir, String carrier) throws Exception {
+        File carrierDir = new File(resourceDir +"/" + carrier);
+        Hashtable<String,Site> sites = carrierSites.get(carrier);
+        if(sites == null) {
+            sites = new Hashtable<String,Site>();
+            File[] siteFiles= carrierDir.listFiles();
+            for(File siteFile: siteFiles) {
+                if(!siteFile.toString().endsWith(".csv")) continue;
+                readSites(carrier, sites, siteFile);
+            }
+            carrierSites.put(carrier, sites);
+        }
+        return sites;
+    }
+
+
+
+    private static Hashtable<String,Site> readSites(String carrier, Hashtable<String,Site>   sites, File file) throws Exception {
+        if(carrier.equals(CARRIER_VERIZON)) return readVerizonSites(sites, file);
+        throw new IllegalArgumentException("Unknown carrier:" + carrier);
+    }
+
+
+    private static Hashtable<String,Site> readVerizonSites(Hashtable<String,Site>   sites, File file) throws Exception {
+        String delimiter = "\r";
+        String contents = IOUtil.readContents(file.toString(), Site.class);
+        for(List<String>toks: Utils.tokenize(contents, "\r", ",",3)) {
+            if(toks.size()!=19) {
+                //                System.err.println("bad:" + toks.size() +" " + StringUtil.join("',", toks));
+                continue;
+            }
+
+            //Market SID,Switch Number,Switch Name,Cell Number,E-911 Latitude Degrees (NAD83),E-911 Longitude Degrees (NAD83),Street Address,City,State,Zip Code,Sector,Technology,Azimuth (deg),Antenna H-BW (deg),PN Offset,Extended Base ID,PN Increment,Max Antenna Range (feet),CDMA Channel Type
+            
+            if(toks.get(3).length()==0) {
+                //                System.err.println("bad:" +  " " + StringUtil.join("',", toks));
+                continue;
+            }
+            int cellNumber = Integer.parseInt(toks.get(3));
+            double latitude  =  Double.parseDouble(toks.get(4));
+            double longitude  =  Double.parseDouble(toks.get(5));
+            Site site = new Site(toks.get(3), latitude,longitude);
+            site.setAddress(toks.get(6));
+            site.setCity(toks.get(7));
+            site.setState(toks.get(8));
+            site.setZipCode(toks.get(9));
+            sites.put(site.getId(), site);
+            //            System.out.println(cellNumber+", " + latitude + ", " + longitude);
+        }
+
+        return sites;
+    }
+
 
 
 
