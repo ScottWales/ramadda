@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v2.min.js"></script>
+<script src="d3graph.js"></script>
+<style>
+
+.graph-link {
+  stroke: #ccc;
+}
+
+
+.graph-node-text-visited {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+
+
+.graph-node-text-unvisited {
+  pointer-events: none;
+  font: 10px sans-serif;
+  font-weight: bold;  
+  color:red;
+  text-decoration: underline;
+}
+
+.graph-div {
+   border: 1px solid #000;
+}
+</style>
+<body>
+<div id="graph" class="graph-div">
+</div>
+<script>
+
+
+function createGraph() {
+  var nodes  = [
+  {"name":"Myriel","group":1,"icon":"http://ramadda.org/repository/astro/fits.gif","url":"miserables.json"},
+  {"name":"Napoleon","group":1},
+  {"name":"aaaaa","group":1},
+  ];
+  var links = [
+  {"source":1,"target":0,"value":1}];
+
+   return new D3Graph("#graph", nodes,links);
+}
+
+function click(graph) {
+    var nodeCnt = graph.getNodes().length;
+    var name = "zzzz " + nodeCnt;
+    var node = {"name":name,"group":1};
+    graph.addNode(node);
+    var idx = Math.floor(Math.random()*nodeCnt);
+    graph.addLink({"source":graph.findNode(name,"name"),"target":idx,"value":1});
+    graph.update();
+}
+
+var graph = createGraph();
+
+
+</script>
+
+
+<a href="javascript:click(graph);">click</a>
