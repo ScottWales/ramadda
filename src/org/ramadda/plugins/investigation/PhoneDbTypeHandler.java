@@ -239,44 +239,69 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     private int cnt = 0;
 
     public Result handleCallGraphPage(Request request, Entry entry, List<Object[]> valueList, boolean fromSearch) throws Exception  {
-        String graphAppletTemplate = getRepository().getResource("/org/ramadda/plugins/investigation/resources/graphapplet.html");
-        String counter = "" + (cnt++);
-        graphAppletTemplate = graphAppletTemplate.replace("${counter}",
-                                                          counter);
-        String html = StringUtil.replace(graphAppletTemplate, "${id}",
-                                         HtmlUtils.urlEncode(entry.getId()));
-        html = StringUtil.replace(html, "${root}",
-                                  getRepository().getUrlBase());
-
-        StringBuffer ids = new StringBuffer();
-        HashSet seen = new HashSet();
-        for(int i=0;i<valueList.size();i++) {
-            Object[] values  = valueList.get(i);
-
-            String fromNumber = fromNumberColumn.getString(values);
-            if(seen.contains(fromNumber)) continue;
-            seen.add(fromNumber);
-            if(ids.length()>0) ids.append(",");
-            ids.append(fromNumber);
-
-
-
-            String toNumber = toNumberColumn.getString(values);
-            if(seen.contains(toNumber)) continue;
-            seen.add(toNumber);
-            if(ids.length()>0) ids.append(",");
-            ids.append(toNumber);
-
-            //for now just get the first ID
-            if(i>10) break;
-        }
-        html = StringUtil.replace(html, "${ids}", ids.toString());
-        System.err.println (html);
-
         StringBuffer sb = new StringBuffer();
         addViewHeader(request, entry, sb, VIEW_CALL_GRAPH, valueList.size(),
                       fromSearch);
-        sb.append(html);
+
+        sb.append("\n\n");
+        StringBuffer js = new StringBuffer();
+        GraphOutputHandler goh = getWikiManager().getGraphOutputHandler();
+        int width  = 800;
+        int height  = 500;
+        String id = goh.addPrefixHtml(sb, js, width, height);
+        List<String> nodes   = new ArrayList<String>();
+        List<String> links   = new ArrayList<String>();
+        String iconUrl = getEntryIcon(request, entry);
+        HashSet<String> seen = new HashSet<String>();
+        Hashtable<String,Integer> count = new Hashtable<String,Integer>();
+        for(int i=0;i<valueList.size();i++) {
+            Object[] values  = valueList.get(i);
+            String fromNumber = fromNumberColumn.getString(values);
+            String toNumber = toNumberColumn.getString(values);
+
+            String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            StringBuffer row = new  StringBuffer();
+            if(!seen.contains(fromNumber)) {
+                String searchUrl =
+                    HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
+                                  new String[] {
+                                      ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
+                                      fromNumberColumn.getFullName(), fromNumber
+                                  });
+
+                nodes.add(HtmlUtils.jsonMap(new String[]{
+                            goh.ATTR_NAME, formatNumber(fromNumber),
+                            goh.ATTR_NODEID, fromNumber,
+                            goh.ATTR_URL, searchUrl,
+                            //goh.ATTR_GRAPHURL, url
+                            goh.ATTR_ICON,iconUrl
+                        }));
+                seen.add(fromNumber);
+            }
+            if(!seen.contains(toNumber)) {
+                String searchUrl =
+                    HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
+                                  new String[] {
+                                      ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
+                                      fromNumberColumn.getFullName(), fromNumber
+                                  });
+                nodes.add(HtmlUtils.jsonMap(new String[]{
+                            goh.ATTR_NAME, formatNumber(toNumber),
+                            goh.ATTR_NODEID, toNumber,
+                            goh.ATTR_URL, searchUrl,
+                            //goh.ATTR_GRAPHURL, url
+                            goh.ATTR_ICON,iconUrl
+                        }));
+                seen.add(toNumber);
+            }
+        links.add(HtmlUtils.jsonMap(new String[]{
+                    goh.ATTR_SOURCE_ID, fromNumber,
+                    goh.ATTR_TARGET_ID, toNumber,
+                    goh.ATTR_TITLE, ""}));
+
+        }
+        goh.addSuffixHtml(sb,  js,  id, nodes,links, width, height);
+        System.err.println(js);
         Result result = new Result(msg("Graph"), sb);
         return result;
     }

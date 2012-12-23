@@ -129,16 +129,17 @@ public class GraphOutputHandler extends OutputHandler {
     /** _more_ */
     static long cnt = System.currentTimeMillis();
 
-    public static final String ATTR_NAME = "\"name\"";
-    public static final String ATTR_URL = "\"url\"";
-    public static final String ATTR_GRAPHURL = "\"graphurl\"";
-    public static final String ATTR_NODEID = "\"nodeid\"";
-    public static final String ATTR_ICON = "\"icon\"";
-    public static final String ATTR_SOURCE = "\"source\"";
-    public static final String ATTR_TARGET = "\"target\"";
-    public static final String ATTR_SOURCE_ID = "\"source_id\"";
-    public static final String ATTR_TARGET_ID = "\"target_id\"";
-    public static final String ATTR_TITLE = "\"title\"";
+    public static final String ATTR_NAME = "name";
+    public static final String ATTR_NAME2 = "name2";
+    public static final String ATTR_URL = "url";
+    public static final String ATTR_GRAPHURL = "graphurl";
+    public static final String ATTR_NODEID = "nodeid";
+    public static final String ATTR_ICON = "icon";
+    public static final String ATTR_SOURCE = "source";
+    public static final String ATTR_TARGET = "target";
+    public static final String ATTR_SOURCE_ID = "source_id";
+    public static final String ATTR_TARGET_ID = "target_id";
+    public static final String ATTR_TITLE = "title";
 
     private void addNode(Request request, Entry entry, List<String>nodes, HashSet<String>  seen) throws Exception {
         if(entry ==null) return;
@@ -146,29 +147,22 @@ public class GraphOutputHandler extends OutputHandler {
         seen.add(entry.getId());
         String iconUrl = getEntryManager().getIconUrl(request,entry);
         String url = getRepository().getUrlBase() +"/graph/get?entryid=" + entry.getId();
-        StringBuffer js = new StringBuffer();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-        js.append("{");
-        js.append(ATTR_NAME +":" + HtmlUtils.quote(entry.getName()) +"," + 
-                  ATTR_NODEID +":" + HtmlUtils.quote(entry.getId()) +"," + 
-                  ATTR_URL +":" + HtmlUtils.quote(entryUrl) +"," + 
-                  ATTR_GRAPHURL +":" + HtmlUtils.quote(url) +"," + 
-                  ATTR_ICON +":" + HtmlUtils.quote(iconUrl)); 
-        js.append("}");
-        nodes.add(js.toString());
+        nodes.add(HtmlUtils.jsonMap(new String[]{
+                    ATTR_NAME, entry.getName(),
+                    ATTR_NODEID, entry.getId(),
+                    ATTR_URL, entryUrl,
+                    ATTR_GRAPHURL,url,
+                    ATTR_ICON,iconUrl}));
     }
 
 
     private void addLink(Request request, Entry from, Entry to, String title, List<String>links) throws Exception {
         if(from == null || to == null) return;
-        StringBuffer js = new StringBuffer();
-        js.append("{");
-        js.append(ATTR_SOURCE_ID +":" + HtmlUtils.quote(from.getId()) +"," + 
-                  ATTR_TARGET_ID +":" + HtmlUtils.quote(to.getId()) +"," +
-                  ATTR_TITLE+":" + HtmlUtils.quote(title)
-                  ); 
-        js.append("}");
-        links.add(js.toString());
+        links.add(HtmlUtils.jsonMap(new String[]{
+                    ATTR_SOURCE_ID, from.getId(),
+                    ATTR_TARGET_ID, to.getId(),
+                    ATTR_TITLE, title}));
     }
 
     /**
@@ -205,11 +199,8 @@ public class GraphOutputHandler extends OutputHandler {
 
     public void getGraph(Request request, Entry mainEntry, List<Entry> entries, StringBuffer sb, int width, int height)
         throws Exception {
-
-
         StringBuffer js = new StringBuffer();
         String id = addPrefixHtml(sb, js, width, height);
-        js.append("function createGraph() {\n");
         HashSet<String>  seen = new HashSet<String>();
         List<String> nodes   = new ArrayList<String>();
         List<String> links   = new ArrayList<String>();
@@ -220,6 +211,22 @@ public class GraphOutputHandler extends OutputHandler {
             getAssociations(request, entry,  nodes, links, seen);
         }
 
+        addSuffixHtml(sb,  js,  id, nodes,links, width, height);
+    }
+
+
+    private int graphCnt=0;
+
+    public String addPrefixHtml(StringBuffer sb, StringBuffer js, int width, int height) {
+        String divId = "graph_" + (graphCnt++) ;
+        js.append("function createGraph" + divId +"() {\n");
+        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3.v3.min.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3graph.js")));
+        sb.append(HtmlUtils.tag(HtmlUtils.TAG_DIV, HtmlUtils.style("width:" + width +";height:" + height) +HtmlUtils.id(divId) + HtmlUtils.cssClass("graph-div")));
+        return divId;
+    }
+
+    public void addSuffixHtml(StringBuffer sb, StringBuffer js, String id, List<String> nodes, List<String> links, int width, int height) {
         js.append("var nodes  = [\n");
         js.append(StringUtil.join(",\n", nodes));
         js.append("];\n");
@@ -227,23 +234,8 @@ public class GraphOutputHandler extends OutputHandler {
         js.append(StringUtil.join(",", links));
         js.append("];\n");
         js.append("return new D3Graph(\"#" + id +"\", nodes,links," + width +"," + height +");\n}\n");
-        js.append("var " + id +" = createGraph();\n");
+        js.append("var " + id +" = createGraph" + id +"();\n");
         sb.append(HtmlUtils.script(js.toString()));
-    }
-
-
-    private int graphCnt=0;
-
-    public String addPrefixHtml(StringBuffer sb, StringBuffer js, int width, int height) {
-        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3.v3.min.js")));
-        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3graph.js")));
-        String divId = "graph_" + (graphCnt++) ;
-        sb.append(HtmlUtils.tag(HtmlUtils.TAG_DIV, HtmlUtils.style("width:" + width +";height:" + height) +HtmlUtils.id(divId) + HtmlUtils.cssClass("graph-div")));
-        return divId;
-    }
-
-    public void addSuffixHtml(StringBuffer sb, StringBuffer js, String id) {
-
     }
 
 

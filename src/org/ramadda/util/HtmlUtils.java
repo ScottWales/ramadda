@@ -3710,4 +3710,16 @@ public class HtmlUtils {
     }
 
 
+    public static String jsonMap(String[] values) {
+        StringBuffer row = new StringBuffer();
+        row.append("{");
+        for(int i=0;i<values.length;i+=2) {
+            if(i>0)  row.append(",\n");
+            row.append(quote(values[i])+":" + quote(values[i+1]));
+        }
+        row.append("}");
+        return row.toString();
+    }
+
+
 }
