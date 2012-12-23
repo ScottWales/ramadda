@@ -277,6 +277,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the calendar property */
     public static final String WIKI_PROP_CALENDAR = "calendar";
 
+    public static final String WIKI_PROP_GRAPH = "graph";
+
     /** the timeline property */
     public static final String WIKI_PROP_TIMELINE = "timeline";
 
@@ -461,8 +463,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_EARTH,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
                    "false")),
-        prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
-        //        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
         WIKI_PROP_GROUP + "Images",
         prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")),
         prop(WIKI_PROP_GALLERY,
@@ -471,7 +471,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    "Figure ${count}: ${name}", ATTR_POPUPCAPTION, "over")),
         prop(WIKI_PROP_SLIDESHOW,
              ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
-        WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc", WIKI_PROP_COMMENTS,
+        WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc", 
+        prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
+        //        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
+        prop(WIKI_PROP_GRAPH,
+             attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400")),
+        WIKI_PROP_COMMENTS,
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
         WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID
     };
@@ -1016,6 +1021,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     getCalendarOutputHandler().makeCalendarEntries(request,
                         children), sb, doDay);
 
+            return sb.toString();
+
+        } else if (include.equals(WIKI_PROP_GRAPH)) {
+            int     width       = Misc.getProperty(props, ATTR_WIDTH, 400);
+            int     height      = Misc.getProperty(props, ATTR_HEIGHT, 300);
+            List<Entry> children = getEntries(request, wikiUtil, entry,
+                                              props);
+            getGraphOutputHandler().getGraph(request,
+                                             entry, children, sb, width,height);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TIMELINE)) {
             //            if (true) {
@@ -2110,6 +2124,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
     }
 
+    public GraphOutputHandler getGraphOutputHandler() {
+        try {
+            return (GraphOutputHandler) getRepository().getOutputHandler(
+                GraphOutputHandler.OUTPUT_GRAPH);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
 
     /**
@@ -2385,20 +2408,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer importMenu = new StringBuffer();
         String       inset      = "&nbsp;&nbsp;";
         int          cnt        = 0;
-        importMenu.append("<table><tr valign=top><td valign=top>");
+        importMenu.append("<table><tr valign=top><td valign=top>\n");
         for (int i = 0; i < WIKIPROPS.length; i++) {
             String prop = WIKIPROPS[i];
 
             if (prop.startsWith(WIKI_PROP_GROUP)) {
                 cnt++;
-                if (cnt > 2) {
-                    importMenu.append("</td><td>&nbsp;</td><td valign=top>");
+                if (cnt > 1) {
+                    importMenu.append("</td><td>&nbsp;</td><td valign=top>\n");
                     cnt = 1;
                 }
                 String group = prop.substring(WIKI_PROP_GROUP.length());
                 importMenu.append(HtmlUtils.b(group));
                 importMenu.append(HtmlUtils.br());
-
+                importMenu.append("\n");
                 continue;
             }
             String textToInsert = prop;
@@ -2410,7 +2433,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
-
             String js2 = "javascript:insertTags("
                          + HtmlUtils.squote(textAreaId) + ","
                          + HtmlUtils.squote("{{" + textToInsert + " ") + ","
@@ -2419,10 +2441,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             importMenu.append(inset);
             importMenu.append(HtmlUtils.href(js2, prop));
             importMenu.append(HtmlUtils.br());
-
+            importMenu.append("\n");
         }
-        importMenu.append("</td><tr></table>");
-
+        importMenu.append("</td></tr></table>\n");
+        //        System.out.println(importMenu);
         List<Link> links = getRepository().getOutputLinks(request,
                                new OutputHandler.State(entry));
 

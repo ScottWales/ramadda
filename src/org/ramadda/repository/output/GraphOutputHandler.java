@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -128,6 +129,48 @@ public class GraphOutputHandler extends OutputHandler {
     /** _more_ */
     static long cnt = System.currentTimeMillis();
 
+    public static final String ATTR_NAME = "\"name\"";
+    public static final String ATTR_URL = "\"url\"";
+    public static final String ATTR_GRAPHURL = "\"graphurl\"";
+    public static final String ATTR_NODEID = "\"nodeid\"";
+    public static final String ATTR_ICON = "\"icon\"";
+    public static final String ATTR_SOURCE = "\"source\"";
+    public static final String ATTR_TARGET = "\"target\"";
+    public static final String ATTR_SOURCE_ID = "\"source_id\"";
+    public static final String ATTR_TARGET_ID = "\"target_id\"";
+    public static final String ATTR_TITLE = "\"title\"";
+
+    private void addNode(Request request, Entry entry, List<String>nodes, HashSet<String>  seen) throws Exception {
+        if(entry ==null) return;
+        if(seen.contains(entry.getId())) return;
+        seen.add(entry.getId());
+        String iconUrl = getEntryManager().getIconUrl(request,entry);
+        String url = getRepository().getUrlBase() +"/graph/get?entryid=" + entry.getId();
+        StringBuffer js = new StringBuffer();
+        String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        js.append("{");
+        js.append(ATTR_NAME +":" + HtmlUtils.quote(entry.getName()) +"," + 
+                  ATTR_NODEID +":" + HtmlUtils.quote(entry.getId()) +"," + 
+                  ATTR_URL +":" + HtmlUtils.quote(entryUrl) +"," + 
+                  ATTR_GRAPHURL +":" + HtmlUtils.quote(url) +"," + 
+                  ATTR_ICON +":" + HtmlUtils.quote(iconUrl)); 
+        js.append("}");
+        nodes.add(js.toString());
+    }
+
+
+    private void addLink(Request request, Entry from, Entry to, String title, List<String>links) throws Exception {
+        if(from == null || to == null) return;
+        StringBuffer js = new StringBuffer();
+        js.append("{");
+        js.append(ATTR_SOURCE_ID +":" + HtmlUtils.quote(from.getId()) +"," + 
+                  ATTR_TARGET_ID +":" + HtmlUtils.quote(to.getId()) +"," +
+                  ATTR_TITLE+":" + HtmlUtils.quote(title)
+                  ); 
+        js.append("}");
+        links.add(js.toString());
+    }
+
     /**
      * _more_
      *
@@ -142,28 +185,64 @@ public class GraphOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        String graphAppletTemplate =
-            getRepository().getResource(PROP_HTML_GRAPHAPPLET);
 
-        String counter = "" + (cnt++);
-        //        counter = "_newjar";
-        graphAppletTemplate = graphAppletTemplate.replace("${counter}",
-                counter);
-        String type = request.getString(ARG_NODETYPE, (String) null);
-        if (type == null) {
-            type = entry.getTypeHandler().getNodeType();
-        }
-        String html = StringUtil.replace(graphAppletTemplate, "${id}",
-                                         HtmlUtils.urlEncode(entry.getId()));
-        html = StringUtil.replace(html, "${root}",
-                                  getRepository().getUrlBase());
-        html = StringUtil.replace(html, "${type}", HtmlUtils.urlEncode(type));
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        return outputGraphEntries(request, entry, entries);
+
+    }
+
+    public Result outputGraphEntries(Request request, Entry mainEntry, List<Entry> entries)
+        throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(html);
+        getGraph(request, mainEntry, entries, sb, 960,500);
         Result result = new Result(msg("Graph"), sb);
-        addLinks(request, result, new State(entry));
-
+        addLinks(request, result, new State(mainEntry));
         return result;
+
+    }
+
+
+    public void getGraph(Request request, Entry mainEntry, List<Entry> entries, StringBuffer sb, int width, int height)
+        throws Exception {
+
+
+        StringBuffer js = new StringBuffer();
+        String id = addPrefixHtml(sb, js, width, height);
+        js.append("function createGraph() {\n");
+        HashSet<String>  seen = new HashSet<String>();
+        List<String> nodes   = new ArrayList<String>();
+        List<String> links   = new ArrayList<String>();
+        for(Entry entry: entries) {
+            addNode(request, entry, nodes, seen);
+            addNode(request, entry.getParentEntry(), nodes, seen);
+            addLink(request,  entry.getParentEntry(), entry, "", links);
+            getAssociations(request, entry,  nodes, links, seen);
+        }
+
+        js.append("var nodes  = [\n");
+        js.append(StringUtil.join(",\n", nodes));
+        js.append("];\n");
+        js.append("var links = [\n");
+        js.append(StringUtil.join(",", links));
+        js.append("];\n");
+        js.append("return new D3Graph(\"#" + id +"\", nodes,links," + width +"," + height +");\n}\n");
+        js.append("var " + id +" = createGraph();\n");
+        sb.append(HtmlUtils.script(js.toString()));
+    }
+
+
+    private int graphCnt=0;
+
+    public String addPrefixHtml(StringBuffer sb, StringBuffer js, int width, int height) {
+        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3.v3.min.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3graph.js")));
+        String divId = "graph_" + (graphCnt++) ;
+        sb.append(HtmlUtils.tag(HtmlUtils.TAG_DIV, HtmlUtils.style("width:" + width +";height:" + height) +HtmlUtils.id(divId) + HtmlUtils.cssClass("graph-div")));
+        return divId;
+    }
+
+    public void addSuffixHtml(StringBuffer sb, StringBuffer js, String id) {
 
     }
 
@@ -185,7 +264,10 @@ public class GraphOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        return outputEntry(request, outputType, group);
+        subGroups.add(0, group);
+        subGroups.addAll(entries);
+        return outputGraphEntries(request, group, subGroups);
+        //        return outputEntry(request, outputType, group);
     }
 
 
@@ -259,6 +341,7 @@ public class GraphOutputHandler extends OutputHandler {
      */
     private void addNodeTag(Request request, StringBuffer sb, Entry entry)
             throws Exception {
+        if(entry == null) return;
         String imageUrl = null;
         if (ImageUtils.isImage(entry.getResource().getPath())) {
             imageUrl =
@@ -340,9 +423,58 @@ public class GraphOutputHandler extends OutputHandler {
      */
     public Result processGraphGet(Request request) throws Exception {
 
+        String  id         = (String) request.getId((String) null);
+        Entry entry = getEntryManager().getEntry(request, id);
+        if (entry == null) {
+            throw new IllegalArgumentException("Could not find entry:" + id);
+
+        }
+
+        StringBuffer js = new StringBuffer();
+        StringBuffer linkJS = new StringBuffer();
+
+        List<String> nodes   = new ArrayList<String>();
+        List<String> links   = new ArrayList<String>();
+        HashSet<String>  seen = new HashSet<String>();
+
+        List<Entry> entries = new ArrayList<Entry>();
+        if (entry.isGroup()) {
+            entries.addAll(getEntryManager().getChildren(request,
+                                                         entry));
+        }
+
+        addNode(request, entry.getParentEntry(), nodes, seen);
+        addLink(request, entry.getParentEntry(), entry, "", links);
+
+        for(Entry e: entries) {
+            addNode(request, e, nodes, seen);
+            addLink(request, entry, e, "", links);
+        }
+
+
+        getAssociations(request, entry,  nodes, links, seen);
+
+
+        js.append("{\n");
+        js.append("\"nodes\":[\n");
+        js.append(StringUtil.join(",", nodes));
+        js.append("]");
+        js.append(",\n");
+        js.append("\"links\":[\n");
+        js.append(StringUtil.join(",", links));
+        js.append("]\n");
+        js.append("}\n");
+
+
+        System.err.println(js);
+        return new Result(BLANK, js,
+                          getRepository().getMimeTypeFromSuffix(".json"));
+
+
+        /*
+
         String graphXmlTemplate =
             getRepository().getResource(PROP_HTML_GRAPHTEMPLATE);
-        String  id         = (String) request.getId((String) null);
         String  originalId = id;
         String  type = (String) request.getString(ARG_NODETYPE, (String) null);
         int     cnt        = 0;
@@ -369,11 +501,7 @@ public class GraphOutputHandler extends OutputHandler {
                     + request);
         }
 
-        Entry entry = getEntryManager().getEntry(request, id);
-        if (entry == null) {
-            throw new IllegalArgumentException("Could not find entry:" + id);
 
-        }
 
         TypeHandler typeHandler = entry.getTypeHandler();
         if (type == null) {
@@ -435,7 +563,7 @@ public class GraphOutputHandler extends OutputHandler {
             }
 
 
-            List<Entry> children = getEntryManager().getChildren(request,
+           List<Entry> children = getEntryManager().getChildren(request,
                                        entry);
             cnt       = 0;
             actualCnt = 0;
@@ -471,6 +599,29 @@ public class GraphOutputHandler extends OutputHandler {
         System.err.println(xml);
         return new Result(BLANK, new StringBuffer(xml),
                           getRepository().getMimeTypeFromSuffix(".xml"));
+
+        */
+    }
+
+
+    private void  getAssociations(Request request, Entry entry, List<String> nodes, List<String> links, HashSet<String>  seen) throws Exception {
+        List<Association> associations =
+            getAssociationManager().getAssociations(request, entry.getId());
+        for (Association association : associations) {
+            Entry   from  = null;
+            Entry   to  = null;
+            if (association.getFromId().equals(entry.getId())) {
+                from = getEntryManager().getEntry(request,
+                                                  association.getToId());
+                addNode(request, from, nodes, seen);
+                addLink(request, from, entry, association.getType(), links);
+            } else {
+                to = getEntryManager().getEntry(request,
+                                                association.getFromId());
+                addNode(request, to, nodes, seen);
+                addLink(request,  entry, from, association.getType(), links);
+            }
+        }
 
     }
 

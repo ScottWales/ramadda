@@ -781,6 +781,51 @@ a.image-link {
 }
 
 
+
+xxxpath.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.graph-path {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.graph-link {
+  stroke: #666;
+}
+
+
+.graph-arrow {
+  fill: #666;
+  xxstroke: #666;
+  stroke-width: 2.5px;
+}
+
+
+.graph-node-text-visited {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+
+
+.graph-node-text-unvisited {
+  pointer-events: none;
+  font: 10px sans-serif;
+  font-weight: bold;  
+  color:red;
+  text-decoration: underline;
+}
+
+.graph-div {
+   border: 1px solid #000;
+}
+
+
+
 .calendartable,  .dategrid {
     border-color: #666;
     border-width: 0px 0px 1px 1px;
@@ -1151,7 +1196,7 @@ a.toggleblocklabellink:visited {
 }
 
 .formtable td {
-      vertical-align: middle;
+      xxxvertical-align: middle;
       padding-top: 6px;
       padding-bottom: 2px;
       padding-left: 4px;

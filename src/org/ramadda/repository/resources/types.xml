@@ -72,4 +72,17 @@
  </type>
 
 
+  <type name="type_column"  description="RAMADDA Database Column" handler="org.ramadda.repository.type.ColumnTypeHandler">
+     <property name="icon" value="/icons/database.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <column name="index"  type="int"     label="Index" columns="4"  showinhtml="true"/>
+     <column name="column_name" type="string"     label="Column Name" columns="80"  showinhtml="true"/>
+     <column name="datatype"  type="enumeration"   label="Data Type" values="file:/org/ramadda/repository/resources/columntypes.properties"/>
+     <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values"/>
+     <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;rows=text area rows&lt;br&gt;size=string db size&lt;br&gt;group=,&lt;br&gt;isindex=true&lt;br&gt;cansearch, canshow, canlist"/>
+ </type>
+
+
 </types>
