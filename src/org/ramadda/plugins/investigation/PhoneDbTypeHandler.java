@@ -80,6 +80,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
 
     public static final String ARG_DB_NAMES = "db.names";
     public static final String ARG_IDS = "ids";
+    public static final String ARG_NUMBER = "number";
     public static final String ARG_ANONYMIZE = "anonymize";
 
     Column fromNumberColumn;
@@ -251,6 +252,14 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         String id = goh.addPrefixHtml(sb, js, width, height);
         List<String> nodes   = new ArrayList<String>();
         List<String> links   = new ArrayList<String>();
+        getNodesAndLinks(request, entry, valueList, nodes, links);
+        goh.addSuffixHtml(sb,  js,  id, nodes,links, width, height);
+        Result result = new Result(msg("Graph"), sb);
+        return result;
+    }
+
+    private void getNodesAndLinks(Request request, Entry entry, List<Object[]>valueList, List<String>nodes,  List<String>links) throws Exception {
+        GraphOutputHandler goh = getWikiManager().getGraphOutputHandler();
         String iconUrl = getEntryIcon(request, entry);
         HashSet<String> seen = new HashSet<String>();
         Hashtable<String,Integer> count = new Hashtable<String,Integer>();
@@ -268,12 +277,12 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                                       ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
                                       fromNumberColumn.getFullName(), fromNumber
                                   });
-
                 nodes.add(HtmlUtils.jsonMap(new String[]{
                             goh.ATTR_NAME, formatNumber(fromNumber),
+                            goh.ATTR_LABEL, fromNameColumn.getString(values),
                             goh.ATTR_NODEID, fromNumber,
                             goh.ATTR_URL, searchUrl,
-                            //goh.ATTR_GRAPHURL, url
+                            goh.ATTR_GRAPHURL, getDataUrl(request, entry, fromNumber),
                             goh.ATTR_ICON,iconUrl
                         }));
                 seen.add(fromNumber);
@@ -287,111 +296,61 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                                   });
                 nodes.add(HtmlUtils.jsonMap(new String[]{
                             goh.ATTR_NAME, formatNumber(toNumber),
+                            goh.ATTR_LABEL, toNameColumn.getString(values),
                             goh.ATTR_NODEID, toNumber,
                             goh.ATTR_URL, searchUrl,
-                            //goh.ATTR_GRAPHURL, url
+                            goh.ATTR_GRAPHURL, getDataUrl(request, entry, toNumber),
                             goh.ATTR_ICON,iconUrl
                         }));
                 seen.add(toNumber);
             }
-        links.add(HtmlUtils.jsonMap(new String[]{
-                    goh.ATTR_SOURCE_ID, fromNumber,
-                    goh.ATTR_TARGET_ID, toNumber,
-                    goh.ATTR_TITLE, ""}));
+            links.add(HtmlUtils.jsonMap(new String[]{
+                        goh.ATTR_SOURCE_ID, fromNumber,
+                        goh.ATTR_TARGET_ID, toNumber,
+                        goh.ATTR_TITLE, ""}));
 
         }
-        goh.addSuffixHtml(sb,  js,  id, nodes,links, width, height);
-        System.err.println(js);
-        Result result = new Result(msg("Graph"), sb);
-        return result;
+    }
+
+    private String getDataUrl(Request request, Entry entry, String number) {
+        return  HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
+                              new String[] { ARG_ENTRYID,
+                                             entry.getId(),
+                                             ARG_DB_VIEW,
+                                             VIEW_CALL_GRAPH_DATA,
+                                             ARG_NUMBER,
+                                             number});
     }
 
 
 
 
-    private String makeXml(Request request, Entry entry, String fromNumber) throws Exception   {
-        String id = fromNumber;
-        //        String fromNumber = fromNumberColumn.getString(values);
-        
-        String imageAttr =
-            XmlUtil.attrs("imagepath",
-                          getEntryIcon(request, entry));
-        String attrs = imageAttr
-            + XmlUtil.attrs(ATTR_TYPE, "entry", 
-                            ATTR_ID,
-                            id, ATTR_TOOLTIP,
-                            fromNumber, ATTR_TITLE,
-                            fromNumber);
-        return XmlUtil.tag(TAG_NODE, attrs);
-    }
     
     public Result handleCallGraphData(Request request, Entry entry) throws Exception  {
         StringBuffer sb = new StringBuffer();
-
-
-        sb.append("<nodetype    name=\"phonenumber\" parent=\"Node\" fillcolor=\"#37FDFC\" imagepath=\"${root}/icons/file.gif\">");
-        //        sb.append("  <command doubleclick=\"true\"  label=\"View entry\" command=\"url(,${root}/entry/show?entryid=${entryid}&dbid=%id%)\"/>");
-        sb.append("  <shape><shape>");
-        sb.append("     <image id=\"image\" url=\"%imagepath%\" from=\"c\" to=\"c\" alt=\"Tag\"/>");
-        sb.append("     <text fillcolor=\"#dedede\" src=\"image\" from=\"s\" to=\"n\" fontstyle=\"bold\" id=\"label\"   text=\"%title%\" color=\"black\" />");
-        sb.append("   </shape></shape></nodetype>");
-
-
-
-
-
-
-        List<String> ids = StringUtil.split(request.getString(ARG_IDS,""));
-        HashSet seen = new HashSet();
-        for(String number: ids) {
-            sb.append(makeXml(request, entry,number));
-            sb.append("\n");
-            List<Clause> where;
-
-
-            where = new ArrayList<Clause>();
-            where.add(Clause.eq(COL_ID, entry.getId()));
-            where.add(Clause.eq(fromNumberColumn.getFullName(), number));
-            for(Object []tuple: readValues(request, entry, Clause.and(where))) {
-                String otherNumber = toNumberColumn.getString(tuple);
-                if(!seen.contains(otherNumber)) {
-                    sb.append(makeXml(request, entry,otherNumber));
-                    sb.append("\n");
-                    seen.add(otherNumber);
-                }
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, otherNumber,
-                                                    ATTR_FROM, number)));
-            }
-
-
-            where = new ArrayList<Clause>();
-            where.add(Clause.eq(COL_ID, entry.getId()));
-            where.add(Clause.eq(toNumberColumn.getFullName(), number));
-            for(Object []tuple: readValues(request, entry, Clause.and(where))) {
-                String otherNumber = fromNumberColumn.getString(tuple);
-                if(!seen.contains(otherNumber)) {
-                    sb.append(makeXml(request, entry,otherNumber));
-                    sb.append("\n");
-                    seen.add(otherNumber);
-                }
-                sb.append(XmlUtil.tag(TAG_EDGE,
-                                      XmlUtil.attrs(ATTR_TYPE, "link", ATTR_TO, number,
-                                                    ATTR_FROM, otherNumber)));
-            }
-
-            
-        }
-
-        String graphXmlTemplate =
-            getRepository().getResource(PROP_HTML_GRAPHTEMPLATE);
-
-        String xml = StringUtil.replace(graphXmlTemplate, "${content}",
-                                        sb.toString());
-        xml = StringUtil.replace(xml, "${root}",
-                                 getRepository().getUrlBase());
-        return new Result(BLANK, new StringBuffer(xml),
-                          getRepository().getMimeTypeFromSuffix(".xml"));
+        GraphOutputHandler goh = getWikiManager().getGraphOutputHandler();
+        String number = request.getString(ARG_NUMBER,"");
+        List<Clause> where;
+        where = new ArrayList<Clause>();
+        where.add(Clause.eq(COL_ID, entry.getId()));
+        where.add(Clause.or(Clause.eq(fromNumberColumn.getFullName(), number),
+                            Clause.eq(toNumberColumn.getFullName(), number)));
+        List<Object[]> values = readValues(request, entry, Clause.and(where));
+        List<String> nodes   = new ArrayList<String>();
+        List<String> links   = new ArrayList<String>();
+        getNodesAndLinks(request, entry, values, nodes, links);
+        StringBuffer  json = new StringBuffer();
+        json.append("{\n");
+        json.append("\"nodes\":[\n");
+        json.append(StringUtil.join(",", nodes));
+        json.append("]");
+        json.append(",\n");
+        json.append("\"links\":[\n");
+        json.append(StringUtil.join(",", links));
+        json.append("]\n");
+        json.append("}\n");
+        return new Result(BLANK, json,
+                          getRepository().getMimeTypeFromSuffix(".json"));
 
     }
 
@@ -424,16 +383,17 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         
         for(Object[] tuple : valueList) {
             String fromNumber = fromNumberColumn.getString(tuple);
+            
             Number from = numberMap.get(fromNumber);
             if(from==null)  {
-                from = new Number(fromNumber);
+                from = new Number(fromNumber, fromNameColumn.getString(tuple));
                 numbers.add(from);
                 numberMap.put(from.number, from);
             }
             String toNumber = toNumberColumn.getString(tuple);
             Number to = numberMap.get(toNumber);
             if(to==null)  {
-                to = new Number(toNumber);
+                to = new Number(toNumber,toNameColumn.getString(tuple));
                 numbers.add(to);
                 numberMap.put(to.number, to);
             }
@@ -450,7 +410,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
             if(n.outbound.size()<=1 && n.inbound.size()<=1) continue;
 
             sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.div(formatNumber(n.number), HtmlUtils.cssClass("ramadda-heading-1")));
+            sb.append(HtmlUtils.div(getTitle(n), HtmlUtils.cssClass("ramadda-heading-1")));
 
             if(n.outbound.size()>0) { 
                 sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.style("margin-top:0px;margin-left:20px;")));
@@ -465,7 +425,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                                           toNumberColumn.getFullName(), outbound.number,
                                       });
 
-                    numberSB.append(HtmlUtils.href(searchUrl, formatNumber(outbound.number)));
+                    numberSB.append(HtmlUtils.href(searchUrl, getTitle(outbound)));
                     numberSB.append("</td>");
 
                     List<Object[]> calls = n.getOutboundCalls(outbound);
@@ -502,7 +462,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                                           toNumberColumn.getFullName(), inbound.number,
                                       });
 
-                    numberSB.append(HtmlUtils.href(searchUrl, formatNumber(inbound.number)));
+                    numberSB.append(HtmlUtils.href(searchUrl, getTitle(inbound)));
                     numberSB.append("</td>");
 
                     List<Object[]> calls = n.getInboundCalls(inbound);
@@ -534,6 +494,10 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
     }
 
 
+    private String getTitle(Number n) {
+        if(Utils.stringDefined(n.name)) return  n.name +" (" + formatNumber(n.number) +")";
+        return  formatNumber(n.number);
+    }
 
     /**
      */
@@ -634,6 +598,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
 
     public static class Number implements Comparable {
         String number;
+        String name;
         int count = 0;
         Hashtable<Number,List<Object[]>> outboundCalls  = new Hashtable<Number,List<Object[]>>();
         Hashtable<Number,List<Object[]>> inboundCalls  = new Hashtable<Number,List<Object[]>>();
@@ -642,8 +607,9 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
         List<Number>inbound = new ArrayList<Number>();
 
 
-        public Number(String number) {
+        public Number(String number, String name) {
             this.number= number;
+            this.name = name;
         }
         
         public void addOutbound(Number n, Object[]tuple) {

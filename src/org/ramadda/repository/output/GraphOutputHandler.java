@@ -130,7 +130,7 @@ public class GraphOutputHandler extends OutputHandler {
     static long cnt = System.currentTimeMillis();
 
     public static final String ATTR_NAME = "name";
-    public static final String ATTR_NAME2 = "name2";
+    public static final String ATTR_LABEL = "label";
     public static final String ATTR_URL = "url";
     public static final String ATTR_GRAPHURL = "graphurl";
     public static final String ATTR_NODEID = "nodeid";

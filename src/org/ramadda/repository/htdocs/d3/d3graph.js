@@ -79,14 +79,19 @@ function D3Graph(div, nodes, links,width,height) {
         .attr("width", "16px")
         .attr("height", "16px");
 
+
         nodeEnter.append("text")
         .attr("class", function(d) {if(d.graphurl) return "graph-node-text-unvisited"; else return "graph-node-text-visited";})
         .attr("dx", 12)
         .attr("dy", ".35em")
         .text(function(d) {return d.name});
 
-        node.append("text")
+        nodeEnter.append("text")
         .attr("class", function(d) {if(d.graphurl) return "graph-node-text-unvisited"; else return "graph-node-text-visited";})
+        .attr("dx", -16)
+        .attr("dy", "-1em")
+        .text(function(d) {if(d.label) return d.label;return "";});
+
 
         node.exit().remove();
         node.on("click", function(d){theGraph.nodeClicked(d);}, true);

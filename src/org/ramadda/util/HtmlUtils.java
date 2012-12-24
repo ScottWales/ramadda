@@ -3715,7 +3715,9 @@ public class HtmlUtils {
         row.append("{");
         for(int i=0;i<values.length;i+=2) {
             if(i>0)  row.append(",\n");
-            row.append(quote(values[i])+":" + quote(values[i+1]));
+            String value = values[i+1];
+            if(value == null) value = "";
+            row.append(quote(values[i])+":" + quote(value));
         }
         row.append("}");
         return row.toString();
