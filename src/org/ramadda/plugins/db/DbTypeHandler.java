@@ -34,6 +34,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 
@@ -976,6 +977,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
         sb.append(HtmlUtils.importJS(getRepository().fileUrl("/db/db.js")));
+        if(Utils.stringDefined(entry.getDescription())) {
+            sb.append(entry.getDescription());
+            sb.append(HtmlUtils.br());
+        }
+
     }
 
 
