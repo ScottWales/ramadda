@@ -335,7 +335,7 @@ public class TextRecord extends PointRecord {
                     return ReadStatus.EOF;
                 }
                 line = line.trim();
-                if (line.length() == 0 || line.startsWith("#")) {
+                if(!lineOk(line)) {
                     continue;
                 }
                 break;
@@ -393,6 +393,15 @@ public class TextRecord extends PointRecord {
     }
 
 
+    public boolean lineOk(String line) {
+        if (line.length() == 0 || line.startsWith("#")) {
+            return false;
+        }
+        return true;
+    }
+
+
+
     public boolean split(String sourceString) {
         int length   = 1;
         int fullTokenCnt = 0;
@@ -418,7 +427,7 @@ public class TextRecord extends PointRecord {
             }
             //            System.err.println ("\ttokens[" + tokenCnt +"] = " + theString);
             tokens[tokenCnt++] = theString.trim();
-            if (idx < 0) {
+            if (idx < 0 || tokenCnt == tokens.length) {
                 break;
             }
         }
