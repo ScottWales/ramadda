@@ -1,4 +1,4 @@
-TIMESTAMP[type=date format="yyyy-MM-dd hh:MM:ss"], 
+TIMESTAMP[type=date format="yyyy-MM-dd HH:mm:ss"], 
 RECORD,
 TavgUpper[unit=degC label="10 min avg of 10 sec observations"  chartable=true],
 T_RTD[unit=degC label="reading at timestamp"  chartable=true],
