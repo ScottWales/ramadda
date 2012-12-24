@@ -7,5 +7,14 @@
       <property name="label" value="Search for AMRC Point Data"/>
       <property name="searchurl" value="/point/amrc/search"/>
       <property name="type" value="type_point_amrc_final"/>
-      <api request="/point/amrc/search"    method="processSearchRequest" toplevel="true" name="View AMRC Point Data"/>
+
+      <property name="searchopen" value="true"/>
+<!--What tabs to display results in -->
+      <property name="tabs" value="earth,map,list,timeline"/>
+<!--Add these metadata search elements to the search form -->
+<--
+      <property name="metadatatypes" value="nlas_platform,nlas_haswaveform"/>
+-->
+
+      <api request="/point/amrc/search"    method="processSearchRequest"  name="View AMRC Point Data"/>
 </api>
