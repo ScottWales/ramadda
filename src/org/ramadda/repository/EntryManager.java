@@ -2648,7 +2648,7 @@ public class EntryManager extends RepositoryManager {
         //        exclude.add(TYPE_GROUP);
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
 
-        String[] sessionType = (String[]) getSessionManager().getSessionProperty(request, ARG_TYPE);
+        List<String>sessionTypes = (List<String>) getSessionManager().getSessionProperty(request, ARG_TYPE);
 
         for (TypeHandler typeHandler : typeHandlers) {
             if ( !typeHandler.getForUser()) {
@@ -2679,12 +2679,12 @@ public class EntryManager extends RepositoryManager {
             if (buffer == null) {
                 catMap.put(typeHandler.getCategory(),
                            buffer = new StringBuffer());
-                if(sessionType!=null && typeHandler.getType().equals(sessionType[0])) {
+                if(sessionTypes!=null && sessionTypes.contains(typeHandler.getType())) {
                     categories.add(0, typeHandler.getCategory());
                 } else {
                     categories.add(typeHandler.getCategory());
                 }
-            } else if(sessionType!=null && typeHandler.getType().equals(sessionType[0])) {
+            } else if(sessionTypes!=null && sessionTypes.contains(typeHandler.getType())) {
                 categories.remove(typeHandler.getCategory());
                 categories.add(0, typeHandler.getCategory());
             }
