@@ -52,15 +52,14 @@ public class NetcdfPointFile extends PointFile {
      *
      * @return _more_
      */
-    /*
     public boolean canLoad(String file) {
+        if(true) return false;
         try {
             return file.endsWith(".nc");
         } catch (Exception exc) {
             return false;
         }
     }
-    */
 
 
 
