@@ -516,9 +516,10 @@ public class MailHarvester extends Harvester {
                         StringBuffer text = new StringBuffer();
                         Entry theParentEntry = parentEntry;
                         for(String line: StringUtil.split(desc.toString(),"\n")) {
-                            if(line.startsWith("name:")) {
+                            String lline = line.toLowerCase();
+                            if(lline.startsWith("name:")) {
                                 name = line.substring("name:".length()).trim();
-                            } else if(line.startsWith("at:")) {
+                            } else if(lline.toLowerCase().startsWith("at:")) {
                                 Entry theFolder =  theParentEntry;
                                 for(String tok: StringUtil.split(line.substring("to:".length()).trim(),"/",true,true)) {
                                     Entry folder =  getEntryManager().findEntryWithName(request, theFolder, tok);
@@ -533,7 +534,7 @@ public class MailHarvester extends Harvester {
                                     theFolder = folder;
                                 }
                                 theParentEntry = theFolder;
-                            } else if(line.startsWith("tag:")) {
+                            } else if(lline.startsWith("tag:")) {
                                 String tag  = line.substring("tag:".length()).trim();
                             } else {
                                 text.append(line);                            
