@@ -1,9 +1,6 @@
 
 package org.ramadda.data.point.aon;
 
-import java.text.SimpleDateFormat;
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;

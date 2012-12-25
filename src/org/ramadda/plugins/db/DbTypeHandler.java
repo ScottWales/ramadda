@@ -943,6 +943,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
+        if(Utils.stringDefined(entry.getDescription())) {
+            sb.append(entry.getDescription());
+            sb.append(HtmlUtils.br());
+        }
+
         if (request.defined(ARG_MESSAGE)) {
             sb.append(
                 getRepository().showDialogNote(
@@ -966,6 +971,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
+
+
         if (addNext[0]) {
             if ((numValues > 0)
                 && ((numValues == getMax(request))
@@ -977,10 +984,6 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
         sb.append(HtmlUtils.importJS(getRepository().fileUrl("/db/db.js")));
-        if(Utils.stringDefined(entry.getDescription())) {
-            sb.append(entry.getDescription());
-            sb.append(HtmlUtils.br());
-        }
 
     }
 
@@ -2622,7 +2625,15 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
     public void formatTableValue(Request request, Entry entry, StringBuffer sb, Column column, Object[]values, SimpleDateFormat sdf) throws Exception  {
-        column.formatValue(entry, sb, Column.OUTPUT_HTML, values, sdf);
+        StringBuffer htmlSB = new StringBuffer();
+        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf);
+        String html = htmlSB.toString();
+
+        if(column.getCanSearch()) {
+            //            html   = ....
+        } 
+
+        sb.append(html);
     }
 
     /**
@@ -2881,14 +2892,11 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         rightSide.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
-        sb.append(
-            "<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\"><td width="
-            + width + ">");
+        sb.append("<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\">");
         map.center();
-        sb.append(map.getHtml());
-        sb.append("</td><td>");
-        sb.append(rightSide);
-        sb.append("</td></tr></table>");
+        sb.append(HtmlUtils.col(rightSide.toString()));
+        sb.append(HtmlUtils.col(map.getHtml(), HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" +width)));
+        sb.append("</tr></table>");
 
         return new Result(getTitle(), sb);
 
@@ -3227,6 +3235,11 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append("</table>");
 
         return new Result(getTitle(), sb);
+    }
+
+
+    public String getSearchUrlArgument(Column column) {
+        return tableHandler.getTableName() + "." + column.getName();
     }
 
 

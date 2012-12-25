@@ -479,6 +479,7 @@ public class MailHarvester extends Harvester {
                                 String desc, List<Entry> newEntries)
         throws Exception {
 
+        Request request= getRequest();
         if (content instanceof MimeMultipart) {
             MimeMultipart multipart = (MimeMultipart) content;
             for (int i = 0; i < multipart.getCount(); i++) {
@@ -491,20 +492,11 @@ public class MailHarvester extends Harvester {
                     } else {
                     }
                     continue;
-
                 }
                 if (disposition.equalsIgnoreCase(Part.ATTACHMENT)
                     || disposition.equalsIgnoreCase(Part.INLINE)) {
                     if (part.getFileName() != null) {
-                        InputStream inputStream = part.getInputStream();
-                        File        f = getStorageManager().getTmpFile(getRequest(),
-                                                                       part.getFileName());
-                        OutputStream outputStream =
-                            getStorageManager().getFileOutputStream(f);
-                        IOUtil.writeTo(inputStream, outputStream);
-                        IOUtil.close(inputStream);
-                        IOUtil.close(outputStream);
-                        f =     getStorageManager().moveToStorage(getRequest(), f);
+                        File        f = getStorageManager().moveToStorage(request, part.getInputStream(),part.getFileName());
                         TypeHandler typeHandler  = getEntryManager().findDefaultTypeHandler(f.toString());
                         if(typeHandler == null) {
                             typeHandler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
@@ -514,13 +506,47 @@ public class MailHarvester extends Harvester {
                         Date        date        = message.getReceivedDate();
                         Object[]    values      = typeHandler.makeValues(new Hashtable());
                         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
-                        String name  = message.getSubject() +" - " + part.getFileName();
-                        entry.initEntry(name, desc.toString(), parentEntry, getUser(), resource, "",
+                        
+                        String name;
+                        if(message.getSubject()!=null) {
+                            name = message.getSubject() +" - " + part.getFileName();
+                        } else {
+                            name = part.getFileName();
+                        }
+                        StringBuffer text = new StringBuffer();
+                        Entry theParentEntry = parentEntry;
+                        for(String line: StringUtil.split(desc.toString(),"\n")) {
+                            if(line.startsWith("name:")) {
+                                name = line.substring("name:".length()).trim();
+                            } else if(line.startsWith("at:")) {
+                                Entry theFolder =  theParentEntry;
+                                for(String tok: StringUtil.split(line.substring("to:".length()).trim(),"/",true,true)) {
+                                    Entry folder =  getEntryManager().findEntryWithName(request, theFolder, tok);
+                                    if(folder == null) {
+                                        System.err.println("could not find folder: " + line);
+                                        break;
+                                    }
+                                    if(!folder.isGroup()) {
+                                        System.err.println("could not find folder: " + line);
+                                        break;
+                                    }
+                                    theFolder = folder;
+                                }
+                                theParentEntry = theFolder;
+                            } else if(line.startsWith("tag:")) {
+                                String tag  = line.substring("tag:".length()).trim();
+                            } else {
+                                text.append(line);                            
+                                text.append("\n");                            
+                            }
+                        }
+
+                        entry.initEntry(name, text.toString(), theParentEntry, getUser(), resource, "",
                                         now.getTime(), now.getTime(), date.getTime(),
                                         date.getTime(), values);
 
                         List<Entry> entries = (List<Entry>) Misc.newList(entry);
-                        getEntryManager().addInitialMetadata(getRequest(),
+                        getEntryManager().addInitialMetadata(request,
                                                              entries,
                                                              true, false);
                         getEntryManager().insertEntries(entries, true, true);

@@ -52,6 +52,7 @@ public class NetcdfPointFile extends PointFile {
      *
      * @return _more_
      */
+    /*
     public boolean canLoad(String file) {
         try {
             return file.endsWith(".nc");
@@ -59,6 +60,7 @@ public class NetcdfPointFile extends PointFile {
             return false;
         }
     }
+    */
 
 
 

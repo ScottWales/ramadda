@@ -263,7 +263,7 @@ public class CellPhoneDbTypeHandler extends PhoneDbTypeHandler {
             direction = "outbound";
         } else if(tmpDirection.equals("F")) {
             direction = "voice";
-            toNumber = "voice";
+            toNumber = "voice-" + fromNumber;
         } else if(tmpDirection.equals("2")) {
             direction = "mobiletomobile";
         }  else  {

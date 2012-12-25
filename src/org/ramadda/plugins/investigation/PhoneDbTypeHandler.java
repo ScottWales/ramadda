@@ -275,7 +275,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                     HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                   new String[] {
                                       ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                      fromNumberColumn.getFullName(), fromNumber
+                                      getSearchUrlArgument(fromNumberColumn), fromNumber
                                   });
                 nodes.add(HtmlUtils.jsonMap(new String[]{
                             goh.ATTR_NAME, formatNumber(fromNumber),
@@ -292,7 +292,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                     HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                   new String[] {
                                       ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                      fromNumberColumn.getFullName(), fromNumber
+                                      getSearchUrlArgument(fromNumberColumn), fromNumber
                                   });
                 nodes.add(HtmlUtils.jsonMap(new String[]{
                             goh.ATTR_NAME, formatNumber(toNumber),
@@ -421,7 +421,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
                                           ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                          fromNumberColumn.getFullName(), n.number,
+                                          getSearchUrlArgument(fromNumberColumn(), n.number,
                                           toNumberColumn.getFullName(), outbound.number,
                                       });
 
@@ -458,7 +458,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
                                           ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                          fromNumberColumn.getFullName(), n.number,
+                                          getSearchUrlArgument(fromNumberColumn), n.number,
                                           toNumberColumn.getFullName(), inbound.number,
                                       });
 

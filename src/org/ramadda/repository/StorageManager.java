@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import java.net.URL;
 
@@ -971,6 +972,17 @@ public class StorageManager extends RepositoryManager {
     public File moveToStorage(Request request, File original)
             throws Exception {
         return moveToStorage(request, original, original.getName());
+    }
+
+    public File moveToStorage(Request request, InputStream inputStream, String fileName) throws Exception {
+        File        f = getStorageManager().getTmpFile(request, fileName);
+        OutputStream outputStream =
+            getStorageManager().getFileOutputStream(f);
+        IOUtil.writeTo(inputStream, outputStream);
+        IOUtil.close(inputStream);
+        IOUtil.close(outputStream);
+        f =     getStorageManager().moveToStorage(request, f);
+        return f;
     }
 
 
