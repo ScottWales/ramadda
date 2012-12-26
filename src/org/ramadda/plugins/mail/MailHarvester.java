@@ -267,9 +267,9 @@ public class MailHarvester extends Harvester {
                                       HtmlUtils.checkbox(ATTR_DELETEEMAIL, "true", delete)+ " " + msg("Delete email after harvesting")));
 
         if(getAdmin().isEmailCapable()) {
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Email Response"),
-                                         HtmlUtils.textArea(ATTR_RESPONSE,
-                                                            response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
+            sb.append(HtmlUtils.formEntryTop(msgLabel("Email Response"),
+                                             HtmlUtils.textArea(ATTR_RESPONSE,
+                                                                response==null?"":response,5,60) +"<br>" + "Use ${url} for the URL to the created entry"));
         }
 
     }
@@ -445,7 +445,7 @@ public class MailHarvester extends Harvester {
                         logHarvesterInfo ("message has been deleted:"  + message.getSubject());
                         message.setFlag(Flags.Flag.DELETED, true);
                     }
-                    status.append("<br>");
+                    status.append(HtmlUtils.br());
                 }
                 if(defined(response) && getAdmin().isEmailCapable()) {
                     String     to     = InternetAddress.toString(message.getFrom());
