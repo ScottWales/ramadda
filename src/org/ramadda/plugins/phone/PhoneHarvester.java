@@ -567,6 +567,7 @@ public class PhoneHarvester extends Harvester  {
                     values[0] = values[0] +" " +desc;
                 }
             } else {
+                desc = new StringBuffer(desc.toString().replaceAll("\n","<br>"));
                 currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
             }
             getEntryManager().updateEntry(currentEntry);
@@ -600,6 +601,8 @@ public class PhoneHarvester extends Harvester  {
         } else if (type.equals("wikipage")) {
             values[0] = desc.toString().replaceAll("<br>","\n");
             desc = new StringBuffer();
+        } else {
+            desc = new StringBuffer(desc.toString().replaceAll("\n","<br>"));
         }
 
         entry.initEntry(name, desc.toString(), currentEntry, getUser(), new Resource(), "",
