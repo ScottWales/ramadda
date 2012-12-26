@@ -948,19 +948,20 @@ public class HtmlOutputHandler extends OutputHandler {
                                      boolean includeDescription,
                                      boolean fixedHeight)
             throws Exception {
-        String desc        = entry.getDescription();
         List   tabTitles   = new ArrayList<String>();
         List   tabContents = new ArrayList<String>();
+        StringBuffer basicSB = new StringBuffer();
+        String desc        = entry.getDescription();
         if (includeDescription && (desc.length() > 0)) {
-            tabTitles.add("Description");
             desc = getEntryManager().processText(request, entry, desc);
-            tabContents.add(desc);
+            basicSB.append(desc);
+            basicSB.append("<br>");
         }
+        basicSB.append(entry.getTypeHandler().getEntryContent(entry,
+                                                              request, false, true));
 
         tabTitles.add("Basic");
-        Object basic;
-        tabContents.add(basic = entry.getTypeHandler().getEntryContent(entry,
-                request, false, true));
+        tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
                 getMetadataHtml(request, entry, true, true)) {

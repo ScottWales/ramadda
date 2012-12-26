@@ -37,16 +37,25 @@ twilio.authtoken=
 
 This is the application SID and the authorization token you can get from your Twilio account dashboard.
 
+
 <h2>Configuring Phone Harvesters</h2>
 The real work in handling a call is done with one or more Phone Harvesters. These are RAMADDA harvesters that define
-the RAMADDA folder to look at and access information. Go to Admin-Harvesters and create a new Phone Harvester.
+the RAMADDA folder to look at and access information. Go to Admin-Harvesters and create a new Phone Harvester:
 
 <p>
-The From Phone and To Phone are optional. If defined, this harvester will only access calls from/to these numbers.
+<img src="harvester.png"  class="image-outer">
 <p>
-If the Pass Code is specified than the body of the text message must contain this text.
+
+
 <p>
-To enable receiving voice messages specify a Voice Message.
+The   <i>From Phone</i> and  <i>To Phone</i> are optional. 
+If defined, this harvester will only access calls from/to these numbers.
+<p>
+There are 3 access levels specified by (potentially) different passwords - View, Add and Edit.
+If you enter "any"  for these passwords then no password is required for that action.
+
+<p>
+To enable receiving voice messages specify a <i>Voice Message</i> response.
 
 
 </body>

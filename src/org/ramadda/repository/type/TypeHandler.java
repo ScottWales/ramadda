@@ -2047,7 +2047,7 @@ public class TypeHandler extends RepositoryManager {
                                              entry.getStartDate(), entry));
 
 
-                    if (okToShowInForm(entry, ARG_TODATE)) {
+                    if (okToShowInForm(entry, ARG_TODATE) && entry.getEndDate() != entry.getStartDate()) {
                         dateSB.append(" - ");
                         dateSB.append(formatDate(request,
                                                  entry.getEndDate(), entry));
