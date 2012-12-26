@@ -612,6 +612,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                              entry);
                 }
 
+                //Ugghh - I really have to unify the EntryManager find entry methods
+                //Look for file path based entry id
+                if(theEntry == null && entryId.startsWith("/")) {
+                    theEntry = getEntryManager().findEntryFromName(request, entryId, request.getUser(), false);
+                }
+
+                //Look for relative to the current entry
+                if(theEntry == null) {
+                    theEntry = getEntryManager().findEntryFromPath(request, entry, entryId);
+                }
+
                 if (theEntry == null) {
                     return getMessage(props,
                                       "Unknown entry:" + entryId);

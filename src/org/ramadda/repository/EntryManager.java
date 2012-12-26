@@ -7454,6 +7454,32 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Entry findEntryFromPath(Request request, Entry parent, String path)
+        throws Exception {
+        Entry currentEntry = parent;
+        List<String>toks = StringUtil.split(path,Entry.PATHDELIMITER, true, true);
+        for(int i=0;i<toks.size();i++) {
+            if(currentEntry.getTypeHandler().isSynthType()) {
+                List<String> subset = toks.subList(i, toks.size());
+                if(subset.size()==0) {
+                    break;
+                }
+                return currentEntry.getTypeHandler().makeSynthEntry(request,  currentEntry, subset);
+            }
+
+
+            String name =  toks.get(i);
+            Entry childEntry=  findEntryWithName(request, currentEntry, name);
+            if(childEntry==null) {
+                return null;
+            }
+
+            currentEntry = childEntry;
+        }
+        return currentEntry;
+    }
+
+
 
 
 
@@ -7855,17 +7881,17 @@ public class EntryManager extends RepositoryManager {
         }
         //split the list
         List<String> toks = (List<String>) StringUtil.split(name,
-                                Entry.PATHDELIMITER, true, true);
+                                                            Entry.PATHDELIMITER, true, true);
         //Now remove the top group
 
         toks.remove(0);
+
         Entry currentEntry = getTopGroup();
 
         if (lastGroupType == null) {
             lastGroupType = TypeHandler.TYPE_GROUP;
         }
         String groupType = TypeHandler.TYPE_GROUP;
-
 
 
         //xxxx

@@ -567,6 +567,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                 }
             };
 
+
+
         for(String filename: entryNames) {
             nameHolder[0] = filename;
             File[] files = file.listFiles(fnf);
