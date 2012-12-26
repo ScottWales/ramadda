@@ -421,7 +421,7 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
                         HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
                                       new String[] {
                                           ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", 
-                                          getSearchUrlArgument(fromNumberColumn(), n.number,
+                                          getSearchUrlArgument(fromNumberColumn), n.number,
                                           toNumberColumn.getFullName(), outbound.number,
                                       });
 
