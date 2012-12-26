@@ -304,7 +304,7 @@ public class MailHarvester extends Harvester {
             cal.add(cal.MINUTE, (int)getSleepMinutes());
             
             String msg = "Sleeping for " + getSleepMinutes()
-                + " minutes. Run again at:" + cal.getTime();
+                + " minutes. Will run again at:" + cal.getTime();
             logHarvesterInfo(msg);
             status.append(msg+"<b>");
             doPause();
@@ -405,14 +405,18 @@ public class MailHarvester extends Harvester {
                 Resource resource = null;
                 String type = "notes_note";
                 TypeHandler typeHandler  = null;
+                String name = message.getSubject();
                 if(url!=null) {
                     type = "link";
+                    if(name == null) name = url.toString();
                     resource = new Resource(url);
                 } 
+                if(name == null) name = "entry";
+                EntryInfo entryInfo = getEntryInfo(getRequest(), getBaseGroup(), name, messageBody);
                 typeHandler  = getRepository().getTypeHandler(type);
                 Date        now         = new Date();
                 Entry       entry = typeHandler.createEntry(getRepository().getGUID());
-                entry.initEntry(message.getSubject(), messageBody, getBaseGroup(), getUser(), resource, "",
+                entry.initEntry(entryInfo.name, entryInfo.text.toString(), entryInfo.parentEntry, getUser(), resource, "",
                                 now.getTime(), now.getTime(), now.getTime(),
                                 now.getTime(), null);
                 
@@ -513,36 +517,8 @@ public class MailHarvester extends Harvester {
                         } else {
                             name = part.getFileName();
                         }
-                        StringBuffer text = new StringBuffer();
-                        Entry theParentEntry = parentEntry;
-                        for(String line: StringUtil.split(desc.toString(),"\n")) {
-                            String lline = line.toLowerCase();
-                            if(lline.startsWith("name:")) {
-                                name = line.substring("name:".length()).trim();
-                            } else if(lline.toLowerCase().startsWith("at:")) {
-                                Entry theFolder =  theParentEntry;
-                                for(String tok: StringUtil.split(line.substring("to:".length()).trim(),"/",true,true)) {
-                                    Entry folder =  getEntryManager().findEntryWithName(request, theFolder, tok);
-                                    if(folder == null) {
-                                        System.err.println("could not find folder: " + line);
-                                        break;
-                                    }
-                                    if(!folder.isGroup()) {
-                                        System.err.println("could not find folder: " + line);
-                                        break;
-                                    }
-                                    theFolder = folder;
-                                }
-                                theParentEntry = theFolder;
-                            } else if(lline.startsWith("tag:")) {
-                                String tag  = line.substring("tag:".length()).trim();
-                            } else {
-                                text.append(line);                            
-                                text.append("\n");                            
-                            }
-                        }
-
-                        entry.initEntry(name, text.toString(), theParentEntry, getUser(), resource, "",
+                        EntryInfo entryInfo = getEntryInfo(request, parentEntry, name, desc.toString());
+                        entry.initEntry(entryInfo.name, entryInfo.text.toString(), entryInfo.parentEntry, getUser(), resource, "",
                                         now.getTime(), now.getTime(), date.getTime(),
                                         date.getTime(), values);
 
@@ -558,6 +534,38 @@ public class MailHarvester extends Harvester {
         } 
     }
 
+    private EntryInfo  getEntryInfo(Request request, Entry parentEntry, String name, String desc) throws Exception {
+        EntryInfo entryInfo = new EntryInfo(parentEntry, name );
+        Entry theParentEntry = parentEntry;
+        for(String line: StringUtil.split(desc.toString(),"\n")) {
+            String lline = line.toLowerCase();
+            if(lline.startsWith("name:")) {
+                entryInfo.name = line.substring("name:".length()).trim();
+            } else if(lline.toLowerCase().startsWith("at:")) {
+                Entry theFolder =  theParentEntry;
+                for(String tok: StringUtil.split(line.substring("to:".length()).trim(),"/",true,true)) {
+                    Entry folder =  getEntryManager().findEntryWithName(request, theFolder, tok);
+                    if(folder == null) {
+                        System.err.println("could not find folder: " + line);
+                        break;
+                    }
+                    if(!folder.isGroup()) {
+                        System.err.println("could not find folder: " + line);
+                        break;
+                    }
+                    theFolder = folder;
+                }
+                theParentEntry = theFolder;
+            } else if(lline.startsWith("tag:")) {
+                String tag  = line.substring("tag:".length()).trim();
+            } else {
+                entryInfo.text.append(line);                            
+                entryInfo.text.append("\n");                            
+            }
+        }
+        entryInfo.parentEntry = theParentEntry;
+        return entryInfo;
+    }
 
 
     private void processEml(Entry parentEntry, Message  message, List<Entry>entries) throws Exception {
@@ -657,5 +665,16 @@ public class MailHarvester extends Harvester {
         if(doNot) return !matches;
         return matches;
     }
+
+    private static class EntryInfo {
+        public EntryInfo(Entry parentEntry, String name) {
+            this.parentEntry = parentEntry;
+            this.name = name;
+        }
+        Entry parentEntry;
+        String name;
+        StringBuffer text  = new StringBuffer();
+    }
+
 
 }
