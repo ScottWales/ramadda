@@ -1392,7 +1392,7 @@ public class Request implements Constants, Cloneable {
     public String getEncodedString(String key, String dflt) {
         String s = getString(key, dflt);
         if (s != null) {
-            s = RepositoryUtil.encodeInput(s);
+            s = RepositoryUtil.encodeUntrustedText(s);
             //            s = HtmlUtils.entityEncode(s);
         }
 

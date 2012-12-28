@@ -379,6 +379,7 @@ public class MailHarvester extends Harvester {
             if(!matches(body, messageBody)) {
                 continue;
             }
+            messageBody = cleanUpText(messageBody);
             numPassed++;
             List<Entry> newEntries = new ArrayList<Entry>();
             if(action.equals(ACTION_EML)) {
@@ -560,7 +561,7 @@ public class MailHarvester extends Harvester {
                 String tag  = line.substring("tag:".length()).trim();
             } else {
                 entryInfo.text.append(line);                            
-                entryInfo.text.append("\n");                            
+                entryInfo.text.append("<br>\n");                            
             }
         }
         entryInfo.parentEntry = theParentEntry;
@@ -674,6 +675,12 @@ public class MailHarvester extends Harvester {
         Entry parentEntry;
         String name;
         StringBuffer text  = new StringBuffer();
+    }
+
+    private String cleanUpText(String text) {
+        text = RepositoryUtil.encodeUntrustedText(text);
+        text = text.replaceAll("\n","<br>");
+        return text;
     }
 
 

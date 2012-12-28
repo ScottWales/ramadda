@@ -254,7 +254,7 @@ public class RepositoryUtil implements Constants {
      *
      * @return  the encoded String
      */
-    public static final String encodeInput(String s) {
+    public static final String encodeUntrustedText(String s) {
         //        s = s.replaceAll("&","&amp;;");
         //
         //Note: if this is wrong then we can get an XSS attack from the anonymous upload.

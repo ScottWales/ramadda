@@ -2530,15 +2530,15 @@ public class EntryManager extends RepositoryManager {
         String oldType = entry.getCategory();
         entry.setCategory(CATEGORY_UPLOAD);
         //Note: the name and description have already been encoded to prevent xss attacks
-        //        entry.setName(RepositoryUtil.encodeInput(entry.getName()));
+        //        entry.setName(RepositoryUtil.encodeUntrustedText(entry.getName()));
         //        entry.setDescription(
-        //            RepositoryUtil.encodeInput(entry.getDescription()));
+        //            RepositoryUtil.encodeUntrustedText(entry.getDescription()));
 
         //        System.err.println ("after:" + entry.getDescription());
-        String fromName = RepositoryUtil.encodeInput(
+        String fromName = RepositoryUtil.encodeUntrustedText(
                               request.getString(
                                   ARG_CONTRIBUTION_FROMNAME, ""));
-        String fromEmail = RepositoryUtil.encodeInput(
+        String fromEmail = RepositoryUtil.encodeUntrustedText(
                                request.getString(
                                    ARG_CONTRIBUTION_FROMEMAIL, ""));
         String user = fromName;

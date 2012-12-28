@@ -201,6 +201,11 @@ public class PhoneHarvester extends Harvester  {
         return phone;
     }
 
+    private String cleanUpText(String text) {
+        text = RepositoryUtil.encodeUntrustedText(text);
+        text = text.replaceAll("\n","<br>");
+        return text;
+    }
 
 
     private PhoneSession getSession(PhoneInfo info)     {
@@ -279,7 +284,7 @@ public class PhoneHarvester extends Harvester  {
 
         String      type = null;
         String tmp;
-        StringBuffer desc = new StringBuffer();
+        StringBuffer descSB = new StringBuffer();
         boolean doAppend = false;
         boolean processedACommand = false;
         String sessionKey = info.getFromPhone();
@@ -518,9 +523,9 @@ public class PhoneHarvester extends Harvester  {
                 processedACommand = true;
                 lineIdx++;
                 for(;lineIdx<lines.size();lineIdx++) {
-                    if(desc.length()>0)
-                        desc.append("\n");
-                    desc.append(lines.get(lineIdx));
+                    if(descSB.length()>0)
+                        descSB.append("\n");
+                    descSB.append(lines.get(lineIdx));
                 }
                 break;
             }
@@ -541,9 +546,9 @@ public class PhoneHarvester extends Harvester  {
                 if(didOne) {
                     lineIdx++;
                     for(;lineIdx<lines.size();lineIdx++) {
-                        if(desc.length()>0)
-                            desc.append("\n");
-                        desc.append(lines.get(lineIdx));
+                        if(descSB.length()>0)
+                            descSB.append("\n");
+                        descSB.append(lines.get(lineIdx));
                     }
                     break;
                 }
@@ -555,20 +560,22 @@ public class PhoneHarvester extends Harvester  {
 
 
 
+        String cleanedInputText = cleanUpText(descSB.toString());
+
 
         Entry  parent      = currentEntry;
         if(doAppend) {
             //TODO: handle wiki and update the entry better
             if(currentEntry.getTypeHandler().getType().equals("wikipage")) {
+                cleanedInputText = cleanedInputText.replaceAll("<br>","\n");
                 Object[]    values      = currentEntry.getTypeHandler().getValues(currentEntry);
                 if(values[0] == null) {
-                    values[0] = desc;
+                    values[0] = cleanedInputText;
                 } else {
-                    values[0] = values[0] +" " +desc;
+                    values[0] = values[0] +" " +cleanedInputText;
                 }
             } else {
-                desc = new StringBuffer(desc.toString().replaceAll("\n","<br>"));
-                currentEntry.setDescription(currentEntry.getDescription() +"\n" + desc);
+                currentEntry.setDescription(currentEntry.getDescription() +"<br>" + cleanedInputText);
             }
             getEntryManager().updateEntry(currentEntry);
             msg.append("appended to:\n" + getEntryInfo(currentEntry));
@@ -599,13 +606,11 @@ public class PhoneHarvester extends Harvester  {
             values[0] = info.getFromPhone();
             values[1] = info.getToPhone();
         } else if (type.equals("wikipage")) {
-            values[0] = desc.toString().replaceAll("<br>","\n");
-            desc = new StringBuffer();
-        } else {
-            desc = new StringBuffer(desc.toString().replaceAll("\n","<br>"));
+            values[0] = cleanedInputText;
+            cleanedInputText = "";
         }
 
-        entry.initEntry(name, desc.toString(), currentEntry, getUser(), new Resource(), "",
+        entry.initEntry(name, cleanedInputText, currentEntry, getUser(), new Resource(), "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 
@@ -675,7 +680,8 @@ public class PhoneHarvester extends Harvester  {
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
-        StringBuffer desc = new StringBuffer(info.getTranscription());
+        StringBuffer descSB = new StringBuffer(info.getTranscription());
+        String cleanedInputText = cleanUpText(descSB.toString());
         File  voiceFile = fetchVoiceFile(request, new URL(info.getRecordingUrl()));
 
         if(voiceFile==null) {
@@ -683,7 +689,7 @@ public class PhoneHarvester extends Harvester  {
         }
         voiceFile =     getStorageManager().moveToStorage(request, voiceFile);
         Resource resource = new Resource(voiceFile.toString(), Resource.TYPE_STOREDFILE);
-        entry.initEntry(name, desc.toString(), parent, getUser(), resource, "",
+        entry.initEntry(name, cleanedInputText, parent, getUser(), resource, "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 
