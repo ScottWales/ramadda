@@ -856,14 +856,24 @@ public class HtmlOutputHandler extends OutputHandler {
 
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
-            StringBuffer favorites = new StringBuffer();
             if (favoritesList.size() > 0) {
-                sb.append(HtmlUtils.b(msg("Favorites")));
-                sb.append(HtmlUtils.br());
+                sb.append(HtmlUtils.center(HtmlUtils.b(msg("Favorites"))));
                 List favoriteLinks = new ArrayList();
                 for (FavoriteEntry favorite : favoritesList) {
                     Entry favEntry = favorite.getEntry();
                     sb.append(getSelectLink(request, favEntry, target));
+                }
+                sb.append(
+                    "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
+            }
+
+
+            List<Entry> recents = getEntryManager().getSessionFolders(request); 
+            if (recents.size() > 0) {
+                sb.append(HtmlUtils.center(HtmlUtils.b(msg("Recent"))));
+                List favoriteLinks = new ArrayList();
+                for (Entry recent : recents) {
+                    sb.append(getSelectLink(request, recent, target));
                 }
                 sb.append(
                     "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");

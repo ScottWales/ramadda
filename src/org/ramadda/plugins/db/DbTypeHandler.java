@@ -928,6 +928,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                                boolean fromSearch, String extraLinks)
             throws Exception {
 
+        if(Utils.stringDefined(entry.getDescription())) {
+            sb.append(entry.getDescription());
+            sb.append(HtmlUtils.br());
+        }
+
+
         List<String> headerToks = new ArrayList<String>();
         String       baseUrl    =
             HtmlUtils.url(request.url(getRepository().URL_ENTRY_SHOW),
@@ -943,10 +949,6 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        if(Utils.stringDefined(entry.getDescription())) {
-            sb.append(entry.getDescription());
-            sb.append(HtmlUtils.br());
-        }
 
         if (request.defined(ARG_MESSAGE)) {
             sb.append(

@@ -223,10 +223,6 @@ public class PluginManager extends RepositoryManager {
             0, getRepository().getResourcePaths(PROP_OUTPUTHANDLERS));
         metadataDefFiles.addAll(
             0, getRepository().getResourcePaths(PROP_METADATA));
-
-
-
-
     }
 
 
@@ -243,6 +239,18 @@ public class PluginManager extends RepositoryManager {
         File   dir           = getStorageManager().getPluginsDir();
         File[] plugins       = dir.listFiles();
         Arrays.sort(plugins);
+        /** TODO: define a mechanism so you can order the processing of plugin files
+        List<File> lastPlugins =  new ArrayList<File>();
+        for (int i = 0; i < plugins.length; i++) {
+            if (plugins[i].isDirectory()) {
+                continue;
+            }
+            if(plugins[i].toString().indexOf(".last.")>=0) {
+                lastPlugins.add(plugins[i]);
+            } 
+        }
+        */
+
         for (int i = 0; i < plugins.length; i++) {
             if (plugins[i].isDirectory()) {
                 continue;

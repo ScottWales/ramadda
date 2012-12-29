@@ -117,6 +117,8 @@ public class EntryManager extends RepositoryManager {
     public static final int ENTRY_CACHE_LIMIT = 5000;
 
 
+    public static final String SESSION_FOLDERS = "folders";
+
     /** _more_ */
     private Object MUTEX_ENTRY = new Object();
 
@@ -439,6 +441,9 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             fatalError(request, "No entry specified");
         }
+
+
+        addSessionFolder(request, entry);
 
 
         if (entry.getIsRemoteEntry()) {
@@ -883,6 +888,31 @@ public class EntryManager extends RepositoryManager {
         return makeEntryEditResult(request, entry, title, sb);
 
     }
+
+    public List<Entry> getSessionFolders(Request request) throws Exception {
+        List<String> list =  (List<String>) getSessionManager().getSessionProperty(request, SESSION_FOLDERS);
+        if(list == null) list = new ArrayList<String>();
+        List<Entry> entries = new ArrayList<Entry>();
+        for(String id: list) {
+            Entry entry = getEntry(request, id);
+            if(entry!=null) entries.add(entry);
+        }
+        return entries;
+    }
+
+    public void addSessionFolder(Request request, Entry entry) throws Exception {
+        if(request.isAnonymous()) return;
+        if(entry.isGroup()) {
+            List<String> list =  (List<String>) getSessionManager().getSessionProperty(request, SESSION_FOLDERS);
+            if(list == null) list = new ArrayList<String>();
+            list.remove(entry.getId());
+            list.add(0, entry.getId());
+            //Cap the size at 5
+            if(list.size()>5) list.remove(list.size()-1);
+            getSessionManager().putSessionProperty(request, SESSION_FOLDERS, list);
+        }
+    }
+
 
     /**
      * _more_
@@ -3022,6 +3052,7 @@ public class EntryManager extends RepositoryManager {
                                             request, request.getUser()));
             List<Entry> groups = getGroups(cart);
             groups.addAll(getGroups(favorites));
+            groups.addAll(getSessionFolders(request));
             HashSet seen = new HashSet();
             for (Entry group : groups) {
                 if (seen.contains(group.getId())) {
