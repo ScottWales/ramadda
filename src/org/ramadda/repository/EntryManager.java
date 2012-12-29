@@ -2072,11 +2072,12 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+        String breadcrumbs = getConfirmBreadCrumbs(request, entry);
         StringBuffer inner = new StringBuffer();
         if (entry.isGroup()) {
             inner.append(
                 msg("Are you sure you want to delete the following folder?"));
-            inner.append(HtmlUtils.p());
+            inner.append(HtmlUtils.div(breadcrumbs, HtmlUtils.cssClass("ramadda-confirm-entries")));
             inner.append(
                 HtmlUtils.b(
                     msg(
@@ -2084,7 +2085,10 @@ public class EntryManager extends RepositoryManager {
         } else {
             inner.append(
                 msg("Are you sure you want to delete the following entry?"));
+            inner.append(HtmlUtils.div(breadcrumbs, HtmlUtils.cssClass("ramadda-confirm-entries")));
         }
+
+
 
         StringBuffer fb = new StringBuffer();
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
@@ -2097,8 +2101,6 @@ public class EntryManager extends RepositoryManager {
         fb.append(HtmlUtils.formClose());
         sb.append(getRepository().showDialogQuestion(inner.toString(),
                 fb.toString()));
-        String bc = getBreadCrumbs(request, entry);
-        sb.append(bc);
 
         return makeEntryEditResult(request, entry,
                                    msg("Entry delete confirm"), sb);
@@ -2186,9 +2188,30 @@ public class EntryManager extends RepositoryManager {
             idBuffer.append(",");
             idBuffer.append(entry.getId());
         }
-        msgSB.append(
-            msg(
-            "Are you sure you want to delete all of the following entries?"));
+        boolean anyFolders = false;
+        StringBuffer entryListSB = new StringBuffer();
+        for(Entry toBeDeletedEntry:  entries) {
+            entryListSB.append(getConfirmBreadCrumbs(request, toBeDeletedEntry));
+            entryListSB.append(HtmlUtils.br());
+            if(toBeDeletedEntry.isGroup()) anyFolders = true;
+        }
+
+        if(entries.size()==1) {
+            msgSB.append(
+                         msg(
+                             "Are you sure you want to delete the following entry?"));
+        } else {
+            msgSB.append(msg(
+                         "Are you sure you want to delete all of the following entries?"));
+        }
+        msgSB.append(HtmlUtils.div(entryListSB.toString(), HtmlUtils.cssClass("ramadda-confirm-entries")));
+
+        if(anyFolders) {
+            msgSB.append(HtmlUtils.div(
+                         HtmlUtils.b(
+                                     msg(
+                                         "Note: This will also delete everything contained by the above " + (entries.size()==1?"folder":"folders")))));
+        }
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_DELETELIST);
         StringBuffer hidden = new StringBuffer(HtmlUtils.hidden(ARG_ENTRYIDS,
@@ -2197,10 +2220,7 @@ public class EntryManager extends RepositoryManager {
                           getRepository().URL_ENTRY_DELETELIST,
                           ARG_DELETE_CONFIRM, hidden.toString());
         sb.append(getRepository().showDialogQuestion(msgSB.toString(), form));
-        sb.append("<ul>");
-        new OutputHandler(getRepository(), "tmp").getBreadcrumbList(request,
-                          sb, entries);
-        sb.append("</ul>");
+
 
         return new Result(msg("Delete Confirm"), sb);
     }
@@ -5228,6 +5248,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+
+    public String getConfirmBreadCrumbs(Request request, Entry entry) throws Exception {
+        return HtmlUtils.img(getIconUrl(request, entry))+ " " + getBreadCrumbs(request, entry);
+    }
 
 
     /**

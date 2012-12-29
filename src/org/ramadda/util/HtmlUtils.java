@@ -954,6 +954,11 @@ public class HtmlUtils {
         return tag(TAG_SPAN, extra, content);
     }
 
+
+    public static String div(String content) {
+        return div(content,"");
+    }
+
     /**
      * _more_
      *
