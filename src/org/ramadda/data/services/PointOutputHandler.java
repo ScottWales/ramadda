@@ -610,7 +610,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 };
                 info.setCurrentStatus("Staging request...");
 
-                memoryCheck("NLAS: memory before:");
+                memoryCheck("POINT: memory before:");
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, new VisitInfo(quickScan));
                 if ( !jobOK(jobId)) {
@@ -626,14 +626,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                         info.addStatusItem("Generating gridded products");
                         outputEntryGrid(request, entry, gridVisitor.getGrid(),
                                         formats, jobId);
-                        memoryCheck("NLAS: memory after grid:");
+                        memoryCheck("POINT: memory after grid:");
                     }
                 }
                 info.addStatusItem("Product processing complete");
                 visitors     = null;
                 groupVisitor = null;
                 pointEntries = null;
-                memoryCheck("NLAS: memory after visit:");
+                memoryCheck("POINT: memory after visit:");
             }
             if (request.responseInXml()) {
                 return new Result(XmlUtil.tag(TAG_RESPONSE,
@@ -1074,7 +1074,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                   bounds.x, bounds.y + bounds.height,
                                   bounds.x + bounds.width);
 
-        //        System.err.println("NLAS Request:" + request.getFullUrl());
+        //        System.err.println("POINT Request:" + request.getFullUrl());
         //llg.fillValue(Double.NaN);
         //If nothing specified then default to 2 grid cells radius
         if ( !request.defined(ARG_GRID_RADIUS_DEGREES)
@@ -1098,10 +1098,10 @@ public class PointOutputHandler extends RecordOutputHandler {
             llg.setNumCells(request.get(ARG_GRID_RADIUS_CELLS, 0));
         }
         if (llg.getCellIndexDelta() > 100) {
-            System.err.println("NLAS bad grid neighborhood size: "
+            System.err.println("POINT: bad grid neighborhood size: "
                                + llg.getCellIndexDelta());
-            System.err.println("NLAS llg: " + llg);
-            System.err.println("NLAS request:" + request.getFullUrl());
+            System.err.println("POINT: llg: " + llg);
+            System.err.println("POINT: request:" + request.getFullUrl());
 
             throw new IllegalArgumentException("bad grid neighborhood size: "
                     + llg.getCellIndexDelta());
@@ -1392,7 +1392,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 grid = llg.getWeightedValueGrid();
             }
             if (grid == null) {
-                System.err.println("NLAS: No grid found for:" + whatGrid);
+                System.err.println("POINT: No grid found for:" + whatGrid);
 
                 continue;
             }
@@ -1558,7 +1558,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         pw.println("cellsize "
                    + (llg.getEast() - llg.getWest()) / imageWidth);
         pw.println("nodata_value " + LatLonGrid.GRID_MISSING);
-        System.err.println("NLAS: writing ARC ASCII grid " + imageWidth
+        System.err.println("POINT: writing ARC ASCII grid " + imageWidth
                            + " X " + imageHeight);
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
@@ -1572,7 +1572,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
             pw.print("\n");
         }
-        System.err.println("NLAS: done writing ARC ASCII grid ");
+        System.err.println("POINT: done writing ARC ASCII grid ");
         pw.close();
     }
 
@@ -1941,7 +1941,7 @@ public class PointOutputHandler extends RecordOutputHandler {
       ncfile.addVariable(null, v);
       ncfile.addGlobalAttribute(new Attribute("Conventions", "CF-1.X"));
       ncfile.addGlobalAttribute(new Attribute("History",
-      "Generated from NLAS/RAMADDA Point Data"));
+      "Generated from RAMADDA Point Data"));
       ncfile.create();
       for (Iterator it = keys.iterator(); it.hasNext(); ) {
       Variable v = (Variable) it.next();

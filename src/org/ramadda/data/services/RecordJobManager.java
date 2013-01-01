@@ -164,14 +164,14 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         Callable<Boolean> callable = new Callable<Boolean>() {
             public Boolean call() {
                 try {
-                    System.err.println("NLAS: processing started");
+                    System.err.println("POINT: processing started");
                     long t1 = System.currentTimeMillis();
                     for (RecordEntry recordEntry : recordEntries) {
                         recordEntry.visit(visitor, visitInfo);
                     }
                     long t2 = System.currentTimeMillis();
                     visitor.close(visitInfo);
-                    System.err.println("NLAS: processing done time:"
+                    System.err.println("POINT: processing done time:"
                                        + (t2 - t1));
 
                     return Boolean.TRUE;
@@ -372,13 +372,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         if ((email.length() > 0) && getAdmin().isEmailCapable()) {
             final String actionUrl     = jobInfo.getJobStatusUrl();
             final String emailContents =
-                "Your NLAS/RAMADDA processing job has completed:\n" + actionUrl;
+                "Your RAMADDA point data processing job has completed:\n" + actionUrl;
             //Put the mail sending in a thread
             Misc.run(new Runnable() {
                 public void run() {
                     try {
                         getRepository().getAdmin().sendEmail(email,
-                                "NLAS/RAMADDA processing job", emailContents, false);
+                                "RAMADDA point data processing job", emailContents, false);
                     } catch (Exception exc) {}
                 }
             });
