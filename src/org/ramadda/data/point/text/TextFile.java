@@ -30,6 +30,8 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 
+import org.ramadda.util.XlsUtil;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
@@ -54,6 +56,24 @@ import javax.swing.*;
  * @author         Enter your name here...
  */
 public abstract class TextFile extends PointFile {
+
+    public static final String FIELD_SITE_ID = "Site_Id";
+    public static final String FIELD_LATITUDE ="Latitude";
+    public static final String FIELD_LONGITUDE  = "Longitude";
+    public static final String FIELD_YEAR = "Year";
+    public static final String FIELD_DATE = "Date";
+
+    public static final String ATTR_TYPE = "type";
+    public static final String ATTR_VALUE = "value";
+    public static final String ATTR_FORMAT = "format";
+
+    public static final String ATTR_UNIT = "unit";
+    public static final String ATTR_SEARCHABLE = "searchable";
+    public static final String ATTR_CHARTABLE = "chartable";
+
+
+    public static final String TYPE_STRING = "string";
+    public static final String TYPE_DATE = "date";
 
     /** _more_          */
     public static final String PROP_SKIPLINES = "skiplines";
@@ -104,9 +124,15 @@ public abstract class TextFile extends PointFile {
      * @throws IOException _more_
      */
     public RecordIO doMakeInputIO(boolean buffered) throws IOException {
-        FileReader fileReader= new FileReader(getFilename());
+        String file = getFilename();
+        Reader reader;
+        if(file.endsWith(".xls")) {
+            reader= new StringReader(XlsUtil.xlsToCsv(file));
+        } else {
+            reader= new FileReader(getFilename());
+        }
         return new RecordIO(
-                            new BufferedReader(fileReader));
+                            new BufferedReader(reader));
     }
 
 
@@ -162,9 +188,30 @@ public abstract class TextFile extends PointFile {
                 headerLines.add(line);
             }
         }
+        if(headerLines.size()!=skipCnt) {
+            throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
+        }
         return visitInfo;
     }
 
+
+    public String makeFields(String[] fields) {
+        StringBuffer sb  = new StringBuffer();
+        for(int i=0;i<fields.length;i++) { 
+            if(i>0) sb.append(",");
+            sb.append (fields[i]);
+        }
+        return sb.toString();
+    }
+
+    public String makeField(String id, String ... attrs) {
+        StringBuffer asb = new StringBuffer();
+        for(String attr: attrs) {
+            asb.append(attr);
+            asb.append(" ");
+        }
+        return id +"[" + asb +"]";
+    }
 
     /**
      * _more_
@@ -202,5 +249,30 @@ public abstract class TextFile extends PointFile {
         return true;
     }
 
+    public String attrValue(double d) {
+        return attrValue(""+d);
+    }
 
+    public String attrValue(String v) {
+        return HtmlUtils.attr(ATTR_VALUE, v);
+    }
+
+    public String attrType(String v) {
+        return HtmlUtils.attr(ATTR_TYPE, v);
+    }
+    public String attrFormat(String v) {
+        return HtmlUtils.attr(ATTR_FORMAT, v);
+    }
+
+    public String attrUnit(String v) {
+        return HtmlUtils.attr(ATTR_UNIT, v);
+    }
+
+    public String attrChartable() {
+        return HtmlUtils.attr(ATTR_CHARTABLE, "true");
+    }
+
+    public String attrSearchable() {
+        return HtmlUtils.attr(ATTR_SEARCHABLE, "true");
+    }
 }

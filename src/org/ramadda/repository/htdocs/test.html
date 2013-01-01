@@ -1,59 +1,32 @@
-<script type="text/javascript" language="JavaScript1.2" src="jquery/js/jquery-1.4.2.min.js"></script>
+
+
+<script type="text/javascript" language="JavaScript1.2" src="/repository/ramadda.js"></script>
+<link rel="stylesheet" href="/repository/jquery/css/smoothness/jquery-ui-1.8.5.custom.css" type="text/css" />
+<script type="text/javascript" language="JavaScript1.2" src="/repository/jquery/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="/repository/jquery/js/jquery-ui-1.8.5.custom.min.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="/repository/jquery/js/jquery.cookie.js"></script>
+
+
+<div id="container"></div>
 
 
 
-<style type="text/css">
+<script type="text/JavaScript" >
+ function processGet(data,status) {
+        $("#container").html(data);
+ }
+ function processGetError(jqXHR, textStatus, errorThrown) {
+    alert("error:" + textStatus + " " + errorThrown);
+ }
 
-body {
-   font-family:  Arial, Helvetica, sans-serif;
-   font-size: 12px;
-   color: black;
-   margin: 10px;
-}
-
-td {
-   font-family:  Arial, Helvetica, sans-serif;
-   font-size: 12px;
-}
-
-
-.timeline {
-   position: relative;
-//   overflow-x: auto;
-   border : 1px #888 solid;
-}
-
-.timeline-row {
-
-//   border-bottom : 1px red solid;
-}
+var url = "/repository/entry/show/Top/RAMADDA+Examples/Photos?entryid=4196c4fb-f186-4a97-973f-deb6a0a9ac3b&output=calendar.calendar&template=empty";
+ $.ajax({
+   url: url,
+   success: processGet,
+   error: processGetError,
+   dataType: "html"
+});
 
 
-.timeline-entry {
-   min-height:10px;
-   border : 1px #000 solid;
-   position: absolute; 
-   background-color : #eee;
-}
+</script>
 
-</style>
-
-
-
-<div class="timeline">
-<div class="timeline-entry">
-</td>
-
-<td class="timeline-row">
-hello
-<div class="timeline-entry" style="left:10px;width:50px;"></div>
-<div class="timeline-entry" style="left:70px;width:50px;"></div>
-there
-</td>
-</tr>
-
-
-
-
-</table>
-</div>

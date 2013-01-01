@@ -371,7 +371,7 @@ public class TextRecord extends PointRecord {
                     System.err.println("tok null: " +tokenCnt +" " +line);
                 }
                 //Check for the riscan NaN
-                if(tok.equals("n.v.") || tok.length()==0 || tok.equals("null") || tok.equals("nan") || tok.equals("NAN") || tok.equals("NaN")) {
+                if(isMissingValue(tok)) {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     values[fieldCnt] = (double) Double.parseDouble(tok);
@@ -388,8 +388,14 @@ public class TextRecord extends PointRecord {
 
             return ReadStatus.OK;
         } catch (Exception exc) {
+            System.err.println("Line:" + line);
             throw new RuntimeException(exc);
         }
+    }
+
+
+    public boolean isMissingValue(String s) {
+        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NaN");
     }
 
 

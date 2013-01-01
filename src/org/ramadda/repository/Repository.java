@@ -2882,7 +2882,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        path = StringUtil.replace(path, urlBase, BLANK);
         path = path.substring(length);
         String type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
-
+        boolean decorate = true;
+        if(path.startsWith("/raw")) {
+            path = path.substring("/raw".length());
+            decorate = false;
+        }
 
         //Go through all of the htdoc roots
         for (String root : htdocRoots) {
@@ -2895,15 +2899,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     String js = IOUtil.readInputStream(inputStream);
                     js          = js.replace("${urlroot}", urlBase);
                     inputStream = new ByteArrayInputStream(js.getBytes());
-                } else if (path.endsWith(".html")) {
+                } else if (path.endsWith(".html") && decorate) {
                     String html = IOUtil.readInputStream(inputStream);
-
                     return getEntryManager().addHeaderToAncillaryPage(
-                        request, new Result(BLANK, new StringBuffer(html)));
+                                                                      request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
                 result.setCacheOk(true);
-
                 return result;
             } catch (IOException fnfe) {
                 //noop
