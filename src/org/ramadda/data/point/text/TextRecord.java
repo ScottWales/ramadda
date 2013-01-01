@@ -376,6 +376,8 @@ public class TextRecord extends PointRecord {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     values[fieldCnt] = (double) Double.parseDouble(tok);
+                    //TODO: We're assuming 999 is a missing value
+                    if(values[fieldCnt] == 999) values[fieldCnt] = Double.NaN;
                 }
             }
             setLocation(values[idxX], values[idxY], ((idxZ >= 0)
