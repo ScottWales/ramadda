@@ -60,8 +60,16 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_SITE_ID = "Site_Id";
     public static final String FIELD_LATITUDE ="Latitude";
     public static final String FIELD_LONGITUDE  = "Longitude";
+    public static final String FIELD_ELEVATION  = "Elevation";
+    public static final String FIELD_DEPTH  = "Depth";
     public static final String FIELD_YEAR = "Year";
     public static final String FIELD_DATE = "Date";
+    public static final String FIELD_TIME = "Time";
+    public static final String FIELD_MONTH = "Month";
+    public static final String FIELD_DAY = "Day";
+    public static final String FIELD_JULIAN_DAY = "Julian_Day";
+    public static final String FIELD_HOUR = "Hour";
+    public static final String FIELD_ = "";
 
     public static final String ATTR_TYPE = "type";
     public static final String ATTR_VALUE = "value";
@@ -79,7 +87,7 @@ public abstract class TextFile extends PointFile {
     public static final String PROP_SKIPLINES = "skiplines";
 
     /** _more_          */
-    private List<String> headerLines = new ArrayList<String>();
+    protected List<String> headerLines = new ArrayList<String>();
 
     /**
      * _more_
@@ -198,6 +206,7 @@ public abstract class TextFile extends PointFile {
     public String makeFields(String[] fields) {
         StringBuffer sb  = new StringBuffer();
         for(int i=0;i<fields.length;i++) { 
+            if(fields[i] == null) continue;
             if(i>0) sb.append(",");
             sb.append (fields[i]);
         }

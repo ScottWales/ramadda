@@ -169,6 +169,7 @@ public class TextRecord extends PointRecord {
         int numTokens = 0;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
+
             hasDefault[i] = field.hasDefaultValue();
             skip[i] = field.getSkip();
             if(!skip[i] && !hasDefault[i]) {
@@ -213,10 +214,7 @@ public class TextRecord extends PointRecord {
         }
 
 
-
-
         tokens      = new String[numTokens];
-
 
         if (idxX == -1) {
             throw new IllegalArgumentException(
@@ -352,6 +350,9 @@ public class TextRecord extends PointRecord {
                 if(hasDefault[fieldCnt]) {
                     if(field.isTypeString()) {
                         objectValues[fieldCnt] = field.getDefaultStringValue();
+                    } else if(field.isTypeDate()) {
+                        String dttm = field.getDefaultStringValue();
+                        objectValues[fieldCnt] = field.getDateFormat().parse(dttm);
                     } else {
                         values[fieldCnt] = field.getDefaultDoubleValue();
                     }

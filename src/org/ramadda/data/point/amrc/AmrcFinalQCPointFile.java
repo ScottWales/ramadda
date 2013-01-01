@@ -149,7 +149,23 @@ public class AmrcFinalQCPointFile extends CsvFile  {
             });
 
 
-        String fields = "Site_Id[type=string value=\"" + siteId.trim()+"\"],Latitude[value=" + lat +"],Longitude[value=" + lon +"],Elevation[value=" + elevString+"],Year,Julian_Day,Month,Day,Time[type=string],Temperature[unit=\"Celsius\"],Pressure[unit=\"hPa\"], Wind_Speed[unit=\"m/s\"],Wind_Direction,Relative_Humidity[unit=\"%\"],Delta_T[unit=\"Celsius\"]";
+        String fields = makeFields(new String[]{
+                makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
+                makeField(FIELD_LATITUDE, attrValue(lat)),
+                makeField(FIELD_LONGITUDE, attrValue(lon)),
+                makeField(FIELD_ELEVATION, attrValue(elevString)),
+                makeField(FIELD_YEAR,""),
+                makeField(FIELD_JULIAN_DAY,""),
+                makeField(FIELD_MONTH,""),
+                makeField(FIELD_DAY,""),
+                makeField(FIELD_TIME,attrType(TYPE_STRING)),
+                makeField("Temperature", attrUnit("Celsius")),
+                makeField("Pressure", attrUnit("hPa")),
+                makeField("Wind_Speed", attrUnit("m/s")),
+                makeField("Wind_Direction"),
+                makeField("Relative_Humidity", attrUnit("%")),
+                makeField("Delta_T", attrUnit("Celsius")),
+            });
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }

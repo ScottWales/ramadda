@@ -202,6 +202,8 @@ public class CsvFile extends TextFile {
             if(value!=null) {
                 if(field.isTypeString()) {
                     field.setDefaultStringValue(value);
+                } else if(field.isTypeDate()) {
+                    field.setDefaultStringValue(value);
                 } else {
                     field.setDefaultDoubleValue(Double.parseDouble(value));
                 }
