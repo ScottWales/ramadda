@@ -39,6 +39,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.ColorTable;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.SelectionRectangle;
 
@@ -73,6 +74,11 @@ import java.util.List;
 
 import java.util.zip.*;
 
+
+import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
+import ucar.nc2.ft.point.writer.CFPointObWriter;
+import ucar.nc2.ft.point.writer.PointObVar;
 
 
 /**
@@ -217,7 +223,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             new OutputType("Point Bounds", base +".bounds",
                            OutputType.TYPE_OTHER);
 
-        OUTPUT_NC = new OutputType("NetCDF Grid",
+        OUTPUT_NC = new OutputType("NetCDF Point",
                                    base +".nc",
                                    OutputType.TYPE_OTHER,
                                    "nc", ICON_DATA,
@@ -308,6 +314,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_RESULTS);
         addType(OUTPUT_PRODUCT);
         addType(OUTPUT_CSV);
+        addType(OUTPUT_NC);
         addType(OUTPUT_VIEW);
         addType(OUTPUT_BOUNDS);
         addType(OUTPUT_METADATA);
@@ -317,7 +324,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_GETLATLON);
         addType(OUTPUT_GETPOINTINDEX);
         addType(OUTPUT_ASC);
-        //addType(OUTPUT_NC);
         addType(OUTPUT_MAP);
         addType(OUTPUT_FORM);
         
@@ -935,6 +941,10 @@ public class PointOutputHandler extends RecordOutputHandler {
                 visitors.add(makeCsvVisitor(request, entry, pointEntries,
                                             jobInfo.getJobId()));
             }
+            if (formats.contains(OUTPUT_NC.getId())) {
+                visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
+                                               jobInfo.getJobId()));
+            }
             if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
                 visitors.add(makeLatLonAltCsvVisitor(request, entry,
                                                      pointEntries, jobInfo.getJobId()));
@@ -1041,6 +1051,101 @@ public class PointOutputHandler extends RecordOutputHandler {
                 return true;
             }
         };
+        return visitor;
+    }
+
+
+    public RecordVisitor makeNetcdfVisitor(final Request request,
+                                        Entry mainEntry,
+                                        List<? extends PointEntry> pointEntries,
+                                        final Object jobId)
+            throws Exception {
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
+                                                        mainEntry, ".nc") {
+                CFPointObWriter writer;
+                private CsvVisitor csvVisitor = null;
+                private List<RecordField> fields;
+                private double[] dvals;
+                private String[] svals;
+                private boolean hasTime=false;
+                private Date now;
+                int                cnt = 0;
+                public boolean doVisitRecord(RecordFile file,
+                                             VisitInfo visitInfo, Record record)
+                    throws Exception {
+                    if (writer == null) {
+                        now =new Date();
+                        hasTime = record.hasRecordTime();
+                        fields = new ArrayList<RecordField>();
+                        DataOutputStream dos = getTheDataOutputStream();
+                        List<Attribute> globalAttributes = new ArrayList<Attribute>();
+                        List<PointObVar> dataVars = new ArrayList<PointObVar>();
+                        int numDouble = 0;
+                        int numString = 0;
+                        for (RecordField field : file.getFields()) {
+                            if(!(field.isTypeNumeric() || field.isTypeString())) {
+                                continue;
+                            }
+                            //Having a field called time breaks the cfwriter
+                            if(field.getName().equals("time")) continue;
+
+
+                            fields.add(field);
+                            PointObVar pointObVar = new PointObVar();
+                            pointObVar.setName(field.getName());
+                            if(Utils.stringDefined(field.getUnit())) {
+                                pointObVar.setUnits(field.getUnit());
+                            }
+                            dataVars.add(pointObVar);
+                            if(field.isTypeNumeric()) {
+                                numDouble++;
+                                pointObVar.setDataType(DataType.DOUBLE);
+                            } else if(field.isTypeString()) {
+                                pointObVar.setDataType(DataType.STRING);
+                                numString++;
+                            }
+                        }
+                        dvals = new double[numDouble];
+                        svals = new String[numString];
+                        writer = new CFPointObWriter(dos, globalAttributes,"m", dataVars, 10000);
+                    }
+                    if ( !jobOK(jobId)) {
+                        return false;
+                    }
+                    int dcnt = 0;
+                    int scnt = 0;
+                    PointRecord pointRecord = (PointRecord) record;
+                    for (RecordField field : fields) {
+                        if(field.isTypeNumeric()) {
+                            dvals[dcnt++] = record.getValue(field.getParamId());
+                        } else if(field.isTypeString()) {
+                            svals[scnt++] = record.getStringValue(field.getParamId());
+                        }
+                    }
+                    writer.addPoint(pointRecord.getLatitude(),
+                                    pointRecord.getLongitude(),
+                                    pointRecord.getAltitude(),
+                                    (hasTime?new Date(record.getRecordTime()):now),
+                                    dvals, svals);
+                    return true;
+                }
+
+
+                @Override
+                public void close(VisitInfo visitInfo) {
+                    try {
+                        if(writer!=null) {
+                            writer.finish();
+                        }
+                    } catch(Exception exc) {
+                        throw new RuntimeException(exc);
+
+                    }
+
+                    super.close(visitInfo);
+                }
+            };
         return visitor;
     }
 
@@ -2189,6 +2294,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                 boolean forCollection) {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_CSV));
+        outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
     }
 
