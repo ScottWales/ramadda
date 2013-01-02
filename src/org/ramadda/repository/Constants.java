@@ -1316,6 +1316,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_TEXT = "text";
 
+    /** title argument */
+    public static final String ARG_TITLE = "title";
+
     /** _more_ */
     public static final String ARG_THUMBNAIL = "thumbnail";
 

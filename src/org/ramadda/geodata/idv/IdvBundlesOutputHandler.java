@@ -130,13 +130,14 @@ public class IdvBundlesOutputHandler extends OutputHandler {
         String   title       = (justOneEntry
                                 ? entries.get(0).getName()
                                 : group.getName());
+        title = request.getString(ARG_TITLE, title);
         Document doc         = XmlUtil.makeDocument();
         Element  root        = XmlUtil.create(doc, TAG_BUNDLES, null,
                                       new String[] { ATTR_NAME,
                 title });
 
         if (justOneEntry) {
-            addEntryToXml(request, group, root, topCategory, 1);
+            addEntryToXml(request, entries.get(0), root, topCategory, 1);
         } else {
             topCategory += ">" + title;
             for (Entry entry : entries) {
