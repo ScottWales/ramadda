@@ -1061,9 +1061,15 @@ public class PointOutputHandler extends RecordOutputHandler {
                                         final Object jobId)
             throws Exception {
 
+
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
                                                         mainEntry, ".nc") {
-                CFPointObWriter writer;
+                private int  recordCnt= 0;
+                private PointDataRecord cacheRecord;
+                private List<PointObVar> dataVars;
+                private File tmpFile;
+                private RecordIO tmpFileIO;
+                private CFPointObWriter writer;
                 private CsvVisitor csvVisitor = null;
                 private List<RecordField> fields;
                 private double[] dvals;
@@ -1074,13 +1080,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                 public boolean doVisitRecord(RecordFile file,
                                              VisitInfo visitInfo, Record record)
                     throws Exception {
-                    if (writer == null) {
+                    if (tmpFileIO == null) {
                         now =new Date();
                         hasTime = record.hasRecordTime();
                         fields = new ArrayList<RecordField>();
-                        DataOutputStream dos = getTheDataOutputStream();
-                        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-                        List<PointObVar> dataVars = new ArrayList<PointObVar>();
+                        dataVars = new ArrayList<PointObVar>();
                         int numDouble = 0;
                         int numString = 0;
                         for (RecordField field : file.getFields()) {
@@ -1108,7 +1112,11 @@ public class PointOutputHandler extends RecordOutputHandler {
                         }
                         dvals = new double[numDouble];
                         svals = new String[numString];
-                        writer = new CFPointObWriter(dos, globalAttributes,"m", dataVars, 10000);
+                        cacheRecord= new PointDataRecord((RecordFile)null);
+                        tmpFile = getStorageManager().getTmpFile(null, "tmp.nc");
+                        tmpFileIO = new RecordIO(getStorageManager().getFileOutputStream(tmpFile));
+                        cacheRecord.dvalsSize = dvals.length;
+                        cacheRecord.svalsSize = svals.length;
                     }
                     if ( !jobOK(jobId)) {
                         return false;
@@ -1123,11 +1131,18 @@ public class PointOutputHandler extends RecordOutputHandler {
                             svals[scnt++] = record.getStringValue(field.getParamId());
                         }
                     }
-                    writer.addPoint(pointRecord.getLatitude(),
-                                    pointRecord.getLongitude(),
-                                    pointRecord.getAltitude(),
-                                    (hasTime?new Date(record.getRecordTime()):now),
-                                    dvals, svals);
+                    recordCnt++;
+                    cacheRecord.setLatitude(pointRecord.getLatitude());
+                    cacheRecord.setLongitude(pointRecord.getLongitude());
+                    cacheRecord.setAltitude(pointRecord.getAltitude());
+                    if(hasTime) {
+                        cacheRecord.setTime(record.getRecordTime());
+                    } else {
+                        cacheRecord.setTime(now.getTime());
+                    }
+                    cacheRecord.setDvals(dvals);
+                    cacheRecord.setSvals(svals);
+                    cacheRecord.write(tmpFileIO);
                     return true;
                 }
 
@@ -1135,9 +1150,23 @@ public class PointOutputHandler extends RecordOutputHandler {
                 @Override
                 public void close(VisitInfo visitInfo) {
                     try {
-                        if(writer!=null) {
-                            writer.finish();
+                        if(tmpFileIO==null) return; 
+                        tmpFileIO.close();
+                        List<Attribute> globalAttributes = new ArrayList<Attribute>();
+                        DataOutputStream dos = getTheDataOutputStream();
+                        writer = new CFPointObWriter(dos, globalAttributes,"m", dataVars, recordCnt);
+                        tmpFileIO = new RecordIO(getStorageManager().getFileInputStream(tmpFile));
+                        System.err.println ("writing " + recordCnt);
+                        for(int i=0;i<recordCnt;i++) {
+                            cacheRecord.read(tmpFileIO);
+                            writer.addPoint(cacheRecord.getLatitude(),
+                                            cacheRecord.getLongitude(),
+                                            cacheRecord.getAltitude(),
+                                            new Date(cacheRecord.getTime()),
+                                            cacheRecord.getDvals(), 
+                                            cacheRecord.getSvals());
                         }
+                        writer.finish();
                     } catch(Exception exc) {
                         throw new RuntimeException(exc);
 
