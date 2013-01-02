@@ -648,7 +648,7 @@ public abstract class RecordFile {
                     }
                 } catch (java.io.EOFException oef) {
                     //Bad form to catch an exception as logic but...
-                    oef.printStackTrace();
+                    //                    oef.printStackTrace();
                     break;
                 } catch (Exception exc) {
                     throw exc;

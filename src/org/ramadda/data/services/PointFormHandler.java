@@ -1394,7 +1394,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             sb.append(mapSB);
             sb.append(timeseriesImage);
             sb.append(HtmlUtils.br());
-            sb.append(HtmlUtils.leftRight(message, message2));
+            sb.append(HtmlUtils.leftRight(message, ""));
         }
 
         sb.append("\n\n");

@@ -313,7 +313,7 @@ public class JobManager extends RepositoryManager  {
             }
             return jobInfo;
         } catch (Exception exc) {
-            logError("NLAS: Could not read processing job: " + jobId, exc);
+            logError("RAMADDA: Could not read processing job: " + jobId, exc);
         }
         return null;
     }
@@ -415,7 +415,7 @@ public class JobManager extends RepositoryManager  {
     public void checkNewJobOK() {
         if ( !canAcceptJob()) {
             throw new IllegalStateException(
-                "NLAS: Too many outstanding processing jobs");
+                "RAMADDA: Too many outstanding processing jobs");
         }
     }
 
@@ -437,7 +437,7 @@ public class JobManager extends RepositoryManager  {
         try {
             synchronized (MUTEX) {
                 currentJobs++;
-                System.err.println("NLAS: job queued: " + this);
+                System.err.println("RAMADDA: job queued: " + this);
             }
             List<Future<Boolean>> results =
                 getExecutor().invokeAll(callables);
@@ -449,7 +449,7 @@ public class JobManager extends RepositoryManager  {
                 }
             }
         } catch (Exception exc) {
-            System.err.println("NLAS: error: " + exc);
+            System.err.println("RAMADDA: error: " + exc);
             exc.printStackTrace();
             throw exc;
         } finally {
@@ -457,7 +457,7 @@ public class JobManager extends RepositoryManager  {
                 long t2 = System.currentTimeMillis();
                 currentJobs--;
                 totalJobs++;
-                System.err.println("NLAS: job end time:" + (t2 - t1) + ": "
+                System.err.println("RAMADDA: job end time:" + (t2 - t1) + ": "
                                    + this);
             }
         }
@@ -520,8 +520,8 @@ public class JobManager extends RepositoryManager  {
     }
 
     /**                                                                                                                            
-     * This creates the appropriate response for an NLAS API request.                                                              
-     * If its the NLAS API this creates the response  xml. If its the browser                                                      
+     * This creates the appropriate response for a Point data API request.                                                              
+     * If its the  API this creates the response  xml. If its the browser                                                      
      * then this creates a web page                                                                                                
      *                                                                                                                             
      * @param request http request                                                                                                 
