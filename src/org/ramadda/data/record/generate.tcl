@@ -319,7 +319,7 @@ proc generateRecordClass {class args} {
                 append readCode "if($var==null || $var.length!=$arraySize) $var = new $javaType\[$arraySize\];\n"
             }
             append readCode "read${unsigned}${Type}s(dis,$var);\n"
-            append getters [method "public void set[camel $var]($javaType\[\] newValue)" "copy($var, newValue);"]
+            append getters [method "public void set[camel $var]($javaType\[\] newValue)" "if($var == null) $var = newValue; else copy($var, newValue);"]
             if {$isString} {
                 append getters [method "public void set[camel $var](String  newValue)" "copy($var, newValue.getBytes());"]
             }

@@ -581,6 +581,35 @@ public abstract class Record implements Cloneable {
         }
     }
 
+
+    public String readString(DataInputStream dis) 
+        throws IOException {
+        return dis.readUTF();
+    }
+
+
+    public void readStrings(DataInputStream dis, String[] v)
+        throws IOException {
+        for (int i = 0; i < v.length; i++) {
+            v[i] = readString(dis);
+        }
+    }
+
+    public void write(DataOutputStream dos, String[] v) throws IOException {
+        for (int i = 0; i < v.length; i++) {
+            dos.writeUTF(v[i]);
+        }
+    }
+
+    public void copy(String[] original, String[] newValue) {
+        if (original.length < newValue.length) {
+            throw new IllegalArgumentException("length mismatch "
+                    + original.length + "<" + newValue.length);
+        }
+        System.arraycopy(newValue, 0, original, 0, newValue.length);
+    }
+
+
     /**
      * _more_
      *
