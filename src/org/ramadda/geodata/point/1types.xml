@@ -1,7 +1,7 @@
 <types>
 
   <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
-     <property name="icon" value="/points/pointdata.gif"/>
+     <property name="icon" value="/points/points.gif"/>
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="true"/>
      <column name="properties" type="string" size="1024" columns="80" rows="5"  label="Properties"  showinhtml="false" canlist="fa\
 lse"/>
