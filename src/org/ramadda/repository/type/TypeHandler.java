@@ -2868,7 +2868,7 @@ public class TypeHandler extends RepositoryManager {
                 HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
                 + HtmlUtils.space(1) + msg("Unzip archive")
                 + HtmlUtils.checkbox(ARG_FILE_PRESERVEDIRECTORY, "true",
-                                     true) + HtmlUtils.space(1)
+                                     false) + HtmlUtils.space(1)
                                            + msg("Make folders from archive");
             /*
             String datePatternWidget = msgLabel("Date pattern")

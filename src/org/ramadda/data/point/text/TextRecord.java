@@ -229,6 +229,7 @@ public class TextRecord extends PointRecord {
 
     @Override
     public boolean hasRecordTime() {
+        if(super.hasRecordTime()) return true;
         return idxTime>=0;
     }
 
@@ -372,12 +373,15 @@ public class TextRecord extends PointRecord {
                     System.err.println("tok null: " +tokenCnt +" " +line);
                 }
                 //Check for the riscan NaN
-                if(isMissingValue(tok)) {
+                if(isMissingValue(field, tok)) {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     values[fieldCnt] = (double) Double.parseDouble(tok);
                     //TODO: We're assuming 999 is a missing value
-                    if(values[fieldCnt] == 999) values[fieldCnt] = Double.NaN;
+                    if(isMissingValue(field, values[fieldCnt])) {
+                        values[fieldCnt] = Double.NaN;
+                    } 
+                    
                 }
             }
             setLocation(values[idxX], values[idxY], ((idxZ >= 0)
@@ -394,11 +398,17 @@ public class TextRecord extends PointRecord {
             System.err.println("Line:" + line);
             throw new RuntimeException(exc);
         }
+
     }
 
 
-    public boolean isMissingValue(String s) {
-        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NaN");
+    public boolean isMissingValue(RecordField field, double v) {
+        return getRecordFile().isMissingValue(this, field, v);
+    }
+
+
+    public boolean isMissingValue(RecordField field, String s) {
+        return getRecordFile().isMissingValue(this, field, s);
     }
 
 

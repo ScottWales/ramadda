@@ -121,6 +121,7 @@ public class PointMetadataHarvester extends RecordVisitor {
             long time = pointRecord.getRecordTime();
             minTime = Math.min(minTime, time);
             maxTime = Math.max(maxTime, time);
+        } else {
         }
 
         minLatitude  = getMin(minLatitude, pointRecord.getLatitude());

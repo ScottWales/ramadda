@@ -16,10 +16,13 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
 
 /**
  */
 public class AmerifluxPointFile extends SingleSiteTextFile  {
+
+    private SimpleDateFormat sdf = makeDateFormat("yyyy-D HHmm");
 
     /**
      * _more_
@@ -59,22 +62,6 @@ public class AmerifluxPointFile extends SingleSiteTextFile  {
         return ",";
     }
 
-    /**
-       Overwrite the record making method so we can check for empty lines
-     */
-@Override
-    public Record doMakeRecord(VisitInfo visitInfo) {
-        TextRecord record = new TextRecord(this, getFields()) {
-                public boolean lineOk(String line) {
-                    if(!super.lineOk(line)) return false;
-                    if(line.startsWith(",")) return false;
-                    return true;
-                }
-
-            };
-        record.setDelimiter(getDelimiter());
-        return record;
-    }
 
     /**
      * _more_
@@ -85,7 +72,7 @@ public class AmerifluxPointFile extends SingleSiteTextFile  {
      */
 @Override
     public int getSkipLines(VisitInfo visitInfo) {
-        return 19;
+        return 20;
     }
 
     /*
@@ -108,7 +95,7 @@ This standardized file is identical in format to other standardized files provid
 Questions about these standardized files should be addressed to Tom Boden (bodenta@ornl.gov) .
 YEAR, GAP, DTIME, DOY, HRMIN, UST, TA, WD, WS, NEE, FC, SFC, H, SH, LE, SLE, FG, TS1, TSdepth1, TS2, TSdepth2, PREC, RH, PRESS, CO2, VPD, SWC1, SWC2, Rn, PAR, Rg, Rgdif, PARout, RgOut, Rgl, RglOut, H2O, RE, GPP, CO2top, CO2height, APAR, PARdif, APARpct, ZL
 YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m2/s, W/m2, W/m2, W/m2, W/m2, W/m2, deg C, cm, deg C, cm, mm, %, kPa, umol/mol, kPa, %, %, W/m2, umol/m2/s, W/m2, W/m2, umol/m2/s, W/m2, W/m2, W/m2, mmol/mol, umol/m2/s, umol/m2/s, umol/mol, m, umol/m2/s, umol/m2/s, %, unitless
-
+100....
     */
 
 
@@ -126,7 +113,7 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
 
         //        Sitename: UCI 1930 Canada
         List<String> toks = StringUtil.splitUpTo(header.get(0),":",2);
-        String siteId =  toks.get(0);
+        String siteId =  toks.get(1);
 
 
         //        Location: Latitude: 55.9058  Longitude: -98.5247  Elevation (masl): 257
@@ -164,7 +151,7 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
 
         
 
-        String attrs = attrChartable() + attrSearchable();
+        String baseAttrs = attrChartable() + attrSearchable();
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
                 makeField("Ecosystem_Type", attrType(TYPE_STRING), attrValue(ecosystemType)),
@@ -178,16 +165,37 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
         for(int fieldIdx=0;fieldIdx<fieldsFromFile.size();fieldIdx++) {
             String field = fieldsFromFile.get(fieldIdx);
             String unit = unitsFromFile.get(fieldIdx).trim();
-            String attr = "";
+            String attr = baseAttrs;
             if(Utils.stringDefined(unit)) {
                 attr += attrUnit(unit);
             }
             fields+="," + makeField(field,attr);
         }
 
-        System.err.println(fields);
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
+    }
+
+
+    @Override
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        int offset = 5;
+        TextRecord textRecord = (TextRecord) record;
+
+        int  year = (int)textRecord.getValue(offset+1);
+        int doy = (int) textRecord.getValue(offset+4);
+        String hhmm = ""+(int) textRecord.getValue(offset+5);
+        //        sdf = makeDateFormat("yyyy-D");
+        hhmm = StringUtil.padLeft(hhmm, 4,"0");
+        String dttm = year + "-" +  doy + " " + hhmm;
+        Date date = sdf.parse(dttm);
+        record.setRecordTime(date.getTime());
+        return super.processAfterReading(visitInfo, record);
+    }
+
+    public boolean isMissingValue(Record record, RecordField field, double v) {
+        if(v == -9999 || v == -6999) return true;
+        return false;
     }
 
 

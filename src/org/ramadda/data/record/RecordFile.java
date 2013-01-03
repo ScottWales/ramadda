@@ -951,6 +951,18 @@ public abstract class RecordFile {
         return sdf;
     }
 
+    public boolean isMissingValue(Record record, RecordField field, double v) {
+        return false;
+    }
+
+
+    public boolean isMissingValue(Record record, RecordField field, String s) {
+        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NaN");
+    }
+
+
+
+
 
 
 }
