@@ -1060,122 +1060,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                         List<? extends PointEntry> pointEntries,
                                         final Object jobId)
             throws Exception {
-
-
-        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
-                                                        mainEntry, ".nc") {
-                private int  recordCnt= 0;
-                private PointDataRecord cacheRecord;
-                private List<PointObVar> dataVars;
-                private File tmpFile;
-                private RecordIO tmpFileIO;
-                private CFPointObWriter writer;
-                private CsvVisitor csvVisitor = null;
-                private List<RecordField> fields;
-                private double[] dvals;
-                private String[] svals;
-                private boolean hasTime=false;
-                private Date now;
-                int                cnt = 0;
-                public boolean doVisitRecord(RecordFile file,
-                                             VisitInfo visitInfo, Record record)
-                    throws Exception {
-                    if (tmpFileIO == null) {
-                        now =new Date();
-                        hasTime = record.hasRecordTime();
-                        fields = new ArrayList<RecordField>();
-                        dataVars = new ArrayList<PointObVar>();
-                        int numDouble = 0;
-                        int numString = 0;
-                        for (RecordField field : file.getFields()) {
-                            if(!(field.isTypeNumeric() || field.isTypeString())) {
-                                continue;
-                            }
-                            //Having a field called time breaks the cfwriter
-                            if(field.getName().equals("time")) continue;
-
-
-                            fields.add(field);
-                            PointObVar pointObVar = new PointObVar();
-                            pointObVar.setName(field.getName());
-                            if(Utils.stringDefined(field.getUnit())) {
-                                pointObVar.setUnits(field.getUnit());
-                            }
-                            dataVars.add(pointObVar);
-                            if(field.isTypeNumeric()) {
-                                numDouble++;
-                                pointObVar.setDataType(DataType.DOUBLE);
-                            } else if(field.isTypeString()) {
-                                pointObVar.setDataType(DataType.STRING);
-                                numString++;
-                            }
-                        }
-                        dvals = new double[numDouble];
-                        svals = new String[numString];
-                        cacheRecord= new PointDataRecord((RecordFile)null);
-                        tmpFile = getStorageManager().getTmpFile(null, "tmp.nc");
-                        tmpFileIO = new RecordIO(getStorageManager().getFileOutputStream(tmpFile));
-                        cacheRecord.dvalsSize = dvals.length;
-                        cacheRecord.svalsSize = svals.length;
-                    }
-                    if ( !jobOK(jobId)) {
-                        return false;
-                    }
-                    int dcnt = 0;
-                    int scnt = 0;
-                    PointRecord pointRecord = (PointRecord) record;
-                    for (RecordField field : fields) {
-                        if(field.isTypeNumeric()) {
-                            dvals[dcnt++] = record.getValue(field.getParamId());
-                        } else if(field.isTypeString()) {
-                            svals[scnt++] = record.getStringValue(field.getParamId());
-                        }
-                    }
-                    recordCnt++;
-                    cacheRecord.setLatitude(pointRecord.getLatitude());
-                    cacheRecord.setLongitude(pointRecord.getLongitude());
-                    cacheRecord.setAltitude(pointRecord.getAltitude());
-                    if(hasTime) {
-                        cacheRecord.setTime(record.getRecordTime());
-                    } else {
-                        cacheRecord.setTime(now.getTime());
-                    }
-                    cacheRecord.setDvals(dvals);
-                    cacheRecord.setSvals(svals);
-                    cacheRecord.write(tmpFileIO);
-                    return true;
-                }
-
-
-                @Override
-                public void close(VisitInfo visitInfo) {
-                    try {
-                        if(tmpFileIO==null) return; 
-                        tmpFileIO.close();
-                        List<Attribute> globalAttributes = new ArrayList<Attribute>();
-                        DataOutputStream dos = getTheDataOutputStream();
-                        writer = new CFPointObWriter(dos, globalAttributes,"m", dataVars, recordCnt);
-                        tmpFileIO = new RecordIO(getStorageManager().getFileInputStream(tmpFile));
-                        System.err.println ("writing " + recordCnt);
-                        for(int i=0;i<recordCnt;i++) {
-                            cacheRecord.read(tmpFileIO);
-                            writer.addPoint(cacheRecord.getLatitude(),
-                                            cacheRecord.getLongitude(),
-                                            cacheRecord.getAltitude(),
-                                            new Date(cacheRecord.getTime()),
-                                            cacheRecord.getDvals(), 
-                                            cacheRecord.getSvals());
-                        }
-                        writer.finish();
-                    } catch(Exception exc) {
-                        throw new RuntimeException(exc);
-
-                    }
-
-                    super.close(visitInfo);
-                }
-            };
-        return visitor;
+        return  new NetcdfVisitor(this, request, jobId, mainEntry);
     }
 
 
@@ -1987,18 +1872,14 @@ public class PointOutputHandler extends RecordOutputHandler {
         String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
                           + entry.getEast() + "," + entry.getNorth();
 
-        PointOutputHandler outputHandler = this;
+        String lasProduct = null;
+        if(OUTPUT_LAS!=null)lasProduct = OUTPUT_LAS.toString();
         String[][] values = {
-            { outputHandler.OUTPUT_LATLONALTCSV.toString(),
+            { OUTPUT_LATLONALTCSV.toString(),
               "Lat/Lon/Alt CSV", ".csv", ICON_POINTS },
-            { outputHandler.OUTPUT_LAS.toString(), "LAS 1.2", ".las",
-              outputHandler.ICON_POINTS },
-            /*
-            {outputHandler.OUTPUT_ASC.toString(),
-             "ARC Ascii Grid",
-             ".asc",null},
-            */
-            { outputHandler.OUTPUT_KMZ.toString(), ".kmz",
+            { lasProduct, "LAS 1.2", ".las",
+              ICON_POINTS },
+            { OUTPUT_KMZ.toString(), ".kmz",
               "Google Earth KMZ", getIconUrl(request, ICON_KML) }
         };
 
@@ -2007,13 +1888,14 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         for (String[] tuple : values) {
             String product = tuple[0];
+            if(product == null) continue;
             String name    = tuple[1];
             String suffix  = tuple[2];
             String icon    = tuple[3];
             url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
                                 + entry.getName() + suffix, new String[] {
                 ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
+                OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
                 //ARG_ASYNCH, "false", 
                 //                ARG_Record_SKIP,
                 //                macro(ARG_RECORD_SKIP), 

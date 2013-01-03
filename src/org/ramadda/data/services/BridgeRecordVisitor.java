@@ -122,6 +122,14 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     }
 
 
+    public RecordOutputHandler getHandler() {
+        return handler;
+    }
+
+    public Object getProcessId() {
+        return processId;
+    }
+
     /**
      * Creates if needed and returns  the output stream
      *
