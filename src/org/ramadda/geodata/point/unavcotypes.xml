@@ -5,6 +5,7 @@ all point types need to have numberoofpoints and properties fields
 this gets it from the type_point super class
 --> 
   <type name="type_point_unavco"  description="" super="type_point" category="Point Data" foruser="false">
+     <property name="icon" value="/points/unavco.png"/>
   </type>
 
 
