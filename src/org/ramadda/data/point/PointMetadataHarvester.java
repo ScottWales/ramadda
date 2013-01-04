@@ -163,8 +163,13 @@ public class PointMetadataHarvester extends RecordVisitor {
      * @return _more_
      */
     public String toString() {
-        return "latitude:" + minLatitude + " - " + maxLatitude
-            + "  longitude:" + minLongitude + " - " + maxLongitude +" has time:" + hasTimeRange() + " " + new Date(getMinTime());
+        String s =   "latitude:" + minLatitude + " - " + maxLatitude
+            + "  longitude:" + minLongitude + " - " + maxLongitude;
+        if(hasTimeRange()) {
+            return s +"  time:" + " " + new Date(getMinTime()) +" -- " + new Date(getMaxTime());
+        } else {
+            return s +" no time";
+        }
     }
 
 

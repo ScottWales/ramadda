@@ -1522,7 +1522,7 @@ public abstract class Record implements Cloneable {
      * @return _more_
      */
     public boolean hasRecordTime() {
-        return recordTime != UNDEFINED_TIME;
+        return getRecordTime() != UNDEFINED_TIME;
     }
 
 
