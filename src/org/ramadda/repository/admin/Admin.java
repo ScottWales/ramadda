@@ -437,7 +437,8 @@ public class Admin extends RepositoryManager {
                                     ""));
                     }
 
-                    getRegistryManager().applyInstallForm(request);
+                    //NOT NOW:
+                    //                    getRegistryManager().applyInstallForm(request);
 
                     sb.append(
                         getRepository().showDialogNote(
@@ -499,7 +500,8 @@ public class Admin extends RepositoryManager {
 
 
                     sb.append(getUserManager().makeLoginForm(request));
-                    getRegistryManager().doFinalInitialization();
+                    //NOT NOW
+                    //getRegistryManager().doFinalInitialization();
 
                     if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
                         String plugin =
@@ -609,8 +611,9 @@ public class Admin extends RepositoryManager {
 
 
 
-            sb.append(HtmlUtils.colspan(msgHeader("Registry"), 2));
-            getRegistryManager().addToInstallForm(request, sb);
+            //NOT NOW
+            //sb.append(HtmlUtils.colspan(msgHeader("Registry"), 2));
+            //            getRegistryManager().addToInstallForm(request, sb);
 
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.p());
