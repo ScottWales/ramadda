@@ -1452,8 +1452,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             ImageOutputHandler imageOutputHandler =
                 (ImageOutputHandler) getRepository().getOutputHandler(
                     ImageOutputHandler.OUTPUT_PLAYER);
-            imageOutputHandler.makePlayer(request, children, sb, false);
-
+            Request imageRequest = request.cloneMe();
+            int     width        = Misc.getProperty(props, ATTR_WIDTH, 0);
+            if(width>0) {
+                imageRequest.put(ARG_WIDTH, ""+width);
+            }
+            int     height        = Misc.getProperty(props, ATTR_HEIGHT, 0);
+            if(height>0) {
+                imageRequest.put(ARG_HEIGHT, ""+height);
+            }
+            imageOutputHandler.makePlayer(imageRequest, children, sb, false);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_GALLERY)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
