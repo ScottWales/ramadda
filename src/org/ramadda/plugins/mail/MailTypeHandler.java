@@ -67,7 +67,9 @@ public class MailTypeHandler extends GenericTypeHandler {
 
 
     /**
-     * _more_
+     * Gets called when the user has created a new entry from the File->New form or
+     * when they have edited the entry. If the eml files were being harvested from a harvester
+     * then also override TypeHandler.initializeNewEntry
      *
      * @param request _more_
      * @param entry _more_
@@ -80,16 +82,23 @@ public class MailTypeHandler extends GenericTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
+        //If this is an edit then return
         if ( !newEntry) {
             return;
         }
+
+        //If the file for the entry does not exist then return
         if ( !entry.isFile()) {
             return;
         }
+
+        //Extract out the mail message metadata
         MimeMessage message = new MimeMessage(
                                   null,
                                   getStorageManager().getFileInputStream(
                                       entry.getFile().toString()));
+
+        //If the user did not specify a name in the entry form then use the mail subject
         if (entryHasDefaultName(entry)) {
             String subject = message.getSubject();
             if (subject == null) {
@@ -106,6 +115,7 @@ public class MailTypeHandler extends GenericTypeHandler {
         if (toDttm == null) {
             toDttm = fromDttm;
         }
+        //Set the start and end date
         if (fromDttm != null) {
             entry.setStartDate(fromDttm.getTime());
         }
@@ -113,7 +123,10 @@ public class MailTypeHandler extends GenericTypeHandler {
             entry.setEndDate(toDttm.getTime());
         }
 
+        //Do more mail stuff
         processContent(request, entry, content, desc);
+
+        //Now get the values (this would be the fromaddress and toaddress from types.xml
         Object[] values = getEntryValues(entry);
         values[0] = from;
         values[1] = to;
