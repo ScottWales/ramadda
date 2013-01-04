@@ -520,7 +520,9 @@ public class MetadataHandler extends RepositoryManager {
         Document doc          = node.getOwnerDocument();
         Element  metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] { ATTR_TYPE,
-                metadata.getType() });
+                                                  metadata.getType(),
+                                                  ATTR_INHERITED, ""+ metadata.getInherited()
+                                               });
         for (MetadataElement element : type.getChildren()) {
             int    index = element.getIndex();
             String value = metadata.getAttr(index);
