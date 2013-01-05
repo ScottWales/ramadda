@@ -76,19 +76,21 @@ dwell_multipler = 3;
 
 function ImagePlayer()  {
     this.prefix = "${imagePlayerPrefix}";
+    this.DIR_FORWARD = 0;
+    this.DIR_BACKWARD = 1;
+    this.MODE_NORMAL=0;
+    this.MODE_ROCKING=1;
+
+
     this.images= new Array();
     this.normal_delay = 1000;
     this.delay = this.normal_delay;         //delay between frames in 1/100 seconds
     this.end_dwell_multipler   = this.dwell_multipler;
     this.start_dwell_multipler = this.dwell_multipler;
     this.current_image = 0;
-    this.direction =1;
+    this.direction =this.DIR_FORWARD;
     this.running = 0;
     this.timestamp=1;
-
-    this.MODE_NORMAL=0;
-    this.MODE_NORMAL=1;
-    this.MODE_ROCKING=2;
     this.play_mode = this.MODE_NORMAL;  
  
 
@@ -124,32 +126,33 @@ function ImagePlayer()  {
  
 
     this.play = function(mytimestamp) {
-        if(mytimestamp!= this.timestamp) return;
-        if(this.direction == 1) {
+        if(mytimestamp!= this.timestamp) {
+            return;
+        }
+        if(this.direction == this.DIR_FORWARD) {
             this.current_image++;  
         } else {
             this.current_image--;
         }
 
+
         if (this.current_image >= this.images.length) {
-            if (this.play_mode == 1) {      
+            if (this.play_mode == this.MODE_NORMAL) {      
                 this.current_image = 0;
-            } else  if (this.play_mode == 2) {              //sweep mode - change directions (go bkwd)
+            } else {
+                //rocking
                 this.current_image = this.images.length-1;
-                this.direction=0;
+                this.direction=this.DIR_BACKWARD;
+            }
+        } else if (this.current_image < 0) {
+            if (this.play_mode == this.MODE_NORMAL) {      
+                this.current_image = 0;
             } else {
                 this.current_image = 0;
+                this.direction=this.DIR_FORWARD;
             }
         }
 
-        if (this.current_image < this.images.length) {
-            if (this.play_mode == 1) {               //rev loop mode - skip to last image
-                this.current_image = this.images.length-1;
-            }
-            if (this.play_mode == 2) {
-                this.current_image = 0;
-            }
-        }
  
         //== Make sure there is at least one image selected
         //== and find first_selected_image and last_selected_image
@@ -170,11 +173,11 @@ function ImagePlayer()  {
             while (this.images[this.current_image].ok == false) {
                 this.current_image++;
                 if (this.current_image >= this.images.length) {
-                    if (this.play_mode == 1)
+                    if (this.play_mode == this.MODE_NORMAL) {
                         this.current_image = 0;
-                    if (this.play_mode == 2) {
+                    } else {
                         this.current_image = this.images.length-1;
-                        direction=0;
+                        this.direction=this.DIR_BACKWARD;
                     }
                 }
             }
@@ -184,8 +187,8 @@ function ImagePlayer()  {
 
         this.displayImage();
         this.delay_time = this.delay;
-        if (this.current_image == first_selected_image) delay_time = this.start_dwell_multipler*this.delay;
-        if (this.current_image == last_selected_image)   delay_time = this.end_dwell_multipler*this.delay;
+        if (this.current_image == first_selected_image) this.delay_time = this.start_dwell_multipler*this.delay;
+        if (this.current_image == last_selected_image)   this.delay_time = this.end_dwell_multipler*this.delay;
         setTimeout("${imagePlayerVar}.play(" +mytimestamp +")", this.delay_time);
     }
 
@@ -232,8 +235,8 @@ function ImagePlayer()  {
 
 
     this.toggle_mode = function()  {
-        if(this.play_mode==0) this.change_mode(1);
-        else this.change_mode(0);
+        if(this.play_mode==this.MODE_NORMAL) this.change_mode(this.MODE_ROCKING);
+        else this.change_mode(this.MODE_NORMAL);
     }
  
 
