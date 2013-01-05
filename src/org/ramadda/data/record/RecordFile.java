@@ -542,7 +542,7 @@ public abstract class RecordFile {
                                             Record record)
             throws IOException {
         visitInfo.addRecordIndex(1);
-        Record.ReadStatus status = record.read(visitInfo.getRecordIO());
+        Record.ReadStatus status = record.readNextRecord(visitInfo.getRecordIO());
         return status;
     }
 
@@ -752,7 +752,7 @@ public abstract class RecordFile {
         RecordIO recordIO = doMakeInputIO(false);
         Record   record   = (Record) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
-        record.read(recordIO);
+        record.readNextRecord(recordIO);
         return record;
     }
 
@@ -830,7 +830,7 @@ public abstract class RecordFile {
                 break;
             }
             try {
-                record.read(recordInput);
+                record.readNextRecord(recordInput);
                 record.index = index;
                 if ((filter == null)
                     || filter.isRecordOk(record, visitInfo)) {

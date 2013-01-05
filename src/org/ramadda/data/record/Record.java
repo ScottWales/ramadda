@@ -296,6 +296,16 @@ public abstract class Record implements Cloneable {
         return ReadStatus.OK;
     }
 
+    public final ReadStatus readNextRecord(RecordIO recordIO) throws IOException {
+        ReadStatus status =read(recordIO);
+        if(status!=ReadStatus.OK) return status;
+        initializeAfterRead(recordIO);
+        return status;
+    }
+
+    public void initializeAfterRead(RecordIO recordIO) throws IOException {
+    }
+
     /**
      * _more_
      *
