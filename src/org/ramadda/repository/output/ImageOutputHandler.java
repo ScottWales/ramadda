@@ -623,6 +623,8 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result(group.getName(), sb, getMimeType(output));
 
         }
+        String playerPrefix = "imageplayer_" + HtmlUtils.blockCnt++;
+        String playerVar  = playerPrefix +"Var";
 
         if (output.equals(OUTPUT_PLAYER)) {
             if ( !request.exists(ARG_ASCENDING)) {
@@ -651,7 +653,7 @@ public class ImageOutputHandler extends OutputHandler {
                          + "</td><td align=right>" + dttm;
                 title += "</table>";
                 title = title.replace("\"", "\\\"");
-                sb.append("addImage(" + HtmlUtils.quote(url) + ","
+                sb.append(playerVar +".addImage(" + HtmlUtils.quote(url) + ","
                           + HtmlUtils.quote(title) + ");\n");
                 cnt++;
             }
@@ -689,12 +691,14 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_PLAYER)) {
             String playerTemplate =
                 repository.getResource(PROP_HTML_IMAGEPLAYER);
+            playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}", playerVar);
+            playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}", playerPrefix);
             String widthAttr = "";
             int    width     = request.get(ARG_WIDTH, 600);
             if (width > 0) {
                 widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
-            String imageHtml = "<img name=\"animation\" border=\"0\" "
+            String imageHtml = "<img id=\"" + playerPrefix +"animation\" border=\"0\" "
                                + widthAttr
                                + HtmlUtils.attr("SRC", firstImage)
                                + " alt=\"image\">";
@@ -765,6 +769,10 @@ public class ImageOutputHandler extends OutputHandler {
     public void makePlayer(Request request, List<Entry> entries,
                            StringBuffer finalSB, boolean addHeader)
             throws Exception {
+        String playerPrefix = "imageplayer_" + HtmlUtils.blockCnt++;
+        String playerVar  = playerPrefix +"Var";
+
+
         StringBuffer sb = new StringBuffer();
         if (entries.size() == 0) {
             finalSB.append("<b>Nothing Found</b><p>");
@@ -797,18 +805,20 @@ public class ImageOutputHandler extends OutputHandler {
                      + "</td><td align=right>" + dttm;
             title += "</table>";
             title = title.replace("\"", "\\\"");
-            sb.append("addImage(" + HtmlUtils.quote(url) + ","
+            sb.append(playerVar + ".addImage(" + HtmlUtils.quote(url) + ","
                       + HtmlUtils.quote(title) + ");\n");
             cnt++;
         }
 
         String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
+        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}", playerVar);
+        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}", playerPrefix);
         String widthAttr      = "";
         int    width          = request.get(ARG_WIDTH, 600);
-        if (width > 0) {
-            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
+        if (width > 0) { 
+           widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
         }
-        String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+        String imageHtml = "<IMG id=\"" + playerPrefix +"animation\" BORDER=\"0\" "
                            + widthAttr + HtmlUtils.attr("SRC", firstImage)
                            + " ALT=\"image\">";
 
@@ -879,7 +889,7 @@ public class ImageOutputHandler extends OutputHandler {
      *   if (width > 0) {
      *       widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
      *   }
-     *   String imageHtml = "<IMG NAME=\"animation\" BORDER=\"0\" "
+     *   String imageHtml = "<IMG id=\"animation\" BORDER=\"0\" "
      *                      + widthAttr + HtmlUtils.attr("SRC", firstImage)
      *                      + " ALT=\"image\">";
      *
