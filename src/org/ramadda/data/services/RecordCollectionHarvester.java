@@ -162,7 +162,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
     }
 
     /**
-     * _more_
+     * This makes the list of entry types that can be created.
      *
      * @param request _more_
      * @param typeHandler _more_
@@ -191,7 +191,6 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
     }
 
 
-
     /**
      * harvester description
      *
@@ -203,15 +202,15 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
 
 
     /**
-     * _more_
+     * Should this harvester harvest the given file
      *
-     * @param fileInfo _more_
-     * @param f _more_
-     * @param matcher _more_
+     * @param fileInfo file information
+     * @param f the actual file
+     * @param matcher pattern matcher
      *
-     * @return _more_
+     * @return the new entry or null if nothing is harvested
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     @Override
     public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher)
