@@ -1372,6 +1372,12 @@ public class EntryManager extends RepositoryManager {
             }
 
             boolean isGzip = resource.endsWith(".gz");
+            
+            // check if it's a zidv file and if so, don't unzip
+            if (unzipArchive && resource.toLowerCase().endsWith(".zidv")) {
+                unzipArchive = false;
+            }
+            
             if (unzipArchive && !IOUtil.isZipFile(resource)) {
                 if ( !isGzip) {
                     unzipArchive = false;
