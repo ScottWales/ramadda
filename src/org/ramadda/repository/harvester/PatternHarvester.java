@@ -28,6 +28,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -518,6 +519,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         if ((notfilePattern == null) && (notfilePatternString.length() > 0)) {
             notfilePattern = Pattern.compile(notfilePatternString);
         }
+        boolean gotAttributeInPattern = false;
 
 
         if ((filePattern == null) && (filePatternString != null)
@@ -526,22 +528,40 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             StringBuffer pattern = new StringBuffer();
             patternNames = new ArrayList<String>();
             while (true) {
-                int idx1 = tmp.indexOf("(");
-                if (idx1 < 0) {
+                int openParenIdx = tmp.indexOf("(");
+                if (openParenIdx < 0) {
                     pattern.append(tmp);
-
                     break;
                 }
-                int idx2 = tmp.indexOf(":");
-                if (idx2 < 0) {
-                    throw new IllegalArgumentException("bad pattern:"
-                            + filePatternString);
+                int closeParenIdx = tmp.indexOf(")");
+                if(closeParenIdx< openParenIdx ) {
+                    pattern.append(tmp);
+                    break;
                 }
-                pattern.append(tmp.substring(0, idx1 + 1));
-                String name = tmp.substring(idx1 + 1, idx2);
+                int colonIdx = tmp.indexOf(":");
+                if (colonIdx < 0) {
+                    pattern.append(tmp);
+                    break;
+                }
+                if(closeParenIdx< colonIdx) {
+                    pattern.append(tmp.substring(0, closeParenIdx+1));
+                    patternNames.add("");
+                    tmp = tmp.substring(closeParenIdx+1);
+                    continue;
+                }
+                pattern.append(tmp.substring(0, openParenIdx + 1));
+                String name = tmp.substring(openParenIdx + 1, colonIdx);
                 patternNames.add(name);
-                tmp = tmp.substring(idx2 + 1);
+                gotAttributeInPattern = true;
+                tmp = tmp.substring(colonIdx + 1);
             }
+            //            System.err.println ("pattern:" + pattern);
+            //            System.err.println ("pattern names:" + patternNames);
+            if(!gotAttributeInPattern) {
+                pattern = new StringBuffer(filePatternString);
+                patternNames = new ArrayList<String>();
+            }
+
             filePattern = Pattern.compile(pattern.toString());
             if (getTestMode()) {
                 getRepository().getLogManager().logInfo("orig pattern:"
@@ -1163,6 +1183,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //        System.err.println("pattern names:" + patternNames);
         for (int dataIdx = 0; dataIdx < patternNames.size(); dataIdx++) {
             String dataName = patternNames.get(dataIdx);
+            if(!Utils.stringDefined(dataName)) {
+                continue;
+            }
             Object value    = matcher.group(dataIdx + 1);
             if (dataName.equals("fromdate")) {
                 value = fromDate = parseDate((String) value);
