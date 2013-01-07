@@ -427,6 +427,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node)
             throws Exception {
@@ -456,6 +457,7 @@ public class GenericTypeHandler extends TypeHandler {
                                              (String) null);
             }
             if (value == null) {
+                //                System.err.println (" could not find column value:" + column);
                 continue;
             }
             column.setValue(entry, values, value);

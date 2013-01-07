@@ -474,6 +474,15 @@ public class Admin extends RepositoryManager {
                     topEntry.setDescription(description);
                     getEntryManager().storeEntry(topEntry);
 
+                    //NOT NOW
+                    //getRegistryManager().doFinalInitialization();
+
+                    //Make sure we do this now before we do the final init entries
+                    if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
+                        String plugin =
+                            "/org/ramadda/repository/resources/plugins/allplugins.jar";
+                        getRepository().installPlugin(plugin);
+                    }
 
                     String initEntriesXml = null;
                     File   initFile       =
@@ -492,22 +501,19 @@ public class Admin extends RepositoryManager {
                             "/org/ramadda/repository/resources/examples/initentries.xml");
                     }
                     Element     root       = XmlUtil.getRoot(initEntriesXml);
+                    Request tmpRequest = getRepository().getRequest(user);
+                    System.err.println("processing initEntries");
                     List<Entry> newEntries =
                         getEntryManager().processEntryXml(
-                            getRepository().getRequest(user), root,
+                                                          tmpRequest, root,
                             new Hashtable<String, Entry>(),
                             new Hashtable<String, String>(), null);
 
-
-                    sb.append(getUserManager().makeLoginForm(request));
-                    //NOT NOW
-                    //getRegistryManager().doFinalInitialization();
-
-                    if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
-                        String plugin =
-                            "/org/ramadda/repository/resources/plugins/allplugins.jar";
-                        getRepository().installPlugin(plugin);
+                    for (Entry entry : newEntries) {
+                        entry.getTypeHandler().doFinalInitialization(tmpRequest, entry);
                     }
+                    sb.append(getUserManager().makeLoginForm(request));
+
 
                     if (errorBuffer.length() > 0) {
                         sb.append(

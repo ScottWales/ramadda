@@ -3846,10 +3846,11 @@ public class EntryManager extends RepositoryManager {
 
         List<String[]> idList = new ArrayList<String[]>();
         for (Element node : entryNodes) {
+
             Entry entry = createEntryFromXml(request, node, entries,
                                              origFileToStorage, true, false);
 
-            //System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
+//            System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
             if (resultRoot != null) {
                 XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
                                resultRoot, new String[] { ATTR_ID,
@@ -3962,6 +3963,7 @@ public class EntryManager extends RepositoryManager {
                                     boolean checkAccess, boolean internal)
             throws Exception {
 
+
         boolean doAnonymousUpload = false;
         String  name              = XmlUtil.getAttribute(node, ATTR_NAME);
         if (name.length() > 200) {
@@ -4034,7 +4036,10 @@ public class EntryManager extends RepositoryManager {
         String localFileToMove = XmlUtil.getAttribute(node,
                                      ATTR_LOCALFILETOMOVE, (String) null);
 
-        TypeHandler typeHandler = getRepository().getTypeHandler(type);
+
+        //Pass in false so we error if the repository does not find the type
+        TypeHandler typeHandler = getRepository().getTypeHandler(type, false, false);
+
         if (typeHandler == null) {
             throw new RepositoryUtil.MissingEntryException(
                 "Could not find type:" + type);
@@ -4141,7 +4146,6 @@ public class EntryManager extends RepositoryManager {
             }
         }
         entry.getTypeHandler().initializeEntryFromXml(request, entry, node);
-
         return entry;
 
     }
