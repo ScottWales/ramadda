@@ -125,6 +125,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         }
 
         StringBuffer sb  = new StringBuffer();
+        sb.append(entry.getDescription());
+        sb.append(HtmlUtils.p());
         String       url = entry.getResource().getPath();
         String       id  = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
