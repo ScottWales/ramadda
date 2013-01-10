@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
 
-  <type name="climatemodelfile"  description="Climate Model File" handler="gov.noaa.esrl.psd.repository.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+  <type name="noaa_climate_collection"  description="Climate Data Collection" handler="gov.noaa.esrl.psd.repository.data.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+   </type>
+
+
+  <type name="noaa_climate_modelfile"  description="Climate Model File" handler="gov.noaa.esrl.psd.repository.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/noaa/noaa.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="true"/>
      <property name="form.date.show" value="true"/>
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
      <column name="variable" type="string"  label="Variable"/>
      <column name="model" type="string"  label="Model"  showinhtml="true" />
      <column name="experiment" type="string"  label="Experiment"  showinhtml="true" />

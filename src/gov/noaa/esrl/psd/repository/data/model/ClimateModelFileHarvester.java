@@ -29,7 +29,7 @@ public class ClimateModelFileHarvester extends PatternHarvester {
     }
 
     public TypeHandler getTypeHandler() throws Exception {
-        return  getRepository().getTypeHandler(ClimateModelFileTypeHandler.TYPE_CLIMATEMODELFILE);
+        return  getRepository().getTypeHandler(ClimateModelFileTypeHandler.TYPE_CLIMATE_MODELFILE);
     }
 
 
@@ -41,16 +41,6 @@ public class ClimateModelFileHarvester extends PatternHarvester {
     public String getDescription() {
         return "Climate Model File";
     }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getLastGroupType() {
-        return ClimateModelFileTypeHandler.TYPE_CLIMATEMODELFILE;
-    }
-
 
     /**
      * Should this harvester harvest the given file
