@@ -154,6 +154,13 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             catAnswerSB.append(HtmlUtils.p());
         }
 
+
+        //sort the categories and put the blank one at the end
+        cats = (List<String>) ucar.unidata.util.Misc.sort(cats);
+        if(cats.contains("")) {
+            cats.remove("");
+            cats.add("");
+        }
         for (String cat : cats) {
             StringBuffer catQuestionSB = catQuestionMap.get(cat);
             catQuestionSB.append("</ol>");
