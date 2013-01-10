@@ -156,7 +156,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         //sort the categories and put the blank one at the end
-        cats = (List<String>) ucar.unidata.util.Misc.sort(cats);
+        cats = new ArrayList<String>(ucar.unidata.util.Misc.sort(cats));
         if(cats.contains("")) {
             cats.remove("");
             cats.add("");
