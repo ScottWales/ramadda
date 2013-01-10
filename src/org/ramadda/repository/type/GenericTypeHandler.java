@@ -404,6 +404,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {

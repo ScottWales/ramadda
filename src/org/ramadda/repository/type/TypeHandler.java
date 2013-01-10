@@ -2422,6 +2422,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
+
         return getDatabaseManager().select(what, tables, Clause.and(clauses),
                                            extra,
                                            getRepository().getMax(request));

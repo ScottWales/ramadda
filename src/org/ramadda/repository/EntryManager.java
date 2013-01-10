@@ -5988,8 +5988,13 @@ public class EntryManager extends RepositoryManager {
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where       = typeHandler.assembleWhereClause(request,
                                  searchCriteriaSB);
-        int skipCnt = request.get(ARG_SKIP, 0);
 
+        return getEntries(request, where, typeHandler);
+    }
+
+    public List[] getEntries(Request request, List<Clause> clauses, TypeHandler typeHandler) 
+        throws Exception {
+        int skipCnt = request.get(ARG_SKIP, 0);
         SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
         List<Entry> groups        = new ArrayList<Entry>();
@@ -5999,7 +6004,7 @@ public class EntryManager extends RepositoryManager {
 
 
         Statement   statement     =
-            typeHandler.select(request, Tables.ENTRIES.COLUMNS, where,
+            typeHandler.select(request, Tables.ENTRIES.COLUMNS, clauses,
                                getRepository().getQueryOrderAndLimit(request,
                                    false));
 
