@@ -71,8 +71,9 @@
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.css"/> 
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.png"/> 
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.gif"/> 
-            <include name="gov/noaa/esrl/psd/repository/data/cmip5/*.xml"/> 
-            <include name="gov/noaa/esrl/psd/repository/data/cmip5/*.txt"/> 
+            <include name="gov/noaa/esrl/psd/repository/data/**/*.xml"/> 
+            <include name="gov/noaa/esrl/psd/repository/data/**/*.txt"/> 
+            <include name="gov/noaa/esrl/psd/repository/resources/**/*.txt"/> 
             <include name="gov/noaa/esrl/psd/repository/resources/**/*.xml"/> 
             <include name="gov/noaa/esrl/psd/repository/resources/**/*.html"/> 
             <include name="gov/noaa/esrl/psd/repository/resources/**/*.jnlp"/> 

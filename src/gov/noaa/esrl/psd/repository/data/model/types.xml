@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+
+  <type name="climatemodelfile"  description="Climate Model File" handler="gov.noaa.esrl.psd.repository.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <column name="variable" type="string"  label="Variable"/>
+     <column name="model" type="string"  label="Model"  showinhtml="true" />
+     <column name="experiment" type="string"  label="Experiment"  showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble Member"/>
+     <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
+   </type>
+
+</types>
+
