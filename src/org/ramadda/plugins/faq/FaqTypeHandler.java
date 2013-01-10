@@ -150,7 +150,9 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             catAnswerSB.append(" ");
             catAnswerSB.append(HtmlUtils.b(entry.getName()));
             catAnswerSB.append(HtmlUtils.br());
-            catAnswerSB.append(entry.getDescription());
+            String desc = entry.getDescription();
+            desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
+            catAnswerSB.append(desc);
             catAnswerSB.append(HtmlUtils.p());
         }
 
