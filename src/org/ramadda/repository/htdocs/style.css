@@ -167,6 +167,15 @@ form {
   padding: 25px 25px 20px;
 }
 
+.boxquote {
+  font-style:italic;
+  margin:10pt;
+  padding:5pt;
+  border: solid #888 1px;
+  background-color:#eff;
+}
+
+
 label {
   display: block;
   margin-bottom: 3px;
