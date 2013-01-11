@@ -1548,6 +1548,11 @@ function toggleTab(mainId) {
 
 
 function insertAtCursor(myField, myValue) {
+
+
+    var textScroll = myField.scrollTop;
+
+
     //IE support
     if (document.selection) {
         myField.focus();
@@ -1564,6 +1569,7 @@ function insertAtCursor(myField, myValue) {
     } else {
         myField.value += myValue;
     }
+    myField.scrollTop = textScroll;
 }
 
 

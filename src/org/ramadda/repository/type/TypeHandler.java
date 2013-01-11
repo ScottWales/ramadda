@@ -2753,7 +2753,7 @@ public class TypeHandler extends RepositoryManager {
                 if (isWikiText(desc)) {
                     showHtmlEditor = false;
                     makeWidget     = false;
-                    rows           = 20;
+                    rows           = 30;
                     buttons        =
                         getRepository().getWikiManager().makeWikiEditBar(
                             request, entry, ARG_DESCRIPTION) + HtmlUtils.br();
@@ -2762,7 +2762,7 @@ public class TypeHandler extends RepositoryManager {
                     //                    sb.append(HtmlUtils.br());
                     sb.append(HtmlUtils.textArea(ARG_DESCRIPTION, desc, rows,
                             getProperty(entry, "form.description.columns",
-                                        60), HtmlUtils.id(ARG_DESCRIPTION)));
+                                        80), HtmlUtils.id(ARG_DESCRIPTION)));
                     sb.append("</td></tr>");
                 }
             }
