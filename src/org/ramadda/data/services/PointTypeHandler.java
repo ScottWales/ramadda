@@ -116,6 +116,16 @@ public   class PointTypeHandler extends RecordTypeHandler {
         log("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
         log("initializeNewEntry: done");
+
+    }
+
+    public void doFinalInitialization(Request request, Entry entry) {
+        try {
+            super.doFinalInitialization(request,  entry);
+            getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     /**

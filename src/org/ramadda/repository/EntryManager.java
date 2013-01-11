@@ -2061,6 +2061,15 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public void setBoundsFromChildren(Request request, Entry entry) throws Exception {
+        if(entry == null) return;
+        Rectangle2D.Double rect = getBounds(getChildren(request, entry));
+        if (rect != null) {
+            entry.setBounds(rect);
+            storeEntry(entry);
+        }
+    }
+
 
     /**
      * _more_
@@ -6221,6 +6230,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> newEntries = new ArrayList<Entry>();
         newEntries.add(entry);
         insertEntries(newEntries, true, true);
+        entry.getTypeHandler().doFinalInitialization(request, entry);
 
         return entry;
     }
