@@ -489,26 +489,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
                         }
                     };
 
-                final RecordVisitor metadata2 = new RecordVisitor() {
-                        public boolean visitRecord(RecordFile file,
-                                                   VisitInfo visitInfo, Record record) {
-                            cnt[0]++;
-                            PointRecord pointRecord = (PointRecord) record;
-                            if ((pointRecord.getLatitude() < -90)
-                                || (pointRecord.getLatitude() > 90)) {
-                                System.err.println("Bad lat:"
-                                                   + pointRecord.getLatitude());
-                            }
-                            if ((cnt[0] % 100000) == 0) {
-                                System.err.println(cnt[0] + " lat:"
-                                                   + pointRecord.getLatitude() + " "
-                                                   + pointRecord.getLongitude() + " "
-                                                   + pointRecord.getAltitude());
 
-                            }
-                            return true;
-                        }
-                    };
 
                 PointFile pointFile = (PointFile) Misc.findConstructor(pointFileClass, new Class[]{String.class}).newInstance(new Object[]{arg});
                 pointFile.visit(metadata);

@@ -111,7 +111,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
             outputHandler.makeLatLonAltBinVisitor(
                 request, entry, pointEntries, null, dos));
         log("initializeNewEntry: visting file");
-        pointFile.visit(visitorGroup, new VisitInfo(true), null);
+        pointFile.visit(visitorGroup, new VisitInfo(false), null);
         dos.close();
         log("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
@@ -190,7 +190,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
                 PointMetadataHarvester metadata2 =
                     new PointMetadataHarvester(llg);
                 pointEntry.getBinaryPointFile().visit(metadata2,
-                        new VisitInfo(true), null);
+                        new VisitInfo(false), null);
                 List<double[]> polygon = llg.getBoundingPolygon();
                 StringBuffer[] sb = new StringBuffer[] { new StringBuffer(),
                         new StringBuffer(), new StringBuffer(),
