@@ -123,6 +123,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
         try {
             super.doFinalInitialization(request,  entry);
             getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
+            getEntryManager().setTimeFromChildren(request, entry.getParentEntry(), null);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
