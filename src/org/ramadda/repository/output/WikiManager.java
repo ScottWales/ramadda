@@ -1193,8 +1193,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     } else {
                         content = child.getDescription();
                         if (wikify) {
-                            content = makeWikiUtil(request,
-                                    false).wikify(content, null);
+                            content = wikifyEntry(request, child, content,
+                                                  false, null, null);
+
                         }
                     }
                     if (child.getResource().isImage()) {
