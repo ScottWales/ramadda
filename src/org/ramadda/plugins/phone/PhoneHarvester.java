@@ -385,7 +385,7 @@ public class PhoneHarvester extends Harvester  {
                 if(currentEntry == null) return true;
                 currentEntry.setDescription("");
                 List<Entry> entries = (List<Entry>) Misc.newList(currentEntry);
-                getEntryManager().insertEntries(entries, true, true);
+                getEntryManager().addNewEntries(entries);
                 processedACommand = true;
                 continue;
             }
@@ -622,7 +622,7 @@ public class PhoneHarvester extends Harvester  {
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
-        getEntryManager().insertEntries(entries, true, true);
+        getEntryManager().addNewEntries(entries);
         msg.append( "New entry:\n" + getEntryInfo(entry));
         return true;
     }
@@ -701,7 +701,7 @@ public class PhoneHarvester extends Harvester  {
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
-        getEntryManager().insertEntries(entries, true, true);
+        getEntryManager().addNewEntries(entries);
         msg.append("New voice entry:\n" + getEntryUrl(entry));
         return true;
     }

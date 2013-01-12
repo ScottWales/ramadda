@@ -104,16 +104,4 @@ public class FieldNoteTypeHandler extends ExtensibleGroupTypeHandler {
         super.initializeNewEntry(entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param newEntry _more_
-     */
-    @Override
-    public void doFinalInitialization(Request request, Entry newEntry) {
-        super.doFinalInitialization(request, newEntry);
-    }
-
 }

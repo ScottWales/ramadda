@@ -1188,7 +1188,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     if (child.getTypeHandler().isType(TYPE_WIKIPAGE)) {
                         String wikitext = child.getValue(0,
                                               child.getDescription());
-                        content = wikifyEntry(request, entry, wikitext,
+                        content = wikifyEntry(request, child, wikitext,
                                 false, null, null);
                     } else {
                         content = child.getDescription();

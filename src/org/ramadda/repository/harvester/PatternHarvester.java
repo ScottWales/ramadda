@@ -945,7 +945,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         currentStatus = "";
         logHarvesterInfo("Inserting " + entriesToAdd.size() + " new entries");
         status.append("Inserting entries<br>");
-        getEntryManager().insertEntries(entriesToAdd, true, true);
+        getEntryManager().addNewEntries(entriesToAdd);
     }
 
     /**
@@ -1263,7 +1263,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 return null;
             }
             group.setDescription(IOUtil.readContents(f.toString(), ""));
-            getEntryManager().storeEntry(group);
+            getEntryManager().updateEntry(group);
 
             return null;
         }

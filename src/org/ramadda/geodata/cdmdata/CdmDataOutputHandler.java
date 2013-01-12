@@ -633,7 +633,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 List<Entry> entries = (List<Entry>) Misc.newList(entry);
                 getEntryManager().addInitialMetadata(request, entries, false,
                         request.get(ARG_SHORT, false));
-                getEntryManager().insertEntries(entries, false);
+                getEntryManager().updateEntries(entries);
                 sb.append(getRepository().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(

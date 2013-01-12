@@ -788,7 +788,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 props.put(PROP_STICKY_POSX + "." + label, posx);
                 props.put(PROP_STICKY_POSY + "." + label, posy);
                 setProperties(entry, props);
-                getEntryManager().storeEntry(entry);
+                getEntryManager().updateEntry(entry);
             } else {
                 Object[] values = tableHandler.getValues(makeClause(entry,
                                       request.getString(ARG_DBID, "")));

@@ -472,7 +472,7 @@ public class Admin extends RepositoryManager {
                     description = description.replace("${root}",
                             getRepository().getUrlBase());
                     topEntry.setDescription(description);
-                    getEntryManager().storeEntry(topEntry);
+                    getEntryManager().updateEntry(topEntry);
 
                     //NOT NOW
                     //getRegistryManager().doFinalInitialization();

@@ -1174,7 +1174,6 @@ public class EntryManager extends RepositoryManager {
                     List<Entry> entries = new ArrayList<Entry>();
                     entries.add(entry);
                     insertEntries(entries, newEntry);
-
                     return new Result(
                         request.entryUrl(
                             getRepository().URL_ENTRY_FORM, entry));
@@ -2066,7 +2065,7 @@ public class EntryManager extends RepositoryManager {
         Rectangle2D.Double rect = getBounds(getChildren(request, entry));
         if (rect != null) {
             entry.setBounds(rect);
-            storeEntry(entry);
+            updateEntry(entry);
         }
     }
 
@@ -5828,8 +5827,7 @@ public class EntryManager extends RepositoryManager {
          * }
          * entry.setStartDate(fileTime);
          * entry.setEndDate(fileTime);
-         * storeEntry(entry);
-         * //        updateEntry(entry);
+         * updateEntry(entry);
          */
     }
 
@@ -6131,26 +6129,12 @@ public class EntryManager extends RepositoryManager {
         if (makeThemUnique) {
             entries = getUniqueEntries(entries);
         }
-        insertEntries(entries, true, true);
+        insertEntries(entries, true);
 
         return true;
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_b
-     */
-    public void addNewEntry(Entry entry) throws Exception {
-        List<Entry> entries = new ArrayList<Entry>();
-        entries.add(entry);
-        insertEntries(entries, true);
-    }
 
 
     /**
@@ -6229,7 +6213,7 @@ public class EntryManager extends RepositoryManager {
         }
         List<Entry> newEntries = new ArrayList<Entry>();
         newEntries.add(entry);
-        insertEntries(newEntries, true, true);
+        insertEntries(newEntries, true);
         entry.getTypeHandler().doFinalInitialization(request, entry);
 
         return entry;
@@ -6364,6 +6348,12 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
+    public void updateEntry(Entry entry) throws Exception {
+        List<Entry> tmp = new ArrayList<Entry>();
+        tmp.add(entry);
+        updateEntries(tmp);
+    }
+
 
 
     /**
@@ -6371,11 +6361,20 @@ public class EntryManager extends RepositoryManager {
      *
      * @param entry _more_
      *
-     * @throws Exception _more_
+     * @throws Exception _more_b
      */
-    public void storeEntry(Entry entry) throws Exception {
+    public void addNewEntry(Entry entry) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+        addNewEntries(entries);
+    }
+
+
+    public void addNewEntries(List<Entry> entries) throws Exception {
+        insertEntries(entries, true);
+    }
+
+    public void updateEntries(List<Entry> entries) throws Exception {
         insertEntries(entries, false);
     }
 
@@ -6389,25 +6388,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void insertEntries(List<Entry> entries, boolean isNew)
+    private void insertEntries(List<Entry> entries, boolean isNew)
             throws Exception {
-        insertEntries(entries, isNew, false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param isNew _more_
-     * @param canBeBatched _more_
-     *
-     * @throws Exception _more_
-     */
-    public void insertEntries(List<Entry> entries, boolean isNew,
-                              boolean canBeBatched)
-            throws Exception {
-
-
         if (entries.size() == 0) {
             return;
         }
@@ -6415,35 +6397,16 @@ public class EntryManager extends RepositoryManager {
         //We have our own connection
         Connection connection = getDatabaseManager().getConnection();
         try {
-            insertEntriesInner(entries, connection, isNew, canBeBatched);
+            insertEntriesInner(entries, connection, isNew);
             if ( !isNew) {
                 Misc.run(getRepository(), "checkModifiedEntries", entries);
+            } else {
             }
-
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void updateEntry(Entry entry) throws Exception {
-        storeEntry(entry);
-        /*
-        PreparedStatement entryStmt =
-            getDatabaseManager().getPreparedStatement(Tables.ENTRIES.UPDATE);
-        setStatement(entry, entryStmt, false, entry.getTypeHandler());
-        entryStmt.addBatch();
-        entryStmt.executeBatch();
-        getDatabaseManager().closeAndReleaseConnection(entryStmt);
-        */
-    }
 
 
     /**
@@ -6452,13 +6415,11 @@ public class EntryManager extends RepositoryManager {
      * @param entries _more_
      * @param connection _more_
      * @param isNew _more_
-     * @param canBeBatched _more_
      *
      * @throws Exception _more_
      */
     private void insertEntriesInner(List<Entry> entries,
-                                    Connection connection, boolean isNew,
-                                    boolean canBeBatched)
+                                    Connection connection, boolean isNew)
             throws Exception {
 
         if (entries.size() == 0) {

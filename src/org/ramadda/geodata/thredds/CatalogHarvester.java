@@ -647,7 +647,7 @@ public class CatalogHarvester extends Harvester {
                 List tmpEntries = Misc.newList(existingEntry);
                 getEntryManager().addInitialMetadata(getRequest(),
                         tmpEntries, getAddMetadata(), getAddShortMetadata());
-                getEntryManager().insertEntries(tmpEntries, false);
+                getEntryManager().updateEntries(tmpEntries);
             }
 
             return false;

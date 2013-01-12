@@ -1251,6 +1251,7 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      */
     public void doFinalInitialization(Request request, Entry entry) {
+        if(request == null) return;
         try {
             if (requiredMetadata.size() == 0) {
                 return;
