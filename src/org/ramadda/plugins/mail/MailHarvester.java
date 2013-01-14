@@ -422,7 +422,7 @@ public class MailHarvester extends Harvester {
                                 now.getTime(), null);
                 
                 newEntries.add(entry);
-                getEntryManager().addNewEntries(newEntries);
+                getEntryManager().addNewEntries(getRequest(), newEntries);
             }
 
             if(newEntries.size()>0) {
@@ -527,7 +527,7 @@ public class MailHarvester extends Harvester {
                         getEntryManager().addInitialMetadata(request,
                                                              entries,
                                                              true, false);
-                        getEntryManager().addNewEntries(entries);
+                        getEntryManager().addNewEntries(getRequest(), entries);
                         newEntries.add(entry);
                     }
                 }
@@ -588,7 +588,7 @@ public class MailHarvester extends Harvester {
                         date.getTime(), values);
         typeHandler.initializeEntryFromForm(getRequest(),  entry, parentEntry, true);
         entries.add(entry);
-        getEntryManager().addNewEntries(entries);
+        getEntryManager().addNewEntries(getRequest(), entries);
     }
 
 

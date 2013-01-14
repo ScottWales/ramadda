@@ -156,7 +156,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      * @param entry    the Entry
      */
     @Override
-    public void doFinalInitialization(Request request, Entry entry) {
+    public void doFinalEntryInitialization(Request request, Entry entry) {
         //Call this to force an initial ingest
         try {
             if (getIngest(entry)) {
@@ -165,7 +165,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
-        super.doFinalInitialization(request, entry);
+        super.doFinalEntryInitialization(request, entry);
     }
 
 
@@ -378,7 +378,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     if (rect != null) {
                         entry.setBounds(rect);
                     }
-                    getEntryManager().updateEntry(entry);
+                    getEntryManager().updateEntry(request, entry);
                 }
             } else {
                 childrenEntries = dummyEntries;

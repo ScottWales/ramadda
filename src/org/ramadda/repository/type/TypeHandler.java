@@ -1257,7 +1257,7 @@ public class TypeHandler extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      */
-    public void doFinalInitialization(Request request, Entry entry) {
+    public void doFinalEntryInitialization(Request request, Entry entry) {
         if(request == null) return;
         try {
             if (requiredMetadata.size() == 0) {
@@ -1279,6 +1279,11 @@ public class TypeHandler extends RepositoryManager {
             for (Metadata metadata : metadataList) {
                 getMetadataManager().insertMetadata(metadata);
             }
+
+
+            //            getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
+            //            getEntryManager().setTimeFromChildren(request, entry.getParentEntry(), null);
+
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);

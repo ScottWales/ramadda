@@ -1749,7 +1749,7 @@ public class EntryManager extends RepositoryManager {
         insertEntries(entries, newEntry);
         if (newEntry) {
             for (Entry theNewEntry : entries) {
-                theNewEntry.getTypeHandler().doFinalInitialization(request,
+                theNewEntry.getTypeHandler().doFinalEntryInitialization(request,
                         theNewEntry);
             }
         }
@@ -2065,7 +2065,7 @@ public class EntryManager extends RepositoryManager {
         Rectangle2D.Double rect = getBounds(getChildren(request, entry));
         if (rect != null) {
             entry.setBounds(rect);
-            updateEntry(entry);
+            updateEntry(request, entry);
         }
     }
 
@@ -2518,8 +2518,7 @@ public class EntryManager extends RepositoryManager {
         Entry        entry = getEntry(request);
         //We use the category on the entry to flag the uploaded entries
         entry.setCategory("");
-        insertEntries((List<Entry>) Misc.newList(entry), true);
-
+        addNewEntry(request, entry);
         return new Result(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                            entry));
     }
@@ -3382,7 +3381,7 @@ public class EntryManager extends RepositoryManager {
                 newEntry.setMetadata(newMetadata);
                 newEntries.add(newEntry);
             }
-            insertEntries(newEntries, true);
+            addNewEntries(request, newEntries);
 
             return new Result(request.url(getRepository().URL_ENTRY_SHOW,
                                           ARG_ENTRYID, toGroup.getId(),
@@ -3787,7 +3786,7 @@ public class EntryManager extends RepositoryManager {
 
 
         for (Entry entry : newEntries) {
-            entry.getTypeHandler().doFinalInitialization(request, entry);
+            entry.getTypeHandler().doFinalEntryInitialization(request, entry);
         }
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
             //TODO: Return a list of the newly created entries
@@ -3908,7 +3907,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        insertEntries(newEntries, true);
+        addNewEntries(request, newEntries);
 
         return newEntries;
     }
@@ -4960,7 +4959,7 @@ public class EntryManager extends RepositoryManager {
                 ContentMetadataHandler.TYPE_ATTACHMENT, false, theFile, "",
                 "", "", ""));
         if (andInsert) {
-            insertEntries((List<Entry>) Misc.newList(entry), false);
+            updateEntry(null, entry);
         }
     }
 
@@ -5827,7 +5826,7 @@ public class EntryManager extends RepositoryManager {
          * }
          * entry.setStartDate(fileTime);
          * entry.setEndDate(fileTime);
-         * updateEntry(entry);
+         * updateEntry(null, entry);
          */
     }
 
@@ -6129,7 +6128,7 @@ public class EntryManager extends RepositoryManager {
         if (makeThemUnique) {
             entries = getUniqueEntries(entries);
         }
-        insertEntries(entries, true);
+        addNewEntries(null, entries);
 
         return true;
     }
@@ -6211,11 +6210,7 @@ public class EntryManager extends RepositoryManager {
         if (initializer != null) {
             initializer.initEntry(entry);
         }
-        List<Entry> newEntries = new ArrayList<Entry>();
-        newEntries.add(entry);
-        insertEntries(newEntries, true);
-        entry.getTypeHandler().doFinalInitialization(request, entry);
-
+        addNewEntry(request, entry);
         return entry;
     }
 
@@ -6273,7 +6268,7 @@ public class EntryManager extends RepositoryManager {
             getEntryManager().addInitialMetadata(request, entries, false,
                     request.get(ARG_SHORT, false));
         }
-        insertEntries(Misc.newList(newEntry), true);
+        addNewEntry(request, newEntry);
         if (associatedEntry != null) {
             getRepository().addAuthToken(request);
             getAssociationManager().addAssociation(request, associatedEntry,
@@ -6348,10 +6343,10 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    public void updateEntry(Entry entry) throws Exception {
+    public void updateEntry(Request request, Entry entry) throws Exception {
         List<Entry> tmp = new ArrayList<Entry>();
         tmp.add(entry);
-        updateEntries(tmp);
+        updateEntries(request, tmp);
     }
 
 
@@ -6363,18 +6358,22 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_b
      */
-    public void addNewEntry(Entry entry) throws Exception {
+    public void addNewEntry(Request request, Entry entry) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-        addNewEntries(entries);
+        addNewEntries(request, entries);
     }
 
 
-    public void addNewEntries(List<Entry> entries) throws Exception {
+    public void addNewEntries(Request request, List<Entry> entries) throws Exception {
         insertEntries(entries, true);
+        for (Entry theNewEntry : entries) {
+            theNewEntry.getTypeHandler().doFinalEntryInitialization(request,
+                                                                    theNewEntry);
+        }
     }
 
-    public void updateEntries(List<Entry> entries) throws Exception {
+    public void updateEntries(Request request, List<Entry> entries) throws Exception {
         insertEntries(entries, false);
     }
 
@@ -7226,7 +7225,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(
                 getRepository().showDialogNote(msg("No entries to publish")));
         }
-        insertEntries(publishedEntries, false);
+        updateEntries(request, publishedEntries);
 
         return new Result("Publish Entries", sb);
     }
@@ -7258,7 +7257,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(changedEntries.size() + " "
                       + getRepository().translate(request,
                           "entries changed"));
-            getEntryManager().insertEntries(changedEntries, false);
+            updateEntries(request,changedEntries);
         }
         if (entries.size() > 0) {
             return new Result(
@@ -8074,7 +8073,7 @@ public class EntryManager extends RepositoryManager {
 
             initializer.initEntry(group);
         }
-        addNewEntry(group);
+        addNewEntry(null, group);
         cacheEntry(group);
 
         return group;

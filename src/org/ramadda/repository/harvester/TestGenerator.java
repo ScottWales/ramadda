@@ -172,7 +172,7 @@ public class TestGenerator extends Harvester {
                         return;
                     }
                     if (entries.size() > 5000) {
-                        getEntryManager().addNewEntries(entries);
+                        getEntryManager().addNewEntries(getRequest(), entries);
                         entries = new ArrayList<Entry>();
                     }
                 }

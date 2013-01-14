@@ -699,7 +699,7 @@ public class HarvesterManager extends RepositoryManager {
         for (Harvester harvester : harvesters) {
             Entry entry = harvester.processFile(typeHandler, filepath);
             if (entry != null) {
-                getEntryManager().addNewEntry(entry);
+                getEntryManager().addNewEntry(request, entry);
 
                 return new Result(BLANK, new StringBuffer("OK"),
                                   "text/plain");

@@ -998,7 +998,7 @@ public class GpsOutputHandler extends OutputHandler {
                         || !Misc.equals(oldHeight,
                                         values[IDX_ANTENNA_HEIGHT])) {
                     changed.add(entry.getId());
-                    getEntryManager().updateEntry(entry);
+                    getEntryManager().updateEntry(request, entry);
                 }
             }
             if (changed.size() > 0) {
@@ -2048,7 +2048,7 @@ public class GpsOutputHandler extends OutputHandler {
                 rinexEntry.setLocation(newEntry.getLatitude(),
                                        newEntry.getLongitude(),
                                        newEntry.getAltitude());
-                getEntryManager().updateEntry(rinexEntry);
+                getEntryManager().updateEntry(request, rinexEntry);
             }
 
             for (Entry rawEntry :
@@ -2064,7 +2064,7 @@ public class GpsOutputHandler extends OutputHandler {
                     rawEntry.setLocation(newEntry.getLatitude(),
                                          newEntry.getLongitude(),
                                          newEntry.getAltitude());
-                    getEntryManager().updateEntry(rawEntry);
+                    getEntryManager().updateEntry(request, rawEntry);
                 }
             }
         }

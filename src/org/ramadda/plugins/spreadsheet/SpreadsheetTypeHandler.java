@@ -189,7 +189,7 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
             entry.setValues(new Object[] { ss });
             List<Entry> entries = new ArrayList<Entry>();
             entries.add(entry);
-            getEntryManager().updateEntries(entries);
+            getEntryManager().updateEntries(request, entries);
             System.err.println("storing:" + ss);
 
             return getRepository().getHtmlOutputHandler().makeAjaxResult(

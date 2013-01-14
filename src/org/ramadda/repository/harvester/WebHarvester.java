@@ -534,7 +534,7 @@ public class WebHarvester extends Harvester {
         }
         newEntryCnt += entries.size();
         if (entries.size() > 0) {
-            getEntryManager().addNewEntries(entries);
+            getEntryManager().addNewEntries(getRequest(), entries);
         }
     }
 

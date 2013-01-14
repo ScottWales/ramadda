@@ -306,7 +306,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             responses.add(response);
             props.put(ATTR_RESPONSES, responses);
             setProperties(entry, props);
-            getEntryManager().updateEntry(entry);
+            getEntryManager().updateEntry(request, entry);
             changed = true;
         }
 
@@ -321,7 +321,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             responses = tmp;
             props.put(ATTR_RESPONSES, responses);
             setProperties(entry, props);
-            getEntryManager().updateEntry(entry);
+            getEntryManager().updateEntry(request, entry);
             changed = true;
         }
 

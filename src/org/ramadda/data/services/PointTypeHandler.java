@@ -120,9 +120,10 @@ public   class PointTypeHandler extends RecordTypeHandler {
     }
 
     @Override
-    public void doFinalInitialization(Request request, Entry entry)  {
+    public void doFinalEntryInitialization(Request request, Entry entry)  {
+        System.err.println("PointTypeHandler:doFinlInitialization");
         try {
-            super.doFinalInitialization(request,  entry);
+            super.doFinalEntryInitialization(request,  entry);
             getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
             getEntryManager().setTimeFromChildren(request, entry.getParentEntry(), null);
         } catch (Exception exc) {

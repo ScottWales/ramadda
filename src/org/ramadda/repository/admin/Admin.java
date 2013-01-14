@@ -472,7 +472,7 @@ public class Admin extends RepositoryManager {
                     description = description.replace("${root}",
                             getRepository().getUrlBase());
                     topEntry.setDescription(description);
-                    getEntryManager().updateEntry(topEntry);
+                    getEntryManager().updateEntry(null, topEntry);
 
                     //NOT NOW
                     //getRegistryManager().doFinalInitialization();
@@ -508,10 +508,6 @@ public class Admin extends RepositoryManager {
                                                           tmpRequest, root,
                             new Hashtable<String, Entry>(),
                             new Hashtable<String, String>(), null);
-
-                    for (Entry entry : newEntries) {
-                        entry.getTypeHandler().doFinalInitialization(tmpRequest, entry);
-                    }
                     sb.append(getUserManager().makeLoginForm(request));
 
 
