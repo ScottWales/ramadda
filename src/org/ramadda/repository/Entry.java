@@ -27,6 +27,8 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.TypeHandler;
 
+import org.ramadda.util.Utils;
+
 import ucar.unidata.util.Misc;
 
 
@@ -386,8 +388,12 @@ public class Entry implements Cloneable {
      *  @param template  the template
      */
     public void initWith(Entry template) {
-        setName(template.getName());
-        setDescription(template.getDescription());
+        if(Utils.stringDefined(template.getName())) {
+            setName(template.getName());
+        }
+        if(Utils.stringDefined(template.getDescription())) {
+            setDescription(template.getDescription());
+        }
 
         if (template.getMetadata() != null) {
             List<Metadata> thisMetadata = new ArrayList<Metadata>();

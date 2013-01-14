@@ -3979,7 +3979,7 @@ public class EntryManager extends RepositoryManager {
 
 
         boolean doAnonymousUpload = false;
-        String  name              = XmlUtil.getAttribute(node, ATTR_NAME);
+        String  name              = XmlUtil.getAttribute(node, ATTR_NAME,"");
         if (name.length() > 200) {
             name = name.substring(0, 195) + "...";
         }
@@ -7364,19 +7364,19 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getTemplateEntry(File file) throws Exception {
+        File parent = file.getParentFile();
         File[] files = new File[] {
-                           new File(IOUtil.joinDir(file.getParentFile(),
-                               "." + file.getName() + ".ramadda")),
-                           new File(IOUtil.joinDir(file.getParentFile(),
+                           new File(IOUtil.joinDir(parent,
+                               "." + file.getName() + ".ramadda.xml")),
+                           new File(IOUtil.joinDir(parent,
+                               "." + file.getName() + ".xml")),
+                           new File(IOUtil.joinDir(parent,
                                ".ramadda.xml")), };
 
         Entry fileInfoEntry = null;
         for (File f : files) {
             if (f.exists()) {
                 fileInfoEntry = parseEntryXml(f, true);
-                if (fileInfoEntry.getName().length() == 0) {
-                    fileInfoEntry.setName(f.getName());
-                }
             }
         }
 
