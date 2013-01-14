@@ -1805,8 +1805,10 @@ public class RepositoryClient extends RepositoryBase {
 
         //Write the xml if we have it
         if (root != null) {
-            String xml = XmlUtil.toString(root);
-            System.out.println(xml);
+            //Tack on a utf-8 header so Chinese characters can encode properly
+            String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
+            String xml = header +"\n" +XmlUtil.toString(root);
+            //System.out.println(xml);
             zos.putNextEntry(new ZipEntry("entries.xml"));
             byte[] bytes = xml.getBytes();
             zos.write(bytes, 0, bytes.length);
