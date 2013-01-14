@@ -261,21 +261,6 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         }
 
 
-        /*
-        String detailsView =
-            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                           entry, ARG_WIKI_DETAILS,
-                                           "" + true), msg("Details"));
-
-        String rawLink =
-            HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                           entry, ARG_WIKI_RAW,
-                                           "" + true), msg("Text"));
-
-        header = HtmlUtils.leftRight(header,
-                                    HtmlUtils.div(detailsView + " " + rawLink,
-                                        HtmlUtils.cssClass(CSS_CLASS_SMALLLINK)));
-        */
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 OutputHandler.PROP_REQUEST,
                                 request, OutputHandler.PROP_ENTRY, entry }));
