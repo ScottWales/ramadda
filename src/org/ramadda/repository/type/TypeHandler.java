@@ -1091,6 +1091,13 @@ public class TypeHandler extends RepositoryManager {
             if (oldId.length() == 0) {
                 continue;
             }
+            //c20a3623-5249-4801-b0a9-f14a6b977372
+            //Make sure we only replace GUIDs
+            if(!oldId.matches("[^-]+-[^-]+-[^-]+-[^-]+-[^-]+")) {
+                //Not an id
+                continue;
+            }
+
             String newId = tuple[1];
             s = s.replaceAll(oldId, newId);
         }
