@@ -637,7 +637,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             request.putExtraProperty(propertyKey, property);
 
-
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, theEntry,
                                  tag, props);
@@ -1043,9 +1042,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                              entry, children, sb, width,height);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TIMELINE)) {
-            //            if (true) {
-            //                return "Timeline not available";
-            //            }
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                               props);
             //Use a dummy list for now 
@@ -1572,7 +1568,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                              + HtmlUtils.style(style));
                 links.add(tagOpen + href + tagClose);
             }
-
             return StringUtil.join(separator, links);
         } else {
             return null;
@@ -2170,7 +2165,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                    Entry importEntry, String tag,
                                    Hashtable props) {
         try {
-            if ( !tag.equals(WIKI_PROP_IMPORT)) {
+            if (!tag.equals(WIKI_PROP_IMPORT)) {
                 String include = getWikiInclude(wikiUtil, request,
                                      importEntry, tag, props);
                 if (include != null) {
@@ -2185,11 +2180,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (handler == null) {
                 return null;
             }
-            OutputType outputType     = handler.findOutputType(tag);
-
-            String     originalOutput = request.getString(ARG_OUTPUT,
-                                        (String) "");
-            String  originalId = request.getString(ARG_ENTRYID, (String) "");
 
             Request myRequest  =
                 new Request(request,
@@ -2202,51 +2192,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
             };
 
-
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 Object key = keys.nextElement();
                 myRequest.put(key, props.get(key));
             }
 
+            OutputType outputType     = handler.findOutputType(tag);
             myRequest.put(ARG_ENTRYID, importEntry.getId());
             myRequest.put(ARG_OUTPUT, outputType.getId());
             myRequest.put(ARG_EMBEDDED, "true");
 
-            String title = null;
-            String propertyValue;
-            if (false && !outputType.getIsView()) {
-                List<Link> links = new ArrayList<Link>();
-                handler.getEntryLinks(myRequest,
-                                      new OutputHandler.State(importEntry),
-                                      links);
-                Link theLink = null;
-                for (Link link : links) {
-                    if (Misc.equals(outputType, link.getOutputType())) {
-                        theLink = link;
-
-                        break;
-                    }
-                }
-
-                String url = ((theLink != null)
-                              ? theLink.getUrl()
-                              : myRequest.entryUrl(
-                                  getRepository().URL_ENTRY_SHOW,
-                                  importEntry, ARG_OUTPUT,
-                                  outputType.getId()));
-                String label = importEntry.getName() + " - "
-                               + ((theLink != null)
-                                  ? theLink.getLabel()
-                                  : outputType.getLabel());
-                propertyValue = getEntryManager().getTooltipLink(myRequest,
-                        importEntry, label, url);
-            } else {
-                Result result = getEntryManager().processEntryShow(myRequest,
-                                    importEntry);
-                propertyValue = new String(result.getContent());
-                title         = result.getTitle();
-                title         = Misc.getProperty(props, ATTR_TITLE, title);
-            }
+            Result result = getEntryManager().processEntryShow(myRequest,
+                                                               importEntry);
+            String content = new String(result.getContent());
+            String title = Misc.getProperty(props, ATTR_TITLE, result.getTitle());
 
             boolean inBlock = Misc.getProperty(props, ATTR_SHOWTOGGLE,
                                   Misc.getProperty(props, ATTR_SHOWHIDE,
@@ -2254,11 +2213,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (inBlock && (title != null)) {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
 
-                return HtmlUtils.makeShowHideBlock(title, propertyValue,
+                return HtmlUtils.makeShowHideBlock(title, content,
                         open, HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "");
             }
 
-            return propertyValue;
+            return content;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
