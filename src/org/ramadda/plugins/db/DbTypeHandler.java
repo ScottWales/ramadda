@@ -33,9 +33,10 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.type.*;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
+import org.ramadda.util.XlsUtil;
 
 
 import org.w3c.dom.*;
@@ -1513,6 +1514,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             return icon;
         }
 
+        String base = getRepository().getUrlBase();
+        if(icon.startsWith(base)) return icon;
         return getRepository().getUrlBase() + "/db/icons/" + icon;
     }
 
@@ -1966,8 +1969,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                     throw new IllegalArgumentException(
                         "Uploaded file does not exist");
                 }
-                bulkContent = IOUtil.readInputStream(
-                    getStorageManager().getFileInputStream(f));
+                if(f.toString().toLowerCase().endsWith(".xls")) {
+                    bulkContent  = XlsUtil.xlsToCsv(f.toString());
+                } else {
+                    bulkContent = IOUtil.readInputStream(
+                                                         getStorageManager().getFileInputStream(f));
+                }
             } else {
                 bulkContent = request.getString(ARG_DB_BULK_TEXT, "");
             }
@@ -2647,7 +2654,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private String getIconFor(Entry entry, Hashtable entryProps,
+    public String getIconFor(Entry entry, Hashtable entryProps,
                               Object[] values) {
         for (Column column : enumColumns) {
             String value    = column.getString(values);
@@ -2672,7 +2679,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @return _more_
      */
-    private String getIconFor(Entry entry, Hashtable entryProps,
+    public String getIconFor(Entry entry, Hashtable entryProps,
                               Column column, String value) {
         return getAttributeFor(entry, entryProps, column, value,
                                PROP_CAT_ICON);

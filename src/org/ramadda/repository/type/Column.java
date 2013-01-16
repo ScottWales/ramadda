@@ -472,7 +472,7 @@ public class Column implements DataTypes, Constants {
      */
     public boolean isEnumeration() {
         return isType(DATATYPE_ENUMERATION)
-               || isType(DATATYPE_ENUMERATIONPLUS);
+            || isType(DATATYPE_ENUMERATIONPLUS);
     }
 
     /**
@@ -500,9 +500,8 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public boolean isString() {
-        return isType(DATATYPE_STRING) || isType(DATATYPE_ENUMERATION)
-               || isType(DATATYPE_ENUMERATIONPLUS) || isType(DATATYPE_ENTRY)
-               || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL);
+        return isType(DATATYPE_STRING) || isEnumeration() || isType(DATATYPE_ENTRY)
+            || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL) || isType(DATATYPE_LIST);
     }
 
     public Object getObject(Object[] values) {
@@ -725,8 +724,7 @@ public class Column implements DataTypes, Constants {
                 s = getRepository().getWikiManager().wikifyEntry(
                     getRepository().getTmpRequest(), entry, s, false, null,
                     null);
-            } else if (isType(DATATYPE_ENUMERATION)
-                       || isType(DATATYPE_ENUMERATIONPLUS)) {
+            } else if (isEnumeration()){
                 String label = enumMap.get(s);
                 if (label != null) {
                     s = label;
@@ -796,8 +794,10 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_LATLON)) {
             if (values[offset] != null) {
                 double lat = ((Double) values[offset]).doubleValue();
-                statement.setDouble(statementIdx, lat);
                 double lon = ((Double) values[offset + 1]).doubleValue();
+                if(Double.isNaN(lat)) lat = Entry.NONGEO;
+                if(Double.isNaN(lon)) lon = Entry.NONGEO;
+                statement.setDouble(statementIdx, lat);
                 statement.setDouble(statementIdx + 1, lon);
             } else {
                 statement.setDouble(statementIdx, Entry.NONGEO);
@@ -980,13 +980,14 @@ public class Column implements DataTypes, Constants {
                 || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
                 || isType(DATATYPE_FILE) || isType(DATATYPE_ENTRY)) {
             defineColumn(statement, name, "varchar(" + size + ") ");
+        } else if (isType(DATATYPE_LIST)) {
+            defineColumn(statement, name, "varchar(" + size + ") ");
         } else if (isType(DATATYPE_CLOB)) {
             String clobType =
                 getRepository().getDatabaseManager().convertType("clob",
                     size);
             defineColumn(statement, name, clobType);
-        } else if (isType(DATATYPE_ENUMERATION)
-                   || isType(DATATYPE_ENUMERATIONPLUS)) {
+        } else if (isEnumeration()) {
             defineColumn(statement, name, "varchar(" + size + ") ");
         } else if (isType(DATATYPE_INT)) {
             defineColumn(statement, name, "int");
@@ -1229,6 +1230,21 @@ public class Column implements DataTypes, Constants {
             String value = request.getString(id + "_hidden", "");
             if (value.length() > 0) {
                 where.add(Clause.eq(getFullName(), value));
+            }
+        } else if (isType(DATATYPE_LIST)) {
+            String value = request.getString(id, null);
+            if (Utils.stringDefined(value)) {
+                String colName = getFullName();
+                //value
+                //value,...
+                //....,value
+                //....,value,...
+                List<Clause> ors = new ArrayList<Clause>();
+                ors.add(Clause.eq(colName, value));
+                ors.add(Clause.like(colName, value+",%"));
+                ors.add(Clause.like(colName, "%," + value));
+                ors.add(Clause.like(colName, "%," + value+",%"));
+                where.add(Clause.or(ors));
             }
         } else if (isEnumeration()) {
             String value = request.getString(id, null);
@@ -1536,10 +1552,12 @@ public class Column implements DataTypes, Constants {
                 if (tfos.size() == 0) {
                     widget = HtmlUtils.input(id, value, " size=10 ");
                 } else {
-
                     widget = HtmlUtils.select(id, tfos, value);
                 }
             } else if (rows > 1) {
+                if(isType(DATATYPE_LIST)) {
+                    value = StringUtil.join("\n", StringUtil.split(value,",",true,true));
+                }
                 widget = HtmlUtils.textArea(id, value, rows, columns);
             } else {
                 widget = HtmlUtils.input(id, value,
@@ -1647,10 +1665,19 @@ public class Column implements DataTypes, Constants {
                 values[offset + 1] = new Double(request.getString(id
                         + "_longitude", "0").trim());
             } else if (request.exists(id + ".latitude")) {
-                values[offset] = new Double(request.getString(id
-                        + ".latitude", "0").trim());
-                values[offset + 1] = new Double(request.getString(id
-                        + ".longitude", "0").trim());
+                String latString = request.getString(id + ".latitude", "0").trim();
+                String lonString = request.getString(id + ".longitude", "0").trim();
+                double lat = Entry.NONGEO;
+                double lon = Entry.NONGEO;
+                if(Utils.stringDefined(latString)) {
+                    lat = Misc.decodeLatLon(latString);
+                }
+                if(Utils.stringDefined(lonString)) {
+                    lon = Misc.decodeLatLon(lonString);
+                }
+
+                values[offset] = lat;
+                values[offset + 1] = lon;
             }
 
         } else if (isType(DATATYPE_LATLONBBOX)) {
@@ -1693,6 +1720,18 @@ public class Column implements DataTypes, Constants {
             } else {
                 values[offset] = dflt;
             }
+        } else if (isType(DATATYPE_LIST)) {
+            if (request.exists(id)) {
+                String value = request.getAnonymousEncodedString(id,
+                        ((dflt != null)
+                         ? dflt
+                         : ""));
+                value = StringUtil.join(",", StringUtil.split(value, "\n", true, true));
+                values[offset] = value;
+            } else {
+                values[offset] = dflt;
+            }
+
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String theValue = "";
             if (request.defined(id + "_plus")) {
@@ -1788,8 +1827,7 @@ public class Column implements DataTypes, Constants {
             values[offset] = parseDate(value);
         } else if (isType(DATATYPE_BOOLEAN)) {
             values[offset] = new Boolean(value);
-        } else if (isType(DATATYPE_ENUMERATION)
-                   || isType(DATATYPE_ENUMERATIONPLUS)) {
+        } else if (isEnumeration()) {
             values[offset] = value;
         } else if (isType(DATATYPE_INT)) {
             values[offset] = new Integer(value);

@@ -237,25 +237,25 @@ public class PluginManager extends RepositoryManager {
                               false);
         File   tmpPluginsDir = tempDir.getDir();
         File   dir           = getStorageManager().getPluginsDir();
-        File[] plugins       = dir.listFiles();
-        Arrays.sort(plugins);
-        /** TODO: define a mechanism so you can order the processing of plugin files
-        List<File> lastPlugins =  new ArrayList<File>();
-        for (int i = 0; i < plugins.length; i++) {
-            if (plugins[i].isDirectory()) {
-                continue;
+        File[] files       = dir.listFiles();
+        Arrays.sort(files);
+        List<File> plugins = new ArrayList<File>();
+        List<File> lastPlugins = new ArrayList<File>();
+        for (int i = 0; i < files.length; i++) {
+            if(files[i].toString().indexOf(".last.")>=0) {
+                lastPlugins.add(files[i]);
+            }  else {
+                plugins.add(files[i]);
             }
-            if(plugins[i].toString().indexOf(".last.")>=0) {
-                lastPlugins.add(plugins[i]);
-            } 
         }
-        */
+        plugins.addAll(lastPlugins);
 
-        for (int i = 0; i < plugins.length; i++) {
-            if (plugins[i].isDirectory()) {
+        for (int i = 0; i < plugins.size(); i++) {
+            File plugin = plugins.get(i);
+            if (plugin.isDirectory()) {
                 continue;
             }
-            String pluginFile = plugins[i].toString();
+            String pluginFile = plugin.toString();
             //            System.err.println ("plugin:" + pluginFile);
             if (haveSeen(pluginFile)) {
                 continue;
