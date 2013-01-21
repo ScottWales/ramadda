@@ -3622,11 +3622,11 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryImport(Request request) throws Exception {
         Entry        group = findGroup(request);
         StringBuffer sb    = new StringBuffer();
-        sb.append(msgHeader("Import Entries"));
+        sb.append(msgHeader("Import " + LABEL_ENTRIES));
         request.uploadFormWithAuthToken(sb,
                                         getRepository().URL_ENTRY_XMLCREATE,
                                         makeFormSubmitDialog(sb,
-                                            msg("Importing Entries")));
+                                            msg("Importing " + LABEL_ENTRIES)));
         sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("File"),
@@ -3805,7 +3805,7 @@ public class EntryManager extends RepositoryManager {
         }
         sb.append("</ul>");
         if (parent != null) {
-            return makeEntryEditResult(request, parent, "Imported Entries",
+            return makeEntryEditResult(request, parent, "Imported "  + LABEL_ENTRIES,
                                        sb);
         }
 
@@ -5265,7 +5265,7 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getRepository().makePopupLink(msg("Connect"),
+            menuItems.add(getRepository().makePopupLink(msg("Links"),
                     exportMenu, menuClass, false, true));
         }
 

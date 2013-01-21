@@ -213,7 +213,7 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE,
-                                                OUTPUT_GRID, OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
+                                                /*OUTPUT_GRID,*/ OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
                 CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer(
@@ -265,7 +265,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TREEVIEW));
-                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
+                //                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
         }
     }
@@ -1450,7 +1450,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         //If no children then show the details of this group
         if ((subGroups.size() == 0) && (entries.size() == 0)) {
-            doSimpleListing = false;
+            //            doSimpleListing = false;
         }
 
 
@@ -1478,7 +1478,6 @@ public class HtmlOutputHandler extends OutputHandler {
         showNext(request, subGroups, entries, sb);
 
 
-
         boolean hasChildren = ((subGroups.size() != 0)
                                || (entries.size() != 0));
 
@@ -1486,7 +1485,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (isSearchResults) {
             if ( !hasChildren) {
                 sb.append(
-                    getRepository().showDialogNote(msg("No entries found")));
+                    getRepository().showDialogNote(msg("No pages found")));
             }
         }
 
@@ -1547,17 +1546,18 @@ public class HtmlOutputHandler extends OutputHandler {
                                              group.isDummy(),
                                              group.isDummy());
                 if ( !doSimpleListing) {
-                    sb.append(HtmlUtils.makeShowHideBlock(msg("Entries")
-                            + link, groupsSB.toString(), true));
+                    sb.append(HtmlUtils.makeShowHideBlock(link, groupsSB.toString(), true));
                 } else {
                     sb.append(HtmlUtils.br());
-                    sb.append(
-                        HtmlUtils.span(
-                            msg("Entries"),
-                            HtmlUtils.cssClass("toggleblocklabel")) + link);
+                    sb.append(link);
                     sb.append(HtmlUtils.br());
                     sb.append(groupsSB.toString());
 
+                }
+            } else {
+                if(!Utils.stringDefined(entry.getDescription())) {
+                    sb.append(
+                              getRepository().showDialogNote(msg(LABEL_EMPTY_FOLDER)));
                 }
             }
 

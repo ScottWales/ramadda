@@ -384,7 +384,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 tabTitles.add(msg("Results"));
                 tabContents.add(
                     HtmlUtils.div(
-                        getRepository().showDialogNote("No entries found"),
+                        getRepository().showDialogNote(LABEL_NO_ENTRIES_FOUND),
                         HtmlUtils.style("min-width:" + minWidth + "px")));
             } else {
                 for (String tab : tabs) {

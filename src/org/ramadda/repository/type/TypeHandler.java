@@ -603,8 +603,10 @@ public class TypeHandler extends RepositoryManager {
      */
     public void handleNoEntriesHtml(Request request, Entry entry,
                                     StringBuffer sb) {
-        sb.append(HtmlUtils.tag(HtmlUtils.TAG_I, "",
-                                msg("No entries in this folder")));
+        if(!Utils.stringDefined(entry.getDescription())) {
+            sb.append(HtmlUtils.tag(HtmlUtils.TAG_I, "",
+                                    msg(LABEL_EMPTY_FOLDER)));
+        }
     }
 
 
@@ -1642,7 +1644,7 @@ public class TypeHandler extends RepositoryManager {
                                 entry.getName())) + ".zip", new String[] {
                                     ARG_ENTRYID,
                                     entry.getId() }), getRepository().iconUrl(
-                                        ICON_EXPORT), "Export Entries",
+                                        ICON_EXPORT), "Export " + LABEL_ENTRIES,
                                             OutputType.TYPE_FILE));
 
             if (canDoNew) {
@@ -1651,7 +1653,7 @@ public class TypeHandler extends RepositoryManager {
                         request.url(
                             getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
                             entry.getId()), getRepository().iconUrl(
-                                ICON_IMPORT), "Import Entries",
+                                                                    ICON_IMPORT), "Import " + LABEL_ENTRIES,
                                     OutputType.TYPE_FILE));
             }
             Link hr = new Link(true);
@@ -1679,7 +1681,7 @@ public class TypeHandler extends RepositoryManager {
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
-                    getRepository().iconUrl(ICON_EDIT), "Edit Entry",
+                    getRepository().iconUrl(ICON_EDIT), "Edit " + LABEL_ENTRY,
                     OutputType.TYPE_EDIT /* | OutputType.TYPE_TOOLBAR*/));
 
             //NOTE: Don't add the direct link because the auth token is added
@@ -1689,7 +1691,7 @@ public class TypeHandler extends RepositoryManager {
                         request.entryUrl(
                             getRepository().URL_ENTRY_CHANGE, entry,
                             ARG_JUSTPUBLISH, "true"), getRepository().iconUrl(
-                                ICON_PUBLISH), "Make Entry Public",
+                                ICON_PUBLISH), "Make " +  LABEL_ENTRY +" Public",
                                     OutputType.TYPE_EDIT
                 /*| OutputType.TYPE_TOOLBAR*/
                 ));
@@ -1722,7 +1724,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_DELETE,
                         entry), getRepository().iconUrl(ICON_DELETE),
-                                "Delete Entry", OutputType.TYPE_EDIT
+                                "Delete " +  LABEL_ENTRY, OutputType.TYPE_EDIT
             /*| OutputType.TYPE_TOOLBAR*/
             ));
 
@@ -1758,7 +1760,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
-                                   "Copy/Move Entry", OutputType.TYPE_EDIT));
+                                   "Copy or Move " +  LABEL_ENTRY, OutputType.TYPE_EDIT));
         }
     }
 

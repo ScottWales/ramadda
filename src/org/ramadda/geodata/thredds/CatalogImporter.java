@@ -115,6 +115,8 @@ public class CatalogImporter extends OutputHandler {
         if ( !request.getUser().getAdmin()) {
             return;
         }
+        /******
+        Let's not put the THREDDS importer into the File menu
         if (state.group != null) {
             links.add(makeLink(request, state.group, OUTPUT_CATALOG_IMPORT));
             Link hr = new Link(true);
@@ -122,6 +124,7 @@ public class CatalogImporter extends OutputHandler {
             //take the hr out for now
             //links.add(hr);
         }
+        ******/
     }
 
 

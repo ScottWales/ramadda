@@ -110,8 +110,10 @@ public class DifOutputHandler extends OutputHandler {
             return;
         }
         if (state.getEntry() != null) {
-            links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_XML));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_TEXT));
+            /*** For now don't add these into the Links menu
+                 links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_XML));
+                 links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_TEXT));
+            ****/
         }
     }
 

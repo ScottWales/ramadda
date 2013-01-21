@@ -1232,7 +1232,7 @@ public class Column implements DataTypes, Constants {
                 where.add(Clause.eq(getFullName(), value));
             }
         } else if (isType(DATATYPE_LIST)) {
-            String value = request.getString(id, null);
+            String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
                 String colName = getFullName();
                 //value
@@ -1247,7 +1247,7 @@ public class Column implements DataTypes, Constants {
                 where.add(Clause.or(ors));
             }
         } else if (isEnumeration()) {
-            String value = request.getString(id, null);
+            String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
                 if(value.startsWith("!")) {
                     where.add(Clause.neq(getFullName(), value.substring(1)));
@@ -1256,7 +1256,7 @@ public class Column implements DataTypes, Constants {
                 }
             }
         } else {
-            String value = request.getString(id, null);
+            String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
                 if(value.startsWith("!")) {
                     value  = value.substring(1);
@@ -1273,6 +1273,15 @@ public class Column implements DataTypes, Constants {
     }
 
 
+    private String getSearchValue(Request request, String dflt) {
+        String id = getFullName();
+        if(request.defined(id))
+            return request.getString(id, dflt);
+        if(request.isEmbedded()) {
+            return request.getString( name, dflt);
+        }
+        return dflt;
+    }
 
 
     /**

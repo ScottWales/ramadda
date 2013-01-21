@@ -142,11 +142,11 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_SHOW = new RequestUrl(this,
-                                                 "/entry/show", "View Entry");
+                                                 "/entry/show", "View " +  LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY = new RequestUrl(this,
-                                                 "/entry", "View Entry");
+                                                 "/entry", "View " +  LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_COPY = new RequestUrl(this,
@@ -177,17 +177,17 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_FORM = new RequestUrl(this,
-                                                 "/entry/form", "Edit Entry");
+                                                 "/entry/form", "Edit " + LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
                                                    "/entry/access",
-                                                   "Edit Entry");
+                                                   "Edit " + LABEL_ENTRY);
 
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_NEW = new RequestUrl(this,
-                                                "/entry/new", "New Entry");
+                                                "/entry/new", "New " +  LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_UPLOAD = new RequestUrl(this,

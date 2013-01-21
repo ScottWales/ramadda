@@ -1412,7 +1412,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         String      extra1      = " class=subnavnolink ";
         String      extra2      = " class=subnavlink ";
         String[]    whats       = { WHAT_ENTRIES, WHAT_TAG, WHAT_ASSOCIATION };
-        String[]    names       = { "Entries", "Tags", "Associations" };
+        String[]    names       = { LABEL_ENTRIES, "Tags", "Associations" };
 
         String      formType    = request.getString(ARG_FORM_TYPE, "basic");
 

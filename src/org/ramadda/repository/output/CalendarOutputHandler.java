@@ -177,8 +177,8 @@ public class CalendarOutputHandler extends OutputHandler {
             if (state.getAllEntries().size() > 1) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_TIMELINE));
-                links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_DATE_GRID));
+                //                links.add(makeLink(request, state.getEntry(),
+                //                                   OUTPUT_DATE_GRID));
             }
         }
     }
@@ -577,7 +577,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
         if (entries.size() == 0) {
             sb.append(
-                getRepository().showDialogNote(msg("No entries found")));
+                getRepository().showDialogNote(msg(LABEL_NO_ENTRIES_FOUND)));
         }
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));

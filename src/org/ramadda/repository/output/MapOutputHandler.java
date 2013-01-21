@@ -197,7 +197,7 @@ public class MapOutputHandler extends OutputHandler {
         entriesToUse.addAll(entries);
         StringBuffer sb = new StringBuffer();
         if (entriesToUse.size() == 0) {
-            sb.append(HtmlUtils.b(msg("No entries")) + HtmlUtils.p());
+            sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND)) + HtmlUtils.p());
 
             return makeLinksResult(request, msg("Map"), sb,
                                    new State(group, subGroups, entries));

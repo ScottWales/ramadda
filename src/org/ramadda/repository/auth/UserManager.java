@@ -2678,6 +2678,7 @@ public class UserManager extends RepositoryManager {
 
                 return addHeader(request, new Result("Login", response));
             } else {
+                Misc.sleepSeconds(1);
                 if (responseAsXml) {
                     return new Result(XmlUtil.tag(TAG_RESPONSE,
                             XmlUtil.attr(ATTR_CODE, CODE_ERROR),

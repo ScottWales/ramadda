@@ -43,6 +43,8 @@ form {
 	background: #fffeec;
 }
 
+
+
 .ramadda-confirm-entries {
    font-weight: bold; 
    margin:15px;
@@ -282,13 +284,14 @@ label {
 }
 
 
+
 a.ramadda-heading-2-link {
    color:black;
    text-decoration: none;
 }
 
 
-a..ramadda-heading-2-link:visited {
+a.ramadda-heading-2-link:visited {
    text-decoration: none;
 }
 
@@ -431,6 +434,12 @@ a..ramadda-heading-2-link:visited {
    margin-top:1px;
    margin-bottom:1px;
    padding-bottom:2px;
+}
+
+a.ramadda-entries-link {
+   color: #000;
+   text-decoration: none;
+   font-weight: bold;
 }
 
 a.ramadda-menuitem-link:hover {

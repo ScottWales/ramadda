@@ -2200,5 +2200,10 @@ public interface Constants {
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
 
+    public static final String LABEL_ENTRY = "Page";
+    public static final String LABEL_ENTRIES = "Pages";
+    public static final String LABEL_EMPTY_FOLDER = "This folder is empty";
+    public static final String LABEL_NO_ENTRIES_FOUND = "No pages found";
+
 
 }

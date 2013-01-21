@@ -1208,9 +1208,11 @@ public class OutputHandler extends RepositoryManager {
                                             .iconUrl(ICON_DOWNDART), msg(
                                                 "Show/Hide Form"), HtmlUtils
                                                     .id(base + "img"));
+        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
+        String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.space(2)
                       + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
-                          + ".groupToggleVisibility()"), arrowImg);
+                                                                + ".groupToggleVisibility()"), linkLabel, linkExtra);
         String selectId = base + "select";
         formSB.append(HtmlUtils.span(selectSB.toString(),
                                      HtmlUtils.cssClass("entrylistform")
