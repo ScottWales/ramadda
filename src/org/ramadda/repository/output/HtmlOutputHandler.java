@@ -27,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -1555,7 +1556,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 }
             } else {
-                if(!Utils.stringDefined(entry.getDescription())) {
+                if(!Utils.stringDefined(group.getDescription())) {
                     sb.append(
                               getRepository().showDialogNote(msg(LABEL_EMPTY_FOLDER)));
                 }
