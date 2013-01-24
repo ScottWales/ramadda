@@ -4,8 +4,13 @@ var urlroot = "${urlroot}";
 var icon_close = "${urlroot}/icons/close.gif";
 var icon_rightarrow = "${urlroot}/icons/grayrightarrow.gif";
 var icon_downdart ="${urlroot}/icons/downdart.gif";
-//var icon_downdart ="${urlroot}/icons/bullet_arrow_down.png";
 var icon_rightdart ="${urlroot}/icons/rightdart.gif";
+
+var icon_downdart ="${urlroot}/icons/application_side_contract.png";
+var icon_rightdart ="${urlroot}/icons/application_side_expand.png";
+
+
+
 var icon_progress = "${urlroot}/icons/progress.gif";
 var icon_information = "${urlroot}/icons/information.png";
 var icon_folderclosed = "${urlroot}/icons/folderclosed.png";

@@ -1467,10 +1467,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS)) {
-            if ( !hasOpenProperty) {
-                open = true;
-            }
-            doBG = false;
             props.put(ATTR_FOLDERS, "true");
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
@@ -1479,14 +1475,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
-            blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, ATTR_TITLE, msg("Folders"))
-                         + link;
+            return link+HtmlUtils.br()+ sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN_ENTRIES)) {
-            if ( !hasOpenProperty) {
-                open = true;
-            }
-            doBG = false;
             props.put(ATTR_FILES, "true");
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
@@ -1496,15 +1486,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
-            blockContent = sb.toString();
-            blockTitle = Misc.getProperty(props, ATTR_TITLE, msg("Folders"))
-                         + link;
+            return link+HtmlUtils.br()+ sb.toString();
         } else if (include.equals(WIKI_PROP_CHILDREN)
                    || include.equals(WIKI_PROP_TREE)) {
-            if ( !hasOpenProperty) {
-                open = true;
-            }
-            doBG = false;
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
@@ -1512,9 +1496,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
-            blockContent = sb.toString();
-            blockTitle   = Misc.getProperty(props, ATTR_TITLE, msg("Links"))
-                         + link;
+
+            return link+HtmlUtils.br()+ sb.toString();
         } else if (include.equals(WIKI_PROP_TREEVIEW)) {
             doBG = false;
             List<Entry> children = getEntries(request, wikiUtil, entry,

@@ -1546,15 +1546,10 @@ public class HtmlOutputHandler extends OutputHandler {
                                              allEntries, true, false, true,
                                              group.isDummy(),
                                              group.isDummy());
-                if ( !doSimpleListing) {
-                    sb.append(HtmlUtils.makeShowHideBlock(link, groupsSB.toString(), true));
-                } else {
-                    sb.append(HtmlUtils.br());
-                    sb.append(link);
-                    sb.append(HtmlUtils.br());
-                    sb.append(groupsSB.toString());
-
-                }
+                sb.append(HtmlUtils.br());
+                sb.append(link);
+                sb.append(HtmlUtils.br());
+                sb.append(groupsSB.toString());
             } else {
                 if(!Utils.stringDefined(group.getDescription())) {
                     sb.append(

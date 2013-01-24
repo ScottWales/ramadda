@@ -1203,12 +1203,13 @@ public class OutputHandler extends RepositoryManager {
 
         String arrowImg = HtmlUtils.img(hideIt
                                         ? getRepository().iconUrl(
-                                            ICON_RIGHTDART)
+                                                                  "/icons/application_side_expand.png")
                                         : getRepository()
-                                            .iconUrl(ICON_DOWNDART), msg(
+                                            .iconUrl("/icons/application_side_contract.png"), msg(
                                                 "Show/Hide Form"), HtmlUtils
                                                     .id(base + "img"));
-        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
+        //        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
+        String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.space(2)
                       + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
