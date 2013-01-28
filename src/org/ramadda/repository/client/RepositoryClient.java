@@ -402,7 +402,7 @@ public class RepositoryClient extends RepositoryBase {
         String xml = XmlUtil.toString(root);
         //        System.out.println(xml);
         zos.putNextEntry(new ZipEntry("entries.xml"));
-        byte[] bytes = xml.getBytes();
+        byte[] bytes = getXmlBytes(xml);
         zos.write(bytes, 0, bytes.length);
         zos.closeEntry();
 
@@ -504,7 +504,7 @@ public class RepositoryClient extends RepositoryBase {
         String xml = XmlUtil.toString(root);
         //        System.out.println(xml);
         zos.putNextEntry(new ZipEntry("entries.xml"));
-        byte[] bytes = xml.getBytes("UTF-8");
+        byte[] bytes = getXmlBytes(xml);
         zos.write(bytes, 0, bytes.length);
         zos.closeEntry();
 
@@ -595,7 +595,7 @@ public class RepositoryClient extends RepositoryBase {
 
 
             postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
-                    xml.getBytes("UTF-8")));
+                    getXmlBytes(xml)));
 
             String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
 
@@ -1004,7 +1004,7 @@ public class RepositoryClient extends RepositoryBase {
             List   entries = new ArrayList();
             addUrlArgs(entries);
             entries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
-                                          xml.getBytes()));
+                                          getXmlBytes(xml)));
             String[] result = doPost(URL_ENTRY_XMLCREATE, entries);
 
             if (result[0] != null) {
@@ -1810,7 +1810,7 @@ public class RepositoryClient extends RepositoryBase {
             String xml = header +"\n" +XmlUtil.toString(root);
             //System.out.println(xml);
             zos.putNextEntry(new ZipEntry("entries.xml"));
-            byte[] bytes = xml.getBytes();
+            byte[] bytes = getXmlBytes(xml);
             zos.write(bytes, 0, bytes.length);
             zos.closeEntry();
 
@@ -1955,7 +1955,7 @@ public class RepositoryClient extends RepositoryBase {
 
 
             postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
-                                              xml.getBytes("UTF-8")));
+                                              getXmlBytes(xml)));
 
             String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
 
@@ -1977,7 +1977,12 @@ public class RepositoryClient extends RepositoryBase {
     }
 
 
-
+    /**
+       encode the text as utf-8
+     */
+    private byte[] getXmlBytes(String xml) throws Exception {
+        return xml.getBytes("UTF-8");
+    }
 
 
     /**
