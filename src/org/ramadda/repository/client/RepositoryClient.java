@@ -1907,6 +1907,78 @@ public class RepositoryClient extends RepositoryBase {
         }
     }
 
+    public boolean newWiki(String entryName, String wikitext, String parent) {
+        checkSession();
+        try {
+            Document doc = XmlUtil.makeDocument();
+            Element root = XmlUtil.create(doc, TAG_ENTRIES, null,
+                                          new String[]{});
+            Element entryNode = XmlUtil.create(doc, TAG_ENTRY, root,
+                                               new String[]{});
+
+            /*
+             * name and id
+             */
+            entryNode.setAttribute(ATTR_NAME, entryName);
+            entryNode.setAttribute(ATTR_ID, entryName);
+            
+            /*
+             * type
+             */
+            entryNode.setAttribute(ATTR_TYPE,"wikipage");
+            /*
+             * wikitext
+             */
+            Element descNode = XmlUtil.create(doc, TAG_WIKITEXT, entryNode);
+            descNode.appendChild(XmlUtil.makeCDataNode(doc, wikitext,
+                                                       false));
+            /*
+             * parent
+             */
+            entryNode.setAttribute(ATTR_PARENT, parent);
+
+            /*
+             * addmetadata
+             */
+            //entryNode.setAttribute(ATTR_ADDMETADATA, "true");
+
+            /*
+             * write the xml definition into the zip file
+             */
+            String xml = XmlUtil.toString(root);
+            //        System.out.println(xml);
+
+
+            List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
+
+            addUrlArgs(postEntries);
+
+
+            postEntries.add(new HttpFormEntry(ARG_FILE, "entries.xml",
+                                              xml.getBytes("UTF-8")));
+
+            String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
+
+            if (result[0] != null) {
+                handleError("Error creating file:\n" + result[0], null);
+                return false;
+            }
+            Element response = XmlUtil.getRoot(result[1]);
+            if (responseOk(response)) {
+                handleMessage("file created");
+                return true;
+            }
+            String body = XmlUtil.getChildText(response).trim();
+            handleError("Error creating file:" + body, null);
+        } catch (Exception exc) {
+            handleError("Error creating file", exc);
+        }
+        return false;
+    }
+
+
+
+
 
     /**
     * Class EntryErrorException _more_
