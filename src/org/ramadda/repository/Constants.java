@@ -1464,6 +1464,8 @@ public interface Constants {
     /** _more_ */
     public static final String TAG_ENTRIES = "entries";
 
+    public static final String TAG_WIKITEXT = "wikitext";
+
     /** _more_ */
     public static final String TAG_ENTRY = "entry";
 
