@@ -3,8 +3,6 @@ package gov.noaa.esrl.psd.repository.data.model;
 import java.io.File;
 import java.util.regex.Matcher;
 
-import org.ramadda.data.services.RecordTypeHandler;
-import org.ramadda.geodata.cdmdata.GridAggregationTypeHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.harvester.FileInfo;
@@ -78,14 +76,14 @@ public class ClimateModelFileHarvester extends PatternHarvester {
     public Entry initializeNewEntry(FileInfo fileInfo, File originalFile,
                                     Entry entry) {
         try {
-            getRepository().getLogManager().logInfo(
-                "ClimateModelFileHarvester:initializeNewEntry:"
-                + entry.getResource());
+            //getRepository().getLogManager().logInfo(
+            //    "ClimateModelFileHarvester:initializeNewEntry:"
+            //    + entry.getResource());
             if (entry.getTypeHandler() instanceof ClimateModelFileTypeHandler) {
                 ((ClimateModelFileTypeHandler) entry.getTypeHandler()).initializeEntry(entry);
             }
-            getRepository().getLogManager().logInfo(
-                "ClimateModelFileHarvester:initializeNewEntry done");
+            //getRepository().getLogManager().logInfo(
+            //    "ClimateModelFileHarvester:initializeNewEntry done");
             return entry;
         } catch (Exception exc) {
             throw new RuntimeException(exc);

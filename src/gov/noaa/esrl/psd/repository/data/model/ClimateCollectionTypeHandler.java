@@ -16,6 +16,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
+import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.repository.type.ExtensibleGroupTypeHandler;
 
@@ -25,6 +26,7 @@ import ucar.unidata.util.TwoFacedObject;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import ucar.unidata.util.IOUtil;
 
@@ -178,7 +180,7 @@ public class ClimateCollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return v;
     }
 
-    private static class ClimateMetadata {
+    private class ClimateMetadata {
         List  variables;
         List  models;
         List  experiments;
@@ -186,12 +188,17 @@ public class ClimateCollectionTypeHandler extends ExtensibleGroupTypeHandler {
         List  frequencies;
 
         public ClimateMetadata(List<List>values) {
+            try {
+            List<Column> cols = getRepository().getTypeHandler(ClimateModelFileTypeHandler.TYPE_CLIMATE_MODELFILE).getColumns();
             int idx =0;
-            variables = addBlank(values.get(idx++));
-            models = addBlank(values.get(idx++));
-            experiments  = addBlank(values.get(idx++));
+            variables = addBlank(getEnumValues(cols.get(idx+1), values.get(idx++)));
+            models = addBlank(getEnumValues(cols.get(idx+1), values.get(idx++)));
+            experiments = addBlank(getEnumValues(cols.get(idx+1), values.get(idx++)));
             ensembles =  addBlank(values.get(idx++));
             frequencies  = addBlank(values.get(idx++));
+            } catch (Exception e) {
+                System.err.println("unable to make values");
+            }
         }
 
         public List getValues(String key) {
@@ -209,6 +216,24 @@ public class ClimateCollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 experiments.size()>0 &&
                 ensembles.size()>0 &&
                 frequencies.size()>0;
+        }
+        
+        public List<TwoFacedObject> getEnumValues(Column col, List vals) {
+            
+            List<TwoFacedObject> newVals = new ArrayList<TwoFacedObject>();
+            List<TwoFacedObject> colVals = col.getValues();
+            for (int i = 0; i < vals.size(); i++) {
+                Object val = vals.get(i);
+                Object tfo = TwoFacedObject.findId(val, colVals);
+                if (tfo != null) {
+                    newVals.add((TwoFacedObject)tfo);
+                } else {
+                    newVals.add(new TwoFacedObject(val.toString(), val));
+                }
+            }
+            TwoFacedObject.sort(newVals);
+            return newVals;
+            
         }
 
 

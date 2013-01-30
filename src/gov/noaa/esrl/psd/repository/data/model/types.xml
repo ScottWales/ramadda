@@ -15,9 +15,9 @@
      <property name="form.resource.show" value="true"/>
      <property name="form.date.show" value="true"/>
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
-     <column name="variable" type="string"  label="Variable"/>
-     <column name="model" type="string"  label="Model"  showinhtml="true" />
-     <column name="experiment" type="string"  label="Experiment"  showinhtml="true" />
+     <column name="variable" type="enumeration"  label="Variable"  values="file:/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" values="file:/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
+     <column name="experiment" type="enumeration"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/model/experiments.txt" showinhtml="true" />
      <column name="ensemble" type="string"  label="Ensemble Member"/>
      <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
    </type>
