@@ -295,7 +295,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                            PROP_DB_URL.replace("${db}", db)));
 
 
-
             String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                                  db);
             //      System.err.println("JDBC Property:" + driverClassPropertyName);
@@ -307,6 +306,11 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             System.err.println("RAMADDA: DatabaseManager connection url:"
                                + connectionURL + " user name:" + userName);
 
+            String encryptPassword = getStorageManager().getEncryptionPassword();
+            if(encryptPassword!=null && isDatabaseDerby()) {
+                System.err.println ("encrypting");
+                connectionURL += "dataEncryption=true;bootPassword=" + encryptPassword +";";
+            }
             ds.setDriverClassName(driverClassName);
             ds.setUsername(userName);
             ds.setPassword(password);

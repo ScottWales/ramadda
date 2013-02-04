@@ -327,7 +327,7 @@ public class PluginManager extends RepositoryManager {
                     continue;
                 }
                 //Write out the zipped file and load it as a plugin
-                FileOutputStream fos =
+                OutputStream fos =
                     getStorageManager().getFileOutputStream(tmpFile);
                 IOUtil.writeTo(zin, fos);
                 IOUtil.close(fos);

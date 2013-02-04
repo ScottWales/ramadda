@@ -1270,7 +1270,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
             //Write the text out
             File f = getStorageManager().getTmpFile(request, fileName);
-            FileOutputStream out =
+            OutputStream out =
                 getStorageManager().getUncheckedFileOutputStream(f);
             out.write(buff.toString().getBytes());
             out.flush();
@@ -2014,7 +2014,7 @@ public class GpsOutputHandler extends OutputHandler {
                               + ".opus";
         //Write the text out
         File f = getStorageManager().getTmpFile(request, opusFileName);
-        FileOutputStream out = getStorageManager().getFileOutputStream(f);
+        OutputStream out = getStorageManager().getFileOutputStream(f);
         out.write(opus.getBytes());
         out.flush();
         out.close();

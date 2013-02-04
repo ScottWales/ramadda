@@ -38,6 +38,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -193,6 +201,8 @@ public class StorageManager extends RepositoryManager {
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
 
+    private String encryptionPassword;
+
     /**
      * Construct a new StorageManager for the repository
      *
@@ -276,6 +286,7 @@ public class StorageManager extends RepositoryManager {
      * Initialize the manager
      */
     protected void init() {
+        encryptionPassword = getRepository().getProperty(PROP_ENCRYPT_PASSWORD, (String) null);
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
         if (repositoryDirProperty == null) {
@@ -1171,7 +1182,7 @@ public class StorageManager extends RepositoryManager {
                     true), IOUtil.getFileTail(url.getPath())));
 
 
-            FileOutputStream toStream = getFileOutputStream(newFile);
+            OutputStream toStream = getFileOutputStream(newFile);
             IOUtil.writeTo(fromStream, toStream);
             IOUtil.close(fromStream);
             IOUtil.close(toStream);
@@ -1787,7 +1798,7 @@ public class StorageManager extends RepositoryManager {
      *
      * @throws Exception  problem opening stream
      */
-    public FileInputStream getFileInputStream(String path) throws Exception {
+    public InputStream getFileInputStream(String path) throws Exception {
         return getFileInputStream(new File(path));
     }
 
@@ -1801,9 +1812,8 @@ public class StorageManager extends RepositoryManager {
      *
      * @throws Exception If the file is not under the main ramadda dir
      */
-    public FileInputStream getFileInputStream(File file) throws Exception {
+    public InputStream getFileInputStream(File file) throws Exception {
         checkReadFile(file);
-
         return new FileInputStream(file);
     }
 
@@ -1820,9 +1830,8 @@ public class StorageManager extends RepositoryManager {
      *
      * @throws Exception if the file is not under an allowable dir
      */
-    public FileOutputStream getFileOutputStream(File file) throws Exception {
+    public OutputStream getFileOutputStream(File file) throws Exception {
         checkWriteFile(file);
-
         return getUncheckedFileOutputStream(file);
     }
 
@@ -1838,7 +1847,7 @@ public class StorageManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public FileOutputStream getUncheckedFileOutputStream(File file)
+    public OutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
         return new FileOutputStream(file);
     }
@@ -1853,5 +1862,43 @@ public class StorageManager extends RepositoryManager {
         storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo/bar/foo/bar"));
     }
 
+    public String getEncryptionPassword() {
+        return encryptionPassword;
+    }
+
+    public static void encrypt(String key, InputStream is, OutputStream os) throws Throwable {
+        encryptOrDecrypt(key, Cipher.ENCRYPT_MODE, is, os);
+    }
+
+    public static void decrypt(String key, InputStream is, OutputStream os) throws Throwable {
+        encryptOrDecrypt(key, Cipher.DECRYPT_MODE, is, os);
+    }
+
+    public static void encryptOrDecrypt(String key, int mode, InputStream is, OutputStream os) throws Throwable {
+        DESKeySpec dks = new DESKeySpec(key.getBytes());
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
+        SecretKey desKey = skf.generateSecret(dks);
+        Cipher cipher = Cipher.getInstance("DES"); // DES/ECB/PKCS5Padding for SunJCE
+
+        if (mode == Cipher.ENCRYPT_MODE) {
+            cipher.init(Cipher.ENCRYPT_MODE, desKey);
+            CipherInputStream cis = new CipherInputStream(is, cipher);
+            doCopy(cis, os);
+        } else if (mode == Cipher.DECRYPT_MODE) {
+            cipher.init(Cipher.DECRYPT_MODE, desKey);
+            CipherOutputStream cos = new CipherOutputStream(os, cipher);
+            doCopy(is, cos);
+        }
+    }
+
+    public static void doCopy(InputStream is, OutputStream os) throws Exception {
+        IOUtil.writeTo(is,os);
+        IOUtil.close(is);
+        IOUtil.close(os);
+    }
+
+
+
 
 }
+

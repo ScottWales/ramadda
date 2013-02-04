@@ -101,7 +101,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
                 name = name + "." + request.getString(ARG_SUFFIX, "");
             }
             File             f = getStorageManager().getTmpFile(request, name);
-            FileOutputStream out = getStorageManager().getFileOutputStream(f);
+            OutputStream out = getStorageManager().getFileOutputStream(f);
             out.write(request.getString(ARG_TEXT, "").getBytes());
             out.flush();
             out.close();

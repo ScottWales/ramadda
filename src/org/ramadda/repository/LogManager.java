@@ -638,7 +638,7 @@ public class LogManager extends RepositoryManager {
      */
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
-        FileInputStream fis = getStorageManager().getFileInputStream(logFile);
+        InputStream fis = getStorageManager().getFileInputStream(logFile);
         try {
             String log      = request.getString(ARG_LOG, "error");
             int    numBytes = request.get(ARG_BYTES, 10000);

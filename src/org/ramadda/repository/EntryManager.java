@@ -1352,7 +1352,7 @@ public class EntryManager extends RepositoryManager {
                                 msg("Downloading") + " " + length + " "
                                 + msg("bytes"));
                     }
-                    FileOutputStream toStream =
+                    OutputStream toStream =
                         getStorageManager().getFileOutputStream(newFile);
                     try {
                         int bytes = IOUtil.writeTo(fromStream, toStream,
@@ -1454,9 +1454,9 @@ public class EntryManager extends RepositoryManager {
                 hasZip = true;
                 Hashtable<String, Entry> nameToGroup = new Hashtable<String,
                                                            Entry>();
-                FileInputStream fis =
+                InputStream fis =
                     getStorageManager().getFileInputStream(resource);
-                FileOutputStream fos = null;
+                OutputStream fos = null;
                 ZipInputStream   zin = new ZipInputStream(fis);
                 ZipEntry         ze  = null;
                 try {
@@ -3723,7 +3723,7 @@ public class EntryManager extends RepositoryManager {
                         String name = IOUtil.getFileTail(ze.getName());
                         File   f    = getStorageManager().getTmpFile(request,
                                      name);
-                        FileOutputStream fos =
+                        OutputStream fos =
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(zin, fos);
                         fos.close();

@@ -858,7 +858,7 @@ public class PhoneHarvester extends Harvester  {
         url = new URL(url.toString()+".mp3");
         URLConnection connection = url.openConnection();
         InputStream   fromStream = connection.getInputStream();
-        FileOutputStream toStream =
+        OutputStream toStream =
             getStorageManager().getFileOutputStream(newFile);
         try {
             int bytes = IOUtil.writeTo(fromStream, toStream);

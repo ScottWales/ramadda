@@ -624,7 +624,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         }
         File newFile =
             getRepository().getStorageManager().getTmpFile(request, name);
-        FileOutputStream fos =
+        OutputStream fos =
             getRepository().getStorageManager().getFileOutputStream(newFile);
         try {
             System.err.println("transferring from client");

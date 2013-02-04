@@ -158,7 +158,7 @@ public class ZipFileOutputHandler extends OutputHandler {
         }
         StringBuffer    sb  = new StringBuffer();
 
-        FileInputStream fis = getStorageManager().getFileInputStream(
+        InputStream fis = getStorageManager().getFileInputStream(
                                   entry.getResource().getPath());
         ZipInputStream zin = new ZipInputStream(fis);
         try {
