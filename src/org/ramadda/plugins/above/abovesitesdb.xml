@@ -2,7 +2,7 @@
 <tables>
 
 
-<table id="above_sites" name="ABoVE Sites" handler="org.ramadda.plugins.above.AboveDbTypeHandler">
+<table id="above_sites" name="ABoVE Sites" handler="org.ramadda.plugins.above.AboveDbTypeHandler"  category="AbOVE">
 
    <column name="name" type="string" label="Name"   canlist="true" cansearch="true"/>
    <column name="url" type="url" label="URL"   canlist="true" size="500" />

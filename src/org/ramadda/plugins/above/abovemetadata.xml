@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="AbOVE" xxxclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
+    
+    <type id="above_organization_sponsor" name="Organization Sponsor">
+      <element id="name" name="Sponsor"/>
+    </type>
+
+    <type id="above_organization_acronym" name="Organization Acronym">
+      <element id="acronym" name="Acronym"/>
+    </type>
+
+
+    <type id="above_organization_leader" name="Organization Leader">
+      <element id="name" name="Name"/>
+      <element id="affiliation" name="Affiliation"/>
+    </type>
+
+
+</handler>
+</metadata>

@@ -1,0 +1,50 @@
+<types>
+
+  <type name="above_organization"  description="AbOVE Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" foruser="false">
+     <property name="icon" value="/above/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.location.show" value="true"/>
+     <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
+     <column name="acronym"   label="Acronym"    cansearch="true"/>
+     <column name="notes" type="string"  label="Notes" rows="5" />
+
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+== {{name}}==
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>Url:</b></td><td>{{resource}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="organization_type"}}</td></tr>
+<tr><td align="right"><b>Notes:</b></td><td> {{field name="notes"}}</td></tr>
+</table>
+
+{{tree title="Data" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350"}}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+{{properties}}
+<p>
+]]>
+</wiki>
+
+
+   </type>
+
+</types>
