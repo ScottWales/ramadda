@@ -17,4 +17,12 @@ this gets it from the type_point super class
   </type>
 
 
+
+
+
+  <type name="type_point_above_cmcswemonthlyclimate"  super="type_point_above" description="CMC SWE Monthly"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.above.CmcSweMonthlyClimate"/>
+  </type>
+
+
 </types>

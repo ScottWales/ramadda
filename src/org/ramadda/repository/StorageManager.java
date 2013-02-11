@@ -66,6 +66,8 @@ public class StorageManager extends RepositoryManager {
     /** file separator */
     public static final String FILE_SEPARATOR = "_file_";
 
+    public static final String DFLT_CIPHER = "DES";
+
     /** the full log file */
     public static final String FILE_FULLLOG = "fullrepository.log";
 
@@ -1813,7 +1815,7 @@ public class StorageManager extends RepositoryManager {
      */
     public InputStream getFileInputStream(File file) throws Exception {
         checkReadFile(file);
-        return decrypt(new FileInputStream(file), getEncryptionPassword());
+        return decrypt(file, getEncryptionPassword());
     }
 
     /**
@@ -1843,47 +1845,46 @@ public class StorageManager extends RepositoryManager {
      *
      * @return FileOutputStream
      *
-     *
      * @throws Exception _more_
      */
     public OutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
-        return encrypt(new FileOutputStream(file), getEncryptionPassword());
+        return encrypt(file, getEncryptionPassword());
     }
 
 
-    public static void main(String[]args) {
-        StorageManager storageManager = new StorageManager(null);
-        storageManager.makeDir(new File("/Users/jeffmc/test"));
-        storageManager.makeDir(new File("/Users/jeffmc/test/foo"));
-        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo"));
-        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo/bar/foo/bar"));
-        storageManager.makeDirRecursive(new File("/Users/jeffmc/test/foo/bar/foo/bar"));
+    public boolean shouldCrypt(File file) {
+        //We only crypt files stored under the RAMADDA home dir
+        if (IOUtil.isADescendent(getRepositoryDir(), file)) {
+            return true;
+        }
+        return false;
     }
 
-    public String getEncryptionPassword() {
+
+    private String getEncryptionPassword() {
         return encryptionPassword;
     }
 
 
-    public InputStream decrypt(InputStream is, String key) throws Exception {
-        if(key == null) return is;
+    public InputStream decrypt(File file, String key) throws Exception {
+        InputStream is = new  FileInputStream(file);
+        if(key == null || !shouldCrypt(file)) return is;
         DESKeySpec dks = new DESKeySpec(key.getBytes());
-        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, "DES");
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(cipherSpec);
-        SecretKey desKey = skf.generateSecret(dks);
+        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
+        SecretKey desKey = SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
         Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
         cipher.init(Cipher.DECRYPT_MODE, desKey);
         return  new CipherInputStream(is, cipher);
     }
 
 
-    public OutputStream encrypt(OutputStream os, String key) throws Exception {
-        if(key == null) return os;
-        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, "DES");
+    public OutputStream encrypt(File file, String key) throws Exception {
+        OutputStream os = new FileOutputStream(file);
+        if(key == null || !shouldCrypt(file)) return os;
+        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
         DESKeySpec dks = new DESKeySpec(key.getBytes());
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(cipherSpec);
-        SecretKey desKey = skf.generateSecret(dks);
+        SecretKey desKey = SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
         Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
         cipher.init(Cipher.ENCRYPT_MODE, desKey);
         return new CipherOutputStream(os, cipher);

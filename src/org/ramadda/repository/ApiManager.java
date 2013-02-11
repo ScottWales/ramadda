@@ -165,6 +165,11 @@ public class ApiManager extends RepositoryManager {
                             Misc.getProperty(props, ApiMethod.ATTR_ADMIN,
                                              true));
 
+        boolean mustBeUser = XmlUtil.getAttributeFromTree(node,
+                            ApiMethod.ATTR_ISUSER,
+                            Misc.getProperty(props, ApiMethod.ATTR_ISUSER,
+                                             false));
+
 
         boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
                                         ApiMethod.ATTR_REQUIRESAUTHTOKEN,
@@ -271,7 +276,7 @@ public class ApiManager extends RepositoryManager {
         ApiMethod apiMethod =
             new ApiMethod(getRepository(), handler, request,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                              request), method, admin, requiresAuthToken,
+                                               request), method, admin, mustBeUser, requiresAuthToken,
                                         needsSsl, authMethod,
                                         checkAuthMethod,
                                         XmlUtil.getAttribute(node,

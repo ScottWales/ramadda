@@ -224,6 +224,13 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     }
 
 
+    public Result sendText(Request request) throws Exception {
+        //TODO
+        StringBuffer sb = new StringBuffer();
+        return new Result("", sb);
+    }
+
+
     /**
      * _more_
      *

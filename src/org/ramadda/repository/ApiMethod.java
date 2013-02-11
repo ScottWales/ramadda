@@ -84,6 +84,7 @@ public class ApiMethod {
 
     /** _more_ */
     public static final String ATTR_ADMIN = "admin";
+    public static final String ATTR_ISUSER = "isuser";
 
     /** _more_ */
     public static final String ATTR_POST = "post";
@@ -109,6 +110,9 @@ public class ApiMethod {
 
     /** _more_ */
     private boolean mustBeAdmin = true;
+
+    /** _more_ */
+    private boolean mustBeUser = false;
 
     /** _more_ */
     private boolean mustBePost = false;
@@ -166,7 +170,7 @@ public class ApiMethod {
      */
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
-                     boolean mustBeAdmin, boolean requiresAuthToken,
+                     boolean mustBeAdmin, boolean mustBeUser, boolean requiresAuthToken,
                      boolean needsSsl, String authMethod,
                      boolean checkAuthMethod, boolean isTopLevel) {
         this.repository        = repository;
@@ -174,6 +178,7 @@ public class ApiMethod {
         this.request           = request;
         this.name              = name;
         this.mustBeAdmin       = mustBeAdmin;
+        this.mustBeUser        = mustBeUser;
         this.requiresAuthToken = requiresAuthToken;
         this.needsSsl          = needsSsl;
         this.authMethod        = authMethod;
@@ -206,6 +211,11 @@ public class ApiMethod {
     public boolean isRequestOk(Request request, Repository repository)
             throws Exception {
         User user = request.getUser();
+        if (mustBeUser) {
+            if(user.getAnonymous()) return false;
+        }
+
+
         if (mustBeAdmin) {
             if (repository.isReadOnly()) {
                 return false;

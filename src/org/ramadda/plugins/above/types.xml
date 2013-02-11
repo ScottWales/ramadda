@@ -7,7 +7,7 @@
      <property name="form.location.show" value="true"/>
      <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
      <column name="acronym"   label="Acronym"    cansearch="true"/>
-     <column name="notes" type="string"  label="Notes" rows="5" />
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
 
      <wiki><![CDATA[
 {{noheading}}
@@ -31,7 +31,7 @@
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="350"}}
+{{comments}}
 </td></tr>
 
 
