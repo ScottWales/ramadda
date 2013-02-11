@@ -1862,7 +1862,7 @@ public class StorageManager extends RepositoryManager {
     }
 
 
-    private String getEncryptionPassword() {
+    public String getEncryptionPassword() {
         return encryptionPassword;
     }
 

@@ -769,9 +769,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
             boolean directoryChanged = dirInfo.hasChanged();
             if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
+                /*
                 logHarvesterInfo("Directory:" + dirInfo.getFile()
                                  + "  * no change *");
-
+                */
                 continue;
             }
 
