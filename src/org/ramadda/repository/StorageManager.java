@@ -200,7 +200,6 @@ public class StorageManager extends RepositoryManager {
     /** list of directories that are okay to write to */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
-
     private String encryptionPassword;
 
     /**
@@ -1814,7 +1813,7 @@ public class StorageManager extends RepositoryManager {
      */
     public InputStream getFileInputStream(File file) throws Exception {
         checkReadFile(file);
-        return new FileInputStream(file);
+        return decrypt(new FileInputStream(file), getEncryptionPassword());
     }
 
     /**
@@ -1849,7 +1848,7 @@ public class StorageManager extends RepositoryManager {
      */
     public OutputStream getUncheckedFileOutputStream(File file)
             throws Exception {
-        return new FileOutputStream(file);
+        return encrypt(new FileOutputStream(file), getEncryptionPassword());
     }
 
 
@@ -1866,29 +1865,28 @@ public class StorageManager extends RepositoryManager {
         return encryptionPassword;
     }
 
-    public static void encrypt(String key, InputStream is, OutputStream os) throws Throwable {
-        encryptOrDecrypt(key, Cipher.ENCRYPT_MODE, is, os);
-    }
 
-    public static void decrypt(String key, InputStream is, OutputStream os) throws Throwable {
-        encryptOrDecrypt(key, Cipher.DECRYPT_MODE, is, os);
-    }
-
-    public static void encryptOrDecrypt(String key, int mode, InputStream is, OutputStream os) throws Throwable {
+    public InputStream decrypt(InputStream is, String key) throws Exception {
+        if(key == null) return is;
         DESKeySpec dks = new DESKeySpec(key.getBytes());
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
+        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, "DES");
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(cipherSpec);
         SecretKey desKey = skf.generateSecret(dks);
-        Cipher cipher = Cipher.getInstance("DES"); // DES/ECB/PKCS5Padding for SunJCE
+        Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
+        cipher.init(Cipher.DECRYPT_MODE, desKey);
+        return  new CipherInputStream(is, cipher);
+    }
 
-        if (mode == Cipher.ENCRYPT_MODE) {
-            cipher.init(Cipher.ENCRYPT_MODE, desKey);
-            CipherInputStream cis = new CipherInputStream(is, cipher);
-            doCopy(cis, os);
-        } else if (mode == Cipher.DECRYPT_MODE) {
-            cipher.init(Cipher.DECRYPT_MODE, desKey);
-            CipherOutputStream cos = new CipherOutputStream(os, cipher);
-            doCopy(is, cos);
-        }
+
+    public OutputStream encrypt(OutputStream os, String key) throws Exception {
+        if(key == null) return os;
+        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, "DES");
+        DESKeySpec dks = new DESKeySpec(key.getBytes());
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(cipherSpec);
+        SecretKey desKey = skf.generateSecret(dks);
+        Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
+        cipher.init(Cipher.ENCRYPT_MODE, desKey);
+        return new CipherOutputStream(os, cipher);
     }
 
     public static void doCopy(InputStream is, OutputStream os) throws Exception {
