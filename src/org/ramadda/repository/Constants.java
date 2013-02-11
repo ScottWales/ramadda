@@ -2028,6 +2028,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
     public static final String PROP_ENCRYPT_PASSWORD = "ramadda.encrypt.password";
+    public static final String PROP_ENCRYPT_CIPHER = "ramadda.encrypt.cipher";
 
 
 

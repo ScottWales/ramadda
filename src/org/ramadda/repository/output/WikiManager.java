@@ -29,6 +29,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.WikiUtil;
@@ -389,6 +390,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_URL = "url";
 
+    public static final String WIKI_PROP_RESOURCE = "resource";
+
 
     /**
      * Create an attribute with the name and value
@@ -444,7 +447,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
         WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
-        WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_DATE_FROM,
+        WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_RESOURCE, WIKI_PROP_DATE_FROM,
         WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML, WIKI_PROP_IMPORT,
         WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
@@ -955,6 +958,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return HtmlUtils.href(url, title);
 
+        } else if (include.equals(WIKI_PROP_RESOURCE)) {
+            String url = entry.getTypeHandler().getEntryResourceUrl(
+                                                                    request, entry);
+            if(Utils.stringDefined(url)) {
+                return HtmlUtils.href(url,url);
+            } else {
+                return msg("None");
+            }
         } else if (include.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");

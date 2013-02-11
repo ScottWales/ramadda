@@ -1001,21 +1001,6 @@ public class TypeHandler extends RepositoryManager {
         return value.equals("true");
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public boolean showBefore(Entry entry, String arg, boolean dflt) {
-        String value = getProperty(entry, "form." + arg + ".show.before",
-                                   "" + dflt);
-
-        return value.equals("true");
-    }
 
 
     /**
@@ -2460,14 +2445,8 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         addBasicToEntryForm(request, sb, entry);
         addSpecialToEntryForm(request, sb, entry);
-        if ( !showBefore(entry, ARG_DATE, true)) {
-            addDateToEntryForm(request, sb, entry);
-        }
-        if ( !showBefore(entry, ARG_LOCATION, true)) {
-            addSpatialToEntryForm(request, sb, entry);
-        }
 
-        if (request.getUser().getAdmin()) {
+        if (request.getUser().getAdmin() &&         okToShowInForm(entry, "owner", true)) {
             sb.append(formEntry(request, msgLabel("Owner"),
                                 HtmlUtils.input(ARG_USER_ID, ((entry != null)
                     ? entry.getUser().getId()
@@ -2715,308 +2694,322 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addBasicToEntryForm(Request request, StringBuffer sb,
                                     Entry entry)
-            throws Exception {
-
+        throws Exception {
 
         String  size      = HtmlUtils.SIZE_70;
 
         boolean forUpload = (entry == null)
-                            && getType().equals(TYPE_CONTRIBUTION);
+            && getType().equals(TYPE_CONTRIBUTION);
 
         if (forUpload) {
             sb.append(formEntry(request, msgLabel("Your Name"),
                                 HtmlUtils.input(ARG_CONTRIBUTION_FROMNAME,
-                                    "", size)));
+                                                "", size)));
             sb.append(formEntry(request, msgLabel("Your Email"),
                                 HtmlUtils.input(ARG_CONTRIBUTION_FROMEMAIL,
-                                    "", size)));
+                                                "", size)));
         }
 
 
+        String[] whatList = {ARG_NAME,ARG_DESCRIPTION,ARG_RESOURCE,ARG_CATEGORY, ARG_DATE,ARG_LOCATION};
 
-        if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
-            sb.append(formEntry(request,
-                                msgLabel(getFormLabel(entry, ARG_NAME,
-                                    "Name")), HtmlUtils.input(ARG_NAME,
-                                        ((entry != null)
-                                         ? entry.getName()
-                                         : getFormDefault(entry, ARG_NAME,
-                                         "")), size)));
-        } else {
-            String nameDefault = getFormDefault(entry, ARG_NAME, null);
-            if (nameDefault != null) {
-                sb.append(HtmlUtils.hidden(ARG_NAME, nameDefault));
-            }
-        }
-
-        if (okToShowInForm(entry, ARG_DESCRIPTION)) {
-            String desc    = "";
-            String buttons = "";
-            int    rows    =
-                getProperty(entry, "form.description.rows",
-                            getRepository().getProperty("ramadda.edit.rows",
-                                5));
-            boolean showHtmlEditor =
-                getProperty(entry, "form.description.html",
-                            getRepository().getProperty("ramadda.edit.html",
-                                false));
-            boolean makeWidget = true;
-            if (entry != null) {
-                desc = entry.getDescription();
-                if (desc.length() > 100) {
-                    rows = rows * 2;
+        for(String what: whatList) {
+            if(what.equals(ARG_NAME)) {
+                if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
+                    sb.append(formEntry(request,
+                                        msgLabel(getFormLabel(entry, ARG_NAME,
+                                                              "Name")), HtmlUtils.input(ARG_NAME,
+                                                                                        ((entry != null)
+                                                                                         ? entry.getName()
+                                                                                         : getFormDefault(entry, ARG_NAME,
+                                                                                                          "")), size)));
+                } else {
+                    String nameDefault = getFormDefault(entry, ARG_NAME, null);
+                    if (nameDefault != null) {
+                        sb.append(HtmlUtils.hidden(ARG_NAME, nameDefault));
+                    }
                 }
-                if (isWikiText(desc)) {
-                    showHtmlEditor = false;
-                    makeWidget     = false;
-                    rows           = 30;
-                    buttons        =
-                        getRepository().getWikiManager().makeWikiEditBar(
-                            request, entry, ARG_DESCRIPTION) + HtmlUtils.br();
-                    sb.append("<tr><td colspan=2>");
-                    sb.append(buttons);
-                    //                    sb.append(HtmlUtils.br());
-                    sb.append(HtmlUtils.textArea(ARG_DESCRIPTION, desc, rows,
-                            getProperty(entry, "form.description.columns",
-                                        80), HtmlUtils.id(ARG_DESCRIPTION)));
-                    sb.append("</td></tr>");
+                continue;
+            }
+
+            if(what.equals(ARG_DESCRIPTION)) {
+                if (okToShowInForm(entry, ARG_DESCRIPTION)) {
+                    String desc    = "";
+                    String buttons = "";
+                    int    rows    =
+                        getProperty(entry, "form.description.rows",
+                                    getRepository().getProperty("ramadda.edit.rows",
+                                                                5));
+                    boolean showHtmlEditor =
+                        getProperty(entry, "form.description.html",
+                                    getRepository().getProperty("ramadda.edit.html",
+                                                                false));
+                    boolean makeWidget = true;
+                    if (entry != null) {
+                        desc = entry.getDescription();
+                        if (desc.length() > 100) {
+                            rows = rows * 2;
+                        }
+                        if (isWikiText(desc)) {
+                            showHtmlEditor = false;
+                            makeWidget     = false;
+                            rows           = 30;
+                            buttons        =
+                                getRepository().getWikiManager().makeWikiEditBar(
+                                                                                 request, entry, ARG_DESCRIPTION) + HtmlUtils.br();
+                            sb.append("<tr><td colspan=2>");
+                            sb.append(buttons);
+                            //                    sb.append(HtmlUtils.br());
+                            sb.append(HtmlUtils.textArea(ARG_DESCRIPTION, desc, rows,
+                                                         getProperty(entry, "form.description.columns",
+                                                                     80), HtmlUtils.id(ARG_DESCRIPTION)));
+                            sb.append("</td></tr>");
+                        }
+                    }
+
+                    if (makeWidget) {
+                        sb.append(
+                                  formEntryTop(
+                                               request, msgLabel(
+                                                                 getFormLabel(
+                                                                              entry, ARG_DESCRIPTION, "Description")), buttons
+                                               + HtmlUtils.textArea(
+                                                                    ARG_DESCRIPTION, desc, rows, getProperty(
+                                                                                                             entry, "form.description.columns", 60), HtmlUtils.id(
+                                                                                                                                                                  ARG_DESCRIPTION))));
+                    }
+
+                    if (showHtmlEditor) {
+                        sb.append(
+                                  HtmlUtils.importJS(
+                                                     getRepository().fileUrl("/tiny_mce/tiny_mce.js")));
+                        if (tinyMceTemplate == null) {
+                            tinyMceTemplate = getRepository().getResource(
+                                                                          getRepository().getProperty(
+                                                                                                      "ramadda.edit.tinymce",
+                                                                                                      "/org/ramadda/repository/resources/tinymce.js.template"));
+                        }
+                        sb.append(HtmlUtils.script(tinyMceTemplate));
+                    }
                 }
+                continue;
             }
 
-            if (makeWidget) {
-                sb.append(
-                    formEntryTop(
-                        request, msgLabel(
-                            getFormLabel(
-                                entry, ARG_DESCRIPTION, "Description")), buttons
-                                    + HtmlUtils.textArea(
-                                        ARG_DESCRIPTION, desc, rows, getProperty(
-                                            entry, "form.description.columns", 60), HtmlUtils.id(
-                                            ARG_DESCRIPTION))));
-            }
+            if(what.equals(ARG_RESOURCE)) {
 
-            if (showHtmlEditor) {
-                sb.append(
-                    HtmlUtils.importJS(
-                        getRepository().fileUrl("/tiny_mce/tiny_mce.js")));
-                if (tinyMceTemplate == null) {
-                    tinyMceTemplate = getRepository().getResource(
-                        getRepository().getProperty(
-                            "ramadda.edit.tinymce",
-                            "/org/ramadda/repository/resources/tinymce.js.template"));
-                }
-                sb.append(HtmlUtils.script(tinyMceTemplate));
-            }
-        }
+                boolean showFile         = okToShowInForm(entry, ARG_FILE);
+                boolean showLocalFile    = showFile && request.getUser().getAdmin() && okToShowInForm(entry, ARG_SERVERFILE);
+                boolean showUrl          = (forUpload
+                                            ? false
+                                            : okToShowInForm(entry, ARG_URL));
+
+                boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
 
 
+                if (showResourceForm) {
+                    boolean showDownload = showFile
+                        && okToShowInForm(entry,
+                                          ARG_RESOURCE_DOWNLOAD);
+                    List<String> tabTitles  = new ArrayList<String>();
+                    List<String> tabContent = new ArrayList<String>();
+                    String       urlLabel   = getFormLabel(entry, ARG_URL, "URL");
+                    String       fileLabel  = getFormLabel(entry, ARG_FILE, "File");
+                    if (showFile) {
+                        String formContent = HtmlUtils.fileInput(ARG_FILE, size);
+                        tabTitles.add(msg(fileLabel));
+                        tabContent.add(HtmlUtils.inset(formContent, 8));
+                    }
+                    if (showUrl) {
+                        String url = "";
+                        if ((entry != null) && entry.getResource().isUrl()) {
+                            url = entry.getResource().getPath();
+                        }
+                        String download = !showDownload
+                            ? ""
+                            : HtmlUtils.space(1)
+                            + HtmlUtils
+                            .checkbox(
+                                      ARG_RESOURCE_DOWNLOAD) + HtmlUtils
+                            .space(1) + msg("Download");
+                        String formContent = HtmlUtils.input(ARG_URL, url, size)
+                            + BLANK + download;
+                        tabTitles.add(urlLabel);
+                        tabContent.add(HtmlUtils.inset(formContent, 8));
+                    }
 
-        boolean showFile         = okToShowInForm(entry, ARG_FILE);
-        boolean showLocalFile    = showFile && request.getUser().getAdmin() && okToShowInForm(entry, ARG_SERVERFILE);
-        boolean showUrl          = (forUpload
-                                    ? false
-                                    : okToShowInForm(entry, ARG_URL));
+                    if (showLocalFile) {
+                        StringBuffer localFilesSB = new StringBuffer();
+                        localFilesSB.append(HtmlUtils.formTable());
+                        localFilesSB.append(
+                                            HtmlUtils.formEntry(
+                                                                msgLabel("File or directory"),
+                                                                HtmlUtils.input(ARG_SERVERFILE, "", size) + " "
+                                                                + msg("Note: If a directory then all files will be added")));
+                        localFilesSB.append(HtmlUtils.formEntry(msgLabel("Pattern"),
+                                                                HtmlUtils.input(ARG_SERVERFILE_PATTERN, "",
+                                                                                HtmlUtils.SIZE_10)));
+                        localFilesSB.append(HtmlUtils.formTableClose());
+                        tabTitles.add(msg("Files on Server"));
+                        tabContent.add(HtmlUtils.inset(localFilesSB.toString(), 8));
+                    }
 
-        boolean showResourceForm = okToShowInForm(entry, ARG_RESOURCE);
+                    String addMetadata = HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
+                                                            Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),"false"))
+                        + HtmlUtils.space(1) + msg("Add properties")
+                        + HtmlUtils.space(1)
+                        + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
+                        + HtmlUtils.space(1)
+                        + msg("Just spatial/temporal properties");
 
+                    List datePatterns = new ArrayList();
+                    datePatterns.add(new TwoFacedObject("", BLANK));
+                    for (int i = 0; i < DateUtil.DATE_PATTERNS.length; i++) {
+                        datePatterns.add(DateUtil.DATE_FORMATS[i]);
+                    }
 
-        if (showResourceForm) {
-            boolean showDownload = showFile
-                                   && okToShowInForm(entry,
-                                       ARG_RESOURCE_DOWNLOAD);
-            List<String> tabTitles  = new ArrayList<String>();
-            List<String> tabContent = new ArrayList<String>();
-            String       urlLabel   = getFormLabel(entry, ARG_URL, "URL");
-            String       fileLabel  = getFormLabel(entry, ARG_FILE, "File");
-            if (showFile) {
-                String formContent = HtmlUtils.fileInput(ARG_FILE, size);
-                tabTitles.add(msg(fileLabel));
-                tabContent.add(HtmlUtils.inset(formContent, 8));
-            }
-            if (showUrl) {
-                String url = "";
-                if ((entry != null) && entry.getResource().isUrl()) {
-                    url = entry.getResource().getPath();
-                }
-                String download = !showDownload
-                                  ? ""
-                                  : HtmlUtils.space(1)
-                                    + HtmlUtils
-                                        .checkbox(
-                                            ARG_RESOURCE_DOWNLOAD) + HtmlUtils
-                                                .space(1) + msg("Download");
-                String formContent = HtmlUtils.input(ARG_URL, url, size)
-                                     + BLANK + download;
-                tabTitles.add(urlLabel);
-                tabContent.add(HtmlUtils.inset(formContent, 8));
-            }
+                    String unzipWidget =
+                        HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
+                        + HtmlUtils.space(1) + msg("Unzip archive")
+                        + HtmlUtils.checkbox(ARG_FILE_PRESERVEDIRECTORY, "true",
+                                             false) + HtmlUtils.space(1)
+                        + msg("Make folders from archive");
+                    /*
+                      String datePatternWidget = msgLabel("Date pattern")
+                      + HtmlUtils.space(1)
+                      + HtmlUtils.select(ARG_DATE_PATTERN,
+                      datePatterns) + " ("
+                      + msg("Use file name") + ")";
 
-            if (showLocalFile) {
-                StringBuffer localFilesSB = new StringBuffer();
-                localFilesSB.append(HtmlUtils.formTable());
-                localFilesSB.append(
-                    HtmlUtils.formEntry(
-                        msgLabel("File or directory"),
-                        HtmlUtils.input(ARG_SERVERFILE, "", size) + " "
-                        + msg("Note: If a directory then all files will be added")));
-                localFilesSB.append(HtmlUtils.formEntry(msgLabel("Pattern"),
-                        HtmlUtils.input(ARG_SERVERFILE_PATTERN, "",
-                                        HtmlUtils.SIZE_10)));
-                localFilesSB.append(HtmlUtils.formTableClose());
-                tabTitles.add(msg("Files on Server"));
-                tabContent.add(HtmlUtils.inset(localFilesSB.toString(), 8));
-            }
+                    */
 
-            String addMetadata = HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
-                                                    Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),"false"))
-                                 + HtmlUtils.space(1) + msg("Add properties")
-                                 + HtmlUtils.space(1)
-                                 + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
-                                 + HtmlUtils.space(1)
-                                 + msg("Just spatial/temporal properties");
-
-            List datePatterns = new ArrayList();
-            datePatterns.add(new TwoFacedObject("", BLANK));
-            for (int i = 0; i < DateUtil.DATE_PATTERNS.length; i++) {
-                datePatterns.add(DateUtil.DATE_FORMATS[i]);
-            }
-
-            String unzipWidget =
-                HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
-                + HtmlUtils.space(1) + msg("Unzip archive")
-                + HtmlUtils.checkbox(ARG_FILE_PRESERVEDIRECTORY, "true",
-                                     false) + HtmlUtils.space(1)
-                                           + msg("Make folders from archive");
-            /*
-            String datePatternWidget = msgLabel("Date pattern")
-                                       + HtmlUtils.space(1)
-                                       + HtmlUtils.select(ARG_DATE_PATTERN,
-                                           datePatterns) + " ("
-                                               + msg("Use file name") + ")";
-
-            */
-
-            String datePatternWidget =
-                msgLabel("Date pattern") + HtmlUtils.space(1)
-                + HtmlUtils.input(ARG_DATE_PATTERN,
-                    request.getString(ARG_DATE_PATTERN,
-                        "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
+                    String datePatternWidget =
+                        msgLabel("Date pattern") + HtmlUtils.space(1)
+                        + HtmlUtils.input(ARG_DATE_PATTERN,
+                                          request.getString(ARG_DATE_PATTERN,
+                                                            "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
 
 
 
-            String extraMore = "";
+                    String extraMore = "";
 
-            if ((entry == null) && getType().equals(TYPE_FILE)) {
-                extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS, "true", true)
+                    if ((entry == null) && getType().equals(TYPE_FILE)) {
+                        extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS, "true", true)
                             + " " + msg("Figure out the type")
                             + HtmlUtils.br();
-            }
-
-            String extra = HtmlUtils.makeShowHideBlock(msg("More..."),
-                               extraMore + addMetadata + HtmlUtils.br()
-                               + unzipWidget + HtmlUtils.br()
-                               + datePatternWidget, false);
-            if (forUpload || !showDownload) {
-                extra = "";
-            }
-            if ( !okToShowInForm(entry, "resource.extra")) {
-                extra = "";
-            }
-
-            if (entry == null) {
-                if (tabTitles.size() > 1) {
-                    sb.append(formEntryTop(request, msgLabel("Resource"),
-                                           OutputHandler.makeTabs(tabTitles,
-                                               tabContent, true) + extra));
-                } else if (tabTitles.size() == 1) {
-                    sb.append(formEntry(request, tabTitles.get(0) + ":",
-                                        tabContent.get(0) + extra));
-                }
-            } else {
-                //                if (entry.getResource().isFile()) {
-                //If its the admin then show the full path
-                if (showFile) {
-                    if (request.getUser().getAdmin()) {
-                        sb.append(formEntry(request, msgLabel("Resource"),
-                                            entry.getResource().getPath()));
-                    } else {
-                        sb.append(
-                            formEntry(
-                                request, msgLabel("Resource"),
-                                getStorageManager().getFileTail(entry)));
                     }
-                }
-                if (showFile) {
-                    if (tabTitles.size() > 1) {
-                        if (showFile) {
-                            sb.append(formEntry(request, "",
-                                    msg("Upload new resource")));
-                            sb.append(formEntryTop(request,
-                                    msgLabel("Resource"),
-                                    OutputHandler.makeTabs(tabTitles,
-                                        tabContent, true) + extra));
+
+                    String extra = HtmlUtils.makeShowHideBlock(msg("More..."),
+                                                               extraMore + addMetadata + HtmlUtils.br()
+                                                               + unzipWidget + HtmlUtils.br()
+                                                               + datePatternWidget, false);
+                    if (forUpload || !showDownload) {
+                        extra = "";
+                    }
+                    if ( !okToShowInForm(entry, "resource.extra")) {
+                        extra = "";
+                    }
+
+                    if (entry == null) {
+                        if (tabTitles.size() > 1) {
+                            sb.append(formEntryTop(request, msgLabel("Resource"),
+                                                   OutputHandler.makeTabs(tabTitles,
+                                                                          tabContent, true) + extra));
+                        } else if (tabTitles.size() == 1) {
+                            sb.append(formEntry(request, tabTitles.get(0) + ":",
+                                                tabContent.get(0) + extra));
                         }
-                    } else if (tabTitles.size() == 1) {
-                        sb.append(formEntry(request, "",
-                                            msg("Upload new resource")));
-                        sb.append(formEntry(request, tabTitles.get(0) + ":",
-                                            tabContent.get(0) + extra));
+                    } else {
+                        //                if (entry.getResource().isFile()) {
+                        //If its the admin then show the full path
+                        if (showFile) {
+                            if (request.getUser().getAdmin()) {
+                                sb.append(formEntry(request, msgLabel("Resource"),
+                                                    entry.getResource().getPath()));
+                            } else {
+                                sb.append(
+                                          formEntry(
+                                                    request, msgLabel("Resource"),
+                                                    getStorageManager().getFileTail(entry)));
+                            }
+                        }
+                        if (showFile) {
+                            if (tabTitles.size() > 1) {
+                                if (showFile) {
+                                    sb.append(formEntry(request, "",
+                                                        msg("Upload new resource")));
+                                    sb.append(formEntryTop(request,
+                                                           msgLabel("Resource"),
+                                                           OutputHandler.makeTabs(tabTitles,
+                                                                                  tabContent, true) + extra));
+                                }
+                            } else if (tabTitles.size() == 1) {
+                                sb.append(formEntry(request, "",
+                                                    msg("Upload new resource")));
+                                sb.append(formEntry(request, tabTitles.get(0) + ":",
+                                                    tabContent.get(0) + extra));
+                            }
+                        } else {
+                            if (tabTitles.size() > 1) {
+                                sb.append(formEntryTop(request, msgLabel("Resource"),
+                                                       OutputHandler.makeTabs(tabTitles, tabContent,
+                                                                              true) + extra));
+                            } else if (tabTitles.size() == 1) {
+                                sb.append(formEntry(request, tabTitles.get(0) + ":",
+                                                    tabContent.get(0) + extra));
+                            }
+                        }
+
+
+                        if (showFile) {
+                            if (entry.getResource().isStoredFile()) {
+                                String formContent = HtmlUtils.fileInput(ARG_FILE,
+                                                                         size);
+                                /*                            sb.append(
+                                                              formEntry(request,
+                                                              msgLabel("Upload new file"), formContent));
+                                */
+                            }
+                        }
+                        /*                } else {
+                                          sb.append(formEntry(request,msgLabel("Resource"),
+                                          entry.getResource().getPath()));
+                                          }*/
                     }
-                } else {
-                    if (tabTitles.size() > 1) {
-                        sb.append(formEntryTop(request, msgLabel("Resource"),
-                                OutputHandler.makeTabs(tabTitles, tabContent,
-                                    true) + extra));
-                    } else if (tabTitles.size() == 1) {
-                        sb.append(formEntry(request, tabTitles.get(0) + ":",
-                                            tabContent.get(0) + extra));
-                    }
+
+                    continue;
                 }
 
+                if(what.equals(ARG_CATEGORY)) {
 
-                if (showFile) {
-                    if (entry.getResource().isStoredFile()) {
-                        String formContent = HtmlUtils.fileInput(ARG_FILE,
-                                                 size);
-                        /*                            sb.append(
-                                  formEntry(request,
-                                                     msgLabel("Upload new file"), formContent));
-                        */
-                    }
-                }
-                /*                } else {
-                sb.append(formEntry(request,msgLabel("Resource"),
-                        entry.getResource().getPath()));
-                        }*/
-            }
-
-
-
-            if ( !hasDefaultCategory()
-                    && okToShowInForm(entry, ARG_CATEGORY, false)) {
-                String selected = "";
-                if (entry != null) {
-                    selected = entry.getCategory();
-                }
-                List   types  = getRepository().getDefaultCategorys();
-                String widget = ((types.size() > 1)
-                                 ? HtmlUtils.select(ARG_CATEGORY_SELECT,
-                                     types, selected) + HtmlUtils.space(1)
+                    if ( !hasDefaultCategory()
+                         && okToShowInForm(entry, ARG_CATEGORY, false)) {
+                        String selected = "";
+                        if (entry != null) {
+                            selected = entry.getCategory();
+                        }
+                        List   types  = getRepository().getDefaultCategorys();
+                        String widget = ((types.size() > 1)
+                                         ? HtmlUtils.select(ARG_CATEGORY_SELECT,
+                                                            types, selected) + HtmlUtils.space(1)
                                          + msgLabel("Or")
-                                 : "") + HtmlUtils.input(ARG_CATEGORY);
-                sb.append(formEntry(request, msgLabel("Data Type"), widget));
+                                         : "") + HtmlUtils.input(ARG_CATEGORY);
+                        sb.append(formEntry(request, msgLabel("Data Type"), widget));
+                    }
+
+                }
+                continue;
             }
 
-        }
 
-
-        if (showBefore(entry, ARG_DATE, true)) {
-            addDateToEntryForm(request, sb, entry);
+            if(what.equals(ARG_DATE)) {
+                addDateToEntryForm(request, sb, entry);
+                continue;
+            }
+            if(what.equals(ARG_LOCATION)) {
+                addSpatialToEntryForm(request, sb, entry);
+                continue;
+            }
         }
-        if (showBefore(entry, ARG_LOCATION, true)) {
-            addSpatialToEntryForm(request, sb, entry);
-        }
-
 
 
         if (entry == null) {
@@ -3026,19 +3019,16 @@ public class TypeHandler extends RepositoryManager {
                 if (handler != null) {
                     if (idLabel[1] != null) {
                         request.putExtraProperty(
-                            MetadataType.PROP_METADATA_LABEL, idLabel[1]);
+                                                 MetadataType.PROP_METADATA_LABEL, idLabel[1]);
                     }
                     handler.makeAddForm(request, null,
                                         handler.findType(idLabel[0]), sb);
                     request.removeExtraProperty(
-                        MetadataType.PROP_METADATA_LABEL);
+                                                MetadataType.PROP_METADATA_LABEL);
                     sb.append("<tr><td colspan=2><hr></td></tr>");
                 }
             }
         }
-
-
-
     }
 
 
