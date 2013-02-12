@@ -1252,7 +1252,7 @@ public class HtmlOutputHandler extends OutputHandler {
             List<Column> columns     = typeHandler.getColumns();
             StringBuffer tableSB     = new StringBuffer();
             tableSB.append("<div class=\"ramadda-entry-table\">");
-            tableSB.append("<table width=100% cellspacing=2 cellpadding=2>");
+            tableSB.append("<table width=100% cellspacing=2 cellpadding=2 border=0>");
             tableSB.append("<tr>");
             numCols++;
             //            tableSB.append(HtmlUtils.col("<b>" + msg("Name") +"</b>"));
@@ -1266,7 +1266,6 @@ public class HtmlOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 if (entry.isFile()) {
                     isFile = true;
-
                     break;
                 }
             }
@@ -1293,11 +1292,12 @@ public class HtmlOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 tableSB.append(
                     "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
-                tableSB.append(
-                    HtmlUtils.col(
-                        getEntryManager().getAjaxLink(
+
+                EntryLink entryLink = getEntryManager().getAjaxLink(
                             request, entry,
-                            entry.getLabel()).toString(), " nowrap "));
+                            entry.getLabel());
+                tableSB.append(
+                               HtmlUtils.col(entryLink.getLink(), " xxxwidth=50%  "));
                 tableSB.append(
                     HtmlUtils.col(
                         getRepository().formatDateShort(
@@ -1314,7 +1314,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                     iconUrl(ICON_DOWNLOAD), msg("Download"),
                                     "")), " width=2% "));
                 } else {
-                    tableSB.append(HtmlUtils.col(""));
+                    //                    tableSB.append(HtmlUtils.col(""));
                 }
 
                 if (isFile) {
@@ -1342,9 +1342,14 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                 }
                 tableSB.append("</tr>");
+                //                tableSB.append("<tr><td colspan=" + numCols
+                //                               + " style=\"border-bottom:1px #eee solid;\" >"
+                //                               + blank + "</td></tr>");
+
                 tableSB.append("<tr><td colspan=" + numCols
                                + " style=\"border-bottom:1px #eee solid;\" >"
-                               + blank + "</td></tr>");
+                               + entryLink.getFolderBlock() + "</td></tr>");
+
             }
             tableSB.append("</table>");
 

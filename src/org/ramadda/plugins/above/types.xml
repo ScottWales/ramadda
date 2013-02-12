@@ -6,7 +6,7 @@
      <property name="form.url.show" value="true"/>
      <property name="form.location.show" value="true"/>
      <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
-     <column name="acronym"   label="Acronym"    cansearch="true"/>
+     <column name="acronym"   label="Acronym"    cansearch="false"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
 
      <wiki><![CDATA[
