@@ -1219,7 +1219,7 @@ public class HtmlOutputHandler extends OutputHandler {
             boolean      hasFields   = false;
             if (columns != null) {
                 for (Column column : columns) {
-                    if (column.getCanList() && column.getCanShow()) {
+                    if (column.getCanList() && column.getCanShow() && column.getRows()<=1) {
                         hasFields = true;
                     }
                 }
@@ -1280,7 +1280,7 @@ public class HtmlOutputHandler extends OutputHandler {
             //            tableSB.append(HtmlUtils.col("&nbsp;"));
             if (columns != null) {
                 for (Column column : columns) {
-                    if (column.getCanList() && column.getCanShow()) {
+                    if (column.getCanList() && column.getCanShow()  && column.getRows()<=1) {
                         numCols++;
                         tableSB.append(
                             HtmlUtils.col(HtmlUtils.b(column.getLabel())));
@@ -1332,7 +1332,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 if (columns != null) {
                     for (Column column : columns) {
-                        if (column.getCanList() && column.getCanShow()) {
+                        if (column.getCanList() && column.getCanShow()  && column.getRows()<=1) {
                             String s = column.getString(values);
                             if (s == null) {
                                 s = "NA";
