@@ -1003,10 +1003,20 @@ public class MetadataManager extends RepositoryManager {
         sb.append(HtmlUtils.center(HtmlUtils.span(header,
                 HtmlUtils.cssClass(CSS_CLASS_HEADING_2))));
         sb.append(HtmlUtils.hr());
-        MetadataHandler handler =
-            findMetadataHandler(request.getString(ARG_METADATA_TYPE, ""));
-        MetadataType type =
-            handler.findType(request.getString(ARG_METADATA_TYPE, ""));
+        
+        String metadataType = request.getString(ARG_METADATA_TYPE, "");
+        MetadataHandler handler = findMetadataHandler(metadataType);
+        MetadataType type = handler.findType(metadataType);
+        doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0); 
+        return getSearchManager().makeResult(request,
+                                             msg(type.getLabel() + " Cloud"),
+                                             sb);
+    }
+
+
+    public void doMakeTagCloudOrList(Request request, String metadataType, StringBuffer sb, boolean doCloud, int threshold) throws Exception { 
+        MetadataHandler handler = findMetadataHandler(metadataType);
+        MetadataType type = handler.findType(metadataType);
         String[] values = getDistinctValues(request, handler, type);
         int[]    cnt    = new int[values.length];
         int      max    = -1;
@@ -1036,7 +1046,9 @@ public class MetadataManager extends RepositoryManager {
         if ( !doCloud) {
             List tuples = new ArrayList();
             for (int i = 0; i < values.length; i++) {
-                tuples.add(new Object[] { new Integer(cnt[i]), values[i] });
+                if(cnt[i] > threshold) {
+                    tuples.add(new Object[] { new Integer(cnt[i]), values[i] });
+                }
             }
             tuples = Misc.sortTuples(tuples, false);
             sb.append(HtmlUtils.formTable());
@@ -1055,7 +1067,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.formTableClose());
         } else {
             for (int i = 0; i < values.length; i++) {
-                if (cnt[i] == 0) {
+                if(cnt[i] <= threshold) {
                     continue;
                 }
                 double percent = cnt[i] / distribution;
@@ -1078,10 +1090,6 @@ public class MetadataManager extends RepositoryManager {
                 sb.append(" &nbsp; ");
             }
         }
-
-        return getSearchManager().makeResult(request,
-                                             msg(type.getLabel() + " Cloud"),
-                                             sb);
     }
 
 

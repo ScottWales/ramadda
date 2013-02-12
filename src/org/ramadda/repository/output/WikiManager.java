@@ -306,6 +306,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_COMMENTS = "comments";
 
+    public static final String WIKI_PROP_TAGCLOUD = "tagcloud";
+
     /** wiki import */
     public static final String WIKI_PROP_RECENT = "recent";
 
@@ -480,6 +482,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_GRAPH,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400")),
         WIKI_PROP_COMMENTS,
+        prop(WIKI_PROP_TAGCLOUD,
+             attrs("type", "","threshold","0")),
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
         WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID
     };
@@ -934,6 +938,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     request, entry, false, true);
             blockTitle = Misc.getProperty(props, ATTR_TITLE,
                                           msg("Information"));
+        } else if (include.equals(WIKI_PROP_TAGCLOUD)) {
+            StringBuffer tagCloud = new StringBuffer();
+            int threshold = Misc.getProperty(props,"threshold", 0);
+            getMetadataManager().doMakeTagCloudOrList(request, Misc.getProperty(props, "type",""),tagCloud, true, threshold);
+            return tagCloud.toString();
         } else if (include.equals(WIKI_PROP_COMMENTS)) {
             return getHtmlOutputHandler().getCommentBlock(request, entry,
                     false).toString();
