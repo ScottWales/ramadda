@@ -92,9 +92,15 @@ public class CDOOutputHandler extends OutputHandler {
     /** end month identifier */
     private static final String ARG_LEVEL = "level";
 
+    /** statistic identifier */
+    private static final String ARG_STAT = "stat";
+
+    /** period identifier */
+    private static final String ARG_PERIOD = "period";
+
     /** CDO Output Type */
     public static final OutputType OUTPUT_CDO =
-        new OutputType("CDO Analysis", "cdo", OutputType.TYPE_OTHER,
+        new OutputType("Data Analysis", "cdo", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, "/cdmdata/cdo.png",
                        CdmDataOutputHandler.GROUP_DATA);
 
@@ -146,6 +152,12 @@ public class CDOOutputHandler extends OutputHandler {
     /** month period */
     private static final String PERIOD_MON = "mon";
 
+    /** day of year period */
+    private static final String PERIOD_YDAY = "yday";
+
+    /** day period */
+    private static final String PERIOD_DAY = "day";
+
     /** info types */
     @SuppressWarnings("unchecked")
     private List<TwoFacedObject> INFO_TYPES = Misc.toList(new Object[] {
@@ -159,7 +171,7 @@ public class CDOOutputHandler extends OutputHandler {
     private List<TwoFacedObject> STAT_TYPES = Misc.toList(new Object[] {
                                                   new TwoFacedObject("Mean",
                                                       STAT_MEAN),
-            new TwoFacedObject("Std Deviation", STAT_STD),
+            //new TwoFacedObject("Std Deviation", STAT_STD),
             new TwoFacedObject("Maximum", STAT_MAX),
             new TwoFacedObject("Minimum", STAT_MIN) });
 
@@ -353,6 +365,8 @@ public class CDOOutputHandler extends OutputHandler {
 
         addVarLevelWidget(request, sb, dataset);
 
+        addStatsWidget(request, sb);
+
         addTimeWidget(request, sb, dataset, true);
 
         LatLonRect llr = dataset.getBoundingBox();
@@ -377,6 +391,23 @@ public class CDOOutputHandler extends OutputHandler {
                 */
 
     }
+
+    /**
+     * Add the statitics widget
+     *
+     * @param request  the Request
+     * @param sb       the HTML
+     */
+    private void addStatsWidget(Request request, StringBuffer sb) {
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Statistic"),
+                msgLabel("Period")
+                + HtmlUtils.select(ARG_PERIOD, PERIOD_TYPES)
+                + HtmlUtils.space(5) + msgLabel("Type")
+                + HtmlUtils.select(ARG_STAT, STAT_TYPES)));
+    }
+
 
     /**
      * Add the variable/level selector widget
