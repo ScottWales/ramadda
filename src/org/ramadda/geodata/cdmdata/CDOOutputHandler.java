@@ -30,17 +30,14 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputHandler.State;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
 import org.w3c.dom.Element;
 
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -51,9 +48,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.visad.UtcDate;
-
 import visad.DateTime;
+
 
 import java.io.File;
 
@@ -68,11 +64,7 @@ import java.util.TreeSet;
 
 
 /**
- * Class description
- *
- *
- * @version        $version$, Mon, Feb 11, '13
- * @author         Enter your name here...
+ * Interface to the Climate Data Operators (CDO) package
  */
 public class CDOOutputHandler extends OutputHandler {
 
@@ -94,6 +86,12 @@ public class CDOOutputHandler extends OutputHandler {
     /** end month identifier */
     private static final String ARG_ENDYEAR = "endyear";
 
+    /** variable identifier */
+    private static final String ARG_PARAM = "param";
+
+    /** end month identifier */
+    private static final String ARG_LEVEL = "level";
+
     /** CDO Output Type */
     public static final OutputType OUTPUT_CDO =
         new OutputType("CDO Analysis", "cdo", OutputType.TYPE_OTHER,
@@ -110,19 +108,22 @@ public class CDOOutputHandler extends OutputHandler {
     private static final String OP_NYEAR = "nyear";
 
     /** select years operator */
-    private static final String OP_SELYEAR = "selyear";
+    private static final String OP_SELYEAR = "-selyear";
 
     /** select months operator */
-    private static final String OP_SELMON = "selmon";
+    private static final String OP_SELMON = "-selmon";
 
     /** select seasons operator */
-    private static final String OP_SELSEAS = "selseas";
+    private static final String OP_SELSEAS = "-selseas";
 
     /** select date operator */
-    private static final String OP_SELDATE = "seldate";
+    private static final String OP_SELDATE = "-seldate";
 
     /** select llbox operator */
-    private static final String OP_SELLLBOX = "sellonlatbox";
+    private static final String OP_SELLLBOX = "-sellonlatbox";
+
+    /** select level operator */
+    private static final String OP_SELLEVEL = "-sellevel";
 
     /** statistic mean */
     private static final String STAT_MEAN = "mean";
@@ -261,11 +262,11 @@ public class CDOOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the data output handler
      *
-     * @return _more_
+     * @return the handler
      *
-     * @throws Exception _more_
+     * @throws Exception Problem getting that
      */
     public CdmDataOutputHandler getDataOutputHandler() throws Exception {
         return (CdmDataOutputHandler) getRepository().getOutputHandler(
@@ -301,13 +302,13 @@ public class CDOOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Add the form
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param sb       the HTML
      *
-     * @throws Exception _more_
+     * @throws Exception problems
      */
     private void addForm(Request request, Entry entry, StringBuffer sb)
             throws Exception {
@@ -315,7 +316,7 @@ public class CDOOutputHandler extends OutputHandler {
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.form(formUrl,
                                  makeFormSubmitDialog(sb,
-                                     msg("Apply CDO..."))));
+                                     msg("Analyzing Data...."))));
 
         String buttons = HtmlUtils.submit("Extract Data", ARG_SUBMIT);
         //sb.append(buttons);
@@ -323,16 +324,36 @@ public class CDOOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CDO));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.h2("Dataset Analysis"));
+        sb.append(HtmlUtils.hr());
+        if (entry.getType().equals("noaa_climate_modelfile")) {
+            //values[1] = var;
+            //values[2] = model;
+            //values[3] = experiment;
+            //values[4] = member;
+            //values[5] = frequency;
+            Object[]     values = entry.getValues();
+            StringBuffer header = new StringBuffer();
+            header.append("Model: ");
+            header.append(values[2]);
+            header.append(" Experiment: ");
+            header.append(values[3]);
+            header.append(" Ensemble: ");
+            header.append(values[4]);
+            header.append(" Frequency: ");
+            header.append(values[5]);
+            //sb.append(HtmlUtils.h3(header.toString()));
+        }
 
         //addInfoWidget(request, sb);
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        //NetcdfDataset dataset =
-        //    NetcdfDataset.openDataset(entry.getResource().getPath());
-        //dataset.close();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(entry,
                 entry.getResource().getPath());
-        addTimeWidget(request, sb, dataset);
+
+        addVarLevelWidget(request, sb, dataset);
+
+        addTimeWidget(request, sb, dataset, true);
 
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
@@ -348,12 +369,60 @@ public class CDOOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.formTableClose());
         sb.append(buttons);
         sb.append(" ");
+        /*
         sb.append(
             HtmlUtils.href(
                 "https://code.zmaw.de/projects/cdo/wiki/Cdo#Documentation",
                 "CDO Documentation", " target=_external "));
+                */
 
     }
+
+    /**
+     * Add the variable/level selector widget
+     *
+     * @param request  the Request
+     * @param sb       the HTML
+     * @param dataset  the dataset
+     */
+    private void addVarLevelWidget(Request request, StringBuffer sb,
+                                   GridDataset dataset) {
+        List<GridDatatype> grids = dataset.getGrids();
+        StringBuffer       varsb = new StringBuffer();
+        //TODO: handle multiple variables
+        //List<TwoFacedObject> varList = new ArrayList<TwoFacedObject>(grids.size());
+        //for (GridDatatype grid : dataset.getGrids()) {
+        //    varList.add(new TwoFacedObject(grid.getDescription(), grid.getName()));
+        //}
+        //varsb.append(HtmlUtils.select(ARG_PARAM, varList));
+        GridDatatype grid = grids.get(0);
+        varsb.append(grid.getDescription());
+        if (grid.getZDimension() != null) {
+            varsb.append(HtmlUtils.space(5));
+            varsb.append(msgLabel("Level"));
+            GridCoordSystem      gcs    = grid.getCoordinateSystem();
+            CoordinateAxis1D     zAxis  = gcs.getVerticalAxis();
+            int                  sizeZ  = (int) zAxis.getSize();
+            String               unit   =
+                zAxis.getUnitsString().toLowerCase();
+            List<TwoFacedObject> levels =
+                new ArrayList<TwoFacedObject>(sizeZ);
+            // TODO: Gotta be a better way to do this.
+            for (int i = 0; i < sizeZ; i++) {
+                int    lev   = (int) zAxis.getCoordValue(i);
+                String label = String.valueOf(unit.startsWith("pa")
+                        ? lev / 100
+                        : lev);
+                levels.add(new TwoFacedObject(label, String.valueOf(lev)));
+            }
+            varsb.append(HtmlUtils.select(ARG_LEVEL, levels));
+            varsb.append(HtmlUtils.space(2));
+            varsb.append("hPa");
+        }
+        sb.append(HtmlUtils.formEntry(msgLabel("Variable"),
+                                      varsb.toString()));
+    }
+
 
     /**
      * Get the grid dates
@@ -403,32 +472,36 @@ public class CDOOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Add a time widget
      *
-     * @param request _more_
-     * @param sb _more_
-     * @param dataset _more_
+     * @param request  the Request
+     * @param sb       the HTML page
+     * @param dataset  the GridDataset
+     * @param useYYMM  true to provide month/year widgets, otherwise straight dates
      */
     private void addTimeWidget(Request request, StringBuffer sb,
-                               GridDataset dataset) {
+                               GridDataset dataset, boolean useYYMM) {
         List<Date> dates = getGridDates(dataset);
 
         if ((dates != null) && (dates.size() > 0)) {
-            addMonthsWidget(request, sb, dates);
-            addYearsWidget(request, sb, dates);
-            //addTimesWidget(request, sb, dates);
+            if (useYYMM) {
+                makeMonthsWidget(request, sb, dates);
+                makeYearsWidget(request, sb, dates);
+            } else {
+                makeTimesWidget(request, sb, dates);
+            }
         }
     }
 
     /**
-     * _more_
+     * Add at time widget
      *
-     * @param request _more_
-     * @param sb _more_
-     * @param dates _more_
+     * @param request  the Request
+     * @param sb       the HTML
+     * @param dates    the list of Dates
      */
-    private void addTimeWidget(Request request, StringBuffer sb,
-                               List<Date> dates) {
+    private void makeTimesWidget(Request request, StringBuffer sb,
+                                 List<Date> dates) {
         List formattedDates = new ArrayList();
         formattedDates.add(new TwoFacedObject("---", ""));
         for (Date date : dates) {
@@ -458,10 +531,10 @@ public class CDOOutputHandler extends OutputHandler {
      *
      * @param request  the Request
      * @param sb       the StringBuffer to add to
-     * @param dates _more_
+     * @param dates    the list of dates (just in case)
      */
-    private void addMonthsWidget(Request request, StringBuffer sb,
-                                 List<Date> dates) {
+    private void makeMonthsWidget(Request request, StringBuffer sb,
+                                  List<Date> dates) {
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Months"),
@@ -475,10 +548,10 @@ public class CDOOutputHandler extends OutputHandler {
      *
      * @param request  the Request
      * @param sb       the StringBuffer to add to
-     * @param dates _more_
+     * @param dates    the list of dates
      */
-    private void addYearsWidget(Request request, StringBuffer sb,
-                                List<Date> dates) {
+    private void makeYearsWidget(Request request, StringBuffer sb,
+                                 List<Date> dates) {
         SortedSet<String> uniqueYears =
             Collections.synchronizedSortedSet(new TreeSet<String>());
         for (Date d : dates) {
@@ -498,11 +571,11 @@ public class CDOOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Add the map widget
      *
-     * @param request _more_
-     * @param sb _more_
-     * @param llr _more_
+     * @param request   The request
+     * @param sb        the HTML
+     * @param llr       the lat/lon rectangle
      */
     private void addMapWidget(Request request, StringBuffer sb,
                               LatLonRect llr) {
@@ -550,6 +623,19 @@ public class CDOOutputHandler extends OutputHandler {
         String operation = request.getString(ARG_CDO_OPERATION, OP_INFO);
         //commands.add(operation);
 
+        // Select order (left to right) - operations go right to left:
+        //   - level
+        //   - region
+        //   - month range
+        //   - year or time range
+
+        if (request.defined(ARG_LEVEL)) {
+            String level = request.getString(ARG_LEVEL);
+            if (level != null) {
+                commands.add(OP_SELLEVEL + "," + level);
+            }
+        }
+
         for (String spatialArg : SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
@@ -569,11 +655,34 @@ public class CDOOutputHandler extends OutputHandler {
 
         String llSelect = null;
         if (haveAllSpatialArgs && anySpatialDifferent) {
-            llSelect = "-" + OP_SELLLBOX + ","
+            llSelect = OP_SELLLBOX + ","
                        + request.getString(ARG_AREA_WEST, "0") + ","
-                       + request.getString(ARG_AREA_EAST, "360.0") + ","
-                       + request.getString(ARG_AREA_SOUTH, "-90.0") + ","
-                       + request.getString(ARG_AREA_NORTH, "90.0");
+                       + request.getString(ARG_AREA_EAST, "360") + ","
+                       + request.getString(ARG_AREA_SOUTH, "-90") + ","
+                       + request.getString(ARG_AREA_NORTH, "90");
+        }
+        if (llSelect != null) {
+            commands.add(llSelect);
+        }
+
+        String selMonth = null;
+        if (request.defined(ARG_STARTMONTH)
+                || request.defined(ARG_ENDMONTH)) {
+            int startMonth = request.defined(ARG_STARTMONTH)
+                             ? request.get(ARG_STARTMONTH, 1)
+                             : 1;
+            int endMonth   = request.defined(ARG_ENDMONTH)
+                             ? request.get(ARG_ENDMONTH, startMonth)
+                             : startMonth;
+            if (endMonth < startMonth) {
+                getRepository().showDialogWarning(
+                    "Start month is after end month");
+            }
+            selMonth = OP_SELMON + "," + startMonth;
+            if (endMonth != startMonth) {
+                selMonth += "/" + endMonth;
+            }
+            commands.add(selMonth);
         }
 
         String dateSelect = null;
@@ -596,7 +705,7 @@ public class CDOOutputHandler extends OutputHandler {
                     getRepository().showDialogWarning(
                         "From date is after to date");
                 } else {
-                    dateSelect = "-" + OP_SELDATE + ","
+                    dateSelect = OP_SELDATE + ","
                                  + DateUtil.getTimeAsISO8601(dates[0]) + ","
                                  + DateUtil.getTimeAsISO8601(dates[1]);
                 }
@@ -620,16 +729,12 @@ public class CDOOutputHandler extends OutputHandler {
             if ((years[0] != null) && (years[1] != null)) {
                 if (years[0].compareTo(years[1]) > 0) {
                     getRepository().showDialogWarning(
-                        "From year is after to year");
+                        "Start year is after end year");
                 } else {
-                    dateSelect = "-" + OP_SELYEAR + "," + years[0] + "/"
-                                 + years[1];
+                    dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];
                 }
             }
 
-        }
-        if (llSelect != null) {
-            commands.add(llSelect);
         }
         if (dateSelect != null) {
             commands.add(dateSelect);
