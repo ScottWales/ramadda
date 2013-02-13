@@ -3729,4 +3729,8 @@ public class HtmlUtils {
     }
 
 
+    public static String jqueryCall(String selector, String func, String code) {
+        return "$(" + squote(selector) + ")." + func +"(function() {" + code +"});\n";
+    }
+
 }
