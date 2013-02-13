@@ -19,10 +19,11 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.repository;
+package org.ramadda.repository.util;
 
 
 
+import org.ramadda.repository.Entry;
 import org.ramadda.util.HtmlUtils;
 
 

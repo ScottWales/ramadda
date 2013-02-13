@@ -23,6 +23,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.util.Link;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
 

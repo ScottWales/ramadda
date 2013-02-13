@@ -31,6 +31,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlTemplate;
+import org.ramadda.repository.util.Link;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
