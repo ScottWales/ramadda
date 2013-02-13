@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.repository.util;
+package org.ramadda.repository;
 
 
 /**
