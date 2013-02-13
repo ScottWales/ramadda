@@ -27,6 +27,9 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
+
+
 import org.ramadda.util.Utils;
 
 
@@ -78,6 +81,10 @@ import java.util.zip.*;
  */
 public class HtmlOutputHandler extends OutputHandler {
 
+    public static final OutputType OUTPUT_TEST =
+        new OutputType("test", "html.test",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_DATA);
 
 
     /** _more_ */
@@ -172,7 +179,9 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_SELECTXML);
         addType(OUTPUT_METADATAXML);
         addType(OUTPUT_LINKSXML);
+        addType(OUTPUT_TEST);
     }
+
 
 
 
@@ -266,6 +275,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TREEVIEW));
+                links.add(makeLink(request, state.getEntry(), OUTPUT_TEST));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
         }
@@ -407,6 +417,10 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_METADATAXML)) {
             return getMetadataXml(request, entry, true);
         }
+        if (outputType.equals(OUTPUT_TEST)) {
+            return outputTest(request, entry);
+        }
+
         if (outputType.equals(OUTPUT_LINKSXML)) {
             return getLinksXml(request, entry);
         }
@@ -1066,6 +1080,66 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    public Result outputTest(Request request, Entry group,
+                              List<Entry> subGroups, List<Entry> entries)
+            throws Exception {
+        return outputTest(request, group);
+    }
+
+
+
+
+    public Result outputTest(Request request, Entry entry)
+            throws Exception {
+        if(request.exists("getimage")) {
+
+        } 
+
+        String formId = "form" + HtmlUtils.blockCnt++;
+        StringBuffer sb         = new StringBuffer();
+        StringBuffer js = new StringBuffer();
+        sb.append(request.form(getRepository().URL_ENTRY_FORM,
+                               HtmlUtils.attr("id", formId)));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.input("value" ,"",
+                                  HtmlUtils.attr("id",formId +"_value")));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.select("select1" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
+                                  HtmlUtils.attr("id",formId +"_select1")));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.select("select2" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
+                                  HtmlUtils.attr("id",formId +"_select2")));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.select("select3" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
+                                  HtmlUtils.attr("id",formId +"_select3")));
+
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit("submit","Submit"));
+
+        sb.append(HtmlUtils.hr());
+        sb.append(HtmlUtils.img(iconUrl("/icons/arrow.gif"),"", HtmlUtils.attr("id", formId+"_image")));
+
+
+        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call("testFormSubmit", HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId()}, true))));
+
+        js.append(JQ.change(JQ.id(formId+"_select1"), "return " + HtmlUtils.call("testFormSelectChange" ,
+                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"1"}, true))));
+
+        js.append(JQ.change(JQ.id(formId+"_select2"), "return " + HtmlUtils.call("testFormSelectChange" ,
+                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"2"}, true))));
+
+        js.append(JQ.change(JQ.id(formId+"_select3"), "return " + HtmlUtils.call("testFormSelectChange" ,
+                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"3"}, true))));
+
+        System.err.println(js);
+        sb.append(HtmlUtils.script(js.toString()));
+        return new Result("test", sb);
+    }
+
+
+
+
+
     /**
      * _more_
      *
@@ -1438,6 +1512,10 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         if (outputType.equals(OUTPUT_TREEVIEW)) {
             return outputTreeView(request, group, subGroups, entries);
+        }
+
+        if (outputType.equals(OUTPUT_TEST)) {
+            return outputTest(request, group, subGroups, entries);
         }
 
         if (outputType.equals(OUTPUT_TABLE)) {

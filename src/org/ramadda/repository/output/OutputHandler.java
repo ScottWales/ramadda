@@ -30,6 +30,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 
 import org.ramadda.util.WikiUtil;
 
@@ -82,6 +83,8 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 public class OutputHandler extends RepositoryManager {
+
+    public static final JQuery JQ = null;
 
     /** max connections attribute */
     public static final String ATTR_MAXCONNECTIONS = "maxconnections";

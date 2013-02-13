@@ -1787,3 +1787,39 @@ function treeViewGoTo () {
     }
 }
 
+
+
+function testFormSelectChange(formId, entryId, num) {
+    num = parseInt(num);
+    var select = $('#' + formId +'_select' + num);
+    select.val();
+    var select2 = $('#' + formId +'_select' + (num+1));
+    var l = "<option value=\"OT\">OT</option>";
+    select2.html(l);
+
+}
+
+
+function testFormSelect2Change(formId, entryId) {
+    var select1 = $('#' + formId +'_select1');
+    var select2 = $('#' + formId +'_select2');
+    var select3 = $('#' + formId +'_select3');
+    var l = "<option value=\"OT\">OT</option>";
+    select3.html(l);
+}
+
+
+function testFormSelect3Change(formId, entryId) {
+    var select1 = $('#' + formId +'_select1');
+    var select2 = $('#' + formId +'_select2');
+    var select3 = $('#' + formId +'_select3');
+    var l = "<option value=\"OT\">OT</option>";
+    select2.html(l);
+}
+
+function testFormSubmit(formId) {
+    var valueField = $('#' + formId +'_value');
+    var image = $('#' + formId +'_image');
+    image.attr("src", "${urlroot}/icons/" + valueField.val());
+    return false;
+}
