@@ -27,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.JQuery;
 
 
@@ -1086,26 +1087,30 @@ public class HtmlOutputHandler extends OutputHandler {
         return outputTest(request, group);
     }
 
-
+    private TTLCache<String, StringBuffer> testCache = new TTLCache<String, StringBuffer>(60*60*1000);
 
 
     public Result outputTest(Request request, Entry entry)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
-        if(request.exists("select1")) {
+        String selectArg = "select";
+
+        if(request.exists(selectArg+"1")) {
             List<String> values = new ArrayList<String>();
             for(int i=1;i<5;i++) {
-                if(!request.exists("select"+i)) break;
-                values.add(request.getString("select"+i,""));
+                if(!request.exists(selectArg+i)) break;
+                values.add(request.getString(selectArg+i,""));
             }
-            System.err.println("Values:" + values);
-            String valueKey = StringUtil.join("::", values);
-            StringBuffer json = new StringBuffer();
-            String lastValue = values.get(values.size()-1);
-
-            json.append(HtmlUtils.jsonMap(new String[]{
-                        "values", HtmlUtils.jsonList(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
-            System.err.println(json);
+            String valueKey = entry.getId() + "::" + StringUtil.join("::", values);
+            StringBuffer json = testCache.get(valueKey);
+            if(json == null) {
+                json = new StringBuffer();
+                String lastValue = values.get(values.size()-1);
+                json.append(HtmlUtils.jsonMap(new String[]{
+                            "values", HtmlUtils.jsonList(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
+                System.err.println(json);
+                testCache.put(valueKey, json);
+            }
             return new Result(BLANK, json,
                               getRepository().getMimeTypeFromSuffix(".json"));
         } 
@@ -1121,9 +1126,16 @@ public class HtmlOutputHandler extends OutputHandler {
         js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
         for(int selectIdx=1;selectIdx<10;selectIdx++) {
             sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.select("select" + selectIdx ,Misc.toList(new String[]{"apple","banana"}),(String)null,
-                                       HtmlUtils.attr("id",formId +"_select" + selectIdx)));
-            js.append(JQ.change(JQ.id(formId+"_select" + selectIdx), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
+            List values = new ArrayList();
+            values.add(new TwoFacedObject("--",""));
+            if(selectIdx==1) {
+                values.add(new TwoFacedObject("Apple","apple"));
+                values.add(new TwoFacedObject("Banana","banana"));
+                values.add(new TwoFacedObject("Orange","orange"));
+            } 
+            sb.append(HtmlUtils.select(selectArg+ + selectIdx ,values,(String)null,
+                                       HtmlUtils.attr("id",formId +"_"  + selectArg + selectIdx)));
+            js.append(JQ.change(JQ.id(formId+"_" + selectArg + selectIdx), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
         }
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("submit","Submit"));

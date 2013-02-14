@@ -3746,6 +3746,17 @@ public class HtmlUtils {
         return row.toString();
     }
 
+    public static String jsonList(List values) {
+        StringBuffer row = new StringBuffer();
+        row.append("[");
+        for(int i=0;i<values.size();i++) {
+            if(i>0)  row.append(",\n");
+            row.append(quote(values.get(i).toString()));
+        }
+        row.append("]");
+        return row.toString();
+    }
+
 
 
 }

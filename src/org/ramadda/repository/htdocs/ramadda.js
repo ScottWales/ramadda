@@ -1788,16 +1788,35 @@ function treeViewGoTo () {
 }
 
 
-function Form (formId, entryId) {
+function Form (formId, entryId, arg) {
     this.id = formId;
     this.entryId = entryId;
-    this.select = function (num) {
-        var nextIdx = parseInt(num)+1;
-        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&output=html.test";
-        for (i = 1; i <nextIdx;i++) {
-            var select = $('#' + this.id+'_select' + i);
-            url += "&select" + i + "=" + select.val();
+    this.arg = arg;
+    if(!this.arg) this.arg = "select";
+
+    this.clearSelect = function (num) {
+        for(var i=num;i<10;i++) {
+            select = this.getSelect(i);
+            if(select.size()==0) break;
+            select.html("<select><option value=''>--</option></select>");
         }
+    }
+
+    this.select = function (num) {
+        num = parseInt(num);
+        select = this.getSelect(num);
+        if(select.val() == "" || select.val().indexOf("--") == 0) {
+            this.clearSelect(num+1);
+            return false;
+        }
+
+        var nextIdx = num+1;
+        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test";
+        for (i = 0; i <=nextIdx;i++) {
+            var select = $('#' + this.id+'_' + this.arg+ i);
+            url += "&" + this.arg +i + "=" + encodeURIComponent(select.val());
+        }
+        //        alert(url);
         var theForm = this;
         $.getJSON(url, function(data) {
                 if(!data.values) {
@@ -1806,20 +1825,22 @@ function Form (formId, entryId) {
                 }
                 var html  = "<select>";
                 for (i = 0; i < data.values.length; i++) {
-                    html += '<option value=' + data.values[i]+">" + data.values[i] +"</option>";
+                    var value = data.values[i];
+                    var label = value;
+                    if(value.indexOf("--") ==0) {
+                        value = "";
+                    }
+                    html += "<option value=\'"  + value+"\'>" + label +"</option>";
                 }
                 html+= "</select>";
-                var next = '#' + theForm.id+'_select' + nextIdx;
-                var select = $(next);
-                select.html(html);
-                for(i=nextIdx+1;i<10;i++) {
-                    next = '#' + theForm.id+'_select' + i;
-                    select = $(next);
-                    if(select.size()==0) break;
-                    select.html("<select><option value=''>--</option></select>");
-                }
+                theForm.getSelect(nextIdx).html(html);
+                theForm.clearSelect(nextIdx+1);
             });
         return false;
+    }
+
+    this.getSelect = function(i) {
+        return $('#' + this.id+'_' + this.arg + i);
     }
 
     this.submit  = function() {
