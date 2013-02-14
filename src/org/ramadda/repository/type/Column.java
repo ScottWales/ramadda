@@ -734,6 +734,14 @@ public class Column implements DataTypes, Constants {
         }
     }
 
+    public String getEnumLabel(String value) {
+        String label  =  enumMap.get(value);
+        if(label==null) {
+            return value;
+        }
+        return label;
+    }
+
     /**
      * _more_
      *

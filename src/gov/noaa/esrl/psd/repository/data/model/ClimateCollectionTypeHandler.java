@@ -100,9 +100,8 @@ public class ClimateCollectionTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
         StringBuffer sb     = new StringBuffer();
-
         String selectArg = "select";
-        if(request.exists(selectArg+"1")) {
+        if(request.exists(selectArg+"0")) {
             List<String> values = new ArrayList<String>();
             List<Clause> clauses = new ArrayList<Clause>();
             String nextColumn = FIELDS[0];
@@ -137,9 +136,9 @@ public class ClimateCollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 nextColumnName = nextColumnName.toLowerCase();
                 if(nextColumnName.startsWith("a") || nextColumnName.startsWith("e") || nextColumnName.startsWith("i") ||
                    nextColumnName.startsWith("o") || nextColumnName.startsWith("u")) {
-                    selectLabel = "-- Select an " + nextColumnName +" --";
+                    selectLabel = ":-- Select an " + nextColumnName +" --";
                 } else {
-                    selectLabel = "-- Select a " + nextColumnName +" --";
+                    selectLabel = ":-- Select a " + nextColumnName +" --";
                 }
                 uniqueValues.add(0,selectLabel);
                 json = new StringBuffer();

@@ -3041,6 +3041,18 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public Column getColumn(String columnName) {
+        List<Column> columns = getColumns();
+        if(columns==null) return null;
+        for(Column c: columns) {
+            if(c.getName().equalsIgnoreCase(columnName)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+
     /**
      * _more_
      *

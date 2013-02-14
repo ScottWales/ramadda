@@ -1811,12 +1811,15 @@ function Form (formId, entryId, arg) {
         }
 
         var nextIdx = num+1;
+
         var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test";
-        for (i = 0; i <=nextIdx;i++) {
+        for (i = 0; i <nextIdx;i++) {
             var select = $('#' + this.id+'_' + this.arg+ i);
+            var value = select.val();
             url += "&" + this.arg +i + "=" + encodeURIComponent(select.val());
         }
-        //        alert(url);
+
+
         var theForm = this;
         $.getJSON(url, function(data) {
                 if(!data.values) {
@@ -1827,13 +1830,24 @@ function Form (formId, entryId, arg) {
                 for (i = 0; i < data.values.length; i++) {
                     var value = data.values[i];
                     var label = value;
+                    var colonIdx = value.indexOf(":");
+                    if(colonIdx>=0) {
+                        label = value.substring(colonIdx+1);
+                        value = value.substring(0,colonIdx);
+                        //                        alert("label:" + label +" value:"  + value); 
+                    }
                     if(value.indexOf("--") ==0) {
                         value = "";
                     }
                     html += "<option value=\'"  + value+"\'>" + label +"</option>";
                 }
                 html+= "</select>";
-                theForm.getSelect(nextIdx).html(html);
+                var nextSelect = theForm.getSelect(nextIdx);
+                var currentValue = nextSelect.val();
+                nextSelect.html(html);
+                if(currentValue) {
+                    nextSelect.val(currentValue);
+                }
                 theForm.clearSelect(nextIdx+1);
             });
         return false;
