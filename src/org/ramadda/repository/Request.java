@@ -1520,6 +1520,14 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    public String getString(String[] keys, String dflt) {
+        for(String key: keys) {
+            String value = getString(key, (String)null);
+            if(value!=null) return value;
+        }
+        return dflt;
+    }
+
     /**
      * _more_
      *

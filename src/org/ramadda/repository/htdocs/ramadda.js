@@ -1812,7 +1812,7 @@ function Form (formId, entryId, arg) {
 
         var nextIdx = num+1;
 
-        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test";
+        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test&metadata=true";
         for (i = 0; i <nextIdx;i++) {
             var select = $('#' + this.id+'_' + this.arg+ i);
             var value = select.val();

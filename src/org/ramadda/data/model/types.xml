@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+
+
+  <type name="noaa_climate_collection"  description="Climate Data Collection" handler="org.ramadda.repository.type.CollectionTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="granule_type" value="noaa_climate_modelfile"/>
+   </type>
+
+
+  <type name="noaa_climate_modelfile"  description="Climate Model File" handler="org.ramadda.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="collection_type" value="noaa_climate_collection"/>
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
+     <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble Member"/>
+     <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
+   </type>
+
+</types>
+
