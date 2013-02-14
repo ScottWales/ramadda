@@ -1788,38 +1788,44 @@ function treeViewGoTo () {
 }
 
 
+function Form (formId, entryId) {
+    this.id = formId;
+    this.entryId = entryId;
+    this.select = function (num) {
+        var nextIdx = parseInt(num)+1;
+        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&output=html.test";
+        for (i = 1; i <nextIdx;i++) {
+            var select = $('#' + this.id+'_select' + i);
+            url += "&select" + i + "=" + select.val();
+        }
+        var theForm = this;
+        $.getJSON(url, function(data) {
+                if(!data.values) {
+                    alert('error');
+                    return;
+                }
+                var html  = "<select>";
+                for (i = 0; i < data.values.length; i++) {
+                    html += '<option value=' + data.values[i]+">" + data.values[i] +"</option>";
+                }
+                html+= "</select>";
+                var next = '#' + theForm.id+'_select' + nextIdx;
+                var select = $(next);
+                select.html(html);
+                for(i=nextIdx+1;i<10;i++) {
+                    next = '#' + theForm.id+'_select' + i;
+                    select = $(next);
+                    if(select.size()==0) break;
+                    select.html("<select><option value=''>--</option></select>");
+                }
+            });
+        return false;
+    }
 
-function testFormSelectChange(formId, entryId, num) {
-    num = parseInt(num);
-    var select = $('#' + formId +'_select' + num);
-    select.val();
-    var select2 = $('#' + formId +'_select' + (num+1));
-    var l = "<option value=\"OT\">OT</option>";
-    select2.html(l);
-
-}
-
-
-function testFormSelect2Change(formId, entryId) {
-    var select1 = $('#' + formId +'_select1');
-    var select2 = $('#' + formId +'_select2');
-    var select3 = $('#' + formId +'_select3');
-    var l = "<option value=\"OT\">OT</option>";
-    select3.html(l);
-}
-
-
-function testFormSelect3Change(formId, entryId) {
-    var select1 = $('#' + formId +'_select1');
-    var select2 = $('#' + formId +'_select2');
-    var select3 = $('#' + formId +'_select3');
-    var l = "<option value=\"OT\">OT</option>";
-    select2.html(l);
-}
-
-function testFormSubmit(formId) {
-    var valueField = $('#' + formId +'_value');
-    var image = $('#' + formId +'_image');
-    image.attr("src", "${urlroot}/icons/" + valueField.val());
-    return false;
+    this.submit  = function() {
+        var valueField = $('#' + this.id +'_value');
+        var image = $('#' + this.id +'_image');
+        image.attr("src", "${urlroot}/icons/" + valueField.val());
+        return false;
+    }
 }

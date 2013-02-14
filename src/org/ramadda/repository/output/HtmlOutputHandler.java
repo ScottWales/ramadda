@@ -1091,48 +1091,48 @@ public class HtmlOutputHandler extends OutputHandler {
 
     public Result outputTest(Request request, Entry entry)
             throws Exception {
-        if(request.exists("getimage")) {
+        StringBuffer sb         = new StringBuffer();
+        if(request.exists("select1")) {
+            List<String> values = new ArrayList<String>();
+            for(int i=1;i<5;i++) {
+                if(!request.exists("select"+i)) break;
+                values.add(request.getString("select"+i,""));
+            }
+            System.err.println("Values:" + values);
+            String valueKey = StringUtil.join("::", values);
+            StringBuffer json = new StringBuffer();
+            String lastValue = values.get(values.size()-1);
 
+            json.append(HtmlUtils.jsonMap(new String[]{
+                        "values", HtmlUtils.jsonList(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
+            System.err.println(json);
+            return new Result(BLANK, json,
+                              getRepository().getMimeTypeFromSuffix(".json"));
         } 
 
         String formId = "form" + HtmlUtils.blockCnt++;
-        StringBuffer sb         = new StringBuffer();
         StringBuffer js = new StringBuffer();
+        js.append("var " + formId + " = new Form(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
         sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                HtmlUtils.attr("id", formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.input("value" ,"",
                                   HtmlUtils.attr("id",formId +"_value")));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.select("select1" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
-                                  HtmlUtils.attr("id",formId +"_select1")));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.select("select2" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
-                                  HtmlUtils.attr("id",formId +"_select2")));
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.select("select3" ,Misc.toList(new String[]{"apple","banana"}),(String)null,
-                                  HtmlUtils.attr("id",formId +"_select3")));
-
+        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
+        for(int selectIdx=1;selectIdx<10;selectIdx++) {
+            sb.append(HtmlUtils.p());
+            sb.append(HtmlUtils.select("select" + selectIdx ,Misc.toList(new String[]{"apple","banana"}),(String)null,
+                                       HtmlUtils.attr("id",formId +"_select" + selectIdx)));
+            js.append(JQ.change(JQ.id(formId+"_select" + selectIdx), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
+        }
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("submit","Submit"));
 
         sb.append(HtmlUtils.hr());
         sb.append(HtmlUtils.img(iconUrl("/icons/arrow.gif"),"", HtmlUtils.attr("id", formId+"_image")));
 
-
-        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call("testFormSubmit", HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId()}, true))));
-
-        js.append(JQ.change(JQ.id(formId+"_select1"), "return " + HtmlUtils.call("testFormSelectChange" ,
-                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"1"}, true))));
-
-        js.append(JQ.change(JQ.id(formId+"_select2"), "return " + HtmlUtils.call("testFormSelectChange" ,
-                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"2"}, true))));
-
-        js.append(JQ.change(JQ.id(formId+"_select3"), "return " + HtmlUtils.call("testFormSelectChange" ,
-                                                                                 HtmlUtils.jsMakeArgs(new String[]{formId, entry.getId(),"3"}, true))));
-
-        System.err.println(js);
         sb.append(HtmlUtils.script(js.toString()));
+        System.err.println(sb);
         return new Result("test", sb);
     }
 
