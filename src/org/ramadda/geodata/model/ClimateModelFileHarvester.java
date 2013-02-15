@@ -1,4 +1,6 @@
-package org.ramadda.data.model;
+package org.ramadda.geodata.model;
+
+import org.ramadda.data.model.*;
 
 import java.io.File;
 import java.util.regex.Matcher;
