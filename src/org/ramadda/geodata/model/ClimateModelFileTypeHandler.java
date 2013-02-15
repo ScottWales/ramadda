@@ -1,4 +1,4 @@
-package org.ramadda.data.model;
+package org.ramadda.geodata.model;
 
 import java.util.Date;
 import java.util.regex.Pattern;

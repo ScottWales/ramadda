@@ -11,7 +11,7 @@
    </type>
 
 
-  <type name="noaa_climate_modelfile"  description="Climate Model File" handler="org.ramadda.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+  <type name="noaa_climate_modelfile"  description="Climate Model File" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
      <property name="icon" value="/noaa/noaa.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="true"/>
