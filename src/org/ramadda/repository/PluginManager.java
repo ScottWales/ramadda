@@ -268,6 +268,7 @@ public class PluginManager extends RepositoryManager {
         //Now check for any special classes that need loading
         for(String classDefFile: classDefFiles) {
             for(String classToLoad: StringUtil.split(getStorageManager().readSystemResource(classDefFile),"\n", true, true)) {
+                if (classToLoad.startsWith("#")) continue;
                 Class c  = Misc.findClass(classToLoad);
                 classLoader.checkSpecialClass(c);
             }
