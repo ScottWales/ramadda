@@ -11,18 +11,18 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.type.GenericTypeHandler;
+import org.ramadda.repository.type.GranuleTypeHandler;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
 
-public class ClimateModelFileTypeHandler extends GenericTypeHandler {
+public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
     
     public static final String FILE_REGEX = "([^_]+)_([^_]+)_(.*)_(ens..|mean|sprd|clim)(_([^_]+))?.nc";
     public static final Pattern pattern = Pattern.compile(FILE_REGEX);
     
     /** ClimateModelFile type */
     public static final String TYPE_CLIMATE_MODELFILE = "noaa_climate_modelfile";
-
 
     public ClimateModelFileTypeHandler(Repository repository, Element entryNode)
             throws Exception {
@@ -39,55 +39,16 @@ public class ClimateModelFileTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    @Override
-    public void initializeEntryFromForm(Request request, Entry entry,
-                                        Entry parent, boolean newEntry)
-            throws Exception {
-        super.initializeEntryFromForm(request, entry, parent, newEntry);
-        if ( !newEntry) {
-            return;
-        }
-        if ( !entry.isFile()) {
-            return;
-        }
-        initializeEntry(entry);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
+@Override
     public void initializeEntry(Entry entry)
             throws Exception {
-        String collectionId = "";
-        Entry parent = entry.getParentEntry();
-        while(parent!=null) {
-            if(parent.getTypeHandler().isType(getProperty("collection_type",""))) {
-                collectionId = parent.getId();
-                break;
-            }
-            parent = parent.getParentEntry();
-        }
-        if(collectionId.equals("")) {
-            System.err.println("Could not find collection:" + entry);
-        }
-
+        super.initializeEntry(entry);
         Object[] values = getEntryValues(entry);
-
-        values[0] = collectionId;        
-
         if(values[1]!=null) {
             System.err.println ("already have  values set");
             return;
         }
         System.err.println ("no values set");
-
         String filepath = entry.getFile().toString();
         String filename = IOUtil.getFileTail(entry.getFile().toString());
         // Filename looks like  var_model_scenario_ens??_<date>.nc
