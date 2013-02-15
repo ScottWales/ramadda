@@ -2,8 +2,8 @@
 <types>
 
 
-  <type name="noaa_climate_collection"  description="Climate Data Collection" handler="org.ramadda.repository.type.CollectionTypeHandler" category="Climate Data" foruser="true">
-     <property name="icon" value="/noaa/noaa.gif"/>
+  <type name="noaa_climate_collection"  description="Climate Data Collection" handler="org.ramadda.geodata.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/model/noaa.gif"/>
      <property name="form.area.show" value="true"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.date.show" value="true"/>
@@ -12,7 +12,7 @@
 
 
   <type name="noaa_climate_modelfile"  description="Climate Model File" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
-     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="icon" value="/model/noaa.gif"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="true"/>
      <property name="form.date.show" value="true"/>

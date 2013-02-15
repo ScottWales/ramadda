@@ -14,6 +14,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.JQuery;
 import org.ramadda.repository.type.Column;
@@ -33,7 +34,7 @@ import ucar.unidata.util.IOUtil;
 
 public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     
-    private static final JQuery JQ = null;
+    public static final JQuery JQ = null;
 
     public static final String ARG_SEARCH =  "search";
 
@@ -57,7 +58,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    private TypeHandler getGranuleTypeHandler() throws Exception {
+    public TypeHandler getGranuleTypeHandler() throws Exception {
         if(granuleTypeHandler ==null) {
             dbTableName = getProperty(PROP_GRANULE_TYPE,"");
             granuleTypeHandler = getRepository().getTypeHandler(getProperty(PROP_GRANULE_TYPE,""));
@@ -80,6 +81,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             if(!request.defined(selectArg+selectIdx)) break;
             if(selectIdx<columns.size()-1) {
                 nextColumn = columns.get(selectIdx+1);
+                nextColumnName = nextColumn.getLabel();
             } else {
                 nextColumn = null;
             }
@@ -94,23 +96,18 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             List<String> uniqueValues= new ArrayList<String>();
             if(nextColumn!=null) {
                 clauses.add(Clause.eq(dbColumnCollectionId, entry.getId()));
-                Statement stmt = getRepository().getDatabaseManager().select(
-                                                                             SqlUtil.distinct(dbTableName+"."+nextColumn.getName()),
-                                                                             dbTableName, Clause.and(clauses));
+                Statement stmt = getDatabaseManager().select(
+                                                             SqlUtil.distinct(dbTableName+"."+nextColumn.getName()),
+                                                             dbTableName, Clause.and(clauses));
                 List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
                 for(String value: dbValues) {
                     String label = nextColumn.getEnumLabel(value);
                     uniqueValues.add(value+":" + label);
                 }
             }
-            String selectLabel;
+
             nextColumnName = nextColumnName.toLowerCase();
-            if(nextColumnName.startsWith("a") || nextColumnName.startsWith("e") || nextColumnName.startsWith("i") ||
-               nextColumnName.startsWith("o") || nextColumnName.startsWith("u")) {
-                selectLabel = ":-- Select an " + nextColumnName +" --";
-            } else {
-                selectLabel = ":-- Select a " + nextColumnName +" --";
-            }
+            String selectLabel = ":-- Select "  + Utils.getArticle(nextColumnName) +" " + nextColumnName + " --";
             uniqueValues.add(0,selectLabel);
             json = new StringBuffer();
             json.append(HtmlUtils.jsonMap(new String[]{
@@ -122,22 +119,38 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                           getRepository().getMimeTypeFromSuffix(".json"));
     }
 
-    public Result getForm(Request request, Entry entry,
-                          List<Entry> subGroups, List<Entry> entries)
+    public void addSelectorsToForm(Request request, Entry entry,
+                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId)
         throws Exception {
-        StringBuffer sb     = new StringBuffer();
-        sb.append(entry.getDescription());
-        String formId = "selectform" + HtmlUtils.blockCnt++;
-        sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                                 HtmlUtils.attr("id", formId)));
-        sb.append(HtmlUtils.formTable());
+
+        for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
+            Column column = columns.get(selectIdx);
+            String key = "values::" + entry.getId()+"::" +column.getName();
+            List values = (List<String>)cache.get(key);
+            if(values == null) {
+                Statement stmt = getRepository().getDatabaseManager().select(
+                                                                             SqlUtil.distinct(dbTableName+"."+column.getName()),
+                                                                             dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
+                values = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+                values.add(0, new TwoFacedObject("-- Select " + Utils.getArticle(column.getLabel()) +" " +column.getLabel() + " --",""));
+                cache.put(key, values);
+            }
+            String selectId = formId +"_"  + selectArg + selectIdx;
+            String selectedValue = request.getString(selectArg+selectIdx,"");
+            String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
+                                                " style=\"min-width:250px;\" " +
+                                                HtmlUtils.attr("id",selectId));
+            sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
+        }
+    }
+
+
+    public void addJsonSelectorsToForm(Request request, Entry entry,
+                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId)
+        throws Exception {
 
         StringBuffer js = new StringBuffer();
         js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
-        sb.append(request.form(getRepository().URL_ENTRY_FORM,
-                               HtmlUtils.attr("id", formId)));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-
         List<String> firstValues = (List<String>)cache.get("firstValues::" + entry.getId());
         if(firstValues == null) {
             Statement stmt = getRepository().getDatabaseManager().select(
@@ -160,18 +173,60 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 values.add(new TwoFacedObject("--",""));
             }
             String selectId = formId +"_"  + selectArg + selectIdx;
-            String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,(String)null,
-                                                " style=\"min-width:200px;\" " +
+            String selectedValue = request.getString(selectArg+selectIdx,"");
+
+            String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
+                                                " style=\"min-width:250px;\" " +
                                                 HtmlUtils.attr("id",selectId));
             sb.append(HtmlUtils.formEntry(msgLabel(label), selectBox));
             js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
         }
+
+        sb.append(HtmlUtils.script(js.toString()));
+    }
+
+
+
+    /**
+     * Get the HTML display for this type
+     *
+     * @param request  the Request
+     * @param group    the group
+     * @param subGroups    the subgroups
+     * @param entries      the Entries
+     *
+     * @return  the Result
+     *
+     * @throws Exception  problem getting the HTML
+     */
+@Override
+    public Result getHtmlDisplay(Request request, Entry entry,
+                                 List<Entry> subGroups, List<Entry> entries)
+        throws Exception {
+        //Always call this to initialize things
+        getGranuleTypeHandler();
+
+        //Check if the user clicked on tree view, etc.
+        if ( !isDefaultHtmlOutput(request)) {
+            return null;
+        }
+        if(request.get("metadata", false)) {
+            return getMetadataJson(request, entry, subGroups, entries);
+        }
+
+        StringBuffer sb     = new StringBuffer();
+        sb.append(entry.getDescription());
+        String formId = "selectform" + HtmlUtils.blockCnt++;
+
+        sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                                 HtmlUtils.attr("id", formId)));
+        sb.append(HtmlUtils.formTable());
+
+        addSelectorsToForm(request, entry, subGroups, entries, sb, formId);
+
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("submit","Submit"));
-
-        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
-        sb.append(HtmlUtils.script(js.toString()));
         sb.append(HtmlUtils.formClose());
 
         if(request.exists(ARG_SEARCH)) {
@@ -190,40 +245,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
         return new Result(msg(getLabel()), sb);
-    }
 
-    /**
-     * Get the HTML display for this type
-     *
-     * @param request  the Request
-     * @param group    the group
-     * @param subGroups    the subgroups
-     * @param entries      the Entries
-     *
-     * @return  the Result
-     *
-     * @throws Exception  problem getting the HTML
-     */
-    public Result getHtmlDisplay(Request request, Entry entry,
-                                 List<Entry> subGroups, List<Entry> entries)
-        throws Exception {
-        //Always call this to initialize things
-        getGranuleTypeHandler();
 
-        //Check if the user clicked on tree view, etc.
-        if ( !isDefaultHtmlOutput(request)) {
-            return null;
-        }
-        if(request.get("metadata", false)) {
-            return getMetadataJson(request, entry, subGroups, entries);
-        }
-        return getForm(request, entry, subGroups, entries);
     }
 
 
-    private List<Entry> processSearch(Request request, Entry group) throws Exception {
-        List<Clause> clauses = new ArrayList<Clause>();
-        clauses.add(Clause.eq(dbColumnCollectionId, group.getId()));
+    public  void addClauses(Request request, Entry group, List<Clause> clauses) throws Exception {
+        clauses.add(Clause.eq(dbTableName +"." + dbColumnCollectionId, group.getId()));
         clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
                                 dbTableName + ".id"));
         for(int i=0;i<columns.size();i++) {
@@ -233,7 +261,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 clauses.add(Clause.makeOrSplit(dbTableName +"." + column, request.getString(urlArg)));
             }
         }
-        List[] pair = getEntryManager().getEntries(request, clauses, granuleTypeHandler);
+    }
+
+
+    public  List<Entry> processSearch(Request request, Entry group) throws Exception {
+        List<Clause> clauses = new ArrayList<Clause>();
+        addClauses(request, group, clauses);
+        List[] pair = getEntryManager().getEntries(request, clauses, getGranuleTypeHandler());
         //        pair[0] is the folder entries. shouldn't have any here
         return (List<Entry>) pair[1];
     }

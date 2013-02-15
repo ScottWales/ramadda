@@ -192,9 +192,23 @@ public class Utils {
         */
     }
 
+    public static String getArticle(String s) {
+        s = s.toLowerCase();
+        if(s.startsWith("a") || s.startsWith("e") || s.startsWith("i") ||
+               s.startsWith("o") || s.startsWith("u")) {
+            return "an";
+        } else {
+            return "a";
+        }
+    }
+
+
+
     public static void main(String args[]) {
         testJulian(args);
     }
+
+
 
 
 

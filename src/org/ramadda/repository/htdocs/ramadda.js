@@ -1845,6 +1845,7 @@ function SelectForm (formId, entryId, arg) {
                 var nextSelect = theForm.getSelect(nextIdx);
                 var currentValue = nextSelect.val();
                 nextSelect.html(html);
+                nextSelect.focus();
                 if(currentValue) {
                     nextSelect.val(currentValue);
                 }

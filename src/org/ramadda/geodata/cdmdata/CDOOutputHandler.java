@@ -208,6 +208,12 @@ public class CDOOutputHandler extends OutputHandler {
     /** the path to cdo program */
     private String cdoPath;
 
+    public CDOOutputHandler(Repository repository)
+            throws Exception {
+        super(repository, "CDO");
+        cdoPath = getProperty(PROP_CDO_PATH, null);
+    }
+
     /**
      * Constructor
      *
@@ -330,14 +336,31 @@ public class CDOOutputHandler extends OutputHandler {
                                  makeFormSubmitDialog(sb,
                                      msg("Analyzing Data...."))));
 
-        String buttons = HtmlUtils.submit("Extract Data", ARG_SUBMIT);
-        //sb.append(buttons);
-
-        sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CDO));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        String buttons = HtmlUtils.submit("Extract Data", ARG_SUBMIT);
+        //sb.append(buttons);
         sb.append(HtmlUtils.h2("Dataset Analysis"));
         sb.append(HtmlUtils.hr());
+        addToForm(request, entry, sb);
+        sb.append(buttons);
+        sb.append(" ");
+        addPublishWidget(
+            request, entry, sb,
+            msg("Select a folder to publish the generated NetCDF file to"));
+
+        /*
+        sb.append(
+            HtmlUtils.href(
+                "https://code.zmaw.de/projects/cdo/wiki/Cdo#Documentation",
+                "CDO Documentation", " target=_external "));
+                */
+
+    }
+
+    public void addToForm(Request request, Entry entry, StringBuffer sb)
+        throws Exception {
+        sb.append(HtmlUtils.formTable());
         if (entry.getType().equals("noaa_climate_modelfile")) {
             //values[1] = var;
             //values[2] = model;
@@ -363,33 +386,24 @@ public class CDOOutputHandler extends OutputHandler {
             dataOutputHandler.getCdmManager().getGridDataset(entry,
                 entry.getResource().getPath());
 
-        addVarLevelWidget(request, sb, dataset);
+        if(dataset != null)  {
+            addVarLevelWidget(request, sb, dataset);
+        }
 
         addStatsWidget(request, sb);
 
-        addTimeWidget(request, sb, dataset, true);
-
-        LatLonRect llr = dataset.getBoundingBox();
-        if (llr != null) {
-            addMapWidget(request, sb, llr);
+        if(dataset != null)  {
+            addTimeWidget(request, sb, dataset, true);
         }
 
-
-
-        addPublishWidget(
-            request, entry, sb,
-            msg("Select a folder to publish the generated NetCDF file to"));
+        if(dataset != null)  {
+            LatLonRect llr = dataset.getBoundingBox();
+            if (llr != null) {
+                addMapWidget(request, sb, llr);
+            }
+        }
 
         sb.append(HtmlUtils.formTableClose());
-        sb.append(buttons);
-        sb.append(" ");
-        /*
-        sb.append(
-            HtmlUtils.href(
-                "https://code.zmaw.de/projects/cdo/wiki/Cdo#Documentation",
-                "CDO Documentation", " target=_external "));
-                */
-
     }
 
     /**
