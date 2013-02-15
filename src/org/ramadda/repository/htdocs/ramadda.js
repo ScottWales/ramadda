@@ -1788,7 +1788,7 @@ function treeViewGoTo () {
 }
 
 
-function Form (formId, entryId, arg) {
+function SelectForm (formId, entryId, arg) {
     this.id = formId;
     this.entryId = entryId;
     this.arg = arg;

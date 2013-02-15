@@ -74,13 +74,12 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         throws Exception {
         List<String> values = new ArrayList<String>();
         List<Clause> clauses = new ArrayList<Clause>();
-        String nextColumn = columns.get(0).getName();
-        String nextColumnName = columns.get(0).getLabel();
+        Column nextColumn = columns.get(0);
+        String nextColumnName = nextColumn.getLabel();
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
             if(!request.defined(selectArg+selectIdx)) break;
             if(selectIdx<columns.size()-1) {
-                nextColumn = columns.get(selectIdx+1).getName();
-                nextColumnName = columns.get(selectIdx+1).getLabel();
+                nextColumn = columns.get(selectIdx+1);
             } else {
                 nextColumn = null;
             }
@@ -92,15 +91,17 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         String valueKey = "json::" + entry.getId() + "::" + StringUtil.join("::", values);
         StringBuffer json = (StringBuffer) cache.get(valueKey);
         if(json == null) {
-            List<String> uniqueValues=null;
+            List<String> uniqueValues= new ArrayList<String>();
             if(nextColumn!=null) {
                 clauses.add(Clause.eq(dbColumnCollectionId, entry.getId()));
                 Statement stmt = getRepository().getDatabaseManager().select(
-                                                                             SqlUtil.distinct(dbTableName+"."+nextColumn),
+                                                                             SqlUtil.distinct(dbTableName+"."+nextColumn.getName()),
                                                                              dbTableName, Clause.and(clauses));
-                uniqueValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
-            } else {
-                uniqueValues = new ArrayList<String>();
+                List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+                for(String value: dbValues) {
+                    String label = nextColumn.getEnumLabel(value);
+                    uniqueValues.add(value+":" + label);
+                }
             }
             String selectLabel;
             nextColumnName = nextColumnName.toLowerCase();
@@ -126,26 +127,24 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         throws Exception {
         StringBuffer sb     = new StringBuffer();
         sb.append(entry.getDescription());
-        String formId = "form" + HtmlUtils.blockCnt++;
+        String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                                  HtmlUtils.attr("id", formId)));
         sb.append(HtmlUtils.formTable());
 
-
         StringBuffer js = new StringBuffer();
-        js.append("var " + formId + " = new Form(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
+        js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
         sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                HtmlUtils.attr("id", formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
-        List<String> models = (List<String>)cache.get("models::" + entry.getId());
-        if(models == null) {
-            
+        List<String> firstValues = (List<String>)cache.get("firstValues::" + entry.getId());
+        if(firstValues == null) {
             Statement stmt = getRepository().getDatabaseManager().select(
                                                                          SqlUtil.distinct(dbTableName+"."+columns.get(0).getName()),
                                                                          dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
-            models = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
-            cache.put("models::" + entry.getId(), models);
+            firstValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+            cache.put("firstValues::" + entry.getId(), firstValues);
         }
 
 
@@ -155,23 +154,24 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.p());
             List values = new ArrayList();
             if(selectIdx==0) {
-                values.add(new TwoFacedObject("-- Select a model --",""));
-                values.addAll(models);
+                values.add(new TwoFacedObject("-- Select a " + label + " --",""));
+                values.addAll(firstValues);
             }  else {
                 values.add(new TwoFacedObject("--",""));
             }
+            String selectId = formId +"_"  + selectArg + selectIdx;
             String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,(String)null,
                                                 " style=\"min-width:200px;\" " +
-                                                HtmlUtils.attr("id",formId +"_"  + selectArg + selectIdx));
+                                                HtmlUtils.attr("id",selectId));
             sb.append(HtmlUtils.formEntry(msgLabel(label), selectBox));
-            js.append(JQ.change(JQ.id(formId+"_" + selectArg + selectIdx), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
+            js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
         }
+        sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit("submit","Submit"));
 
         js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
         sb.append(HtmlUtils.script(js.toString()));
-        sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 
         if(request.exists(ARG_SEARCH)) {
