@@ -193,7 +193,9 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public abstract boolean canLoad(String file);
+    public  boolean canLoad(String file) {
+        return false;
+    }
 
     public boolean isCapable(String action) {
         return false;
