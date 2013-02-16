@@ -79,7 +79,7 @@ proc getJavaType {type} {
 
 
 proc generateRecordClass {class args} {
-    array set A {-super {Record} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} }
+    array set A {-super {Record} -makefile 0 -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} }
     set SUPER [string toupper $A(-super)]
     array set A $args
     set list $A(-fields)
@@ -92,6 +92,13 @@ proc generateRecordClass {class args} {
     puts "Generating class: $class"
 
     set javaFile $class.java
+    if {$A(-makefile)} {
+        set fileClass $class
+        regsub -all {Record} $fileClass {File} fileClass
+        set javaFile $fileClass.java
+    }
+
+
     set fp [open $javaFile w]
     puts $fp $::header
     puts $fp "\npackage $package;\n"
@@ -104,10 +111,25 @@ proc generateRecordClass {class args} {
     puts $fp [extraImport]
     puts $fp $A(-extraImport)
 
+    if {$A(-makefile)} {
+        puts $fp "import org.ramadda.data.point.PointFile;"
+    }
+
 
     puts $fp  "\n\n"
     puts $fp "/** This is generated code from generate.tcl. Do not edit it! */"
-    puts $fp  "public class $class extends $A(-super) \{"
+
+    if {$A(-makefile)} {
+        puts $fp  "public class $fileClass extends $A(-filesuper) \{"
+        puts $fp "public ${fileClass}()  {}"
+        puts $fp "public ${fileClass}(String filename) throws java.io.IOException {super(filename);}"
+        puts $fp "public Record doMakeRecord(VisitInfo visitInfo) {return new ${class}(this);}"
+        puts $fp "public static void main(String\[\]args) throws Exception \{PointFile.test(args, ${fileClass}.class);\n\}\n"
+        puts $fp "\n//generated record class\n\n"
+        puts $fp  "public static class $class extends $A(-super) \{"
+    } else {
+        puts $fp  "public class $class extends $A(-super) \{"
+    }
 
     set getters ""
     set writes "$A(-writePre)"
@@ -171,8 +193,12 @@ proc generateRecordClass {class args} {
         set rawType [lindex $tuple 1]
 
         set type $rawType
+
         array set A {-synthetic 0 -getter {} -default {} -declare 1 -cast {} -csv {} -valuegetter {}   -indexed 0  -searchable false -searchsuffix {} -bitfields {} -chartable false -scale {1} -label {} -desc {} -unit {} -enums {} -skip 0 -unsigned 0}
         array set A [lrange $tuple 2 end]
+
+
+
         if {[cleanUpVar]} {
             set var [getVarName $var]
         }
@@ -197,7 +223,6 @@ proc generateRecordClass {class args} {
         }
 
         set type [getJavaType $type]
-
         set javaType $type
         if {$A(-unsigned)} {
             if {$type == "byte"} {
@@ -229,6 +254,12 @@ proc generateRecordClass {class args} {
 
         set Type [camel $type]
         set JavaType [camel $javaType]
+
+        if {$A(-scale)!=1} {
+            #assume double when scaling
+            set type double
+        }
+
 
         set typeSize 0
         set numBytes 0
@@ -319,7 +350,7 @@ proc generateRecordClass {class args} {
                 append readCode "if($var==null || $var.length!=$arraySize) $var = new $javaType\[$arraySize\];\n"
             }
             append readCode "read${unsigned}${Type}s(dis,$var);\n"
-            append getters [method "public void set[camel $var]($javaType\[\] newValue)" "if($var == null) $var = newValue; else copy($var, newValue);"]
+            append getters [method "public void set[camel $var]($javaType\[\] newValue)" "copy($var, newValue);"]
             if {$isString} {
                 append getters [method "public void set[camel $var](String  newValue)" "copy($var, newValue.getBytes());"]
             }
@@ -541,6 +572,11 @@ proc generateRecordClass {class args} {
 
     puts $fp  $getters
 
+    if {$A(-makefile)} {
+        puts $fp  "\}\n"
+    }
+
+
     puts $fp  "\}\n\n\n"
     close $fp
 }
@@ -609,4 +645,6 @@ proc extraImport {} {
 proc readHeader {} {
     return ""
 }
+
+
 
