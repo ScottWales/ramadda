@@ -108,7 +108,7 @@ public class PointMetadataHarvester extends RecordVisitor {
 
         //Skip this if it doesn't have a valid position
         if ( !pointRecord.isValidPosition()) {
-            System.err.println("  not valid position ");
+            System.err.println("bad position: " + lat +" " + lon);
             return true;
         }
 
