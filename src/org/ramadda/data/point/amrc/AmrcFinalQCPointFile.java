@@ -159,12 +159,12 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 makeField(FIELD_MONTH,""),
                 makeField(FIELD_DAY,""),
                 makeField(FIELD_TIME,attrType(TYPE_STRING)),
-                makeField("Temperature", attrUnit("Celsius")),
-                makeField("Pressure", attrUnit("hPa")),
-                makeField("Wind_Speed", attrUnit("m/s")),
-                makeField("Wind_Direction"),
-                makeField("Relative_Humidity", attrUnit("%")),
-                makeField("Delta_T", attrUnit("Celsius")),
+                makeField("Temperature", attrUnit("Celsius"), attrChartable()),
+                makeField("Pressure", attrUnit("hPa"), attrChartable()),
+                makeField("Wind_Speed", attrUnit("m/s"), attrChartable()),
+                makeField("Wind_Direction", attrUnit("degrees")),
+                makeField("Relative_Humidity", attrUnit("%"), attrChartable()),
+                makeField("Delta_T", attrUnit("Celsius"), attrChartable()),
             });
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
