@@ -365,7 +365,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                         }
                     };
                     //                    System.err.println("Adding file to aggregation:" + dataFile);
-                    Entry newEntry = getEntryManager().addFileEntry(request,
+                    Request addRequest = new Request(getRepository(), entry.getUser()); 
+                    Entry newEntry = getEntryManager().addFileEntry(addRequest,
                                          dataFile, entry, dataFile.getName(),
                                          entry.getUser(), null, initializer);
                     childrenEntries.add(newEntry);
