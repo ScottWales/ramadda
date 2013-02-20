@@ -7,6 +7,7 @@ import org.ramadda.util.grid.LatLonGrid;
 
 import java.io.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -23,6 +24,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     private int cnt = 0;
 
     private double minElevation = Double.NaN;
+
     private double maxElevation = Double.NaN;
 
     /** _more_ */
@@ -47,6 +49,9 @@ public class PointMetadataHarvester extends RecordVisitor {
     private LatLonGrid llg;
 
     private Properties properties;
+
+    private double [][]ranges;
+    List<RecordField> fields;
 
     /**
      * _more_
@@ -102,9 +107,20 @@ public class PointMetadataHarvester extends RecordVisitor {
      */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                Record record) {
+
+
         PointRecord pointRecord = (PointRecord) record;
         double      lat         = pointRecord.getLatitude();
         double      lon         = pointRecord.getLongitude();
+
+        if(ranges==null) {
+            fields = pointRecord.getFields();
+            ranges = new double[fields.size()][2];
+            for(double[]range: ranges) {
+                range[0] = Double.NaN;
+                range[1] = Double.NaN;
+            }
+        }
 
         //Skip this if it doesn't have a valid position
         if ( !pointRecord.isValidPosition()) {
@@ -112,6 +128,24 @@ public class PointMetadataHarvester extends RecordVisitor {
             return true;
         }
 
+        int fieldCnt = 0;
+        for(RecordField field: fields) {
+            
+            if(field.isTypeNumeric()) {
+                double value = field.getValueGetter().getValue(pointRecord, field, visitInfo);
+                
+                if(Double.isNaN(ranges[fieldCnt][0])) 
+                    ranges[fieldCnt][0] = value;
+                else 
+                    ranges[fieldCnt][0] = Math.min(value,ranges[fieldCnt][0]);
+
+                if(Double.isNaN(ranges[fieldCnt][1])) 
+                    ranges[fieldCnt][1] = value;
+                else
+                    ranges[fieldCnt][1] = Math.max(value,ranges[fieldCnt][1]);
+            }
+            fieldCnt++;
+        }
         cnt++;
         if (llg != null) {
             llg.incrementCount(lat, lon);
@@ -164,6 +198,17 @@ public class PointMetadataHarvester extends RecordVisitor {
     public String toString() {
         String s =   "latitude:" + minLatitude + " - " + maxLatitude
             + "  longitude:" + minLongitude + " - " + maxLongitude;
+        if(fields!=null) {
+            int fieldCnt = 0;
+            for(RecordField field: fields) {
+                if(field.isTypeNumeric()) {
+                    System.err.println(field +" " + ranges[fieldCnt][0] + " " + ranges[fieldCnt][1]);
+                }
+                fieldCnt++;
+            }
+        }
+
+
         if(hasTimeRange()) {
             return s +"  time:" + " " + new Date(getMinTime()) +" -- " + new Date(getMaxTime());
         } else {

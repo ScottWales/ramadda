@@ -377,7 +377,6 @@ public class TextRecord extends PointRecord {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     values[fieldCnt] = (double) Double.parseDouble(tok);
-                    //TODO: We're assuming 999 is a missing value
                     if(isMissingValue(field, values[fieldCnt])) {
                         values[fieldCnt] = Double.NaN;
                     } 
@@ -401,15 +400,6 @@ public class TextRecord extends PointRecord {
 
     }
 
-
-    public boolean isMissingValue(RecordField field, double v) {
-        return getRecordFile().isMissingValue(this, field, v);
-    }
-
-
-    public boolean isMissingValue(RecordField field, String s) {
-        return getRecordFile().isMissingValue(this, field, s);
-    }
 
 
     public boolean lineOk(String line) {

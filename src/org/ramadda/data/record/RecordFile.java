@@ -954,7 +954,8 @@ public abstract class RecordFile {
     }
 
     public boolean isMissingValue(Record record, RecordField field, double v) {
-        return false;
+        double missing = field.getMissingValue();
+        return missing == v;
     }
 
 

@@ -106,6 +106,8 @@ public class RecordField {
 
     private String type = TYPE_NUMERIC;
 
+    private double missingValue  =Double.NaN;
+
 
     /**
      * _more_
@@ -124,10 +126,10 @@ public class RecordField {
         this.paramId     = paramId;
         this.unit        = unit;
         /*      this.rawType = rawType;
-        this.typeName = typeName;
-        this.arity = arity;
-        this.searchable = searchable;
-        this.chartable  = chartable;
+                this.typeName = typeName;
+                this.arity = arity;
+                this.searchable = searchable;
+                this.chartable  = chartable;
         */
     }
 
@@ -620,6 +622,24 @@ public class RecordField {
     **/
     public SimpleDateFormat getDateFormat () {
 	return dateFormat;
+    }
+
+    /**
+       Set the MissingValue property.
+
+       @param value The new value for MissingValue
+    **/
+    public void setMissingValue (double value) {
+	missingValue = value;
+    }
+
+    /**
+       Get the MissingValue property.
+
+       @return The MissingValue
+    **/
+    public double getMissingValue () {
+	return missingValue;
     }
 
 

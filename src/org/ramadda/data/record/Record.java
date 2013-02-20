@@ -1535,5 +1535,15 @@ public abstract class Record implements Cloneable {
         return getRecordTime() != UNDEFINED_TIME;
     }
 
+    public boolean isMissingValue(RecordField field, double v) {
+        return getRecordFile().isMissingValue(this, field, v);
+    }
+
+
+    public boolean isMissingValue(RecordField field, String s) {
+        return getRecordFile().isMissingValue(this, field, s);
+    }
+
+
 
 }
