@@ -83,7 +83,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
-        addSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId);
+        addJsonSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId);
         selectorSB.append(HtmlUtils.formTableClose());
 
         StringBuffer analysisSB = new StringBuffer();

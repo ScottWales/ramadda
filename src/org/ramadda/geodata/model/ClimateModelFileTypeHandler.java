@@ -19,6 +19,7 @@ import ucar.unidata.util.IOUtil;
 public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
     
     public static final String FILE_REGEX = "([^_]+)_([^_]+)_(.*)_(ens..|mean|sprd|clim)(_([^_]+))?.nc";
+
     public static final Pattern pattern = Pattern.compile(FILE_REGEX);
     
     /** ClimateModelFile type */

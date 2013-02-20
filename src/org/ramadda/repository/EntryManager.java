@@ -1409,6 +1409,7 @@ public class EntryManager extends RepositoryManager {
                     if (pattern != null) {
                         pattern = StringUtil.wildcardToRegexp(pattern);
                     }
+                    //TODO for Don - Walk the tree
                     final String thePattern = pattern;
                     File[] files = serverFile.listFiles(new FileFilter() {
                         public boolean accept(File f) {

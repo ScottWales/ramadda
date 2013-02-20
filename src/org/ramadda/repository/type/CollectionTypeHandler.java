@@ -6,6 +6,8 @@ import java.sql.*;
 
 
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -100,9 +102,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                                              SqlUtil.distinct(dbTableName+"."+nextColumn.getName()),
                                                              dbTableName, Clause.and(clauses));
                 List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
-                for(String value: dbValues) {
-                    String label = nextColumn.getEnumLabel(value);
-                    uniqueValues.add(value+":" + label);
+                for(TwoFacedObject tfo: getValueList(entry, dbValues, nextColumn)) {
+                    uniqueValues.add(tfo.getId()+":" + tfo.getLabel());
                 }
             }
 
@@ -119,6 +120,32 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                           getRepository().getMimeTypeFromSuffix(".json"));
     }
 
+    private Hashtable<String,Properties> labelCache = new Hashtable<String,Properties>();
+
+    private List<TwoFacedObject> getValueList(Entry collectionEntry, List values, Column column) throws Exception {
+        Hashtable map  = column.getEnumTable();
+        String key  = column.getName()+".values";
+        String vocabFile = getProperty(key,(String) null);
+        if(vocabFile!=null) {
+            Properties properties = labelCache.get(vocabFile);
+            if(properties == null) {
+                properties = new Properties();
+                getRepository().loadProperties(properties, vocabFile);
+                labelCache.put(vocabFile, properties);
+            }
+            map  = new Hashtable();
+            map.putAll(properties);
+        }
+        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        for(String value: (List<String>)values) {
+            String label = (String) map.get(value);
+            if(label == null) label = value;
+            tfos.add(new TwoFacedObject(label, value));
+        }
+        return tfos;
+    }
+
+
     public void addSelectorsToForm(Request request, Entry entry,
                                    List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId)
         throws Exception {
@@ -126,12 +153,12 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
             Column column = columns.get(selectIdx);
             String key = "values::" + entry.getId()+"::" +column.getName();
-            List values = (List<String>)cache.get(key);
+            List values = (List)cache.get(key);
             if(values == null) {
                 Statement stmt = getRepository().getDatabaseManager().select(
                                                                              SqlUtil.distinct(dbTableName+"."+column.getName()),
                                                                              dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
-                values = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+                values = getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), column);
                 values.add(0, new TwoFacedObject("-- Select " + Utils.getArticle(column.getLabel()) +" " +column.getLabel() + " --",""));
                 cache.put(key, values);
             }
@@ -151,12 +178,12 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer js = new StringBuffer();
         js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
-        List<String> firstValues = (List<String>)cache.get("firstValues::" + entry.getId());
+        List firstValues =  (List)cache.get("firstValues::" + entry.getId());
         if(firstValues == null) {
             Statement stmt = getRepository().getDatabaseManager().select(
                                                                          SqlUtil.distinct(dbTableName+"."+columns.get(0).getName()),
                                                                          dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
-            firstValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+            firstValues = getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), columns.get(0));
             cache.put("firstValues::" + entry.getId(), firstValues);
         }
 

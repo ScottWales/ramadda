@@ -7,6 +7,12 @@
      <property name="form.resource.show" value="false"/>
      <property name="form.date.show" value="true"/>
      <property name="granule_type" value="climate_modelfile"/>
+<!--
+    These properties point to a vocabulary properties file to be used for the below columns
+     <property name="model.values" value="/Users/jeffmc/test.properties"/>
+     <property name="experiment.values" value="/Users/jeffmc/test.properties"/>
+     <property name="variable.values" value="/Users/jeffmc/test.properties"/>
+-->
    </type>
 
 
