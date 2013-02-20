@@ -59,6 +59,7 @@ import java.util.List;
  * Class for handling grid aggregation
  *
  */
+
 public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** Type index for GUI */
@@ -326,17 +327,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             for (File dataFile : filesToUse) {
                 //Check for access
                 getStorageManager().checkLocalFile(dataFile);
-                Entry dummyEntry = new Entry();
-                dummyEntry.setTypeHandler(
-                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
-
-                dummyEntry.setResource(new Resource(dataFile,
-                        Resource.TYPE_LOCAL_FILE));
-                dummyEntries.add(dummyEntry);
+                dummyEntries.add(makeDummyEntry(dataFile));
             }
 
-            if (ingest) {
+            boolean readOnly =getRepository().isReadOnly();
 
+            if (ingest) {
                 //See if we have all of the files
                 HashSet seen = new HashSet();
                 for (Entry existingEntry : childrenEntries) {
@@ -347,6 +343,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     if (seen.contains(dataFile)) {
                         continue;
                     }
+                    //If the repository is readonly then don't add the entry to the repository
+                    if(readOnly) {
+                        childrenEntries.add(makeDummyEntry(dataFile));
+                        continue;
+                    }
+
                     addedNewOne = true;
                     final Request    finalRequest = request;
                     EntryInitializer initializer  = new EntryInitializer() {
@@ -432,6 +434,15 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
+    private Entry makeDummyEntry(File dataFile) throws Exception {
+        Entry dummyEntry = new Entry();
+        dummyEntry.setTypeHandler(
+                                  getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
+        
+        dummyEntry.setResource(new Resource(dataFile,
+                                            Resource.TYPE_LOCAL_FILE));
+        return dummyEntry;
+    }
 
     /**
      * Handle a change to a child entry
