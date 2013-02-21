@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -42,6 +43,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
     public static final String PROP_GRANULE_TYPE  = "granule_type";
 
+    private JsonOutputHandler jsonOutputHandler;
+
     private String dbTableName;
 
     private String dbColumnCollectionId;
@@ -60,6 +63,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public JsonOutputHandler getJsonOutputHandler () {
+        if(jsonOutputHandler == null) {
+            jsonOutputHandler  =(JsonOutputHandler)getRepository().getOutputHandler(org.ramadda.repository.output.JsonOutputHandler.class);
+        }
+        return         jsonOutputHandler;
+    }
+
     public TypeHandler getGranuleTypeHandler() throws Exception {
         if(granuleTypeHandler ==null) {
             dbTableName = getProperty(PROP_GRANULE_TYPE,"");
@@ -76,6 +86,76 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                  List<Entry> subGroups, List<Entry> entries)
         throws Exception {
         List<String> values = new ArrayList<String>();
+        List<Clause> clauses = getClauses(request, entry, values);
+        String valueKey = "json::" + entry.getId() + "::" + StringUtil.join("::", values);
+        StringBuffer json = (StringBuffer) cache.get(valueKey);
+        if(json == null) {
+            Column nextColumn = columns.get(0);
+            String nextColumnName = nextColumn.getLabel();
+            for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
+                if(!request.defined(selectArg+selectIdx)) break;
+                if(selectIdx<columns.size()-1) {
+                    nextColumn = columns.get(selectIdx+1);
+                    nextColumnName = nextColumn.getLabel();
+                } else {
+                    nextColumn = null;
+                }
+            }
+
+            List<String> uniqueValues= getUniqueValues(entry, nextColumn, clauses);
+            nextColumnName = nextColumnName.toLowerCase();
+            String selectLabel = ":-- Select "  + Utils.getArticle(nextColumnName) +" " + nextColumnName + " --";
+            uniqueValues.add(0,selectLabel);
+            json = new StringBuffer();
+            json.append(HtmlUtils.jsonMap(new String[]{
+                        "values", HtmlUtils.jsonList(uniqueValues)},false));
+            System.err.println(json);
+            cache.put(valueKey, json);
+        }
+        return new Result(BLANK, json,
+                          getRepository().getMimeTypeFromSuffix(".json"));
+    }
+
+
+    public void makeMetadataTree(Request request, Entry entry, StringBuffer sb, int colIdx, List<Clause>clauses)     throws Exception {
+
+    }
+
+
+    public void makeMetadataTree(Request request, Entry entry)     throws Exception {
+        StringBuffer tree = new StringBuffer();
+        tree.append("<ul>");
+        for(Column column: columns) {
+            List<Clause> clauses = new ArrayList<Clause>();
+            List<String> uniqueValues= getUniqueValues(entry, column, clauses);
+            for(String v: uniqueValues) {
+                tree.append("<li> " + v);
+            }
+        }
+        tree.append("</ul>");
+    }
+
+
+
+
+    private List<String> getUniqueValues(Entry entry, Column column, List<Clause> clauses) throws Exception {
+        clauses = new ArrayList<Clause>(clauses);
+        List<String> uniqueValues= new ArrayList<String>();
+        if(column!=null) {
+            clauses.add(Clause.eq(dbColumnCollectionId, entry.getId()));
+            Statement stmt = getDatabaseManager().select(
+                                                         SqlUtil.distinct(dbTableName+"."+column.getName()),
+                                                         dbTableName, Clause.and(clauses));
+            List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+            for(TwoFacedObject tfo: getValueList(entry, dbValues, column)) {
+                uniqueValues.add(tfo.getId()+":" + tfo.getLabel());
+            }
+        }
+        return uniqueValues;
+    }
+
+
+    public List<Clause> getClauses(Request request, Entry entry, List<String> values) throws Exception {
         List<Clause> clauses = new ArrayList<Clause>();
         Column nextColumn = columns.get(0);
         String nextColumnName = nextColumn.getLabel();
@@ -90,35 +170,11 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             String column=  columns.get(selectIdx).getName();
             String v = request.getString(selectArg+selectIdx,"");
             clauses.add(Clause.eq(column, v));
-            values.add(v);
+            if(values!=null) values.add(v);
         }
-        String valueKey = "json::" + entry.getId() + "::" + StringUtil.join("::", values);
-        StringBuffer json = (StringBuffer) cache.get(valueKey);
-        if(json == null) {
-            List<String> uniqueValues= new ArrayList<String>();
-            if(nextColumn!=null) {
-                clauses.add(Clause.eq(dbColumnCollectionId, entry.getId()));
-                Statement stmt = getDatabaseManager().select(
-                                                             SqlUtil.distinct(dbTableName+"."+nextColumn.getName()),
-                                                             dbTableName, Clause.and(clauses));
-                List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
-                for(TwoFacedObject tfo: getValueList(entry, dbValues, nextColumn)) {
-                    uniqueValues.add(tfo.getId()+":" + tfo.getLabel());
-                }
-            }
-
-            nextColumnName = nextColumnName.toLowerCase();
-            String selectLabel = ":-- Select "  + Utils.getArticle(nextColumnName) +" " + nextColumnName + " --";
-            uniqueValues.add(0,selectLabel);
-            json = new StringBuffer();
-            json.append(HtmlUtils.jsonMap(new String[]{
-                        "values", HtmlUtils.jsonList(uniqueValues)},false));
-            System.err.println(json);
-            cache.put(valueKey, json);
-        }
-        return new Result(BLANK, json,
-                          getRepository().getMimeTypeFromSuffix(".json"));
+        return clauses;
     }
+
 
     private Hashtable<String,Properties> labelCache = new Hashtable<String,Properties>();
 
@@ -147,7 +203,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public void addSelectorsToForm(Request request, Entry entry,
-                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId)
+                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId, StringBuffer js)
         throws Exception {
 
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
@@ -168,16 +224,16 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                                 " style=\"min-width:250px;\" " +
                                                 HtmlUtils.attr("id",selectId));
             sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
+            js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
         }
     }
 
 
     public void addJsonSelectorsToForm(Request request, Entry entry,
-                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId)
+                                       List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId,StringBuffer js)
         throws Exception {
 
-        StringBuffer js = new StringBuffer();
-        js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
+
         List firstValues =  (List)cache.get("firstValues::" + entry.getId());
         if(firstValues == null) {
             Statement stmt = getRepository().getDatabaseManager().select(
@@ -191,7 +247,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
             String column=  columns.get(selectIdx).getName();
             String label=  columns.get(selectIdx).getLabel();
-            sb.append(HtmlUtils.p());
             List values = new ArrayList();
             if(selectIdx==0) {
                 values.add(new TwoFacedObject("-- Select a " + label + " --",""));
@@ -208,8 +263,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.formEntry(msgLabel(label), selectBox));
             js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
         }
-
-        sb.append(HtmlUtils.script(js.toString()));
     }
 
 
@@ -237,11 +290,18 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
+
+        StringBuffer sb     = new StringBuffer();
+        if(request.exists(ARG_SEARCH)) {
+            entries =  processSearch(request, entry);
+            getJsonOutputHandler().makeJson(request, entries,sb);
+            return new Result("", sb, "application/json");
+        }
+
         if(request.get("metadata", false)) {
             return getMetadataJson(request, entry, subGroups, entries);
         }
 
-        StringBuffer sb     = new StringBuffer();
         sb.append(entry.getDescription());
         String formId = "selectform" + HtmlUtils.blockCnt++;
 
@@ -249,28 +309,19 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                  HtmlUtils.attr("id", formId)));
         sb.append(HtmlUtils.formTable());
 
-        addSelectorsToForm(request, entry, subGroups, entries, sb, formId);
+        StringBuffer js = new StringBuffer();
+        js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
+        addJsonSelectorsToForm(request, entry, subGroups, entries, sb, formId, js);
+        sb.append(js);
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit("submit","Submit"));
+        sb.append(HtmlUtils.submit(ARG_SEARCH,"Submit", HtmlUtils.id(formId+".search")));
+        js.append(JQ.submit(JQ.id(formId+".search"), "return " + HtmlUtils.call(formId +".search","")));
+        sb.append(HtmlUtils.script(js.toString()));
         sb.append(HtmlUtils.formClose());
 
-        if(request.exists(ARG_SEARCH)) {
-            sb.append(HtmlUtils.p());
-            entries =  processSearch(request, entry);
-            if(entries.size()==0) {
-                sb.append(msg("No entries found"));
-            } else {
-                sb.append("Found " + entries.size() +" results");
-                sb.append(HtmlUtils.p());
-                for(Entry child: entries) {
-                    sb.append(getEntryManager().getBreadCrumbs(request,
-                                                               child));
-                    sb.append(HtmlUtils.br());
-                }
-            }
-        }
+
         return new Result(msg(getLabel()), sb);
 
 

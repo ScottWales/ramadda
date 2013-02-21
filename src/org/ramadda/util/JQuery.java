@@ -34,8 +34,14 @@ public class JQuery  {
     }
 
 
+    public static String select(String selector) {
+        return "$(" + HtmlUtils.squote(selector) + ")";
+    }
+
+
+
     public static String call(String selector, String func, String code) {
-        return "$(" + HtmlUtils.squote(selector) + ")." + func +"(function() {" + code +"});\n";
+        return select(selector) +"." + func +"(function(event) {" + code +"});\n";
     }
 
     public static String submit(String selector,  String code) {
@@ -46,5 +52,13 @@ public class JQuery  {
         return call(selector,"change", code);
     }
 
+    public static String click(String selector,  String code) {
+        return call(selector,"click", code);
+    }
 
+    public static String button(String label, String id, StringBuffer js, String code ) {
+        String html = HtmlUtils.tag("button", HtmlUtils.id(id),label);
+        js.append (JQuery.select(JQuery.id(id)) +".button().click(function(event){event.preventDefault();\n" + code +"\n});\n");
+        return html;
+    }
 }

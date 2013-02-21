@@ -39,13 +39,13 @@ import java.io.*;
 public abstract class PointRecord extends GeoRecord {
 
     /** _more_ */
-    double latitude = Double.NaN;
+    protected double latitude = Double.NaN;
 
     /** _more_ */
-    double longitude = Double.NaN;
+    protected     double longitude = Double.NaN;
 
     /** _more_ */
-    double altitude = Double.NaN;
+    protected     double altitude = Double.NaN;
 
     /** _more_ */
     protected double x = Double.NaN;

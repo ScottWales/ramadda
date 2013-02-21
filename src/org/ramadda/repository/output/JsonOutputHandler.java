@@ -158,20 +158,24 @@ public class JsonOutputHandler extends OutputHandler {
             allEntries.addAll(entries);
         }
         StringBuffer sb = new StringBuffer();
+        makeJson(request, allEntries, sb);
+        return new Result("", sb, "application/json");
+    }
+
+
+    public void makeJson(Request request, List<Entry> entries, StringBuffer sb)
+        throws Exception {
         sb.append("[");
         int cnt = 0;
-        for (Entry entry : allEntries) {
+        for (Entry entry : entries) {
             if (cnt > 0) {
                 sb.append(",");
             }
             cnt++;
             toJson(request, entry, sb);
-
             sb.append("\n");
         }
         sb.append("]");
-
-        return new Result("", sb, "application/json");
     }
 
     /**
@@ -375,6 +379,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (request.get(ARG_EXTRACOLUMNS, true)) {
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
+                List<Column> columns = entry.getTypeHandler().getColumns();
                 StringBuffer msb = new StringBuffer("[");
                 for (int i = 0; i < extraParameters.length; i++) {
                     if (i > 0) {
@@ -382,10 +387,8 @@ public class JsonOutputHandler extends OutputHandler {
                     }
                     msb.append("{");
                     String value = entry.getValue(i, "");
-                    // I don't know how to extract column name maybe there is a function but
-                    // I don't know so I add the column position. In any case you need to know
-                    // the output type in the client side to deal with the parameters.
-                    qtattr(msb, Integer.toString(i), replaceForJSON(value),
+                    String name = columns.get(i).getName();
+                    qtattr(msb, name, replaceForJSON(value),
                            false);
 
                     msb.append("}");

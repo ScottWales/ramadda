@@ -1788,10 +1788,31 @@ function treeViewGoTo () {
 }
 
 
-function SelectForm (formId, entryId, arg) {
+function Entry (entry) {
+    this.entry = entry;
+    this.getIconImage = function () {
+        return "<img src=\"" + this.entry.icon +"\">";
+    }
+    this.getName = function () {
+        if(this.entry.name ==null || this.entry.name == "") {
+            return "no name";
+        }
+        return this.entry.name;
+    }
+    this.getLink = function (label) {
+        if(!label) label = this.getName();
+        return  "<a href=\"${urlroot}/entry/show?entryid=" + this.entry.id +"\">" + label +"</a>";
+    }
+
+}
+
+
+function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     this.id = formId;
     this.entryId = entryId;
     this.arg = arg;
+    this.outputDivId = outputDiv;
+    this.selectValues = selectValues;
     if(!this.arg) this.arg = "select";
 
     this.clearSelect = function (num) {
@@ -1802,7 +1823,41 @@ function SelectForm (formId, entryId, arg) {
         }
     }
 
+    this.search = function(event) {
+        var result = "";
+        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test&search=true";
+        $(':input[id*=\"' + this.id +'\"]').each(function() {             
+                var value = $(this).val();
+                if(value != "" && value.indexOf("--") != 0) {
+                     url += "&" + this.name+ "=" + encodeURIComponent(value);
+                 }
+         });       
+        $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
+        var theForm = this;
+        $.getJSON(url, function(data) {
+                var html = "";
+                if(data.length==0) {
+                    html = "Nothing found";
+                }
+                for(var i=0;i<data.length;i++)  {
+                    var entry = new Entry(data[i]);
+                    html+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
+                    html+= "<br>";
+                }
+                $("#" + theForm.outputDivId).html(html);
+            });
+        return false;
+    }
+
+    this.isSelectLinked = function () {
+        return true;
+    }
+
     this.select = function (num) {
+        if (!this.isSelectLinked()) {
+            return;
+        }
+
         num = parseInt(num);
         select = this.getSelect(num);
         if(select.val() == "" || select.val().indexOf("--") == 0) {
@@ -1818,7 +1873,6 @@ function SelectForm (formId, entryId, arg) {
             var value = select.val();
             url += "&" + this.arg +i + "=" + encodeURIComponent(select.val());
         }
-
 
         var theForm = this;
         $.getJSON(url, function(data) {

@@ -70,45 +70,67 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
             return getMetadataJson(request, entry, subGroups, entries);
         }
 
-
         StringBuffer sb     = new StringBuffer();
+
+
+        if(request.exists(ARG_SEARCH)) {
+            entries =  processSearch(request, entry);
+            getJsonOutputHandler().makeJson(request, entries,sb);
+            System.err.println("json:" + sb);
+            return new Result("", sb, "application/json");
+        }
+
+
+
+        StringBuffer js = new StringBuffer();
+
         sb.append(entry.getDescription());
         String formId = "selectform" + HtmlUtils.blockCnt++;
 
         sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                                  HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-
-
-
+        js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output"}, true))+"\n");
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
-        addJsonSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId);
+        //        addSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId);
+        addSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId,js);
+        selectorSB.append(HtmlUtils.formEntry("",JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event"))));
         selectorSB.append(HtmlUtils.formTableClose());
 
         StringBuffer analysisSB = new StringBuffer();
         StringBuffer productSB = new StringBuffer();
 
-        productSB.append(HtmlUtils.submit(msg("Search for files"),ARG_SEARCH));
+        //        productSB.append(HtmlUtils.submit(msg("Search for files"),ARG_SEARCH));
 
         sb.append(header(msg("Select Data")));
-        sb.append(selectorSB);
+
+
+        sb.append("<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
+        sb.append(HtmlUtils.col(HtmlUtils.div(selectorSB.toString(), HtmlUtils.cssClass("entryselect")) , " width=30%"));
+        sb.append(HtmlUtils.col(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output"))));
+        sb.append("</tr></table>");
+        sb.append(HtmlUtils.p());
+
 
         cdoOutputHandler.addToForm(request, entry, analysisSB);
+        /*
+        sb.append(HtmlUtils.p());
         sb.append(header(msg("Do Something to Data")));
         sb.append(analysisSB);
 
+        sb.append(HtmlUtils.p());
         sb.append(header(msg("Do Something with Data")));
         sb.append(productSB);
+        */
 
-
-
-        StringBuffer js = new StringBuffer();
         //        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
         sb.append(HtmlUtils.script(js.toString()));
 
 
         sb.append(HtmlUtils.formClose());
+
+
 
         if(request.exists(ARG_SEARCH)) {
             sb.append(HtmlUtils.p());

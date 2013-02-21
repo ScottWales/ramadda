@@ -378,6 +378,19 @@ a.ramadda-heading-2-link:visited {
 }
 
 
+.entryoutput {
+    margin:0px;
+    padding: 10px;
+    max-height: 200px; 
+    overflow-y: auto;
+}
+
+.entryselect {
+    margin:0px;
+    padding: 10px;
+    min-height: 200px; 
+a   border-top: 5px #ccc solid; 
+}
 
 .ramadda-menubar {
    background-repeat: repeat-x;
