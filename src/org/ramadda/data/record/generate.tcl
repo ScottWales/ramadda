@@ -79,7 +79,7 @@ proc getJavaType {type} {
 
 
 proc generateRecordClass {class args} {
-    array set A {-super {Record} -makefile 0 -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} }
+    array set A {-super {Record} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} -makefile 0 -filesuper {PointFile} -skiplines {0} }
     set SUPER [string toupper $A(-super)]
     array set A $args
     set list $A(-fields)
@@ -111,6 +111,7 @@ proc generateRecordClass {class args} {
     puts $fp [extraImport]
     puts $fp $A(-extraImport)
 
+    #Assume if we do makefile then we are doing point files
     if {$A(-makefile)} {
         puts $fp "import org.ramadda.data.point.PointFile;"
     }
@@ -125,6 +126,10 @@ proc generateRecordClass {class args} {
         puts $fp "public ${fileClass}(String filename) throws java.io.IOException {super(filename);}"
         puts $fp "public Record doMakeRecord(VisitInfo visitInfo) {return new ${class}(this);}"
         puts $fp "public static void main(String\[\]args) throws Exception \{PointFile.test(args, ${fileClass}.class);\n\}\n"
+        if {$A(-skiplines)} {
+            puts $fp "\n@Override\npublic int getSkipLines(VisitInfo visitInfo) \{\nreturn  $A(-skiplines);\n\}\n\n"
+        }
+
         puts $fp "\n//generated record class\n\n"
         puts $fp  "public static class $class extends $A(-super) \{"
     } else {
@@ -194,7 +199,7 @@ proc generateRecordClass {class args} {
 
         set type $rawType
 
-        array set A {-synthetic 0 -getter {} -default {} -declare 1 -cast {} -csv {} -valuegetter {}   -indexed 0  -searchable false -searchsuffix {} -bitfields {} -chartable false -scale {1} -label {} -desc {} -unit {} -enums {} -skip 0 -unsigned 0}
+        array set A {-synthetic 0 -getter {} -default {} -declare 1 -cast {} -csv {} -valuegetter {}   -indexed 0  -searchable false -searchsuffix {} -bitfields {} -chartable false -scale {1} -label {} -desc {} -unit {} -enums {} -skip 0 -unsigned 0 -missing {}}
         array set A [lrange $tuple 2 end]
 
 
@@ -411,6 +416,9 @@ proc generateRecordClass {class args} {
                 }
                 if {$A(-lineoriented)} {
                     append readCode "$var = ($javaType) Double.parseDouble(toks\[fieldCnt++\]);\n"
+                    if {$A(-missing) != {}} {
+                        append readCode "if(isMissingValue($recordAttrName, $var)) $var = Double.NaN;\n"
+                    }
                 } else {
                     append readCode "$var = $A(-cast) read${unsigned}${Type}(dis);\n"
                 }
@@ -458,6 +466,9 @@ proc generateRecordClass {class args} {
         append recordStatics "FIELDS.add($recordAttrName = new RecordField([dqt $var], [dqt $A(-label)], [dqt $A(-desc)], ATTR_$VAR, \"$A(-unit)\", \"$rawType\", \"$type\", $attributeArraySize, $searchable,$chartable));\n"
  
 
+        if {$A(-missing) !=""} {
+            append recordStatics "$recordAttrName.setMissingValue($A(-missing));\n"
+        }
         if {$A(-synthetic)} {
             append recordStatics "$recordAttrName.setSynthetic(true);\n"
         }
