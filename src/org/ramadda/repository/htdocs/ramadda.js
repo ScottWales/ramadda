@@ -1850,7 +1850,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     }
 
     this.isSelectLinked = function () {
-        return true;
+        return false;
     }
 
     this.select = function (num) {
