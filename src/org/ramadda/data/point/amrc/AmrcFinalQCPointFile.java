@@ -45,7 +45,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
 
 
     /**
-     * _more_
+     * ctor
      */
     public AmrcFinalQCPointFile() {
     }
@@ -57,19 +57,19 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      * @param filename _more_
      * @throws Exception On badness
      *
-     * @throws IOException _more_
+     * @throws IOException On badness
      */
     public AmrcFinalQCPointFile(String filename) throws IOException {
         super(filename);
     }
 
     /**
-     * _more_
+     * ctor
      *
-     * @param filename _more_
-     * @param properties _more_
+     * @param filename filename
+     * @param properties properties
      *
-     * @throws IOException _more_
+     * @throws IOException On badness
      */
     public AmrcFinalQCPointFile(String filename,
                                 Hashtable properties)
@@ -78,6 +78,10 @@ public class AmrcFinalQCPointFile extends CsvFile  {
     }
 
 
+    /**
+     * This is used by RAMADDA to determine what kind of services are available for this type of point data
+     * @return is this file capable of the action
+     */
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
         if(action.equals(ACTION_GRID)) return false;
@@ -85,30 +89,34 @@ public class AmrcFinalQCPointFile extends CsvFile  {
     }
 
 
+    /*
+     * Get the delimiter (space)
+     *      @return the column delimiter
+     */
     public String getDelimiter() {
         return " ";
     }
 
 
     /**
-     * _more_
+     * There are  2 header lines
      *
-     * @param visitInfo _more_
+     * @param visitInfo file visit info
      *
-     * @return _more_
+     * @return how many lines to skip
      */
     public int getSkipLines(VisitInfo visitInfo) {
         return 2;
     }
 
     /**
-     * _more_
+     * This  gets called before the file is visited. It reads the header and pulls out metadata
      *
-     * @param visitInfo _more_
+     * @param visitInfo visit info
      *
-     * @return _more_
+     * @return possible new visitinfo
      *
-     * @throws IOException _more_
+     * @throws IOException On badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
@@ -149,6 +157,8 @@ public class AmrcFinalQCPointFile extends CsvFile  {
             });
 
 
+        //Make the field definition 
+        //The attrValue defines a default value for that field. 
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
                 makeField(FIELD_LATITUDE, attrValue(lat)),
@@ -171,6 +181,10 @@ public class AmrcFinalQCPointFile extends CsvFile  {
     }
 
 
+    /*
+     * This gets called after a record has been read
+     * It extracts and creates the record date/time
+     */
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
         TextRecord textRecord = (TextRecord) record;
