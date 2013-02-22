@@ -1922,7 +1922,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                         totalSize += entry.getFilesize();
                         listHtml += "</tr>";
                     }
-                    html += "<tr><td><b>" + data.length +" entries found</b></td><td align=right><b>Size: " + size_format(totalSize) +"</b></td></tr>";
+                    html += "<tr><td><b>" + data.length +" files found</b></td><td align=right><b>Size: " + size_format(totalSize) +"</b></td></tr>";
                     html+= listHtml;
                     html += "</table>";
                 }

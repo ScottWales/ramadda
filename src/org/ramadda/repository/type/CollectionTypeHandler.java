@@ -6,6 +6,7 @@ import java.sql.*;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -52,7 +53,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     private JsonOutputHandler jsonOutputHandler;
     private ZipOutputHandler zipOutputHandler;
 
-    private String dbTableName;
 
     private String dbColumnCollectionId;
 
@@ -86,7 +86,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
     public TypeHandler getGranuleTypeHandler() throws Exception {
         if(granuleTypeHandler ==null) {
-            dbTableName = getProperty(PROP_GRANULE_TYPE,"");
             granuleTypeHandler = getRepository().getTypeHandler(getProperty(PROP_GRANULE_TYPE,""));
             columns = new ArrayList<Column>(granuleTypeHandler.getColumns());
             dbColumnCollectionId = columns.get(0).getName();
@@ -156,8 +155,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         if(column!=null) {
             clauses.add(Clause.eq(dbColumnCollectionId, entry.getId()));
             Statement stmt = getDatabaseManager().select(
-                                                         SqlUtil.distinct(dbTableName+"."+column.getName()),
-                                                         dbTableName, Clause.and(clauses));
+                                                         SqlUtil.distinct(column.getTableName()+"."+column.getName()),
+                                                         column.getTableName(), Clause.and(clauses));
             List<String> dbValues = (List<String>)Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
             for(TwoFacedObject tfo: getValueList(entry, dbValues, column)) {
                 uniqueValues.add(tfo.getId()+":" + tfo.getLabel());
@@ -216,8 +215,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             List values = (List)cache.get(key);
             if(values == null) {
                 Statement stmt = getRepository().getDatabaseManager().select(
-                                                                             SqlUtil.distinct(dbTableName+"."+column.getName()),
-                                                                             dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
+                                                                             SqlUtil.distinct(column.getTableName()+"."+column.getName()),
+                                                                             column.getTableName(), Clause.eq(dbColumnCollectionId, entry.getId()));
                 values = getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), column);
                 values.add(0, new TwoFacedObject("-- Select " + Utils.getArticle(column.getLabel()) +" " +column.getLabel() + " --",""));
                 //                values.add(0, new TwoFacedObject("FOOBAR","foobar"));
@@ -241,9 +240,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         List firstValues =  (List)cache.get("firstValues::" + entry.getId());
         if(firstValues == null) {
+            Column column = columns.get(0);
             Statement stmt = getRepository().getDatabaseManager().select(
-                                                                         SqlUtil.distinct(dbTableName+"."+columns.get(0).getName()),
-                                                                         dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
+                                                                         SqlUtil.distinct(column.getTableName()+"."+column.getName()),
+                                                                         column.getTableName(), Clause.eq(dbColumnCollectionId, entry.getId()));
             firstValues = getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), columns.get(0));
             cache.put("firstValues::" + entry.getId(), firstValues);
         }
@@ -346,14 +346,19 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public  void addClauses(Request request, Entry group, List<Clause> clauses) throws Exception {
-        clauses.add(Clause.eq(dbTableName +"." + dbColumnCollectionId, group.getId()));
-        clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
-                                dbTableName + ".id"));
+        HashSet<String> seenTable = new HashSet<String>();
         for(int i=0;i<columns.size();i++) {
-            String column=  columns.get(i).getName();
+            Column column = columns.get(i);
+            String dbTableName =  column.getTableName();
+            if(!seenTable.contains(dbTableName)) {
+                clauses.add(Clause.eq(dbTableName +"." + dbColumnCollectionId, group.getId()));
+                clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
+                                        dbTableName + ".id"));
+                seenTable.add(dbTableName);
+            }
             String urlArg = selectArg + i;
             if(request.defined(urlArg)) {
-                clauses.add(Clause.makeOrSplit(dbTableName +"." + column, request.getString(urlArg)));
+                clauses.add(Clause.makeOrSplit(dbTableName +"." + column.getName(), request.getString(urlArg)));
             }
         }
     }
