@@ -1787,6 +1787,43 @@ function treeViewGoTo () {
     }
 }
 
+function number_format( number, decimals, dec_point, thousands_sep ) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +     bugfix by: Michael White (http://crestidg.com)
+    // +     bugfix by: Benjamin Lupton
+    // +     bugfix by: Allan Jensen (http://www.winternet.no)
+    // +    revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)    
+    // *     example 1: number_format(1234.5678, 2, '.', '');
+    // *     returns 1: 1234.57     
+ 
+    var n = number, c = isNaN(decimals = Math.abs(decimals)) ? 2 : decimals;
+    var d = dec_point == undefined ? "," : dec_point;
+    var t = thousands_sep == undefined ? "." : thousands_sep, s = n < 0 ? "-" : "";
+    var i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+    
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+}
+
+//from http://snipplr.com/view.php?codeview&id=5949
+function size_format (filesize) {
+    if (filesize >= 1073741824) {
+        filesize = number_format(filesize / 1073741824, 2, '.', '') + ' Gb';
+    } else { 
+        if (filesize >= 1048576) {
+            filesize = number_format(filesize / 1048576, 2, '.', '') + ' Mb';
+        } else { 
+            if (filesize >= 1024) {
+                filesize = number_format(filesize / 1024, 0) + ' Kb';
+            } else {
+                filesize = number_format(filesize, 0) + ' bytes';
+            };
+        };
+    };
+    return filesize;
+};
+
 
 function Entry (entry) {
     this.entry = entry;
@@ -1800,7 +1837,10 @@ function Entry (entry) {
         return this.entry.name;
     }
     this.getFilesize = function () {
-        return this.entry.filesize;
+        return parseInt(this.entry.filesize);
+    }
+    this.getFormattedFilesize = function () {
+        return size_format(this.getFilesize());
     }
     this.getLink = function (label) {
         if(!label) label = this.getName();
@@ -1816,6 +1856,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     this.arg = arg;
     this.outputDivId = outputDiv;
     this.selectValues = selectValues;
+    this.totalSize = 0;
     if(!this.arg) this.arg = "select";
 
     this.clearSelect = function (num) {
@@ -1863,26 +1904,42 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var url = this.getUrl("search");
         var theForm = this;
         $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
+        theForm.totalSize = 0;
         $.getJSON(url, function(data) {
+                var totalSize =0;
                 var html = "";
                 if(data.length==0) {
                     html = "Nothing found";
                 } else {
-                    html = data.length +" entries found<br>";
                     html += "<table width=100%>";
+                    var listHtml = "";
                     for(var i=0;i<data.length;i++)  {
                         var entry = new Entry(data[i]);
-                        html += "<tr><td>";
-                        html+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
-                        html += "</td><td>";
-                        html+= entry.getFilesize();
-                        html += "</tr>";
+                        listHtml += "<tr><td>";
+                        listHtml+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
+                        listHtml += "</td><td align=right>";
+                        listHtml+= entry.getFormattedFilesize();
+                        totalSize += entry.getFilesize();
+                        listHtml += "</tr>";
                     }
+                    html += "<tr><td><b>" + data.length +" entries found</b></td><td align=right><b>Size: " + size_format(totalSize) +"</b></td></tr>";
+                    html+= listHtml;
                     html += "</table>";
                 }
+                theForm.totalSize = totalSize;
                 $("#" + theForm.outputDivId).html(html);
+                theForm.listUpdated()
             });
         return false;
+    }
+
+    this.listUpdated = function () {
+        var btn =  $('#' + this.id+'_download');
+        if (this.totalSize>0) {
+            btn.removeAttr('disabled').removeClass( 'ui-state-disabled' );
+        } else {
+            btn.attr('disabled', 'disabled' ).addClass( 'ui-state-disabled' );
+        }
     }
 
     this.isSelectLinked = function () {
@@ -1979,4 +2036,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         image.attr("src", "${urlroot}/icons/" + valueField.val());
         return false;
     }
+
+    this.listUpdated();
+
+
 }

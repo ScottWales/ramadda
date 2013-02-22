@@ -220,6 +220,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                                                              dbTableName, Clause.eq(dbColumnCollectionId, entry.getId()));
                 values = getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), column);
                 values.add(0, new TwoFacedObject("-- Select " + Utils.getArticle(column.getLabel()) +" " +column.getLabel() + " --",""));
+                //                values.add(0, new TwoFacedObject("FOOBAR","foobar"));
                 cache.put(key, values);
             }
             String selectId = formId +"_"  + selectArg + selectIdx;
@@ -365,6 +366,35 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         //        pair[0] is the folder entries. shouldn't have any here
         return (List<Entry>) pair[1];
     }
+
+    public String openForm(Request request, Entry entry, StringBuffer sb, StringBuffer js) {
+        String formId = "selectform" + HtmlUtils.blockCnt++;
+        sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                                 HtmlUtils.id(formId)));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output"}, true))+"\n");
+
+        return formId;
+    }
+
+    public void appendSearchResults(Request request, Entry entry, StringBuffer sb) throws Exception {
+        if(request.exists(ARG_SEARCH)) {
+            sb.append(HtmlUtils.p());
+            List<Entry>        entries =  processSearch(request, entry);
+            if(entries.size()==0) {
+                sb.append(msg("No entries found"));
+            } else {
+                sb.append("Found " + entries.size() +" results");
+                sb.append(HtmlUtils.p());
+                for(Entry child: entries) {
+                    sb.append(getEntryManager().getBreadCrumbs(request,
+                                                               child));
+                    sb.append(HtmlUtils.br());
+                }
+            }
+        }
+    }
+
 
 
 }

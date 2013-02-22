@@ -66,30 +66,23 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
-        StringBuffer sb     = new StringBuffer();
-
         Result result = processRequest(request, entry);
         if(result!=null) return result;
 
 
-        StringBuffer js = new StringBuffer();
-
+        StringBuffer sb     = new StringBuffer();
         sb.append(entry.getDescription());
-        String formId = "selectform" + HtmlUtils.blockCnt++;
+        StringBuffer js = new StringBuffer();
+        String formId = openForm(request, entry, sb, js);
 
-        sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                                 HtmlUtils.id(formId)));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output"}, true))+"\n");
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
-        //        addSelectorsToForm(request, entry, selectorSB, formId);
         addSelectorsToForm(request, entry, selectorSB, formId,js);
         String buttons = JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event")) +" " +
             JQ.button("Download files", formId+"_download",js, HtmlUtils.call(formId +".download","event"));
         selectorSB.append(HtmlUtils.formEntry("",buttons));
-
         selectorSB.append(HtmlUtils.formTableClose());
+
 
         StringBuffer analysisSB = new StringBuffer();
         StringBuffer productSB = new StringBuffer();
@@ -117,29 +110,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         sb.append(productSB);
         */
 
-        //        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
         sb.append(HtmlUtils.script(js.toString()));
-
-
         sb.append(HtmlUtils.formClose());
-
-
-
-        if(request.exists(ARG_SEARCH)) {
-            sb.append(HtmlUtils.p());
-            entries =  processSearch(request, entry);
-            if(entries.size()==0) {
-                sb.append(msg("No entries found"));
-            } else {
-                sb.append("Found " + entries.size() +" results");
-                sb.append(HtmlUtils.p());
-                for(Entry child: entries) {
-                    sb.append(getEntryManager().getBreadCrumbs(request,
-                                                               child));
-                    sb.append(HtmlUtils.br());
-                }
-            }
-        }
+        //        appendSearchResults(request, entry, sb);
         return new Result(msg(getLabel()), sb);
 
 
