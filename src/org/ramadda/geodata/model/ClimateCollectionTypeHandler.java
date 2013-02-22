@@ -66,20 +66,10 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
-        if(request.get("metadata", false)) {
-            return getMetadataJson(request, entry, subGroups, entries);
-        }
-
         StringBuffer sb     = new StringBuffer();
 
-
-        if(request.exists(ARG_SEARCH)) {
-            entries =  processSearch(request, entry);
-            getJsonOutputHandler().makeJson(request, entries,sb);
-            System.err.println("json:" + sb);
-            return new Result("", sb, "application/json");
-        }
-
+        Result result = processRequest(request, entry);
+        if(result!=null) return result;
 
 
         StringBuffer js = new StringBuffer();
@@ -93,9 +83,12 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output"}, true))+"\n");
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
-        //        addSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId);
-        addSelectorsToForm(request, entry, subGroups, entries, selectorSB, formId,js);
-        selectorSB.append(HtmlUtils.formEntry("",JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event"))));
+        //        addSelectorsToForm(request, entry, selectorSB, formId);
+        addSelectorsToForm(request, entry, selectorSB, formId,js);
+        String buttons = JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event")) +" " +
+            JQ.button("Download files", formId+"_download",js, HtmlUtils.call(formId +".download","event"));
+        selectorSB.append(HtmlUtils.formEntry("",buttons));
+
         selectorSB.append(HtmlUtils.formTableClose());
 
         StringBuffer analysisSB = new StringBuffer();

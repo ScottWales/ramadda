@@ -18,6 +18,7 @@ import ucar.unidata.util.IOUtil;
 
 public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
     
+    //var _ model _ experiment _ member
     public static final String FILE_REGEX = "([^_]+)_([^_]+)_(.*)_(ens..|mean|sprd|clim)(_([^_]+))?.nc";
 
     public static final Pattern pattern = Pattern.compile(FILE_REGEX);
@@ -85,5 +86,19 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
         values[idx++] = var;
 
     }
+
+    public static void main(String[]args) {
+        for(String arg: args) {
+            Matcher m = pattern.matcher(arg);
+            if (!m.find()) {
+                System.err.println ("no match x");
+            } else  {
+               System.err.println ("match");
+               String var = m.group(1);
+               System.err.println ("var:" + var);
+            }
+        }
+    } 
+
 
 }

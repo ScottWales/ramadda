@@ -1799,6 +1799,9 @@ function Entry (entry) {
         }
         return this.entry.name;
     }
+    this.getFilesize = function () {
+        return this.entry.filesize;
+    }
     this.getLink = function (label) {
         if(!label) label = this.getName();
         return  "<a href=\"${urlroot}/entry/show?entryid=" + this.entry.id +"\">" + label +"</a>";
@@ -1823,26 +1826,59 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         }
     }
 
-    this.search = function(event) {
-        var result = "";
-        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test&search=true";
+
+
+    this.valueDefined =function(value) {
+        if(value != "" && value.indexOf("--") != 0) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    this.getUrl = function(what) {
+        var url = "${urlroot}/entry/show?entryid=" + this.entryId;
+        var theForm = this;
         $(':input[id*=\"' + this.id +'\"]').each(function() {             
                 var value = $(this).val();
-                if(value != "" && value.indexOf("--") != 0) {
+                if(theForm.valueDefined(value)) {
                      url += "&" + this.name+ "=" + encodeURIComponent(value);
                  }
          });       
-        $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
+        if(what!=null) {
+            url += "&request=" + what;
+        }
+        return url;
+    }
+
+    this.download = function(event) {
+        var url = this.getUrl("download");
+        event.preventDefault();
+        window.location.href = url;
+    }
+
+    this.search = function(event) {
+        var result = "";
+        var url = this.getUrl("search");
         var theForm = this;
+        $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
         $.getJSON(url, function(data) {
                 var html = "";
                 if(data.length==0) {
                     html = "Nothing found";
-                }
-                for(var i=0;i<data.length;i++)  {
-                    var entry = new Entry(data[i]);
-                    html+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
-                    html+= "<br>";
+                } else {
+                    html = data.length +" entries found<br>";
+                    html += "<table width=100%>";
+                    for(var i=0;i<data.length;i++)  {
+                        var entry = new Entry(data[i]);
+                        html += "<tr><td>";
+                        html+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
+                        html += "</td><td>";
+                        html+= entry.getFilesize();
+                        html += "</tr>";
+                    }
+                    html += "</table>";
                 }
                 $("#" + theForm.outputDivId).html(html);
             });
@@ -1858,6 +1894,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
             return;
         }
 
+        this.narrowSelect();
+        return;
         num = parseInt(num);
         select = this.getSelect(num);
         if(select.val() == "" || select.val().indexOf("--") == 0) {
@@ -1866,14 +1904,37 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         }
 
         var nextIdx = num+1;
+        var url = this.getUrl("metadata");
+        this.applyToSelect(url, nextIdx);
+        return false;
+    }
 
-        var url = "${urlroot}/entry/show?entryid=" + this.entryId+"&xoutput=html.test&metadata=true";
-        for (i = 0; i <nextIdx;i++) {
-            var select = $('#' + this.id+'_' + this.arg+ i);
+
+    this.narrowSelect = function() {
+        var args="";
+        for(var i=0;i<10;i++) {
+            select = this.getSelect(i);
+            if(select.size()==0) break;
             var value = select.val();
-            url += "&" + this.arg +i + "=" + encodeURIComponent(select.val());
+            if(this.valueDefined(value)) {
+                args+="&" + this.arg +i + "=" + encodeURIComponent(value);
+            } 
         }
 
+        var url = this.getUrl("metadata");
+        for(var i=0;i<10;i++) {
+            select = this.getSelect(i);
+            if(select.size()==0) break;
+            var value = select.val();
+            if(!this.valueDefined(value)) {
+                this.applyToSelect(url+"&field=" + this.arg+i, i);
+            }
+        }
+  }
+
+
+
+    this.applyToSelect = function(url, index) {
         var theForm = this;
         $.getJSON(url, function(data) {
                 if(!data.values) {
@@ -1896,16 +1957,16 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                     html += "<option value=\'"  + value+"\'>" + label +"</option>";
                 }
                 html+= "</select>";
-                var nextSelect = theForm.getSelect(nextIdx);
+                var nextSelect = theForm.getSelect(index);
                 var currentValue = nextSelect.val();
                 nextSelect.html(html);
                 nextSelect.focus();
                 if(currentValue) {
                     nextSelect.val(currentValue);
                 }
-                theForm.clearSelect(nextIdx+1);
+                theForm.clearSelect(index+1);
             });
-        return false;
+
     }
 
     this.getSelect = function(i) {

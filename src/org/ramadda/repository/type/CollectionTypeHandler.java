@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.JsonOutputHandler;
+import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -40,10 +41,16 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public static final JQuery JQ = null;
 
     public static final String ARG_SEARCH =  "search";
+    public static final String ARG_FIELD =  "field";
+    public static final String ARG_REQUEST =  "request";
+    public static final String REQUEST_METADATA =  "metadata";
+    public static final String REQUEST_SEARCH=  "search";
+    public static final String REQUEST_DOWNLOAD=  "download";
 
     public static final String PROP_GRANULE_TYPE  = "granule_type";
 
     private JsonOutputHandler jsonOutputHandler;
+    private ZipOutputHandler zipOutputHandler;
 
     private String dbTableName;
 
@@ -55,7 +62,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
     private TypeHandler granuleTypeHandler;
 
-    private TTLCache<String, Object> cache = new TTLCache<String, Object>(60*60*1000);
+    private TTLCache<Object, Object> cache = new TTLCache<Object, Object>(60*60*1000);
 
     public CollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
@@ -70,6 +77,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return         jsonOutputHandler;
     }
 
+    public ZipOutputHandler getZipOutputHandler () {
+        if(zipOutputHandler == null) {
+            zipOutputHandler  =(ZipOutputHandler)getRepository().getOutputHandler(org.ramadda.repository.output.ZipOutputHandler.class);
+        }
+        return         zipOutputHandler;
+    }
+
     public TypeHandler getGranuleTypeHandler() throws Exception {
         if(granuleTypeHandler ==null) {
             dbTableName = getProperty(PROP_GRANULE_TYPE,"");
@@ -82,35 +96,33 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    public Result getMetadataJson(Request request, Entry entry,
-                                 List<Entry> subGroups, List<Entry> entries)
+
+    public Result getMetadataJson(Request request, Entry entry)
         throws Exception {
-        List<String> values = new ArrayList<String>();
-        List<Clause> clauses = getClauses(request, entry, values);
-        String valueKey = "json::" + entry.getId() + "::" + StringUtil.join("::", values);
-        StringBuffer json = (StringBuffer) cache.get(valueKey);
-        if(json == null) {
-            Column nextColumn = columns.get(0);
-            String nextColumnName = nextColumn.getLabel();
-            for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
-                if(!request.defined(selectArg+selectIdx)) break;
-                if(selectIdx<columns.size()-1) {
-                    nextColumn = columns.get(selectIdx+1);
-                    nextColumnName = nextColumn.getLabel();
-                } else {
-                    nextColumn = null;
-                }
+        int field = 0;
+        for(int i=0;i<10;i++) {
+            if(request.defined(ARG_FIELD+i)) {
+                field = i;
+                break;
             }
 
-            List<String> uniqueValues= getUniqueValues(entry, nextColumn, clauses);
-            nextColumnName = nextColumnName.toLowerCase();
+        }
+
+
+        StringBuffer key = new StringBuffer("json::" + entry.getId() + ":field:");
+        List<Clause> clauses = getClauses(request, entry, key);
+        StringBuffer json = (StringBuffer) cache.get(key);
+        if(json == null) {
+            Column column = columns.get(field);
+            List<String> uniqueValues= getUniqueValues(entry, column, clauses);
+            String nextColumnName = column.getLabel();
             String selectLabel = ":-- Select "  + Utils.getArticle(nextColumnName) +" " + nextColumnName + " --";
             uniqueValues.add(0,selectLabel);
             json = new StringBuffer();
             json.append(HtmlUtils.jsonMap(new String[]{
                         "values", HtmlUtils.jsonList(uniqueValues)},false));
             System.err.println(json);
-            cache.put(valueKey, json);
+            cache.put(key, json);
         }
         return new Result(BLANK, json,
                           getRepository().getMimeTypeFromSuffix(".json"));
@@ -155,22 +167,14 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    public List<Clause> getClauses(Request request, Entry entry, List<String> values) throws Exception {
+    public List<Clause> getClauses(Request request, Entry entry, StringBuffer key) throws Exception {
         List<Clause> clauses = new ArrayList<Clause>();
-        Column nextColumn = columns.get(0);
-        String nextColumnName = nextColumn.getLabel();
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
-            if(!request.defined(selectArg+selectIdx)) break;
-            if(selectIdx<columns.size()-1) {
-                nextColumn = columns.get(selectIdx+1);
-                nextColumnName = nextColumn.getLabel();
-            } else {
-                nextColumn = null;
-            }
+            if(!request.defined(selectArg+selectIdx)) continue;
             String column=  columns.get(selectIdx).getName();
             String v = request.getString(selectArg+selectIdx,"");
             clauses.add(Clause.eq(column, v));
-            if(values!=null) values.add(v);
+            if(key!=null) key.append(column+"="+v+";");
         }
         return clauses;
     }
@@ -203,7 +207,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public void addSelectorsToForm(Request request, Entry entry,
-                                   List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId, StringBuffer js)
+                                   StringBuffer sb, String formId, StringBuffer js)
         throws Exception {
 
         for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
@@ -230,7 +234,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public void addJsonSelectorsToForm(Request request, Entry entry,
-                                       List<Entry> subGroups, List<Entry> entries, StringBuffer sb, String formId,StringBuffer js)
+                                       StringBuffer sb, String formId,StringBuffer js)
         throws Exception {
 
 
@@ -266,6 +270,26 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public Result processRequest(Request request, Entry entry) throws Exception {
+        String what = request.getString(ARG_REQUEST,(String) null);
+        if(what == null) return null;
+        if(what.equals(REQUEST_METADATA)) {
+            return getMetadataJson(request, entry);
+        }
+
+        if(what.equals(REQUEST_SEARCH) || request.defined(ARG_SEARCH)) {
+            StringBuffer sb = new StringBuffer();
+            getJsonOutputHandler().makeJson(request, processSearch(request, entry),sb);
+            return new Result("", sb, "application/json");
+        }
+
+        if(what.equals(REQUEST_DOWNLOAD)) {
+            request.setReturnFilename(entry.getName()+".zip");
+            return getZipOutputHandler().toZip(request,entry.getName(), processSearch(request, entry),false,false);
+        }
+
+        return null;
+    }
 
     /**
      * Get the HTML display for this type
@@ -291,17 +315,9 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
 
+        Result result = processRequest(request, entry);
+        if(result!=null) return result;
         StringBuffer sb     = new StringBuffer();
-        if(request.exists(ARG_SEARCH)) {
-            entries =  processSearch(request, entry);
-            getJsonOutputHandler().makeJson(request, entries,sb);
-            return new Result("", sb, "application/json");
-        }
-
-        if(request.get("metadata", false)) {
-            return getMetadataJson(request, entry, subGroups, entries);
-        }
-
         sb.append(entry.getDescription());
         String formId = "selectform" + HtmlUtils.blockCnt++;
 
@@ -311,7 +327,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         StringBuffer js = new StringBuffer();
         js.append("var " + formId + " = new SelectForm(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
-        addJsonSelectorsToForm(request, entry, subGroups, entries, sb, formId, js);
+        addJsonSelectorsToForm(request, entry, sb, formId, js);
         sb.append(js);
 
         sb.append(HtmlUtils.formTableClose());
