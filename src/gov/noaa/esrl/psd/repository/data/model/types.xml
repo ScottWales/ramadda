@@ -4,9 +4,9 @@
   <type name="noaa_facts_climate_collection"  description="NOAA FACTS Climate Data Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelCollectionTypeHandler" foruser="true">
      <property name="icon" value="/noaa/noaa.gif"/>
      <property name="granule_type" value="noaa_facts_climate_modelfile"/>
-     <property name="model.values" value="file:/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
-     <property name="experiment.values" value="file:/gov/noaa/esrl/psd/repository/data/model/experiments.txt"/>
-     <property name="variable.values" value="file:/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/experiments.txt"/>
+     <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
    </type>
 
 
