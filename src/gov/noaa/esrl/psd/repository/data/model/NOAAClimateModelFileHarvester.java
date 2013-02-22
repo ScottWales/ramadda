@@ -10,24 +10,24 @@ import org.ramadda.repository.harvester.PatternHarvester;
 import org.ramadda.repository.type.TypeHandler;
 import org.w3c.dom.Element;
 
-public class ClimateModelFileHarvester extends PatternHarvester {
+public class NOAAClimateModelFileHarvester extends PatternHarvester {
 
-    public ClimateModelFileHarvester(Repository repository, String id)
+    public NOAAClimateModelFileHarvester(Repository repository, String id)
             throws Exception {
         super(repository, id);
     }
 
-    public ClimateModelFileHarvester(Repository repository, Element element)
+    public NOAAClimateModelFileHarvester(Repository repository, Element element)
             throws Exception {
         super(repository, element);
      }
 
     public Class getTypeHandlerClass(){
-        return ClimateModelFileTypeHandler.class;
+        return NOAAClimateModelFileTypeHandler.class;
     }
 
     public TypeHandler getTypeHandler() throws Exception {
-        return  getRepository().getTypeHandler(ClimateModelFileTypeHandler.TYPE_CLIMATE_MODELFILE);
+        return  getRepository().getTypeHandler(NOAAClimateModelFileTypeHandler.TYPE_CLIMATE_MODELFILE);
     }
 
 
@@ -37,7 +37,7 @@ public class ClimateModelFileHarvester extends PatternHarvester {
      * @return harvester description
      */
     public String getDescription() {
-        return "Climate Model File";
+        return "NOAA Climate Model File";
     }
 
     /**
@@ -79,8 +79,8 @@ public class ClimateModelFileHarvester extends PatternHarvester {
             //getRepository().getLogManager().logInfo(
             //    "ClimateModelFileHarvester:initializeNewEntry:"
             //    + entry.getResource());
-            if (entry.getTypeHandler() instanceof ClimateModelFileTypeHandler) {
-                ((ClimateModelFileTypeHandler) entry.getTypeHandler()).initializeEntry(entry);
+            if (entry.getTypeHandler() instanceof NOAAClimateModelFileTypeHandler) {
+                ((NOAAClimateModelFileTypeHandler) entry.getTypeHandler()).initializeEntry(entry);
             }
             //getRepository().getLogManager().logInfo(
             //    "ClimateModelFileHarvester:initializeNewEntry done");

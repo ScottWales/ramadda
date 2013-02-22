@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
 
-  <type name="noaa_climate_collection"  description="Climate Data Collection" handler="gov.noaa.esrl.psd.repository.data.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
+  <type name="noaa_facts_climate_collection"  description="NOAA FACTS Climate Data Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelCollectionTypeHandler" foruser="true">
      <property name="icon" value="/noaa/noaa.gif"/>
-     <property name="form.area.show" value="true"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.date.show" value="true"/>
+     <property name="granule_type" value="noaa_facts_climate_modelfile"/>
+     <property name="model.values" value="file:/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
+     <property name="experiment.values" value="file:/gov/noaa/esrl/psd/repository/data/model/experiments.txt"/>
+     <property name="variable.values" value="file:/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
    </type>
 
 
-  <type name="noaa_climate_modelfile"  description="Climate Model File" handler="gov.noaa.esrl.psd.repository.data.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true">
+  <type name="noaa_facts_climate_modelfile"  description="NOAA FACTS Climate Model File" super="climate_modelfile" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelFileTypeHandler" >
      <property name="icon" value="/noaa/noaa.gif"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.resource.show" value="true"/>
-     <property name="form.date.show" value="true"/>
-     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
-     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
-     <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/gov/noaa/esrl/psd/repository/data/model/experiments.txt" showinhtml="true" />
-     <column name="ensemble" type="string"  label="Ensemble Member"/>
-     <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
-     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
+     <property name="collection_type" value="noaa_facts_climate_collection"/>
    </type>
 
 </types>
