@@ -306,16 +306,25 @@ public class JsonOutputHandler extends OutputHandler {
         // Add special columns to the entries depending on the type
         if (request.get(ARG_EXTRACOLUMNS, true)) {
             List<String> extraColumns = new ArrayList<String>();
+            List<String> columnNames = new ArrayList<String>();
+            List<String> columnLabels = new ArrayList<String>();
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
                 List<Column> columns = entry.getTypeHandler().getColumns();
                 for (int i = 0; i < extraParameters.length; i++) {
-                    String value = entry.getValue(i, "");
-                    String name = columns.get(i).getName();
-                    extraColumns.add(Json.map(new String[]{"name",
-                                                           Json.cleanAndQuote(value)}));
+                    Column column  = columns.get(i);
+                    String name = column.getName();
+                    if(name.endsWith("_id")) continue;
+                    String value = Json.cleanAndQuote(entry.getValue(i, ""));
+                    columnNames.add(name);
+                    columnLabels.add(column.getLabel());
+                    Json.attr(items, "column." + name, value);
+                    extraColumns.add(Json.map(new String[]{name,
+                                                           value}));
                 }
             }
+            Json.attr(items, "columnNames", Json.list(columnNames,true));
+            Json.attr(items, "columnLabels", Json.list(columnLabels,true));
             Json.attr(items, "extraColumns", Json.list(extraColumns));
         }
 

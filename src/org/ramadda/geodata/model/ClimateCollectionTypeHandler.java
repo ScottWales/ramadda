@@ -3,13 +3,17 @@ package org.ramadda.geodata.model;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
+
+import ucar.unidata.ui.ImageUtils;
 import java.sql.*;
+import java.awt.*;
+import java.io.*;
 
 
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
+import java.awt.image.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
@@ -79,7 +83,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
         String buttons = JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event")) +" " +
-            JQ.button("Download files", formId+"_download",js, HtmlUtils.call(formId +".download","event"));
+            JQ.button("Download files", formId+"_download",js, HtmlUtils.call(formId +".download","event")) +
+            HtmlUtils.br() +
+            JQ.button("Image", formId+"_image",js, HtmlUtils.call(formId +".makeImage","event"));
         selectorSB.append(HtmlUtils.formEntry("",buttons));
         selectorSB.append(HtmlUtils.formTableClose());
 
@@ -121,6 +127,31 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
     }
 
 
+    public static final String REQUEST_IMAGE =  "image";
 
+    public Result processRequest(Request request, Entry entry) throws Exception {
+        Result result = super.processRequest(request, entry);
+        if(result!=null) return result;
+        String what = request.getString(ARG_REQUEST,(String) null);
+        if(what == null) return null;
+        if(what.equals(REQUEST_IMAGE)) {
+            File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
+            BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = (Graphics2D) image.getGraphics();
+            g.setColor(Color.red);
+            int row = 0;
+            for(Entry granule: processSearch(request, entry)) {
+                g.drawString(granule.getName(), 10, (row*20)+20);
+                row++;
+            }
+
+            ImageUtils.writeImageToFile(image, imageFile);
+            String extension = IOUtil.getFileExtension(imageFile.toString());
+            return new Result("",
+                              getStorageManager().getFileInputStream(imageFile),
+                              getRepository().getMimeTypeFromSuffix(extension));
+        }
+        return null;
+    }
 
 }

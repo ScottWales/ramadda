@@ -1929,7 +1929,6 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     }
 
 
-
     this.search = function(event) {
         var result = "";
         var url = this.getUrl("search");
@@ -1942,6 +1941,18 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
 
         return false;
     }
+
+
+    this.makeImage = function(event) {
+        var result = "";
+        var url = this.getUrl("image");
+        var theForm = this;
+        $("#" + this.outputDivId).html("<img src=\"" + url+"\">");
+        theForm.totalSize = 0;
+        return false;
+    }
+
+
 
     this.processEntryJson = function(data) {
         var totalSize =0;
@@ -1964,7 +1975,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                     widthPerColumn = Math.floor(60/(columnNames.length+1))+"%";
                     var labels = entry.getColumnLabels();
                     for(var colIdx=0;colIdx<labels.length;colIdx++) {
-                        header+="<td width=" + widthPerColumn +"><b>" + labels[colIdx] +"</b></td>";
+                        header+="<td width=" + widthPerColumn +"><b>" + labels[colIdx] +"</b>&nbsp;&nbsp;&nbsp;</td>";
                         footer+="<td></td>";
                     }
                 }
@@ -1993,23 +2004,28 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
 
             var tableHeader = "<table width=100% cellpadding=3 cellspacing=0 id=\"listing\">";
 
+            html += "<div style=\" border-bottom: 1px #888 solid;\">";
             html += tableHeader;
-            html += "<thead><tr style=\"background: #fff;\">"; 
+            html += "<thead><tr style=\"background: #FFF;\">"; 
             html+= "<td width=" + firstColWidth +">";
             html+= "<input type=checkbox checked value=true\> ";
-            html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size</b></td></tr></thead>";
+            html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size&nbsp;&nbsp;&nbsp;</b></td></tr></thead>";
             html += "</table>"
+            html += "</div>";
 
-            html += "<div style=\"  max-height: 300px; border-top: 1px #ccc solid; border-bottom: 1px #ccc solid;     overflow-y: auto;\">";
+            html += "<div style=\"  max-height: 300px; overflow-y: auto;\">";
             html += tableHeader;
             html += listHtml;
             html += "</table>";
             html += "</div>";
+
+            html += "<div style=\" border-top: 1px #888 solid;\">";
             html += tableHeader;
-            html += "<thead><tr style=\"background: #fff;\">"; 
-            html+= "<td width=" + firstColWidth +">";
+            html += "<thead><tr style=\"background: #Fff;\">"; 
+            html += "<td width=" + firstColWidth +">";
             html += "</td>" + header +"<td width=" + widthPerColumn  +" align=right><b>" + size_format(totalSize) +"</b></td></tr></thead>";
             html += "</table>"
+            html +="</div>"
 
         }
         this.totalSize = totalSize;
