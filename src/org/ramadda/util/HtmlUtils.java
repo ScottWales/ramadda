@@ -3715,48 +3715,5 @@ public class HtmlUtils {
     }
 
 
-    public static String jsonMap(String[] values) {
-        return jsonMap(values,true);
-    }
-
-    public static String jsonMap(String[] values, boolean quoteEm) {
-        StringBuffer row = new StringBuffer();
-        row.append("{");
-        for(int i=0;i<values.length;i+=2) {
-            if(i>0)  row.append(",\n");
-            String value = values[i+1];
-            if(value == null) value = "";
-            if(quoteEm)
-                row.append(quote(values[i])+":" + quote(value));
-            else
-                row.append(quote(values[i])+":" + value);
-        }
-        row.append("}");
-        return row.toString();
-    }
-
-    public static String jsonList(String[] values) {
-        StringBuffer row = new StringBuffer();
-        row.append("[");
-        for(int i=0;i<values.length;i++) {
-            if(i>0)  row.append(",\n");
-            row.append(quote(values[i]));
-        }
-        row.append("]");
-        return row.toString();
-    }
-
-    public static String jsonList(List values) {
-        StringBuffer row = new StringBuffer();
-        row.append("[");
-        for(int i=0;i<values.size();i++) {
-            if(i>0)  row.append(",\n");
-            row.append(quote(values.get(i).toString()));
-        }
-        row.append("]");
-        return row.toString();
-    }
-
-
 
 }
