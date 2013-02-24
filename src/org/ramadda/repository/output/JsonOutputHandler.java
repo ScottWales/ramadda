@@ -30,6 +30,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.Column;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 
 
 import org.w3c.dom.*;
@@ -165,87 +166,13 @@ public class JsonOutputHandler extends OutputHandler {
 
     public void makeJson(Request request, List<Entry> entries, StringBuffer sb)
         throws Exception {
-        sb.append("[");
-        int cnt = 0;
+        List<String> items = new ArrayList<String>();
         for (Entry entry : entries) {
-            if (cnt > 0) {
-                sb.append(",");
-            }
-            cnt++;
-            toJson(request, entry, sb);
-            sb.append("\n");
+            items.add(toJson(request, entry));
         }
-        sb.append("]");
+        sb.append(Json.list(items));
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    private String qt(String s) {
-        return "\"" + s + "\"";
-    }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param name _more_
-     * @param value _more_
-     */
-    private void attr(StringBuffer sb, String name, String value) {
-        attr(sb, name, value, true);
-    }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param name _more_
-     * @param value _more_
-     */
-    private void qtattr(StringBuffer sb, String name, String value) {
-        qtattr(sb, name, value, true);
-    }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param name _more_
-     * @param value _more_
-     * @param addComma _more_
-     */
-    private void qtattr(StringBuffer sb, String name, String value,
-                        boolean addComma) {
-        if (value == null) {
-            attr(sb, name, qt("no value"), addComma);
-        } else {
-            value = value.replaceAll("\"", "\\\"");
-            attr(sb, name, qt(value), addComma);
-        }
-    }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param name _more_
-     * @param value _more_
-     * @param addComma _more_
-     */
-    private void attr(StringBuffer sb, String name, String value,
-                      boolean addComma) {
-        if (addComma) {
-            sb.append(", ");
-        }
-        sb.append(qt(name));
-        sb.append(":");
-        sb.append(value);
-    }
 
 
     /** _more_ */
@@ -258,7 +185,7 @@ public class JsonOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    private String fmt(long dttm) {
+    private String formatDate(long dttm) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss");
         }
@@ -277,67 +204,68 @@ public class JsonOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private void toJson(Request request, Entry entry, StringBuffer sb)
+    private String toJson(Request request, Entry entry)
             throws Exception {
+        List<String> items = new ArrayList<String>();
+        Json.quoteAttr(items, "id", entry.getId());
+        Json.quoteAttr(items, "name", Json.cleanString(entry.getName()));
+        Json.quoteAttr(items, "description", Json.cleanString(entry.getDescription()));
+        Json.quoteAttr(items, "type", entry.getType());
 
-        sb.append("{");
-
-        attr(sb, "id", qt(entry.getId()), false);
-        qtattr(sb, "name", replaceForJSON(entry.getName()));
-        qtattr(sb, "description", replaceForJSON(entry.getDescription()));
-        qtattr(sb, "type", entry.getType());
-
+        //
         if (entry.isGroup()) {
-            attr(sb, "isGroup", "true");
+            Json.attr(items, "isGroup", "true");
         } else {
-            attr(sb, "isGroup", "false");
+            Json.attr(items, "isGroup", "false");
         }
 
-        qtattr(sb, "icon",
-               getRepository().getEntryManager().getIconUrl(request, entry));
+        Json.quoteAttr(items, "icon",
+                       getRepository().getEntryManager().getIconUrl(request, entry));
 
-        qtattr(sb, "parent", entry.getParentEntryId());
-        qtattr(sb, "user", entry.getUser().getId());
-        qtattr(sb, "resource", entry.getResource().getPath());
-        qtattr(sb, "createDate", fmt(entry.getCreateDate()));
-        qtattr(sb, "startDate", fmt(entry.getStartDate()));
-        qtattr(sb, "endDate", fmt(entry.getEndDate()));
+        Json.quoteAttr(items, "parent", entry.getParentEntryId());
+        Json.quoteAttr(items, "user", entry.getUser().getId());
+        if(entry.getResource().isUrl()) {
+            Json.quoteAttr(items, "url", entry.getResource().getPath());
+        }
+        Json.quoteAttr(items, "createDate", formatDate(entry.getCreateDate()));
+        Json.quoteAttr(items, "startDate", formatDate(entry.getStartDate()));
+        Json.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
 
 
         if (entry.hasNorth()) {
-            attr(sb, "north", "" + entry.getNorth());
+            Json.attr(items, "north", "" + entry.getNorth());
         } else {
-            attr(sb, "north", "-9999");
+            Json.attr(items, "north", "-9999");
         }
 
         if (entry.hasSouth()) {
-            attr(sb, "south", "" + entry.getSouth());
+            Json.attr(items, "south", "" + entry.getSouth());
         } else {
-            attr(sb, "south", "-9999");
+            Json.attr(items, "south", "-9999");
         }
 
         if (entry.hasEast()) {
-            attr(sb, "east", "" + entry.getEast());
+            Json.attr(items, "east", "" + entry.getEast());
         } else {
-            attr(sb, "east", "-9999");
+            Json.attr(items, "east", "-9999");
         }
 
         if (entry.hasWest()) {
-            attr(sb, "west", "" + entry.getWest());
+            Json.attr(items, "west", "" + entry.getWest());
         } else {
-            attr(sb, "west", "-9999");
+            Json.attr(items, "west", "-9999");
         }
 
         if (entry.hasAltitudeTop()) {
-            attr(sb, "altitudeTop", "" + entry.getAltitudeTop());
+            Json.attr(items, "altitudeTop", "" + entry.getAltitudeTop());
         } else {
-            attr(sb, "altitudeTop", "-9999");
+            Json.attr(items, "altitudeTop", "-9999");
         }
 
         if (entry.hasAltitudeBottom()) {
-            attr(sb, "altitudeBottom", "" + entry.getAltitudeBottom());
+            Json.attr(items, "altitudeBottom", "" + entry.getAltitudeBottom());
         } else {
-            attr(sb, "altitudeBottom", "-9999");
+            Json.attr(items, "altitudeBottom", "-9999");
         }
 
 
@@ -348,145 +276,102 @@ public class JsonOutputHandler extends OutputHandler {
         if (resource != null) {
             if (resource.isUrl()) {
 
-                String temp = replaceForJSON(resource.getPath());
+                String temp = Json.cleanString(resource.getPath());
                 if (temp == null) {
-                    qtattr(sb, "filename", "");
+                    Json.quoteAttr(items, "filename", "");
                 } else {
-                    qtattr(sb, "filename", java.net.URLEncoder.encode(temp));
+                    Json.quoteAttr(items, "filename", java.net.URLEncoder.encode(temp));
                 }
 
-                attr(sb, "filesize", "" + resource.getFileSize());
-                qtattr(sb, "md5", "");
+                Json.attr(items, "filesize", "" + resource.getFileSize());
+                Json.quoteAttr(items, "md5", "");
                 //TODO MATIAS            } else if(resource.isFileNoCheck()) {
             } else if (resource.isFile()) {
-                qtattr(sb, "filename",
+                Json.quoteAttr(items, "filename",
                        getStorageManager().getFileTail(entry));
-                attr(sb, "filesize", "" + resource.getFileSize());
+                Json.attr(items, "filesize", "" + resource.getFileSize());
                 if (resource.getMd5() != null) {
-                    qtattr(sb, "md5", resource.getMd5());
+                    Json.quoteAttr(items, "md5", resource.getMd5());
                 } else {
-                    qtattr(sb, "md5", "");
+                    Json.quoteAttr(items, "md5", "");
                 }
             }
         } else {
-            qtattr(sb, "filename", "no resource");
-            attr(sb, "filesize", "");
-            qtattr(sb, "md5", "");
+            Json.quoteAttr(items, "filename", "no resource");
+            Json.attr(items, "filesize", "0");
+            Json.quoteAttr(items, "md5", "");
         }
 
 
         // Add special columns to the entries depending on the type
         if (request.get(ARG_EXTRACOLUMNS, true)) {
+            List<String> extraColumns = new ArrayList<String>();
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
                 List<Column> columns = entry.getTypeHandler().getColumns();
-                StringBuffer msb = new StringBuffer("[");
                 for (int i = 0; i < extraParameters.length; i++) {
-                    if (i > 0) {
-                        msb.append(",\n ");
-                    }
-                    msb.append("{");
                     String value = entry.getValue(i, "");
                     String name = columns.get(i).getName();
-                    qtattr(msb, name, replaceForJSON(value),
-                           false);
-
-                    msb.append("}");
+                    extraColumns.add(Json.map(new String[]{"name",
+                                                           Json.cleanAndQuote(value)}));
                 }
-                msb.append("]");
-                attr(sb, "extraColumns", msb.toString());
-            } else {
-                attr(sb, "extraColumns", "[]");
             }
+            Json.attr(items, "extraColumns", Json.list(extraColumns));
         }
 
 
 
         if (request.get(ARG_LINKS, false)) {
-            List<Link> links = new ArrayList<Link>();
-            links = repository.getEntryManager().getEntryLinks(request,
-                    entry);
-            if (links != null) {
-                StringBuffer msb   = new StringBuffer("[");
-                int          index = 0;
-                for (Link link : links) {
-                    if (index > 0) {
-                        msb.append(",\n ");
-                    }
-                    if (link.getLabel() != "") {
-                        msb.append("{");
-                        qtattr(msb, "label", replaceForJSON(link.getLabel()),
-                               false);
-                        OutputType outputType = link.getOutputType();
-                        if (outputType == null) {
-                            qtattr(msb, "type", "unknow");
-                        } else {
-                            qtattr(msb, "type",
-                                   replaceForJSON(outputType.toString()));
-                        }
-
-                        if (link.getUrl() != null) {
-                            qtattr(msb, "url",
-                                   java.net.URLEncoder.encode(
-                                       replaceForJSON(link.getUrl())));
-                        } else {
-                            qtattr(msb, "url", "");
-                        }
-
-
-                        qtattr(msb, "icon", link.getIcon());
-                        msb.append("}");
-                        index++;
-                    }
-                }
-                msb.append("]");
-                attr(sb, "links", msb.toString());
-            } else {
-                attr(sb, "links", "[]");
+            List<String> links = new ArrayList<String>();
+            for(Link link:  repository.getEntryManager().getEntryLinks(request,
+                                                                       entry)) {
+                OutputType outputType = link.getOutputType();
+                links.add(Json.map(new String[]{
+                            "label",Json.cleanAndQuote(link.getLabel()),
+                            "type",outputType==null?"unknown":
+                            Json.cleanAndQuote(outputType.toString()),
+                            "url", link.getUrl()==null?Json.quote(""):
+                            Json.quote(java.net.URLEncoder.encode(
+                                                                  Json.cleanString(link.getUrl()))),
+                            "icon", Json.quote(link.getIcon())
+                        }));
             }
+            Json.attr(items,"links", Json.list(links));
         }
 
         if (request.get(ARG_METADATA, true)) {
-            List<Metadata> metadataItems =
+            List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
-            if ((metadataItems != null) && (metadataItems.size() > 0)) {
-                StringBuffer msb = new StringBuffer("[");
-                for (int j = 0; j < metadataItems.size(); j++) {
-                    if (j > 0) {
-                        msb.append(",\n ");
-                    }
-                    Metadata metadata = metadataItems.get(j);
-                    msb.append("{");
-                    qtattr(msb, "id", metadata.getId(), false);
-                    qtattr(msb, "type", metadata.getType());
+            List<String>metadataItems = new ArrayList<String>();
+            if (metadataList != null) {
+                for (Metadata metadata:metadataList) {
+                    List<String>mapItems = new ArrayList<String>();
+                    Json.quoteAttr(mapItems,"id", metadata.getId());
+                    Json.quoteAttr(mapItems,"type", metadata.getType());
                     int attrIdx = 1;
                     //We always add the four attributes to have always the same structure
                     while (attrIdx <= 4) {
                         String attr = metadata.getAttr(attrIdx);
                         if (attr != null) {
                             if (attr.length() > 0) {
-                                qtattr(msb, "attr" + attrIdx,
-                                       replaceForJSON(attr));
+                                Json.quoteAttr(mapItems, "attr" + attrIdx,
+                                               Json.cleanString(attr));
                             } else {
-                                qtattr(msb, "attr" + attrIdx, "");
+                                Json.quoteAttr(mapItems, "attr" + attrIdx, "");
                             }
                         } else {
-                            qtattr(msb, "attr" + attrIdx, "");
+                            Json.quoteAttr(mapItems, "attr" + attrIdx, "");
                         }
                         attrIdx++;
                     }
-                    msb.append("}\n");
+                    metadataItems.add(Json.map(mapItems));
                 }
-                msb.append("]");
-                attr(sb, "metadata", msb.toString());
-            } else {
-                attr(sb, "metadata", "[]");
             }
+            Json.attr(items, "metadata", Json.list(metadataItems));
         }
-        sb.append("}\n");
 
 
-
+        return Json.map(items);
     }
 
     /**
@@ -558,49 +443,6 @@ public class JsonOutputHandler extends OutputHandler {
             //            return true;
             return false;
         }
-    }
-
-    /**
-     * _more_
-     *
-     * @param aText _more_
-     *
-     * @return _more_
-     */
-    public static String replaceForJSON(String aText) {
-        if ((aText == null) || (aText == "")) {
-            return "";
-        }
-        final StringBuilder     result    = new StringBuilder();
-
-        StringCharacterIterator iterator  = new StringCharacterIterator(aText);
-        char                    character = iterator.current();
-        while (character != StringCharacterIterator.DONE) {
-            if (character == '\"') {
-                result.append("\\\"");
-            } else if (character == '\\') {
-                result.append("\\\\");
-            } else if (character == '/') {
-                result.append("\\/");
-            } else if (character == '\b') {
-                result.append("\\b");
-            } else if (character == '\f') {
-                result.append("\\f");
-            } else if (character == '\n') {
-                result.append("\\n");
-            } else if (character == '\r') {
-                result.append("\\r");
-            } else if (character == '\t') {
-                result.append("\\t");
-            } else {
-                //the char is not a special one
-                //add it to the result as is
-                result.append(character);
-            }
-            character = iterator.next();
-        }
-
-        return result.toString();
     }
 
 }

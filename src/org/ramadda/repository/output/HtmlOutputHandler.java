@@ -27,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.JQuery;
 
@@ -1106,8 +1107,8 @@ public class HtmlOutputHandler extends OutputHandler {
             if(json == null) {
                 json = new StringBuffer();
                 String lastValue = values.get(values.size()-1);
-                json.append(HtmlUtils.jsonMap(new String[]{
-                            "values", HtmlUtils.jsonList(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
+                json.append(Json.map(new String[]{
+                            "values", Json.list(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
                 System.err.println(json);
                 testCache.put(valueKey, json);
             }

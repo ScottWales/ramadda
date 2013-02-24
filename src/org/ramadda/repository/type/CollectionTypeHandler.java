@@ -19,6 +19,7 @@ import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.JQuery;
@@ -118,13 +119,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             String selectLabel = ":-- Select "  + Utils.getArticle(nextColumnName) +" " + nextColumnName + " --";
             uniqueValues.add(0,selectLabel);
             json = new StringBuffer();
-            json.append(HtmlUtils.jsonMap(new String[]{
-                        "values", HtmlUtils.jsonList(uniqueValues)},false));
+            json.append(Json.map(new String[]{
+                        "values", Json.list(uniqueValues)},false));
             System.err.println(json);
             cache.put(key, json);
         }
         return new Result(BLANK, json,
-                          getRepository().getMimeTypeFromSuffix(".json"));
+                          Json.MIMETYPE);
     }
 
 
@@ -279,9 +280,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if(what.equals(REQUEST_SEARCH) || request.defined(ARG_SEARCH)) {
-            StringBuffer sb = new StringBuffer();
-            getJsonOutputHandler().makeJson(request, processSearch(request, entry),sb);
-            return new Result("", sb, "application/json");
+            StringBuffer json = new StringBuffer();
+            getJsonOutputHandler().makeJson(request, processSearch(request, entry),json);
+            System.err.println(json);
+            return new Result("", json, "application/json");
         }
 
         if(what.equals(REQUEST_DOWNLOAD)) {

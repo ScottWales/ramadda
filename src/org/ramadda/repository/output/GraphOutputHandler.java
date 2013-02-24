@@ -27,6 +27,8 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
+
 
 
 import org.w3c.dom.*;
@@ -148,7 +150,7 @@ public class GraphOutputHandler extends OutputHandler {
         String iconUrl = getEntryManager().getIconUrl(request,entry);
         String url = getRepository().getUrlBase() +"/graph/get?entryid=" + entry.getId();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-        nodes.add(HtmlUtils.jsonMap(new String[]{
+        nodes.add(Json.map(new String[]{
                     ATTR_NAME, entry.getName(),
                     ATTR_NODEID, entry.getId(),
                     ATTR_URL, entryUrl,
@@ -159,7 +161,7 @@ public class GraphOutputHandler extends OutputHandler {
 
     private void addLink(Request request, Entry from, Entry to, String title, List<String>links) throws Exception {
         if(from == null || to == null) return;
-        links.add(HtmlUtils.jsonMap(new String[]{
+        links.add(Json.map(new String[]{
                     ATTR_SOURCE_ID, from.getId(),
                     ATTR_TARGET_ID, to.getId(),
                     ATTR_TITLE, title}));

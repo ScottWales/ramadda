@@ -343,6 +343,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
                 + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE)));
 
+
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
         formSB.append("</div>");
