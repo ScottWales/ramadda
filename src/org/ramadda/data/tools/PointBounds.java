@@ -34,9 +34,23 @@ public class PointBounds extends RecordTool {
     /** _more_ */
     private static boolean debug = false;
 
-    public PointBounds (String factoryClass, String[]args) throws Exception {
-        super(factoryClass);
-        process(args);
+    private int   skip   = 0;
+    private int   width   = 40;
+    private int   height  = 40;
+    private String kmlFile  = null;
+    private String name   = null;
+    private boolean doPolygon = false;
+
+
+   public PointBounds (String[]args) throws Exception {
+       super(null);
+       process(args);
+    }
+
+
+   public PointBounds (String factoryClass, String[]args) throws Exception {
+       super(factoryClass);
+       process(args);
     }
 
 
@@ -74,26 +88,15 @@ public class PointBounds extends RecordTool {
      *
      * @throws Exception _more_
      */
-    public void process(String[] args) throws Exception {
+    public void process(String[] argArray) throws Exception {
 
-        int     skip      = 0;
-        int     width     = 40;
-        int     height    = 40;
-        String  kmlFile   = null;
-        String  name      = null;
-        boolean doPolygon = false;
-        if (args.length == 0) {
+        if (argArray.length == 0) {
             usage("No input files given");
         }
 
-        int    total = 0;
-        double north = -90,
-               west  = 180,
-               south = 90,
-               east  = -180;
-
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+        List<String>  args = processArgs(argArray);
+        for (int i = 0; i < args.size(); i++) {
+            String arg = args.get(i);
             if (arg.equals("-help")) {
                 usage("");
             }
@@ -102,18 +105,18 @@ public class PointBounds extends RecordTool {
                 continue;
             }
             if (arg.equals("-kml")) {
-                kmlFile = args[i + 1];
+                kmlFile = args.get(i + 1);
                 i++;
                 continue;
             }
             if (arg.equals("-name")) {
-                name = args[i + 1];
+                name = args.get(i + 1);
                 i++;
                 continue;
             }
             if (arg.equals("-width")) {
                 i++;
-                width = Integer.parseInt(args[i]);
+                width = Integer.parseInt(args.get(i));
                 continue;
             }
             if (arg.equals("-debug")) {
@@ -123,21 +126,29 @@ public class PointBounds extends RecordTool {
 
             if (arg.equals("-skip")) {
                 i++;
-                skip = Integer.parseInt(args[i]);
+                skip = Integer.parseInt(args.get(i));
                 continue;
             }
             if (arg.equals("-height")) {
                 i++;
-                height = Integer.parseInt(args[i]);
+                height = Integer.parseInt(args.get(i));
                 continue;
             }
+
+
             if ( !new File(arg).exists()) {
                 usage("File:" + arg + " does not exist");
             }
         }
 
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+        int    total = 0;
+        double north = -90,
+               west  = 180,
+               south = 90,
+               east  = -180;
+
+        for (int i = 0; i < args.size(); i++) {
+            String arg = args.get(i);
             if (arg.equals("-polygon")) {
                 continue;
             }
@@ -154,7 +165,7 @@ public class PointBounds extends RecordTool {
             if (name == null) {
                 name = IOUtil.stripExtension(IOUtil.getFileTail(arg));
             }
-            PointFile pointFile = (PointFile) getRecordFileFactory().doMakeRecordFile(arg);
+            PointFile pointFile = (PointFile) doMakeRecordFile(arg);
             PointMetadataHarvester metadata  = new PointMetadataHarvester();
             long                   t1        = System.currentTimeMillis();
             VisitInfo              visitInfo = new VisitInfo();
@@ -220,4 +231,17 @@ public class PointBounds extends RecordTool {
 
 
     }
+
+    /**                                                                         
+     * _more_                                                                   
+     *                                                                          
+     * @param args _more_                                                       
+     *                                                                          
+     * @throws Exception _more_                                                 
+     */
+    public static void main(String[] args) throws Exception {
+        new PointBounds(args);
+    }
+
+
 }

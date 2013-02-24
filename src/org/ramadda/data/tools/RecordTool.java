@@ -28,12 +28,28 @@ public  class RecordTool {
         }
     }
 
+    public List<String> processArgs(String[]args) {
+        List<String> rest = new ArrayList<String>();
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if(arg.equals("-file")) {
+                recordFileClass = args[++i];
+                continue;
+            }
+            rest.add(arg);
+        }
+        return rest;
+    }
+
     public RecordFile doMakeRecordFile(String inFile) throws Exception {
         if(recordFileClass!=null) {
             Class c = Misc.findClass(recordFileClass);
             Constructor ctor = Misc.findConstructor(c,
                                                     new Class[] { String.class});
             return (RecordFile)ctor.newInstance(new Object[] { inFile});
+        }
+        if(getRecordFileFactory() == null) {
+            throw new IllegalStateException("No record file or record file factory specified\nUse -file <record file class>");
         }
         return getRecordFileFactory().doMakeRecordFile(inFile);
     }
