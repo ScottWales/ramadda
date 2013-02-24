@@ -1827,9 +1827,38 @@ function size_format (filesize) {
 
 function Entry (entry) {
     this.entry = entry;
+    /*
+    for(var key in entry) {
+        if(key == "column.model") {
+            alert(key + "=" + this.entry[key]);
+            break;
+        }
+        }*/
+
+    this.getId = function () {
+        return  this.entry.id;
+    }
+
     this.getIconImage = function () {
         return "<img src=\"" + this.entry.icon +"\">";
     }
+    this.getColumnValue = function (name) {
+        var value = this.entry["column." + name];
+        return value;
+    }
+
+    this.getColumnNames = function () {
+        var names =  this.entry.columnNames;
+        if (!names) names = new Array();
+        return names;
+    }
+
+    this.getColumnLabels = function () {
+        var names =  this.entry.columnLabels;
+        if (!names) names = new Array();
+        return names;
+    }
+
     this.getName = function () {
         if(this.entry.name ==null || this.entry.name == "") {
             return "no name";
@@ -1899,6 +1928,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         window.location.href = url;
     }
 
+
+
     this.search = function(event) {
         var result = "";
         var url = this.getUrl("search");
@@ -1906,32 +1937,87 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
         theForm.totalSize = 0;
         $.getJSON(url, function(data) {
-                var totalSize =0;
-                var html = "";
-                if(data.length==0) {
-                    html = "Nothing found";
-                } else {
-                    html += "<table width=100%>";
-                    var listHtml = "";
-                    for(var i=0;i<data.length;i++)  {
-                        var entry = new Entry(data[i]);
-                        listHtml += "<tr><td>";
-                        listHtml+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
-                        listHtml += "</td><td align=right>";
-                        listHtml+= entry.getFormattedFilesize();
-                        totalSize += entry.getFilesize();
-                        listHtml += "</tr>";
-                    }
-                    html += "<tr><td><b>" + data.length +" files found</b></td><td align=right><b>Size: " + size_format(totalSize) +"</b></td></tr>";
-                    html+= listHtml;
-                    html += "</table>";
-                }
-                theForm.totalSize = totalSize;
-                $("#" + theForm.outputDivId).html(html);
-                theForm.listUpdated()
+                theForm.processEntryJson(data);
             });
+
         return false;
     }
+
+    this.processEntryJson = function(data) {
+        var totalSize =0;
+        var html = "";
+        if(data.length==0) {
+            html = "Nothing found";
+        } else {
+            var firstColWidth = "40%";
+            var widthPerColumn=0;
+            var checkboxPrefix = "entry_" + this.id+"_";
+            var listHtml = "";
+            var header = "";
+            var footer= "";
+            var columnNames = null;
+            var row1 = true;
+            for(var i=0;i<data.length;i++)  {
+                var entry = new Entry(data[i]);
+                if(i==0) {
+                    columnNames = entry.getColumnNames();
+                    widthPerColumn = Math.floor(60/(columnNames.length+1))+"%";
+                    var labels = entry.getColumnLabels();
+                    for(var colIdx=0;colIdx<labels.length;colIdx++) {
+                        header+="<td width=" + widthPerColumn +"><b>" + labels[colIdx] +"</b></td>";
+                        footer+="<td></td>";
+                    }
+                }
+
+                if(row1)
+                    listHtml += "<tr class=listrow1>";
+                else
+                    listHtml += "<tr class=listrow2>";
+                row1 = !row1;
+                listHtml+= "<td width=" + firstColWidth+" ><input type=checkbox checked value=true id=\"" +
+                    checkboxPrefix + 
+                    + entry.getId() +"\" >";
+                listHtml+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
+
+                for(var colIdx=0;colIdx<columnNames.length;colIdx++) {
+                    var value = entry.getColumnValue(columnNames[colIdx]);
+                    listHtml+= "<td width=" + widthPerColumn +">" + value +"</td>";
+                }
+
+
+                listHtml += "</td><td align=right width=10%>";
+                listHtml+= entry.getFormattedFilesize();
+                totalSize += entry.getFilesize();
+                listHtml += "</tr>";
+            }
+
+            var tableHeader = "<table width=100% cellpadding=3 cellspacing=0 id=\"listing\">";
+
+            html += tableHeader;
+            html += "<thead><tr style=\"background: #fff;\">"; 
+            html+= "<td width=" + firstColWidth +">";
+            html+= "<input type=checkbox checked value=true\> ";
+            html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size</b></td></tr></thead>";
+            html += "</table>"
+
+            html += "<div style=\"  max-height: 300px; border-top: 1px #ccc solid; border-bottom: 1px #ccc solid;     overflow-y: auto;\">";
+            html += tableHeader;
+            html += listHtml;
+            html += "</table>";
+            html += "</div>";
+            html += tableHeader;
+            html += "<thead><tr style=\"background: #fff;\">"; 
+            html+= "<td width=" + firstColWidth +">";
+            html += "</td>" + header +"<td width=" + widthPerColumn  +" align=right><b>" + size_format(totalSize) +"</b></td></tr></thead>";
+            html += "</table>"
+
+        }
+        this.totalSize = totalSize;
+        $("#" + this.outputDivId).html(html);
+        //                $('#listing').dataTable();
+        this.listUpdated()
+    }
+
 
     this.listUpdated = function () {
         var btn =  $('#' + this.id+'_download');

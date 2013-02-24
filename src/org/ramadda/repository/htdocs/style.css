@@ -381,15 +381,14 @@ a.ramadda-heading-2-link:visited {
 .entryoutput {
     margin:0px;
     padding: 10px;
-    max-height: 200px; 
-    overflow-y: auto;
+    xxxmax-height: 400px; 
+    xxxoverflow-y: auto;
 }
 
 .entryselect {
     margin:0px;
     padding: 10px;
     min-height: 200px; 
-a   border-top: 5px #ccc solid; 
 }
 
 .ramadda-menubar {
@@ -994,12 +993,14 @@ xxxpath.link {
 }
 
 .listrow1 {
+   background-color:#eee;
    padding:2px;
    padding-bottom:0px;
 }
 
 .listrow2 {
-   background-color:#edf5ff;
+   background-color:#fff;
+   xxxbackground-color:#edf5ff;
    padding:2px;
    padding-bottom:0px;
 }
