@@ -211,6 +211,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             if(label == null) label = value;
             tfos.add(new TwoFacedObject(label, value));
         }
+        TwoFacedObject.sort(tfos);
         return tfos;
     }
 
