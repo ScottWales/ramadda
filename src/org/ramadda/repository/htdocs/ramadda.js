@@ -1975,7 +1975,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                     widthPerColumn = Math.floor(60/(columnNames.length+1))+"%";
                     var labels = entry.getColumnLabels();
                     for(var colIdx=0;colIdx<labels.length;colIdx++) {
-                        header+="<td width=" + widthPerColumn +"><b>" + labels[colIdx] +"</b>&nbsp;&nbsp;&nbsp;</td>";
+                        header+="<td width=" + widthPerColumn +"><b>" + labels[colIdx] +"</b></td>";
                         footer+="<td></td>";
                     }
                 }
@@ -1995,7 +1995,6 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                     listHtml+= "<td width=" + widthPerColumn +">" + value +"</td>";
                 }
 
-
                 listHtml += "</td><td align=right width=10%>";
                 listHtml+= entry.getFormattedFilesize();
                 totalSize += entry.getFilesize();
@@ -2004,22 +2003,23 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
 
             var tableHeader = "<table width=100% cellpadding=3 cellspacing=0 id=\"listing\">";
 
-            html += "<div style=\" border-bottom: 1px #888 solid;\">";
+            html += "<div>";
             html += tableHeader;
             html += "<thead><tr style=\"background: #FFF;\">"; 
             html+= "<td width=" + firstColWidth +">";
             html+= "<input type=checkbox checked value=true\> ";
-            html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size&nbsp;&nbsp;&nbsp;</b></td></tr></thead>";
+            html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size</b></td></tr></thead>";
             html += "</table>"
             html += "</div>";
 
-            html += "<div style=\"  max-height: 300px; overflow-y: auto;\">";
+             
+            html += "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 300px; overflow-y: auto; border: 1px #ccc solid;\">";
             html += tableHeader;
             html += listHtml;
             html += "</table>";
             html += "</div>";
 
-            html += "<div style=\" border-top: 1px #888 solid;\">";
+            html += "<div>";
             html += tableHeader;
             html += "<thead><tr style=\"background: #Fff;\">"; 
             html += "<td width=" + firstColWidth +">";

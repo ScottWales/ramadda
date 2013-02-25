@@ -630,6 +630,8 @@ public class TypeHandler extends RepositoryManager {
     public void initAfterDatabaseImport() throws Exception {}
 
 
+    public void clearCache() {}
+
     /**
      * _more_
      *

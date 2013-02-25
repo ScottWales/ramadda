@@ -65,11 +65,20 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
     private TTLCache<Object, Object> cache = new TTLCache<Object, Object>(60*60*1000);
 
+    private Hashtable<String,Properties> labelCache = new Hashtable<String,Properties>();
+
     public CollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
         super(repository, entryNode);
     }
 
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        cache = new TTLCache<Object, Object>(60*60*1000);
+        labelCache = new Hashtable<String,Properties>();
+    }
 
     public JsonOutputHandler getJsonOutputHandler () {
         if(jsonOutputHandler == null) {
@@ -180,7 +189,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    private Hashtable<String,Properties> labelCache = new Hashtable<String,Properties>();
+
 
     private List<TwoFacedObject> getValueList(Entry collectionEntry, List values, Column column) throws Exception {
         Hashtable map  = column.getEnumTable();

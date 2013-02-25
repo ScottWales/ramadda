@@ -2060,6 +2060,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (OutputHandler outputHandler : outputHandlers) {
             outputHandler.clearCache();
         }
+        for (TypeHandler typeHandler : allTypeHandlers) {
+            typeHandler.clearCache();
+        }
         clearCache();
     }
 
