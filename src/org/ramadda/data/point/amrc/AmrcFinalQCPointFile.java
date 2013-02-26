@@ -176,6 +176,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 makeField("Relative_Humidity", attrUnit("%"), attrChartable()),
                 makeField("Delta_T", attrUnit("Celsius"), attrChartable()),
             });
+        System.err.println(fields);
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }

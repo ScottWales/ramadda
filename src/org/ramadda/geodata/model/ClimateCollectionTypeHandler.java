@@ -105,11 +105,11 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
 
         cdoOutputHandler.addToForm(request, entry, analysisSB);
-        /*
         sb.append(HtmlUtils.p());
         sb.append(header(msg("Do Something to Data")));
         sb.append(analysisSB);
 
+        /*
         sb.append(HtmlUtils.p());
         sb.append(header(msg("Do Something with Data")));
         sb.append(productSB);

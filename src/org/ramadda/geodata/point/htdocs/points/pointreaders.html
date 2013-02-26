@@ -3,19 +3,17 @@
 <title>Developing point data readers for RAMADDA</title>
 </head>
 <body>
+<div style="margin-left:10px; margin-top:10px;">
+
 &nbsp;<p>
 
 This page describes how to develop a new Java-based point data file reader using the RAMADDA
-point data framework. 
-
-
-<h2>Basic Architecture</h2>
-
-This framework is  based around a record file reading framework. To provide support for a new point data format
-all that is required is to define a new Java File class that can create the Record class that knows how to read a record from the file.
+point data framework. This framework is  based around a record file reading framework. To provide support for a new point data format all that is required is to define a new Java File class that can create the Record class that knows how to read a record from the file.
 
 
 <h2>Getting Started</h2>
+
+
 First, check out the core RAMADDA package
 
 <pre>
@@ -138,7 +136,7 @@ The NLAS RAMADDA plugin is located here:
 cd src/org/unavco/projects/nlas/ramadda
 </pre>
 
-In resources/types.xml is the entry used for the Mcords file. This specifies a record.file.class property that is used to instantiate the file reader. 
+In resources/types.xml is the entry used for the Mcords file. This specifies a record.file.class property that is used to instantiate the file reader. Running <i>ant</i> in the plugin directory creates an nlasplugin.jar.
 
 <pre>
 &lt;type name="lidar_mccords_irmcr2"  
@@ -149,6 +147,7 @@ In resources/types.xml is the entry used for the Mcords file. This specifies a r
      &lt;property name="record.file.class" value="org.unavco.data.lidar.icebridge.McordsIrmcr2File"/&gt;
 &lt;/type&gt;
 </pre>
+
 
 
 
@@ -187,5 +186,56 @@ cd src/org/ramadda/data/point/amrc
 </pre>
 
 
+The AmrcFinalQCPointFile class reads the final QC'ed text file format:
+<pre>
+Year: 2001  Month: 09  ID: BPT  ARGOS:  8923  Name: Bonaparte Point     
+Lat: 64.78S  Lon:  64.07W  Elev:    8m
+2001 244  9  1 0000   -2.5  444.0    0.2  110.0  444.0  444.0
+2001 244  9  1 0010   -2.5  444.0    0.2  114.0  444.0  444.0
+2001 244  9  1 0020   -2.5  444.0    0.2  110.0  444.0  444.0
+2001 244  9  1 0030   -2.5  444.0    0.0    0.0  444.0  444.0
+2001 244  9  1 0040   -2.5  444.0    0.0    0.0  444.0  444.0
+</pre>
+
+The AmrcFinalQCPointFile does not create a specific Record class (like the examples above). Rather, it
+uses the generic TextRecord that is instantiated by a <i>fields</i> property.
+
+In the  AmrcFinalQCPointFile.prepareToVisit method the 2 line header is read and the fields are defined:
+<pre>
+fields=
+Site_Id[ type="string"   value="BPT"  ],
+Latitude[ value="-64.78"  ],
+Longitude[ value="-64.07"  ],
+Elevation[ value="    8"  ],
+Year[ ],
+Julian_Day[ ],
+Month[ ],
+Day[ ],
+Time[ type="string"  ],
+Temperature[ unit="Celsius"   chartable="true"  ],
+Pressure[ unit="hPa"   chartable="true"  ],
+Wind_Speed[ unit="m/s"   chartable="true"  ],
+Wind_Direction[ unit="degrees"  ],
+Relative_Humidity[ unit="%"   chartable="true"  ],
+</pre>
+</body>
+</html>
+
+The fields that have the <i>value</i> attribute set are not actually in the data. This allows us to take the metadata in the header (e.g., location) and have it applied to the data records.
+
+The AmrcFinalQCPointFile class also implements the processAfterReading method to parse the date/time from the column values and set the time on the Record:
+<pre>
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        if(!super.processAfterReading(visitInfo, record)) return false;
+        TextRecord textRecord = (TextRecord) record;
+        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
+           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
+        Date date = sdf.parse(dttm);
+        record.setRecordTime(date.getTime());
+        return true;
+    }
+</pre>
+
+</div>
 </body>
 </html>

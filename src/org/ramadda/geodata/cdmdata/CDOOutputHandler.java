@@ -42,6 +42,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -396,13 +397,14 @@ public class CDOOutputHandler extends OutputHandler {
             addTimeWidget(request, sb, dataset, true);
         }
 
+        LatLonRect llr = null;
         if(dataset != null)  {
-            LatLonRect llr = dataset.getBoundingBox();
-            if (llr != null) {
-                addMapWidget(request, sb, llr);
-            }
+            llr = dataset.getBoundingBox();
+        } else  {
+            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0), 
+                                 new LatLonPointImpl(-90.0,   180.0));
         }
-
+        addMapWidget(request, sb, llr);
         sb.append(HtmlUtils.formTableClose());
     }
 
