@@ -23,7 +23,7 @@
 
         <property  name="build.sysclasspath" value="ignore"/>
         <property name="classpath" value="${tika_jar}:${libdir}/idv.jar:${libdir}/ramaddalib.jar:${libdir}/ramaddatds.jar:${libdir}/servlet-api.jar"/>
-        <property name="pluginjar" value="${distdir}/psdramadda.jar"/>
+        <property name="pluginjar" value="${distdir}/psdramadda.last.plugin.jar"/>
 
         <property name="compiledir" value="${srcdir}"/>
         <property name="failonerror" value="true"/>
@@ -68,6 +68,9 @@
             jarfile="${pluginjar}">
             <include name="gov/noaa/esrl/psd/**/*.class"/> 
             <exclude name="gov/noaa/esrl/psd/**/*.java"/> 
+            <!--
+            <exclude name="gov/noaa/esrl/psd/repository/data/model/**"/> 
+            -->
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.css"/> 
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.png"/> 
             <include name="gov/noaa/esrl/psd/repository/htdocs/**/*.gif"/> 
