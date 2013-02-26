@@ -130,9 +130,12 @@ public class PointMetadataHarvester extends RecordVisitor {
 
         int fieldCnt = 0;
         for(RecordField field: fields) {
-            
             if(field.isTypeNumeric()) {
-                double value = field.getValueGetter().getValue(pointRecord, field, visitInfo);
+                ValueGetter valueGetter  = field.getValueGetter();
+                if(valueGetter == null) {
+                    continue;
+                }
+                double value = valueGetter.getValue(pointRecord, field, visitInfo);
                 
                 if(Double.isNaN(ranges[fieldCnt][0])) 
                     ranges[fieldCnt][0] = value;

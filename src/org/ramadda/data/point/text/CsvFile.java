@@ -227,6 +227,17 @@ public class CsvFile extends TextFile {
             if(label!=null) {
                 field.setDescription(label);
             }
+            field.setValueGetter(new ValueGetter() {
+                    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+                        TextRecord textRecord = (TextRecord) record;
+                        return textRecord.getValue(field.getParamId());
+                    }
+                    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+                        TextRecord textRecord = (TextRecord) record;
+                        return textRecord.getStringValue(field.getParamId());
+                    }
+                });
+
             fields.add(field);
         }
         return fields;
