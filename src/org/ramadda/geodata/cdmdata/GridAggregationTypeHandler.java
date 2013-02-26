@@ -345,7 +345,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     }
                     //If the repository is readonly then don't add the entry to the repository
                     if(readOnly) {
-                        System.err.println("Read only  - making dummy entry " + dataFile);
+                        //System.err.println("Read only  - making dummy entry " + dataFile);
                         childrenEntries.add(makeDummyEntry(dataFile));
                         continue;
                     }
