@@ -7,4 +7,5 @@
   <outputhandler class="org.ramadda.geodata.cdmdata.LdmOutputHandler" name="LDM Insert"/>
   <outputhandler class="org.ramadda.geodata.cdmdata.NCOOutputHandler" name="NetCDF Operators"/>
   <outputhandler class="org.ramadda.geodata.cdmdata.CDOOutputHandler" name="Climate Data Operators"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.NCLOutputHandler" name="Map Plot"/>
 </outputhandlers>
