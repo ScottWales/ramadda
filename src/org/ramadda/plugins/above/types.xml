@@ -1,6 +1,6 @@
 <types>
 
-  <type name="above_organization"  description="AbOVE Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" foruser="false">
+  <type name="above_organization"  description="AbOVE Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
      <property name="icon" value="/above/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
@@ -46,5 +46,12 @@
 
 
    </type>
+
+  <type name="above_person"  description="AbOVE Person" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
+     <property name="icon" value="/icons/group.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+   </type>
+
 
 </types>

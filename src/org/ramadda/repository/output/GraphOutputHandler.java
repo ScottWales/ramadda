@@ -155,7 +155,7 @@ public class GraphOutputHandler extends OutputHandler {
                     ATTR_NODEID, entry.getId(),
                     ATTR_URL, entryUrl,
                     ATTR_GRAPHURL,url,
-                    ATTR_ICON,iconUrl}));
+                    ATTR_ICON,iconUrl},true));
     }
 
 
@@ -164,7 +164,7 @@ public class GraphOutputHandler extends OutputHandler {
         links.add(Json.map(new String[]{
                     ATTR_SOURCE_ID, from.getId(),
                     ATTR_TARGET_ID, to.getId(),
-                    ATTR_TITLE, title}));
+                    ATTR_TITLE, title}, true));
     }
 
     /**
