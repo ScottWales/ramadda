@@ -253,45 +253,23 @@ public class NCLOutputHandler extends OutputHandler {
 
         commands.add(entry.getResource().getPath());
         commands.add(outFile.toString());
-        ProcessBuilder pb = new ProcessBuilder(commands);
-
-
-        pb.directory(getProductDir());
-        Process process = pb.start();
-        String errorMsg =
-            new String(IOUtil.readBytes(process.getErrorStream()));
-        String outMsg =
-            new String(IOUtil.readBytes(process.getInputStream()));
-        int result = process.waitFor();
+        //Use new repository method to execute. This gets back [stdout,stderr]
+        String[] results = getRepository().executeCommand(commands, getProductDir());
+        String errorMsg =results[1];
+        String outMsg =results[0];
         if (outMsg.length() > 0) {
-            return new Result(
-                "NCL-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "An error occurred:<br>" + outMsg)));
+            return getErrorResult(request, "NCL-Error","An error occurred:<br>" + outMsg);
         }
-
         if (errorMsg.length() > 0) {
-            return new Result(
-                "NCL-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "An error occurred:<br>" + errorMsg)));
+            return getErrorResult(request, "NCL-Error", "An error occurred:<br>" + errorMsg);
         }
         if ( !outFile.exists()) {
-            return new Result(
-                "NCL-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "Humm, the NCL image generation failed for some reason")));
+            return getErrorResult(request, "NCL-Error", "Humm, the NCL image generation failed for some reason");
         }
-
-
         if (doingPublish(request)) {
             if ( !request.defined(ARG_PUBLISH_NAME)) {
                 request.put(ARG_PUBLISH_NAME, outFile);
             }
-
             return getEntryManager().processEntryPublish(request, outFile,
                     null, entry, "generated from");
         }
@@ -299,6 +277,8 @@ public class NCLOutputHandler extends OutputHandler {
         return request.returnFile(
             outFile, getStorageManager().getFileTail(outFile.toString()));
     }
+
+
 
 
 

@@ -5538,7 +5538,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
+    public String[] executeCommand(List<String> commands, File dir) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.directory(dir);
+        Process process = pb.start();
+        String errorMsg =
+            new String(IOUtil.readBytes(process.getErrorStream()));
+        String outMsg =
+            new String(IOUtil.readBytes(process.getInputStream()));
+        int result = process.waitFor();
+        return new String[]{outMsg, errorMsg};
+    }
 
 
 }

@@ -791,14 +791,9 @@ public class GpsOutputHandler extends OutputHandler {
             args.add(inputFile);
             //            System.err.println("work dir:" + workDir +" rinex file:" + rinexFile);
             //            System.err.println("args:" + args);
-            ProcessBuilder pb = new ProcessBuilder(args);
-            pb.directory(workDir);
-            Process process  = pb.start();
-            String  errorMsg =
-                new String(IOUtil.readBytes(process.getErrorStream()));
-            String outMsg =
-                new String(IOUtil.readBytes(process.getInputStream()));
-            int result = process.waitFor();
+            String[] results = getRepository().executeCommand(args, workDir);
+            String  errorMsg =results[1];
+            String outMsg = results[0];
             sb.append("<li>");
             sb.append(rawEntry.getName());
 

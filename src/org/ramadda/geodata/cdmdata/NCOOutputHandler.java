@@ -536,37 +536,17 @@ public class NCOOutputHandler extends OutputHandler {
 
         commands.add(entry.getResource().getPath());
         commands.add(outFile.toString());
-        ProcessBuilder pb = new ProcessBuilder(commands);
-
-
-        pb.directory(getProductDir());
-        Process process  = pb.start();
-        String  errorMsg =
-            new String(IOUtil.readBytes(process.getErrorStream()));
-        String outMsg =
-            new String(IOUtil.readBytes(process.getInputStream()));
-        int result = process.waitFor();
-        if (errorMsg.length() > 0) {
-            return new Result(
-                "NCO-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "An error occurred:<br>" + errorMsg)));
-        }
+        String[] results = getRepository().executeCommand(commands, getProductDir());
+        String  errorMsg = results[1];
+        String outMsg = results[0];
         if (outMsg.length() > 0) {
-            return new Result(
-                "NCO-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "An error occurred:<br>" + outMsg)));
+            return getErrorResult(request, "NCO-Error","An error occurred:<br>" + outMsg);
         }
-
+        if (errorMsg.length() > 0) {
+            return getErrorResult(request, "NCO-Error", "An error occurred:<br>" + errorMsg);
+        }
         if ( !outFile.exists()) {
-            return new Result(
-                "NCO-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "Humm, the NCO generation failed for some reason")));
+            return getErrorResult(request, "NCL-Error",  "Humm, the NCO generation failed for some reason");
         }
 
         if (doingPublish(request)) {
