@@ -1,0 +1,69 @@
+[ht::head {Point Data Command Line Tools}]
+<%nochildlist%>
+
+The Point Data Tools package is a suite of tools for accessing and converting 
+various point data formats.   They are implemented in pure Java
+so can run on any platform. They are available at the
+<a href="http://sourceforge.net/projects/nlas/">NLAS SourceForge site</a>.
+
+<subhead intoc="false" id="requirements">Requirements and Installation</subhead>
+Download and unzip the latest nlastools.zip from 
+<a href="http://sourceforge.net/projects/nlas/">SourceForge</a>.
+<p>
+All of the NLAS tools run as shell scripts that call Java programs. 
+You need to have JAVA JDK 1.6 installed.
+<p>
+To make the scripts executable do:
+<pre>
+    source install.sh
+</pre>
+
+
+<subhead intoc="false" id="tools">Tools </subhead>
+
+<ul>
+
+<li>  <i>lidar2csv.sh </i><br>
+Convert a LiDAR file to csv.
+For help do:
+<pre>
+    lidar2csv.sh -help
+</pre>
+
+<a name="tiler"></a>
+<li>  <i>lidartiler.sh</i><br>
+This takes one or more LiDAR files and a specification of a spatial grid (bounds and grid size) and tiles 
+the points in the input LiDAR files into separate files corresponding to the grid squares.
+For help do:
+<pre>
+    lidartiler.sh -help
+</pre>
+
+
+
+
+<li> <i>lidarbounds.sh</i><br>
+This takes one or more LiDAR files as arguments and prints to the stdout the spatial bounds in the form:
+<pre> 
+     north west south east
+</pre>
+
+<li>  <i>lidarchecker.sh</i><br>
+Reads in a file and prints out the number of points, etc.
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[ht::foot]
