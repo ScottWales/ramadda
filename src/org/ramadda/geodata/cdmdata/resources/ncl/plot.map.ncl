@@ -1,6 +1,6 @@
 ;************************************************
-; Program: plot.ncl
-; Purpose: plot ncl maps or timeseries
+; Program: plot.maps.ncl
+; Purpose: plot NCL maps 
 ; Parameters: IMG_DIR - directory to store images (environ var)
 ;             LAST_DATE  environment variable of last date file
 ; Output:  plot or time series
@@ -126,17 +126,17 @@ end
 
 begin
 
+variable=(getenv("variable"))
+ncfile=(getenv("ncfile"))
+level=(getenv("level"))
+wks_name=(getenv("wks_name"))
 ;ltm=(getenv("ltm"))
-;varname=(getenv("variable"))
 ;varnameltm=(getenv("variableltm"))
-;ncFile=(getenv("ncfile"))
-;level=(getenv("level"))
-;wks_name=(getenv("wks_name"))
 
 datafile = addfile(ncfile ,"r")  ; open input data file
 ;dimsNames = getfilevardims(ncFile, $variable$)
 
-if (.not. isvar("level")) then
+if (ismissing(level)) then
    vardata = datafile->$variable$(0,:,:)
 else
    vardata = datafile->$variable$(0,{stringtointeger(level)},:,:)

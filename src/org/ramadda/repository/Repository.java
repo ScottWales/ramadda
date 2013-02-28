@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,71 +22,78 @@
 package org.ramadda.repository;
 
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 
-
-import org.ramadda.repository.admin.*;
-
-
-import org.ramadda.repository.auth.*;
-
-
-import org.ramadda.repository.database.*;
-
+import org.ramadda.repository.admin.Admin;
+import org.ramadda.repository.admin.AdminHandler;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.AccessManager;
+import org.ramadda.repository.auth.AuthorizationMethod;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.auth.SessionManager;
+import org.ramadda.repository.auth.User;
+import org.ramadda.repository.auth.UserManager;
+import org.ramadda.repository.database.DatabaseManager;
+import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.ftp.FtpManager;
-import org.ramadda.repository.harvester.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.monitor.*;
-
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.search.*;
-import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.*;
+import org.ramadda.repository.harvester.HarvesterManager;
+import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataManager;
+import org.ramadda.repository.monitor.MonitorManager;
+import org.ramadda.repository.output.CalendarOutputHandler;
+import org.ramadda.repository.output.HtmlOutputHandler;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.output.PageStyle;
+import org.ramadda.repository.output.WikiManager;
+import org.ramadda.repository.output.XmlOutputHandler;
+import org.ramadda.repository.output.ZipOutputHandler;
+import org.ramadda.repository.search.SearchManager;
+import org.ramadda.repository.type.GroupTypeHandler;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
-
-import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
-import org.ramadda.util.TempDir;
 
-
-
-
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
-
-import ucar.unidata.util.Cache;
 import ucar.unidata.util.CacheManager;
-
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
-
 import ucar.unidata.xml.XmlUtil;
 
 
-
-import java.io.*;
-
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Reader;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 
-import java.net.*;
-
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -94,7 +101,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -103,10 +109,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
-
-
-import java.util.regex.*;
-import java.util.zip.*;
 
 
 
@@ -118,39 +120,40 @@ import java.util.zip.*;
 public class Repository extends RepositoryBase implements RequestHandler,
         PropertyProvider {
 
-    /** _more_ */
+    /** dummy field 1 */
     private static final org.ramadda.util.HttpFormField dummyField1ToForceCompile =
         null;
 
-    /** _more_ */
+    /** dummy field 2 */
     private static final org.ramadda.util.ObjectPool dummyField2ToForceCompile =
         null;
 
-    /** _more_ */
+    /** dummy field 3 */
     private static final org.ramadda.util.EntryGroup dummyField3ToForceCompile =
         null;
 
-    /** _more_          */
+    /** dummy field 4 */
     private static final org.ramadda.util.GeoUtils dummyField4ToForceCompile =
         null;
 
+    /** dummy field 5 */
     private static final org.ramadda.data.services.PointOutputHandler dummyField5ToForceCompile =
         null;
 
 
-    private static final org.ramadda.repository.job.JobManager dummyField6ToForceCompile = null;
+    /** dummy field 6 */
+    private static final org.ramadda.repository.job.JobManager dummyField6ToForceCompile =
+        null;
 
 
-
-    /** _more_ */
+    /** Cache resoruces property */
     public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
 
 
-
-    /** _more_ */
+    /** Entry edit URLs */
     protected List<RequestUrl> entryEditUrls;
 
-    /** _more_ */
+    /** Group edit URLs */
     protected List<RequestUrl> groupEditUrls;
 
     /** _more_ */
@@ -253,6 +256,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private StorageManager storageManager;
 
+    /** _more_ */
     private ApiManager apiManager;
 
     /** _more_ */
@@ -747,7 +751,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             metadataManager    = null;
             registryManager    = null;
             storageManager     = null;
-            apiManager     = null;
+            apiManager         = null;
             pluginManager      = null;
             databaseManager    = null;
             ftpManager         = null;
@@ -796,9 +800,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         CacheManager.setDoCache(false);
         initProperties(properties);
         initServer();
-        StringBuffer statusMsg = new StringBuffer("RAMADDA: repository started");
-        statusMsg.append("  --  Version:"+getProperty(PROP_BUILD_VERSION, "1.0"));
-        statusMsg.append("  --  Build Date:"+ getProperty(PROP_BUILD_DATE, "N/A"));
+        StringBuffer statusMsg =
+            new StringBuffer("RAMADDA: repository started");
+        statusMsg.append("  --  Version:"
+                         + getProperty(PROP_BUILD_VERSION, "1.0"));
+        statusMsg.append("  --  Build Date:"
+                         + getProperty(PROP_BUILD_DATE, "N/A"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
     }
 
@@ -1187,11 +1194,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public boolean installPlugin(String pluginPath) throws Exception {
         try {
             //Remove any ..._file_ prefix
-            String tail          = RepositoryUtil.getFileTail(pluginPath);
+            String tail = RepositoryUtil.getFileTail(pluginPath);
             String newPluginFile =
                 IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
             InputStream      inputStream = IOUtil.getInputStream(pluginPath);
-            FileOutputStream fos         = new FileOutputStream(newPluginFile);
+            FileOutputStream fos         =
+                new FileOutputStream(newPluginFile);
             IOUtil.writeTo(inputStream, fos);
             IOUtil.close(inputStream);
             IOUtil.close(fos);
@@ -1245,14 +1253,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 TypeHandler.TAG_TYPE);
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
-                String  classPath =
+                String classPath =
                     XmlUtil.getAttribute(
                         entryNode, TypeHandler.TAG_HANDLER,
                         "org.ramadda.repository.type.GenericTypeHandler");
 
                 //System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
-                    Class       handlerClass = Misc.findClass(classPath);
+                    Class handlerClass = Misc.findClass(classPath);
 
 
                     Constructor ctor = Misc.findConstructor(handlerClass,
@@ -1292,7 +1300,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             List children = XmlUtil.findChildren(root, TAG_OUTPUTHANDLER);
             for (int i = 0; i < children.size(); i++) {
-                Element node     = (Element) children.get(i);
+                Element node = (Element) children.get(i);
                 boolean required = XmlUtil.getAttribute(node, ARG_REQUIRED,
                                        true);
                 try {
@@ -1391,10 +1399,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         repositoryManagers.add(repositoryManager);
     }
 
+    /**
+     * _more_
+     *
+     * @param c _more_
+     *
+     * @return _more_
+     */
     public RepositoryManager getRepositoryManager(Class c) {
-        for(RepositoryManager manager: repositoryManagers) {
-            if(manager.getClass().equals(c)) return manager;
+        for (RepositoryManager manager : repositoryManagers) {
+            if (manager.getClass().equals(c)) {
+                return manager;
+            }
         }
+
         return null;
     }
 
@@ -1579,14 +1597,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return sessionManager;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     protected ApiManager doMakeApiManager() {
         return new ApiManager(this);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public ApiManager getApiManager() {
         if (apiManager == null) {
             apiManager = doMakeApiManager();
         }
+
         return apiManager;
     }
 
@@ -2887,10 +2916,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         int length = urlBase.length();
         //        path = StringUtil.replace(path, urlBase, BLANK);
         path = path.substring(length);
-        String type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+        String  type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
         boolean decorate = true;
-        if(path.startsWith("/raw")) {
-            path = path.substring("/raw".length());
+        if (path.startsWith("/raw")) {
+            path     = path.substring("/raw".length());
             decorate = false;
         }
 
@@ -2907,11 +2936,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     inputStream = new ByteArrayInputStream(js.getBytes());
                 } else if (path.endsWith(".html") && decorate) {
                     String html = IOUtil.readInputStream(inputStream);
+
                     return getEntryManager().addHeaderToAncillaryPage(
-                                                                      request, new Result(BLANK, new StringBuffer(html)));
+                        request, new Result(BLANK, new StringBuffer(html)));
                 }
                 Result result = new Result(BLANK, inputStream, type);
                 result.setCacheOk(true);
+
                 return result;
             } catch (IOException fnfe) {
                 //noop
@@ -2950,7 +2981,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             String       childPath = null;
             List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
-            Entry        entry = getEntryManager().getEntryFromAlias(request,
+            Entry entry = getEntryManager().getEntryFromAlias(request,
                               toks.get(0));
             if (toks.size() == 2) {
                 entry = getEntryManager().findEntryFromName(request,
@@ -2964,6 +2995,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             request.put(ARG_ENTRYID, entry.getId());
+
             //For now, don't redirect
             return getEntryManager().processEntryShow(request);
             //            return new Result(request.url(URL_ENTRY_SHOW, ARG_ENTRYID,
@@ -3494,10 +3526,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new ArrayList<OutputHandler>(outputHandlers);
     }
 
+    /**
+     * _more_
+     *
+     * @param handlerClass _more_
+     *
+     * @return _more_
+     */
     public OutputHandler getOutputHandler(Class handlerClass) {
-        for(OutputHandler handler: outputHandlers) {
-            if(handler.getClass().equals(handlerClass)) return handler;
+        for (OutputHandler handler : outputHandlers) {
+            if (handler.getClass().equals(handlerClass)) {
+                return handler;
+            }
         }
+
         return null;
     }
 
@@ -3766,9 +3808,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             typeHandler = new TypeHandler(this, type);
             typeHandler.setForUser(false);
-            if(type.equals(TypeHandler.TYPE_CONTRIBUTION)) {
-                typeHandler.putProperty("form.date.show","false");
-                typeHandler.putProperty("form.area.show","false");
+            if (type.equals(TypeHandler.TYPE_CONTRIBUTION)) {
+                typeHandler.putProperty("form.date.show", "false");
+                typeHandler.putProperty("form.area.show", "false");
             }
             addTypeHandler(type, typeHandler);
         }
@@ -3789,8 +3831,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processPing(Request request) throws Exception {
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
-            Document resultDoc  = XmlUtil.makeDocument();
-            Element  resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
+            Document resultDoc = XmlUtil.makeDocument();
+            Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
                                      null, new String[] { ATTR_CODE,
                     "ok" });
             String xml = XmlUtil.toString(resultRoot);
@@ -3921,9 +3963,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processBlank(Request request) throws Exception {
-        Result result =  new Result("",new StringBuffer());
+        Result result = new Result("", new StringBuffer());
         result.setShouldDecorate(false);
+
         return result;
     }
 
@@ -4236,7 +4288,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String template = getPageHandler().getTemplateProperty(request,
                               "ramadda.template.link.wrapper", "");
 
-        ApiMethod homeApi  = getApiManager().getHomeApi();
+        ApiMethod homeApi = getApiManager().getHomeApi();
         for (ApiMethod apiMethod : getApiManager().getTopLevelMethods()) {
             if (apiMethod.getMustBeAdmin() && !isAdmin) {
                 continue;
@@ -4358,14 +4410,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //menus -1, showbreadcrumbs-2, toolbar-3, entry header-4, layout toolbar-5, type-6,  apply to this-7, wiki-8
             Metadata theMetadata = null;
             for (Metadata metadata : metadataList) {
-                if(Misc.equals(metadata.getAttr(7),"false")) {
-                    if(metadata.getEntryId().equals(entry.getId())) {
+                if (Misc.equals(metadata.getAttr(7), "false")) {
+                    if (metadata.getEntryId().equals(entry.getId())) {
                         continue;
                     }
                 }
                 String types = metadata.getAttr(6);
                 if ((types == null) || (types.trim().length() == 0)) {
                     theMetadata = metadata;
+
                     break;
                 }
                 for (String type : StringUtil.split(types, ",", true, true)) {
@@ -4541,7 +4594,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String   prevUrl  = HtmlUtils.space(1)
+        String prevUrl = HtmlUtils.space(1)
                          + HtmlUtils.href(
                              url + "&"
                              + CalendarOutputHandler.getUrlArgs(
@@ -4990,12 +5043,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             by = sortMetadata.getAttr1();
             String tmp = sortMetadata.getAttr3();
-            if(tmp!=null && tmp.length()>0) {
+            if ((tmp != null) && (tmp.length() > 0)) {
                 int tmpMax = Integer.parseInt(tmp.trim());
-                if(tmpMax>0) {
+                if (tmpMax > 0) {
                     max = tmpMax;
-                    if(!request.defined(ARG_MAX)) {
-                        request.put(ARG_MAX,""+max);
+                    if ( !request.defined(ARG_MAX)) {
+                        request.put(ARG_MAX, "" + max);
                     }
                 }
             }
@@ -5163,7 +5216,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getCalendarSelector(String formName, String fieldName) {
         String anchorName = "anchor." + fieldName;
         String divName    = "div." + fieldName;
-        String call       =
+        String call =
             HtmlUtils.call("selectDate",
                            HtmlUtils.comma(HtmlUtils.squote(divName),
         //                              "document.forms['"  + formName + "']." + fieldName, 
@@ -5251,7 +5304,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String           inputId    = "dateinput" + (HtmlUtils.blockCnt++);
 
 
-        String           js         =
+        String js =
             "<script>jQuery(function() {$( "
             + HtmlUtils.squote("#" + inputId)
             + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' });});</script>";
@@ -5333,7 +5386,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String compId   = "menu_" + HtmlUtils.blockCnt++;
         String linkId   = "menulink_" + HtmlUtils.blockCnt++;
         String contents = makePopupDiv(menuContents, compId, makeClose);
-        String onClick  = HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
+        String onClick = HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
                              HtmlUtils.comma(new String[] { "event",
                 HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
                 ? "1"
@@ -5362,7 +5415,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String  compId    = "menu_" + HtmlUtils.blockCnt++;
         String  linkId    = "menulink_" + HtmlUtils.blockCnt++;
         String  contents  = makeStickyPopupDiv(innerContents, compId);
-        String  onClick   =
+        String onClick =
             HtmlUtils.onMouseClick(HtmlUtils.call("showStickyPopup",
                 HtmlUtils.comma(new String[] { "event",
                 HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
@@ -5385,8 +5438,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String makeStickyPopupDiv(String contents, String compId) {
-        StringBuffer menu  = new StringBuffer();
-        String       cLink = HtmlUtils.jsLink(
+        StringBuffer menu = new StringBuffer();
+        String cLink = HtmlUtils.jsLink(
                            HtmlUtils.onMouseClick(
                                HtmlUtils.call(
                                    "hideElementById",
@@ -5485,69 +5538,101 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     /**
-     * _more_
+     * Decode the XML into an Object
      *
-     * @param xml _more_
+     * @param xml  the XML spec
      *
-     * @return _more_
+     * @return the Object defined by the XML
      *
-     * @throws Exception _more_
+     * @throws Exception  problem decoding
      */
     public static Object decodeObject(String xml) throws Exception {
         return getEncoder().toObject(xml);
     }
 
     /**
-     * _more_
+     * Get the python libraries
      *
-     * @return _more_
+     * @return  the libraries
      */
     public List<String> getPythonLibs() {
         return getPluginManager().getPythonLibs();
     }
 
     /**
-     * _more_
+     * Print the message
      *
-     * @param msg _more_
+     * @param msg the message
      */
     public static void println(String msg) {
         System.err.println(msg);
     }
 
-
-
     /**
-     * _more_
+     * Get the system message
      *
-     * @return _more_
+     * @return  the message
      */
     public String getSystemMessage() {
         return getProperty(PROP_SYSTEM_MESSAGE, (String) null);
     }
 
     /**
-     * _more_
+     * Get the system message for the request
      *
-     * @param request _more_
+     * @param request  the request
      *
-     * @return _more_
+     * @return  the message
      */
     public String getSystemMessage(Request request) {
         return getSystemMessage();
     }
 
 
-    public String[] executeCommand(List<String> commands, File dir) throws Exception {
+    /**
+     * Excecute a command
+     *
+     * @param commands     command parameters
+     * @param workingDir   the working directory
+     *
+     * @return the input and output streams
+     *
+     * @throws Exception  problem with execution
+     */
+    public String[] executeCommand(List<String> commands, File dir)
+            throws Exception {
+        return executeCommand(commands, null, dir);
+    }
+
+    /**
+     * Excecute a command
+     *
+     * @param commands     command parameters
+     * @param envVars      enviroment variables
+     * @param workingDir   the working directory
+     *
+     * @return the input and output streams
+     *
+     * @throws Exception  problem with execution
+     */
+    public String[] executeCommand(List<String> commands,
+                                   Map<String, String> envVars, File workingDir)
+            throws Exception {
         ProcessBuilder pb = new ProcessBuilder(commands);
-        pb.directory(dir);
+        if (envVars != null) {
+            Map<String, String> env = pb.environment();
+            //env.clear();
+            env.putAll(envVars);
+        }
+        pb.directory(workingDir);
         Process process = pb.start();
         String errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));
         String outMsg =
             new String(IOUtil.readBytes(process.getInputStream()));
         int result = process.waitFor();
-        return new String[]{outMsg, errorMsg};
+
+        return new String[] { outMsg, errorMsg };
     }
 
 

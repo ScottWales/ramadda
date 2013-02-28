@@ -1,13 +1,26 @@
+/*
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
+*                     Don Murray/CU-CIRES
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
+
 package org.ramadda.geodata.cdmdata;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -19,23 +32,45 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
+
 import org.w3c.dom.Element;
 
 import ucar.nc2.dt.grid.GridDataset;
+
 import ucar.unidata.util.IOUtil;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Class description
+ *
+ *
+ */
 public class NCLOutputHandler extends OutputHandler {
 
     /** NCL program path */
     private static final String PROP_NCARG_ROOT = "ncl.ncarg_root";
-    
+
     /** NCL map plot script */
     private static final String SCRIPT_MAPPLOT = "plot.map.ncl";
 
     /** map plot output id */
     public static final OutputType OUTPUT_NCL_MAPPLOT =
-        new OutputType("NCL Map Displays", "ncl.mapplot", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, "/cdmdata/ncl.gif", CdmDataOutputHandler.GROUP_DATA);
+        new OutputType("NCL Map Displays", "ncl.mapplot",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       "/cdmdata/ncl.gif", CdmDataOutputHandler.GROUP_DATA);
 
     /** the product directory */
     private TempDir productDir;
@@ -43,29 +78,49 @@ public class NCLOutputHandler extends OutputHandler {
     /** the path to NCL program */
     private String ncargRoot;
 
-    public NCLOutputHandler(Repository repository)
-            throws Exception {
+    /**
+     * Construct a new NCLOutputHandler
+     *
+     * @param repository  the Repository
+     *
+     * @throws Exception  problem creating handler
+     */
+    public NCLOutputHandler(Repository repository) throws Exception {
         super(repository, "NCL");
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
     }
-        
+
+    /**
+     * Construct a new NCL output handler
+     *
+     * @param repository  the Repository
+     * @param element     the XML definition
+     *
+     * @throws Exception  problem creating handler
+     */
     public NCLOutputHandler(Repository repository, Element element)
-                throws Exception {
+            throws Exception {
         super(repository, element);
         addType(OUTPUT_NCL_MAPPLOT);
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
         if (ncargRoot != null) {
             // write out the template
-            String nclScript = getStorageManager().readSystemResource("/org/ramadda/geodata/cdmdata/resources/ncl/"+SCRIPT_MAPPLOT);
+            String nclScript =
+                getStorageManager().readSystemResource(
+                    "/org/ramadda/geodata/cdmdata/resources/ncl/"
+                    + SCRIPT_MAPPLOT);
             nclScript = nclScript.replaceAll("\\$NCARG_ROOT", ncargRoot);
-            String outdir = IOUtil.joinDir(getStorageManager().getResourceDir() , "ncl");
+            String outdir =
+                IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl");
             StorageManager.makeDir(outdir);
-            File outputFile = new File(IOUtil.joinDir(outdir,SCRIPT_MAPPLOT));
+            File outputFile = new File(IOUtil.joinDir(outdir,
+                                  SCRIPT_MAPPLOT));
             InputStream is = new ByteArrayInputStream(nclScript.getBytes());
-            OutputStream os = getStorageManager().getFileOutputStream(outputFile);
+            OutputStream os =
+                getStorageManager().getFileOutputStream(outputFile);
             IOUtil.writeTo(is, os);
         }
-        
+
     }
 
     /**
@@ -180,16 +235,25 @@ public class NCLOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.h2("Plot Dataset"));
         sb.append(HtmlUtils.hr());
         addToForm(request, entry, sb);
-        sb.append(buttons);
-        sb.append(" ");
+        sb.append(HtmlUtils.br());
         addPublishWidget(
             request, entry, sb,
             msg("Select a folder to publish the generated image file to"));
+        sb.append(buttons);
 
     }
 
+    /**
+     * Add the necessary components to the form
+     *
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param sb       the HTML string
+     *
+     * @throws Exception  problem making form
+     */
     public void addToForm(Request request, Entry entry, StringBuffer sb)
-        throws Exception {
+            throws Exception {
         sb.append(HtmlUtils.formTable());
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         GridDataset dataset =
@@ -210,66 +274,70 @@ public class NCLOutputHandler extends OutputHandler {
      * @throws Exception  problem executing the command
      */
     public Result outputNCL(Request request, Entry entry) throws Exception {
-        
+
         File input = entry.getTypeHandler().getFileForEntry(entry);
-        String wksName = IOUtil.joinDir(getProductDir(), getRepository().getGUID());
-        File outFile = new File(wksName+".png");
-        
+        String wksName = IOUtil.joinDir(getProductDir(),
+                                        getRepository().getGUID());
+        File         outFile       = new File(wksName + ".png");
+
         StringBuffer commandString = new StringBuffer();
-        List<String> commands            = new ArrayList<String>();
+        List<String> commands      = new ArrayList<String>();
         commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-        commandString.append(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-        commandString.append(" ");
-        // add arguments here
-        //commands.add("'wks_name=\""+wksName+"\"'");
-        commandString.append("wks_name=\""+wksName+"\"");
-        commandString.append(" ");
-        //commands.add("'ncfile=\""+input.toString()+"\"'");
-        commandString.append("ncfile=\""+input.toString()+"\"");
-        commandString.append(" ");
+        //commands.add("${file}");
+        commands.add(
+            IOUtil.joinDir(
+                IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),
+                SCRIPT_MAPPLOT));
+        Map<String, String> envMap = new HashMap<String, String>();
+        envMap.put("NCARG_ROOT", ncargRoot);
+        envMap.put("wks_name", wksName);
+        envMap.put("ncfile", input.toString());
+        Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();
-        Hashtable args     = request.getArgs();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
-            if (arg.startsWith(CdmDataOutputHandler.VAR_PREFIX) && request.get(arg, false)) {
-                varNames.add(arg.substring(CdmDataOutputHandler.VAR_PREFIX.length()));
+            if (arg.startsWith(CdmDataOutputHandler.VAR_PREFIX)
+                    && request.get(arg, false)) {
+                varNames.add(
+                    arg.substring(CdmDataOutputHandler.VAR_PREFIX.length()));
             }
         }
         String varname = varNames.get(0);
-        //commands.add("'"+ARG_VARIABLE+"=\""+varname+"\"'");
-        commandString.append(ARG_VARIABLE+"=\""+request.getString(ARG_VARIABLE, null)+"\"");
-        commandString.append(" ");
-        String level = request.getString(CdmDataOutputHandler.ARG_LEVEL, null);
-        if (level != null && !level.isEmpty()) {
-            //commands.add("'"+CdmDataOutputHandler.ARG_LEVEL+"=\""+level+"\"'");
-            commandString.append(CdmDataOutputHandler.ARG_LEVEL+"=\""+level+"\"");
-            commandString.append(" ");
+        envMap.put(ARG_VARIABLE, varname);
+        String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
+                                         null);
+        if ((level != null) && !level.isEmpty()) {
+            envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
         }
-        commands.add(IOUtil.joinDir(IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),SCRIPT_MAPPLOT));
-        commandString.append(IOUtil.joinDir(IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),SCRIPT_MAPPLOT));
-        //commands.add(commandString.toString());
 
         System.err.println("cmds:" + commands);
+        System.err.println("env:" + envMap);
 
-        commands.add(entry.getResource().getPath());
-        commands.add(outFile.toString());
         //Use new repository method to execute. This gets back [stdout,stderr]
-        String[] results = getRepository().executeCommand(commands, getProductDir());
-        String errorMsg =results[1];
-        String outMsg =results[0];
-        if (outMsg.length() > 0) {
-            return getErrorResult(request, "NCL-Error","An error occurred:<br>" + outMsg);
-        }
-        if (errorMsg.length() > 0) {
-            return getErrorResult(request, "NCL-Error", "An error occurred:<br>" + errorMsg);
-        }
+        String[] results = getRepository().executeCommand(commands, envMap,
+                               getProductDir());
+        String errorMsg = results[1];
+        String outMsg   = results[0];
         if ( !outFile.exists()) {
-            return getErrorResult(request, "NCL-Error", "Humm, the NCL image generation failed for some reason");
+            if (outMsg.length() > 0) {
+                return getErrorResult(request, "NCL-Error",
+                                      "An error occurred:<br>" + outMsg);
+            }
+            if (errorMsg.length() > 0) {
+                return getErrorResult(request, "NCL-Error",
+                                      "An error occurred:<br>" + errorMsg);
+            }
+            if ( !outFile.exists()) {
+                return getErrorResult(
+                    request, "NCL-Error",
+                    "Humm, the NCL image generation failed for some reason");
+            }
         }
         if (doingPublish(request)) {
             if ( !request.defined(ARG_PUBLISH_NAME)) {
                 request.put(ARG_PUBLISH_NAME, outFile);
             }
+
             return getEntryManager().processEntryPublish(request, outFile,
                     null, entry, "generated from");
         }
@@ -277,9 +345,5 @@ public class NCLOutputHandler extends OutputHandler {
         return request.returnFile(
             outFile, getStorageManager().getFileTail(outFile.toString()));
     }
-
-
-
-
 
 }
