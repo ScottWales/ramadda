@@ -99,6 +99,18 @@ public class UserManager extends RepositoryManager {
     public static final String PROP_LOGIN_ALLOWEDIPS =
         "ramadda.login.allowedips";
 
+    public static final String PROP_PASSWORD_DIGEST  =
+        "ramadda.password.hash.digest";
+
+
+    public static final String PROP_PASSWORD_ITERATIONS  =
+        "ramadda.password.hash.iterations";
+
+    public static final String PROP_PASSWORD_SALT1  =
+        "ramadda.password.hash.salt1";
+
+    public static final String PROP_PASSWORD_SALT2  =
+        "ramadda.password.hash.salt2";
 
     /** activity type for logging */
     public static final String ACTIVITY_LOGIN = "login";
@@ -275,11 +287,15 @@ public class UserManager extends RepositoryManager {
         makeUserIfNeeded(new User(USER_LOCALFILE, "Local Files"));
 
         for (User user : cmdLineUsers) {
+            //If it was from the cmd line then the password is not hashed
+            user.setPassword(hashPassword(user.getPassword()));
             makeOrUpdateUser(user, true);
         }
 
-        //If we have an admin property then it is of the form userid:password
-        //and is used to set the password of the admin
+        /*****
+              Keep this commented out as its too easy for a plugin to add an admin user account
+        //If we have an admin property then it is of the form userid:password           
+        //and is used to set the password of the admin                                  
         String adminFromProperties = getProperty(PROP_ADMIN, null);
         if (adminFromProperties != null) {
             List<String> toks = StringUtil.split(adminFromProperties, ":");
@@ -291,15 +307,15 @@ public class UserManager extends RepositoryManager {
             }
             User   user        = new User(toks.get(0), "", false);
             String rawPassword = toks.get(1).trim();
-            user.setPasswords(rawPassword, hashPassword(rawPassword));
+            user.setPassword(hashPassword(rawPassword));
             if ( !userExistsInDatabase(user)) {
                 makeOrUpdateUser(user, true);
             } else {
                 changePassword(user);
             }
-
             logInfo("Password for:" + user.getId() + " has been updated");
         }
+        *****/
 
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
             userAuthenticator.initUsers();
@@ -316,12 +332,71 @@ public class UserManager extends RepositoryManager {
      * @return hashed password
      */
     public String hashPassword(String password) {
-        if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
-            return RepositoryUtil.hashPasswordForOldMD5(password);
-        } else {
-            return RepositoryUtil.hashPassword(password);
+        //See, e.g. http://www.jasypt.org/howtoencryptuserpasswords.html
+        try {
+            String salt1 = getProperty(PROP_PASSWORD_SALT1, "");
+            String salt2 = getProperty(PROP_PASSWORD_SALT2, "");
+            password = salt1+password;
+            int passwordHashIterations = getRepository().getProperty(PROP_PASSWORD_ITERATIONS,1);
+            for(int i=0;i<passwordHashIterations;i++) {
+                password = doHashPassword(password);
+            }
+            password = salt2+password;
+            String result = RepositoryUtil.encodeBase64(password.getBytes("UTF-8"));
+            return result.trim();
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
+
+
+    private String doHashPassword(String password) {
+        try {
+            String digest = getProperty(PROP_PASSWORD_DIGEST, "SHA-512");
+            MessageDigest md = MessageDigest.getInstance(digest);
+            md.update(password.getBytes("UTF-8"));
+            byte[] bytes  = md.digest();
+            return new String(bytes);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalStateException(nsae.getMessage());
+        } catch (UnsupportedEncodingException uee) {
+            throw new IllegalStateException(uee.getMessage());
+        }
+    }
+
+
+    /**
+     * This is a routine created by Matias Bonet to handle pre-existing passwords that
+     * were hashed via md5
+     *
+     * @param password The password
+     *
+     * @return hashed password
+     */
+    private  String hashPasswordOldWay(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(password.getBytes("UTF-8"));
+            byte         messageDigest[] = md.digest();
+            StringBuffer hexString       = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String hex = Integer.toHexString(0xFF & messageDigest[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            //            System.out.println(hexString.toString());
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalStateException(nsae.getMessage());
+        } catch (UnsupportedEncodingException uee) {
+            throw new IllegalStateException(uee.getMessage());
+        }
+    }
+
+
 
 
     /**
@@ -792,7 +867,7 @@ public class UserManager extends RepositoryManager {
             if ( !password1.equals(password2)) {
                 return false;
             } else {
-                user.setPasswords(password1, hashPassword(password1));
+                user.setPassword(hashPassword(password1));
             }
         }
 
@@ -1117,7 +1192,6 @@ public class UserManager extends RepositoryManager {
             User user = new User(id, name, email, "", "",
                                  hashPassword(password1), false, "", "",
                                  false, null);
-            user.setRawPassword(password1);
             users.add(user);
         }
 
@@ -1172,7 +1246,6 @@ public class UserManager extends RepositoryManager {
                 User newUser = new User(id, name, email, "", "",
                                         hashPassword(password1), admin, "",
                                         "", false, null);
-                newUser.setRawPassword(password1);
                 users.add(newUser);
             }
         }

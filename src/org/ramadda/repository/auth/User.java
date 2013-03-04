@@ -68,9 +68,6 @@ public class User {
     private String hashedPassword = "";
 
     /** _more_ */
-    private String rawPassword = "";
-
-    /** _more_ */
     private boolean admin = false;
 
     /** _more_ */
@@ -434,16 +431,6 @@ public class User {
         return answer;
     }
 
-    /**
-     * _more_
-     *
-     * @param rawPassword _more_
-     * @param hashedPassword _more_
-     */
-    public void setPasswords(String rawPassword, String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-        this.rawPassword    = rawPassword;
-    }
 
 
     /**
@@ -487,26 +474,6 @@ public class User {
     public String getHashedPassword() {
         return hashedPassword;
     }
-
-
-    /**
-     * Set the RawPassword property.
-     *
-     * @param value The new value for RawPassword
-     */
-    public void setRawPassword(String value) {
-        rawPassword = value;
-    }
-
-    /**
-     * Get the RawPassword property.
-     *
-     * @return The RawPassword
-     */
-    public String getRawPassword() {
-        return rawPassword;
-    }
-
 
     /**
      *  Set the Roles property.

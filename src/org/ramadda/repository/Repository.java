@@ -877,8 +877,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 i++;
             } else if (args[i].equals("-admin")) {
                 User user = new User(args[i + 1], true);
-                user.setPasswords(args[i + 2],
-                                  RepositoryUtil.hashPassword(args[i + 2]));
+                user.setPassword(args[i + 2]);
                 cmdLineUsers.add(user);
                 i += 2;
             } else if (args[i].equals("-port")) {
@@ -1137,7 +1136,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 readGlobals();
             }
         }
-
 
         getUserManager().initUsers(cmdLineUsers);
 
@@ -2793,7 +2791,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String getAuthToken(String sessionId) {
-        return RepositoryUtil.hashPassword(sessionId);
+        return RepositoryUtil.hashString(sessionId);
     }
 
     /**
