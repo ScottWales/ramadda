@@ -28,6 +28,8 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.StorageManager;
+import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
@@ -35,9 +37,16 @@ import org.ramadda.util.TempDir;
 
 import org.w3c.dom.Element;
 
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 
 
 import java.io.ByteArrayInputStream;
@@ -77,6 +86,10 @@ public class NCLOutputHandler extends OutputHandler {
 
     /** the path to NCL program */
     private String ncargRoot;
+
+    /** spatial arguments */
+    private static final String[] SPATIALARGS = new String[] { ARG_AREA_NORTH,
+            ARG_AREA_WEST, ARG_AREA_SOUTH, ARG_AREA_EAST, };
 
     /**
      * Construct a new NCLOutputHandler
@@ -224,9 +237,14 @@ public class NCLOutputHandler extends OutputHandler {
             throws Exception {
 
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtils.form(formUrl,
-                                 makeFormSubmitDialog(sb,
-                                     msg("Plotting Data...."))));
+        sb.append(HtmlUtils.form(formUrl));
+        /*
+sb.append(HtmlUtils.form(formUrl,
+                         makeFormSubmitDialog(sb,
+                             msg("Plotting Data...."))));
+                             */
+
+        sb.append(HtmlUtils.formTable());
 
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_NCL_MAPPLOT));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -235,10 +253,12 @@ public class NCLOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.h2("Plot Dataset"));
         sb.append(HtmlUtils.hr());
         addToForm(request, entry, sb);
-        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.p());
         addPublishWidget(
             request, entry, sb,
             msg("Select a folder to publish the generated image file to"));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.p());
         sb.append(buttons);
 
     }
@@ -254,13 +274,55 @@ public class NCLOutputHandler extends OutputHandler {
      */
     public void addToForm(Request request, Entry entry, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_NCL_MAPPLOT));
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(entry,
                 entry.getResource().getPath());
-        sb.append(dataOutputHandler.getVariableForm(dataset, true));
-        sb.append(HtmlUtils.formTableClose());
+        List<GridDatatype> grids = dataset.getGrids();
+        GridDatatype       var   = grids.get(0);
+        sb.append(HtmlUtils.hidden(ARG_VARIABLE, var));
+        GridCoordSystem gcs = var.getCoordinateSystem();
+        sb.append(HtmlUtils.formEntry(msgLabel("Variable"),
+                                      var.getName() + HtmlUtils.space(1)
+                                      + ((var.getUnitsString() != null)
+                                         ? "(" + var.getUnitsString() + ")"
+                                         : "") + HtmlUtils.italics(
+                                             var.getDescription())));
+
+        if (gcs.getVerticalAxis() != null) {
+            CoordinateAxis1D     zAxis  = gcs.getVerticalAxis();
+            int                  sizeZ  = (int) zAxis.getSize();
+            List<TwoFacedObject> levels =
+                new ArrayList<TwoFacedObject>(sizeZ);
+            for (int k = 0; k < sizeZ; k++) {
+                int level = (int) zAxis.getCoordValue(k);
+                levels.add(new TwoFacedObject(String.valueOf(level), level));
+            }
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Level"),
+                    HtmlUtils.select(CdmDataOutputHandler.ARG_LEVEL, levels)
+                    + HtmlUtils.space(1) + "(" + zAxis.getUnitsString()
+                    + ")"));
+        }
+        LatLonRect llr = dataset.getBoundingBox();
+        if (llr != null) {
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              true);
+            map.addBox("", llr, new MapProperties("blue", false, true));
+            String[] points = new String[] { "" + llr.getLatMax(),
+                                             "" + llr.getLonMin(),
+                                             "" + llr.getLatMin(),
+                                             "" + llr.getLonMax(), };
+
+            for (int i = 0; i < points.length; i++) {
+                sb.append(HtmlUtils.hidden(SPATIALARGS[i] + ".original",
+                                           points[i]));
+            }
+            String llb = map.makeSelector(ARG_AREA, true, points);
+            sb.append(HtmlUtils.formEntryTop(msgLabel("Area"), llb));
+        }
     }
 
     /**
@@ -276,14 +338,15 @@ public class NCLOutputHandler extends OutputHandler {
     public Result outputNCL(Request request, Entry entry) throws Exception {
 
         File input = entry.getTypeHandler().getFileForEntry(entry);
-        String wksName = IOUtil.joinDir(getProductDir(),
-                                        getRepository().getGUID());
-        File         outFile       = new File(wksName + ".png");
+        //String wksName = IOUtil.joinDir(getProductDir(),
+        //                                getRepository().getGUID());
+        String wksName = getRepository().getGUID();
+        File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
+                                + ".png");
 
         StringBuffer commandString = new StringBuffer();
         List<String> commands      = new ArrayList<String>();
         commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-        //commands.add("${file}");
         commands.add(
             IOUtil.joinDir(
                 IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),
@@ -292,6 +355,7 @@ public class NCLOutputHandler extends OutputHandler {
         envMap.put("NCARG_ROOT", ncargRoot);
         envMap.put("wks_name", wksName);
         envMap.put("ncfile", input.toString());
+
         Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
@@ -302,13 +366,33 @@ public class NCLOutputHandler extends OutputHandler {
                     arg.substring(CdmDataOutputHandler.VAR_PREFIX.length()));
             }
         }
-        String varname = varNames.get(0);
+        String varname = request.getString(ARG_VARIABLE, null);
+        if (varname == null) {
+            throw new Exception("No variable selected");
+        }
         envMap.put(ARG_VARIABLE, varname);
         String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
                                          null);
         if ((level != null) && !level.isEmpty()) {
             envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
         }
+        envMap.put("maxLat", request.getString(ARG_AREA_NORTH, "90.0"));
+        envMap.put("minLat", request.getString(ARG_AREA_SOUTH, "-90.0"));
+        envMap.put("minLon", request.getString(ARG_AREA_WEST, "0"));
+        envMap.put("maxLon", request.getString(ARG_AREA_EAST, "360"));
+
+        boolean haveOriginalBounds = true;
+        for (String spatialArg : SPATIALARGS) {
+            if ( !Misc.equals(request.getString(spatialArg, ""),
+                              request.getString(spatialArg + ".original",
+                                  ""))) {
+                haveOriginalBounds = false;
+
+                break;
+            }
+        }
+        envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
+
 
         System.err.println("cmds:" + commands);
         System.err.println("env:" + envMap);

@@ -27,43 +27,43 @@ procedure labelbar(lbres:logical)
 
 begin
 
-  lbres@vpWidthF             = 0.45
-  lbres@vpHeightF            = 0.02
-  lbres@lbAutoManage         = False
-
-  lbres@lbBottomMarginF      = 0.0
-  lbres@lbLeftMarginF        = 0.0
-  lbres@lbRightMarginF       = 0.0
-  lbres@lbTopMarginF         = 0.0
-
-  lbres@lbLabelsOn           = True
-  lbres@lbPerimOn            = False
-  lbres@lbMonoFillPattern    = True
-  lbres@lbOrientation        = "Horizontal"
+    lbres@vpWidthF             = 0.45
+    lbres@vpHeightF            = 0.02
+    lbres@lbAutoManage         = False
+  
+    lbres@lbBottomMarginF      = 0.0
+    lbres@lbLeftMarginF        = 0.0
+    lbres@lbRightMarginF       = 0.0
+    lbres@lbTopMarginF         = 0.0
+  
+    lbres@lbLabelsOn           = True
+    lbres@lbPerimOn            = False
+    lbres@lbMonoFillPattern    = True
+    lbres@lbOrientation        = "Horizontal"
 ;
 ; This specifies the proportion of the space in the direction
 ; perpendicular to the labelbar orientation that is occupied by the
 ; colorbar. By default it is 0.33, or 1/3 of the width specified by
 ; vpWidthF in the case of a vertically oriented labelbar.
 ;
-  lbres@lbBoxMinorExtentF    = 1.0
-
-  lbres@lbJustification      = "TopLeft"
-  lbres@lbLabelAlignment     = "InteriorEdges"
-  lbres@lbLabelPosition      = "Bottom"
-  lbres@lbLabelAutoStride    = True
-  lbres@lbLabelOffsetF       = 0.25
-  lbres@lbLabelFontHeightF   = 0.009
-
+    lbres@lbBoxMinorExtentF    = 1.0
+  
+    lbres@lbJustification      = "TopLeft"
+    lbres@lbLabelAlignment     = "InteriorEdges"
+    lbres@lbLabelPosition      = "Bottom"
+    lbres@lbLabelAutoStride    = True
+    lbres@lbLabelOffsetF       = 0.25
+    lbres@lbLabelFontHeightF   = 0.009
+  
 ;--- title (deg C)
-  lbres@lbTitleOn            = True
-  lbres@lbTitleString = "~S~o~N~C"  ; ~S to superscript, ~N to normalize
-  lbres@lbTitlePosition = "Right"
-  lbres@lbTitleFontHeightF = 0.009
-  lbres@lbTitleOffsetF = 0.01
-  lbres@lbTitleJust = "BottomLeft"
-  lbres@lbTitleDirection = "Across"
-
+    lbres@lbTitleOn            = True
+    lbres@lbTitleString = "~S~o~N~C"  ; ~S to superscript, ~N to normalize
+    lbres@lbTitlePosition = "Right"
+    lbres@lbTitleFontHeightF = 0.009
+    lbres@lbTitleOffsetF = 0.01
+    lbres@lbTitleJust = "BottomLeft"
+    lbres@lbTitleDirection = "Across"
+  
 end
 
 ;************************************************
@@ -75,48 +75,34 @@ end
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotmap")
-procedure plotmap(data:float, wks_name:string, wks_type:string, opts:logical)
+procedure plotmap(data:float, wks_name:string, wks_type:string, rescf:logical)
 
 begin
 
-;  wks_type@wkBackgroundColor="white"
-;  wks_type@wkForegroundColor="black"
-;  wks_type@wkWidth                     = 800
-;  wks_type@wkHeight                    = 800
+    wks_type@wkBackgroundColor="white"
+    wks_type@wkForegroundColor="black"
+    wks_type@wkWidth                     = 800
+    wks_type@wkHeight                    = 800
 
-  rescf = True  ; color-fill params
-  rescn = True  ; contour params
-;  rescf@vpXF = 0.1
-;  rescf@vpYF = 0.945
-;  rescf@vpWidthF = 0.8
-;  rescf@vpHeightF = 0.8
+    rescf@gsnMaximize         = True     ; Maximize plot in frame
+    rescf@gsnSpreadColors = True
 
-
-;--- don't draw or advance frames automatically
-;  rescf@gsnDraw  = False               
-;  rescf@gsnFrame  = False               
-;  rescn@gsnDraw  = False               
-;  rescn@gsnFrame  = False               
-
-   rescf@gsnPaperOrientation = "auto"
-   rescf@gsnMaximize         = True        ; must include w/ Paper Orientation
-   rescf@gsnSpreadColors = True
-
-   rescf@cnFillOn= True
-   rescf@cnFillDrawOrder       =  "PreDraw"
-   rescf@mpFillOn = True
-   rescf@mpCenterLonF = 0.
-   rescf@mpGeophysicalLineThicknessF = 1.
-   rescf@lbLabelBarOn = True         ; turn off label bar
-
-  wks = gsn_open_wks(wks_type,wks_name) 
-  gsn_define_colormap(wks, "rainbow")
-  res=True
-  plot = gsn_csm_contour_map(wks,data,rescf)
-;  draw(plot)
-;  delete(wks)
-;  delete(plot)
+    rescf@cnFillOn= True          ; color fill
+;    rescf@cnFillMode= "CellFill"  ; Raster mode
   
+    rescf@mpFillOn = False
+;    rescf@mpCenterLonF = 0.
+    rescf@mpGeophysicalLineThicknessF = 1.
+  
+    rescf@lbLabelBarOn = True         ; turn on label bar
+
+    wks = gsn_open_wks(wks_type,wks_name) 
+    gsn_define_colormap(wks, "rainbow")
+    plot = gsn_csm_contour_map_ce(wks,data,rescf)
+  
+;    draw(plot)
+    delete(plot)
+    delete(wks)
 
 end
 
@@ -126,23 +112,49 @@ end
 
 begin
 
+; --- Read in the environment variables
 variable=(getenv("variable"))
 ncfile=(getenv("ncfile"))
-level=(getenv("level"))
+level=stringtointeger(getenv("level"))
 wks_name=(getenv("wks_name"))
 ;ltm=(getenv("ltm"))
 ;varnameltm=(getenv("variableltm"))
+;
+; Region parameters
+minLat=stringtointeger(getenv("minLat"))
+maxLat=stringtointeger(getenv("maxLat"))
+minLon=stringtointeger(getenv("minLon"))
+maxLon=stringtointeger(getenv("maxLon"))
+addCyclic=(getenv("addCyclic"))
 
+;--  Open the data file
 datafile = addfile(ncfile ,"r")  ; open input data file
 ;dimsNames = getfilevardims(ncFile, $variable$)
 
 if (ismissing(level)) then
-   vardata = datafile->$variable$(0,:,:)
+;   vardata = datafile->$variable$(0,:,:)
+   vardata = datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon})
 else
-   vardata = datafile->$variable$(0,{stringtointeger(level)},:,:)
+;   vardata = datafile->$variable$(0,{level},:,:)
+   vardata = datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon})
 end if
+
 printVarSummary(vardata)
-plotmap(vardata, wks_name, "png",True)
+
+rescf = True;
+rescf@gsnAddCyclic          = (addCyclic .eq. "true")    ; turn off if subset
+;if (addCyclic .eq. "true")
+;    rescf@gsnAddCyclic          = True    ;for plotting entire region
+;else
+;    rescf@gsnAddCyclic          = False    ;for plotting subregions
+;end if
+rescf@mpMinLatF            = minLat       ; range to zoom in on
+rescf@mpMaxLatF            = maxLat
+rescf@mpMinLonF            = minLon
+rescf@mpMaxLonF            = maxLon
+rescf@mpCenterLonF         = (maxLon - minLon)/2
+
+plotmap(vardata, wks_name, "png",rescf)
 status_exit(0)
 
 end
