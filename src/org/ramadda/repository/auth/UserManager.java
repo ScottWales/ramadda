@@ -356,7 +356,7 @@ public class UserManager extends RepositoryManager {
             MessageDigest md = MessageDigest.getInstance(digest);
             md.update(password.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
-            return new String(bytes);
+            return new String(bytes, "UTF-8");
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
         } catch (UnsupportedEncodingException uee) {
