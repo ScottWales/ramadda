@@ -336,15 +336,25 @@ public class UserManager extends RepositoryManager {
         try {
             String salt1 = getProperty(PROP_PASSWORD_SALT1, "");
             String salt2 = getProperty(PROP_PASSWORD_SALT2, "");
-            password = salt1+password;
-            int hashIterations = getRepository().getProperty(PROP_PASSWORD_ITERATIONS,1);
-            //            byte[] bytes= null;
-            for(int i=0;i<hashIterations;i++) {
-                //                bytes=assword = doHashPassword(password);
+            if(salt1.length()>0) {
+                password = salt1+password;
             }
-            password = salt2+password;
-            byte []bytes = doHashPassword(password);
+            int hashIterations = getRepository().getProperty(PROP_PASSWORD_ITERATIONS,1);
+            byte[] bytes= password.getBytes("UTF-8");
+            for(int i=0;i<hashIterations;i++) {
+                bytes= doHashPassword(bytes);
+            }
+            if(salt2.length()>0) {
+                byte[] prefix = salt2.getBytes("UTF-8");
+                byte[] newBytes = new byte[prefix.length+bytes.length];
+                for(int i=0;i<prefix.length;i++)
+                    newBytes[i] = prefix[i];
+                for(int i=0;i<bytes.length;i++)
+                    newBytes[bytes.length+i] = bytes[i];
+                bytes =  newBytes;
+            }
             String result = RepositoryUtil.encodeBase64(bytes);
+            System.err.println ("password:" + result);
             return result.trim();
         } catch(Exception exc) {
             throw new RuntimeException(exc);
@@ -352,17 +362,14 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    private byte[] doHashPassword(String password) {
+    private byte[] doHashPassword(byte[] bytes) {
         try {
             String digest = getProperty(PROP_PASSWORD_DIGEST, "SHA-512");
             MessageDigest md = MessageDigest.getInstance(digest);
-            md.update(password.getBytes("UTF-8"));
-            byte[] bytes  = md.digest();
-            return bytes;
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new IllegalStateException(nsae.getMessage());
-        } catch (UnsupportedEncodingException uee) {
-            throw new IllegalStateException(uee.getMessage());
+            md.update(bytes);
+            return  md.digest();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
 
