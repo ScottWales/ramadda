@@ -337,12 +337,14 @@ public class UserManager extends RepositoryManager {
             String salt1 = getProperty(PROP_PASSWORD_SALT1, "");
             String salt2 = getProperty(PROP_PASSWORD_SALT2, "");
             password = salt1+password;
-            int passwordHashIterations = getRepository().getProperty(PROP_PASSWORD_ITERATIONS,1);
-            for(int i=0;i<passwordHashIterations;i++) {
-                password = doHashPassword(password);
+            int hashIterations = getRepository().getProperty(PROP_PASSWORD_ITERATIONS,1);
+            //            byte[] bytes= null;
+            for(int i=0;i<hashIterations;i++) {
+                //                bytes=assword = doHashPassword(password);
             }
             password = salt2+password;
-            String result = RepositoryUtil.encodeBase64(password.getBytes("UTF-8"));
+            byte []bytes = doHashPassword(password);
+            String result = RepositoryUtil.encodeBase64(bytes);
             return result.trim();
         } catch(Exception exc) {
             throw new RuntimeException(exc);
@@ -350,13 +352,13 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    private String doHashPassword(String password) {
+    private byte[] doHashPassword(String password) {
         try {
             String digest = getProperty(PROP_PASSWORD_DIGEST, "SHA-512");
             MessageDigest md = MessageDigest.getInstance(digest);
             md.update(password.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
-            return new String(bytes, "UTF-8");
+            return bytes;
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
         } catch (UnsupportedEncodingException uee) {
