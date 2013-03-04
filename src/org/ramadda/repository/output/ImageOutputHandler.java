@@ -82,6 +82,10 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
+    public static final String ARG_CAPTION = "caption";
+    public static final String ARG_CAPTION_TOP = "caption.top";
+    public static final String ARG_CAPTION_BOTTOM = "caption.bottom";
+
     /** _more_ */
     public static final String ARG_IMAGE_APPLY_TO_GROUP =
         "image.applytogroup";
@@ -166,6 +170,11 @@ public class ImageOutputHandler extends OutputHandler {
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
 
+    public static final OutputType OUTPUT_CAPTION = new OutputType("Caption Image",
+                                                     "image.caption",
+                                                     OutputType.TYPE_VIEW,
+                                                     "", ICON_IMAGES);
+
 
 
     /**
@@ -182,6 +191,7 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_GALLERY);
         addType(OUTPUT_PLAYER);
         //        addType(OUTPUT_SLIDESHOW);
+        addType(OUTPUT_CAPTION);
         addType(OUTPUT_EDIT);
         addType(OUTPUT_VIDEO);
     }
@@ -204,6 +214,9 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (state.entry != null) {
             if (state.entry.isFile()) {
+                //                if (state.entry.getResource().isImage()) {
+                    //                    links.add(makeLink(request, state.getEntry(), OUTPUT_CAPTION));
+                //                }
                 String extension =
                     IOUtil.getFileExtension(
                         state.entry.getResource().getPath()).toLowerCase();
@@ -314,6 +327,10 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
+
+        if (outputType.equals(OUTPUT_CAPTION)) {
+            return outputEntryCaption(request, entry);
+        }
 
         if (outputType.equals(OUTPUT_VIDEO)) {
             Link link = entry.getTypeHandler().getEntryDownloadLink(request,
@@ -456,6 +473,24 @@ public class ImageOutputHandler extends OutputHandler {
 
         return new Result("Image Edit", sb);
 
+    }
+
+
+    public Result outputEntryCaption(Request request,  Entry entry)
+            throws Exception {
+        StringBuffer sb = new StringBuffer();
+        if(request.exists(ARG_CAPTION)) {
+        }
+        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.formEntry(msgLabel("Top Caption"), HtmlUtils.input(ARG_CAPTION_TOP,entry.getName())));
+        sb.append(HtmlUtils.formEntry(msgLabel("Bottom Caption"), HtmlUtils.input(ARG_CAPTION_TOP,entry.getDescription())));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CAPTION));
+        sb.append(HtmlUtils.submit(ARG_CAPTION, "Make Caption"));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
+        return new Result("Image Caption", sb);
     }
 
 
