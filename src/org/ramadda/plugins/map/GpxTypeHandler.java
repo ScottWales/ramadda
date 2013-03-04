@@ -233,6 +233,17 @@ public class GpxTypeHandler extends GenericTypeHandler {
             minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
         }
 
+
+
+        for (Element child :
+                ((List<Element>) XmlUtil.findChildren(root,
+                    GpxUtil.TAG_RTEPT))) {
+            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
+            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
+            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
+            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+        }
+
         if (minTime > 0) {
             entry.setStartDate(minTime);
             entry.setEndDate(maxTime);
@@ -350,6 +361,31 @@ public class GpxTypeHandler extends GenericTypeHandler {
         }
 
 
+        for (Element track :
+                ((List<Element>) XmlUtil.findChildren(gpxRoot,
+                    GpxUtil.TAG_RTE))) {
+            List<double[]> points = new ArrayList<double[]>();
+            for (Element trackPoint :
+                     ((List<Element>) XmlUtil.findChildren(track,
+                                                           GpxUtil.TAG_RTEPT))) {
+                double lat = XmlUtil.getAttribute(trackPoint,
+                                                  GpxUtil.ATTR_LAT, 0.0);
+                double lon = XmlUtil.getAttribute(trackPoint,
+                                                  GpxUtil.ATTR_LON, 0.0);
+                points.add(new double[] { lat, lon });
+            }
+            float[][] coords = new float[2][points.size()];
+            int       cnt    = 0;
+            for (double[] point : points) {
+                coords[0][cnt] = (float) point[0];
+                coords[1][cnt] = (float) point[1];
+                cnt++;
+            }
+            KmlUtil.placemark(folder, "track", "", coords,
+                              java.awt.Color.RED, 2);
+        }
+
+
 
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
@@ -428,6 +464,23 @@ public class GpxTypeHandler extends GenericTypeHandler {
                     }
                 }
             }
+
+            for (Element track :
+                ((List<Element>) XmlUtil.findChildren(root,
+                    GpxUtil.TAG_RTE))) {
+                List<double[]> points = new ArrayList<double[]>();
+                for (Element trackPoint :
+                         ((List<Element>) XmlUtil.findChildren(track,
+                                                           GpxUtil.TAG_RTEPT))) {
+                    double lat = XmlUtil.getAttribute(trackPoint,
+                                                      GpxUtil.ATTR_LAT, 0.0);
+                    double lon = XmlUtil.getAttribute(trackPoint,
+                                                      GpxUtil.ATTR_LON, 0.0);
+                    points.add(new double[] { lat, lon });
+                }
+                map.addLines("", points);
+            }
+
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
