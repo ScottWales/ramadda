@@ -354,7 +354,6 @@ public class UserManager extends RepositoryManager {
                 bytes =  newBytes;
             }
             String result = RepositoryUtil.encodeBase64(bytes);
-            System.err.println ("password:" + result);
             return result.trim();
         } catch(Exception exc) {
             throw new RuntimeException(exc);
