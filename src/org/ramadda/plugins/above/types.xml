@@ -6,6 +6,7 @@
      <property name="form.url.show" value="true"/>
      <property name="form.location.show" value="true"/>
      <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
      <column name="acronym"   label="Acronym"    cansearch="false"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
 
@@ -14,7 +15,7 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
-== {{name}}==
+== {{field name="acronym"}} -- {{name}}==
 
 {{description wikify="true"}}
 
@@ -46,6 +47,19 @@
 
 
    </type>
+
+  <type name="above_site"  description="AbOVE Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
+     <property name="icon" value="/above/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.location.show" value="true"/>
+     <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true"/>
+     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" />
+   </type>
+
+
+
 
   <type name="above_person"  description="AbOVE Person" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
      <property name="icon" value="/icons/group.png"/>
