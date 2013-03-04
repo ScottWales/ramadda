@@ -114,7 +114,7 @@ clear:left;
 #major_header {
         clear: both;
         height: auto;
-        min-height: 100px;
+        min-height: 85px;
         width: auto;
         background: url(${urlroot}/images/globe_top.png);
         background-color:#030361;
