@@ -350,7 +350,7 @@ public class UserManager extends RepositoryManager {
                 for(int i=0;i<prefix.length;i++)
                     newBytes[i] = prefix[i];
                 for(int i=0;i<bytes.length;i++)
-                    newBytes[bytes.length+i] = bytes[i];
+                    newBytes[prefix.length+i] = bytes[i];
                 bytes =  newBytes;
             }
             String result = RepositoryUtil.encodeBase64(bytes);
