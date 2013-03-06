@@ -141,6 +141,9 @@ public class CDOOutputHandler extends OutputHandler {
     /** statistic max */
     private static final String STAT_MAX = "max";
 
+    /** statistic anomaly */
+    private static final String STAT_ANOM = "anomaly";
+
     /** statistic min */
     private static final String STAT_MIN = "min";
 
@@ -159,6 +162,12 @@ public class CDOOutputHandler extends OutputHandler {
     /** day period */
     private static final String PERIOD_DAY = "day";
 
+    /** start year */
+    private int startYear = 1979;
+
+    /** end year */
+    private int endYear = 2011;
+
     /** info types */
     @SuppressWarnings("unchecked")
     private List<TwoFacedObject> INFO_TYPES = Misc.toList(new Object[] {
@@ -172,9 +181,10 @@ public class CDOOutputHandler extends OutputHandler {
     private List<TwoFacedObject> STAT_TYPES = Misc.toList(new Object[] {
                                                   new TwoFacedObject("Mean",
                                                       STAT_MEAN),
-            //new TwoFacedObject("Std Deviation", STAT_STD),
+            new TwoFacedObject("Std Deviation", STAT_STD),
             new TwoFacedObject("Maximum", STAT_MAX),
-            new TwoFacedObject("Minimum", STAT_MIN) });
+            new TwoFacedObject("Minimum", STAT_MIN),
+            new TwoFacedObject("Minimum", STAT_ANOM) });
 
     /** period types */
     @SuppressWarnings("unchecked")
@@ -209,8 +219,14 @@ public class CDOOutputHandler extends OutputHandler {
     /** the path to cdo program */
     private String cdoPath;
 
-    public CDOOutputHandler(Repository repository)
-            throws Exception {
+    /**
+     * Create a CDOOutputHandler
+     *
+     * @param repository  the repository
+     *
+     * @throws Exception problem during creation
+     */
+    public CDOOutputHandler(Repository repository) throws Exception {
         super(repository, "CDO");
         cdoPath = getProperty(PROP_CDO_PATH, null);
     }
@@ -333,9 +349,12 @@ public class CDOOutputHandler extends OutputHandler {
             throws Exception {
 
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
+        sb.append(HtmlUtils.form(formUrl));
+        /*
         sb.append(HtmlUtils.form(formUrl,
                                  makeFormSubmitDialog(sb,
                                      msg("Analyzing Data...."))));
+        */
 
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CDO));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -359,8 +378,17 @@ public class CDOOutputHandler extends OutputHandler {
 
     }
 
+    /**
+     * Add this output handlers UI to the form
+     *
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param sb        the form HTML
+     *
+     * @throws Exception _more_
+     */
     public void addToForm(Request request, Entry entry, StringBuffer sb)
-        throws Exception {
+            throws Exception {
         sb.append(HtmlUtils.formTable());
         if (entry.getType().equals("noaa_climate_modelfile")) {
             //values[1] = var;
@@ -387,22 +415,22 @@ public class CDOOutputHandler extends OutputHandler {
             dataOutputHandler.getCdmManager().getGridDataset(entry,
                 entry.getResource().getPath());
 
-        if(dataset != null)  {
+        if (dataset != null) {
             addVarLevelWidget(request, sb, dataset);
         }
 
         addStatsWidget(request, sb);
 
-        if(dataset != null)  {
-            addTimeWidget(request, sb, dataset, true);
-        }
+        //if(dataset != null)  {
+        addTimeWidget(request, sb, dataset, true);
+        //}
 
         LatLonRect llr = null;
-        if(dataset != null)  {
+        if (dataset != null) {
             llr = dataset.getBoundingBox();
-        } else  {
-            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0), 
-                                 new LatLonPointImpl(-90.0,   180.0));
+        } else {
+            llr = new LatLonRect(new LatLonPointImpl(90.0, 0.0),
+                                 new LatLonPointImpl(-90.0, 360.0));
         }
         addMapWidget(request, sb, llr);
         sb.append(HtmlUtils.formTableClose());
@@ -476,12 +504,15 @@ public class CDOOutputHandler extends OutputHandler {
      *
      * @param dataset  the dataset
      *
-     * @return  the dates or null
+     * @return  the dates or empty list if dataset is null
      */
     private List<Date> getGridDates(GridDataset dataset) {
-        List<Date>         gridDates = null;
-        List<GridDatatype> grids     = dataset.getGrids();
-        HashSet<Date>      dateHash  = new HashSet<Date>();
+        List<Date> gridDates = null;
+        if (dataset == null) {
+            return new ArrayList<Date>();
+        }
+        List<GridDatatype> grids    = dataset.getGrids();
+        HashSet<Date>      dateHash = new HashSet<Date>();
         List<CoordinateAxis1DTime> timeAxes =
             new ArrayList<CoordinateAxis1DTime>();
 
@@ -530,14 +561,14 @@ public class CDOOutputHandler extends OutputHandler {
                                GridDataset dataset, boolean useYYMM) {
         List<Date> dates = getGridDates(dataset);
 
-        if ((dates != null) && (dates.size() > 0)) {
-            if (useYYMM) {
-                makeMonthsWidget(request, sb, dates);
-                makeYearsWidget(request, sb, dates);
-            } else {
-                makeTimesWidget(request, sb, dates);
-            }
+        //if ((dates != null) && (!dates.size() > 0)) {
+        if (useYYMM) {
+            makeMonthsWidget(request, sb, dates);
+            makeYearsWidget(request, sb, dates);
+        } else {
+            makeTimesWidget(request, sb, dates);
         }
+        //}
     }
 
     /**
@@ -601,14 +632,23 @@ public class CDOOutputHandler extends OutputHandler {
                                  List<Date> dates) {
         SortedSet<String> uniqueYears =
             Collections.synchronizedSortedSet(new TreeSet<String>());
-        for (Date d : dates) {
-            try {  // shouldn't get an exception
-                String year = new DateTime(d).formattedString("yyyy",
-                                           DateTime.DEFAULT_TIMEZONE);
-                uniqueYears.add(year);
-            } catch (Exception e) {}
+        if (dates != null) {
+            for (Date d : dates) {
+                try {  // shouldn't get an exception
+                    String year = new DateTime(d).formattedString("yyyy",
+                                      DateTime.DEFAULT_TIMEZONE);
+                    uniqueYears.add(year);
+                } catch (Exception e) {}
+            }
         }
         List<String> years = new ArrayList<String>(uniqueYears);
+        // TODO:  make a better list of years
+        if (years.isEmpty()) {
+            for (int i = startYear; i <= endYear; i++) {
+                years.add(String.valueOf(i));
+            }
+        }
+
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Years"),
@@ -658,11 +698,8 @@ public class CDOOutputHandler extends OutputHandler {
         String tail    = getStorageManager().getFileTail(entry);
         String newName = IOUtil.stripExtension(tail) + "_product.nc";
         tail = getStorageManager().getStorageFileName(tail);
-        File         outFile = new File(IOUtil.joinDir(getProductDir(),
-                                   tail));
-        List<String> commands            = new ArrayList<String>();
-        boolean      anySpatialDifferent = false;
-        boolean      haveAllSpatialArgs  = true;
+        File outFile = new File(IOUtil.joinDir(getProductDir(), newName));
+        List<String> commands = new ArrayList<String>();
         commands.add(cdoPath);
         commands.add("-L");
         commands.add("-s");
@@ -676,13 +713,19 @@ public class CDOOutputHandler extends OutputHandler {
         //   - month range
         //   - year or time range
 
-        if (request.defined(ARG_LEVEL)) {
-            String level = request.getString(ARG_LEVEL);
-            if (level != null) {
-                commands.add(OP_SELLEVEL + "," + level);
-            }
-        }
+        String select = null;
 
+        select = createLevelSelectCommand(request, entry);
+        if ((select != null) && !select.isEmpty()) {
+            commands.add(select);
+        }
+        //if (level != null) {
+        //    commands.add(OP_SELLEVEL + "," + level);
+        //}
+        // Spatial subset
+        /*
+        boolean      anySpatialDifferent = false;
+        boolean      haveAllSpatialArgs  = true;
         for (String spatialArg : SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
@@ -692,6 +735,7 @@ public class CDOOutputHandler extends OutputHandler {
                 break;
             }
         }
+
         for (String spatialArg : SPATIALARGS) {
             if ( !request.defined(spatialArg)) {
                 haveAllSpatialArgs = false;
@@ -708,10 +752,22 @@ public class CDOOutputHandler extends OutputHandler {
                        + request.getString(ARG_AREA_SOUTH, "-90") + ","
                        + request.getString(ARG_AREA_NORTH, "90");
         }
-        if (llSelect != null) {
-            commands.add(llSelect);
+        */
+        //if (llSelect != null) {
+        select = createAreaSelectCommand(request, entry);
+        if ((select != null) && !select.isEmpty()) {
+            commands.add(select);
         }
+        //}
 
+        List<String> dateCmds = createDateSelectCommands(request, entry);
+        for (String cmd : dateCmds) {
+            if ((cmd != null) && !cmd.isEmpty()) {
+                commands.add(cmd);
+            }
+        }
+        /*
+        // Time selection
         String selMonth = null;
         if (request.defined(ARG_STARTMONTH)
                 || request.defined(ARG_ENDMONTH)) {
@@ -786,6 +842,7 @@ public class CDOOutputHandler extends OutputHandler {
         if (dateSelect != null) {
             commands.add(dateSelect);
         }
+            */
 
         System.err.println("cmds:" + commands);
 
@@ -864,4 +921,172 @@ public class CDOOutputHandler extends OutputHandler {
             outFile, getStorageManager().getFileTail(outFile.toString()));
     }
 
+    /**
+     * _more_
+     *
+     * @param start _more_
+     */
+    public void setStartYear(int start) {
+        startYear = start;
+    }
+
+    /**
+     * _more_
+     *
+     * @param end _more_
+     */
+    public void setEndYear(int end) {
+        endYear = end;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public static String createAreaSelectCommand(Request request,
+            Entry entry) {
+        boolean anySpatialDifferent = false;
+        boolean haveAllSpatialArgs  = true;
+        for (String spatialArg : SPATIALARGS) {
+            if ( !Misc.equals(request.getString(spatialArg, ""),
+                              request.getString(spatialArg + ".original",
+                                  ""))) {
+                anySpatialDifferent = true;
+
+                break;
+            }
+        }
+
+        for (String spatialArg : SPATIALARGS) {
+            if ( !request.defined(spatialArg)) {
+                haveAllSpatialArgs = false;
+
+                break;
+            }
+        }
+
+        String llSelect = "";
+        if (haveAllSpatialArgs && anySpatialDifferent) {
+            llSelect = OP_SELLLBOX + ","
+                       + request.getString(ARG_AREA_WEST, "0") + ","
+                       + request.getString(ARG_AREA_EAST, "360") + ","
+                       + request.getString(ARG_AREA_SOUTH, "-90") + ","
+                       + request.getString(ARG_AREA_NORTH, "90");
+        }
+
+        return llSelect;
+    }
+
+    /**
+     * Create the region subset command
+     * @param request  the Request
+     * @param entry    the Entry
+     * @return  the subset command.   Will be empty if no subset
+     */
+    public static String createLevelSelectCommand(Request request,
+            Entry entry) {
+        String levSelect = null;
+        if (request.defined(ARG_LEVEL)) {
+            String level = request.getString(ARG_LEVEL);
+            if (level != null) {
+                levSelect = OP_SELLEVEL + "," + level;
+            }
+        }
+
+        return levSelect;
+    }
+
+    /**
+     * Create the list of date/time select commands
+     * @param request the Request
+     * @param entry   the associated Entry
+     * @return  a list of date select commands (may be empty list)
+     *
+     * @throws Exception _more_
+     */
+    public List<String> createDateSelectCommands(Request request, Entry entry)
+            throws Exception {
+
+        List<String> commands = new ArrayList<String>();
+        String       selMonth = null;
+        if (request.defined(ARG_STARTMONTH)
+                || request.defined(ARG_ENDMONTH)) {
+            int startMonth = request.defined(ARG_STARTMONTH)
+                             ? request.get(ARG_STARTMONTH, 1)
+                             : 1;
+            int endMonth   = request.defined(ARG_ENDMONTH)
+                             ? request.get(ARG_ENDMONTH, startMonth)
+                             : startMonth;
+            if (endMonth < startMonth) {
+                getRepository().showDialogWarning(
+                    "Start month is after end month");
+            }
+            selMonth = OP_SELMON + "," + startMonth;
+            if (endMonth != startMonth) {
+                selMonth += "/" + endMonth;
+            }
+            commands.add(selMonth);
+        }
+
+        String dateSelect = null;
+        if (request.defined(ARG_FROMDATE) || request.defined(ARG_TODATE)) {
+
+            Date[] dates = new Date[] { request.defined(ARG_FROMDATE)
+                                        ? request.getDate(ARG_FROMDATE, null)
+                                        : null, request.defined(ARG_TODATE)
+                    ? request.getDate(ARG_TODATE, null)
+                    : null };
+            //have to have both dates
+            if ((dates[0] != null) && (dates[1] == null)) {
+                dates[0] = null;
+            }
+            if ((dates[1] != null) && (dates[0] == null)) {
+                dates[1] = null;
+            }
+            if ((dates[0] != null) && (dates[1] != null)) {
+                if (dates[0].getTime() > dates[1].getTime()) {
+                    getRepository().showDialogWarning(
+                        "From date is after to date");
+                } else {
+                    dateSelect = OP_SELDATE + ","
+                                 + DateUtil.getTimeAsISO8601(dates[0]) + ","
+                                 + DateUtil.getTimeAsISO8601(dates[1]);
+                }
+            }
+        } else if (request.defined(ARG_STARTYEAR)
+                   || request.defined(ARG_ENDYEAR)) {
+            String[] years = new String[] { request.defined(ARG_STARTYEAR)
+                                            ? request.getString(
+                                                ARG_STARTYEAR, null)
+                                            : null, request.defined(
+                                                ARG_ENDYEAR)
+                    ? request.getString(ARG_ENDYEAR, null)
+                    : null };
+            //have to have both dates
+            if ((years[0] != null) && (years[1] == null)) {
+                years[0] = null;
+            }
+            if ((years[1] != null) && (years[0] == null)) {
+                years[1] = null;
+            }
+            if ((years[0] != null) && (years[1] != null)) {
+                if (years[0].compareTo(years[1]) > 0) {
+                    getRepository().showDialogWarning(
+                        "Start year is after end year");
+                } else {
+                    dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];
+                }
+            }
+
+        }
+        if (dateSelect != null) {
+            commands.add(dateSelect);
+        }
+
+        return commands;
+    }
 }

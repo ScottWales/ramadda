@@ -18,6 +18,7 @@ import java.awt.image.*;
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
+import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -39,11 +40,13 @@ import ucar.unidata.util.IOUtil;
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
     private CDOOutputHandler cdoOutputHandler;
+    private NCLOutputHandler nclOutputHandler;
 
     public ClimateCollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
         super(repository, entryNode);
         cdoOutputHandler = new CDOOutputHandler(repository);
+        nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
@@ -82,11 +85,11 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
-        String buttons = JQ.button("List files", formId+"_search",js, HtmlUtils.call(formId +".search","event")) +" " +
-            JQ.button("Download files", formId+"_download",js, HtmlUtils.call(formId +".download","event")) + " " +
-            JQ.button("Image", formId+"_image",js, HtmlUtils.call(formId +".makeImage","event"));
+        String searchButton = JQ.button("Select Data", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
+        String analysisButtons = JQ.button("Download Data", formId+"_download",js, HtmlUtils.call(formId +".download","event")) + " " +
+            JQ.button("Plot", formId+"_image",js, HtmlUtils.call(formId +".makeImage","event"));
         selectorSB.append(HtmlUtils.formTableClose());
-        selectorSB.append(buttons);
+        selectorSB.append(searchButton);
 
 
         StringBuffer analysisSB = new StringBuffer();
@@ -101,12 +104,11 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         sb.append(HtmlUtils.col(HtmlUtils.div(selectorSB.toString(), HtmlUtils.cssClass("entryselect")) , " width=30%"));
         sb.append(HtmlUtils.col(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output"))));
         sb.append("</tr></table>");
-        sb.append(HtmlUtils.p());
-
+//        sb.append(HtmlUtils.p());
 
         cdoOutputHandler.addToForm(request, entry, analysisSB);
-        sb.append(HtmlUtils.p());
-        sb.append(header(msg("Do Something to Data")));
+//        sb.append(HtmlUtils.p());
+        sb.append(header(msg("Analyze Selected Data")));
         sb.append(analysisSB);
 
         /*
@@ -114,15 +116,12 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         sb.append(header(msg("Do Something with Data")));
         sb.append(productSB);
         */
+        sb.append(analysisButtons);
 
         sb.append(HtmlUtils.script(js.toString()));
         sb.append(HtmlUtils.formClose());
         //        appendSearchResults(request, entry, sb);
         return new Result(msg(getLabel()), sb);
-
-
-
-
     }
 
 

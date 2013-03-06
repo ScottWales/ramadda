@@ -287,7 +287,7 @@ sb.append(HtmlUtils.form(formUrl,
                                       var.getName() + HtmlUtils.space(1)
                                       + ((var.getUnitsString() != null)
                                          ? "(" + var.getUnitsString() + ")"
-                                         : "") + HtmlUtils.italics(
+                                         : "") + HtmlUtils.space(3) + HtmlUtils.italics(
                                              var.getDescription())));
 
         if (gcs.getVerticalAxis() != null) {
