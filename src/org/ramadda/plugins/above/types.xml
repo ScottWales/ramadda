@@ -4,6 +4,7 @@
      <property name="icon" value="/above/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
+     <property name="form.time.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
