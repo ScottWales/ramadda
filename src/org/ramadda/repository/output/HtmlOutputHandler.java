@@ -277,7 +277,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TREEVIEW));
-                links.add(makeLink(request, state.getEntry(), OUTPUT_TEST));
+                //                links.add(makeLink(request, state.getEntry(), OUTPUT_TEST));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
         }

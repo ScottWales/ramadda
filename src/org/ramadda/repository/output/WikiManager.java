@@ -91,6 +91,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+    public static final String ATTR_BLOCK_SHOW = "block.show";
+    public static final String ATTR_BLOCK_OPEN = "block.open";
+    public static final String ATTR_BLOCK_TITLE = "block.title";
+    public static final String ATTR_BLOCK_POPUP = "block.popup";
+
+
+
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
@@ -123,6 +130,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** src attribute */
     public static final String ATTR_SRC = "src";
+
+    public static final String ATTR_PREFIX = "prefix";
+    public static final String ATTR_SUFFIX = "suffix";
 
 
     /** include icon attribute */
@@ -241,8 +251,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_REQUEST = "request";
 
-
-    /** attribute in import tag */
     public static final String ATTR_POPUP = "popup";
 
     /** attribute in import tag */
@@ -914,30 +922,54 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry entry, String include, Hashtable props)
             throws Exception {
+        boolean blockPopup = Misc.getProperty(props, ATTR_BLOCK_POPUP, false);
+        boolean blockShow = Misc.getProperty(props, ATTR_BLOCK_SHOW, false);
+        String prefix = Misc.getProperty(props, ATTR_PREFIX, (String)null);
+        String suffix = Misc.getProperty(props, ATTR_SUFFIX, (String)null);
+        String result = getWikiIncludeInner(wikiUtil, request, entry, include,  props);
+        if(result == null) {
+            result =  getMessage(props,
+                                 "Could not find entry");
+        }
+        if(result.length()==0) return "";
 
-        String hasChildren = (String) wikiUtil.getProperty(entry.getId()
-                                 + "_haschildren");
+        StringBuffer sb = new StringBuffer();
+        if(prefix!=null)  {
+            sb.append(makeWikiUtil(request, false).wikify(prefix, null));
+        }
+        sb.append(result);
+        if(suffix!=null)  {
+            sb.append(makeWikiUtil(request, false).wikify(suffix, null));
+        }
 
-        boolean hasOpenProperty = props.get(ATTR_OPEN) != null;
 
-        boolean open            = Misc.getProperty(props, ATTR_OPEN,
-                                        ((hasChildren != null)
-                                         ? hasChildren.equals("false")
-                                         : true));
-        boolean      inBlock = Misc.getProperty(props, ATTR_SHOWTOGGLE, true);
-        String       blockContent = null;
-        String       blockTitle   = "";
-        boolean      doBG         = true;
+        String       blockTitle   = Misc.getProperty(props, ATTR_BLOCK_TITLE, "");
+        if (blockPopup) {
+            return getRepository().makePopupLink(blockTitle,
+                                                 sb.toString());
+        }
+
+        if (blockShow) {
+            boolean blockOpen  = Misc.getProperty(props, ATTR_BLOCK_OPEN, true);
+            return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
+                                               blockOpen, HtmlUtils.cssClass("toggleblocklabel"), "");
+        }
+
+        return sb.toString();
+
+    }
+
+
+    private String getWikiIncludeInner(WikiUtil wikiUtil, Request request,
+                                 Entry entry, String include, Hashtable props)
+            throws Exception {
 
         boolean      wikify       = Misc.getProperty(props, ATTR_WIKIFY, true);
 
         StringBuffer sb           = new StringBuffer();
         if (include.equals(WIKI_PROP_INFORMATION)) {
-            blockContent =
-                getRepository().getHtmlOutputHandler().getInformationTabs(
-                    request, entry, false, true);
-            blockTitle = Misc.getProperty(props, ATTR_TITLE,
-                                          msg("Information"));
+            return getRepository().getHtmlOutputHandler().getInformationTabs(
+                                                                             request, entry, false, true);
         } else if (include.equals(WIKI_PROP_TAGCLOUD)) {
             StringBuffer tagCloud = new StringBuffer();
             int threshold = Misc.getProperty(props,"threshold", 0);
@@ -1138,18 +1170,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MENU)) {
-            boolean popup = Misc.getProperty(props, ATTR_POPUP, false);
             String  menus = Misc.getProperty(props, ATTR_MENUS, "");
             int     type  = OutputType.getTypeMask(StringUtil.split(menus, ",",
                            true, true));
-            blockTitle = Misc.getProperty(props, ATTR_TITLE,
-                                          msg(LABEL_LINKS));
-            blockContent = getEntryManager().getEntryActionsTable(request,
-                    entry, type);
-            if (popup) {
-                return getRepository().makePopupLink(blockTitle,
-                        blockContent);
-            }
+            return  getEntryManager().getEntryActionsTable(request,
+                                                           entry, type);
         } else if (include.equals(WIKI_PROP_TABS)
                    || include.equals(WIKI_PROP_ACCORDIAN)
                    || include.equals(WIKI_PROP_SLIDESHOW)) {
@@ -1464,7 +1489,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props, true);
             if (children.size() == 0) {
-                return getMessage(props, "");
+                return null;
             }
             ImageOutputHandler imageOutputHandler =
                 (ImageOutputHandler) getRepository().getOutputHandler(
@@ -1498,7 +1523,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return getMessage(props, "");
+                return null;
             }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
@@ -1508,11 +1533,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return sb.toString();
             }
         } else if (include.equals(WIKI_PROP_TREEVIEW)) {
-            doBG = false;
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return getMessage(props, "");
+                return null;
             }
             getHtmlOutputHandler().makeTreeView(request, children, sb);
             return sb.toString();
@@ -1522,7 +1546,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);
             if (children.size() == 0) {
-                return getMessage(props, "");
+                return null;
             }
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
@@ -1563,19 +1587,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return StringUtil.join(separator, links);
         } else {
             return null;
-        }
-
-        if ( !inBlock) {
-            return blockContent;
-        }
-
-        if (doBG) {
-            return HtmlUtils.makeShowHideBlock(blockTitle, blockContent,
-                    open, HtmlUtils.cssClass("toggleblocklabel"), "");
-            //            HtmlUtils.cssClass("wiki-tocheader"),  HtmlUtils.cssClass("wiki-toc"));
-        } else {
-            return HtmlUtils.makeShowHideBlock(blockTitle, blockContent,
-                    open);
         }
 
     }
@@ -2679,15 +2690,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               List<Entry> subEntries)
             throws Exception {
         List    children    = new ArrayList();
-        boolean hasChildren = false;
         if (subGroups != null) {
-            hasChildren = subGroups.size() > 0;
             wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
             children.addAll(subGroups);
         }
 
         if (subEntries != null) {
-            hasChildren |= subEntries.size() > 0;
             wikiUtil.putProperty(entry.getId() + "_subentries", subEntries);
             children.addAll(subEntries);
         }
