@@ -134,23 +134,28 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         String what = request.getString(ARG_REQUEST,(String) null);
         if(what == null) return null;
         if(what.equals(REQUEST_IMAGE)) {
-            File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
-            BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = (Graphics2D) image.getGraphics();
-            g.setColor(Color.red);
-            int row = 0;
-            for(Entry granule: processSearch(request, entry)) {
-                g.drawString(granule.getName(), 10, (row*20)+20);
-                row++;
-            }
-
-            ImageUtils.writeImageToFile(image, imageFile);
-            String extension = IOUtil.getFileExtension(imageFile.toString());
-            return new Result("",
-                              getStorageManager().getFileInputStream(imageFile),
-                              getRepository().getMimeTypeFromSuffix(extension));
+            return processImageRequest(request, entry);
         }
         return null;
+    }
+
+
+    public Result processImageRequest(Request request, Entry entry) throws Exception {
+        File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
+        BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        g.setColor(Color.red);
+        int row = 0;
+        for(Entry granule: processSearch(request, entry)) {
+            g.drawString(granule.getName(), 10, (row*20)+20);
+            row++;
+        }
+        
+        ImageUtils.writeImageToFile(image, imageFile);
+        String extension = IOUtil.getFileExtension(imageFile.toString());
+        return new Result("",
+                          getStorageManager().getFileInputStream(imageFile),
+                          getRepository().getMimeTypeFromSuffix(extension));
     }
 
 }
