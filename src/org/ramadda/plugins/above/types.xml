@@ -7,7 +7,7 @@
      <property name="form.location.show" value="true"/>
      <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true"/>
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
-     <column name="acronym"   label="Acronym"    cansearch="false"/>
+     <column name="short_name"   label="Short Name"    cansearch="false"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
 
      <wiki><![CDATA[
@@ -15,7 +15,9 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
-== {{field name="acronym"}} -- {{name}}==
+<div class="wiki-h1">
+{{field name="short_name"}}  {{name}}
+</div>
 
 {{description wikify="true"}}
 
@@ -23,16 +25,21 @@
 <table class="formtable">
 <tr><td align="right"><b>Url:</b></td><td>{{resource}}</td></tr>
 <tr><td align="right"><b>Type:</b></td><td>{{field name="organization_type"}}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
 <tr><td align="right"><b>Notes:</b></td><td> {{field name="notes"}}</td></tr>
 </table>
 
-{{tree title="Data" showtoggle="false"}}
+{{tree prefix="==Contents==" message="" showtoggle="false"}}
 
 </td>
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{comments}}
+{{map  entry="Sites" message="" width="300" suffix="<b>Site Map</b>"}}
+<p>
+{{links  entry="Links" message="" prefix="==Links=="}}
+<p>
+{{comments prefix="==Comments==" }}
 </td></tr>
 
 
@@ -40,7 +47,7 @@
 </table>
 
 ==Properties==
-{{properties}}
+{{properties block.show="true" block.open="false"}}
 <p>
 ]]>
 </wiki>
@@ -48,24 +55,19 @@
 
    </type>
 
-  <type name="above_site"  description="AbOVE Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
-     <property name="icon" value="/above/chart_organisation.png"/>
+  <type name="above_site"  description="AbOVE Site" xxxhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
+     <property name="icon" value="/above/site.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
      <property name="form.location.show" value="true"/>
      <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
+     <column name="short_name"   label="Short Name"    cansearch="true"/>
      <column name="network"   label="Network"    type="enumerationplus"   cansearch="true"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" />
    </type>
 
 
-
-
-  <type name="above_person"  description="AbOVE Person" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="AbOVE" >
-     <property name="icon" value="/icons/group.png"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.resource.download.show" value="false"/>
-   </type>
 
 
 </types>

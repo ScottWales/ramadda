@@ -16,6 +16,14 @@
       <element id="affiliation" name="Affiliation"/>
     </type>
 
+    <type id="above_monitoring_type" name="Monitoring Type" searchable="true" browsable="true">
+      <element id="type" name="Type" datatype="enumerationplus" values="A:Assessment,E:Educational,L:Long-term,M:Monitoring,R:Research" />
+    </type>
+
+    <type id="above_site_equipment" name="Site Equipment" searchable="true" browsable="true">
+      <element id="equipment" name="Equipment" datatype="enumerationplus"/>
+    </type>
+
 
 </handler>
 </metadata>
