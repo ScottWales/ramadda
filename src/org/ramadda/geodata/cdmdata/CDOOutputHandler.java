@@ -385,7 +385,7 @@ public class CDOOutputHandler extends OutputHandler {
      * @param entry     the Entry
      * @param sb        the form HTML
      *
-     * @throws Exception _more_
+     * @throws Exception  on badness
      */
     public void addToForm(Request request, Entry entry, StringBuffer sb)
             throws Exception {
@@ -708,57 +708,27 @@ public class CDOOutputHandler extends OutputHandler {
         //commands.add(operation);
 
         // Select order (left to right) - operations go right to left:
+        //   - stats
         //   - level
         //   - region
         //   - month range
         //   - year or time range
 
-        String select = null;
-
-        select = createLevelSelectCommand(request, entry);
-        if ((select != null) && !select.isEmpty()) {
-            commands.add(select);
-        }
-        //if (level != null) {
-        //    commands.add(OP_SELLEVEL + "," + level);
-        //}
-        // Spatial subset
-        /*
-        boolean      anySpatialDifferent = false;
-        boolean      haveAllSpatialArgs  = true;
-        for (String spatialArg : SPATIALARGS) {
-            if ( !Misc.equals(request.getString(spatialArg, ""),
-                              request.getString(spatialArg + ".original",
-                                  ""))) {
-                anySpatialDifferent = true;
-
-                break;
+        List<String> statCommands = createStatCommands(request, entry);
+        for (String cmd : statCommands) {
+            if ((cmd != null) && !cmd.isEmpty()) {
+                commands.add(cmd);
             }
         }
 
-        for (String spatialArg : SPATIALARGS) {
-            if ( !request.defined(spatialArg)) {
-                haveAllSpatialArgs = false;
-
-                break;
-            }
+        String levSelect = createLevelSelectCommand(request, entry);
+        if ((levSelect != null) && !levSelect.isEmpty()) {
+            commands.add(levSelect);
         }
-
-        String llSelect = null;
-        if (haveAllSpatialArgs && anySpatialDifferent) {
-            llSelect = OP_SELLLBOX + ","
-                       + request.getString(ARG_AREA_WEST, "0") + ","
-                       + request.getString(ARG_AREA_EAST, "360") + ","
-                       + request.getString(ARG_AREA_SOUTH, "-90") + ","
-                       + request.getString(ARG_AREA_NORTH, "90");
+        String areaSelect = createAreaSelectCommand(request, entry);
+        if ((areaSelect != null) && !areaSelect.isEmpty()) {
+            commands.add(areaSelect);
         }
-        */
-        //if (llSelect != null) {
-        select = createAreaSelectCommand(request, entry);
-        if ((select != null) && !select.isEmpty()) {
-            commands.add(select);
-        }
-        //}
 
         List<String> dateCmds = createDateSelectCommands(request, entry);
         for (String cmd : dateCmds) {
@@ -766,126 +736,34 @@ public class CDOOutputHandler extends OutputHandler {
                 commands.add(cmd);
             }
         }
-        /*
-        // Time selection
-        String selMonth = null;
-        if (request.defined(ARG_STARTMONTH)
-                || request.defined(ARG_ENDMONTH)) {
-            int startMonth = request.defined(ARG_STARTMONTH)
-                             ? request.get(ARG_STARTMONTH, 1)
-                             : 1;
-            int endMonth   = request.defined(ARG_ENDMONTH)
-                             ? request.get(ARG_ENDMONTH, startMonth)
-                             : startMonth;
-            if (endMonth < startMonth) {
-                getRepository().showDialogWarning(
-                    "Start month is after end month");
-            }
-            selMonth = OP_SELMON + "," + startMonth;
-            if (endMonth != startMonth) {
-                selMonth += "/" + endMonth;
-            }
-            commands.add(selMonth);
-        }
-
-        String dateSelect = null;
-        if (request.defined(ARG_FROMDATE) || request.defined(ARG_TODATE)) {
-
-            Date[] dates = new Date[] { request.defined(ARG_FROMDATE)
-                                        ? request.getDate(ARG_FROMDATE, null)
-                                        : null, request.defined(ARG_TODATE)
-                    ? request.getDate(ARG_TODATE, null)
-                    : null };
-            //have to have both dates
-            if ((dates[0] != null) && (dates[1] == null)) {
-                dates[0] = null;
-            }
-            if ((dates[1] != null) && (dates[0] == null)) {
-                dates[1] = null;
-            }
-            if ((dates[0] != null) && (dates[1] != null)) {
-                if (dates[0].getTime() > dates[1].getTime()) {
-                    getRepository().showDialogWarning(
-                        "From date is after to date");
-                } else {
-                    dateSelect = OP_SELDATE + ","
-                                 + DateUtil.getTimeAsISO8601(dates[0]) + ","
-                                 + DateUtil.getTimeAsISO8601(dates[1]);
-                }
-            }
-        } else if (request.defined(ARG_STARTYEAR)
-                   || request.defined(ARG_ENDYEAR)) {
-            String[] years = new String[] { request.defined(ARG_STARTYEAR)
-                                            ? request.getString(
-                                                ARG_STARTYEAR, null)
-                                            : null, request.defined(
-                                                ARG_ENDYEAR)
-                    ? request.getString(ARG_ENDYEAR, null)
-                    : null };
-            //have to have both dates
-            if ((years[0] != null) && (years[1] == null)) {
-                years[0] = null;
-            }
-            if ((years[1] != null) && (years[0] == null)) {
-                years[1] = null;
-            }
-            if ((years[0] != null) && (years[1] != null)) {
-                if (years[0].compareTo(years[1]) > 0) {
-                    getRepository().showDialogWarning(
-                        "Start year is after end year");
-                } else {
-                    dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];
-                }
-            }
-
-        }
-        if (dateSelect != null) {
-            commands.add(dateSelect);
-        }
-            */
 
         System.err.println("cmds:" + commands);
 
         commands.add(entry.getResource().getPath());
         commands.add(outFile.toString());
-        ProcessBuilder pb = new ProcessBuilder(commands);
-
-
-        pb.directory(getProductDir());
-        Process process = pb.start();
-        String errorMsg =
-            new String(IOUtil.readBytes(process.getErrorStream()));
-        String outMsg =
-            new String(IOUtil.readBytes(process.getInputStream()));
-        int result = process.waitFor();
-        if (errorMsg.length() > 0) {
-            return new Result(
-                "CDO-Error",
-                new StringBuffer(
-                    getRepository().showDialogError(
-                        "An error occurred:<br>" + errorMsg)));
+        String[] results = getRepository().executeCommand(commands, null,
+                               getProductDir());
+        String errorMsg = results[1];
+        String outMsg   = results[0];
+        if ( !outFile.exists()) {
+            if (outMsg.length() > 0) {
+                return getErrorResult(request, "CDO-Error",
+                                      "An error occurred:<br>" + outMsg);
+            }
+            if (errorMsg.length() > 0) {
+                return getErrorResult(request, "CDO-Error",
+                                      "An error occurred:<br>" + errorMsg);
+            }
+            if ( !outFile.exists()) {
+                return getErrorResult(
+                    request, "CDO-Error",
+                    "Humm, the CDO analysis failed for some reason");
+            }
         }
 
         //The jeff is here for when I have a fake cdo.sh
         boolean jeff = true;
 
-        if ( !jeff) {
-            if (outMsg.length() > 0) {
-                return new Result(
-                    "CDO-Error",
-                    new StringBuffer(
-                        getRepository().showDialogError(
-                            "An error occurred:<br>" + outMsg)));
-            }
-
-            if ( !outFile.exists()) {
-                return new Result(
-                    "CDO-Error",
-                    new StringBuffer(
-                        getRepository().showDialogError(
-                            "Humm, the CDO generation failed for some reason")));
-            }
-        }
 
         if (doingPublish(request)) {
             if ( !request.defined(ARG_PUBLISH_NAME)) {
@@ -896,7 +774,7 @@ public class CDOOutputHandler extends OutputHandler {
                     null, entry, "generated from");
         }
 
-        //Assuming this is some text
+        //Assuming this is some text - DOESN'T HAPPEN anymore
         if (operation.equals(OP_INFO) && false) {
             String info;
 
@@ -922,30 +800,30 @@ public class CDOOutputHandler extends OutputHandler {
     }
 
     /**
-     * _more_
+     * Set the start year
      *
-     * @param start _more_
+     * @param start  start year
      */
     public void setStartYear(int start) {
         startYear = start;
     }
 
     /**
-     * _more_
+     * Set the end year
      *
-     * @param end _more_
+     * @param end end year
      */
     public void setEndYear(int end) {
         endYear = end;
     }
 
     /**
-     * _more_
+     * Create the CDO command to select an area
      *
-     * @param request _more_
-     * @param entry _more_
+     * @param request  the Request
+     * @param entry    the Entry
      *
-     * @return _more_
+     * @return the select command
      */
     public static String createAreaSelectCommand(Request request,
             Entry entry) {
@@ -1006,7 +884,7 @@ public class CDOOutputHandler extends OutputHandler {
      * @param entry   the associated Entry
      * @return  a list of date select commands (may be empty list)
      *
-     * @throws Exception _more_
+     * @throws Exception  on badness
      */
     public List<String> createDateSelectCommands(Request request, Entry entry)
             throws Exception {
@@ -1085,6 +963,36 @@ public class CDOOutputHandler extends OutputHandler {
         }
         if (dateSelect != null) {
             commands.add(dateSelect);
+        }
+
+        return commands;
+    }
+
+    /**
+     * Creat the statistics command
+     * @param request  the request
+     * @param entry    the entry
+     * @return         the list of commands
+     */
+    public List<String> createStatCommands(Request request, Entry entry) {
+        List<String> commands = new ArrayList<String>();
+        if (request.defined(ARG_PERIOD) && request.defined(ARG_STAT)) {
+            String period = request.getString(ARG_PERIOD);
+            String stat   = request.getString(ARG_STAT);
+            if ((period == null) || (stat == null)) {
+                return commands;
+            }
+            // TODO:  Handle anomaly
+            if (stat.equals(STAT_ANOM)) {
+                stat = STAT_MEAN;
+            }
+            if (period.equals(PERIOD_YEAR)) {
+                commands.add("-" + PERIOD_YEAR + stat);
+                commands.add("-" + PERIOD_YMON + stat);
+            }
+            if (period.equals(PERIOD_YMON)) {
+                commands.add("-" + PERIOD_YMON + stat);
+            }
         }
 
         return commands;
