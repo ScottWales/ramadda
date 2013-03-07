@@ -694,7 +694,25 @@ public class CDOOutputHandler extends OutputHandler {
      * @throws Exception  problem executing the command
      */
     public Result outputCDO(Request request, Entry entry) throws Exception {
+        try {
+        File outFile = processRequest(request, entry);
 
+        if (doingPublish(request)) {
+            if ( !request.defined(ARG_PUBLISH_NAME)) {
+                request.put(ARG_PUBLISH_NAME, outFile.getName());
+            }
+            return getEntryManager().processEntryPublish(request, outFile,
+                    null, entry, "generated from");
+        }
+        return request.returnFile(
+            outFile, getStorageManager().getFileTail(outFile.toString()));
+        } catch(RuntimeException rte) {
+            return getErrorResult(
+                                  request, "CDO-Error", rte.toString());
+        }
+    }
+
+    public File processRequest(Request request, Entry entry) throws Exception {
         String tail    = getStorageManager().getFileTail(entry);
         String newName = IOUtil.stripExtension(tail) + "_product.nc";
         tail = getStorageManager().getStorageFileName(tail);
@@ -747,31 +765,21 @@ public class CDOOutputHandler extends OutputHandler {
         String outMsg   = results[0];
         if ( !outFile.exists()) {
             if (outMsg.length() > 0) {
-                return getErrorResult(request, "CDO-Error",
-                                      "An error occurred:<br>" + outMsg);
+                throw new IllegalArgumentException(outMsg);
             }
             if (errorMsg.length() > 0) {
-                return getErrorResult(request, "CDO-Error",
-                                      "An error occurred:<br>" + errorMsg);
+                throw new IllegalArgumentException(errorMsg);
             }
             if ( !outFile.exists()) {
-                return getErrorResult(
-                    request, "CDO-Error",
-                    "Humm, the CDO analysis failed for some reason");
+                throw new IllegalArgumentException("Humm, the CDO analysis failed for some reason");
             }
         }
 
         //The jeff is here for when I have a fake cdo.sh
         boolean jeff = true;
 
-
         if (doingPublish(request)) {
-            if ( !request.defined(ARG_PUBLISH_NAME)) {
-                request.put(ARG_PUBLISH_NAME, newName);
-            }
-
-            return getEntryManager().processEntryPublish(request, outFile,
-                    null, entry, "generated from");
+            return outFile;
         }
 
         //Assuming this is some text - DOESN'T HAPPEN anymore
@@ -790,13 +798,9 @@ public class CDOOutputHandler extends OutputHandler {
             sb.append(header(msg("CDO Information")));
             sb.append(HtmlUtils.pre(info));
 
-            return new Result("CDO", sb);
+            //            return new Result("CDO", sb);
         }
-
-
-
-        return request.returnFile(
-            outFile, getStorageManager().getFileTail(outFile.toString()));
+        return outFile;
     }
 
     /**

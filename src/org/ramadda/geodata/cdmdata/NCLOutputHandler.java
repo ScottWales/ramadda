@@ -337,7 +337,29 @@ sb.append(HtmlUtils.form(formUrl,
      */
     public Result outputNCL(Request request, Entry entry) throws Exception {
 
-        File input = entry.getTypeHandler().getFileForEntry(entry);
+        try {
+            File input = entry.getTypeHandler().getFileForEntry(entry);
+            File outFile = processRequest(request, input);
+            if (doingPublish(request)) {
+                if ( !request.defined(ARG_PUBLISH_NAME)) {
+                    request.put(ARG_PUBLISH_NAME, outFile.getName());
+                }
+
+                return getEntryManager().processEntryPublish(request, outFile,
+                                                             null, entry, "generated from");
+            }
+
+            return request.returnFile(
+                                      outFile, getStorageManager().getFileTail(outFile.toString()));
+        } catch(IllegalArgumentException iae) {
+            return getErrorResult(request, "NCL-Error",
+                                  "An error occurred:<br>" + iae);
+        }
+
+    }
+
+    public File processRequest(Request request, File input) throws Exception {
+
         //String wksName = IOUtil.joinDir(getProductDir(),
         //                                getRepository().getGUID());
         String wksName = getRepository().getGUID();
@@ -404,30 +426,16 @@ sb.append(HtmlUtils.form(formUrl,
         String outMsg   = results[0];
         if ( !outFile.exists()) {
             if (outMsg.length() > 0) {
-                return getErrorResult(request, "NCL-Error",
-                                      "An error occurred:<br>" + outMsg);
+                throw new IllegalArgumentException(outMsg);
             }
             if (errorMsg.length() > 0) {
-                return getErrorResult(request, "NCL-Error",
-                                      "An error occurred:<br>" + errorMsg);
+                throw new IllegalArgumentException(errorMsg);
             }
             if ( !outFile.exists()) {
-                return getErrorResult(
-                    request, "NCL-Error",
-                    "Humm, the NCL image generation failed for some reason");
+                throw new IllegalArgumentException("Humm, the NCL image generation failed for some reason");
             }
         }
-        if (doingPublish(request)) {
-            if ( !request.defined(ARG_PUBLISH_NAME)) {
-                request.put(ARG_PUBLISH_NAME, outFile);
-            }
-
-            return getEntryManager().processEntryPublish(request, outFile,
-                    null, entry, "generated from");
-        }
-
-        return request.returnFile(
-            outFile, getStorageManager().getFileTail(outFile.toString()));
+        return outFile;
     }
 
 }

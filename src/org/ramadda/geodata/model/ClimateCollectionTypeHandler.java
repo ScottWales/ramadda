@@ -140,17 +140,24 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
 
     public Result processImageRequest(Request request, Entry entry) throws Exception {
-        File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
-        BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = (Graphics2D) image.getGraphics();
-        g.setColor(Color.red);
-        int row = 0;
-        for(Entry granule: processSearch(request, entry)) {
-            g.drawString(granule.getName(), 10, (row*20)+20);
-            row++;
+        //        File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
+        //        BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
+        //        Graphics2D g = (Graphics2D) image.getGraphics();
+
+        //Get the entries
+        List<Entry> entries = processSearch(request, entry);
+        List<File> files = new ArrayList<File>();
+
+        //Process each one in turn
+        for(Entry granule: entries) {
+            File outFile =cdoOutputHandler.processRequest(request, granule);
+            files.add(outFile);
         }
-        
-        ImageUtils.writeImageToFile(image, imageFile);
+
+        //Make the image
+        File imageFile = nclOutputHandler.processRequest(request, files.get(0));
+
+        //And return the results
         String extension = IOUtil.getFileExtension(imageFile.toString());
         return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
