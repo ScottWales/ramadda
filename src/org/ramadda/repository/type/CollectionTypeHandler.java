@@ -3,6 +3,8 @@ package org.ramadda.repository.type;
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import java.sql.*;
+import java.io.*;
+import java.util.zip.*;
 
 
 import java.util.Date;
@@ -297,12 +299,38 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         if(what.equals(REQUEST_DOWNLOAD)) {
-            request.setReturnFilename(entry.getName()+".zip");
-            return getZipOutputHandler().toZip(request,entry.getName(), processSearch(request, entry),false,false);
+            return processDownloadRequest(request, entry);
         }
 
         return null;
     }
+
+
+    public Result processDownloadRequest(Request request, Entry entry) throws Exception {
+        request.setReturnFilename(entry.getName()+".zip");
+        return getZipOutputHandler().toZip(request,entry.getName(), processSearch(request, entry),false,false);
+    }
+
+
+    public Result zipFiles(Request request, String zipFileName, List<File> files) throws Exception {
+        Result result = new Result();
+        result.setNeedToWrite(false);
+        OutputStream os = request.getHttpServletResponse().getOutputStream();
+        request.getHttpServletResponse().setContentType("application/zip");
+        ZipOutputStream zos = new ZipOutputStream(os);
+        for(File f: files) {
+            zos.putNextEntry(new ZipEntry(f.getName()));
+            InputStream fis =
+                getStorageManager().getFileInputStream(f);
+            IOUtil.writeTo(fis, zos);
+            zos.closeEntry();
+            IOUtil.close(fis);
+        }
+        IOUtil.close(zos);
+        return result;
+    }
+
+
 
     /**
      * Get the HTML display for this type

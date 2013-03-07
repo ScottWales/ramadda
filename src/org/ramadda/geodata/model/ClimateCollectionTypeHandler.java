@@ -133,13 +133,13 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         String what = request.getString(ARG_REQUEST,(String) null);
         if(what == null) return null;
         if(what.equals(REQUEST_IMAGE)) {
-            return processImageRequest(request, entry);
+            return processDataRequest(request, entry, false);
         }
         return null;
     }
 
 
-    public Result processImageRequest(Request request, Entry entry) throws Exception {
+    public Result processDataRequest(Request request, Entry entry, boolean doDownload) throws Exception {
         //        File   imageFile =     getStorageManager().getTmpFile(request, "test.png");
         //        BufferedImage image = new BufferedImage(600,400,BufferedImage.TYPE_INT_RGB);
         //        Graphics2D g = (Graphics2D) image.getGraphics();
@@ -154,6 +154,10 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
             files.add(outFile);
         }
 
+        if(doDownload) {
+            return zipFiles(request, IOUtil.stripExtension(entry.getName())+".zip",files);
+        }
+
         //Make the image
         File imageFile = nclOutputHandler.processRequest(request, files.get(0));
 
@@ -162,6 +166,15 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
                           getRepository().getMimeTypeFromSuffix(extension));
+    }
+
+
+    /**
+       Overwrite the base class and route it through processImageRequest
+     */
+    @Override
+    public Result processDownloadRequest(Request request, Entry entry) throws Exception {
+        return processDataRequest(request, entry, true);
     }
 
 }
