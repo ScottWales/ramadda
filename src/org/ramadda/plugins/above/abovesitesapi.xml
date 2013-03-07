@@ -6,7 +6,7 @@
       <property name="searchopen" value="true"/>
 
 <!--What tabs to display results in -->
-      <property name="tabs" value="map,list,earth"/>
+      <property name="tabs" value="map,list"/>
 
 <!--Add these metadata search elements to the search form -->
     <property name="metadatatypes" value="above_monitoring_type,above_site_equipment,above_organization_sponsor"/>
