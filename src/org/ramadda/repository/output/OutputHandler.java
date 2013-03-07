@@ -596,6 +596,11 @@ public class OutputHandler extends RepositoryManager {
 
 
 
+    public String getEntryName(Entry entry) {
+        return entry.getTypeHandler().getEntryName(entry);
+    }
+
+
     /**
      * Make a link for the OutputType
      *

@@ -138,6 +138,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
+    public static final String ATTR_INCLUDEDESCRIPTION = "includedescription";
+
     public static final String ATTR_ICON = "icon";
 
     /** attribute in the tabs tag */
@@ -461,7 +463,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_DATE_TO, WIKI_PROP_LINK, WIKI_PROP_HTML, WIKI_PROP_IMPORT,
         WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
-             attrs(ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
+             attrs(ATTR_LINKRESOURCE,"true", ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
         WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
         WIKI_PROP_TREEVIEW,

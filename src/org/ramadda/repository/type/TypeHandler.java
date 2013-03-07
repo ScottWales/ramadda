@@ -1399,7 +1399,7 @@ public class TypeHandler extends RepositoryManager {
     protected String processDisplayTemplate(Request request, Entry entry,
                                             String html)
             throws Exception {
-        html = html.replace("${" + ARG_NAME + "}", entry.getName());
+        html = html.replace("${" + ARG_NAME + "}", getEntryName(entry));
         html = html.replace("${" + ARG_LABEL + "}", entry.getLabel());
         html = html.replace("${" + ARG_DESCRIPTION + "}",
                             entry.getDescription());
@@ -1629,7 +1629,7 @@ public class TypeHandler extends RepositoryManager {
                         getRepository().URL_ENTRY_EXPORT.toString() + "/"
                         + IOUtil.stripExtension(
                             Entry.encodeName(
-                                entry.getName())) + ".zip", new String[] {
+                                getEntryName(entry))) + ".zip", new String[] {
                                     ARG_ENTRYID,
                                     entry.getId() }), getRepository().iconUrl(
                                         ICON_EXPORT), "Export " + LABEL_ENTRIES,
@@ -1894,7 +1894,7 @@ public class TypeHandler extends RepositoryManager {
                                       entry, output));
 
             if (showDescription) {
-                String nameString = entry.getName();
+                String nameString = getEntryName(entry);
                 nameString = HtmlUtils.href(
                     HtmlUtils.url(
                         request.url(getRepository().URL_ENTRY_SHOW),
@@ -4589,6 +4589,10 @@ public class TypeHandler extends RepositoryManager {
      */
     protected String getEnumValueKey(Column column, Entry entry) {
         return column.getName();
+    }
+
+    public String getEntryName(Entry entry) {
+        return entry.getName();
     }
 
     /**

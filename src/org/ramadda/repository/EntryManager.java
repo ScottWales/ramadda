@@ -980,7 +980,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         // Share button
-        String title = entry.getName();
+        String title = getEntryName(entry);
         //  String share =
         //      "<script type=\"text/javascript\">var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script><a href=\"http://www.addthis.com/bookmark.php?v=20\" onmouseover=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\" onmouseout=\"addthis_close()\" onclick=\"return addthis_sendto()\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
 
@@ -1073,6 +1073,9 @@ public class EntryManager extends RepositoryManager {
         return doProcessEntryChange(request, false, null);
     }
 
+    public String getEntryName(Entry entry) {
+        return entry.getTypeHandler().getEntryName(entry);
+    }
 
 
 
@@ -1833,7 +1836,7 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "fileextension",
             IOUtil.getFileExtension(entry.getResource().getPath()), "name",
-            entry.getName(), "fullname", entry.getFullName(), "user",
+            getEntryName(entry), "fullname", entry.getFullName(), "user",
             entry.getUser().getLabel(), "url", url
         };
 
@@ -2594,7 +2597,7 @@ public class EntryManager extends RepositoryManager {
         String oldType = entry.getCategory();
         entry.setCategory(CATEGORY_UPLOAD);
         //Note: the name and description have already been encoded to prevent xss attacks
-        //        entry.setName(RepositoryUtil.encodeUntrustedText(entry.getName()));
+        //        entry.setName(RepositoryUtil.encodeUntrustedText(getEntryName(entry)));
         //        entry.setDescription(
         //            RepositoryUtil.encodeUntrustedText(entry.getDescription()));
 
@@ -4203,7 +4206,7 @@ public class EntryManager extends RepositoryManager {
         String entryUrl =
             HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
                           ARG_ENTRYID, entry.getId());
-        String title = entry.getName();
+        String title = getEntryName(entry);
         String share =
             "<script type=\"text/javascript\">var addthis_disable_flash=\"true\" addthis_pub=\"jeffmc\";</script><a href=\"http://www.addthis.com/bookmark.php?v=20\" onmouseover=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\" onmouseout=\"addthis_close()\" onclick=\"return addthis_sendto()\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
 
@@ -4684,7 +4687,7 @@ public class EntryManager extends RepositoryManager {
 
         boolean forTreeView = request.get(ARG_TREEVIEW, false);
         if(forTreeView) {
-            String label = entry.getName();
+            String label = getEntryName(entry);
             url = url.replace("%27","'");
             url = url.replace("'","");
             label =  label.replace("'","\\'");
@@ -7219,7 +7222,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(
                 HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                    entry.getName()));
+                    getEntryName(entry)));
             sb.append(HtmlUtils.br());
         }
         if ( !didone) {

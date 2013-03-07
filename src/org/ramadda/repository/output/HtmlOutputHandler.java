@@ -1241,7 +1241,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
-                    entry.getName(), url));
+                                                       getEntryName(entry), url));
             sb.append(HtmlUtils.br());
             sb.append(getRepository().formatDateShort(request,
                     new Date(entry.getStartDate()),
@@ -1249,7 +1249,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
             //            sb.append (getEntryManager().getAjaxLink( request,  entry,
-            //                                                      "<br>"+entry.getName(),null, false));
+            //                                                      "<br>"+getEntryName(entry),null, false));
 
             sb.append("</td>");
         }
