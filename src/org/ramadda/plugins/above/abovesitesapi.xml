@@ -2,7 +2,7 @@
 <api handler="org.ramadda.repository.search.SpecialSearch" id="above_sites">
 
 <!--The search form label -->
-      <property name="label" value="AbOVE Sites"/>
+      <property name="label" value="ABoVE Sites"/>
       <property name="searchopen" value="true"/>
 
 <!--What tabs to display results in -->

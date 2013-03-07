@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="AbOVE" xxxclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
+  <handler category="ABoVE" xxxclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
     
     <type id="above_organization_sponsor" name="Organization Sponsor" searchable="true" browsable="true">
       <element id="name" name="Sponsor"/>
