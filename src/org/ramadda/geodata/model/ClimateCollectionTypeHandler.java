@@ -20,6 +20,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.data.analysis.AnalysisProvider;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.repository.type.Column;
@@ -39,7 +40,7 @@ import ucar.unidata.util.IOUtil;
 
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
-    private CDOOutputHandler cdoOutputHandler;
+    private AnalysisProvider cdoOutputHandler;
     private NCLOutputHandler nclOutputHandler;
 
     public ClimateCollectionTypeHandler(Repository repository, Element entryNode)

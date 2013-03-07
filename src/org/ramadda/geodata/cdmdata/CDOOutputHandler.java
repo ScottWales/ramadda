@@ -34,6 +34,9 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
+import org.ramadda.data.analysis.AnalysisProvider;
+
+
 import org.w3c.dom.Element;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -67,7 +70,7 @@ import java.util.TreeSet;
 /**
  * Interface to the Climate Data Operators (CDO) package
  */
-public class CDOOutputHandler extends OutputHandler {
+public class CDOOutputHandler extends OutputHandler implements AnalysisProvider {
 
     /** CDO program path */
     private static final String PROP_CDO_PATH = "cdo.path";
@@ -245,6 +248,10 @@ public class CDOOutputHandler extends OutputHandler {
         cdoPath = getProperty(PROP_CDO_PATH, null);
     }
 
+
+    public String getAnalysisId() {
+        return "CDO";
+    }
 
     public  boolean isEnabled() {
         return cdoPath != null;
