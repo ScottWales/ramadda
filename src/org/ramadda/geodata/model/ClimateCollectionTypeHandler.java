@@ -86,10 +86,11 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
         String searchButton = JQ.button("Select Data", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
-        String analysisButtons = JQ.button("Download Data", formId+"_download",js, HtmlUtils.call(formId +".download","event")) + " " +
-            JQ.button("Plot", formId+"_image",js, HtmlUtils.call(formId +".makeImage","event"));
+        String analysisButtons = JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event")) + " " +
+            JQ.button("Plot", formId+"_do_image",js, HtmlUtils.call(formId +".makeImage","event"));
+        selectorSB.append(HtmlUtils.formEntry("", searchButton));
         selectorSB.append(HtmlUtils.formTableClose());
-        selectorSB.append(searchButton);
+
 
 
         StringBuffer analysisSB = new StringBuffer();
@@ -97,17 +98,16 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
         //        productSB.append(HtmlUtils.submit(msg("Search for files"),ARG_SEARCH));
 
-        sb.append(header(msg("Select Data")));
-
-
         sb.append("<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
-        sb.append(HtmlUtils.col(HtmlUtils.div(selectorSB.toString(), HtmlUtils.cssClass("entryselect")) , " width=30%"));
-        sb.append(HtmlUtils.col(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output"))));
-        sb.append("</tr></table>");
-//        sb.append(HtmlUtils.p());
-
+        sb.append("<td width=30%>");
+        sb.append(header(msg("Select Data")));
+        sb.append(HtmlUtils.div(selectorSB.toString(), HtmlUtils.cssClass("entryselect")));
         cdoOutputHandler.addToForm(request, entry, analysisSB);
-//        sb.append(HtmlUtils.p());
+        sb.append("</td><td>");
+        sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_list")));
+        sb.append("</td></tr>");
+        sb.append("<tr valign=top><td>");
+
         sb.append(header(msg("Analyze Selected Data")));
         sb.append(analysisSB);
 
@@ -117,6 +117,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         sb.append(productSB);
         */
         sb.append(analysisButtons);
+        sb.append("</td><td>");
+        sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_image")));
+        sb.append("</td></tr></table>");
 
         sb.append(HtmlUtils.script(js.toString()));
         sb.append(HtmlUtils.formClose());
@@ -133,6 +136,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         String what = request.getString(ARG_REQUEST,(String) null);
         if(what == null) return null;
         if(what.equals(REQUEST_IMAGE)) {
+            Misc.sleepSeconds(10);
             return processDataRequest(request, entry, false);
         }
         return null;
@@ -149,11 +153,19 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         List<File> files = new ArrayList<File>();
 
         //Process each one in turn
-        for(Entry granule: entries) {
-            File outFile =cdoOutputHandler.processRequest(request, granule);
-            files.add(outFile);
-        }
+        if(cdoOutputHandler.isEnabled()) {
+            for(Entry granule: entries) {
+                File outFile =cdoOutputHandler.processRequest(request, granule);
+                files.add(outFile);
+            }
+        } else {
+            for(Entry granule: entries) {
+                if(granule.isFile()) {
+                    files.add(granule.getFile());
+                }
+            }
 
+        }
         if(doDownload) {
             return zipFiles(request, IOUtil.stripExtension(entry.getName())+".zip",files);
         }

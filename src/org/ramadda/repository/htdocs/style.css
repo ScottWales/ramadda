@@ -381,8 +381,9 @@ a.ramadda-heading-2-link:visited {
 .entryoutput {
     margin:0px;
     padding: 10px;
-    xxxmax-height: 400px; 
-    xxxoverflow-y: auto;
+    min-height: 300px; 
+    max-height: 300px; 
+    overflow-y: auto;
 }
 
 .entryselect {

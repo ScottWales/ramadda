@@ -246,14 +246,10 @@ public class CDOOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * Check to see if we have cdo installed
-     *
-     * @return  true if path to cdo is set
-     */
-    private boolean haveCdo() {
+    public  boolean isEnabled() {
         return cdoPath != null;
     }
+
 
 
     /**
@@ -267,7 +263,7 @@ public class CDOOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if ( !haveCdo()) {
+        if ( !isEnabled()) {
             return;
         }
         if ((state.entry != null) && state.entry.isFile()
@@ -776,7 +772,7 @@ public class CDOOutputHandler extends OutputHandler {
         }
 
         //The jeff is here for when I have a fake cdo.sh
-        boolean jeff = true;
+        boolean jeff = false;
 
         if (doingPublish(request)) {
             return outFile;

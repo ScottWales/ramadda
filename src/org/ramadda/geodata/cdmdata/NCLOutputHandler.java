@@ -141,7 +141,7 @@ public class NCLOutputHandler extends OutputHandler {
      *
      * @return  true if path to NCL is set
      */
-    private boolean haveNcl() {
+    public boolean isEnabled() {
         return ncargRoot != null;
     }
 
@@ -157,7 +157,7 @@ public class NCLOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if ( !haveNcl()) {
+        if ( !isEnabled()) {
             return;
         }
         if ((state.entry != null) && state.entry.isFile()

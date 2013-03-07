@@ -1866,7 +1866,9 @@ function Entry (entry) {
         return this.entry.name;
     }
     this.getFilesize = function () {
-        return parseInt(this.entry.filesize);
+        var size =  parseInt(this.entry.filesize);
+        if(size == size) return size;
+        return 0;
     }
     this.getFormattedFilesize = function () {
         return size_format(this.getFilesize());
@@ -1883,7 +1885,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     this.id = formId;
     this.entryId = entryId;
     this.arg = arg;
-    this.outputDivId = outputDiv;
+    this.outputDivPrefix = outputDiv;
     this.selectValues = selectValues;
     this.totalSize = 0;
     if(!this.arg) this.arg = "select";
@@ -1933,7 +1935,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("search");
         var theForm = this;
-        $("#" + this.outputDivId).html("<img src=" + icon_progress +"> searching...");
+        $("#" + this.outputDivPrefix+"list").html("<img src=" + icon_progress +"> searching...");
+        $("#" + this.outputDivPrefix+"image").html("");
         theForm.totalSize = 0;
         $.getJSON(url, function(data) {
                 theForm.processEntryJson(data);
@@ -1947,8 +1950,9 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("image");
         var theForm = this;
-        $("#" + this.outputDivId).html("<img src=\"" + url+"\">");
-        theForm.totalSize = 0;
+        //        $("#" + this.outputDivPrefix+"image").html("<img src=" + icon_progress +"> Creating image");
+        $("#" + this.outputDivPrefix+"image").html("<img src=\"" + url+"\">");
+        //        theForm.totalSize = 0;
         return false;
     }
 
@@ -1997,9 +2001,12 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
 
                 listHtml += "</td><td align=right width=10%>";
                 listHtml+= entry.getFormattedFilesize();
+
                 totalSize += entry.getFilesize();
                 listHtml += "</tr>";
             }
+
+
 
             var tableHeader = "<table width=100% cellpadding=3 cellspacing=0 id=\"listing\">";
 
@@ -2029,18 +2036,18 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
 
         }
         this.totalSize = totalSize;
-        $("#" + this.outputDivId).html(html);
+        $("#" + this.outputDivPrefix+"list").html(html);
         //                $('#listing').dataTable();
         this.listUpdated()
     }
 
 
     this.listUpdated = function () {
-        var btn =  $('#' + this.id+'_download');
+        var btns  =  $(':input[id*=\"' + this.id +'_do_\"]');
         if (this.totalSize>0) {
-            btn.removeAttr('disabled').removeClass( 'ui-state-disabled' );
+            btns.removeAttr('disabled').removeClass( 'ui-state-disabled' );
         } else {
-            btn.attr('disabled', 'disabled' ).addClass( 'ui-state-disabled' );
+            btns.attr('disabled', 'disabled' ).addClass( 'ui-state-disabled' );
         }
     }
 

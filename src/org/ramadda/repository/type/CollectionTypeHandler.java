@@ -313,6 +313,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public Result zipFiles(Request request, String zipFileName, List<File> files) throws Exception {
+        request.setReturnFilename(zipFileName);
         Result result = new Result();
         result.setNeedToWrite(false);
         OutputStream os = request.getHttpServletResponse().getOutputStream();
@@ -417,7 +418,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                                  HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output"}, true))+"\n");
+        js.append("var " + formId + " =  " + HtmlUtils.call("new  SelectForm",  HtmlUtils.jsMakeArgs(new String[]{formId,entry.getId(),"select", formId+"_output_"}, true))+"\n");
 
         return formId;
     }
