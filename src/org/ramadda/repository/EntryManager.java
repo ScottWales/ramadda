@@ -6273,7 +6273,7 @@ public class EntryManager extends RepositoryManager {
                     request.get(ARG_SHORT, false));
         }
         addNewEntry(request, newEntry);
-        if (associatedEntry != null) {
+        if (associatedEntry != null && !isSynthEntry(associatedEntry.getId())) {
             getRepository().addAuthToken(request);
             getAssociationManager().addAssociation(request, associatedEntry,
                     newEntry, "", associationType);
