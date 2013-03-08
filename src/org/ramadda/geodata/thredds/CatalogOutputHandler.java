@@ -386,12 +386,12 @@ public class CatalogOutputHandler extends OutputHandler {
                 }
             }
         } else if (justOneEntry) {
-            outputEntry(entries.get(0), request, catalogInfo, root);
+            outputEntry(entries.get(0), request, catalogInfo, root, doingLatest);
         } else {
             topDataset = XmlUtil.create(doc, CatalogUtil.TAG_DATASET, root,
                                         new String[] { CatalogUtil.ATTR_NAME,
                     title });
-            addServices(group, request, catalogInfo, topDataset);
+            addServices(group, request, catalogInfo, topDataset, doingLatest);
             addMetadata(request, group, catalogInfo, topDataset);
             int cnt = subGroups.size() + entries.size();
             //            int max  = request.get(ARG_MAX, DB_MAX_ROWS);
@@ -611,7 +611,7 @@ public class CatalogOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void addServices(Entry entry, Request request,
-                            CatalogInfo catalogInfo, Element dataset)
+                            CatalogInfo catalogInfo, Element dataset, boolean doingLatest)
             throws Exception {
 
         File   f    = entry.getFile();
@@ -650,6 +650,9 @@ public class CatalogOutputHandler extends OutputHandler {
                     SERVICE_OPENDAP, CatalogUtil.ATTR_URLPATH, urlPath });
             didOpendap = true;
         }
+
+        //Just add the opendap link if we are doing the latest
+        if(doingLatest) return;
 
 
         for (Service service : services) {
@@ -752,7 +755,7 @@ public class CatalogOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void outputEntry(Entry entry, Request request,
-                            CatalogInfo catalogInfo, Element parent)
+                            CatalogInfo catalogInfo, Element parent, boolean doLatest)
             throws Exception {
 
         if (entry.getType().equals("cataloglink")) {
@@ -838,7 +841,7 @@ public class CatalogOutputHandler extends OutputHandler {
 
         }
 
-        addServices(entry, request, catalogInfo, dataset);
+        addServices(entry, request, catalogInfo, dataset, doLatest);
 
         addMetadata(request, entry, catalogInfo, dataset);
 
@@ -974,7 +977,7 @@ public class CatalogOutputHandler extends OutputHandler {
                     generate(request, subGroup, catalogInfo, dataset);
                 } else if (child instanceof Entry) {
                     Entry entry = (Entry) child;
-                    outputEntry(entry, request, catalogInfo, dataset);
+                    outputEntry(entry, request, catalogInfo, dataset, false);
                 }
             }
         }
