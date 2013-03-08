@@ -22,6 +22,9 @@
 package org.ramadda.geodata.cdmdata;
 
 
+import org.ramadda.data.analysis.AnalysisProvider;
+
+
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
@@ -33,8 +36,6 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
-
-import org.ramadda.data.analysis.AnalysisProvider;
 
 
 import org.w3c.dom.Element;
@@ -151,6 +152,9 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
     private static final String STAT_MIN = "min";
 
     /** year period */
+    private static final String PERIOD_TIM = "tim";
+
+    /** year period */
     private static final String PERIOD_YEAR = "year";
 
     /** month of year period */
@@ -187,14 +191,15 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
             new TwoFacedObject("Std Deviation", STAT_STD),
             new TwoFacedObject("Maximum", STAT_MAX),
             new TwoFacedObject("Minimum", STAT_MIN),
-            new TwoFacedObject("Minimum", STAT_ANOM) });
+            new TwoFacedObject("Anomaly", STAT_ANOM) });
 
     /** period types */
     @SuppressWarnings("unchecked")
     private List<TwoFacedObject> PERIOD_TYPES =
-        Misc.toList(new Object[] { new TwoFacedObject("Annual", PERIOD_YEAR),
-                                   new TwoFacedObject("Monthly",
-                                       PERIOD_YMON) });
+        Misc.toList(new Object[] {
+            new TwoFacedObject("All Times", PERIOD_TIM),
+            new TwoFacedObject("Annual", PERIOD_YEAR),
+            new TwoFacedObject("Monthly", PERIOD_YMON) });
 
     /** month names */
     private static final String[] MONTH_NAMES = {
@@ -249,11 +254,21 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
     }
 
 
+    /**
+     * Get the Analysis id
+     *
+     * @return the ID
+     */
     public String getAnalysisId() {
         return "CDO";
     }
 
-    public  boolean isEnabled() {
+    /**
+     * Is this enabled
+     *
+     * @return  true if enabled
+     */
+    public boolean isEnabled() {
         return cdoPath != null;
     }
 
@@ -359,6 +374,7 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
                                      msg("Analyzing Data...."))));
         */
 
+        sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CDO));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         String buttons = HtmlUtils.submit("Extract Data", ARG_SUBMIT);
@@ -366,11 +382,11 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         sb.append(HtmlUtils.h2("Dataset Analysis"));
         sb.append(HtmlUtils.hr());
         addToForm(request, entry, sb);
-        sb.append(buttons);
-        sb.append(" ");
         addPublishWidget(
             request, entry, sb,
             msg("Select a folder to publish the generated NetCDF file to"));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(buttons);
 
         /*
         sb.append(
@@ -432,8 +448,8 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         if (dataset != null) {
             llr = dataset.getBoundingBox();
         } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0, 0.0),
-                                 new LatLonPointImpl(-90.0, 360.0));
+            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                 new LatLonPointImpl(-90.0, 180.0));
         }
         addMapWidget(request, sb, llr);
         sb.append(HtmlUtils.formTableClose());
@@ -698,24 +714,36 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
      */
     public Result outputCDO(Request request, Entry entry) throws Exception {
         try {
-        File outFile = processRequest(request, entry);
+            File outFile = processRequest(request, entry);
 
-        if (doingPublish(request)) {
-            if ( !request.defined(ARG_PUBLISH_NAME)) {
-                request.put(ARG_PUBLISH_NAME, outFile.getName());
+            if (doingPublish(request)) {
+                if ( !request.defined(ARG_PUBLISH_NAME)) {
+                    request.put(ARG_PUBLISH_NAME, outFile.getName());
+                }
+
+                return getEntryManager().processEntryPublish(request,
+                        outFile, null, entry, "generated from");
             }
-            return getEntryManager().processEntryPublish(request, outFile,
-                    null, entry, "generated from");
-        }
-        return request.returnFile(
-            outFile, getStorageManager().getFileTail(outFile.toString()));
-        } catch(RuntimeException rte) {
-            return getErrorResult(
-                                  request, "CDO-Error", rte.toString());
+
+            return request.returnFile(
+                outFile, getStorageManager().getFileTail(outFile.toString()));
+        } catch (RuntimeException rte) {
+            return getErrorResult(request, "CDO-Error", rte.toString());
         }
     }
 
-    public File processRequest(Request request, Entry entry) throws Exception {
+    /**
+     * Process the request
+     *
+     * @param request  the request
+     * @param entry    the Entry
+     *
+     * @return the output file
+     *
+     * @throws Exception  problems running the commands
+     */
+    public File processRequest(Request request, Entry entry)
+            throws Exception {
         String tail    = getStorageManager().getFileTail(entry);
         String newName = IOUtil.stripExtension(tail) + "_product.nc";
         tail = getStorageManager().getStorageFileName(tail);
@@ -774,7 +802,8 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
                 throw new IllegalArgumentException(errorMsg);
             }
             if ( !outFile.exists()) {
-                throw new IllegalArgumentException("Humm, the CDO analysis failed for some reason");
+                throw new IllegalArgumentException(
+                    "Humm, the CDO analysis failed for some reason");
             }
         }
 
@@ -803,6 +832,7 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
 
             //            return new Result("CDO", sb);
         }
+
         return outFile;
     }
 
@@ -857,8 +887,8 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         String llSelect = "";
         if (haveAllSpatialArgs && anySpatialDifferent) {
             llSelect = OP_SELLLBOX + ","
-                       + request.getString(ARG_AREA_WEST, "0") + ","
-                       + request.getString(ARG_AREA_EAST, "360") + ","
+                       + request.getString(ARG_AREA_WEST, "-180") + ","
+                       + request.getString(ARG_AREA_EAST, "180") + ","
                        + request.getString(ARG_AREA_SOUTH, "-90") + ","
                        + request.getString(ARG_AREA_NORTH, "90");
         }
@@ -915,6 +945,8 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
                 selMonth += "/" + endMonth;
             }
             commands.add(selMonth);
+        } else {  // ONLY FOR TESTING
+            commands.add(OP_SELMON + ",1");
         }
 
         String dateSelect = null;
@@ -922,9 +954,10 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
 
             Date[] dates = new Date[] { request.defined(ARG_FROMDATE)
                                         ? request.getDate(ARG_FROMDATE, null)
-                                        : null, request.defined(ARG_TODATE)
-                    ? request.getDate(ARG_TODATE, null)
-                    : null };
+                                        : null,
+                                        request.defined(ARG_TODATE)
+                                        ? request.getDate(ARG_TODATE, null)
+                                        : null };
             //have to have both dates
             if ((dates[0] != null) && (dates[1] == null)) {
                 dates[0] = null;
@@ -947,10 +980,11 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
             String[] years = new String[] { request.defined(ARG_STARTYEAR)
                                             ? request.getString(
                                                 ARG_STARTYEAR, null)
-                                            : null, request.defined(
-                                                ARG_ENDYEAR)
-                    ? request.getString(ARG_ENDYEAR, null)
-                    : null };
+                                            : null,
+                                            request.defined(ARG_ENDYEAR)
+                                            ? request.getString(ARG_ENDYEAR,
+                                                null)
+                                            : null };
             //have to have both dates
             if ((years[0] != null) && (years[1] == null)) {
                 years[0] = null;
@@ -966,6 +1000,9 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
                     dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];
                 }
             }
+
+        } else {
+            dateSelect = OP_SELYEAR + "," + startYear;
 
         }
         if (dateSelect != null) {
@@ -993,13 +1030,15 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
             if (stat.equals(STAT_ANOM)) {
                 stat = STAT_MEAN;
             }
-            if (period.equals(PERIOD_YEAR)) {
+            if (period.equals(PERIOD_TIM)) {
+                commands.add("-" + PERIOD_TIM + stat);
+            } else if (period.equals(PERIOD_YEAR)) {
                 commands.add("-" + PERIOD_YEAR + stat);
+            } else if (period.equals(PERIOD_YMON)) {
                 commands.add("-" + PERIOD_YMON + stat);
             }
-            if (period.equals(PERIOD_YMON)) {
-                commands.add("-" + PERIOD_YMON + stat);
-            }
+        } else {  // ONLY FOR TESTING
+            commands.add("-" + PERIOD_TIM + STAT_MEAN);
         }
 
         return commands;
