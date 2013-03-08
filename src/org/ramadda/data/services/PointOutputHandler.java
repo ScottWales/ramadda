@@ -1868,6 +1868,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public void getServices(Request request, Entry entry,
                             List<Service> services) {
         super.getServices(request, entry, services);
+        if(!canHandleEntry(entry)) return;
         String url;
         String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
                           + entry.getEast() + "," + entry.getNorth();

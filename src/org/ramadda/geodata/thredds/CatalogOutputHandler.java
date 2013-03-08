@@ -258,7 +258,8 @@ public class CatalogOutputHandler extends OutputHandler {
             if (getEntryManager().isSynthEntry(state.getEntry().getId())) {
                 link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
             } else {
-                String url = getRepository().getUrlBase() + "/thredds/"
+                link = makeLink(request, state.getEntry(), OUTPUT_CATALOG);
+                /*                String url = getRepository().getUrlBase() + "/thredds/"
                              + state.getEntry().getFullName(true) + ".xml";
                 OutputType outputType = OUTPUT_CATALOG;
                 link = new Link(url, (outputType.getIcon() == null)
@@ -266,6 +267,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                      : iconUrl(outputType
                                          .getIcon()), outputType.getLabel(),
                                              outputType);
+                */
             }
             links.add(link);
         }
@@ -378,9 +380,8 @@ public class CatalogOutputHandler extends OutputHandler {
             entries = getEntryManager().sortEntriesOnDate(entries, true);
             for (Entry entry : entries) {
                 if (canDataLoad(request, entry)) {
-                    outputEntry(entry, request, catalogInfo, root);
+                    outputEntry(entry, request, catalogInfo, root, doingLatest);
                     didone = true;
-
                     break;
                 }
             }

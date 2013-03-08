@@ -102,8 +102,11 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_CROP = "image.edit.crop";
 
+    public static final String ARG_IMAGE_EDIT_MATTE = "image.edit.matte";
+
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_REDEYE = "image.edit.redeye";
+
 
     /** _more_ */
     public static final String ARG_IMAGE_CROPX1 = "image.edit.cropx1";
