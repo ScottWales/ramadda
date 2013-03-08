@@ -287,7 +287,8 @@ sb.append(HtmlUtils.form(formUrl,
                                       var.getName() + HtmlUtils.space(1)
                                       + ((var.getUnitsString() != null)
                                          ? "(" + var.getUnitsString() + ")"
-                                         : "") + HtmlUtils.space(3) + HtmlUtils.italics(
+                                         : "") + HtmlUtils.space(3)
+                                         + HtmlUtils.italics(
                                              var.getDescription())));
 
         if (gcs.getVerticalAxis() != null) {
@@ -338,26 +339,36 @@ sb.append(HtmlUtils.form(formUrl,
     public Result outputNCL(Request request, Entry entry) throws Exception {
 
         try {
-            File input = entry.getTypeHandler().getFileForEntry(entry);
+            File input   = entry.getTypeHandler().getFileForEntry(entry);
             File outFile = processRequest(request, input);
             if (doingPublish(request)) {
                 if ( !request.defined(ARG_PUBLISH_NAME)) {
                     request.put(ARG_PUBLISH_NAME, outFile.getName());
                 }
 
-                return getEntryManager().processEntryPublish(request, outFile,
-                                                             null, entry, "generated from");
+                return getEntryManager().processEntryPublish(request,
+                        outFile, null, entry, "generated from");
             }
 
             return request.returnFile(
-                                      outFile, getStorageManager().getFileTail(outFile.toString()));
-        } catch(IllegalArgumentException iae) {
+                outFile, getStorageManager().getFileTail(outFile.toString()));
+        } catch (IllegalArgumentException iae) {
             return getErrorResult(request, "NCL-Error",
                                   "An error occurred:<br>" + iae);
         }
 
     }
 
+    /**
+     * Process the request
+     *
+     * @param request  the request
+     * @param input    the file to work on
+     *
+     * @return  the output
+     *
+     * @throws Exception problem generating output
+     */
     public File processRequest(Request request, File input) throws Exception {
 
         //String wksName = IOUtil.joinDir(getProductDir(),
@@ -390,7 +401,15 @@ sb.append(HtmlUtils.form(formUrl,
         }
         String varname = request.getString(ARG_VARIABLE, null);
         if (varname == null) {
-            throw new Exception("No variable selected");
+            CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
+            GridDataset dataset =
+                dataOutputHandler.getCdmManager().createGrid(input.getPath());
+            if (dataset == null) {
+                throw new Exception("No variable selected");
+            }
+            List<GridDatatype> grids = dataset.getGrids();
+            GridDatatype       var   = grids.get(0);
+            varname = var.getName();
         }
         envMap.put(ARG_VARIABLE, varname);
         String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
@@ -432,9 +451,11 @@ sb.append(HtmlUtils.form(formUrl,
                 throw new IllegalArgumentException(errorMsg);
             }
             if ( !outFile.exists()) {
-                throw new IllegalArgumentException("Humm, the NCL image generation failed for some reason");
+                throw new IllegalArgumentException(
+                    "Humm, the NCL image generation failed for some reason");
             }
         }
+
         return outFile;
     }
 
