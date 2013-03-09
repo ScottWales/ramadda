@@ -1912,7 +1912,9 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     this.getUrl = function(what) {
         var url = "${urlroot}/entry/show?entryid=" + this.entryId;
         var theForm = this;
-        $(':input[id*=\"' + this.id +'\"]').each(function() {             
+        var inputs = $('#' + this.id +' ::input');
+        //        $(':input[id*=\"' + this.id +'\"]')
+        inputs.each(function() {             
                 var value = $(this).val();
                 if(theForm.valueDefined(value)) {
                      url += "&" + this.name+ "=" + encodeURIComponent(value);
