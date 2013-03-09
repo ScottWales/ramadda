@@ -35,12 +35,14 @@ form {
     padding: 0px;
 }
 
+
+
 .input, .password, .fileinput,.textarea,.select {
   border : 1px #888888 solid;
 }
 
 .input:focus, .textarea:focus {
-	background: #fffeec;
+  background: #fffeec;
 }
 
 

@@ -537,10 +537,10 @@ function RepositoryMap(mapId, params) {
                     // theMap.fldSouth.obj.value = ll.lat;
                     // theMap.fldWest.obj.value = ll.lon;
                     // theMap.fldEast.obj.value = ur.lon;
-                    theMap.fldNorth.obj.value = formatValue(bounds.top);
-                    theMap.fldSouth.obj.value = formatValue(bounds.bottom);
-                    theMap.fldWest.obj.value = formatValue(bounds.left);
-                    theMap.fldEast.obj.value = formatValue(bounds.right);
+                    theMap.fldNorth.obj.value = formatLocationValue(bounds.top);
+                    theMap.fldSouth.obj.value = formatLocationValue(bounds.bottom);
+                    theMap.fldWest.obj.value = formatLocationValue(bounds.left);
+                    theMap.fldEast.obj.value = formatLocationValue(bounds.right);
                 }
                 // OpenLayers.Event.stop(evt);
             }
@@ -846,8 +846,8 @@ function RepositoryMap(mapId, params) {
 
 }
 
-function formatValue(value) {
-   return number_format(value, 2, ".", "");
+function formatLocationValue(value) {
+   return number_format(value, 3, ".", "");
 }
 
 OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
@@ -890,8 +890,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         latFld = util.getDomObject(this.latFldId);
         zoomFld = util.getDomObject(this.zoomFldId);
         if (latFld && lonFld) {
-            latFld.obj.value = formatValue(lonlat.lat);
-            lonFld.obj.value = formatValue(lonlat.lon);
+            latFld.obj.value = formatLocationValue(lonlat.lat);
+            lonFld.obj.value = formatLocationValue(lonlat.lon);
         }
         if (zoomFld) {
             zoomFld.obj.value = this.theMap.getMap().getZoom();

@@ -1460,6 +1460,7 @@ public class HtmlUtils {
     public static String makeLatLonInput(String arg, String value,
                                          String tip) {
         return input(arg, value,
+                     style("margin:0px;") +
                      attrs(ATTR_SIZE, "5") + id(arg) + ((tip != null)
                 ? title(tip)
                 : ""));
@@ -1504,7 +1505,7 @@ public class HtmlUtils {
                                        String eastArg, String westArg,
                                        String southValue, String northValue,
                                        String eastValue, String westValue) {
-        return "<table cellspacing=0 cellpadding=1><tr><td colspan=\"2\" align=\"center\">"
+        return "<table border=0 cellspacing=0 cellpadding=0><tr><td colspan=\"2\" align=\"center\">"
                + makeLatLonInput(northArg, northValue, "North")
                + "</td></tr>" + "<tr><td>"
                + makeLatLonInput(westArg, westValue, "West") + "</td><td>"
