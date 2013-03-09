@@ -1349,14 +1349,14 @@ public class HtmlOutputHandler extends OutputHandler {
             //            tableSB.append(HtmlUtils.col("<b>" + msg("Date") +"</b>"));
 
 
-            boolean isFile = false;
+            boolean haveFiles = false;
             for (Entry entry : entries) {
                 if (entry.isFile()) {
-                    isFile = true;
+                    haveFiles = true;
                     break;
                 }
             }
-            if (isFile) {
+            if (haveFiles) {
                 numCols++;
                 tableSB.append(HtmlUtils.col(""));
                 numCols++;
@@ -1400,11 +1400,11 @@ public class HtmlOutputHandler extends OutputHandler {
                                     request, entry), HtmlUtils.img(
                                     iconUrl(ICON_DOWNLOAD), msg("Download"),
                                     "")), " width=2% "));
-                } else {
-                    //                    tableSB.append(HtmlUtils.col(""));
+                } else if(haveFiles) {
+                    tableSB.append(HtmlUtils.col(""));
                 }
 
-                if (isFile) {
+                if (haveFiles) {
                     if (entry.isFile()) {
                         tableSB.append(HtmlUtils
                             .col(formatFileLength(entry.getResource()
