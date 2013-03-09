@@ -318,31 +318,31 @@ public class MapInfo {
                                              : msg("Click to select point"));
 
         StringBuffer sb  = new StringBuffer();
-        sb.append(msg);
-        sb.append(HtmlUtils.br());
+        String clearLink  = getSelectorClearLink(msg("Clear"));
+        sb.append(HtmlUtils.leftRight(msg, clearLink));
+                  //        sb.append(HtmlUtils.br());
+                  //        sb.append(clearLink);
         sb.append(getMapDiv(""));
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget = widget + HtmlUtils.br() + extraLeft;
         }
 
         String rightSide  = null;
-        String clearLink  = getSelectorClearLink(msg("Clear"));
         String initParams = HtmlUtils.squote(arg) + "," + doRegion + ","
                             + (popup
                                ? "1"
                                : "0");
 
         if (popup) {
+            String popupLabel =  (selectionLabel != null)
+                ? selectionLabel:
+                HtmlUtils.img(repository.iconUrl("/icons/map.png"),  msg("Show Map"));
             rightSide = HtmlUtils.space(2)
-                        + repository.makeStickyPopup((selectionLabel != null)
-                    ? selectionLabel
-                    : msg("Show Map"), sb.toString(),
+                        + repository.makeStickyPopup(popupLabel, sb.toString(),
                                        getVariableName()
-                                       + ".selectionPopupInit();") + HtmlUtils
-                                           .space(2) + clearLink
-                                               + HtmlUtils.space(2)
-                                                   + HtmlUtils.space(2)
-                                                       + extraTop;
+                                       + ".selectionPopupInit();") + 
+                //                                              HtmlUtils.space(2) + clearLink
+                HtmlUtils.space(2) + extraTop;
         } else {
             rightSide = clearLink + HtmlUtils.space(2) + HtmlUtils.br()
                         + sb.toString();
