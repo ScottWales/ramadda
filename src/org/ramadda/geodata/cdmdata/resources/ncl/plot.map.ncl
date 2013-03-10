@@ -130,13 +130,22 @@ addCyclic=(getenv("addCyclic"))
 ;--  Open the data file
 datafile = addfile(ncfile ,"r")  ; open input data file
 ;dimsNames = getfilevardims(ncFile, $variable$)
+vartype = getfilevartypes(datafile,variable)
 
 if (ismissing(level)) then
 ;   vardata = datafile->$variable$(0,:,:)
-   vardata = datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon})
+   if (vartype .eq. "short") then
+       vardata = short2flt(datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon}))
+   else
+       vardata = datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon})
+   end if
 else
 ;   vardata = datafile->$variable$(0,{level},:,:)
-   vardata = datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon})
+   if (vartype .eq. "short") then
+       vardata = short2flt(datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon}))
+   else
+       vardata = datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon})
+   end if
 end if
 
 printVarSummary(vardata)
