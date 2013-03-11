@@ -137,7 +137,6 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         String what = request.getString(ARG_REQUEST,(String) null);
         if(what == null) return null;
         if(what.equals(REQUEST_IMAGE)) {
-            Misc.sleepSeconds(10);
             return processDataRequest(request, entry, false);
         }
         return null;
