@@ -1953,7 +1953,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var url = this.getUrl("image");
         var theForm = this;
         //        $("#" + this.outputDivPrefix+"image").html("<img src=" + icon_progress +"> Creating image");
-        $("#" + this.outputDivPrefix+"image").html("<img src=\"" + url+"\">");
+        $("#" + this.outputDivPrefix+"image").html("<img alt=\"Generating Image....\" src=\"" + url+"\">");
         //        theForm.totalSize = 0;
         return false;
     }
