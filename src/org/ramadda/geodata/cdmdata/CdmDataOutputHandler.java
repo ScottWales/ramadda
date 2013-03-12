@@ -284,64 +284,11 @@ public class CdmDataOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_GRIDASPOINT =
         new OutputType("data.gridaspoint", OutputType.TYPE_FEEDS);
 
-    /** cdm cache */
-    private Cache<String, Boolean> cdmEntries = new Cache<String,
-                                                    Boolean>(5000);
 
-    /** grid entries cache */
-    private Cache<String, Boolean> gridEntries = new Cache<String,
-                                                     Boolean>(5000);
-
-
-    /** point entries cache */
-    private Cache<String, Boolean> pointEntries = new Cache<String,
-                                                      Boolean>(5000);
-
-    /** trajectory entries cache */
-    private Cache<String, Boolean> trajectoryEntries = new Cache<String,
-                                                           Boolean>(5000);
-
-
-    /** nj cache directory */
-    private TempDir nj22Dir;
-
-    /** data cache directory */
-    private TempDir dataCacheDir;
-
-
-    /** nc counter */
-    Counter ncCounter = new Counter();
-
-    /** nc create counter */
-    Counter ncCreateCounter = new Counter();
-
-    /** nc remove counter */
-    Counter ncRemoveCounter = new Counter();
-
-    /** nc get counter */
-    Counter ncGetCounter = new Counter();
-
-    /** nc put counter */
-    Counter ncPutCounter = new Counter();
-
-    /** ext counter */
-    Counter extCounter = new Counter();
 
     /** opendap counter */
     Counter opendapCounter = new Counter();
 
-    /** grid open counter */
-    Counter gridOpenCounter = new Counter();
-
-    /** grid close counter */
-    Counter gridCloseCounter = new Counter();
-
-
-    /** point open counter */
-    Counter pointOpenCounter = new Counter();
-
-    /** point close counter */
-    Counter pointCloseCounter = new Counter();
 
     /** the CDM manager */
     private static CdmManager cdmManager;
@@ -1859,7 +1806,7 @@ public class CdmDataOutputHandler extends OutputHandler {
             request.setReturnFilename(IOUtil.stripExtension(entry.getName())
                                       + ".kml");
         }
-        System.out.println("name: " + request);
+        //        System.out.println("name: " + request);
 
 
         OutputStream os = request.getHttpServletResponse().getOutputStream();
