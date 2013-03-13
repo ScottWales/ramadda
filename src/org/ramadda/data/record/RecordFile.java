@@ -153,7 +153,6 @@ public abstract class RecordFile {
 
 
 
-
     public static Hashtable getPropertiesForFile(String file, String defaultCommonFile) {
         File f = new File(file);
         File parent = f.getParentFile();

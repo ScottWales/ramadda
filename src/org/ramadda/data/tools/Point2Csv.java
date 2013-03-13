@@ -136,6 +136,13 @@ public  class Point2Csv extends RecordTool {
             outputWriter.println(prefix);
         }
 
+        if(getRecordFileClass()==null) {
+            if(inFile.endsWith(".txt")) {
+                setRecordFileClass("org.ramadda.data.point.text.CsvFile");
+            }
+        }
+
+
         RecordFile file = doMakeRecordFile(inFile);
         /*
         if (suffix.endsWith("csv")) {

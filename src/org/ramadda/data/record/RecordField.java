@@ -56,11 +56,13 @@ public class RecordField {
     public static final String TYPE_NUMERIC = "numeric";
     public static final String TYPE_STRING = "string";
     public static final String TYPE_DATE = "date";
+    public static final String TYPE_INTEGER = "integer";
 
     private boolean isTypeNumeric = true;
     private boolean isTypeString = false;
     private boolean isTypeDate = false;
     private SimpleDateFormat dateFormat;
+    private double roundingFactor = 0;
 
     /** _more_ */
     private String name;
@@ -485,6 +487,28 @@ public class RecordField {
         return arity;
     }
 
+
+
+    /**
+Set the RoundingFactor property.
+
+@param value The new value for RoundingFactor
+    **/
+    public void setRoundingFactor (double value) {
+        roundingFactor = value;
+    }
+
+    /**
+Get the RoundingFactor property.
+
+@return The RoundingFactor
+    **/
+    public double getRoundingFactor () {
+        return roundingFactor;
+    }
+
+
+
     /**
      *  Set the Skip property.
      *
@@ -580,7 +604,7 @@ public class RecordField {
     **/
     public void setType (String value) {
 	type = value;
-        isTypeNumeric = value.equals(TYPE_NUMERIC);
+        isTypeNumeric = value.equals(TYPE_NUMERIC) || value.equals(TYPE_INTEGER);
         isTypeString = value.equals(TYPE_STRING);
         isTypeDate = value.equals(TYPE_DATE);
     }
@@ -596,6 +620,10 @@ public class RecordField {
 
     public boolean isTypeString() {
         return isTypeString;
+    }
+
+    public boolean isTypeInteger() {
+        return (isTypeNumeric && type.equals(TYPE_INTEGER));
     }
 
     public boolean isTypeNumeric() {

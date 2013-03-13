@@ -184,6 +184,10 @@ public class CsvFile extends TextFile {
             //            System.err.println ("props:" + properties);
             RecordField field = new RecordField(name, name, "", paramId++,
                                                 getProperty(properties, "unit", ""));
+            String precision = getProperty(properties, "precision",(String)null);
+            if(precision!=null) {
+                field.setRoundingFactor(Math.pow(10,Integer.parseInt(precision)));
+            }
             String fmt = getProperty(properties, "fmt", (String) null);
             if(fmt==null) {
                 fmt = getProperty(properties, "format", (String) null);
@@ -350,9 +354,10 @@ public class CsvFile extends TextFile {
      * @param args _more_
      */
     public static void main(String[] args) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat(args[0]);
-        System.err.println(sdf.parse(args[1]));
-        if(true) return;
+        if(true) {
+            PointFile.test(args, CsvFile.class);
+            return;
+        }
 
 
         for (int argIdx = 0; argIdx < args.length; argIdx++) {

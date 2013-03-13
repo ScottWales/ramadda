@@ -505,15 +505,45 @@ public class TextRecord extends PointRecord {
             } 
 
             double  value  = values[fieldCnt];
+
+
+
+            if(recordField.isTypeInteger()) {
+                int v = (int) value;
+                pw.print(v);
+                continue;
+            } 
+
+
             if(fieldCnt == idxX)
                 value = getLongitude();
             else  if(fieldCnt == idxY)
                 value = getLatitude();
             else  if(fieldCnt == idxZ)
                 value = getAltitude();
+
+
+            double roundingFactor = recordField.getRoundingFactor();
+            if(roundingFactor>0) {
+                double nv = Math.round(value*roundingFactor)/roundingFactor;
+                value = nv;
+            }
+
+
             pw.print(value);
         }
         return fields.size() + superCnt;
+    }
+
+
+    public static void main(String[]args) {
+        int precision = 4;
+        double value = 1.23456789;
+        //        double nv = Math.round(value * factor) / factor;
+        double factor =  Math.pow(10,precision);
+        double nv = Math.round(value*factor)/factor;
+        System.err.println(factor);
+        System.err.println(nv);
     }
 
 

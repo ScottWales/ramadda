@@ -9,6 +9,7 @@ import ucar.unidata.util.Misc;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import java.util.List;
 import java.lang.reflect.*;
@@ -46,7 +47,16 @@ public  class RecordTool {
             Class c = Misc.findClass(recordFileClass);
             Constructor ctor = Misc.findConstructor(c,
                                                     new Class[] { String.class});
-            return (RecordFile)ctor.newInstance(new Object[] { inFile});
+
+            Hashtable properties = RecordFile.getPropertiesForFile(inFile,
+                                                                   PointFile.DFLT_PROPERTIES_FILE);
+                
+            RecordFile recordFile = (RecordFile)ctor.newInstance(new Object[] { inFile});
+            if(properties!=null) {
+                recordFile.setProperties(properties);
+            }
+
+            return recordFile;
         }
         if(getRecordFileFactory() == null) {
             throw new IllegalStateException("No record file or record file factory specified\nUse -file <record file class>");

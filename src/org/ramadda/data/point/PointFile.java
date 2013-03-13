@@ -492,6 +492,14 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
 
                 PointFile pointFile = (PointFile) Misc.findConstructor(pointFileClass, new Class[]{String.class}).newInstance(new Object[]{arg});
+                Hashtable properties = RecordFile.getPropertiesForFile(arg,
+                                                                  PointFile.DFLT_PROPERTIES_FILE);
+                
+                if(properties!=null) {
+                    pointFile.setProperties(properties);
+                }
+
+
                 pointFile.visit(metadata);
                 long t2 = System.currentTimeMillis();
                 System.err.println("time:" + (t2 - t1) / 1000.0
