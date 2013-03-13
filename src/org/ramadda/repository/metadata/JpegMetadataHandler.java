@@ -116,7 +116,9 @@ public class JpegMetadataHandler extends MetadataHandler {
             metadataList.add(thumbnailMetadata);
 
         } catch (Exception exc) {
-            throw new RuntimeException(exc);
+            System.err.println ("JpgeMetadataHandler:" + exc);
+            exc.printStackTrace();
+            return;
         }
 
 
