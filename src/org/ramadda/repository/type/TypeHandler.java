@@ -1587,7 +1587,7 @@ public class TypeHandler extends RepositoryManager {
                     request.url(
                         getRepository().URL_ENTRY_NEW, ARG_GROUP,
                         entry.getId()), getRepository().iconUrl(ICON_NEW),
-                                        "New Page",
+                                        LABEL_NEW_ENTRY,
                                         OutputType.TYPE_FILE
                                         | OutputType.TYPE_TOOLBAR));
             Link hr = new Link(true);

@@ -2205,6 +2205,7 @@ public interface Constants {
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
 
+    public static final String LABEL_NEW_ENTRY = "New Entry";
     public static final String LABEL_ENTRY = "Entry";
     public static final String LABEL_ENTRIES = "Entries";
     public static final String LABEL_EMPTY_FOLDER = "This folder is empty";
