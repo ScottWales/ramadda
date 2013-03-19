@@ -19,7 +19,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package org.ramadda.plugins.above;
+package org.ramadda.projects.above;
 
 
 import org.ramadda.plugins.db.*;
