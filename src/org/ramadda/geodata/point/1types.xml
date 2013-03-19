@@ -1,5 +1,16 @@
 <types>
 
+  <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="LiDAR">
+     <property name="icon" value="/point/sitemap_color.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+   </type>
+
+
+
   <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
      <property name="icon" value="/point/points.gif"/>
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="true"/>
@@ -7,8 +18,6 @@
 lse"/>
   </type>
 
-  <type name="type_point_idv"  description="IDV Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="record.file.class" value="org.ramadda.data.point.idv.IdvPointFile"/>
-  </type>
+
 
 </types>
