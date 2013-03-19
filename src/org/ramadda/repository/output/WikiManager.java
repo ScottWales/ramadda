@@ -1086,7 +1086,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         children), sb, doDay);
 
             return sb.toString();
-
         } else if (include.equals(WIKI_PROP_GRAPH)) {
             int     width       = Misc.getProperty(props, ATTR_WIDTH, 400);
             int     height      = Misc.getProperty(props, ATTR_HEIGHT, 300);
@@ -1096,13 +1095,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                              entry, children, sb, width,height);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TIMELINE)) {
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            Entry mainEntry  = entry;
+            List<Entry> children = getEntries(request, wikiUtil, mainEntry,
                                               props);
-            //Use a dummy list for now 
-            //            List<Entry> children = new ArrayList<Entry>();
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
-            getCalendarOutputHandler().makeTimeline(request, entry, children, sb,            style);
+            getCalendarOutputHandler().makeTimeline(request, mainEntry, children, sb,            style);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MAP)
                    || include.equals(WIKI_PROP_EARTH)) {

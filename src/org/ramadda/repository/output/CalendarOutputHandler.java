@@ -350,7 +350,10 @@ public class CalendarOutputHandler extends OutputHandler {
         String timelineApplet =
             getRepository().getResource(
                 "/org/ramadda/repository/resources/timeline.html");
-        String url = request.getUrl();
+
+        //        String url = request.getUrl();
+        String url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW.toString(), ARG_ENTRYID, mainEntry.getId(), ARG_OUTPUT,
+                                   OUTPUT_TIMELINE.toString());
         url            = url + "&timelinexml=true";
         timelineApplet = timelineApplet.replace("${timelineurl}", url);
         timelineApplet = timelineApplet.replace("${basedate}",
