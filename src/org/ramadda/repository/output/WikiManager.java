@@ -101,6 +101,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
+    public static final String ATTR_PADDING = "padding";
+
     /** border color */
     public static final String ATTR_BORDERCOLOR = "bordercolor";
 
@@ -270,6 +272,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** max image height attribute */
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
+    public static final String ATTR_MAXHEIGHT = "maxheight";
+    public static final String ATTR_MINHEIGHT = "minheight";
+
     /** attribute in import tag */
     public static final String ATTR_DAY = "day";
 
@@ -332,6 +337,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
+
+    public static final String WIKI_PROP_ITERATE = "iterate";
 
     /** accordian property */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
@@ -465,9 +472,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_LINKRESOURCE,"true", ATTR_SEPARATOR, " | ", ATTR_TAGOPEN, "", ATTR_TAGCLOSE,
                    "")),
-        WIKI_PROP_LIST, prop(WIKI_PROP_TABS, ATTRS_LAYOUT), WIKI_PROP_TREE,
+        WIKI_PROP_LIST, 
+        prop(WIKI_PROP_TABS,         attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK,"true") + ATTRS_LAYOUT), WIKI_PROP_TREE,
         WIKI_PROP_TREEVIEW,
-        prop(WIKI_PROP_ACCORDIAN, ATTRS_LAYOUT), WIKI_PROP_GRID,
+        prop(WIKI_PROP_ACCORDIAN, attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK,"true") + ATTRS_LAYOUT), WIKI_PROP_GRID,
         WIKI_PROP_TABLE, prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
         WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
@@ -485,10 +493,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    ATTR_THUMBNAIL, "true", ATTR_CAPTION,
                    "Figure ${count}: ${name}", ATTR_POPUPCAPTION, "over")),
         prop(WIKI_PROP_SLIDESHOW,
-             ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
+             attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK,"true") + ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
         WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc", 
         prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
-        //        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
+        prop(WIKI_PROP_TIMELINE, attrs(ATTR_HEIGHT, "150")),
         prop(WIKI_PROP_GRAPH,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400")),
         WIKI_PROP_COMMENTS,
@@ -914,7 +922,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * @param wikiUtil The wiki util
      * @param request The request
      * @param entry the entry
-     * @param include  the include
+     * @param tag  the tag
      * @param props    the properties
      *
      * @return  the include text
@@ -922,13 +930,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * @throws Exception  problems
      */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry entry, String include, Hashtable props)
+                                 Entry entry, String tag, Hashtable props)
             throws Exception {
-        boolean blockPopup = Misc.getProperty(props, ATTR_BLOCK_POPUP, false);
-        boolean blockShow = Misc.getProperty(props, ATTR_BLOCK_SHOW, false);
-        String prefix = Misc.getProperty(props, ATTR_PREFIX, (String)null);
-        String suffix = Misc.getProperty(props, ATTR_SUFFIX, (String)null);
-        String result = getWikiIncludeInner(wikiUtil, request, entry, include,  props);
+        boolean doingIterate  = tag.equals(WIKI_PROP_ITERATE);
+        String attrPrefix = "";
+        if(doingIterate) {
+            attrPrefix = "iterate.";
+        }
+
+        boolean blockPopup = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_POPUP, false);
+        boolean blockShow = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_SHOW, false);
+        String prefix = Misc.getProperty(props, attrPrefix + ATTR_PREFIX, (String)null);
+        String suffix = Misc.getProperty(props, attrPrefix + ATTR_SUFFIX, (String)null);
+        String result = getWikiIncludeInner(wikiUtil, request, entry, tag,  props);
         if(result == null) {
             result =  getMessage(props,
                                  "Could not find entry");
@@ -944,15 +958,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             sb.append(makeWikiUtil(request, false).wikify(suffix, null));
         }
 
-
-        String       blockTitle   = Misc.getProperty(props, ATTR_BLOCK_TITLE, "");
+        String       blockTitle   = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_TITLE, "");
         if (blockPopup) {
             return getRepository().makePopupLink(blockTitle,
                                                  sb.toString());
         }
 
         if (blockShow) {
-            boolean blockOpen  = Misc.getProperty(props, ATTR_BLOCK_OPEN, true);
+            boolean blockOpen  = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_OPEN, true);
             return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
                                                blockOpen, HtmlUtils.cssClass("toggleblocklabel"), "");
         }
@@ -1175,14 +1188,98 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                            true, true));
             return  getEntryManager().getEntryActionsTable(request,
                                                            entry, type);
+
+
+        } else if (include.equals(WIKI_PROP_ITERATE)) {
+            StringBuffer style       = new StringBuffer(Misc.getProperty(props, "iterate." + ATTR_STYLE, ""));
+            int    padding      = Misc.getProperty(props, "iterate." + ATTR_PADDING, 5);
+            int    border      = Misc.getProperty(props, "iterate." + ATTR_BORDER, -1);
+            String bordercolor = Misc.getProperty(props, "iterate." + ATTR_BORDERCOLOR,
+                                                  "#000");
+
+
+            if (border > 0) {
+                style.append(" border: " + border + "px solid " + bordercolor + "; ");
+            }
+
+
+            if (padding > 0) {
+                style.append(" padding: " + padding + "px; ");
+            }
+
+
+            int maxHeight= Misc.getProperty(props,"iterate.maxheight", -1);
+            if(maxHeight>0) {
+                style.append(" max-height: " + maxHeight  + "px;  overflow-y: auto; ");
+            }
+
+            int minHeight= Misc.getProperty(props,"iterate.minheight", -1);
+            if(minHeight>0) {
+                style.append(" min-height: " + minHeight  + "px; ");
+            }
+
+            Hashtable tmpProps = new Hashtable(props);
+            //            {{iterate tag="tree" iterate.layout="grid" iterate.columns="2"}}
+            String  tag  = Misc.getProperty(props, "tag", "html");
+            String  prefixTemplate  = Misc.getProperty(props, "iterate.header", "");
+            String  suffixTemplate  = Misc.getProperty(props, "iterate.footer", "");
+            List<Entry>  children       = getEntries(request, wikiUtil, entry,
+                                                     props);
+            if (children.size() == 0) {
+                return null;
+            }
+            int     columns      = Misc.getProperty(props, "iterate." + ATTR_COLUMNS, 1);
+            if(columns> children.size()) columns  = children.size();
+            String colWidth = "";
+            if(columns>1) {
+                sb.append("<table border=0 cellspacing=5 cellpadding=5  width=100%>");
+                sb.append("<tr valign=top>");
+                colWidth = ((int)(100.0/columns)) +"%";
+            }
+            int colCnt = 0;
+
+
+            for(Entry child: children) {
+                String childsHtml =  getWikiInclude(wikiUtil, request, child, tag, props);
+                childsHtml = HtmlUtils.div(childsHtml, HtmlUtils.style(style.toString()));
+                if(columns>1) {
+                    if(colCnt>=columns) {
+                        sb.append("</tr>");
+                        sb.append("<tr valign=top>");
+                        colCnt = 0;
+                    }
+                    sb.append("<td width=" + colWidth+">");
+                }
+                colCnt++;
+                String prefix  = prefixTemplate;
+                String suffix  = suffixTemplate;
+                String childUrl = HtmlUtils.href(request.entryUrl(
+                                                                  getRepository().URL_ENTRY_SHOW, child), child.getName());
+                prefix = prefix.replace("${name}", child.getName()).replace("${description}", child.getDescription());
+                suffix = suffix.replace("${name}", child.getName()).replace("${description}", child.getDescription());
+                prefix = prefix.replace("${url}", childUrl);
+                suffix = suffix.replace("${url}", childUrl);
+
+
+                sb.append(prefix);
+                sb.append(childsHtml);
+                sb.append(suffix);
+                if(columns>1) {
+                    sb.append("</td>");
+                }
+            }
+            if(columns>1) {
+                sb.append("</table>");
+            }
+            return sb.toString();
         } else if (include.equals(WIKI_PROP_TABS)
                    || include.equals(WIKI_PROP_ACCORDIAN)
                    || include.equals(WIKI_PROP_SLIDESHOW)) {
+            List<Entry>  children       = getEntries(request, wikiUtil, entry,
+                                                     props);
             boolean      doingSlideshow = include.equals(WIKI_PROP_SLIDESHOW);
             List<String> titles         = new ArrayList<String>();
             List<String> contents       = new ArrayList<String>();
-            List<Entry>  children       = getEntries(request, wikiUtil, entry,
-                                       props);
             boolean useDescription = Misc.getProperty(props,
                                          ATTR_USEDESCRIPTION, true);
             boolean showLink    = Misc.getProperty(props, ATTR_SHOWLINK, true);
