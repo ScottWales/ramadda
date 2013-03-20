@@ -22,34 +22,9 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import opendap.dap.DAP2Exception;
-
-import opendap.servlet.GuardedDataset;
-import opendap.servlet.ReqState;
-
-//import ucar.nc2.dt.PointObsDataset;
-//import ucar.nc2.dt.PointObsDatatype;
-
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.*;
-
-import org.jfree.chart.*;
-import org.jfree.chart.annotations.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.entity.*;
-import org.jfree.chart.event.*;
-import org.jfree.chart.labels.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.*;
-import org.jfree.data.general.*;
-import org.jfree.data.time.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.admin.AdminHandler;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
@@ -59,18 +34,9 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ObjectPool;
 
-
-
 import org.ramadda.util.TempDir;
 
 import org.w3c.dom.*;
-
-
-
-import thredds.server.ncSubset.GridPointWriter;
-import thredds.server.ncSubset.QueryParams;
-
-import thredds.server.opendap.GuardedDatasetImpl;
 
 
 
