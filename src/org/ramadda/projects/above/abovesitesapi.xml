@@ -13,6 +13,7 @@
 
 <!--The entry point. This corresponds to the below API entry -->
       <property name="searchurl" value="/above/sites/search"/>
+      <property name="initsearch" value="false"/>
       <property name="form.date.show" value="false"/>
 
 <!--The entry type to search for -->
