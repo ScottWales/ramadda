@@ -59,6 +59,8 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static String TYPE_GLOSSARY = "glossary";
 
+    public static String ALL = "all";
+
     /**
      * _more_
      *
@@ -106,14 +108,20 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         List<Clause> where = super.assembleWhereClause(request,
                                  searchCriteria);
-        if (request.defined(ARG_OUTPUT)) {
+        if ( !isDefaultHtmlOutput(request)) {
             return where;
         }
+
+        /* if (request.defined(ARG_OUTPUT)) {
+            return where;
+        }
+        */
+
         if ( !request.defined(ARG_LETTER)) {
             return where;
         }
         String letter = request.getString(ARG_LETTER, "A");
-        if (letter.equals("all")) {
+        if (letter.equals(ALL)) {
             return where;
         }
         where.add(
@@ -123,6 +131,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
                     letter.toLowerCase() + "%"), Clause.like(
                         Tables.ENTRIES.COL_NAME,
                         letter.toUpperCase() + "%")));
+
 
         return where;
     }
@@ -139,7 +148,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void getChildrenEntries(Request request, Entry group,
+    public void xxxgetChildrenEntries(Request request, Entry group,
                                    List<Entry> entries,
                                    List<Entry> subGroups, List<Clause> where)
             throws Exception {
@@ -204,7 +213,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         String[]     ltrs      = {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "all"
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ALL
         };
         String url = request.getUrl(ARG_LETTER);
         for (String letter : ltrs) {
