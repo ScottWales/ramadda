@@ -92,6 +92,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private boolean searchOpen = true;
 
+    private boolean doSearchInitially = true;
+
     /** _more_ */
     private boolean showText = true;
 
@@ -161,6 +163,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         searchOpen  = Misc.getProperty(props, "searchopen", true);
+        doSearchInitially  = Misc.getProperty(props, "initsearch", true);
         showText    = Misc.getProperty(props, "form.text.show", true);
         showArea    = Misc.getProperty(props, "form.area.show", true);
         showDate    = Misc.getProperty(props, "form.date.show", true);
@@ -226,7 +229,15 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<Entry> entries    = new ArrayList<Entry>();
         List<Entry> groups    = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
-        if ( !refinement) {
+
+
+        boolean doSearch = (refinement?false:doSearchInitially);
+        if(request.defined(ARG_SEARCH_KML) || request.defined(ARG_SEARCH_SUBMIT)) {
+            doSearch =  true;
+        }
+
+
+        if (doSearch) {
             List[] groupAndEntries =
                 getRepository().getEntryManager().getEntries(request);
             groups =  (List<Entry>) groupAndEntries[0];
@@ -407,6 +418,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                     getRepository().showDialogNote(
                         "Search criteria refined"), HtmlUtils.style(
                         "min-width:" + minWidth + "px")));
+        } else if(!doSearch) {
+            tabTitles.add(msg("Results"));
+            tabContents.add("");
+
         } else {
             if (allEntries.size() == 0) {
                 tabTitles.add(msg("Results"));
