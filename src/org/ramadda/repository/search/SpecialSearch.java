@@ -72,6 +72,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
+    public static final String ARG_SEARCH_KML = "search.kml";
+
     /** _more_          */
     public static final String ARG_SEARCH_REFINE = "search.refine";
 
@@ -220,19 +222,32 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
         request.put(ARG_TYPE, theType);
+        List<Entry> allEntries    = new ArrayList<Entry>();
         List<Entry> entries    = new ArrayList<Entry>();
+        List<Entry> groups    = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
         if ( !refinement) {
             List[] groupAndEntries =
                 getRepository().getEntryManager().getEntries(request);
-            entries = (List<Entry>) groupAndEntries[0];
-            entries.addAll(groupAndEntries[1]);
+            groups =  (List<Entry>) groupAndEntries[0];
+            entries = (List<Entry>) groupAndEntries[1];
+            allEntries.addAll(groups);
+            allEntries.addAll(entries);
         }
+
+
+        if(request.defined(ARG_SEARCH_KML)) {
+            request.setReturnFilename("Search Results.kml");
+            KmlOutputHandler koh = (KmlOutputHandler) getRepository().getOutputHandler(KmlOutputHandler.class);
+            return koh.outputGroup(request, null,
+                                   getEntryManager().getDummyGroup(), groups, entries);
+        }
+
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
             return getRepository().getCalendarOutputHandler()
-                .outputTimelineXml(request, group, entries);
+                .outputTimelineXml(request, group, allEntries);
         }
 
         StringBuffer sb = new StringBuffer();
@@ -255,8 +270,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         MapInfo map = getRepository().getMapManager().createMap(request,
                           contentsWidth, contentsHeight, true);
 
-        getMapManager().addToMap(request, map, entries, false, null, true);
-        Rectangle2D.Double bounds = getEntryManager().getBounds(entries);
+        getMapManager().addToMap(request, map, allEntries, false, null, true);
+        Rectangle2D.Double bounds = getEntryManager().getBounds(allEntries);
 
 
         //shrink the bounds down
@@ -288,6 +303,19 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         map.addJS(map.getVariableName() + ".setSelection(" + initParams
                   + ");\n");
         map.centerOn(bounds);
+
+
+        boolean georeferencedResults = tabs.contains(TAB_MAP) || tabs.contains(TAB_EARTH);
+
+        StringBuffer buttons = new StringBuffer();
+        buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
+                       + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE));
+
+        if(georeferencedResults) {
+            buttons.append(" ");
+            buttons.append(HtmlUtils.submit(msg("Get KML"), ARG_SEARCH_KML));
+        }
+
 
 
         StringBuffer formSB = new StringBuffer();
@@ -337,11 +365,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }
         }
 
+
         formSB.append(
             HtmlUtils.formEntry(
-                "",
-                HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
-                + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE)));
+                "", buttons.toString()));
 
 
         formSB.append(HtmlUtils.formTableClose());
@@ -355,11 +382,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         StringBuffer listSB      = new StringBuffer();
 
 
-        makeEntryList(request, listSB, entries);
+        makeEntryList(request, listSB, allEntries);
 
         getRepository().getCalendarOutputHandler().makeTimeline(request,
                                                                 null, //Pass null for the main entry
-                                                                entries, timelineSB,
+                                                                allEntries, timelineSB,
                 "width:" + contentsWidth + "px; height: " + contentsHeight
                 + "px;");
 
@@ -381,7 +408,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         "Search criteria refined"), HtmlUtils.style(
                         "min-width:" + minWidth + "px")));
         } else {
-            if (entries.size() == 0) {
+            if (allEntries.size() == 0) {
                 tabTitles.add(msg("Results"));
                 tabContents.add(
                     HtmlUtils.div(
@@ -412,7 +439,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                    request)) {
                         StringBuffer earthSB = new StringBuffer();
                         getMapManager().getGoogleEarth(
-                            request, entries, earthSB,
+                            request, allEntries, earthSB,
                             contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
                             contentsHeight, true, false);
                         tabContents.add(HtmlUtils.div(earthSB.toString(),
@@ -441,13 +468,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         sb.append("</table>");
 
         sb.append(HtmlUtils.script(js.toString()));
-        if (entries.size() == 0) {
+        if (allEntries.size() == 0) {
             //            sb.append(getRepository().showDialogNote("No entries found"));
         }
 
 
 
-        for (Entry entry : entries) {}
+        for (Entry entry : allEntries) {}
 
         Result result = new Result("Search", sb);
 
