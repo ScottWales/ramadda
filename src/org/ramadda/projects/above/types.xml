@@ -64,7 +64,7 @@
      <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true"/>
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
      <column name="short_name"   label="Short Name"    cansearch="true"/>
-     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true"/>
+     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" />
    </type>
 

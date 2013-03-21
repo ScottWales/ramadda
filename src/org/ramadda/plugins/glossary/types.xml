@@ -21,7 +21,7 @@
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
 <!--
-     <column name="category" type="string" label="Category" cansearch="true" showinhtml="true"/>
+     <column name="category" iscategory="true"  type="string" label="Category" cansearch="true" showinhtml="true"/>
 -->
 </type>
 

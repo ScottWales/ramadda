@@ -16,7 +16,7 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.resource.show" value="false"/>
 <!--
-     <column name="category" type="enumerationplug" label="Category" cansearch="true" showinhtml="true"/>
+     <column name="category" iscategory="true"  type="enumerationplug" label="Category" cansearch="true" showinhtml="true"/>
 -->
 </type>
 

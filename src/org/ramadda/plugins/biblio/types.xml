@@ -4,6 +4,7 @@
      <property name="icon" value="/biblio/book.png"/>
      <property name="form.name.label" value="Title"/>
      <property name="form.description.label" value="Abstract"/>
+     <property name="form.url.show" value="true"/>
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="false"/>
@@ -11,8 +12,10 @@
      <property name="form.todate.show" value="false"/>
 
 
-     <column name="primary_author" type="string"  label="Primary Author"  />
-     <column name="other_authors" type="string"  label="Other Authors"  rows="5"/>
+     <column name="type" type="enumerationplus"  label="Type" values="Generic,Journal Article,Report" />
+     <column name="primary_author" type="string"  label="Primary Author"  searchable="true"/>
+     <column name="institution" type="string"  label="Institution"  searchable="true"/>
+     <column name="other_authors" type="list"  size="5000" label="Other Authors"  rows="5"/>
      <column name="publication" type="enumerationplus"  label="Publication"  />
      <column name="volume" type="int"  label="Volume"  />
      <column name="issue" type="int"  label="Issue"  />
