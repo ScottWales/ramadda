@@ -44,11 +44,14 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -75,6 +78,20 @@ public class NCLOutputHandler extends OutputHandler {
     /** NCL map plot script */
     private static final String SCRIPT_MAPPLOT = "plot.map.ncl";
 
+    /** NCL prefix string */
+    private static final String ARG_NCL_PREFIX= "ncl.";
+
+    private static final String ARG_NCL_AREA  = ARG_NCL_PREFIX +"area";
+    private static final String ARG_NCL_AREA_NORTH  = ARG_NCL_AREA+"_north";
+    private static final String ARG_NCL_AREA_SOUTH  = ARG_NCL_AREA+"_south";
+    private static final String ARG_NCL_AREA_EAST  = ARG_NCL_AREA+"_east";
+    private static final String ARG_NCL_AREA_WEST  = ARG_NCL_AREA+"_west";
+    private static final String ARG_NCL_VARIABLE  = ARG_NCL_PREFIX+ARG_VARIABLE;
+    
+    /** spatial arguments */
+    private static final String[] SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+            ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
+    
     /** map plot output id */
     public static final OutputType OUTPUT_NCL_MAPPLOT =
         new OutputType("NCL Map Displays", "ncl.mapplot",
@@ -86,10 +103,10 @@ public class NCLOutputHandler extends OutputHandler {
 
     /** the path to NCL program */
     private String ncargRoot;
-
+    
     /** spatial arguments */
-    private static final String[] SPATIALARGS = new String[] { ARG_AREA_NORTH,
-            ARG_AREA_WEST, ARG_AREA_SOUTH, ARG_AREA_EAST, };
+    private static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+            ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
 
     /**
      * Construct a new NCLOutputHandler
@@ -281,7 +298,7 @@ sb.append(HtmlUtils.form(formUrl,
                 entry.getResource().getPath());
         List<GridDatatype> grids = dataset.getGrids();
         GridDatatype       var   = grids.get(0);
-        sb.append(HtmlUtils.hidden(ARG_VARIABLE, var));
+        sb.append(HtmlUtils.hidden(ARG_NCL_VARIABLE, var));
         GridCoordSystem gcs = var.getCoordinateSystem();
         sb.append(HtmlUtils.formEntry(msgLabel("Variable"),
                                       var.getName() + HtmlUtils.space(1)
@@ -318,10 +335,10 @@ sb.append(HtmlUtils.form(formUrl,
                                              "" + llr.getLonMax(), };
 
             for (int i = 0; i < points.length; i++) {
-                sb.append(HtmlUtils.hidden(SPATIALARGS[i] + ".original",
+                sb.append(HtmlUtils.hidden(NCL_SPATIALARGS[i] + ".original",
                                            points[i]));
             }
-            String llb = map.makeSelector(ARG_AREA, true, points);
+            String llb = map.makeSelector(ARG_NCL_AREA, true, points);
             sb.append(HtmlUtils.formEntryTop(msgLabel("Area"), llb));
         }
     }
@@ -376,6 +393,12 @@ sb.append(HtmlUtils.form(formUrl,
         String wksName = getRepository().getGUID();
         File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
                                 + ".png");
+        CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
+        GridDataset dataset =
+            dataOutputHandler.getCdmManager().createGrid(input.getPath());
+        if (dataset == null) {
+            throw new Exception("Not a grid");
+        }
 
         StringBuffer commandString = new StringBuffer();
         List<String> commands      = new ArrayList<String>();
@@ -399,31 +422,26 @@ sb.append(HtmlUtils.form(formUrl,
                     arg.substring(CdmDataOutputHandler.VAR_PREFIX.length()));
             }
         }
-        String varname = request.getString(ARG_VARIABLE, null);
+        String varname = request.getString(ARG_NCL_VARIABLE, null);
         if (varname == null) {
-            CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-            GridDataset dataset =
-                dataOutputHandler.getCdmManager().createGrid(input.getPath());
-            if (dataset == null) {
-                throw new Exception("No variable selected");
-            }
             List<GridDatatype> grids = dataset.getGrids();
             GridDatatype       var   = grids.get(0);
             varname = var.getName();
         }
-        envMap.put(ARG_VARIABLE, varname);
+        envMap.put("variable", varname);
         String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
                                          null);
         if ((level != null) && !level.isEmpty()) {
             envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
         }
-        envMap.put("maxLat", request.getString(ARG_AREA_NORTH, "90.0"));
-        envMap.put("minLat", request.getString(ARG_AREA_SOUTH, "-90.0"));
-        envMap.put("minLon", request.getString(ARG_AREA_WEST, "0"));
-        envMap.put("maxLon", request.getString(ARG_AREA_EAST, "360"));
+        LatLonRect llb = dataset.getBoundingBox();
+        envMap.put("maxLat", request.getString(ARG_NCL_AREA_NORTH, String.valueOf(llb.getLatMax())));
+        envMap.put("minLat", request.getString(ARG_NCL_AREA_SOUTH, String.valueOf(llb.getLatMin())));
+        envMap.put("minLon", request.getString(ARG_NCL_AREA_WEST, String.valueOf(llb.getLonMin())));
+        envMap.put("maxLon", request.getString(ARG_NCL_AREA_EAST, String.valueOf(llb.getLonMax())));
 
         boolean haveOriginalBounds = true;
-        for (String spatialArg : SPATIALARGS) {
+        for (String spatialArg : NCL_SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
                                   ""))) {
@@ -455,7 +473,15 @@ sb.append(HtmlUtils.form(formUrl,
                     "Humm, the NCL image generation failed for some reason");
             }
         }
-
+        /*
+        // Crop the image - needs work to handle different aspect ratios
+        int[] ul = new int[] {0,160};
+        int[] lr = new int[] {800,670};
+        Image i = ImageUtils.readImage(outFile.getAbsolutePath());
+        BufferedImage bim = ImageUtils.clip(ImageUtils.toBufferedImage(i), ul, lr);
+        ImageUtils.writeImageToFile(bim, outFile);
+        */
+        
         return outFile;
     }
 
