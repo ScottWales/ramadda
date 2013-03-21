@@ -18,6 +18,16 @@ var map_ms_aerial = "ms.aerial";
 // WMS maps
 var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vmap0,basic";
 
+//http://webmap.ornl.gov/fcgi-bin/mapserv.exe?&width=720&SERVICE=WMS&REQUEST=GetMap&height=360&VERSION=1.1.1&FORMAT=image/png&bbox=-180,-90,180,90&map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map&LAYERS=10010_3_band1&xoriginator=SDAT&SRS=EPSG:4326
+
+//http://webmap.ornl.gov/fcgi-bin/mapserv.exe?LAYERS=10010_3_band1&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&FORMAT=image%2Fpng&WIDTH=256&HEIGHT=256&SRS=EPSG:4326
+
+
+var division =   "wms:Bailey's Ecoregions Division,http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map,10010_1_band1";
+var domain = "wms:Bailey's Ecoregions (domain),http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map,10010_2_band1";
+var province = "wms:Bailey's Ecoregion (province),http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map,10010_3_band1";
+
+
 // doesn't support EPSG:900913
 var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG";
 
@@ -28,6 +38,7 @@ var maxExtent = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508);
 
 var earthCS = new OpenLayers.Projection("EPSG:4326");
 var sphericalMercatorCS = new OpenLayers.Projection("EPSG:900913");
+
 
 var maxLatValue = 89;
 
@@ -55,6 +66,11 @@ function RepositoryMap(mapId, params) {
     var lines;
     var selectorBox;
     var selectorMarker;
+
+    this.sourceProjection = sphericalMercatorCS;
+    //    this.sourceProjection = earthCS;
+    this.displayProjection = earthCS;
+
 
     var theMap = this;
     jQuery(document).ready(function($) {
@@ -90,7 +106,7 @@ function RepositoryMap(mapId, params) {
         }, {
             wrapDateLine : true
         });
-        layer.isBaseLayer = false;
+        //        layer.isBaseLayer = false;
         layer.visibility = false;
         layer.reproject = true;
         this.map.addLayer(layer);
@@ -114,16 +130,14 @@ function RepositoryMap(mapId, params) {
     this.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [ 
-                map_google_terrain, 
-                map_google_streets, 
-                map_google_satellite,
-                map_google_hybrid, 
-                map_wms_openlayers
-                // these don't play well with google projection
-                // map_wms_topographic,
-                // map_ms_aerial,
-                // map_ms_shaded,
-                // map_ms_hybrid,
+                              map_google_terrain, 
+                              map_google_streets, 
+                              map_google_satellite,
+                              map_google_hybrid,
+                              //                              map_wms_openlayers,
+                              division,
+                              domain,
+                              province
             ];
         }
 
@@ -219,8 +233,8 @@ function RepositoryMap(mapId, params) {
         this.name = "map";
         var theMap = this;
         var options = {
-            projection : sphericalMercatorCS,
-            displayProjection : earthCS,
+            projection : this.sourceProjection,
+            displayProjection : this.displayProjection,
             units : "m",
             maxResolution : 156543.0339,
             maxExtent : maxExtent
@@ -418,28 +432,28 @@ function RepositoryMap(mapId, params) {
         if (!bounds)
             return;
         var llbounds = bounds.clone();
-        return llbounds.transform(earthCS, sphericalMercatorCS);
+        return llbounds.transform(this.displayProjection, this.sourceProjection);
     }
 
     this.transformLLPoint = function(point) {
         if (!point)
             return;
         var llpoint = point.clone();
-        return llpoint.transform(earthCS, sphericalMercatorCS);
+        return llpoint.transform(this.displayProjection, this.sourceProjection);
     }
 
     this.transformProjBounds = function(bounds) {
         if (!bounds)
             return;
         var projbounds = bounds.clone();
-        return projbounds.transform(sphericalMercatorCS, earthCS);
+        return projbounds.transform(this.sourceProjection, this.displayProjection);
     }
 
     this.transformProjPoint = function(point) {
         if (!point)
             return;
         var projpoint = point.clone();
-        return projpoint.transform(sphericalMercatorCS, earthCS);
+        return projpoint.transform(this.sourceProjection, this.displayProjection);
     }
 
     this.normalizeBounds = function(bounds) {
@@ -757,7 +771,7 @@ function RepositoryMap(mapId, params) {
                 new OpenLayers.Geometry.Point(west, north) ];
 
         for (i in points) {
-            points[i].transform(earthCS, sphericalMercatorCS);
+            points[i].transform(this.displayProjection, this.sourceProjection);
         }
 
         return this.addPolygon(id, points, attrs);
@@ -767,7 +781,7 @@ function RepositoryMap(mapId, params) {
         var points = [ new OpenLayers.Geometry.Point(lon1, lat1),
                 new OpenLayers.Geometry.Point(lon2, lat2) ];
         for (i in points) {
-            points[i].transform(earthCS, sphericalMercatorCS);
+            points[i].transform(this.displayProjection, this.sourceProjection);
         }
         return this.addPolygon(id, points, attrs);
     }
