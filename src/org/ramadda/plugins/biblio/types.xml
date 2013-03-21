@@ -13,12 +13,12 @@
 
 
      <column name="type" type="enumerationplus"  label="Type" values="Generic,Journal Article,Report" />
-     <column name="primary_author" type="string"  label="Primary Author"  searchable="true"/>
-     <column name="institution" type="string"  label="Institution"  searchable="true"/>
-     <column name="other_authors" type="list"  size="5000" label="Other Authors"  rows="5"/>
+     <column name="primary_author" type="string" size="500" changetype="true"  label="Primary Author"  cansearch="true"/>
+     <column name="institution" type="string"  label="Institution"  cansearch="true"/>
+     <column name="other_authors" type="list"  changetype="true" size="5000" label="Other Authors"  rows="5"/>
      <column name="publication" type="enumerationplus"  label="Publication"  />
-     <column name="volume" type="int"  label="Volume"  />
-     <column name="issue" type="int"  label="Issue"  />
+     <column name="volume_number" type="string"  label="Volume"  />
+     <column name="issue_number" type="string"  label="Issue"  />
      <column name="pages" type="string"  label="Pages"  />
      <column name="doi" type="string"  label="DOI"  />
    </type>
