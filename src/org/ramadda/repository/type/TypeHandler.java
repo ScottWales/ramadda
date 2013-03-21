@@ -4522,8 +4522,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getCategory(Entry entry) {
-        return description;
+    public TwoFacedObject getCategory(Entry entry) {
+        return new TwoFacedObject(description, type);
     }
 
     /**

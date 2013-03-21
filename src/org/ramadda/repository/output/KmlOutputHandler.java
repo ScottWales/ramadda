@@ -28,6 +28,7 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -189,11 +190,19 @@ public class KmlOutputHandler extends OutputHandler {
                           ? entries.get(0).getName()
                           : group.getFullName());
         Element root   = KmlUtil.kml(title);
-        Element folder = KmlUtil.folder(root, title,
-                                        request.get(ARG_VISIBLE, false));
-        KmlUtil.open(folder, false);
+        
+        Hashtable<String,Element> catToFolder = new Hashtable<String,Element>();
+
+        Element document = KmlUtil.document(root, title, true);
+
+
+        Element defaultFolder = document;
+        //        Element folder = KmlUtil.folder(document, title,
+        //                                        request.get(ARG_VISIBLE, false));
+        //        KmlUtil.open(folder, false);
+
         if (group.getDescription().length() > 0) {
-            KmlUtil.description(folder, group.getDescription());
+            KmlUtil.description(defaultFolder, group.getDescription());
         }
 
         int cnt  = subGroups.size() + entries.size();
@@ -203,7 +212,7 @@ public class KmlOutputHandler extends OutputHandler {
             String url =
                 request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
-            Element link = KmlUtil.networkLink(folder, childGroup.getName(),
+            Element link = KmlUtil.networkLink(defaultFolder, childGroup.getName(),
                                url);
             if (childGroup.getDescription().length() > 0) {
                 KmlUtil.description(link, childGroup.getDescription());
@@ -225,7 +234,7 @@ public class KmlOutputHandler extends OutputHandler {
                                          "" + max);
 
                 url = request.getAbsoluteUrl(url);
-                Element link = KmlUtil.networkLink(folder, "More...", url);
+                Element link = KmlUtil.networkLink(defaultFolder, "More...", url);
 
                 if (skipArg != null) {
                     request.put(ARG_SKIP, skipArg);
@@ -235,6 +244,20 @@ public class KmlOutputHandler extends OutputHandler {
 
 
         for (Entry entry : (List<Entry>) entries) {
+            String category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
+            Element parentFolder = defaultFolder;
+
+            if(Utils.stringDefined(category)) {
+                parentFolder =  catToFolder.get(category);
+                if(parentFolder==null) {
+                    parentFolder = KmlUtil.folder(document, category,
+                                                  request.get(ARG_VISIBLE, false));
+                    KmlUtil.open(parentFolder, false);
+                    catToFolder.put(category, parentFolder);
+                }
+            }
+
+
             if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
                 String url      =
@@ -242,7 +265,7 @@ public class KmlOutputHandler extends OutputHandler {
                                   + "/" + fileTail, ARG_ENTRYID,
                                       entry.getId());
                 url = request.getAbsoluteUrl(url);
-                myGroundOverlay(folder, entry.getName(),
+                myGroundOverlay(parentFolder, entry.getName(),
                                 entry.getDescription(), url,
                                 getLocation(entry.getNorth(), 90),
                                 getLocation(entry.getSouth(), -90),
@@ -258,14 +281,14 @@ public class KmlOutputHandler extends OutputHandler {
 
             for (Service service : services) {
                 if (service.isType(Service.TYPE_KML)) {
-                    KmlUtil.networkLink(folder, service.getName(),
+                    KmlUtil.networkLink(parentFolder, service.getName(),
                                         service.getUrl());
                 }
             }
 
             String url = getKmlUrl(request, entry);
             if (url != null) {
-                Element link = KmlUtil.networkLink(folder, entry.getName(),
+                Element link = KmlUtil.networkLink(parentFolder, entry.getName(),
                                    url);
 
                 if (entry.getDescription().length() > 0) {
@@ -298,7 +321,7 @@ public class KmlOutputHandler extends OutputHandler {
                                             ARG_IMAGEWIDTH, "500"));
                     desc = desc + "<br>" + HtmlUtils.img(thumbUrl, "", "");
                 }
-                Element placemark = KmlUtil.placemark(folder,
+                Element placemark = KmlUtil.placemark(parentFolder,
                                         entry.getName(), desc, lonlat[0],
                                         lonlat[1], entry.hasAltitudeTop()
                         ? entry.getAltitudeTop()
@@ -321,7 +344,7 @@ public class KmlOutputHandler extends OutputHandler {
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,
                                                      dir, 0.25, null);
                             Element bearingPlacemark =
-                                KmlUtil.placemark(folder, "Bearing", null,
+                                KmlUtil.placemark(parentFolder, "Bearing", null,
                                     new float[][] {
                                 { (float) fromPt.getLatitude(),
                                   (float) pt.getLatitude() },

@@ -270,16 +270,16 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @return _more_
      */
-    public String getCategory(Entry entry) {
+    public TwoFacedObject getCategory(Entry entry) {
         for (Column column : columns) {
-            if (column.getName().equals("category")) {
+            if (column.getIsCategory()) {
                 Object[] values = entry.getValues();
                 if (values != null) {
                     String s = column.getString(values);
                     if (s != null) {
-                        return s;
+                        String label = column.getEnumLabel(s);
+                        return new TwoFacedObject(label, s);
                     }
-
                     break;
                 }
             }

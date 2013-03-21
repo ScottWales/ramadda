@@ -401,7 +401,7 @@ public class MapManager extends RepositoryManager {
             if (Misc.equals(categoryType, "parent")) {
                 category = entry.getParentEntry().getName();
             } else {
-                category = entry.getTypeHandler().getCategory(entry);
+                category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
             }
             StringBuffer catSB = catMap.get(category);
             if (catSB == null) {
@@ -811,7 +811,7 @@ public class MapManager extends RepositoryManager {
             if (Misc.equals(categoryType, "parent")) {
                 category = entry.getParentEntry().getName();
             } else {
-                category = entry.getTypeHandler().getCategory(entry);
+                category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
             }
             StringBuffer catSB = catMap.get(category);
             if (catSB == null) {

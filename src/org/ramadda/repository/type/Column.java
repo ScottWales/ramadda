@@ -161,6 +161,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_ISINDEX = "isindex";
 
+    public static final String ATTR_ISCATEGORY = "iscategory";
+
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
     public static final String ATTR_ADVANCED = "advanced";
@@ -230,6 +232,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean isIndex;
+
+    private boolean isCategory;
 
     /** _more_ */
     private boolean canSearch;
@@ -333,6 +337,7 @@ public class Column implements DataTypes, Constants {
         changeType  = XmlUtil.getAttribute(element, ATTR_CHANGETYPE, false);
         dflt        = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex     = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
+        isCategory     = XmlUtil.getAttribute(element, ATTR_ISCATEGORY, false);
         canSearch   = XmlUtil.getAttribute(element, ATTR_CANSEARCH, false);
         advancedSearch   = XmlUtil.getAttribute(element, ATTR_ADVANCED, false);
         editable   = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
@@ -2253,6 +2258,25 @@ public class Column implements DataTypes, Constants {
      */
     public boolean getIsIndex() {
         return isIndex;
+    }
+
+
+    /**
+     * Set the IsCategory property.
+     *
+     * @param value The new value for IsCategory
+     */
+    public void setIsCategory(boolean value) {
+        isCategory = value;
+    }
+
+    /**
+     * Get the IsCategory property.
+     *
+     * @return The IsCategory
+     */
+    public boolean getIsCategory() {
+        return isCategory;
     }
 
 

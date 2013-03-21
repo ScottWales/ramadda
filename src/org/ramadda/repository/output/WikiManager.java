@@ -339,6 +339,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKI_PROP_TABS = "tabs";
 
     public static final String WIKI_PROP_ITERATE = "iterate";
+    public static final String ITERATE_PREFIX = "iterate.";
 
     /** accordian property */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
@@ -935,7 +936,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         boolean doingIterate  = tag.equals(WIKI_PROP_ITERATE);
         String attrPrefix = "";
         if(doingIterate) {
-            attrPrefix = "iterate.";
+            attrPrefix = ITERATE_PREFIX;
         }
 
         boolean blockPopup = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_POPUP, false);
@@ -1189,19 +1190,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return  getEntryManager().getEntryActionsTable(request,
                                                            entry, type);
 
-
         } else if (include.equals(WIKI_PROP_ITERATE)) {
-            StringBuffer style       = new StringBuffer(Misc.getProperty(props, "iterate." + ATTR_STYLE, ""));
-            int    padding      = Misc.getProperty(props, "iterate." + ATTR_PADDING, 5);
-            int    border      = Misc.getProperty(props, "iterate." + ATTR_BORDER, -1);
-            String bordercolor = Misc.getProperty(props, "iterate." + ATTR_BORDERCOLOR,
+            StringBuffer style       = new StringBuffer(Misc.getProperty(props, ITERATE_PREFIX + ATTR_STYLE, ""));
+            int    padding      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_PADDING, 5);
+            int    border      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDER, -1);
+            String bordercolor = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDERCOLOR,
                                                   "#000");
-
 
             if (border > 0) {
                 style.append(" border: " + border + "px solid " + bordercolor + "; ");
             }
-
 
             if (padding > 0) {
                 style.append(" padding: " + padding + "px; ");
@@ -1228,7 +1226,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (children.size() == 0) {
                 return null;
             }
-            int     columns      = Misc.getProperty(props, "iterate." + ATTR_COLUMNS, 1);
+            int     columns      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_COLUMNS, 1);
             if(columns> children.size()) columns  = children.size();
             String colWidth = "";
             if(columns>1) {
@@ -1237,10 +1235,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 colWidth = ((int)(100.0/columns)) +"%";
             }
             int colCnt = 0;
-
-
             for(Entry child: children) {
-                String childsHtml =  getWikiInclude(wikiUtil, request, child, tag, props);
+                String childsHtml =  getWikiInclude(wikiUtil, request, child, tag, tmpProps);
                 childsHtml = HtmlUtils.div(childsHtml, HtmlUtils.style(style.toString()));
                 if(columns>1) {
                     if(colCnt>=columns) {
