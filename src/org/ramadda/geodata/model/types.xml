@@ -8,6 +8,7 @@
      <property name="form.resource.show" value="false"/>
      <property name="form.date.show" value="true"/>
      <property name="granule_type" value="climate_modelfile"/>
+     <column name="frequency" type="enumerationplus"  label="Frequency"  values="Daily,Monthly,4xDaily" showinhtml="true" />
 <!--
     These properties point to a vocabulary properties file to be used for the below columns
      <property name="model.values" value="/Users/jeffmc/test.properties"/>
