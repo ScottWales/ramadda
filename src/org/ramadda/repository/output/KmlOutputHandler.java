@@ -196,6 +196,7 @@ public class KmlOutputHandler extends OutputHandler {
         Element document = KmlUtil.document(root, title, true);
 
 
+
         Element defaultFolder = document;
         //        Element folder = KmlUtil.folder(document, title,
         //                                        request.get(ARG_VISIBLE, false));
@@ -322,7 +323,7 @@ public class KmlOutputHandler extends OutputHandler {
                     desc = desc + "<br>" + HtmlUtils.img(thumbUrl, "", "");
                 }
                 Element placemark = KmlUtil.placemark(parentFolder,
-                                        entry.getName(), desc, lonlat[0],
+                                                      getName(entry, cnt), desc, lonlat[0],
                                         lonlat[1], entry.hasAltitudeTop()
                         ? entry.getAltitudeTop()
                         : (entry.hasAltitudeBottom()
@@ -494,5 +495,13 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
+    public String getName(Entry entry, int numEntries) {
+        if(numEntries<100) return entry.getName();
+        String s = entry.getName();
+        if(s.length()>15) {
+            s = s.substring(0,14) +"...";
+        }
+        return s;
+    }
 
 }
