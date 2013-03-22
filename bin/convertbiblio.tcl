@@ -85,7 +85,9 @@ proc outputEntry {} {
 
 
 puts "<entries>"
-set c [read [open export.txt r]]
+
+
+set c [read [open [lindex $argv 0] r]]
 
 set inOne 0
 reset
