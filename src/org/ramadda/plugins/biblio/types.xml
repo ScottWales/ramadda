@@ -4,8 +4,10 @@
      <property name="icon" value="/biblio/book.png"/>
      <property name="form.name.label" value="Title"/>
      <property name="form.description.label" value="Abstract"/>
+<!--
      <property name="form.url.show" value="true"/>
      <property name="form.file.show" value="false"/>
+-->
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="false"/>
      <property name="form.fromdate.label" value="Date"/>
@@ -21,6 +23,7 @@
      <column name="issue_number" type="string"  label="Issue"  />
      <column name="pages" type="string"  label="Pages"  />
      <column name="doi" type="string"  label="DOI"  />
+     <column name="link" type="url"  label="Link"  />
    </type>
 
 
