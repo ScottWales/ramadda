@@ -19,57 +19,37 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.repository;
+package org.ramadda.projects.above;
 
-import org.ramadda.repository.map.MapInfo;
-
-
+import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
+import org.ramadda.repository.output.*;
+import ucar.unidata.util.Misc;
 import java.util.List;
 
-
-
 /**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
+ * @author Jeff McWhirter
  */
-public class PageDecorator extends RepositoryManager {
+public class AbovePageDecorator extends PageDecorator {
 
-    public PageDecorator() {
-        super(null);
+    public AbovePageDecorator() {
     }
 
 
-    public PageDecorator(Repository repository) {
-        super(repository);
-
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param request _more_
-     * @param html _more_
-     * @param entry _more_
-     *
-     * @return _more_
+    /*
+     * ctor
      */
-    public String decoratePage(Repository repository, Request request,
-                               String html, Entry entry) {
-        return html;
-    }
-
-    public String getDefaultOutputType(Repository repository, Request request,
-                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
-        return null;
+    public AbovePageDecorator(Repository repository) {
+        super(repository);
     }
 
 
-    public void addToMap(Request request, MapInfo mapInfo, List<Entry> entriesToUse, boolean detailed) {}
+    public void addToMap(Request request, MapInfo mapInfo, List<Entry> entriesToUse, boolean detailed) {
+        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Division','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map','10010_1_band1',true);");
+        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Domain','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map','10010_2_band1',true);");
+        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Province','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map','10010_3_band1',true);");
 
+    }
 
 
 }

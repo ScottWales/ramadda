@@ -18,16 +18,6 @@ var map_ms_aerial = "ms.aerial";
 // WMS maps
 var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vmap0,basic";
 
-//http://webmap.ornl.gov/fcgi-bin/mapserv.exe?&width=720&SERVICE=WMS&REQUEST=GetMap&height=360&VERSION=1.1.1&FORMAT=image/png&bbox=-180,-90,180,90&map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map&LAYERS=10010_3_band1&xoriginator=SDAT&SRS=EPSG:4326
-
-//http://webmap.ornl.gov/fcgi-bin/mapserv.exe?LAYERS=10010_3_band1&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&FORMAT=image%2Fpng&WIDTH=256&HEIGHT=256&SRS=EPSG:4326
-
-
-var division =   "wms:Bailey's Ecoregions Division,http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map,10010_1_band1";
-var domain = "wms:Bailey's Ecoregions (domain),http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map,10010_2_band1";
-var province = "wms:Bailey's Ecoregion (province),http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map,10010_3_band1";
-
-
 // doesn't support EPSG:900913
 var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG";
 
@@ -100,13 +90,16 @@ function RepositoryMap(mapId, params) {
         this.latlonReadout = latlonReadoutID;
     }
 
-    this.addWMSLayer = function(name, url, layer) {
+    this.addWMSLayer = function(name, url, layer, isBaseLayer) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
             layers : layer
         }, {
             wrapDateLine : true
         });
-        //        layer.isBaseLayer = false;
+        if(isBaseLayer) 
+            layer.isBaseLayer = true;
+        else
+            layer.isBaseLayer = false;
         layer.visibility = false;
         layer.reproject = true;
         this.map.addLayer(layer);
@@ -134,10 +127,7 @@ function RepositoryMap(mapId, params) {
                               map_google_streets, 
                               map_google_satellite,
                               map_google_hybrid,
-                              //                              map_wms_openlayers,
-                              division,
-                              domain,
-                              province
+                              map_wms_openlayers,
             ];
         }
 

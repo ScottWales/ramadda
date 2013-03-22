@@ -128,6 +128,10 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository;
     }
 
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
 
     /**
      * _more_

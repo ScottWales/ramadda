@@ -44,7 +44,9 @@ public class TestPageDecorator extends PageDecorator {
     /**
      * ctor
      */
-    public TestPageDecorator() {}
+    public TestPageDecorator(Repository repository) {
+        super(repository);
+    }
 
     /**
      * Decorate the html

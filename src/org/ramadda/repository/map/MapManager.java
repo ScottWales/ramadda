@@ -790,13 +790,19 @@ public class MapManager extends RepositoryManager {
             throws Exception {
         MapInfo map = createMap(request, width, height, false);
         if (map == null) {
-            return map;
+            return null;
         }
         addToMap(request, map, entriesToUse, detailed, haveBearingLines,
                  true);
 
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
+
+        for (PageDecorator pageDecorator :
+                 getRepository().getPluginManager().getPageDecorators()) {
+            pageDecorator.addToMap(request, map, entriesToUse, detailed);
+        }
+
         List<String>                    categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
                                                      StringBuffer>();

@@ -620,6 +620,7 @@ public class PluginManager extends RepositoryManager {
                 //                                System.out.println("class:" + c.getName());
                 pluginStat("Page decorator", c.getName());
                 PageDecorator pageDecorator = (PageDecorator) c.newInstance();
+                pageDecorator.setRepository(getRepository());
                 pageDecorators.add(pageDecorator);
             } else if (AdminHandler.class.isAssignableFrom(c)) {
                 //                                System.out.println("class:" + c.getName());

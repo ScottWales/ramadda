@@ -42,6 +42,10 @@ public class CmaPageDecorator extends PageDecorator {
     public CmaPageDecorator() {}
 
 
+    public CmaPageDecorator(Repository repository) {
+        super(repository);
+    }
+
     /**
        This is called when no ARG_OUTPUT is specified. It can return the OUTPUT_TYPE to use for the given entry
     */
