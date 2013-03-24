@@ -31,32 +31,16 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.WikiUtil;
 
-
-import org.w3c.dom.Element;
-
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
-
-import java.io.File;
-
-
 import java.net.*;
-
-
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -69,18 +53,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
-
-import java.util.zip.*;
 
 
 /**
  * Provides wiki text processing services
  */
-public class WikiManager extends RepositoryManager implements WikiUtil
-    .WikiPageHandler {
+public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageHandler {
 
     /** id counter */
     static int idCounter = 0;
@@ -339,6 +318,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKI_PROP_TABS = "tabs";
 
     public static final String WIKI_PROP_ITERATE = "iterate";
+    
     public static final String ITERATE_PREFIX = "iterate.";
 
     /** accordian property */
@@ -1128,7 +1108,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 && getMapManager().isGoogleEarthEnabled(request);
 
             List<Entry> children = getEntries(request, wikiUtil, entry,
-                                       props, false, true);
+                                              props, false, true,"");
 
             Request newRequest = request.cloneMe();
             newRequest.putAll(props);
@@ -1206,47 +1186,47 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
-            int maxHeight= Misc.getProperty(props,"iterate.maxheight", -1);
+            int maxHeight= Misc.getProperty(props,ITERATE_PREFIX + "maxheight", -1);
             if(maxHeight>0) {
                 style.append(" max-height: " + maxHeight  + "px;  overflow-y: auto; ");
             }
 
-            int minHeight= Misc.getProperty(props,"iterate.minheight", -1);
+            int minHeight= Misc.getProperty(props,ITERATE_PREFIX + "minheight", -1);
             if(minHeight>0) {
                 style.append(" min-height: " + minHeight  + "px; ");
             }
 
+
             Hashtable tmpProps = new Hashtable(props);
+            tmpProps.remove(ATTR_ENTRY);
             //            {{iterate tag="tree" iterate.layout="grid" iterate.columns="2"}}
             String  tag  = Misc.getProperty(props, "tag", "html");
-            String  prefixTemplate  = Misc.getProperty(props, "iterate.header", "");
-            String  suffixTemplate  = Misc.getProperty(props, "iterate.footer", "");
+            String  prefixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "header", "");
+            String  suffixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "footer", "");
+
             List<Entry>  children       = getEntries(request, wikiUtil, entry,
-                                                     props);
+                                                     props, false, false, ITERATE_PREFIX);
             if (children.size() == 0) {
                 return null;
             }
+            String layout = Misc.getProperty(props, ITERATE_PREFIX + "layout","table");
             int     columns      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_COLUMNS, 1);
             if(columns> children.size()) columns  = children.size();
             String colWidth = "";
-            if(columns>1) {
-                sb.append("<table border=0 cellspacing=5 cellpadding=5  width=100%>");
-                sb.append("<tr valign=top>");
-                colWidth = ((int)(100.0/columns)) +"%";
+            if (layout.equals("table")) {
+                if(columns>1) {
+                    sb.append("<table border=0 cellspacing=5 cellpadding=5  width=100%>");
+                    sb.append("<tr valign=top>");
+                    colWidth = ((int)(100.0/columns)) +"%";
+                }
             }
+            List<String>contents = new ArrayList<String>();
+            List<String>titles = new ArrayList<String>();
+
             int colCnt = 0;
             for(Entry child: children) {
                 String childsHtml =  getWikiInclude(wikiUtil, request, child, tag, tmpProps);
                 childsHtml = HtmlUtils.div(childsHtml, HtmlUtils.style(style.toString()));
-                if(columns>1) {
-                    if(colCnt>=columns) {
-                        sb.append("</tr>");
-                        sb.append("<tr valign=top>");
-                        colCnt = 0;
-                    }
-                    sb.append("<td width=" + colWidth+">");
-                }
-                colCnt++;
                 String prefix  = prefixTemplate;
                 String suffix  = suffixTemplate;
                 String childUrl = HtmlUtils.href(request.entryUrl(
@@ -1255,17 +1235,46 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 suffix = suffix.replace("${name}", child.getName()).replace("${description}", child.getDescription());
                 prefix = prefix.replace("${url}", childUrl);
                 suffix = suffix.replace("${url}", childUrl);
+                String icon =    HtmlUtils.img(getEntryManager().getIconUrl(request,
+                                                                            child));
+                prefix = prefix.replace("${icon}", icon);
+                suffix = suffix.replace("${icon}", icon);
 
+                StringBuffer content = new StringBuffer();
+                content.append(prefix);
+                content.append(childsHtml);
+                content.append(suffix);
 
-                sb.append(prefix);
-                sb.append(childsHtml);
-                sb.append(suffix);
-                if(columns>1) {
-                    sb.append("</td>");
+                if (layout.equals("table")) {
+                    if(columns>1) {
+                        if(colCnt>=columns) {
+                            sb.append("</tr>");
+                            sb.append("<tr valign=top>");
+                            colCnt = 0;
+                        }
+                        sb.append("<td width=" + colWidth+">");
+                    }
+                    colCnt++;
+                    sb.append(content);
+                    if(columns>1) {
+                        sb.append("</td>");
+                    }
+                }  else {
+                    contents.add(content.toString());
+                    titles.add(child.getName());
                 }
             }
-            if(columns>1) {
-                sb.append("</table>");
+            if (layout.equals("table")) {
+                if(columns>1) {
+                    sb.append("</table>");
+                }
+            } else if(layout.equals("tabs")) {
+                sb.append(OutputHandler.makeTabs(titles, contents, true,
+                                                 false));
+            } else if(layout.equals("accordian")) {
+                makeAccordian(sb, titles, contents);
+            } else {
+                throw new IllegalArgumentException("Unknown layout:" + layout);
             }
             return sb.toString();
         } else if (include.equals(WIKI_PROP_TABS)
@@ -1367,33 +1376,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
             if (include.equals(WIKI_PROP_ACCORDIAN)) {
-                String accordianId = "accordion_" + (idCounter++);
-                sb.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass(
-                            "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                            accordianId)));
-                for (int i = 0; i < titles.size(); i++) {
-                    String title   = titles.get(i);
-                    String content = contents.get(i);
-                    sb.append(
-                        HtmlUtils.open(
-                            HtmlUtils.TAG_H3,
-                            HtmlUtils.cssClass(
-                                "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
-                    sb.append("<a href=\"#\">");
-                    sb.append(title);
-                    sb.append("</a></h3>");
-                    sb.append(HtmlUtils.div(content, ""));
-                }
-                sb.append("</div>");
-                String args =
-                    "autoHeight: false, navigation: true, collapsible: true";
-                sb.append(HtmlUtils.script("$(function() {\n$(\"#"
-                                           + accordianId + "\" ).accordion({"
-                                           + args + "});});\n"));
-
+                makeAccordian(sb, titles, contents);
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
@@ -1839,7 +1822,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                   Entry entry, Hashtable props,
                                   boolean onlyImages)
             throws Exception {
-        return getEntries(request, wikiUtil, entry, props, onlyImages, false);
+        return getEntries(request, wikiUtil, entry, props, onlyImages, false,"");
     }
 
 
@@ -1859,18 +1842,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      */
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry entry, Hashtable props,
-                                  boolean onlyImages, boolean includeEntry)
+                                  boolean onlyImages, boolean includeEntry, String attrPrefix)
             throws Exception {
 
+
         if ( !onlyImages) {
-            onlyImages = Misc.getProperty(props, ATTR_IMAGES, onlyImages);
+            onlyImages = Misc.getProperty(props, attrPrefix+ATTR_IMAGES, onlyImages);
         }
 
-        boolean folders        = Misc.getProperty(props, ATTR_FOLDERS, false);
-        boolean files          = Misc.getProperty(props, ATTR_FILES, false);
-        boolean doAssociations = Misc.getProperty(props, ATTR_ASSOCIATIONS,
+        boolean folders        = Misc.getProperty(props, attrPrefix+ATTR_FOLDERS, false);
+        boolean files          = Misc.getProperty(props, attrPrefix+ATTR_FILES, false);
+        boolean doAssociations = Misc.getProperty(props, attrPrefix+ATTR_ASSOCIATIONS,
                                      false);
-
 
 
 
@@ -1898,20 +1881,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         //If there is a max property then clone the request and set the max
-        int max = Misc.getProperty(props, ATTR_MAX, -1);
+        int max = Misc.getProperty(props, attrPrefix+ATTR_MAX, -1);
         if (max > 0) {
             request = request.cloneMe();
             request.put(ARG_MAX, "" + max);
         }
 
-        String      type     = (String) props.get(ATTR_TYPE);
-        int         level    = Misc.getProperty(props, ATTR_LEVEL, 1);
+        String      type     = (String) props.get(attrPrefix+ATTR_TYPE);
+        int         level    = Misc.getProperty(props, attrPrefix+ATTR_LEVEL, 1);
         List<Entry> children = getEntryManager().getChildren(request, entry);
         if (children.isEmpty() && !entry.isGroup() && includeEntry) {
             children.add(entry);
         }
 
-        String userDefinedEntries = Misc.getProperty(props, ATTR_ENTRIES,
+        String userDefinedEntries = Misc.getProperty(props, attrPrefix+ATTR_ENTRIES,
                                         (String) null);
         if (userDefinedEntries != null) {
             children = getEntries(request, userDefinedEntries);
@@ -1967,7 +1950,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             children = getImageEntries(children);
         }
 
-        String excludeEntries = Misc.getProperty(props, ATTR_EXCLUDE,
+        String excludeEntries = Misc.getProperty(props, attrPrefix+ATTR_EXCLUDE,
                                     (String) null);
 
         if (excludeEntries != null) {
@@ -1985,9 +1968,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String sort = Misc.getProperty(props, ATTR_SORT, (String) null);
+        String sort = Misc.getProperty(props, attrPrefix+ATTR_SORT, (String) null);
         if (sort != null) {
-            boolean ascending = Misc.getProperty(props, ATTR_SORT_ORDER,
+            boolean ascending = Misc.getProperty(props, attrPrefix+ATTR_SORT_ORDER,
                                     "up").equals("up");
             if (sort.equals(SORT_DATE)) {
                 children = getEntryManager().sortEntriesOnDate(children,
@@ -2004,7 +1987,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-        String firstEntries = Misc.getProperty(props, ATTR_FIRST,
+        String firstEntries = Misc.getProperty(props, attrPrefix+ATTR_FIRST,
                                   (String) null);
 
         if (firstEntries != null) {
@@ -2023,7 +2006,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
         }
 
-        String name    = Misc.getProperty(props, ATTR_NAME, (String) null);
+        String name    = Misc.getProperty(props, attrPrefix+ATTR_NAME, (String) null);
         String pattern = (name == null)
                          ? null
                          : getPattern(name);
@@ -2038,7 +2021,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        int count = Misc.getProperty(props, ATTR_COUNT, -1);
+        int count = Misc.getProperty(props, attrPrefix+ATTR_COUNT, -1);
         if (count > 0) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
@@ -2857,5 +2840,36 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return name;
         }
     }
+
+    public void makeAccordian(StringBuffer sb, List<String> titles, List<String> contents) {
+
+        String accordianId = "accordion_" + (idCounter++);
+        sb.append(
+                  HtmlUtils.open(
+                                 HtmlUtils.TAG_DIV,
+                                 HtmlUtils.cssClass(
+                                                    "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
+                                                                                                             accordianId)));
+        for (int i = 0; i < titles.size(); i++) {
+            String title   = titles.get(i);
+            String content = contents.get(i);
+            sb.append(
+                      HtmlUtils.open(
+                                     HtmlUtils.TAG_H3,
+                                     HtmlUtils.cssClass(
+                                                        "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+            sb.append("<a href=\"#\">");
+            sb.append(title);
+            sb.append("</a></h3>");
+            sb.append(HtmlUtils.div(content, ""));
+        }
+        sb.append("</div>");
+        String args =
+            "autoHeight: false, navigation: true, collapsible: true";
+        sb.append(HtmlUtils.script("$(function() {\n$(\"#"
+                                   + accordianId + "\" ).accordion({"
+                                   + args + "});});\n"));
+    }
+
 
 }
