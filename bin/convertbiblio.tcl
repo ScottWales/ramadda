@@ -1,8 +1,10 @@
 
 
-proc camel {s} {
+proc tag {s} {
+    regsub -all {^[0-9]+\s+} $s {} s
     regsub -all {\&} $s {\&amp;} s
     regsub -all {\s\s+} $s { } s
+    return [string tolower $s]
     set c [string range $s 0 0]
     set r [string range $s 1 end]
     set s "[string toupper $c][string tolower $r]"
@@ -44,43 +46,54 @@ proc textTag {tag text} {
 
 proc outputEntry {docsDir} {
     set author [lindex $::authors 0]
-    set file "nofile"
+    set theFile "nofile"
     if {$::file!=""} {
         set tail [file tail $::file]
-        set file [file join $docsDir $tail]
+        set theFile [file join $docsDir $tail]
     }
     
-    if {![file exists $file] } {
+    if {![file exists $theFile] } {
         if {[regexp {^\s*([^\s,]+)} $author match name]} {
-            set files [glob -directory $docsDir -nocomplain "*$name*"]
-##            puts stderr "FILES: $files"
-            if {[llength $files] >0} {
-##                puts stderr "FILES: $files"
-                set file [lindex $files 0]
+            set nameToMatch $name
+
+##Some hacks for some of the above docs
+            regsub -all {ODonnell} $nameToMatch {Donnell} nameToMatch
+            if {$nameToMatch == "Ma"} {
+                set nameToMatch "-${nameToMatch}-"
+            }
+
+            if {[string length $nameToMatch]>2 || [regexp X $nameToMatch]} {
+                set files [glob -directory $docsDir -nocomplain  tolower "*$nameToMatch*"]
+                if {[llength $files] ==0 } {
+                    set files [glob -directory $docsDir -nocomplain [string tolower "*$nameToMatch*"]]
+                }
+
+
+                if {[llength $files] >0} {
+                    foreach f $files {
+                        if {[info exists ::seen($f)]} {
+                            continue
+                        }
+                        set ::seen($f) 1
+                        set theFile $f
+                        break
+                    }
+                }
             }
         }
     }
 
-    if {$::file!=""} {
-        if {![file exists $file] } {
-#            puts stderr "Unknown file: $tail  author: $author "
-        }
-    }
+
 
     set extra ""
 
-    if {[file exists $file] } {
-        puts stderr "Found file: $file  $::title"
-        file copy -force $file results 
-        append extra " file=\"[file tail $file]\" "
-    }
-
-    if {0} {
-        if {$::link!=""} {
-            regsub -all {\&} $::link {\&amp;} ::link
-            append extra " url=\"$::url\" "
-            set ::link ""
-        }
+    if {[file exists $theFile] } {
+        #        puts stderr "Found file: $theFile  $::title"
+        file copy -force $theFile results 
+        file delete -force $theFile 
+        append extra " file=\"[file tail $theFile]\" "
+    } else {
+        puts stderr "NO FILE: $author [string range $::title 0 50]"
     }
 
     puts "<entry name=\"$::title\" type=\"biblio\" fromdate=\"$::date-01-01\" $extra >"
@@ -101,7 +114,7 @@ proc outputEntry {docsDir} {
     }
 #    puts stderr "$::title"
     foreach key $::keywords {
-        set key [camel $key]
+        set key [tag $key]
         puts "<metadata type=\"enum_tag\" attr1=\"$key\" />"
 
     }
