@@ -3556,7 +3556,10 @@ public class HtmlUtils {
         StringBuffer sb = new StringBuffer();
         for(int i=0;i<args.length;i++) {
             String s = args[i];
-            if(andSquote) s = squote(s);
+            if(andSquote) {
+                s  = s.replaceAll("'","\\\\'");
+                s = squote(s);
+            }
             if(i>0) sb.append(", ");
             sb.append(s);
         }

@@ -24,6 +24,7 @@ package org.ramadda.projects.above;
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
 import java.util.List;
 
@@ -44,11 +45,38 @@ public class AbovePageDecorator extends PageDecorator {
     }
 
 
-    public void addToMap(Request request, MapInfo mapInfo, List<Entry> entriesToUse, boolean detailed) {
-        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Division','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map','10010_1_band1',true);");
-        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Domain','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map','10010_2_band1',true);");
-        mapInfo.addJS(mapInfo.getVariableName() + ".addWMSLayer('Bailey\\'s Ecoregions Province','http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map','10010_3_band1',true);");
+@Override
+    public void addToMap(Request request, MapInfo mapInfo) {
+        //        if(mapInfo.forSelection()) return;
+        StringBuffer rightSide = new StringBuffer();
+        String[] legendLabels = {"Bailey's Division", 
+                           "Bailey's Domain",
+                           "Bailey's Province",};
 
+
+        String[] labels = {"Bailey's Ecosystem Division", 
+                           "Bailey's Ecosystem Domain",
+                           "Bailey's Ecosystem Province",};
+
+        String[] legends = {"http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_1&format=image/png&STYLE=default",
+                            "http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_2&format=image/png&STYLE=default",
+                            "http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_3&format=image/png&STYLE=default",};
+
+        String[] layers = {"10010_1_band1", "10010_2_band1", "10010_3_band1",};
+
+        String[] urls = {"http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map",
+                         "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map",
+                         "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map",};
+
+        mapInfo.addRightSide("<b>Legends</b><br>");
+        for(int i=0;i< labels.length;i++) {
+            mapInfo.addRightSide(getRepository().makeStickyPopup(legendLabels[i], HtmlUtils.img(legends[i]),""));
+            mapInfo.addRightSide("<br>");
+            String labelArg  = labels[i].replaceAll("'","\\\\'");
+            mapInfo.addJS(HtmlUtils.call(mapInfo.getVariableName() + ".addWMSLayer",
+                                         HtmlUtils.jsMakeArgs(new String[]{HtmlUtils.squote(labelArg), HtmlUtils.squote(urls[i]), HtmlUtils.squote(layers[i]),"true"},false)));
+            mapInfo.addJS("\n");
+        }
     }
 
 

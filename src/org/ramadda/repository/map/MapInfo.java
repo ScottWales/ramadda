@@ -22,8 +22,7 @@
 package org.ramadda.repository.map;
 
 
-import org.ramadda.repository.Entry;
-import org.ramadda.repository.Repository;
+import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.util.HtmlUtils;
@@ -76,19 +75,24 @@ public class MapInfo {
     /** the javascript buffer? */
     private StringBuffer jsBuffer = null;
 
+    private StringBuffer rightSide = new StringBuffer();
+
     /** the html */
     private StringBuffer html = new StringBuffer();
 
+
     /** _more_ */
     private String selectionLabel;
+
+    private Request request;
 
     /**
      * Create a MapInfo for the associated repository
      *
      * @param repository the associated repository
      */
-    public MapInfo(Repository repository) {
-        this(repository, DFLT_WIDTH, DFLT_HEIGHT);
+    public MapInfo(Request request, Repository repository) {
+        this(request, repository, DFLT_WIDTH, DFLT_HEIGHT);
     }
 
     /**
@@ -98,8 +102,8 @@ public class MapInfo {
      * @param width  the width of the map
      * @param height  the height of the map
      */
-    public MapInfo(Repository repository, int width, int height) {
-        this(repository, width, height, false);
+    public MapInfo(Request request, Repository repository, int width, int height) {
+        this(request, repository, width, height, false);
     }
 
     /**
@@ -110,8 +114,9 @@ public class MapInfo {
      * @param height  the height of the map
      * @param forSelection  true if for selecting something
      */
-    public MapInfo(Repository repository, int width, int height,
+    public MapInfo(Request request, Repository repository, int width, int height,
                    boolean forSelection) {
+        this.request       = request;
         this.repository   = repository;
         this.mapVarName   = "ramaddaMap" + (cnt++);
         this.width        = width;
@@ -170,6 +175,11 @@ public class MapInfo {
     public void addJS(String s) {
         getJS().append(s);
     }
+
+    public void addRightSide(String s) {
+        rightSide.append(s);
+    }
+
 
 
     /**
@@ -245,9 +255,29 @@ public class MapInfo {
         if ( !showMaps()) {
             return getMapDiv("&nbsp;Maps not available");
         }
+
+        for (PageDecorator pageDecorator :
+                 repository.getPluginManager().getPageDecorators()) {
+            pageDecorator.addToMap(request, this);
+        }
+
+
         StringBuffer result = new StringBuffer();
         result.append(html);
+        if(rightSide.length()>0) {
+            result.append("<table xxwidth=\"100%\"><tr valign=top><td>");
+        }
+
+
+
+
         result.append(getMapDiv(""));
+        if(rightSide.length()>0) {
+            result.append("</td><td>");
+            result.append(rightSide);
+            result.append("</td></tr></table>");
+        }
+
         result.append(HtmlUtils.script(getJS().toString()));
         result.append("\n");
 
@@ -734,6 +764,10 @@ public class MapInfo {
      */
     public void setSelectionLabel(String l) {
         selectionLabel = l;
+    }
+
+    public boolean forSelection() {
+        return forSelection;
     }
 
 

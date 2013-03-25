@@ -140,7 +140,7 @@ public class MapManager extends RepositoryManager {
                              boolean forSelection) {
 
 
-        MapInfo mapInfo = new MapInfo(getRepository(), width, height,
+        MapInfo mapInfo = new MapInfo(request, getRepository(), width, height,
                                       forSelection);
 
         if ( !showMaps()) {
@@ -798,10 +798,6 @@ public class MapManager extends RepositoryManager {
         Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
         map.centerOn(bounds);
 
-        for (PageDecorator pageDecorator :
-                 getRepository().getPluginManager().getPageDecorators()) {
-            pageDecorator.addToMap(request, map, entriesToUse, detailed);
-        }
 
         List<String>                    categories = new ArrayList<String>();
         Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
@@ -955,7 +951,12 @@ public class MapManager extends RepositoryManager {
                                                infoHtml);
             }
         }
+
+
+
     }
+
+
 
 
     /**

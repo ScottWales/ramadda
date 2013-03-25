@@ -68,7 +68,7 @@ public class PageDecorator extends RepositoryManager {
     }
 
 
-    public void addToMap(Request request, MapInfo mapInfo, List<Entry> entriesToUse, boolean detailed) {}
+    public void addToMap(Request request, MapInfo mapInfo) {}
 
 
 
