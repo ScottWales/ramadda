@@ -95,15 +95,15 @@ begin
     
     rescf@tiMainFontHeightF=0.012
     rescf@tiMainFontThicknessF=.8
+    rescf@cnLineLabelsOn=True
     rescf@cnLineLabelPlacementMode = "Computed"
-    ;rescf@cnConstFLabelAngleF=0
     rescf@cnLineLabelAngleF=0
     rescf@cnConstFLabelFontHeightF=0.010
     rescf@tmXBLabelFontHeightF=0.011
     rescf@tmYLLabelFontHeightF=0.011
  
     wks = gsn_open_wks(wks_type,wks_name) 
-    drawNDCGrid(wks)
+    ;drawNDCGrid(wks)
     gsn_define_colormap(wks, "rainbow")
     plot = gsn_csm_contour_map_ce(wks,data,rescf)
     

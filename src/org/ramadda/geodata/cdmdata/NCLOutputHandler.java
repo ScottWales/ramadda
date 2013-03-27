@@ -411,6 +411,9 @@ sb.append(HtmlUtils.form(formUrl,
 
         String wksName = getRepository().getGUID();
         String plotType = request.getString(CollectionTypeHandler.ARG_REQUEST,"png");
+        if (plotType.equals("image")) {
+            plotType = "png";
+        }
         File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
                                 + "." + plotType);
         //String wksName = IOUtil.joinDir(getProductDir(),
