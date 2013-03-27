@@ -23,9 +23,11 @@ package org.ramadda.plugins.biblio;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -44,6 +46,8 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 
+import java.util.GregorianCalendar;
+import java.util.Date;
 
 
 import java.io.File;
@@ -78,11 +82,26 @@ import java.util.zip.*;
 public class BiblioOutputHandler extends OutputHandler {
 
 
+    public static final String TAG_TYPE = "%0";
+    public static final String TAG_AUTHOR = "%A";
+    public static final String TAG_INSTITUTION = "%I";
+    public static final String TAG_DATE = "%D";
+    public static final String TAG_TAG = "%K";
+    public static final String TAG_TITLE = "%T";
+    public static final String TAG_PUBLICATION = "%J";
+    public static final String TAG_VOLUME = "%V";
+    public static final String TAG_NUMBER = "%N";
+    public static final String TAG_PAGE = "%P";
+    public static final String TAG_DOI = "%R";
+    public static final String TAG_DESCRIPTION = "%X";
+    public static final String TAG_URL = "%U";
+
+
 
 
     /** _more_ */
-    public static final OutputType OUTPUT_BIBLIO_TEST =
-        new OutputType("Biblio Test", "biblio_test", OutputType.TYPE_VIEW,
+    public static final OutputType OUTPUT_BIBLIO_EXPORT =
+        new OutputType("Export Bibliography", "biblio_export", OutputType.TYPE_VIEW,
                        "", "/biblio/book.png");
 
 
@@ -97,7 +116,7 @@ public class BiblioOutputHandler extends OutputHandler {
     public BiblioOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        addType(OUTPUT_BIBLIO_TEST);
+        addType(OUTPUT_BIBLIO_EXPORT);
     }
 
     /**
@@ -112,13 +131,14 @@ public class BiblioOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if (state.entry == null) {
-            return;
+        for(Entry entry:state.getAllEntries()) {
+            if (entry.getTypeHandler().getType().equals("biblio")) {
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_BIBLIO_EXPORT));
+                return;
+            }
         }
-        if (state.entry.getTypeHandler().getType().equals("biblio")) {
-            links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_BIBLIO_TEST));
-        }
+
     }
 
 
@@ -140,12 +160,112 @@ public class BiblioOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        sb.append(entry.getName());
-
-        return new Result("", sb);
-
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        return outputEntries(request, entries);
     }
+
+    public Result outputGroup(Request request, OutputType outputType,
+                              Entry group, List<Entry> subGroups,
+                              List<Entry> entries)
+            throws Exception {
+        return outputEntries(request, entries);
+    }
+
+
+    public Result outputEntries(Request request, 
+                                List<Entry> entries)
+            throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        for(Entry entry: entries) {
+            if (!entry.getTypeHandler().getType().equals("biblio")) {
+                continue;
+            }
+            appendExport(request, entry, sb);
+        }
+        request.setReturnFilename("bibliography.txt");
+        Result result =  new Result("", sb);
+        result.setShouldDecorate(false);
+        result.setMimeType("text/plain");
+        return result;
+    }
+
+
+
+    /*
+     <column name="type" type="enumerationplus"  label="Type" values="Generic,Journal Article,Report" />
+     <column name="primary_author" type="string" size="500" changetype="true"  label="Primary Author"  cansearch="true"/>
+     <column name="institution" type="string"  label="Institution"  cansearch="true"/>
+     <column name="other_authors" type="list"  changetype="true" size="5000" label="Other Authors"  rows="5"/>
+     <column name="publication" type="enumerationplus"  label="Publication"  />
+     <column name="volume_number" type="string"  label="Volume"  />
+     <column name="issue_number" type="string"  label="Issue"  />
+     <column name="pages" type="string"  label="Pages"  />
+     <column name="doi" type="string"  label="DOI"  />
+     <column name="link" type="url"  label="Link"  />
+    */
+
+    private void  appendExport(Request request, 
+                               Entry entry, StringBuffer sb)
+            throws Exception {
+        GregorianCalendar cal =  new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+        cal.setTime(new Date(entry.getStartDate()));
+        Object[] values = entry.getTypeHandler().getValues(entry);
+        int idx =0;
+        appendTag(sb, TAG_TYPE, values[idx++]);
+        appendTag(sb, TAG_TITLE, entry.getName());
+        appendTag(sb, TAG_AUTHOR, values[idx++]);
+        appendTag(sb, TAG_INSTITUTION, values[idx++]);
+        if(values[idx]!=null) {
+            for(String otherAuthor: StringUtil.split(values[idx].toString(),"\n", true, true)) {
+                appendTag(sb, TAG_AUTHOR, otherAuthor);
+            }
+        }
+        idx++;
+
+        appendTag(sb, TAG_DATE, ""+cal.get(GregorianCalendar.YEAR));
+        appendTag(sb, TAG_PUBLICATION, values[idx++]);
+        appendTag(sb, TAG_VOLUME, values[idx++]);
+        appendTag(sb, TAG_NUMBER, values[idx++]);
+        appendTag(sb, TAG_PAGE, values[idx++]);
+        appendTag(sb, TAG_DOI, values[idx++]);
+        appendTag(sb, TAG_URL, values[idx++]);
+
+
+        List<Metadata> metadataList =
+            getMetadataManager().getMetadata(entry);
+        if (metadataList != null) {
+            boolean firstMetadata = true;
+            for (Metadata metadata:metadataList) {
+                if(!metadata.getType().equals("enum_tag")) {
+                    continue;
+                } 
+                if(firstMetadata) {
+                    sb.append(TAG_TAG);
+                    sb.append(" ");
+                }
+                sb.append(metadata.getAttr1());
+                sb.append("\n");
+                firstMetadata = false;
+            }
+        }
+        appendTag(sb, TAG_DESCRIPTION, entry.getDescription());
+        sb.append("\n");
+    }
+
+    private void  appendTag(StringBuffer sb, String tag, Object value) {
+        if(value == null) return;
+        String s = value.toString();
+        if(Utils.stringDefined(s)) {
+            s = s.replaceAll("\n"," ");
+            sb.append(tag);
+            sb.append(" ");
+            sb.append(s);
+            sb.append("\n");
+        }
+    }
+
 
 
 
