@@ -32,6 +32,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
@@ -75,11 +76,22 @@ public class NCLOutputHandler extends OutputHandler {
     /** NCL program path */
     private static final String PROP_NCARG_ROOT = "ncl.ncarg_root";
 
+    /** NCL program path */
+    private static final String PROP_CONVERT_PATH = "ncl.convert.path";
+
     /** NCL map plot script */
     private static final String SCRIPT_MAPPLOT = "plot.map.ncl";
 
+    /** NCL map plot script */
+    private static final String SCRIPT_KML = "kml.ncl";
+    
+    private static final String[] SCRIPTS = {SCRIPT_MAPPLOT, SCRIPT_KML};
+
     /** NCL prefix string */
     private static final String ARG_NCL_PREFIX= "ncl.";
+
+    /** NCL plot string */
+    private static final String ARG_NCL_PLOTTYPE= ARG_NCL_PREFIX+"_plottype";
 
     private static final String ARG_NCL_AREA  = ARG_NCL_PREFIX +"area";
     private static final String ARG_NCL_AREA_NORTH  = ARG_NCL_AREA+"_north";
@@ -104,6 +116,9 @@ public class NCLOutputHandler extends OutputHandler {
     /** the path to NCL program */
     private String ncargRoot;
     
+    /** the path to convert program */
+    private String convertPath;
+    
     /** spatial arguments */
     private static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
@@ -118,6 +133,7 @@ public class NCLOutputHandler extends OutputHandler {
     public NCLOutputHandler(Repository repository) throws Exception {
         super(repository, "NCL");
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
+        convertPath = getProperty(PROP_CONVERT_PATH, "convert");
     }
 
     /**
@@ -133,22 +149,27 @@ public class NCLOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_NCL_MAPPLOT);
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
+        convertPath = getProperty(PROP_CONVERT_PATH, null);
         if (ncargRoot != null) {
-            // write out the template
-            String nclScript =
-                getStorageManager().readSystemResource(
-                    "/org/ramadda/geodata/cdmdata/resources/ncl/"
-                    + SCRIPT_MAPPLOT);
-            nclScript = nclScript.replaceAll("\\$NCARG_ROOT", ncargRoot);
-            String outdir =
-                IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl");
-            StorageManager.makeDir(outdir);
-            File outputFile = new File(IOUtil.joinDir(outdir,
-                                  SCRIPT_MAPPLOT));
-            InputStream is = new ByteArrayInputStream(nclScript.getBytes());
-            OutputStream os =
-                getStorageManager().getFileOutputStream(outputFile);
-            IOUtil.writeTo(is, os);
+            // write out the templates
+            for (int i = 0; i < SCRIPTS.length; i++) {
+                String nclScript =
+                    getStorageManager().readSystemResource(
+                        "/org/ramadda/geodata/cdmdata/resources/ncl/"
+                        + SCRIPTS[i]);
+                //nclScript = nclScript.replaceAll("\\$NCARG_ROOT", ncargRoot);
+                String outdir =
+                    IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl");
+                nclScript = nclScript.replaceAll("\\$NCL_RESOURCES", outdir);
+                nclScript = nclScript.replaceAll("%convert%", convertPath);
+                StorageManager.makeDir(outdir);
+                File outputFile = new File(IOUtil.joinDir(outdir,
+                                      SCRIPTS[i]));
+                InputStream is = new ByteArrayInputStream(nclScript.getBytes());
+                OutputStream os =
+                    getStorageManager().getFileOutputStream(outputFile);
+                IOUtil.writeTo(is, os);
+            }
         }
 
     }
@@ -388,11 +409,13 @@ sb.append(HtmlUtils.form(formUrl,
      */
     public File processRequest(Request request, File input) throws Exception {
 
+        String wksName = getRepository().getGUID();
+        String plotType = request.getString(CollectionTypeHandler.ARG_REQUEST,"png");
+        File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
+                                + "." + plotType);
         //String wksName = IOUtil.joinDir(getProductDir(),
         //                                getRepository().getGUID());
-        String wksName = getRepository().getGUID();
-        File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
-                                + ".png");
+        //File outFile = new File(wksName+".png");
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().createGrid(input.getPath());
@@ -411,6 +434,8 @@ sb.append(HtmlUtils.form(formUrl,
         envMap.put("NCARG_ROOT", ncargRoot);
         envMap.put("wks_name", wksName);
         envMap.put("ncfile", input.toString());
+        envMap.put("productdir", getProductDir().toString());
+        envMap.put("plot_type", plotType);
 
         Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();

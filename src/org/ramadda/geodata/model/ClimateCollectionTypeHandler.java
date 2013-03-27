@@ -87,8 +87,10 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
         String searchButton = JQ.button("Select Data", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
-        String analysisButtons = JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event")) + " " +
-            JQ.button("Plot", formId+"_do_image",js, HtmlUtils.call(formId +".makeImage","event"));
+        String analysisButtons = 
+            JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event")) + " " +
+            JQ.button("Plot", formId+"_do_image",js, HtmlUtils.call(formId +".makeImage","event")) + " " +
+            JQ.button("Google Earth", formId+"_do_kmz",js, HtmlUtils.call(formId +".makeKMZ","event"));
         selectorSB.append(HtmlUtils.formEntry("", searchButton));
         selectorSB.append(HtmlUtils.formTableClose());
 
@@ -130,13 +132,14 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
 
     public static final String REQUEST_IMAGE =  "image";
+    public static final String REQUEST_KMZ =  "kmz";
 
     public Result processRequest(Request request, Entry entry) throws Exception {
         Result result = super.processRequest(request, entry);
         if(result!=null) return result;
         String what = request.getString(ARG_REQUEST,(String) null);
         if(what == null) return null;
-        if(what.equals(REQUEST_IMAGE)) {
+        if(what.equals(REQUEST_IMAGE) || what.equals(REQUEST_KMZ)) {
             return processDataRequest(request, entry, false);
         }
         return null;

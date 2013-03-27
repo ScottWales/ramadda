@@ -1932,6 +1932,13 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         window.location.href = url;
     }
 
+    this.makeKMZ = function(event) {
+        var url = this.getUrl("kmz");
+        event.preventDefault();
+        window.location.href = url;
+    }
+
+
 
     this.search = function(event) {
         var result = "";
