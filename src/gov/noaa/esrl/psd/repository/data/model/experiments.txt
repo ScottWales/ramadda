@@ -1,7 +1,7 @@
 amip_vary_ghg:AMIP Time Evolving GHG
 amip_fixed_ghg:AMIP Climatological GHG
 amip_1880s_forcing:AMIP 1880s Forcing
-amip_1880s_forcing:AMIP 1880s Forcing
 amip_fixed_o3:AMIP Fixed Ozone
 amip_fixed_sic:AMIP Fixed Sea Ice
 amip_eof1_sst:AMIP Climatological SST
+famip:AMIP Time Evolving GHG

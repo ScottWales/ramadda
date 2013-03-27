@@ -127,3 +127,7 @@ snc:snow depth at the canopy
 abso4:antropogenic sulfur burden
 ao3:ipcc ozone
 tropo:tropopause height
+prec:total precipitation
+tref:reference height temperature
+z200:200 hPa geopotenial height
+z500:500 hPa geopotenial height
