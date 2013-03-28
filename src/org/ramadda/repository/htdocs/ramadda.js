@@ -1888,6 +1888,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
     this.outputDivPrefix = outputDiv;
     this.selectValues = selectValues;
     this.totalSize = 0;
+    this.checkboxPrefix = "entry_" + this.id+"_";
     if(!this.arg) this.arg = "select";
 
     this.clearSelect = function (num) {
@@ -1975,7 +1976,6 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         } else {
             var firstColWidth = "40%";
             var widthPerColumn=0;
-            var checkboxPrefix = "entry_" + this.id+"_";
             var listHtml = "";
             var header = "";
             var footer= "";
@@ -1998,8 +1998,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                 else
                     listHtml += "<tr class=listrow2>";
                 row1 = !row1;
-                listHtml+= "<td width=" + firstColWidth+" ><input type=checkbox checked value=true id=\"" +
-                    checkboxPrefix + 
+                listHtml+= "<td width=" + firstColWidth+" ><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() +"\" id=\"" +
+                    this.checkboxPrefix + 
                     + entry.getId() +"\" >";
                 listHtml+= entry.getLink(entry.getIconImage()  + " " + entry.getName());
 
@@ -2023,7 +2023,8 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
             html += tableHeader;
             html += "<thead><tr style=\"background: #FFF;\">"; 
             html+= "<td width=" + firstColWidth +">";
-            html+= "<input type=checkbox checked value=true\> ";
+            var checkboxId = this.id +"_listcbx";
+            html+= "<input type=checkbox checked value=true id=\"" + checkboxId  +"\"\> ";
             html += "<b>" + data.length +" files found</b></td>" + header +"<td width=" + widthPerColumn  +" align=right><b>Size</b></td></tr></thead>";
             html += "</table>"
             html += "</div>";
@@ -2046,14 +2047,41 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         }
         this.totalSize = totalSize;
         $("#" + this.outputDivPrefix+"list").html(html);
-        //                $('#listing').dataTable();
+        var theForm = this;
+        var cbx  =  $("#" + checkboxId);
+
+        this.getEntryCheckboxes().change(function(event) {
+                theForm.listUpdated();
+            });
+
+
+        cbx.change(function(event) {
+                var value = cbx.is(':checked');
+                theForm.getEntryCheckboxes().attr("checked", value);
+                theForm.listUpdated();
+            });
         this.listUpdated()
     }
 
 
+
+    this.getEntryCheckboxes = function () {
+        return   $(':input[id*=\"' + this.checkboxPrefix +'\"]');
+    }
+
+
     this.listUpdated = function () {
+        var cbxs  = this.getEntryCheckboxes();
+        var hasSelectedEntries = false;
+        cbxs.each(function( index ) {
+                if ($(this).attr("checked")) {
+                    hasSelectedEntries = true;
+                }
+            });
+
+        //        this.totalSize
         var btns  =  $(':input[id*=\"' + this.id +'_do_\"]');
-        if (this.totalSize>0) {
+        if (hasSelectedEntries) {
             btns.removeAttr('disabled').removeClass( 'ui-state-disabled' );
         } else {
             btns.attr('disabled', 'disabled' ).addClass( 'ui-state-disabled' );
