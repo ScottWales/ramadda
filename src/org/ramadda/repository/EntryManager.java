@@ -3703,7 +3703,7 @@ public class EntryManager extends RepositoryManager {
                 while ((ze = zin.getNextEntry()) != null) {
                     String entryName = ze.getName();
                     //                System.err.println ("ZIP: " + ze.getName());
-                    if (entryName.equals("entries.xml")) {
+                    if (entryName.endsWith("/entries.xml") || entryName.equals("entries.xml")) {
                         xmlFile = "entries.xml";
 
                         InputStream entriesStream = zin;
@@ -3731,7 +3731,9 @@ public class EntryManager extends RepositoryManager {
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(zin, fos);
                         fos.close();
+                        //Add both the zip path and the filename in case we have dir/filename.txt in the zip
                         origFileToStorage.put(ze.getName(), f.toString());
+                        origFileToStorage.put(name, f.toString());
                     }
                 }
                 if (entriesXml == null) {

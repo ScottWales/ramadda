@@ -1004,6 +1004,14 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public boolean okToShowInHtml(Entry entry, String arg, boolean dflt) {
+        String key   = "html." + arg + ".show";
+        String value = getProperty(entry, key, "" + dflt);
+
+        return value.equals("true");
+    }
+
+
 
     /**
      * _more_
@@ -2069,8 +2077,10 @@ public class TypeHandler extends RepositoryManager {
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
                 //                if ( !request.isAnonymous()) {
-                sb.append(formEntry(request, msgLabel("Type"),
-                                    msg(typeDesc)));
+                if(okToShowInHtml(entry,"type", true)) {
+                    sb.append(formEntry(request, msgLabel("Type"),
+                                        msg(typeDesc)));
+                }
                 //                }
             }
 
