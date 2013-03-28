@@ -8,13 +8,14 @@
      <property name="form.url.show" value="true"/>
      <property name="form.file.show" value="false"/>
 -->
-     <property name="form.area.show" value="false"/>
+
+     <property name="html.type.show" value="false"/>
      <property name="form.location.show" value="false"/>
      <property name="form.fromdate.label" value="Date"/>
      <property name="form.todate.show" value="false"/>
 
 
-     <column name="type" type="enumerationplus"  label="Type" values="Generic,Journal Article,Report" />
+     <column name="type" type="enumerationplus"  label="Publication Type" values="Journal Article,Generic,Report" />
      <column name="primary_author" type="string" size="500" changetype="true"  label="Primary Author"  cansearch="true"/>
      <column name="institution" type="string"  label="Institution"  cansearch="true"/>
      <column name="other_authors" type="list"  changetype="true" size="5000" label="Other Authors"  rows="5"/>
