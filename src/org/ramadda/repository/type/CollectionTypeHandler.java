@@ -361,6 +361,9 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         if(result!=null) return result;
         StringBuffer sb     = new StringBuffer();
         sb.append(entry.getDescription());
+
+
+
         String formId = "selectform" + HtmlUtils.blockCnt++;
 
         sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
@@ -414,6 +417,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
     public String openForm(Request request, Entry entry, StringBuffer sb, StringBuffer js) {
+        sb.append(HtmlUtils.importJS(fileUrl("/selectform.js")));
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(HtmlUtils.form(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                                  HtmlUtils.id(formId)));
