@@ -132,7 +132,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             json = new StringBuffer();
             json.append(Json.map(new String[]{
                         "values", Json.list(uniqueValues)},false));
-            System.err.println(json);
+            //            System.err.println(json);
             cache.put(key, json);
         }
         return new Result(BLANK, json,
@@ -409,6 +409,23 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public  List<Entry> processSearch(Request request, Entry group) throws Exception {
+        return processSearch(request, group, false);
+    }
+
+
+    public  List<Entry> processSearch(Request request, Entry group, boolean checkForSelectedEntries) throws Exception {
+
+        if(checkForSelectedEntries) {
+            List<String> entryIds = (List<String>) request.get("entryselect", new ArrayList<String>());
+            if(entryIds.size()>0) {
+                List<Entry> entries  = new ArrayList<Entry>();
+                for(String entryId: entryIds) {
+                    Entry entry = getEntryManager().getEntry(request, entryId);
+                    entries.add(entry);
+                }
+                return entries;
+            }
+        }
         List<Clause> clauses = new ArrayList<Clause>();
         addClauses(request, group, clauses);
         List[] pair = getEntryManager().getEntries(request, clauses, getGranuleTypeHandler());

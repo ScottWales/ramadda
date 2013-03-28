@@ -34,10 +34,16 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var inputs = $('#' + this.id +' ::input');
         //        $(':input[id*=\"' + this.id +'\"]')
         inputs.each(function() {             
+                //if(this.name == "entryselect" && !this.attr('checked')) {
                 var value = $(this).val();
+                if(this.name == "entryselect") {
+                    if(!$(this).is(':checked')) {
+                        return;
+                    }
+                }
                 if(theForm.valueDefined(value)) {
                      url += "&" + this.name+ "=" + encodeURIComponent(value);
-                 }
+                }
          });       
         if(what!=null) {
             url += "&request=" + what;

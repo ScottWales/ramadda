@@ -152,7 +152,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         //        Graphics2D g = (Graphics2D) image.getGraphics();
 
         //Get the entries
-        List<Entry> entries = processSearch(request, entry);
+        List<Entry> entries = processSearch(request, entry, true);
         List<File> files = new ArrayList<File>();
 
         //Process each one in turn
