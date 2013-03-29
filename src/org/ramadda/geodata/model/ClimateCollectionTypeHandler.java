@@ -86,7 +86,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         StringBuffer selectorSB = new StringBuffer();
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
-        String searchButton = JQ.button("Select Data", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
+        String searchButton = JQ.button("Search", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
         String analysisButtons = 
             JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event")) + " " +
             JQ.button("Plot", formId+"_do_image",js, HtmlUtils.call(formId +".makeImage","event")) + " " +
