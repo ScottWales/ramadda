@@ -23,6 +23,7 @@ package org.ramadda.geodata.cdmdata;
 
 
 import org.ramadda.data.analysis.AnalysisProvider;
+import org.ramadda.data.analysis.Analysis;
 
 
 import org.ramadda.repository.Entry;
@@ -71,7 +72,7 @@ import java.util.TreeSet;
 /**
  * Interface to the Climate Data Operators (CDO) package
  */
-public class CDOOutputHandler extends OutputHandler implements AnalysisProvider {
+public class CDOOutputHandler extends OutputHandler implements AnalysisProvider, Analysis {
 
     /** CDO program path */
     private static final String PROP_CDO_PATH = "cdo.path";
@@ -271,6 +272,20 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
 
 
     /**
+       The AnalysisProvider method. Just adds this
+     */
+    public List<Analysis> getAnalysese() {
+        List<Analysis> analysese = new ArrayList<Analysis>();
+        //TODO: put this back
+        //        if(isEnabled()) {
+        if(true) {
+            analysese.add(this);
+        }
+        return analysese;
+    }
+
+
+    /**
      * Get the Analysis id
      *
      * @return the ID
@@ -278,6 +293,12 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
     public String getAnalysisId() {
         return "CDO";
     }
+
+    public String getAnalysisLabel() {
+        return "Climate Data Operator";
+    }
+
+
 
     /**
      * Is this enabled
@@ -481,10 +502,10 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Statistic"),
-                msgLabel("Period")
-                + HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES)
-                + HtmlUtils.space(5) + msgLabel("Type")
-                + HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES)));
+                new String[]{msgLabel("Period"),
+                             HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES),
+                             msgLabel("Type"),
+                             HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES)}));
     }
 
 
@@ -651,9 +672,11 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Months"),
-                msgLabel("Start") + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)
-                + HtmlUtils.space(5) + msgLabel("End")
-                + HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)));
+                new String[]{
+                    msgLabel("Start"),
+                    HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS),
+                    msgLabel("End"),
+                    HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)}));
     }
 
     /**
@@ -687,9 +710,10 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Years"),
-                msgLabel("Start") + HtmlUtils.select(ARG_CDO_STARTYEAR, years)
-                + HtmlUtils.space(10) + msgLabel("End")
-                + HtmlUtils.select(ARG_CDO_ENDYEAR, years)));
+                new String[]{msgLabel("Start"),
+                             HtmlUtils.select(ARG_CDO_STARTYEAR, years),
+                             msgLabel("End"),
+                             HtmlUtils.select(ARG_CDO_ENDYEAR, years)}));
     }
 
     /**
@@ -716,7 +740,7 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider 
         }
         //ARG_PREFIX +
         String llb = map.makeSelector(ARG_CDO_AREA, true, points);
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Region"), llb));
+        sb.append(HtmlUtils.formEntry(msgLabel("Region"), llb,4));
     }
 
     /**

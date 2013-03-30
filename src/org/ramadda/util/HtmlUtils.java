@@ -2659,6 +2659,28 @@ public class HtmlUtils {
     }
 
 
+    public static String formEntry(String left, String right, int rightColSpan) {
+        return tag(TAG_TR, "",
+                   tag(TAG_TD,
+                       attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
+                             CLASS_FORMLABEL), left) + tag(TAG_TD, attr("colspan", ""+rightColSpan),
+                                 right));
+
+    }
+
+
+    public static String formEntry(String left, String[]cols) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(tag(TAG_TD,
+                      attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
+                            CLASS_FORMLABEL), left));
+        for(String col: cols) {
+            sb.append(tag(TAG_TD, "", col));
+        }
+        return tag(TAG_TR, "", sb.toString());
+    }
+
+
     /**
      * _more_
      *

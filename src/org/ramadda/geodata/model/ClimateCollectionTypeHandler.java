@@ -16,11 +16,14 @@ import java.util.regex.Matcher;
 import java.awt.image.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.database.*;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
+import org.ramadda.geodata.cdmdata.NCOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.data.analysis.AnalysisProvider;
+import org.ramadda.data.analysis.Analysis;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.repository.type.Column;
@@ -40,13 +43,15 @@ import ucar.unidata.util.IOUtil;
 
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
-    private AnalysisProvider cdoOutputHandler;
+    private List<Analysis> analysese = new ArrayList<Analysis>();
+
     private NCLOutputHandler nclOutputHandler;
 
     public ClimateCollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
         super(repository, entryNode);
-        cdoOutputHandler = new CDOOutputHandler(repository);
+        analysese.addAll(new CDOOutputHandler(repository).getAnalysese());
+        analysese.addAll(new NCOOutputHandler(repository).getAnalysese());
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
@@ -96,29 +101,35 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
 
 
-        StringBuffer analysisSB = new StringBuffer();
-        StringBuffer productSB = new StringBuffer();
-
-        //        productSB.append(HtmlUtils.submit(msg("Search for files"),ARG_SEARCH));
-
         sb.append("<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
         sb.append("<td width=30%>");
         sb.append(header(msg("Select Data")));
         sb.append(HtmlUtils.div(selectorSB.toString(), HtmlUtils.cssClass("entryselect")));
-        cdoOutputHandler.addToForm(request, entry, analysisSB);
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_list")));
         sb.append("</td></tr>");
         sb.append("<tr valign=top><td>");
 
-        sb.append(header(msg("Analyze Selected Data")));
-        sb.append(analysisSB);
+        List<String> analysisTabs = new ArrayList<String>();
+        List<String> analysisTitles = new ArrayList<String>();
 
-        /*
-        sb.append(HtmlUtils.p());
-        sb.append(header(msg("Do Something with Data")));
-        sb.append(productSB);
-        */
+        for(Analysis analysis: analysese) {
+            //TODO: add radio buttons
+            StringBuffer tmpSB = new StringBuffer();
+            analysis.addToForm(request, entry, tmpSB);
+            analysisTabs.add(HtmlUtils.div(tmpSB.toString(),
+                                           HtmlUtils.style("min-height:200px;")));
+            analysisTitles.add(analysis.getAnalysisLabel());
+        }
+
+        sb.append(header(msg("Analyze Selected Data")));
+        if(analysisTabs.size()==1) {
+            sb.append(analysisTitles.get(0));
+            sb.append(HtmlUtils.br());
+            sb.append(analysisTabs.get(0));
+        } else {
+            sb.append(OutputHandler.makeTabs(analysisTitles, analysisTabs, true));
+        }
         sb.append(analysisButtons);
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_image")));
@@ -156,19 +167,24 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         List<File> files = new ArrayList<File>();
 
         //Process each one in turn
-        if(cdoOutputHandler.isEnabled()) {
+        
+
+        boolean didAnalysis  = false;
+        for(Analysis analysis: analysese) {
+            didAnalysis   = true;
             for(Entry granule: entries) {
-                File outFile =cdoOutputHandler.processRequest(request, granule);
+                File outFile =analysis.processRequest(request, granule);
                 files.add(outFile);
             }
-        } else {
+        } 
+        if(!didAnalysis) {
             for(Entry granule: entries) {
                 if(granule.isFile()) {
                     files.add(granule.getFile());
                 }
             }
-
         }
+
         if(doDownload) {
             return zipFiles(request, IOUtil.stripExtension(entry.getName())+".zip",files);
         }

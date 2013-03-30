@@ -294,7 +294,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         if(what.equals(REQUEST_SEARCH) || request.defined(ARG_SEARCH)) {
             StringBuffer json = new StringBuffer();
             getJsonOutputHandler().makeJson(request, processSearch(request, entry),json);
-            System.err.println(json);
+            //            System.err.println(json);
             return new Result("", json, "application/json");
         }
 

@@ -69,7 +69,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         var result = "";
         var url = this.getUrl("search");
         var theForm = this;
-        $("#" + this.outputDivPrefix+"list").html("<img src=" + icon_progress +"> searching...");
+        $("#" + this.outputDivPrefix+"list").html("<img src=" + icon_progress +"> Searching...");
         $("#" + this.outputDivPrefix+"image").html("");
         theForm.totalSize = 0;
         $.getJSON(url, function(data) {
@@ -154,7 +154,7 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
             html += "</div>";
 
              
-            html += "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 300px; overflow-y: auto; border: 1px #ccc solid;\">";
+            html += "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 250px; overflow-y: auto; border: 1px #ccc solid;\">";
             html += tableHeader;
             html += listHtml;
             html += "</table>";

@@ -34,6 +34,9 @@ import java.util.List;
 
 /**
  */
-public interface AnalysisProvider {
-    public List<Analysis> getAnalysese();
+public interface Analysis {
+    public String getAnalysisId();
+    public void addToForm(Request request, Entry entry, StringBuffer sb)  throws Exception;
+    public File processRequest(Request request, Entry granule) throws Exception;
+    public String getAnalysisLabel();
 }

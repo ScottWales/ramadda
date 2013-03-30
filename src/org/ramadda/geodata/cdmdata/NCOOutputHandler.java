@@ -28,6 +28,8 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.TempDir;
 
+import org.ramadda.data.analysis.AnalysisProvider;
+import org.ramadda.data.analysis.Analysis;
 
 
 import org.w3c.dom.*;
@@ -54,7 +56,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter/ramadda.org
  */
-public class NCOOutputHandler extends OutputHandler {
+public class NCOOutputHandler extends OutputHandler implements AnalysisProvider, Analysis { 
 
 
     /** _more_ */
@@ -203,15 +205,72 @@ public class NCOOutputHandler extends OutputHandler {
     }
 
 
+    public NCOOutputHandler(Repository repository)
+            throws Exception {
+        super(repository, "NCO");
+        ncwaPath = getProperty(PROP_NCWA_PATH, null);
+    }
+
+
     /**
      * _more_
      *
      * @return _more_
      */
-    public boolean haveNco() {
+    public boolean isEnabled() {
         return ncwaPath != null;
     }
 
+    /**
+       The AnalysisProvider method. Just adds this
+     */
+    public List<Analysis> getAnalysese() {
+        List<Analysis> analysese = new ArrayList<Analysis>();
+        //TODO: put this back
+        //        if(isEnabled()) {
+        if(true) {
+            analysese.add(this);
+        }
+        return analysese;
+    }
+
+
+    /**
+     * Get the Analysis id
+     *
+     * @return the ID
+     */
+    public String getAnalysisId() {
+        return "NCO";
+    }
+
+
+    public String getAnalysisLabel() {
+        return "NCO Weighted Average";
+    }
+
+
+    /**
+     * Add this output handlers UI to the form
+     *
+     * @param request   the Request
+     * @param entry     the Entry
+     * @param sb        the form HTML
+     *
+     * @throws Exception  on badness
+     */
+    public void addToForm(Request request, Entry entry, StringBuffer sb)
+            throws Exception {
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
+        sb.append(HtmlUtils.formTableClose());
+    }
+
+
+    public File processRequest(Request request, Entry entry)
+            throws Exception {
+        return entry.getFile();
+    }
 
 
 
@@ -227,7 +286,7 @@ public class NCOOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if ( !haveNco()) {
+        if ( !isEnabled()) {
             return;
         }
         if ((state.entry != null) && state.entry.isFile()
