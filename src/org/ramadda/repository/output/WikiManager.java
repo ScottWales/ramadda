@@ -461,9 +461,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
-                   "false")),
+                   "false", ATTR_DETAILS,"false")),
         prop(WIKI_PROP_MAPENTRY,
-             attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400")),
+             attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400",  ATTR_DETAILS,"false")),
         prop(WIKI_PROP_EARTH,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
                    "false")),
@@ -1097,7 +1097,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             getCalendarOutputHandler().makeTimeline(request, mainEntry, children, sb,            style);
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MAP)
-                   || include.equals(WIKI_PROP_EARTH)) {
+                   || include.equals(WIKI_PROP_EARTH) 
+                   || include.equals(WIKI_PROP_MAPENTRY)) {
             int     width       = Misc.getProperty(props, ATTR_WIDTH, 400);
             int     height      = Misc.getProperty(props, ATTR_HEIGHT, 300);
             boolean justPoints  = Misc.getProperty(props, "justpoints", false);
@@ -1107,8 +1108,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 include.equals(WIKI_PROP_EARTH)
                 && getMapManager().isGoogleEarthEnabled(request);
 
-            List<Entry> children = getEntries(request, wikiUtil, entry,
+            List<Entry> children;
+            if(include.equals(WIKI_PROP_MAPENTRY)) {
+                children = new ArrayList<Entry>();
+                children.add(entry);
+            } else {
+                children = getEntries(request, wikiUtil, entry,
                                               props, false, true,"");
+            }
 
             Request newRequest = request.cloneMe();
             newRequest.putAll(props);
@@ -1143,25 +1150,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                     newRequest.remove(ARG_ICON);
                 newRequest.remove(ARG_MAP_ICONSONLY);
             }
-
-            return sb.toString();
-        } else if (include.equals(WIKI_PROP_MAPENTRY)) {
-            int              width = Misc.getProperty(props, ATTR_WIDTH, 400);
-            int height = Misc.getProperty(props, ATTR_HEIGHT, 300);
-            MapOutputHandler mapOutputHandler =
-                (MapOutputHandler) getRepository().getOutputHandler(
-                    MapOutputHandler.OUTPUT_MAP);
-            if (mapOutputHandler == null) {
-                return "No maps";
-            }
-
-            List<Entry> children = new ArrayList<Entry>();
-            boolean     details = Misc.getProperty(props, ATTR_DETAILS, false);
-            children.add(entry);
-            boolean[] haveBearingLines = { false };
-            MapInfo   map = getMapManager().getMap(request, children, sb,
-                              width, height, details, haveBearingLines);
-
             return sb.toString();
         } else if (include.equals(WIKI_PROP_MENU)) {
             String  menus = Misc.getProperty(props, ATTR_MENUS, "");

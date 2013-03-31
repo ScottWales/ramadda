@@ -530,20 +530,19 @@ public class WikiUtil {
         while (true) {
             int idx1 = s.indexOf("{{", baseIdx);
             if (idx1 < 0) {
-                //                System.err.println("no idx1");
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
-                //                System.err.println("no idx2");
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));
             String property = s.substring(idx1 + 2, idx2);
+            //If there were new lines in the property tag they got replaced with <P>
+            //Unreplace them
+            property = property.replaceAll("\n<p>\n"," ");
             baseIdx = idx2 + 2;
 
             if (property.equals(PROP_NOHEADING)) {
