@@ -320,6 +320,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     public static final String WIKI_PROP_ITERATE = "iterate";
     
     public static final String ITERATE_PREFIX = "iterate.";
+    public static final String ATTR_ITERATE_TAG = ITERATE_PREFIX +"tag";
 
     /** accordian property */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
@@ -542,18 +543,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 return "";
             }
 
+
+            property  = property.replaceAll("\\n", " ");
+            property  = property.replaceAll("\r", "");
+
             List<String> toks = StringUtil.splitUpTo(property, " ", 2);
+            String stoks = toks.toString();
             if (toks.size() == 0) {
                 return "<b>Incorrect import specification:" + property
                        + "</b>";
             }
-            String tag       = ((toks.size() == 0)
-                                ? ""
-                                : toks.get(0));
+            String tag       =  toks.get(0);
             String remainder = "";
             if (toks.size() > 1) {
                 remainder = toks.get(1);
             }
+            //            System.err.println ("PROPERTY:");
+            System.err.println ("TAG:" + tag+":");
+            System.err.println ("REM:" + remainder);
             Entry theEntry = entry;
             if (tag.equals(WIKI_PROP_IMPORT)) {
                 //Old style
@@ -578,6 +585,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 }
             }
 
+            //            System.err.println ("TAG:" + tag);
+            //            System.err.println ("REMAINDER:" + remainder);
             Hashtable props   = StringUtil.parseHtmlProperties(remainder);
             String    entryId = (String) props.get(ATTR_ENTRY);
 
@@ -923,10 +932,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         boolean blockShow = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_SHOW, false);
         String prefix = Misc.getProperty(props, attrPrefix + ATTR_PREFIX, (String)null);
         String suffix = Misc.getProperty(props, attrPrefix + ATTR_SUFFIX, (String)null);
+
         String result = getWikiIncludeInner(wikiUtil, request, entry, tag,  props);
         if(result == null) {
             result =  getMessage(props,
-                                 "Could not find entry");
+                                 "Could not find entry ");
         }
         if(result.length()==0) return "";
 
@@ -1159,6 +1169,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                                                            entry, type);
 
         } else if (include.equals(WIKI_PROP_ITERATE)) {
+            //xxx
             StringBuffer style       = new StringBuffer(Misc.getProperty(props, ITERATE_PREFIX + ATTR_STYLE, ""));
             int    padding      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_PADDING, 5);
             int    border      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDER, -1);
@@ -1188,7 +1199,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             Hashtable tmpProps = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
             //            {{iterate tag="tree" iterate.layout="grid" iterate.columns="2"}}
-            String  tag  = Misc.getProperty(props, "tag", "html");
+            String  tag  = Misc.getProperty(props, ATTR_ITERATE_TAG, "html");
             String  prefixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "header", "");
             String  suffixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "footer", "");
 
