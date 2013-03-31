@@ -26,6 +26,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class AbovePageDecorator extends PageDecorator {
 @Override
     public void addToMap(Request request, MapInfo mapInfo) {
         //        if(mapInfo.forSelection()) return;
-        StringBuffer rightSide = new StringBuffer();
+
         String[] legendLabels = {"Bailey's Division", 
                            "Bailey's Domain",
                            "Bailey's Province",};
@@ -68,15 +69,30 @@ public class AbovePageDecorator extends PageDecorator {
                          "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map",
                          "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map",};
 
-        mapInfo.addRightSide("<b>Legends</b><br>");
+        List<String>titles = new ArrayList<String>();
+        List<String>tabs = new ArrayList<String>();
+
+
+
+
         for(int i=0;i< labels.length;i++) {
-            mapInfo.addRightSide(getRepository().makeStickyPopup(legendLabels[i], HtmlUtils.img(legends[i]),""));
-            mapInfo.addRightSide("<br>");
+            titles.add(legendLabels[i]);
+            tabs.add(HtmlUtils.img(legends[i]));
             String labelArg  = labels[i].replaceAll("'","\\\\'");
             mapInfo.addJS(HtmlUtils.call(mapInfo.getVariableName() + ".addWMSLayer",
                                          HtmlUtils.jsMakeArgs(new String[]{HtmlUtils.squote(labelArg), HtmlUtils.squote(urls[i]), HtmlUtils.squote(layers[i]),"true"},false)));
             mapInfo.addJS("\n");
         }
+
+        StringBuffer rightSide = new StringBuffer();
+        rightSide.append("<b>Legends</b><br>");
+        rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
+
+        mapInfo.addRightSide(getRepository().makeStickyPopup(HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")), 
+                                                             rightSide.toString(),null));
+        //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
+        //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
+
     }
 
 

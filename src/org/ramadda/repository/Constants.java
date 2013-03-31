@@ -1568,6 +1568,7 @@ public interface Constants {
 
 
     public static final String ARG_MAP_ICONSONLY = "iconsonly";
+    public static final String ARG_MAP_EXTRA = "map.extra";
 
     /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
