@@ -542,7 +542,7 @@ public class WikiUtil {
             String property = s.substring(idx1 + 2, idx2);
             //If there were new lines in the property tag they got replaced with <P>
             //Unreplace them
-            //            property = property.replaceAll("\n<p>\n"," ");
+            property = property.replaceAll("\n<p>\n"," ");
             baseIdx = idx2 + 2;
 
             if (property.equals(PROP_NOHEADING)) {
