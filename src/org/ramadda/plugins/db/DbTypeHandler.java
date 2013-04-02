@@ -144,6 +144,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
+    public static final String ARG_VIEW = "view";
 
     public static final String ARG_DB_ALL = "db.all";
 
@@ -757,11 +758,13 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     
     private String getWhatToShow(Request request) {
+        System.err.println ("REQ:" + request);
+
         String what = request.getString(ARG_WHAT,null);
         if(what != null)  {
             return what;
         }
-        return  request.getString(ARG_DB_VIEW, VIEW_TABLE);
+        return  request.getString(ARG_DB_VIEW, request.getString(ARG_VIEW, VIEW_TABLE));
     }
 
 
@@ -1202,6 +1205,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                              String action, boolean fromSearch)
             throws Exception {
         String         view = getWhatToShow(request);
+        System.err.println("handleList: " + view);
         List<Object[]> valueList;
 
         if ((dateColumns.size() > 0) && request.defined(ARG_YEAR)
@@ -2436,7 +2440,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 actions.add(new TwoFacedObject("Delete selected",
                         ACTION_DELETE));
             }
-            if (actions.size() > 0) {
+            
+            if (!request.get(ARG_EMBEDDED, false) && actions.size() > 0) {
                 if (doForm) {
                     sb.append(HtmlUtils.submit(msgLabel("Do"), ARG_DB_DO));
                     sb.append(HtmlUtils.select(ARG_DB_ACTION, actions));
@@ -2804,9 +2809,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         String       links   = getHref(request, entry, VIEW_KML,
                                        msg("Google Earth KML"));
-
-        addViewHeader(request, entry, sb, VIEW_MAP, valueList.size(),
-                      fromSearch, links);
+        if ( !request.get(ARG_EMBEDDED, false)) {
+            addViewHeader(request, entry, sb, VIEW_MAP, valueList.size(),
+                          fromSearch, links);
+        }
 
         Column  theColumn = null;
         boolean bbox      = true;

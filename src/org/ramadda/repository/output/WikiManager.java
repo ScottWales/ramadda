@@ -559,8 +559,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 remainder = toks.get(1);
             }
             //            System.err.println ("PROPERTY:");
-            System.err.println ("TAG:" + tag+":");
-            System.err.println ("REM:" + remainder);
+            //            System.err.println ("TAG:" + tag+":");
+            //            System.err.println ("REM:" + remainder);
             Entry theEntry = entry;
             if (tag.equals(WIKI_PROP_IMPORT)) {
                 //Old style
@@ -1061,6 +1061,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         } else if (include.equals(WIKI_PROP_URL)) {
             return getWikiUrl(wikiUtil, request, entry, props);
         } else if (include.equals(WIKI_PROP_HTML)) {
+            Request newRequest = makeRequest(request, props);
             if (Misc.getProperty(props, ATTR_CHILDREN, false)) {
                 List<Entry> children = getEntries(request, wikiUtil, entry,
                                            props);
@@ -1077,7 +1078,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 return sb.toString();
             }
 
-            Result result = getHtmlOutputHandler().getHtmlResult(request,
+            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
                                 OutputHandler.OUTPUT_HTML, entry);
 
             return new String(result.getContent());
@@ -1127,8 +1128,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                                               props, false, true,"");
             }
 
-            Request newRequest = request.cloneMe();
-            newRequest.putAll(props);
+
+            Request newRequest = makeRequest(request, props);
+
 
             if (googleEarth) {
                 getMapManager().getGoogleEarth(newRequest, children, sb,
@@ -1169,7 +1171,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                                                            entry, type);
 
         } else if (include.equals(WIKI_PROP_ITERATE)) {
-            //xxx
             StringBuffer style       = new StringBuffer(Misc.getProperty(props, ITERATE_PREFIX + ATTR_STYLE, ""));
             int    padding      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_PADDING, 5);
             int    border      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDER, -1);
@@ -1198,6 +1199,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
 
             Hashtable tmpProps = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
+            Request newRequest = makeRequest(request, props);
+            //            System.err.println("cloned:" + newRequest);
             //            {{iterate tag="tree" iterate.layout="grid" iterate.columns="2"}}
             String  tag  = Misc.getProperty(props, ATTR_ITERATE_TAG, "html");
             String  prefixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "header", "");
@@ -1222,9 +1225,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             List<String>contents = new ArrayList<String>();
             List<String>titles = new ArrayList<String>();
 
+
+
             int colCnt = 0;
             for(Entry child: children) {
-                String childsHtml =  getWikiInclude(wikiUtil, request, child, tag, tmpProps);
+                String childsHtml =  getWikiInclude(wikiUtil, newRequest, child, tag, tmpProps);
                 childsHtml = HtmlUtils.div(childsHtml, HtmlUtils.style(style.toString()));
                 String prefix  = prefixTemplate;
                 String suffix  = suffixTemplate;
@@ -1344,8 +1349,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                         if (doingSlideshow) {
                             props.put("imageclass", "slides_image");
                         }
-                        Request newRequest = request.cloneMe();
-                        newRequest.putAll(props);
+                        Request newRequest = makeRequest(request, props);
                         content = getMapManager().makeInfoBubble(newRequest,
                                 child);
                     }
@@ -1735,6 +1739,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         return wikiUtil;
     }
 
+
+    private Request makeRequest(Request original, Hashtable props) {
+        Request newRequest = original.cloneMe();
+        newRequest.putAll(props);
+        newRequest.put(ARG_EMBEDDED,"true");
+        return newRequest;
+    }
 
     /**
      * Make entry tabs html
