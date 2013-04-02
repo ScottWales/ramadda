@@ -140,7 +140,7 @@ This would give us:
 <div class="cimg"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
 
 
-Normally, all property tags refer to the relevant entry. However, you can specify another entry:
+Normally, all property tags refer to the current entry. However, you can specify another entry:
 <blockquote><pre>{{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre></blockquote>
 
 
@@ -153,6 +153,32 @@ adds both the ID of the entry as well as its name.
 Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 <blockquote><pre>{{someproperty <i>message="some message"</i>}}</pre></blockquote>
+
+For example, you can set up a wiki template that shows an image attachment 
+and a list of entries in a sub-folder called "Links". If you used the below wiki text then you would see displayed 
+"Could not find image" 
+and "Could not find entry" error messages. 
+
+<blockquote><pre>
+{{image src="::*"}}
+{{links entry="Links"}}
+</pre></blockquote>
+
+If, however, you specify a blank message then nothing will be shown:
+
+<blockquote><pre>
+{{image src="::*" message=""}}
+{{links entry="Links" message=""}}
+</pre></blockquote>
+
+Note: you can specify a prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+
+<blockquote><pre>
+{{links entry="Links" message="" prefix="Here are the links:<br>"}}
+</pre></blockquote>
+
+
+This would only show when there is a Links sub-folder.
 
 
 <a name="basic"></a><div class="pagesubtitle">10.1.4 Basic Wiki Properties</div> 
@@ -232,11 +258,12 @@ Show the menu actions in a popup:
 </ul>
 
 
+
 <a name="collection"></a><div class="pagesubtitle">10.1.5 Collection Wiki Properties</div> 
 
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
-other groups of entries with:
+other groups of entries with any of the following arguments:
 <blockquote><pre>{{property entry="some other entry" folders="true" files="true" 
                type="entries of a specific type" level="1 or 2" 
                associations="true|false" 
@@ -377,7 +404,60 @@ You can create a header with wiki text like:
 
 
 
+<li> <a name="apply"></a>{{apply}}
+The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
+the results in a variety of ways (e.g.,  table, tabs);
+The apply tag is of the form:
 
+<blockquote><pre>apply
+apply.entry="the entry to find the children of"
+apply.tag="some tag to apply to the entries"
+apply.layout="table, accordian or tabs"
+apply.columns="number of columns in table"
+apply.header="text to go before can contain macros ${name} ${url}"
+apply.footer="text to go after"
+apply.border="border width - defaults to 0"
+apply.bordercolor="border color"
+...
+&lt;arguments for the apply tag&gt;
+</pre></blockquote>
+
+All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
+mix the arguments that control the apply function with the arguments that you are using for each entry.
+
+
+Say you have the following entries:
+<pre>
+parent
+     entry1
+            sub-entry1
+            sub-entry2
+     entry2
+            sub-entry3
+            sub-entry4
+</pre>
+
+If you used the apply tag:
+
+<blockquote><pre>apply
+apply.entry="parent"
+apply.layout="tabs"
+apply.tag="links"
+linkresource="true"
+</pre></blockquote>
+
+This applies the tag "links" to each main entry. It puts each result in a tab.
+
+This tag would make a 2 column table of maps with links to the entries show in the header.
+
+<blockquote><pre>apply
+apply.layout="table"
+apply.columns="2"
+apply.tag="map"
+apply.border="1"
+apply.header="${url}"
+&lt;any map arguments*gt;
+</pre></blockquote>
 
 
 

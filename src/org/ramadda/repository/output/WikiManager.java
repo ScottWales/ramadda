@@ -317,10 +317,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
 
-    public static final String WIKI_PROP_ITERATE = "iterate";
+    public static final String WIKI_PROP_APPLY = "apply";
     
-    public static final String ITERATE_PREFIX = "iterate.";
-    public static final String ATTR_ITERATE_TAG = ITERATE_PREFIX +"tag";
+    public static final String APPLY_PREFIX = "apply.";
+    public static final String ATTR_APPLY_TAG = APPLY_PREFIX +"tag";
 
     /** accordian property */
     public static final String WIKI_PROP_ACCORDIAN = "accordian";
@@ -922,10 +922,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry entry, String tag, Hashtable props)
             throws Exception {
-        boolean doingIterate  = tag.equals(WIKI_PROP_ITERATE);
+        boolean doingApply  = tag.equals(WIKI_PROP_APPLY);
         String attrPrefix = "";
-        if(doingIterate) {
-            attrPrefix = ITERATE_PREFIX;
+        if(doingApply) {
+            attrPrefix = APPLY_PREFIX;
         }
 
         boolean blockPopup = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_POPUP, false);
@@ -1170,11 +1170,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             return  getEntryManager().getEntryActionsTable(request,
                                                            entry, type);
 
-        } else if (include.equals(WIKI_PROP_ITERATE)) {
-            StringBuffer style       = new StringBuffer(Misc.getProperty(props, ITERATE_PREFIX + ATTR_STYLE, ""));
-            int    padding      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_PADDING, 5);
-            int    border      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDER, -1);
-            String bordercolor = Misc.getProperty(props, ITERATE_PREFIX + ATTR_BORDERCOLOR,
+        } else if (include.equals(WIKI_PROP_APPLY)) {
+            StringBuffer style       = new StringBuffer(Misc.getProperty(props, APPLY_PREFIX + ATTR_STYLE, ""));
+            int    padding      = Misc.getProperty(props, APPLY_PREFIX + ATTR_PADDING, 5);
+            int    border      = Misc.getProperty(props, APPLY_PREFIX + ATTR_BORDER, -1);
+            String bordercolor = Misc.getProperty(props, APPLY_PREFIX + ATTR_BORDERCOLOR,
                                                   "#000");
 
             if (border > 0) {
@@ -1186,12 +1186,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             }
 
 
-            int maxHeight= Misc.getProperty(props,ITERATE_PREFIX + "maxheight", -1);
+            int maxHeight= Misc.getProperty(props,APPLY_PREFIX + "maxheight", -1);
             if(maxHeight>0) {
                 style.append(" max-height: " + maxHeight  + "px;  overflow-y: auto; ");
             }
 
-            int minHeight= Misc.getProperty(props,ITERATE_PREFIX + "minheight", -1);
+            int minHeight= Misc.getProperty(props,APPLY_PREFIX + "minheight", -1);
             if(minHeight>0) {
                 style.append(" min-height: " + minHeight  + "px; ");
             }
@@ -1201,18 +1201,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             tmpProps.remove(ATTR_ENTRY);
             Request newRequest = makeRequest(request, props);
             //            System.err.println("cloned:" + newRequest);
-            //            {{iterate tag="tree" iterate.layout="grid" iterate.columns="2"}}
-            String  tag  = Misc.getProperty(props, ATTR_ITERATE_TAG, "html");
-            String  prefixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "header", "");
-            String  suffixTemplate  = Misc.getProperty(props, ITERATE_PREFIX + "footer", "");
+            //            {{apply tag="tree" apply.layout="grid" apply.columns="2"}}
+            String  tag  = Misc.getProperty(props, ATTR_APPLY_TAG, "html");
+            String  prefixTemplate  = Misc.getProperty(props, APPLY_PREFIX + "header", "");
+            String  suffixTemplate  = Misc.getProperty(props, APPLY_PREFIX + "footer", "");
 
             List<Entry>  children       = getEntries(request, wikiUtil, entry,
-                                                     props, false, false, ITERATE_PREFIX);
+                                                     props, false, false, APPLY_PREFIX);
             if (children.size() == 0) {
                 return null;
             }
-            String layout = Misc.getProperty(props, ITERATE_PREFIX + "layout","table");
-            int     columns      = Misc.getProperty(props, ITERATE_PREFIX + ATTR_COLUMNS, 1);
+            String layout = Misc.getProperty(props, APPLY_PREFIX + "layout","table");
+            int     columns      = Misc.getProperty(props, APPLY_PREFIX + ATTR_COLUMNS, 1);
             if(columns> children.size()) columns  = children.size();
             String colWidth = "";
             if (layout.equals("table")) {

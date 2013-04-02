@@ -115,7 +115,7 @@ This would give us:
 [ht::cimg images/wikiinformation.png {} {border=0}]
 
 
-Normally, all property tags refer to the relevant entry. However, you can specify another entry:
+Normally, all property tags refer to the current entry. However, you can specify another entry:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
 
 
@@ -128,6 +128,32 @@ adds both the ID of the entry as well as its name.
 Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 [wiki::text [wiki::tag someproperty {message="some message"}]]
+
+For example, you can set up a wiki template that shows an image attachment 
+and a list of entries in a sub-folder called "Links". If you used the below wiki text then you would see displayed 
+"Could not find image" 
+and "Could not find entry" error messages. 
+
+[wiki::text {
+{{image src="::*"}}
+{{links entry="Links"}}
+}]
+
+If, however, you specify a blank message then nothing will be shown:
+
+[wiki::text {
+{{image src="::*" message=""}}
+{{links entry="Links" message=""}}
+}]
+
+Note: you can specify a prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+
+[wiki::text {
+{{links entry="Links" message="" prefix="Here are the links:<br>"}}
+}]
+
+
+This would only show when there is a Links sub-folder.
 
 
 <subhead intoc="false" id="basic">Basic Wiki Properties</subhead>
@@ -207,11 +233,12 @@ Show the menu actions in a popup:
 </ul>
 
 
+
 <subhead intoc="false" id="collection">Collection Wiki Properties</subhead>
 
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
-other groups of entries with:
+other groups of entries with any of the following arguments:
 [wiki::text {{{property entry="some other entry" folders="true" files="true" 
                type="entries of a specific type" level="1 or 2" 
                associations="true|false" 
@@ -352,7 +379,60 @@ You can create a header with wiki text like:
 
 
 
+<li> [wiki::tagdef apply]
+The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
+the results in a variety of ways (e.g.,  table, tabs);
+The apply tag is of the form:
 
+[wiki::text {apply
+apply.entry="the entry to find the children of"
+apply.tag="some tag to apply to the entries"
+apply.layout="table, accordian or tabs"
+apply.columns="number of columns in table"
+apply.header="text to go before can contain macros ${name} ${url}"
+apply.footer="text to go after"
+apply.border="border width - defaults to 0"
+apply.bordercolor="border color"
+...
+&lt;arguments for the apply tag&gt;
+}]
+
+All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
+mix the arguments that control the apply function with the arguments that you are using for each entry.
+
+
+Say you have the following entries:
+<pre>
+parent
+     entry1
+            sub-entry1
+            sub-entry2
+     entry2
+            sub-entry3
+            sub-entry4
+</pre>
+
+If you used the apply tag:
+
+[wiki::text {apply
+apply.entry="parent"
+apply.layout="tabs"
+apply.tag="links"
+linkresource="true"
+}]
+
+This applies the tag "links" to each main entry. It puts each result in a tab.
+
+This tag would make a 2 column table of maps with links to the entries show in the header.
+
+[wiki::text {apply
+apply.layout="table"
+apply.columns="2"
+apply.tag="map"
+apply.border="1"
+apply.header="${url}"
+&lt;any map arguments*gt;
+}]
 
 
 
