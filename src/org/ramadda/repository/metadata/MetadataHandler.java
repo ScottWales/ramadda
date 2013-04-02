@@ -806,9 +806,16 @@ public class MetadataHandler extends RepositoryManager {
             List l = trimValues((List<String>) Misc.toList(values));
             l.add(0, new TwoFacedObject("-" + msg("all") + "-", ""));
             String value = request.getString(argName, "");
+
+            String size = "";
+            if(l.size()>=4) {
+                size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"4");
+            }
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
                                           HtmlUtils.select(argName, l, value,
-                                              100) + inheritedCbx));
+                                                           size+
+                                                           HtmlUtils.ATTR_MULTIPLE,
+                                                           100) + inheritedCbx));
         } else {
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
                                           HtmlUtils.input(argName, "")
