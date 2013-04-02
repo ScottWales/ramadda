@@ -1266,13 +1266,18 @@ public class Column implements DataTypes, Constants {
                 where.add(Clause.or(ors));
             }
         } else if (isEnumeration()) {
-            String value = getSearchValue(request, null);
-            if (Utils.stringDefined(value)) {
-                if(value.startsWith("!")) {
-                    where.add(Clause.neq(getFullName(), value.substring(1)));
-                } else {
-                    where.add(Clause.eq(getFullName(), value));
+            List<String> values = getSearchValues(request);
+            if (values!=null && values.size()>0) {
+                List<Clause>subClauses = new ArrayList<Clause>();
+                for(String value: values) {
+                    if(value.startsWith("!")) {
+                        subClauses.add(Clause.neq(getFullName(), value.substring(1)));
+                    } else {
+                        subClauses.add(Clause.eq(getFullName(), value));
+                    }
                 }
+                //                System.err.println (Clause.or(subClauses));
+                where.add(Clause.or(subClauses));
             }
         } else {
             String value = getSearchValue(request, null);
@@ -1298,6 +1303,18 @@ public class Column implements DataTypes, Constants {
             return request.getString(id, dflt);
         if(request.isEmbedded()) {
             return request.getString( name, dflt);
+        }
+        return dflt;
+    }
+
+
+    private List<String> getSearchValues(Request request) {
+        List<String> dflt = new ArrayList<String>();
+        String id = getFullName();
+        if(request.defined(id))
+            return request.get(id, dflt);
+        if(request.isEmbedded()) {
+            return request.get( name, dflt);
         }
         return dflt;
     }

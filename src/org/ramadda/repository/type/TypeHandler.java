@@ -158,7 +158,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** _more_ */
-    public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject("All",
+    public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject("-all-",
                                                         "");
 
     /** _more_ */
@@ -3295,7 +3295,7 @@ public class TypeHandler extends RepositoryManager {
          * List<Entry> collectionGroups =
          *   getEntryManager().getTopGroups(request);
          * List<TwoFacedObject> collections = new ArrayList<TwoFacedObject>();
-         * collections.add(new TwoFacedObject("All", ""));
+         * collections.add(new TwoFacedObject("-all-", ""));
          * for (Entry group : collectionGroups) {
          *   collections.add(new TwoFacedObject(group.getLabel(),
          *           group.getId()));
@@ -4045,6 +4045,8 @@ public class TypeHandler extends RepositoryManager {
                                        Tables.ENTRIES.COL_ID));
             subClauses.add(Clause.eq(subTable + ".type", type));
             subClauses.add(Clause.or(attrOrs));
+            System.err.println ("ORS:" + Clause.or(attrOrs));
+
             metadataAnds.add(Clause.and(subClauses));
         }
 
