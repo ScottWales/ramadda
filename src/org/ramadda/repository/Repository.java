@@ -559,6 +559,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return jettyServer;
     }
 
+    public boolean isChild() {
+        return parentRepository!=null;
+    }
+
+    public boolean isMaster() {
+        return getProperty("ramadda.master.enabled",false);
+    }
 
     public boolean isPrimary() {
         return getProperty(PROP_REPOSITORY_PRIMARY,true);
@@ -748,17 +755,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         shutdown();
     }
 
-    /** _more_ */
-    private boolean shutdownEnabled = false;
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
-    public void setShutdownEnabled(boolean v) {
-        shutdownEnabled = true;
-    }
+    //    private boolean shutdownEnabled = false;
 
     /**
      * _more_
@@ -766,7 +764,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getShutdownEnabled() {
-        return shutdownEnabled;
+        return  jettyServer!=null && isPrimary();
     }
 
     /**
@@ -1226,6 +1224,39 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Do this in a thread because (on macs) it hangs sometimes)
         if (isPrimary()) {
             Misc.run(this, "getFtpManager");
+        }
+    }
+
+    public void initializeMaster() throws Exception {
+        if(!isMaster()) {
+            return;
+        }
+        if(jettyServer==null) {
+            getLogManager().logError("RAMADDA is defined as a master but not running under Jetty", null);
+            return;
+        }
+        //Check for child repos
+        String otherServersDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
+        otherServersDir = otherServersDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
+        for(String otherServer: StringUtil.split(getProperty("ramadda.master.repositories",""), ",",true, true)) {
+            System.err.println ("RAMADA: master adding child repository:" + otherServer);
+            File otherServerDir = new File(IOUtil.joinDir(otherServersDir, "repository_" + otherServer));
+            otherServerDir.mkdirs();
+            File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
+            //TODO: Do we always copy the plugins on start up or just the first time
+            if(!otherPluginDir.exists()) {
+                otherPluginDir.mkdirs();
+                for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
+                    if(!myPluginFile.isFile()) continue;
+                    IOUtil.copyFile(myPluginFile, otherPluginDir);
+               }
+            }
+            Repository child = jettyServer.addServlet("/" + otherServer, otherServerDir).getRepository();
+            int sslPort = getHttpsPort();
+            if(sslPort>0) {
+                child.setHttpsPort(sslPort);
+            }
+            addChildRepository(child);
         }
     }
 

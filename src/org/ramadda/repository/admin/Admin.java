@@ -241,7 +241,7 @@ public class Admin extends RepositoryManager {
             adminUrls.add(URL_ADMIN_SQL);
         }
 
-        if (getRepository().canHaveChildren()) {
+        if (getRepository().isMaster()) {
             int idx = adminUrls.indexOf(getHarvesterManager().URL_HARVESTERS_LIST);
             adminUrls.add(idx+1, URL_ADMIN_LOCAL);
         }
@@ -873,6 +873,9 @@ public class Admin extends RepositoryManager {
 
 
     public Result adminLocal(Request request) throws Exception {
+        if (!getRepository().isMaster()) {
+            throw new IllegalArgumentException("Not a master repo");
+        }
         StringBuffer    sb         = new StringBuffer();
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>", "<b>Initialized</b>")));

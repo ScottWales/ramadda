@@ -104,24 +104,10 @@ public class JettyServer implements Constants {
                 "SSL: error opening ssl connection", exc);
         }
         baseRepository = baseServlet.getRepository();
-
-        //Check for child repos
-        String otherServersDir = baseRepository.getProperty("repositories.dir", "%repositorydir%/repositories");
-        otherServersDir = otherServersDir.replace("%repositorydir%",baseRepository.getStorageManager().getRepositoryDir().toString());
-        for(String otherServer: StringUtil.split(baseRepository.getProperty("repositories",""), ",",true, true)) {
-            File otherServerDir = new File(IOUtil.joinDir(otherServersDir, "repository_" + otherServer));
-            otherServerDir.mkdirs();
-            Repository child = addServlet("/" + otherServer, otherServerDir).getRepository();
-            if(sslPort>0) {
-                child.setHttpsPort(sslPort);
-            }
-            baseRepository.addChildRepository(child);
-        }
-
+        baseRepository.initializeMaster();
         server.start();
         server.join();
     }
-
 
     public RepositoryServlet addServlet(String base, File homeDir) throws Exception {
         Properties properties = new Properties();
@@ -130,21 +116,19 @@ public class JettyServer implements Constants {
             properties.put(PROP_REPOSITORY_HOME,homeDir.toString());
             properties.put(PROP_REPOSITORY_PRIMARY,"false");
         }
-        RepositoryServlet repositoryServlet = new RepositoryServlet(this,
-                                                                    args, port, properties);
-        
-        Repository repository = repositoryServlet.getRepository();
-
-        //Tell the repository that they are running stand-alone and can provide the admin shutdown service
-        if(repository.isPrimary()) {
-            repository.setShutdownEnabled(true);
-        }
-
-        String path = repository.getUrlBase();
-        context.addServlet(new ServletHolder(repositoryServlet), path+"/*");
-        repository.setJettyServer(this);
-        return repositoryServlet;
+        return addServlet(new RepositoryServlet(this, args, port, properties));
     }
+
+
+    public RepositoryServlet addServlet(RepositoryServlet servlet) throws Exception {
+        Repository repository = servlet.getRepository();
+        String path = repository.getUrlBase();
+        context.addServlet(new ServletHolder(servlet), path+"/*");
+        repository.setJettyServer(this);
+        return servlet;
+    }
+
+
 
 
     /**
