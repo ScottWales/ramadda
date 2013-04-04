@@ -32,6 +32,7 @@ import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -118,7 +119,10 @@ public class Admin extends RepositoryManager {
     public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
                                                        "Local Repositories");
 
-
+    public static final String ARG_LOCAL_NEW = "local.new";
+    public static final String ARG_LOCAL_NEW_SURE = "local.new.sure";
+    public static final String ARG_LOCAL_NAME = "local.name";
+    public static final String ARG_LOCAL_ID = "local.id";
 
     /** _more_ */
     public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql",
@@ -876,19 +880,60 @@ public class Admin extends RepositoryManager {
         if (!getRepository().isMaster()) {
             throw new IllegalArgumentException("Not a master repo");
         }
+        
         StringBuffer    sb         = new StringBuffer();
+
+        if(request.get(ARG_LOCAL_NEW_SURE, false)) {
+            processLocalNew(request, sb);
+        }
+
+
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>", "<b>Initialized</b>")));
-        for(Repository child: getRepository().getChildRepositories()) {
+        List<Repository> children = getRepository().getChildRepositories();
+        if(children.size()>0) {
+            sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>", "<b>Initialized</b>")));
+        }
+
+        for(Repository child: children) {
             boolean initialized = child.getAdmin().getInstallationComplete();
             String url  = child.getUrlBase();
             sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,child.getRepositoryName() + " - " + url),
                                                    initialized?"yes":"no")));
         }
         sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.p());
+
+        sb.append(formHeader(msg("New repository")));
+        sb.append(request.form(URL_ADMIN_LOCAL));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Name"),  HtmlUtils.input(ARG_LOCAL_NAME)));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.checkbox(ARG_LOCAL_NEW_SURE, "true", false) + " " + msg("Yes, I am sure")));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"))));
+        sb.append(HtmlUtils.formTableClose());
+
+        sb.append(HtmlUtils.formClose());
+
 
         return makeResult(request, "Administration", sb);
     }
+
+    private void processLocalNew(Request request, StringBuffer sb) throws Exception {
+        String id  = request.getString(ARG_LOCAL_ID,"");
+        String name  = request.getString(ARG_LOCAL_NAME,"");
+        if(!Utils.stringDefined(id)) {
+            sb.append(getRepository().showDialogError("No ID given"));
+            return;
+        }
+
+        if(getRepository().hasServer(id)) {
+            sb.append(getRepository().showDialogError("Server with id already exists"));
+            return;
+        }
+        getRepository().addChildRepository(id);
+
+    }
+
 
     /**
      * _more_

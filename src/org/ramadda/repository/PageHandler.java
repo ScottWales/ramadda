@@ -925,6 +925,7 @@ public class PageHandler extends RepositoryManager {
             return getMobileTemplate();
         }
 
+
         List<HtmlTemplate> theTemplates = getTemplates();
         if ((request == null) && (defaultTemplate != null)) {
             return defaultTemplate;

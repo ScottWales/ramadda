@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 
 import org.ramadda.repository.server.JettyServer;
+import org.ramadda.repository.server.RepositoryServlet;
 
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
@@ -212,6 +213,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     private JettyServer jettyServer;
+
+    private Hashtable<String,RepositoryServlet> childrenServlets  = new Hashtable<String,RepositoryServlet>();
 
     /** _more_ */
     private UserManager userManager;
@@ -1236,29 +1239,46 @@ public class Repository extends RepositoryBase implements RequestHandler,
             getLogManager().logError("RAMADDA is defined as a master but not running under Jetty", null);
             return;
         }
-        //Check for child repos
-        String otherServersDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
-        otherServersDir = otherServersDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
-        for(String otherServer: StringUtil.split(getProperty("ramadda.master.repositories",""), ",",true, true)) {
-            System.err.println ("RAMADA: master adding child repository:" + otherServer);
-            File otherServerDir = new File(IOUtil.joinDir(otherServersDir, "repository_" + otherServer));
-            otherServerDir.mkdirs();
-            File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
-            //TODO: Do we always copy the plugins on start up or just the first time
-            if(!otherPluginDir.exists()) {
-                otherPluginDir.mkdirs();
-                for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
-                    if(!myPluginFile.isFile()) continue;
-                    IOUtil.copyFile(myPluginFile, otherPluginDir);
-               }
-            }
-            Repository child = jettyServer.addServlet("/" + otherServer, otherServerDir).getRepository();
-            int sslPort = getHttpsPort();
-            if(sslPort>0) {
-                child.setHttpsPort(sslPort);
-            }
-            addChildRepository(child);
+    }
+
+    public boolean hasServer(String otherServer) throws Exception {
+        RepositoryServlet servlet = childrenServlets.get(otherServer);
+        return servlet != null;
+    }
+
+
+    public void addChildRepository(String repositoryId) throws Exception {
+        repositoryId = repositoryId.trim();
+        repositoryId = repositoryId.replaceAll("[^a-zA-Z_]+","");
+        if(repositoryId.length()==0) {
+            throw new IllegalArgumentException("Bad id:" + repositoryId);
         }
+        if(hasServer(repositoryId)) {
+            throw new IllegalArgumentException("Already have a repository with id:" + repositoryId);
+        }
+        System.err.println("RAMADDA: add server:" + repositoryId);
+        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
+        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
+        System.err.println ("RAMADA: master adding child repository:" + repositoryId);
+        File otherServerDir = new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
+        otherServerDir.mkdirs();
+        File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
+        //TODO: Do we always copy the plugins on start up or just the first time
+        if(!otherPluginDir.exists()) {
+            otherPluginDir.mkdirs();
+            for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
+                if(!myPluginFile.isFile()) continue;
+                IOUtil.copyFile(myPluginFile, otherPluginDir);
+            }
+        }
+        RepositoryServlet servlet = jettyServer.addServlet("/" + repositoryId, otherServerDir);
+        childrenServlets.put(repositoryId, servlet);
+        Repository child = servlet.getRepository();
+        int sslPort = getHttpsPort();
+        if(sslPort>0) {
+            child.setHttpsPort(sslPort);
+        }
+        addChildRepository(child);
     }
 
 
