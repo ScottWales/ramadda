@@ -111,12 +111,15 @@ public class JettyServer implements Constants {
 
     public RepositoryServlet addServlet(String base, File homeDir) throws Exception {
         Properties properties = new Properties();
+        String[] cmdLineArgs = args;
         if(base!=null) {
             properties.put(PROP_HTML_URLBASE, base);
             properties.put(PROP_REPOSITORY_HOME,homeDir.toString());
             properties.put(PROP_REPOSITORY_PRIMARY,"false");
+            //Don't pass in the cmd line args to children repos
+            cmdLineArgs = new String[]{};
         }
-        return addServlet(new RepositoryServlet(this, args, port, properties));
+        return addServlet(new RepositoryServlet(this, cmdLineArgs, port, properties));
     }
 
 
