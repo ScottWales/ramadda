@@ -384,7 +384,8 @@ The apply tag allows you to apply some tag (e.g., links, map) to a set of entrie
 the results in a variety of ways (e.g.,  table, tabs);
 The apply tag is of the form:
 
-[wiki::text {apply
+[wiki::text {
+{{apply
 apply.entry="the entry to find the children of"
 apply.tag="some tag to apply to the entries"
 apply.layout="table, accordian or tabs"
@@ -395,6 +396,7 @@ apply.border="border width - defaults to 0"
 apply.bordercolor="border color"
 ...
 &lt;arguments for the apply tag&gt;
+}}
 }]
 
 All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
@@ -414,24 +416,28 @@ parent
 
 If you used the apply tag:
 
-[wiki::text {apply
+[wiki::text {
+{{apply
 apply.entry="parent"
 apply.layout="tabs"
 apply.tag="links"
 linkresource="true"
+}}
 }]
 
 This applies the tag "links" to each main entry. It puts each result in a tab.
 
 This tag would make a 2 column table of maps with links to the entries show in the header.
 
-[wiki::text {apply
+[wiki::text {
+{{apply
 apply.layout="table"
 apply.columns="2"
 apply.tag="map"
 apply.border="1"
 apply.header="${url}"
 &lt;any map arguments*gt;
+}}
 }]
 
 
