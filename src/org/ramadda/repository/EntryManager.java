@@ -6441,9 +6441,10 @@ public class EntryManager extends RepositoryManager {
         int               cnt         = 0;
         int               metadataCnt = 0;
 
+
         PreparedStatement entryStmt   = connection.prepareStatement(isNew
                 ? Tables.ENTRIES.INSERT
-                : Tables.ENTRIES.UPDATE);
+                : SqlUtil.makeUpdate(Tables.ENTRIES.NAME, Tables.ENTRIES.COL_ID, Tables.ENTRIES.ARRAY));
 
         PreparedStatement metadataStmt =
             connection.prepareStatement(Tables.METADATA.INSERT);

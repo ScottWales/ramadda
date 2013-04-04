@@ -272,6 +272,12 @@ CREATE TABLE  remoteservers (
 alter table remoteservers add column isregistry int;
 
 
+CREATE TABLE  localservers (
+        path    varchar(200),
+        enabled int);
+
+
+
 -----------------------------------------------------------------------
 --- just here so ramadda knows if the db has been created
 -----------------------------------------------------------------------

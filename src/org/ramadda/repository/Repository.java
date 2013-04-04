@@ -1151,6 +1151,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected void initServer() throws Exception {
 
         getDatabaseManager().init();
+        //getDatabaseManager().writeTables("org.ramadda.repository.database");
         initDefaultTypeHandlers();
 
         boolean loadedRdb = false;
