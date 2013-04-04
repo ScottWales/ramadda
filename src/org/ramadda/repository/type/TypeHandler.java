@@ -4603,6 +4603,11 @@ public class TypeHandler extends RepositoryManager {
         return column.getName();
     }
 
+    public String getEntryListName(Request request, Entry entry) {
+        return getEntryName(entry);
+    }
+
+
     public String getEntryName(Entry entry) {
         return entry.getName();
     }
@@ -4818,5 +4823,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public String formatDate(Request request, Entry entry, Date date, String extra) {
+        return getRepository().formatDateShort(request,
+                                               date,
+                                               getEntryManager().getTimezone(entry), extra);
+
+    }
 
 }

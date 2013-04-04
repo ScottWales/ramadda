@@ -30,7 +30,15 @@ import java.io.InputStream;
 
 /**
  */
-public abstract class ImportHandler {
+public abstract class ImportHandler extends RepositoryManager {
+
+    public ImportHandler() {
+        super(null);
+    }
+
+    public ImportHandler(Repository repository) {
+        super(repository);
+    }
 
     /**
      * _more_

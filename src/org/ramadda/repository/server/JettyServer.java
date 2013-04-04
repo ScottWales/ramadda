@@ -39,6 +39,7 @@ import org.ramadda.repository.*;
 
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.WrapperException;
@@ -63,12 +64,16 @@ import javax.servlet.http.*;
 
 
 /**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
-public class JettyServer extends RepositoryServlet implements Constants {
+public class JettyServer implements Constants {
+
+    private String[] args;
+    private int port;
+    private int sslPort = -1;
+    private Server server;
+    private RepositoryServlet baseServlet;
+    private ServletContextHandler context;
+    private Repository  baseRepository;
 
     /**
      * _more_
@@ -77,64 +82,68 @@ public class JettyServer extends RepositoryServlet implements Constants {
      * @throws Throwable _more_
      */
     public JettyServer(String[] args) throws Throwable {
-        int port = 8080;
+        this.args = args;
+        port = 8080;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 port = new Integer(args[i + 1]).intValue();
-
                 break;
             }
         }
 
-
-        RepositoryServlet repositoryServlet = new RepositoryServlet(this,
-                                                  args, port);
-
-        Server     server     = new Server(port);
-        Repository repository = repositoryServlet.getRepository();
-        repository.setShutdownEnabled(true);
-
-        //        HandlerCollection        handlers = new HandlerCollection();
-        //        ContextHandlerCollection contexts = new ContextHandlerCollection();
-
-        ServletContextHandler context =
+        server     = new Server(port);
+        context =
             new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
-        context.addServlet(new ServletHolder(repositoryServlet), "/*");
         server.setHandler(context);
-
-
-        //        Context context = new Context(contexts, "/", Context.SESSIONS);
-        //        context.addServlet(new ServletHolder(repositoryServlet), "/*");
-        /*
-        RequestLogHandler requestLogHandler = new RequestLogHandler();
-        if ( !repository.isReadOnly()) {
-            NCSARequestLog logger =
-                new NCSARequestLog(repository.getStorageManager().getLogDir()
-                                   + "/" + "requests.log");
-            logger.setExtended(false);
-            logger.setRetainDays(90);
-            logger.setAppend(true);
-            logger.setLogTimeZone("GMT");
-
-            requestLogHandler.setRequestLog(logger);
-
-            handlers.setHandlers(new Handler[] { contexts,
-                    new DefaultHandler(), requestLogHandler });
-        } else {
-            handlers.setHandlers(new Handler[] { contexts,
-                    new DefaultHandler() });
-        }
-        server.setHandler(handlers);
-        */
+        baseServlet = addServlet(null, null);
         try {
-            initSsl(server, repository);
+            initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
-            repository.getLogManager().logErrorAndPrint(
+            baseServlet.getRepository().getLogManager().logErrorAndPrint(
                 "SSL: error opening ssl connection", exc);
         }
+        baseRepository = baseServlet.getRepository();
+
+        //Check for child repos
+        String otherServersDir = baseRepository.getProperty("repositories.dir", "%repositorydir%/repositories");
+        otherServersDir = otherServersDir.replace("%repositorydir%",baseRepository.getStorageManager().getRepositoryDir().toString());
+        for(String otherServer: StringUtil.split(baseRepository.getProperty("repositories",""), ",",true, true)) {
+            File otherServerDir = new File(IOUtil.joinDir(otherServersDir, "repository_" + otherServer));
+            otherServerDir.mkdirs();
+            Repository child = addServlet("/" + otherServer, otherServerDir).getRepository();
+            if(sslPort>0) {
+                child.setHttpsPort(sslPort);
+            }
+            baseRepository.addChildRepository(child);
+        }
+
         server.start();
         server.join();
+    }
+
+
+    public RepositoryServlet addServlet(String base, File homeDir) throws Exception {
+        Properties properties = new Properties();
+        if(base!=null) {
+            properties.put(PROP_HTML_URLBASE, base);
+            properties.put(PROP_REPOSITORY_HOME,homeDir.toString());
+            properties.put(PROP_REPOSITORY_PRIMARY,"false");
+        }
+        RepositoryServlet repositoryServlet = new RepositoryServlet(this,
+                                                                    args, port, properties);
+        
+        Repository repository = repositoryServlet.getRepository();
+
+        //Tell the repository that they are running stand-alone and can provide the admin shutdown service
+        if(repository.isPrimary()) {
+            repository.setShutdownEnabled(true);
+        }
+
+        String path = repository.getUrlBase();
+        context.addServlet(new ServletHolder(repositoryServlet), path+"/*");
+        repository.setJettyServer(this);
+        return repositoryServlet;
     }
 
 
@@ -187,7 +196,7 @@ public class JettyServer extends RepositoryServlet implements Constants {
         }
 
 
-        int    sslPort = -1;
+        sslPort = -1;
         String ssls    = repository.getPropertyValue(PROP_SSL_PORT,
                           (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {

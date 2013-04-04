@@ -115,6 +115,10 @@ public class Admin extends RepositoryManager {
 
 
 
+    public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
+                                                       "Local Repositories");
+
+
 
     /** _more_ */
     public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql",
@@ -178,7 +182,7 @@ public class Admin extends RepositoryManager {
 
 
     /** _more_ */
-    public List<RequestUrl> adminUrls =
+    private List<RequestUrl> adminUrls =
         RepositoryUtil.toList(new RequestUrl[] {
         URL_ADMIN_SETTINGS, getRepositoryBase().URL_USER_LIST,
         URL_ADMIN_STATS, URL_ADMIN_ACCESS,
@@ -236,6 +240,12 @@ public class Admin extends RepositoryManager {
         if (getRepository().getProperty(PROP_ADMIN_INCLUDESQL, false)) {
             adminUrls.add(URL_ADMIN_SQL);
         }
+
+        if (getRepository().canHaveChildren()) {
+            int idx = adminUrls.indexOf(getHarvesterManager().URL_HARVESTERS_LIST);
+            adminUrls.add(idx+1, URL_ADMIN_LOCAL);
+        }
+
     }
 
     /**
@@ -855,6 +865,22 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.row(HtmlUtils.cols(apiMethod.getName(),
                     "" + apiMethod.getMustBeAdmin(),
                     StringUtil.join(",", apiMethod.getActions()))));
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+        return makeResult(request, "Administration", sb);
+    }
+
+
+    public Result adminLocal(Request request) throws Exception {
+        StringBuffer    sb         = new StringBuffer();
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>", "<b>Initialized</b>")));
+        for(Repository child: getRepository().getChildRepositories()) {
+            boolean initialized = child.getAdmin().getInstallationComplete();
+            String url  = child.getUrlBase();
+            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,child.getRepositoryName() + " - " + url),
+                                                   initialized?"yes":"no")));
         }
         sb.append(HtmlUtils.formTableClose());
 

@@ -149,6 +149,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_ORACLE = "oracle";
 
+    private   String connectionURL;
+
     /** _more_ */
     private BasicDataSource dataSource;
 
@@ -290,10 +292,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                                   PROP_DB_USER.replace("${db}", db));
             String password = (String) getRepository().getProperty(
                                   PROP_DB_PASSWORD.replace("${db}", db));
-            String connectionURL = getStorageManager().localizePath(
-                                       (String) getRepository().getProperty(
-                                           PROP_DB_URL.replace("${db}", db)));
+            connectionURL = getStorageManager().localizePath(
+                                                             (String) getRepository().getProperty(
+                                                                                                  PROP_DB_URL.replace("${db}", db)));
 
+
+            //ramadda.db.derby.url=jdbc:derby:${storagedir}/derby/${db.name};create=true;
+            connectionURL = connectionURL.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
+            connectionURL = connectionURL.replace("%db.name%",getRepository().getProperty("db.name", "repository"));
 
             String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                                  db);
@@ -892,10 +898,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @param sb _more_
      */
     public void addInfo(StringBuffer sb) {
-        String dbUrl = "" + (String) getRepository().getProperty(
-                           PROP_DB_URL.replace("${db}", db));
         sb.append(HtmlUtils.formEntry("Database:", db));
-        sb.append(HtmlUtils.formEntry("JDBC URL:", dbUrl));
+        sb.append(HtmlUtils.formEntry("JDBC URL:", connectionURL));
     }
 
 

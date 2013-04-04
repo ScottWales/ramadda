@@ -1772,6 +1772,8 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_REPOSITORY_HOME = "ramadda_home";
 
+    public static final String PROP_REPOSITORY_PRIMARY = "ramadda.primary";
+
     /** _more_ */
     public static final String PROP_REPOSITORY_NAME =
         "ramadda.repository.name";

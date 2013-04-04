@@ -1284,7 +1284,7 @@ public class OutputHandler extends RepositoryManager {
                                 "event", HtmlUtils.squote(cbxId)))));
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
-                             entry.getLabel()), rowId, cbx);
+                                                       entry.getLabel()), rowId, cbx);
     }
 
 
@@ -1534,9 +1534,10 @@ public class OutputHandler extends RepositoryManager {
                 sb.append("<td align=right width=100><div "
                           + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             }
-            sb.append(getRepository().formatDateShort(request,
-                                                      new Date(entry.getStartDate()),
-                                                      getEntryManager().getTimezone(entry), extraAlt.toString()));
+            sb.append(entry.getTypeHandler().formatDate(request,
+                                                             entry,
+                                                             new Date(entry.getStartDate()),
+                                                             extraAlt.toString()));
             sb.append("</div></td>");
         }
 
@@ -2051,6 +2052,9 @@ public class OutputHandler extends RepositoryManager {
                                            getRepository().showDialogError(
                                                                            msg)));
     }
+
+
+
 
 
 }

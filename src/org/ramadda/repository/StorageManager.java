@@ -290,6 +290,7 @@ public class StorageManager extends RepositoryManager {
         encryptionPassword = getRepository().getProperty(PROP_ENCRYPT_PASSWORD, (String) null);
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
+
         if (repositoryDirProperty == null) {
             //Use the old <home>/.unidata/repository if its there
             repositoryDirProperty =

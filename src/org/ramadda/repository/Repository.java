@@ -28,6 +28,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 
+import org.ramadda.repository.server.JettyServer;
+
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
 import org.ramadda.repository.auth.AccessException;
@@ -209,6 +211,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        OutputType.TYPE_FILE, "", ICON_FILELISTING);
 
 
+    private JettyServer jettyServer;
+
     /** _more_ */
     private UserManager userManager;
 
@@ -276,6 +280,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private List<RepositoryManager> repositoryManagers =
         new ArrayList<RepositoryManager>();
 
+    private Repository parentRepository;
+    private List<Repository> childRepositories = new ArrayList<Repository>();
+
     /** _more_ */
     private String cookieExpirationDate;
 
@@ -318,7 +325,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private Date startTime = new Date();
-
 
 
     /** _more_ */
@@ -418,6 +424,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         super(port);
         init(args, port);
     }
+
+
 
     /**
      * _more_
@@ -529,13 +537,55 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getProperty(PROP_SSL_IGNORE, false)) {
             return false;
         }
-
         return getHttpsPort() >= 0;
     }
 
 
+    /**
+       Set the JettyServer property.
+
+       @param value The new value for JettyServer
+    **/
+    public void setJettyServer (JettyServer value) {
+        jettyServer = value;
+    }
+
+    /**
+       Get the JettyServer property.
+
+       @return The JettyServer
+    **/
+    public JettyServer getJettyServer () {
+        return jettyServer;
+    }
 
 
+    public boolean isPrimary() {
+        return getProperty(PROP_REPOSITORY_PRIMARY,true);
+    }
+
+    private void setParentRepository(Repository parent) {
+        this.parentRepository = parent;
+    }
+
+    public Repository getParentRepository() {
+        return parentRepository;
+    }
+
+    public boolean canHaveChildren() {
+        return (childRepositories.size()>0 || getProperty("repositories",(String)null)!=null);
+    }
+
+    public List<Repository>getChildRepositories() {
+       return childRepositories;
+    }
+
+    //
+
+    public void addChildRepository(Repository repository) {
+        childRepositories.add(repository);
+        repository.setParentRepository(this);
+    }
 
     /**
      * _more_
@@ -654,7 +704,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
                                   fullDate + extraAlt));
     }
-
 
 
     /**
@@ -782,7 +831,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-
 
         /*
                 final PrintStream oldErr = System.err;
@@ -1003,6 +1051,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             setUrlBase(BLANK);
         }
 
+
         String derbyHome = (String) properties.get(PROP_DB_DERBY_HOME);
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
@@ -1175,9 +1224,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getHarvesterManager().initHarvesters();
 
         //Do this in a thread because (on macs) it hangs sometimes)
-        Misc.run(this, "getFtpManager");
+        if (isPrimary()) {
+            Misc.run(this, "getFtpManager");
+        }
     }
-
 
 
 

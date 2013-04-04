@@ -1073,6 +1073,12 @@ public class EntryManager extends RepositoryManager {
         return doProcessEntryChange(request, false, null);
     }
 
+
+    public String getEntryListName(Request request, Entry entry) {
+        return entry.getTypeHandler().getEntryListName(request, entry);
+    }
+
+
     public String getEntryName(Entry entry) {
         return entry.getTypeHandler().getEntryName(entry);
     }
@@ -4689,7 +4695,7 @@ public class EntryManager extends RepositoryManager {
 
         boolean forTreeView = request.get(ARG_TREEVIEW, false);
         if(forTreeView) {
-            String label = getEntryName(entry);
+            String label = getEntryListName(request, entry);
             url = url.replace("%27","'");
             url = url.replace("'","");
             label =  label.replace("'","\\'");

@@ -279,7 +279,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
 
     /** _more_ */
-    private static String urlBase = "/repository";
+    private  String urlBase = "/repository";
 
 
     /** _more_ */
@@ -809,7 +809,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public static String fileUrl(String f) {
+    public  String fileUrl(String f) {
         return urlBase + f;
     }
 
@@ -844,7 +844,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return The UrlBase
      */
-    public static String getUrlBase() {
+    public  String getUrlBase() {
         return urlBase;
     }
 

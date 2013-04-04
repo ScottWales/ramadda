@@ -2698,9 +2698,22 @@ public class UserManager extends RepositoryManager {
                 }
                 getDatabaseManager().closeAndReleaseConnection(statement);
 
-                if (TESTAUTH) {
-                    user = null;
+                //Chain up to the parent
+                if(user == null && getRepository().getParentRepository()!=null) {
+                    statement      =
+                        getRepository().getParentRepository().getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                                                     Tables.USERS.NAME,
+                                                                     Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
+                                                                                Clause.eq(Tables.USERS.COL_PASSWORD,
+                                                                                          hashedPassword)));
+
+                    results = statement.getResultSet();
+                    if (results.next()) {
+                        user = getUser(results);
+                    }
+                    getRepository().getParentRepository().getDatabaseManager().closeAndReleaseConnection(statement);
                 }
+
 
                 //Check  the authenticators
                 if (user == null) {

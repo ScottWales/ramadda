@@ -852,7 +852,6 @@ public class Entry implements Cloneable {
         if (label.length() > 0) {
             return label;
         }
-
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 
@@ -868,7 +867,6 @@ public class Entry implements Cloneable {
         if ((description != null) && (description.trim().length() > 0)) {
             return description;
         }
-
         return "";
 
     }

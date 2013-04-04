@@ -83,27 +83,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     private String[] args;
 
     /** Repository object that will be instantiated */
-    private static Repository repository;
-
-
-    /**
-     * _more_
-     */
-    public RepositoryServlet() {}
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param port _more_
-     *
-     * @throws Exception _more_
-     */
-    public RepositoryServlet(String[] args, int port) throws Exception {
-        this.args = args;
-        createRepository(port, new Properties(), true);
-    }
+    private  Repository repository;
 
 
     /**
@@ -115,15 +95,11 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      *
      * @throws Exception _more_
      */
-    public RepositoryServlet(JettyServer jettyServer, String[] args, int port)
+    public RepositoryServlet(JettyServer jettyServer, String[] args, int port, Properties properties )
             throws Exception {
         this.args = args;
-        createRepository(port, new Properties(), false);
+        createRepository(port, properties, false);
     }
-
-
-
-
 
     /**
      * _more_

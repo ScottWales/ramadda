@@ -1243,9 +1243,10 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(getEntryManager().getTooltipLink(request, entry,
                                                        getEntryName(entry), url));
             sb.append(HtmlUtils.br());
-            sb.append(getRepository().formatDateShort(request,
-                    new Date(entry.getStartDate()),
-                    getEntryManager().getTimezone(entry), ""));
+            sb.append(entry.getTypeHandler().formatDate(request,
+                                                             entry,
+                                                             new Date(entry.getStartDate()),
+                                                             ""));
 
 
             //            sb.append (getEntryManager().getAjaxLink( request,  entry,
@@ -1386,11 +1387,10 @@ public class HtmlOutputHandler extends OutputHandler {
                 tableSB.append(
                                HtmlUtils.col(entryLink.getLink(), " xxxwidth=50%  "));
                 tableSB.append(
-                    HtmlUtils.col(
-                        getRepository().formatDateShort(
-                            request, new Date(entry.getStartDate()),
-                            getEntryManager().getTimezone(entry),
-                            ""), " width=10% align=right "));
+                    HtmlUtils.col(entry.getTypeHandler().formatDate(
+                                                                         request, entry,
+                                                                         new Date(entry.getStartDate()),
+                                                                         ""), " width=10% align=right "));
 
                 if (entry.isFile()) {
                     tableSB.append(
