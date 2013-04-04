@@ -79,22 +79,7 @@ import java.util.zip.*;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class BiblioOutputHandler extends OutputHandler {
-
-
-    public static final String TAG_TYPE = "%0";
-    public static final String TAG_AUTHOR = "%A";
-    public static final String TAG_INSTITUTION = "%I";
-    public static final String TAG_DATE = "%D";
-    public static final String TAG_TAG = "%K";
-    public static final String TAG_TITLE = "%T";
-    public static final String TAG_PUBLICATION = "%J";
-    public static final String TAG_VOLUME = "%V";
-    public static final String TAG_NUMBER = "%N";
-    public static final String TAG_PAGE = "%P";
-    public static final String TAG_DOI = "%R";
-    public static final String TAG_DESCRIPTION = "%X";
-    public static final String TAG_URL = "%U";
+public class BiblioOutputHandler extends OutputHandler implements BiblioConstants {
 
 
 
@@ -213,24 +198,24 @@ public class BiblioOutputHandler extends OutputHandler {
         cal.setTime(new Date(entry.getStartDate()));
         Object[] values = entry.getTypeHandler().getValues(entry);
         int idx =0;
-        appendTag(sb, TAG_TYPE, values[idx++]);
-        appendTag(sb, TAG_TITLE, entry.getName());
-        appendTag(sb, TAG_AUTHOR, values[idx++]);
-        appendTag(sb, TAG_INSTITUTION, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_AUTHOR, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_TYPE, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_TITLE, entry.getName());
+        appendTag(sb, TAG_BIBLIO_INSTITUTION, values[idx++]);
         if(values[idx]!=null) {
             for(String otherAuthor: StringUtil.split(values[idx].toString(),"\n", true, true)) {
-                appendTag(sb, TAG_AUTHOR, otherAuthor);
+                appendTag(sb, TAG_BIBLIO_AUTHOR, otherAuthor);
             }
         }
         idx++;
 
-        appendTag(sb, TAG_DATE, ""+cal.get(GregorianCalendar.YEAR));
-        appendTag(sb, TAG_PUBLICATION, values[idx++]);
-        appendTag(sb, TAG_VOLUME, values[idx++]);
-        appendTag(sb, TAG_NUMBER, values[idx++]);
-        appendTag(sb, TAG_PAGE, values[idx++]);
-        appendTag(sb, TAG_DOI, values[idx++]);
-        appendTag(sb, TAG_URL, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_DATE, ""+cal.get(GregorianCalendar.YEAR));
+        appendTag(sb, TAG_BIBLIO_PUBLICATION, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_VOLUME, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_NUMBER, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_PAGE, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_DOI, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_URL, values[idx++]);
 
 
         List<Metadata> metadataList =
@@ -242,7 +227,7 @@ public class BiblioOutputHandler extends OutputHandler {
                     continue;
                 } 
                 if(firstMetadata) {
-                    sb.append(TAG_TAG);
+                    sb.append(TAG_BIBLIO_TAG);
                     sb.append(" ");
                 }
                 sb.append(metadata.getAttr1());
@@ -250,7 +235,7 @@ public class BiblioOutputHandler extends OutputHandler {
                 firstMetadata = false;
             }
         }
-        appendTag(sb, TAG_DESCRIPTION, entry.getDescription());
+        appendTag(sb, TAG_BIBLIO_DESCRIPTION, entry.getDescription());
         sb.append("\n");
     }
 

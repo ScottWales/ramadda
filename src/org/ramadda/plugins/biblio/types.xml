@@ -1,6 +1,6 @@
 <types>
 
-  <type name="biblio"  description="Bibliographic Entry" xxxhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+  <type name="biblio"  description="Bibliographic Entry" handler="org.ramadda.plugins.biblio.BiblioTypeHandler" category="Information">
      <property name="icon" value="/biblio/book.png"/>
      <property name="form.name.label" value="Title"/>
      <property name="form.description.label" value="Abstract"/>
@@ -15,8 +15,8 @@
      <property name="form.todate.show" value="false"/>
 
 
-     <column name="type" type="enumerationplus"  label="Publication Type" values="Journal Article,Generic,Report" />
      <column name="primary_author" type="string" size="500" changetype="true"  label="Primary Author"  cansearch="true"/>
+     <column name="type" type="enumerationplus"  label="Publication Type" values="Journal Article,Generic,Report" />
      <column name="institution" type="string"  label="Institution"  cansearch="true"/>
      <column name="other_authors" type="list"  changetype="true" size="5000" label="Other Authors"  rows="5"/>
      <column name="publication" type="enumerationplus"  label="Publication"  />

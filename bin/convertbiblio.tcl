@@ -93,10 +93,18 @@ proc outputEntry {docsDir} {
         file delete -force $theFile 
         append extra " file=\"[file tail $theFile]\" "
     } else {
-        puts stderr "NO FILE: $author [string range $::title 0 50]"
+#        puts stderr "NO FILE: $author [string range $::title 0 50]"
     }
 
-    puts "<entry name=\"$::title\" type=\"biblio\" fromdate=\"$::date-01-01\" $extra >"
+    if {![info exists ::types($::type)]} {
+        puts "<entry name=\"${::type}s\" type=\"group\" id=\"$::type\" />"
+        set ::types($::type) ""
+        #puts  "TYPE:$::type"
+    }
+    
+
+
+    puts "<entry name=\"$::title\" type=\"biblio\" fromdate=\"$::date-01-01\" $extra parent=\"$::type\">"
     puts [textTag primary_author $author]
     if {[llength $::authors]>1} {
         set otherAuthors [lrange $::authors 1 end]
