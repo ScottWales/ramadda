@@ -260,7 +260,7 @@ public class MetadataType extends MetadataTypeBase {
             }
             if ( !node.getTagName().equals(TAG_TYPE)) {
                 manager.logError("Unknown metadata xml tag:"
-                                 + node.getTagName(), null);
+                                 + XmlUtil.toString(node), null);
             }
 
             Class c = Misc.findClass(XmlUtil.getAttributeFromTree(node,

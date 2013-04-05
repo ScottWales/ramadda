@@ -419,7 +419,7 @@ public class MetadataTypeBase extends RepositoryManager {
             } else if (childNode.getTagName().equals(TAG_ELEMENT)) {}
             else {
                 logError("Unknown metadata xml tag:"
-                         + childNode.getTagName(), null);
+                         + XmlUtil.toString(childNode), null);
             }
         }
 
