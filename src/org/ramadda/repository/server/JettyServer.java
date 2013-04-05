@@ -39,6 +39,7 @@ import org.ramadda.repository.*;
 
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.LogUtil;
@@ -105,10 +106,12 @@ public class JettyServer implements Constants {
                 "SSL: error opening ssl connection", exc);
         }
         baseRepository = baseServlet.getRepository();
-        baseRepository.initializeLocalRepositories();
+        //Initialize the local repos in a thread
+        Misc.run(baseRepository, "initializeLocalRepositories");
         server.start();
         server.join();
     }
+
 
     public int getPort() {
         return port;
