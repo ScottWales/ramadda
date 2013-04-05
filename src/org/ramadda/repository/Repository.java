@@ -1285,6 +1285,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         properties.put(PROP_REPOSITORY_NAME, name);
         Repository childRepository =  startLocalRepository(repositoryId, properties);
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
+        childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
+
         User user = new User(repositoryId+"_admin",
                              "Administrator",
                              "", "", "",
@@ -2304,9 +2306,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    public String getUrlPath(RequestUrl requestUrl) {
+    @Override
+    public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
-            return httpsUrl(getUrlBase() + requestUrl.getPath());
+            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
 
         return getUrlBase() + requestUrl.getPath();

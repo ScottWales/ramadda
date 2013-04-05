@@ -570,7 +570,7 @@ public class Request implements Constants, Cloneable {
                 repository.getPathFromEntry(collectionEntry);
             return theUrl.getUrl(collectionPath);
             }*/
-        return checkUrl(theUrl.toString());
+        return checkUrl(theUrl.toString(this));
     }
 
     /**

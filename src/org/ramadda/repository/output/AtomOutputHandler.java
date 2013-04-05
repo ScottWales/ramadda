@@ -207,7 +207,7 @@ public class AtomOutputHandler extends OutputHandler {
             String              selfUrl =
                 request.getAbsoluteUrl(
                     HtmlUtils.url(
-                        getRepository().getUrlPath(
+                                  getRepository().getUrlPath(request,
                             getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
                                 entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_ALTERNATE, selfUrl,

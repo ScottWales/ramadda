@@ -555,7 +555,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public String getUrlPath(RequestUrl requestUrl) {
+    public String getUrlPath(Request request, RequestUrl requestUrl) {
         return getUrlBase() + requestUrl.getPath();
     }
 
@@ -588,17 +588,23 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String httpsUrl(String url) {
+        return httpsUrl(null, url);
+    }
+
+
+    public String httpsUrl(Request request, String url) {
+        String hostname = request!=null? request.getServerName():getHostname();
         int port = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol() + "://" + getHostname() + ":"
+            return getHttpProtocol() + "://" + hostname + ":"
                    + getPort() + url;
             //            return url;
             //            throw new IllegalStateException("Do not have ssl port defined");
         }
         if (port == 0) {
-            return "https://" + getHostname() + url;
+            return "https://" + hostname + url;
         } else {
-            return "https://" + getHostname() + ":" + port + url;
+            return "https://" + hostname + ":" + port + url;
         }
     }
 

@@ -173,8 +173,12 @@ public class RequestUrl {
      */
     public String toString() {
         checkInit();
+        return repositorySource.getRepositoryBase().getUrlPath(null, this);
+    }
 
-        return repositorySource.getRepositoryBase().getUrlPath(this);
+    public String toString(Request request) {
+        checkInit();
+        return repositorySource.getRepositoryBase().getUrlPath(request, this);
     }
 
 

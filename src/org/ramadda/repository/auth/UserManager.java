@@ -2056,7 +2056,6 @@ public class UserManager extends RepositoryManager {
                 String redirect =
                     RepositoryUtil.encodeBase64(request.getUrl().getBytes());
                 extras.add("");
-                //            System.err.println ("initial url " + request.getUrl());
                 urls.add(request.url(getRepositoryBase().URL_USER_LOGIN,
                                      ARG_REDIRECT, redirect));
                 labels.add(msg("Login"));
