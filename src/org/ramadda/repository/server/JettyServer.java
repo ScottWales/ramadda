@@ -97,6 +97,7 @@ public class JettyServer implements Constants {
         context.setContextPath("/");
         server.setHandler(context);
         baseServlet = addServlet();
+        context.addServlet(new ServletHolder(baseServlet), "/");
         try {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
