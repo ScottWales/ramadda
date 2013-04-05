@@ -712,14 +712,11 @@ public class StorageManager extends RepositoryManager {
                 return logDir;
             }
 
-            System.out.println("RAMADDA: log directory:" + tmpLogDir);
             File log4JFile = new File(tmpLogDir + "/" + "log4j.properties");
             //For now always write out the log from the jar
             //            System.out.println("RAMADDA: log4j file=" + log4JFile);
             if (true || !log4JFile.exists()) {
                 try {
-                    System.out.println(
-                        "RAMADDA: writing out log4j.properties:" + log4JFile);
                     String c =
                         IOUtil.readContents(
                             "/org/ramadda/repository/resources/log4j.properties",

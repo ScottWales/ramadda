@@ -892,21 +892,28 @@ public class Admin extends RepositoryManager {
 
 
         sb.append(HtmlUtils.formTable());
-        List<Repository> children = getRepository().getChildRepositories();
-        if(children.size()>0) {
-            sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>")));
-        }
-
-        for(Repository child: children) {
-            boolean initialized = child.getAdmin().getInstallationComplete();
-            String url  = child.getUrlBase();
-            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,child.getRepositoryName() + " - " + url))));
+        Statement stmt =
+            getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
+                                        Tables.LOCALREPOSITORIES.NAME,
+                                        (Clause) null);
+        boolean didone = false;
+        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
+        ResultSet        results;
+        while ((results = iter.getNext()) != null) {
+            if(!didone) {
+                sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>","<b>Contact</b>","<b>Status</b>")));
+            }
+            didone = true;
+            String id = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
+            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
+            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
+            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href("/" + id,id),contact,status)));
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
 
         sb.append(formHeader(msg("New repository")));
-        sb.append(request.form(URL_ADMIN_LOCAL));
+        sb.append(request.formPost(URL_ADMIN_LOCAL));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID)));
         sb.append(HtmlUtils.formEntry(msgLabel("Repository Name"),  HtmlUtils.input(ARG_LOCAL_NAME)));

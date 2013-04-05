@@ -2601,7 +2601,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             pw.append("\n");
             pw.append(sp2 + "public String getName() {return NAME;}\n");
             pw.append(sp2 + "public String getColumns() {return COLUMNS;}\n");
-            System.out.println("processing " + TABLENAME);
+            System.out.println("processing table:" + TABLENAME);
 
             String  tableVar = null;
             List    colVars  = new ArrayList();

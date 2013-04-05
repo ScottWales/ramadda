@@ -325,8 +325,8 @@ public abstract class Tables {
 
 
 
-    public static class LOCALSERVERS extends Tables {
-        public static final String NAME = "LOCALSERVERS";
+    public static class LOCALREPOSITORIES extends Tables {
+        public static final String NAME = "LOCALREPOSITORIES";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
@@ -334,16 +334,16 @@ public abstract class Tables {
         public static final String COL_NODOT_ID =   "ID";
         public static final String COL_EMAIL =  NAME + ".EMAIL";
         public static final String COL_NODOT_EMAIL =   "EMAIL";
-        public static final String COL_ENABLED =  NAME + ".ENABLED";
-        public static final String COL_NODOT_ENABLED =   "ENABLED";
+        public static final String COL_STATUS =  NAME + ".STATUS";
+        public static final String COL_NODOT_STATUS =   "STATUS";
 
         public static final String[] ARRAY = new String[] {
-            COL_ID,COL_EMAIL,COL_ENABLED
+            COL_ID,COL_EMAIL,COL_STATUS
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final LOCALSERVERS table  = new  LOCALSERVERS();
+    public static final LOCALREPOSITORIES table  = new  LOCALREPOSITORIES();
     }
 
 

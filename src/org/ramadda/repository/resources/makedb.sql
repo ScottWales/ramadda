@@ -272,10 +272,10 @@ CREATE TABLE  remoteservers (
 alter table remoteservers add column isregistry int;
 
 
-CREATE TABLE  localservers (
+CREATE TABLE  localrepositories (
         id    varchar(200),
         email varchar(200),
-        enabled int);
+        status varchar(200));
 
 
 

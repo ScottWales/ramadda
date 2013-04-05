@@ -471,7 +471,7 @@ public class RegistryManager extends RepositoryManager {
                     PROP_REGISTRY_SERVERS,
                     getRepository().getProperty(
                         PROP_REGISTRY_SERVERS,
-                        "http://motherlode.ucar.edu/repository"), 5, 60)));
+                        ""), 5, 60)));
 
     }
 
@@ -714,7 +714,7 @@ public class RegistryManager extends RepositoryManager {
             StringUtil.split(
                 getRepository().getProperty(
                     PROP_REGISTRY_SERVERS,
-                    "http://motherlode.ucar.edu/repository"), "\n", true,
+                    ""), "\n", true,
                         true);
 
         return urls;

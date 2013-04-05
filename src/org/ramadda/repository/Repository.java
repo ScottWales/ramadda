@@ -592,9 +592,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     //
 
-    public void addChildRepository(Repository repository) {
-        childRepositories.add(repository);
-        repository.setParentRepository(this);
+    private void addChildRepository(Repository childRepository) throws Exception {
+        childRepositories.add(childRepository);
+        childRepository.setParentRepository(this);
+        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
+        jettyServer.addServlet(servlet);
+        childrenServlets.put(childRepository.getUrlBase(), servlet);
+        int sslPort = getHttpsPort();
+        if(sslPort>0) {
+            childRepository.setHttpsPort(sslPort);
+        }
     }
 
     /**
@@ -1013,8 +1020,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                "repository.properties");
 
             if (new File(localPropertyFile).exists()) {
-                println("RAMADDA: loading local property file:"
-                        + localPropertyFile);
                 loadProperties(properties, localPropertyFile);
             } else {}
 
@@ -1231,7 +1236,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    public void initializeMaster() throws Exception {
+    public void initializeLocalRepositories() throws Exception {
         if(!isMaster()) {
             return;
         }
@@ -1239,16 +1244,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
             getLogManager().logError("RAMADDA is defined as a master but not running under Jetty", null);
             return;
         }
+        Statement stmt =
+            getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
+                                        Tables.LOCALREPOSITORIES.NAME,
+                                        (Clause) null);
+        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
+        ResultSet        results;
+        while ((results = iter.getNext()) != null) {
+            String repositoryId = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
+            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
+            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
+            if(status.equals("active")) {
+                Repository childRepository =  startLocalRepository(repositoryId, new Properties());
+            }
+        }
     }
 
     public boolean hasServer(String otherServer) throws Exception {
-        return getDatabaseManager().tableContains(otherServer, Tables.LOCALSERVERS.NAME, Tables.LOCALSERVERS.COL_ID);
+        return getDatabaseManager().tableContains(otherServer, Tables.LOCALREPOSITORIES.NAME, Tables.LOCALREPOSITORIES.COL_ID);
     }
 
 
     public void addChildRepository(Request request, StringBuffer sb, String repositoryId) throws Exception {
         repositoryId = repositoryId.trim();
-        repositoryId= repositoryId.replaceAll("[^a-zA-Z_]+","");
+        repositoryId= repositoryId.replaceAll("[^a-zA-Z_0-9]+","");
         if(repositoryId.length()==0) {
             throw new IllegalArgumentException("Bad id:" + repositoryId);
         }
@@ -1262,32 +1281,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         String name  = request.getString(Admin.ARG_LOCAL_NAME,"");
         String contact = request.getString(Admin.ARG_LOCAL_CONTACT,"").trim();
-        System.err.println("RAMADDA: add server:" + repositoryId);
-        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
-        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
-        System.err.println ("RAMADA: adding child repository:" + repositoryId);
-        File otherServerDir = new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
-        otherServerDir.mkdirs();
-        File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
-        //TODO: Do we always copy the plugins on start up or just the first time
-        if(!otherPluginDir.exists()) {
-            otherPluginDir.mkdirs();
-            for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
-                if(!myPluginFile.isFile()) continue;
-                IOUtil.copyFile(myPluginFile, otherPluginDir);
-            }
-        }
-
         Properties properties = new Properties();
-        properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
-        properties.put(PROP_REPOSITORY_HOME,otherServerDir.toString());
         properties.put(PROP_REPOSITORY_NAME, name);
-        //TODO: do we let the children also be masters?
-        properties.put(PROP_REPOSITORY_PRIMARY,"false");
-        File propertiesFile = new File(IOUtil.joinDir(otherServerDir, "repository.properties"));
-        properties.store(new FileOutputStream(propertiesFile),"Generated by RAMADDA");
-        Repository childRepository =  new Repository(new String[]{}, jettyServer.getPort());
-        childRepository.init(properties);
+        Repository childRepository =  startLocalRepository(repositoryId, properties);
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
         User user = new User(repositoryId+"_admin",
                              "Administrator",
@@ -1302,18 +1298,37 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HtmlUtils.p());
         childRepository.getUserManager().makeOrUpdateUser(user, false);
         childRepository.getAdmin().addInitEntries(user);
-
-        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
-        jettyServer.addServlet(servlet);
-        childrenServlets.put(repositoryId, servlet);
-        int sslPort = getHttpsPort();
-        if(sslPort>0) {
-            childRepository.setHttpsPort(sslPort);
-        }
         addChildRepository(childRepository);
-        getDatabaseManager().executeInsert(Tables.LOCALSERVERS.INSERT, new Object[]{repositoryId, contact, new Integer(1)});
+        getDatabaseManager().executeInsert(Tables.LOCALREPOSITORIES.INSERT, new Object[]{repositoryId, contact, "active"});
     }
 
+    private Repository startLocalRepository(String repositoryId,  Properties properties) throws Exception {
+        System.err.println("RAMADDA: starting local repository:" + repositoryId);
+        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
+        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
+        File otherServerDir = new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
+        otherServerDir.mkdirs();
+        File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
+        //TODO: Do we always copy the plugins on start up or just the first time
+        //        if(!otherPluginDir.exists()) {
+            otherPluginDir.mkdirs();
+            for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
+                if(!myPluginFile.isFile()) continue;
+                IOUtil.copyFile(myPluginFile, otherPluginDir);
+            }
+            //        }
+
+        properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
+        properties.put(PROP_REPOSITORY_HOME,otherServerDir.toString());
+        //TODO: do we let the children also be masters?
+        properties.put(PROP_REPOSITORY_PRIMARY,"false");
+        File propertiesFile = new File(IOUtil.joinDir(otherServerDir, "repository.properties"));
+        properties.store(new FileOutputStream(propertiesFile),"Generated by RAMADDA");
+        Repository childRepository =  new Repository(new String[]{}, jettyServer.getPort());
+        childRepository.init(properties);
+        addChildRepository(childRepository);
+        return childRepository;
+    }
 
 
     /**

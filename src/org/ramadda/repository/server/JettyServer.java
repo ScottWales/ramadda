@@ -104,7 +104,7 @@ public class JettyServer implements Constants {
                 "SSL: error opening ssl connection", exc);
         }
         baseRepository = baseServlet.getRepository();
-        baseRepository.initializeMaster();
+        baseRepository.initializeLocalRepositories();
         server.start();
         server.join();
     }
