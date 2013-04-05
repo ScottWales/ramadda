@@ -21,12 +21,13 @@
 
 package org.ramadda.repository;
 
-
+import ucar.unidata.util.TwoFacedObject;
 import org.w3c.dom.*;
 
 
 import java.io.InputStream;
 
+import java.util.List;
 
 /**
  */
@@ -38,6 +39,9 @@ public abstract class ImportHandler extends RepositoryManager {
 
     public ImportHandler(Repository repository) {
         super(repository);
+    }
+
+    public void addImportTypes(List<TwoFacedObject>importTypes) {
     }
 
     /**

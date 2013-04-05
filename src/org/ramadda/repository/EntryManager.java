@@ -42,8 +42,8 @@ import org.w3c.dom.*;
 
 
 import ucar.unidata.sql.Clause;
-
 import ucar.unidata.sql.SqlUtil;
+import ucar.unidata.util.TwoFacedObject;
 
 
 import ucar.unidata.ui.ImageUtils;
@@ -3632,6 +3632,11 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryImport(Request request) throws Exception {
         Entry        group = findGroup(request);
         StringBuffer sb    = new StringBuffer();
+        List<TwoFacedObject> importTypes = new ArrayList<TwoFacedObject>();
+        for (ImportHandler importHandler :
+                getRepository().getImportHandlers()) {
+            importHandler.addImportTypes(importTypes);
+        }
         sb.append(msgHeader("Import " + LABEL_ENTRIES));
         request.uploadFormWithAuthToken(sb,
                                         getRepository().URL_ENTRY_XMLCREATE,
@@ -3642,7 +3647,15 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.formEntry(msgLabel("File"),
                                       HtmlUtils.fileInput(ARG_FILE,
                                           HtmlUtils.SIZE_70)));
+        if(importTypes.size()>0) {
+            importTypes.add(0, new TwoFacedObject("--none--",""));
+            sb.append(HtmlUtils.formEntry(msgLabel("Type"), HtmlUtils.select(ARG_IMPORT_TYPE,importTypes)));
+        }
+
         sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Submit")));
+
+
+
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 

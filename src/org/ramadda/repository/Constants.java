@@ -2214,5 +2214,6 @@ public interface Constants {
     public static final String LABEL_EMPTY_FOLDER = "This folder is empty";
     public static final String LABEL_NO_ENTRIES_FOUND = "No entries found";
 
+    public static final String ARG_IMPORT_TYPE = "import.type";
 
 }
