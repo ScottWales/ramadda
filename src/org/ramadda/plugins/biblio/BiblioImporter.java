@@ -40,6 +40,7 @@ import java.util.Hashtable;
 
 import java.util.List;
 
+import ucar.unidata.util.TwoFacedObject;
 
 /**
  * Class description
@@ -56,6 +57,24 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
     public BiblioImporter(Repository repository) {
         super(repository);
     }
+
+
+    @Override
+    public void addImportTypes(List<TwoFacedObject>importTypes) {
+        super.addImportTypes(importTypes);
+        importTypes.add(new TwoFacedObject("Bibliography Import","biblio"));
+    }
+
+
+    public Result handleRequest(Request request, Repository repository,
+                                String uploadedFile, Entry parentEntry)
+            throws Exception {
+        if(!request.getString(ARG_IMPORT_TYPE,"").equals("biblio")) {
+            return null;
+        }
+        return null;
+    }
+
 
 
 
