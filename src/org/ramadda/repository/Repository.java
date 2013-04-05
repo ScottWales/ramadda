@@ -1237,6 +1237,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public void initializeLocalRepositories() throws Exception {
+        //        if(true) return;
         if(!isMaster()) {
             return;
         }

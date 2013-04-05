@@ -861,6 +861,12 @@ public class Request implements Constants, Cloneable {
         return getAbsoluteUrl(getUrl());
     }
 
+    public String getAbsoluteUrl(RequestUrl url) {
+        String path = repository.getUrlBase() + "/" +
+            url.getPath();
+        return getAbsoluteUrl(path);
+    }
+
     /**
      * _more_
      *

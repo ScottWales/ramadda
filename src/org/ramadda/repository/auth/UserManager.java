@@ -545,8 +545,8 @@ public class UserManager extends RepositoryManager {
         sb.append(header(msg("Please login")));
         String id = request.getString(ARG_USER_ID, "");
         sb.append(
-            HtmlUtils.formPost(
-                getRepositoryBase().URL_USER_LOGIN.toString()));
+                  HtmlUtils.formPost(
+                                     getRepository().getUrlPath(request, getRepositoryBase().URL_USER_LOGIN)));
         if (request.defined(ARG_REDIRECT)) {
             String redirect = request.getUnsafeString(ARG_REDIRECT, "");
             //Um, a bit of a hack
@@ -3241,23 +3241,26 @@ public class UserManager extends RepositoryManager {
                 sb.append(
                     getRepository().showDialogWarning(
                         msg("Incorrect passwords")));
+                message = "Incorrect passwords";
+            } else {
+                //msg("Your password has been changed");
+                message = "Your password has been changed";
+                addActivity(request, request.getUser(), ACTIVITY_PASSWORD_CHANGE,
+                            "");
             }
-            //msg("Your password has been changed");
-            message = "Your password has been changed";
-            addActivity(request, request.getUser(), ACTIVITY_PASSWORD_CHANGE,
-                        "");
         } else {
             message = "Your settings have been changed";
             //msg("Your settings have been changed");
         }
+        String formUrl = getRepository().getUrlPath(request, getRepositoryBase().URL_USER_FORM);
         if (settingsOk) {
             applyUserProperties(request, user, false);
-            String redirect;
+            String redirect = formUrl;
             //If we are under ssl then redirect to non-ssl
             if (getRepository().isSSLEnabled(request)) {
-                redirect = getRepositoryBase().URL_USER_FORM.getFullUrl("");
+                //                redirect = getRepositoryBase().URL_USER_FORM.getFullUrl("");
             } else {
-                redirect = getRepositoryBase().URL_USER_FORM.toString();
+                //                redirect = getRepositoryBase().URL_USER_FORM.toString();
             }
 
             return new Result(
@@ -3266,7 +3269,11 @@ public class UserManager extends RepositoryManager {
                     getRepository().translate(request, message)));
         }
 
-        return new Result(getRepositoryBase().URL_USER_FORM.toString());
+        return new Result(
+                          HtmlUtils.url(
+                                        formUrl, ARG_MESSAGE,
+                                        getRepository().translate(request, message)));
+
     }
 
 

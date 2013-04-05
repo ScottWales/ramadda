@@ -96,7 +96,21 @@ public class RequestUrl {
 
         return repositorySource.getRepositoryBase().absoluteUrl(
             repositorySource.getRepositoryBase().getUrlBase()
-            + path) + suffix;
+            + path) + (suffix!=null?suffix:"");
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getFullUrl() {
+        return getFullUrl("");
+    }
+
+
+    public String getFullUrl(Request request, String suffix) {
+        return getFullUrl(suffix);
     }
 
     /**
@@ -122,20 +136,6 @@ public class RequestUrl {
             repositorySource.getRepositoryBase().getUrlBase() + path);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getFullUrl() {
-        checkInit();
-        if (needsSsl) {
-            return getHttpsUrl();
-        }
-
-        return repositorySource.getRepositoryBase().absoluteUrl(
-            repositorySource.getRepositoryBase().getUrlBase() + path);
-    }
 
 
 

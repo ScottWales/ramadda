@@ -948,8 +948,8 @@ public class EntryManager extends RepositoryManager {
         }
         StringBuffer sb       = new StringBuffer();
 
-        String       entryUrl =
-            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+        String       entryUrl = 
+            HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                           ARG_ENTRYID, entry.getId());
 
 

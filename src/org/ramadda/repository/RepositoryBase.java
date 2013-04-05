@@ -676,6 +676,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return The Hostname
      */
     public String getHostname() {
+        ucar.unidata.util.Misc.printStack ("****  get host", 10);
         return hostname;
     }
 
