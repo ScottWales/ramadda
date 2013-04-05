@@ -212,7 +212,7 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
         appendTag(sb, TAG_BIBLIO_DATE, ""+cal.get(GregorianCalendar.YEAR));
         appendTag(sb, TAG_BIBLIO_PUBLICATION, values[idx++]);
         appendTag(sb, TAG_BIBLIO_VOLUME, values[idx++]);
-        appendTag(sb, TAG_BIBLIO_NUMBER, values[idx++]);
+        appendTag(sb, TAG_BIBLIO_ISSUE, values[idx++]);
         appendTag(sb, TAG_BIBLIO_PAGE, values[idx++]);
         appendTag(sb, TAG_BIBLIO_DOI, values[idx++]);
         appendTag(sb, TAG_BIBLIO_URL, values[idx++]);

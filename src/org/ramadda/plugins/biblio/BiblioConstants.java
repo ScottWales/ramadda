@@ -37,11 +37,44 @@ public interface BiblioConstants  {
     public static final String TAG_BIBLIO_PUBLICATION = "%J";
     public static final String TAG_BIBLIO_KEYWORD = "%K";
     public static final String TAG_BIBLIO_VOLUME = "%V";
-    public static final String TAG_BIBLIO_NUMBER = "%N";
+    public static final String TAG_BIBLIO_ISSUE = "%N";
     public static final String TAG_BIBLIO_PAGE = "%P";
     public static final String TAG_BIBLIO_DOI = "%R";
     public static final String TAG_BIBLIO_DESCRIPTION = "%X";
     public static final String TAG_BIBLIO_URL = "%U";
+
+    public static final int IDX_PRIMARY_AUTHOR = 0;
+    public static final int IDX_TYPE = 1;
+    public static final int IDX_INSTITUTION = 2;
+    public static final int IDX_OTHER_AUTHORS = 3;
+    public static final int IDX_PUBLICATION = 4;
+    public static final int IDX_VOLUME = 5;
+    public static final int IDX_ISSUE = 6;
+    public static final int IDX_PAGE = 7;
+    public static final int IDX_DOI = 8;
+    public static final int IDX_LINK = 9;
+
+
+    public static final String[] TAGS = {TAG_BIBLIO_INSTITUTION,
+                                TAG_BIBLIO_PUBLICATION,
+                                TAG_BIBLIO_VOLUME,
+                                TAG_BIBLIO_ISSUE,
+                                TAG_BIBLIO_PAGE,
+                                TAG_BIBLIO_DOI,
+                                TAG_BIBLIO_URL,
+    };
+
+    public static final int[] INDICES = {
+        IDX_INSTITUTION,
+                                IDX_PUBLICATION,
+                                IDX_VOLUME,
+                                IDX_ISSUE,
+                                IDX_PAGE,
+                                IDX_DOI,
+                                IDX_LINK,
+    };
+
+
 
 
 }

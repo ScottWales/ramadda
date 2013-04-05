@@ -23,11 +23,13 @@ package org.ramadda.plugins.biblio;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -35,6 +37,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -50,6 +53,9 @@ import ucar.unidata.util.TwoFacedObject;
  * @author         Enter your name here...
  */
 public class BiblioImporter extends ImportHandler implements BiblioConstants {
+
+
+
 
     /**
      * ctor
@@ -84,7 +90,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         List<String> keywords = new ArrayList<String>();
         List<String> authors = new ArrayList<String>();
         Entry entry  = null; 
-
+        Object[] values = new Object[10];
         for(String line: StringUtil.split(s, "\n",true,true)) {
             List<String> toks = StringUtil.splitUpTo(line," ",2);
             if(toks.get(0).startsWith("%") && toks.size() ==2) {
@@ -92,12 +98,46 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 String value = toks.get(1);
                 if(tag.equals(TAG_BIBLIO_TYPE)) {
                     if(entry !=null) {
+                        values[IDX_OTHER_AUTHORS]  = StringUtil.join("\n",authors);
+                        for(int idx=0;idx<TAGS.length;idx++) {
+                            if(values[idx] == null) {
+                                values[idx] = "";
+                            }
+                        }
+                        entry.setValues(values);
                         //Add authors and keywords
                         entries.add(entry);
                     }
                     keywords = new ArrayList<String>();
                     authors =  new ArrayList<String>();
                     entry  = new Entry();
+                    values = new Object[10];
+                    values[IDX_TYPE]  =value;
+                    continue;
+                }
+
+                if(tag.equals(TAG_BIBLIO_AUTHOR)) {
+                    if(!Utils.stringDefined((String)values[IDX_PRIMARY_AUTHOR])) {
+                        values[IDX_PRIMARY_AUTHOR] = value;
+                    } else {
+                        authors.add(value);
+                    }
+                    continue;
+                }
+
+                if(tag.equals(TAG_BIBLIO_TITLE)) {
+                    entry.setName(value);
+                    continue;
+                }
+                if(tag.equals(TAG_BIBLIO_DESCRIPTION)) {
+                    entry.setDescription(value);
+                    continue;
+                }
+
+                if(tag.equals(TAG_BIBLIO_DATE)) {
+                    Date date  = DateUtil.parse(value);
+                    entry.setStartDate(date.getTime());
+                    entry.setEndDate(date.getTime());
                     continue;
                 }
 
@@ -106,15 +146,27 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     keywords.add(value);
                     continue;
                 }
+                boolean gotone = false;
+                for(int idx=0;idx<TAGS.length && !gotone;idx++) {
+                    if(tag.equals(TAGS[idx])) {
+                        values[INDICES[idx]] = value;
+                        gotone = true;
+                    }
+                }
+
+                if(gotone) {
+                    continue;
+                }
+                //                System.err.println ("Unknown tag:" + tag + "=" + value);
             } else if(inKeyword) {
                 keywords.add(line);
                 continue;
             } else {
-                System.err.println ("?LINE:" +line);
+                System.err.println ("LINE:" +line);
             }
-
         }
     }
+
 
 
 
