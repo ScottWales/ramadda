@@ -96,7 +96,7 @@ public class JettyServer implements Constants {
             new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-        baseServlet = addServlet(null, null);
+        baseServlet = addServlet();
         try {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
@@ -109,16 +109,13 @@ public class JettyServer implements Constants {
         server.join();
     }
 
-    public RepositoryServlet addServlet(String base, File homeDir) throws Exception {
+    public int getPort() {
+        return port;
+    }
+
+    public RepositoryServlet addServlet() throws Exception {
         Properties properties = new Properties();
         String[] cmdLineArgs = args;
-        if(base!=null) {
-            properties.put(PROP_HTML_URLBASE, base);
-            properties.put(PROP_REPOSITORY_HOME,homeDir.toString());
-            properties.put(PROP_REPOSITORY_PRIMARY,"false");
-            //Don't pass in the cmd line args to children repos
-            cmdLineArgs = new String[]{};
-        }
         return addServlet(new RepositoryServlet(this, cmdLineArgs, port, properties));
     }
 

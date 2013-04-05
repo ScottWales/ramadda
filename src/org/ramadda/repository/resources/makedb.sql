@@ -273,7 +273,8 @@ alter table remoteservers add column isregistry int;
 
 
 CREATE TABLE  localservers (
-        path    varchar(200),
+        id    varchar(200),
+        email varchar(200),
         enabled int);
 
 

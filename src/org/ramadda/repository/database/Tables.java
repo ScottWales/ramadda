@@ -16,7 +16,9 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_ANCESTOR_ID =  NAME + ".ANCESTOR_ID";
+        public static final String COL_NODOT_ANCESTOR_ID =   "ANCESTOR_ID";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_ANCESTOR_ID
@@ -35,10 +37,15 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_TYPE =  NAME + ".TYPE";
+        public static final String COL_NODOT_TYPE =   "TYPE";
         public static final String COL_FROM_ENTRY_ID =  NAME + ".FROM_ENTRY_ID";
+        public static final String COL_NODOT_FROM_ENTRY_ID =   "FROM_ENTRY_ID";
         public static final String COL_TO_ENTRY_ID =  NAME + ".TO_ENTRY_ID";
+        public static final String COL_NODOT_TO_ENTRY_ID =   "TO_ENTRY_ID";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_NAME,COL_TYPE,COL_FROM_ENTRY_ID,COL_TO_ENTRY_ID
@@ -51,64 +58,23 @@ public abstract class Tables {
 
 
 
-    public static class BIBLIO extends Tables {
-        public static final String NAME = "BIBLIO";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_PRIMARY_AUTHOR =  NAME + ".PRIMARY_AUTHOR";
-        public static final String COL_INSTITUTION =  NAME + ".INSTITUTION";
-        public static final String COL_OTHER_AUTHORS =  NAME + ".OTHER_AUTHORS";
-        public static final String COL_PUBLICATION =  NAME + ".PUBLICATION";
-        public static final String COL_VOLUME_NUMBER =  NAME + ".VOLUME_NUMBER";
-        public static final String COL_ISSUE_NUMBER =  NAME + ".ISSUE_NUMBER";
-        public static final String COL_PAGES =  NAME + ".PAGES";
-        public static final String COL_DOI =  NAME + ".DOI";
-        public static final String COL_LINK =  NAME + ".LINK";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_TYPE,COL_PRIMARY_AUTHOR,COL_INSTITUTION,COL_OTHER_AUTHORS,COL_PUBLICATION,COL_VOLUME_NUMBER,COL_ISSUE_NUMBER,COL_PAGES,COL_DOI,COL_LINK
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final BIBLIO table  = new  BIBLIO();
-    }
-
-
-
-    public static class BLOGENTRY extends Tables {
-        public static final String NAME = "BLOGENTRY";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_BLOGTEXT =  NAME + ".BLOGTEXT";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_BLOGTEXT
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final BLOGENTRY table  = new  BLOGENTRY();
-    }
-
-
-
     public static class COMMENTS extends Tables {
         public static final String NAME = "COMMENTS";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
+        public static final String COL_NODOT_ENTRY_ID =   "ENTRY_ID";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_DATE =  NAME + ".DATE";
+        public static final String COL_NODOT_DATE =   "DATE";
         public static final String COL_SUBJECT =  NAME + ".SUBJECT";
+        public static final String COL_NODOT_SUBJECT =   "SUBJECT";
         public static final String COL_COMMENT =  NAME + ".COMMENT";
+        public static final String COL_NODOT_COMMENT =   "COMMENT";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_ENTRY_ID,COL_USER_ID,COL_DATE,COL_SUBJECT,COL_COMMENT
@@ -121,341 +87,13 @@ public abstract class Tables {
 
 
 
-    public static class DB_AGENDAITEMS extends Tables {
-        public static final String NAME = "DB_AGENDAITEMS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_WHO =  NAME + ".WHO";
-        public static final String COL_TITLE =  NAME + ".TITLE";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-        public static final String COL_DATE =  NAME + ".DATE";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-        public static final String COL_ENTRY =  NAME + ".ENTRY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_WHO,COL_TITLE,COL_STATUS,COL_DATE,COL_DESCRIPTION,COL_ENTRY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_AGENDAITEMS table  = new  DB_AGENDAITEMS();
-    }
-
-
-
-    public static class DB_BOOKMARKS extends Tables {
-        public static final String NAME = "DB_BOOKMARKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_TITLE =  NAME + ".TITLE";
-        public static final String COL_URL =  NAME + ".URL";
-        public static final String COL_CATEGORY =  NAME + ".CATEGORY";
-        public static final String COL_DATE =  NAME + ".DATE";
-        public static final String COL_SNIPPET =  NAME + ".SNIPPET";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_TITLE,COL_URL,COL_CATEGORY,COL_DATE,COL_SNIPPET
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_BOOKMARKS table  = new  DB_BOOKMARKS();
-    }
-
-
-
-    public static class DB_CONTACT extends Tables {
-        public static final String NAME = "DB_CONTACT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_NAME =  NAME + ".NAME";
-        public static final String COL_INSTITUTION =  NAME + ".INSTITUTION";
-        public static final String COL_EMAIL =  NAME + ".EMAIL";
-        public static final String COL_PHONE =  NAME + ".PHONE";
-        public static final String COL_ADDRESS =  NAME + ".ADDRESS";
-        public static final String COL_CITY =  NAME + ".CITY";
-        public static final String COL_STATE =  NAME + ".STATE";
-        public static final String COL_POSTALCODE =  NAME + ".POSTALCODE";
-        public static final String COL_COUNTRY =  NAME + ".COUNTRY";
-        public static final String COL_NOTES =  NAME + ".NOTES";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_NAME,COL_INSTITUTION,COL_EMAIL,COL_PHONE,COL_ADDRESS,COL_CITY,COL_STATE,COL_POSTALCODE,COL_COUNTRY,COL_NOTES
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_CONTACT table  = new  DB_CONTACT();
-    }
-
-
-
-    public static class DB_DEVPLANS extends Tables {
-        public static final String NAME = "DB_DEVPLANS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_PACKAGE =  NAME + ".PACKAGE";
-        public static final String COL_DATE =  NAME + ".DATE";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-        public static final String COL_PLANS =  NAME + ".PLANS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_PACKAGE,COL_DATE,COL_STATUS,COL_PLANS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_DEVPLANS table  = new  DB_DEVPLANS();
-    }
-
-
-
-    public static class DB_DEVTASKS extends Tables {
-        public static final String NAME = "DB_DEVTASKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_TITLE =  NAME + ".TITLE";
-        public static final String COL_PACKAGE =  NAME + ".PACKAGE";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_TITLE,COL_PACKAGE,COL_TYPE,COL_STATUS,COL_DESCRIPTION
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_DEVTASKS table  = new  DB_DEVTASKS();
-    }
-
-
-
-    public static class DB_EXERCISE extends Tables {
-        public static final String NAME = "DB_EXERCISE";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_DATE =  NAME + ".DATE";
-        public static final String COL_HOURS =  NAME + ".HOURS";
-        public static final String COL_MILES =  NAME + ".MILES";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_TYPE,COL_DATE,COL_HOURS,COL_MILES,COL_DESCRIPTION
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_EXERCISE table  = new  DB_EXERCISE();
-    }
-
-
-
-    public static class DB_FP_EQUIPMENT extends Tables {
-        public static final String NAME = "DB_FP_EQUIPMENT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_QUANTITY =  NAME + ".QUANTITY";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-        public static final String COL_MANUFACTURER =  NAME + ".MANUFACTURER";
-        public static final String COL_ORIGIN =  NAME + ".ORIGIN";
-        public static final String COL_PART =  NAME + ".PART";
-        public static final String COL_MODEL =  NAME + ".MODEL";
-        public static final String COL_SERIAL =  NAME + ".SERIAL";
-        public static final String COL_OWNER =  NAME + ".OWNER";
-        public static final String COL_INTERNALID =  NAME + ".INTERNALID";
-        public static final String COL_NASAID =  NAME + ".NASAID";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_QUANTITY,COL_TYPE,COL_DESCRIPTION,COL_MANUFACTURER,COL_ORIGIN,COL_PART,COL_MODEL,COL_SERIAL,COL_OWNER,COL_INTERNALID,COL_NASAID
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_FP_EQUIPMENT table  = new  DB_FP_EQUIPMENT();
-    }
-
-
-
-    public static class DB_LOCATIONS extends Tables {
-        public static final String NAME = "DB_LOCATIONS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_NAME =  NAME + ".NAME";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_LOCATION_LAT =  NAME + ".LOCATION_LAT";
-        public static final String COL_LOCATION_LON =  NAME + ".LOCATION_LON";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_NAME,COL_TYPE,COL_LOCATION_LAT,COL_LOCATION_LON
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_LOCATIONS table  = new  DB_LOCATIONS();
-    }
-
-
-
-    public static class DB_NOTES extends Tables {
-        public static final String NAME = "DB_NOTES";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_NOTE =  NAME + ".NOTE";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_NOTE
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_NOTES table  = new  DB_NOTES();
-    }
-
-
-
-    public static class DB_STATUSBOARD extends Tables {
-        public static final String NAME = "DB_STATUSBOARD";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_WHAT =  NAME + ".WHAT";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_WHAT,COL_STATUS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_STATUSBOARD table  = new  DB_STATUSBOARD();
-    }
-
-
-
-    public static class DB_TASKS extends Tables {
-        public static final String NAME = "DB_TASKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_TITLE =  NAME + ".TITLE";
-        public static final String COL_PRIORITY =  NAME + ".PRIORITY";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-        public static final String COL_COMPLETE =  NAME + ".COMPLETE";
-        public static final String COL_ASSIGNEDTO =  NAME + ".ASSIGNEDTO";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-        public static final String COL_STARTDATE =  NAME + ".STARTDATE";
-        public static final String COL_ENDDATE =  NAME + ".ENDDATE";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_TITLE,COL_PRIORITY,COL_STATUS,COL_COMPLETE,COL_ASSIGNEDTO,COL_DESCRIPTION,COL_STARTDATE,COL_ENDDATE
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_TASKS table  = new  DB_TASKS();
-    }
-
-
-
-    public static class DB_TODO extends Tables {
-        public static final String NAME = "DB_TODO";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_DB_ID =  NAME + ".DB_ID";
-        public static final String COL_DB_USER =  NAME + ".DB_USER";
-        public static final String COL_DB_CREATEDATE =  NAME + ".DB_CREATEDATE";
-        public static final String COL_DB_PROPS =  NAME + ".DB_PROPS";
-        public static final String COL_CHECKED =  NAME + ".CHECKED";
-        public static final String COL_TITLE =  NAME + ".TITLE";
-        public static final String COL_CATEGORY =  NAME + ".CATEGORY";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_DB_ID,COL_DB_USER,COL_DB_CREATEDATE,COL_DB_PROPS,COL_CHECKED,COL_TITLE,COL_CATEGORY,COL_DESCRIPTION
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final DB_TODO table  = new  DB_TODO();
-    }
-
-
-
     public static class DUMMY extends Tables {
         public static final String NAME = "DUMMY";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
 
         public static final String[] ARRAY = new String[] {
             COL_NAME
@@ -474,26 +112,47 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_TYPE =  NAME + ".TYPE";
+        public static final String COL_NODOT_TYPE =   "TYPE";
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
+        public static final String COL_NODOT_DESCRIPTION =   "DESCRIPTION";
         public static final String COL_PARENT_GROUP_ID =  NAME + ".PARENT_GROUP_ID";
+        public static final String COL_NODOT_PARENT_GROUP_ID =   "PARENT_GROUP_ID";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_RESOURCE =  NAME + ".RESOURCE";
+        public static final String COL_NODOT_RESOURCE =   "RESOURCE";
         public static final String COL_RESOURCE_TYPE =  NAME + ".RESOURCE_TYPE";
+        public static final String COL_NODOT_RESOURCE_TYPE =   "RESOURCE_TYPE";
         public static final String COL_MD5 =  NAME + ".MD5";
+        public static final String COL_NODOT_MD5 =   "MD5";
         public static final String COL_FILESIZE =  NAME + ".FILESIZE";
+        public static final String COL_NODOT_FILESIZE =   "FILESIZE";
         public static final String COL_DATATYPE =  NAME + ".DATATYPE";
+        public static final String COL_NODOT_DATATYPE =   "DATATYPE";
         public static final String COL_CREATEDATE =  NAME + ".CREATEDATE";
+        public static final String COL_NODOT_CREATEDATE =   "CREATEDATE";
         public static final String COL_CHANGEDATE =  NAME + ".CHANGEDATE";
+        public static final String COL_NODOT_CHANGEDATE =   "CHANGEDATE";
         public static final String COL_FROMDATE =  NAME + ".FROMDATE";
+        public static final String COL_NODOT_FROMDATE =   "FROMDATE";
         public static final String COL_TODATE =  NAME + ".TODATE";
+        public static final String COL_NODOT_TODATE =   "TODATE";
         public static final String COL_SOUTH =  NAME + ".SOUTH";
+        public static final String COL_NODOT_SOUTH =   "SOUTH";
         public static final String COL_NORTH =  NAME + ".NORTH";
+        public static final String COL_NODOT_NORTH =   "NORTH";
         public static final String COL_EAST =  NAME + ".EAST";
+        public static final String COL_NODOT_EAST =   "EAST";
         public static final String COL_WEST =  NAME + ".WEST";
+        public static final String COL_NODOT_WEST =   "WEST";
         public static final String COL_ALTITUDETOP =  NAME + ".ALTITUDETOP";
+        public static final String COL_NODOT_ALTITUDETOP =   "ALTITUDETOP";
         public static final String COL_ALTITUDEBOTTOM =  NAME + ".ALTITUDEBOTTOM";
+        public static final String COL_NODOT_ALTITUDEBOTTOM =   "ALTITUDEBOTTOM";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_TYPE,COL_NAME,COL_DESCRIPTION,COL_PARENT_GROUP_ID,COL_USER_ID,COL_RESOURCE,COL_RESOURCE_TYPE,COL_MD5,COL_FILESIZE,COL_DATATYPE,COL_CREATEDATE,COL_CHANGEDATE,COL_FROMDATE,COL_TODATE,COL_SOUTH,COL_NORTH,COL_EAST,COL_WEST,COL_ALTITUDETOP,COL_ALTITUDEBOTTOM
@@ -506,54 +165,21 @@ public abstract class Tables {
 
 
 
-    public static class FAQ extends Tables {
-        public static final String NAME = "FAQ";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_SHOWLINK =  NAME + ".SHOWLINK";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_SHOWLINK
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final FAQ table  = new  FAQ();
-    }
-
-
-
-    public static class FAQENTRY extends Tables {
-        public static final String NAME = "FAQENTRY";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CATEGORY =  NAME + ".CATEGORY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CATEGORY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final FAQENTRY table  = new  FAQENTRY();
-    }
-
-
-
     public static class FAVORITES extends Tables {
         public static final String NAME = "FAVORITES";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
+        public static final String COL_NODOT_ENTRY_ID =   "ENTRY_ID";
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_CATEGORY =  NAME + ".CATEGORY";
+        public static final String COL_NODOT_CATEGORY =   "CATEGORY";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_USER_ID,COL_ENTRY_ID,COL_NAME,COL_CATEGORY
@@ -566,39 +192,25 @@ public abstract class Tables {
 
 
 
-    public static class FRAMES extends Tables {
-        public static final String NAME = "FRAMES";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_URLS =  NAME + ".URLS";
-        public static final String COL_HEIGHT =  NAME + ".HEIGHT";
-        public static final String COL_COLS =  NAME + ".COLS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_URLS,COL_HEIGHT,COL_COLS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final FRAMES table  = new  FRAMES();
-    }
-
-
-
     public static class FTP extends Tables {
         public static final String NAME = "FTP";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_SERVER =  NAME + ".SERVER";
+        public static final String COL_NODOT_SERVER =   "SERVER";
         public static final String COL_BASEDIR =  NAME + ".BASEDIR";
+        public static final String COL_NODOT_BASEDIR =   "BASEDIR";
         public static final String COL_FTPUSER =  NAME + ".FTPUSER";
+        public static final String COL_NODOT_FTPUSER =   "FTPUSER";
         public static final String COL_FTPPASSWORD =  NAME + ".FTPPASSWORD";
+        public static final String COL_NODOT_FTPPASSWORD =   "FTPPASSWORD";
         public static final String COL_MAXSIZE =  NAME + ".MAXSIZE";
+        public static final String COL_NODOT_MAXSIZE =   "MAXSIZE";
         public static final String COL_PATTERN =  NAME + ".PATTERN";
+        public static final String COL_NODOT_PATTERN =   "PATTERN";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_SERVER,COL_BASEDIR,COL_FTPUSER,COL_FTPPASSWORD,COL_MAXSIZE,COL_PATTERN
@@ -611,52 +223,15 @@ public abstract class Tables {
 
 
 
-    public static class GADGETS_CLOCK extends Tables {
-        public static final String NAME = "GADGETS_CLOCK";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_TIMEZONE =  NAME + ".TIMEZONE";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_TIMEZONE
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final GADGETS_CLOCK table  = new  GADGETS_CLOCK();
-    }
-
-
-
-    public static class GADGETS_COUNTDOWN extends Tables {
-        public static final String NAME = "GADGETS_COUNTDOWN";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_ORIENTATION =  NAME + ".ORIENTATION";
-        public static final String COL_HOWMANY =  NAME + ".HOWMANY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_ORIENTATION,COL_HOWMANY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final GADGETS_COUNTDOWN table  = new  GADGETS_COUNTDOWN();
-    }
-
-
-
     public static class GLOBALS extends Tables {
         public static final String NAME = "GLOBALS";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_VALUE =  NAME + ".VALUE";
+        public static final String COL_NODOT_VALUE =   "VALUE";
 
         public static final String[] ARRAY = new String[] {
             COL_NAME,COL_VALUE
@@ -669,66 +244,17 @@ public abstract class Tables {
 
 
 
-    public static class GPS_SOLUTION extends Tables {
-        public static final String NAME = "GPS_SOLUTION";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_SITE_CODE =  NAME + ".SITE_CODE";
-        public static final String COL_UTM_X =  NAME + ".UTM_X";
-        public static final String COL_UTM_Y =  NAME + ".UTM_Y";
-        public static final String COL_REFERENCE_FRAME =  NAME + ".REFERENCE_FRAME";
-        public static final String COL_ITRF_X =  NAME + ".ITRF_X";
-        public static final String COL_ITRF_Y =  NAME + ".ITRF_Y";
-        public static final String COL_ITRF_Z =  NAME + ".ITRF_Z";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_SITE_CODE,COL_UTM_X,COL_UTM_Y,COL_REFERENCE_FRAME,COL_ITRF_X,COL_ITRF_Y,COL_ITRF_Z
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final GPS_SOLUTION table  = new  GPS_SOLUTION();
-    }
-
-
-
-    public static class GRIDAGGREGATION extends Tables {
-        public static final String NAME = "GRIDAGGREGATION";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_TYPE =  NAME + ".TYPE";
-        public static final String COL_COORDINATE =  NAME + ".COORDINATE";
-        public static final String COL_FIELDS =  NAME + ".FIELDS";
-        public static final String COL_FILES =  NAME + ".FILES";
-        public static final String COL_PATTERN =  NAME + ".PATTERN";
-        public static final String COL_RECURSE =  NAME + ".RECURSE";
-        public static final String COL_INGEST =  NAME + ".INGEST";
-        public static final String COL_ADDSHORTMETADATA =  NAME + ".ADDSHORTMETADATA";
-        public static final String COL_ADDMETADATA =  NAME + ".ADDMETADATA";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_TYPE,COL_COORDINATE,COL_FIELDS,COL_FILES,COL_PATTERN,COL_RECURSE,COL_INGEST,COL_ADDSHORTMETADATA,COL_ADDMETADATA
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final GRIDAGGREGATION table  = new  GRIDAGGREGATION();
-    }
-
-
-
     public static class HARVESTERS extends Tables {
         public static final String NAME = "HARVESTERS";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_CLASS =  NAME + ".CLASS";
+        public static final String COL_NODOT_CLASS =   "CLASS";
         public static final String COL_CONTENT =  NAME + ".CONTENT";
+        public static final String COL_NODOT_CONTENT =   "CONTENT";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_CLASS,COL_CONTENT
@@ -741,40 +267,23 @@ public abstract class Tables {
 
 
 
-    public static class INCIDENT extends Tables {
-        public static final String NAME = "INCIDENT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_INCIDENTTYPE =  NAME + ".INCIDENTTYPE";
-        public static final String COL_CAUSE =  NAME + ".CAUSE";
-        public static final String COL_STATE =  NAME + ".STATE";
-        public static final String COL_LOCATION =  NAME + ".LOCATION";
-        public static final String COL_COMMANDER =  NAME + ".COMMANDER";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_INCIDENTTYPE,COL_CAUSE,COL_STATE,COL_LOCATION,COL_COMMANDER
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final INCIDENT table  = new  INCIDENT();
-    }
-
-
-
     public static class JOBINFOS extends Tables {
         public static final String NAME = "JOBINFOS";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
+        public static final String COL_NODOT_ENTRY_ID =   "ENTRY_ID";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_DATE =  NAME + ".DATE";
+        public static final String COL_NODOT_DATE =   "DATE";
         public static final String COL_TYPE =  NAME + ".TYPE";
+        public static final String COL_NODOT_TYPE =   "TYPE";
         public static final String COL_JOB_INFO_BLOB =  NAME + ".JOB_INFO_BLOB";
+        public static final String COL_NODOT_JOB_INFO_BLOB =   "JOB_INFO_BLOB";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_ENTRY_ID,COL_USER_ID,COL_DATE,COL_TYPE,COL_JOB_INFO_BLOB
@@ -793,11 +302,17 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_LOCALFILEPATH =  NAME + ".LOCALFILEPATH";
+        public static final String COL_NODOT_LOCALFILEPATH =   "LOCALFILEPATH";
         public static final String COL_TIMEDELAY =  NAME + ".TIMEDELAY";
+        public static final String COL_NODOT_TIMEDELAY =   "TIMEDELAY";
         public static final String COL_INCLUDEPATTERN =  NAME + ".INCLUDEPATTERN";
+        public static final String COL_NODOT_INCLUDEPATTERN =   "INCLUDEPATTERN";
         public static final String COL_EXCLUDEPATTERN =  NAME + ".EXCLUDEPATTERN";
+        public static final String COL_NODOT_EXCLUDEPATTERN =   "EXCLUDEPATTERN";
         public static final String COL_NAMING =  NAME + ".NAMING";
+        public static final String COL_NODOT_NAMING =   "NAMING";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_LOCALFILEPATH,COL_TIMEDELAY,COL_INCLUDEPATTERN,COL_EXCLUDEPATTERN,COL_NAMING
@@ -815,60 +330,20 @@ public abstract class Tables {
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
-        public static final String COL_PATH =  NAME + ".PATH";
+        public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
+        public static final String COL_EMAIL =  NAME + ".EMAIL";
+        public static final String COL_NODOT_EMAIL =   "EMAIL";
         public static final String COL_ENABLED =  NAME + ".ENABLED";
+        public static final String COL_NODOT_ENABLED =   "ENABLED";
 
         public static final String[] ARRAY = new String[] {
-            COL_PATH,COL_ENABLED
+            COL_ID,COL_EMAIL,COL_ENABLED
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
     public static final LOCALSERVERS table  = new  LOCALSERVERS();
-    }
-
-
-
-    public static class MAP_GOOGLEMAP extends Tables {
-        public static final String NAME = "MAP_GOOGLEMAP";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_WIDTH =  NAME + ".WIDTH";
-        public static final String COL_HEIGHT =  NAME + ".HEIGHT";
-        public static final String COL_DISPLAY =  NAME + ".DISPLAY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_WIDTH,COL_HEIGHT,COL_DISPLAY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final MAP_GOOGLEMAP table  = new  MAP_GOOGLEMAP();
-    }
-
-
-
-    public static class MEDIA_YOUTUBEVIDEO extends Tables {
-        public static final String NAME = "MEDIA_YOUTUBEVIDEO";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_WIDTH =  NAME + ".WIDTH";
-        public static final String COL_HEIGHT =  NAME + ".HEIGHT";
-        public static final String COL_VIDEO_START =  NAME + ".VIDEO_START";
-        public static final String COL_VIDEO_END =  NAME + ".VIDEO_END";
-        public static final String COL_DISPLAY =  NAME + ".DISPLAY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_WIDTH,COL_HEIGHT,COL_VIDEO_START,COL_VIDEO_END,COL_DISPLAY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final MEDIA_YOUTUBEVIDEO table  = new  MEDIA_YOUTUBEVIDEO();
     }
 
 
@@ -879,14 +354,23 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
+        public static final String COL_NODOT_ENTRY_ID =   "ENTRY_ID";
         public static final String COL_TYPE =  NAME + ".TYPE";
+        public static final String COL_NODOT_TYPE =   "TYPE";
         public static final String COL_INHERITED =  NAME + ".INHERITED";
+        public static final String COL_NODOT_INHERITED =   "INHERITED";
         public static final String COL_ATTR1 =  NAME + ".ATTR1";
+        public static final String COL_NODOT_ATTR1 =   "ATTR1";
         public static final String COL_ATTR2 =  NAME + ".ATTR2";
+        public static final String COL_NODOT_ATTR2 =   "ATTR2";
         public static final String COL_ATTR3 =  NAME + ".ATTR3";
+        public static final String COL_NODOT_ATTR3 =   "ATTR3";
         public static final String COL_ATTR4 =  NAME + ".ATTR4";
+        public static final String COL_NODOT_ATTR4 =   "ATTR4";
         public static final String COL_EXTRA =  NAME + ".EXTRA";
+        public static final String COL_NODOT_EXTRA =   "EXTRA";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_ENTRY_ID,COL_TYPE,COL_INHERITED,COL_ATTR1,COL_ATTR2,COL_ATTR3,COL_ATTR4,COL_EXTRA
@@ -905,11 +389,17 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_MONITOR_ID =  NAME + ".MONITOR_ID";
+        public static final String COL_NODOT_MONITOR_ID =   "MONITOR_ID";
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_FROM_DATE =  NAME + ".FROM_DATE";
+        public static final String COL_NODOT_FROM_DATE =   "FROM_DATE";
         public static final String COL_TO_DATE =  NAME + ".TO_DATE";
+        public static final String COL_NODOT_TO_DATE =   "TO_DATE";
         public static final String COL_ENCODED_OBJECT =  NAME + ".ENCODED_OBJECT";
+        public static final String COL_NODOT_ENCODED_OBJECT =   "ENCODED_OBJECT";
 
         public static final String[] ARRAY = new String[] {
             COL_MONITOR_ID,COL_NAME,COL_USER_ID,COL_FROM_DATE,COL_TO_DATE,COL_ENCODED_OBJECT
@@ -928,8 +418,11 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
+        public static final String COL_NODOT_ENTRY_ID =   "ENTRY_ID";
         public static final String COL_ACTION =  NAME + ".ACTION";
+        public static final String COL_NODOT_ACTION =   "ACTION";
         public static final String COL_ROLE =  NAME + ".ROLE";
+        public static final String COL_NODOT_ROLE =   "ROLE";
 
         public static final String[] ARRAY = new String[] {
             COL_ENTRY_ID,COL_ACTION,COL_ROLE
@@ -942,37 +435,25 @@ public abstract class Tables {
 
 
 
-    public static class POINTDATABASE extends Tables {
-        public static final String NAME = "POINTDATABASE";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_PROPERTIES =  NAME + ".PROPERTIES";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_PROPERTIES
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final POINTDATABASE table  = new  POINTDATABASE();
-    }
-
-
-
     public static class POINTDATAMETADATA extends Tables {
         public static final String NAME = "POINTDATAMETADATA";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_TABLENAME =  NAME + ".TABLENAME";
+        public static final String COL_NODOT_TABLENAME =   "TABLENAME";
         public static final String COL_COLUMNNAME =  NAME + ".COLUMNNAME";
+        public static final String COL_NODOT_COLUMNNAME =   "COLUMNNAME";
         public static final String COL_COLUMNNUMBER =  NAME + ".COLUMNNUMBER";
+        public static final String COL_NODOT_COLUMNNUMBER =   "COLUMNNUMBER";
         public static final String COL_SHORTNAME =  NAME + ".SHORTNAME";
+        public static final String COL_NODOT_SHORTNAME =   "SHORTNAME";
         public static final String COL_LONGNAME =  NAME + ".LONGNAME";
+        public static final String COL_NODOT_LONGNAME =   "LONGNAME";
         public static final String COL_UNIT =  NAME + ".UNIT";
+        public static final String COL_NODOT_UNIT =   "UNIT";
         public static final String COL_VARTYPE =  NAME + ".VARTYPE";
+        public static final String COL_NODOT_VARTYPE =   "VARTYPE";
 
         public static final String[] ARRAY = new String[] {
             COL_TABLENAME,COL_COLUMNNAME,COL_COLUMNNUMBER,COL_SHORTNAME,COL_LONGNAME,COL_UNIT,COL_VARTYPE
@@ -985,371 +466,23 @@ public abstract class Tables {
 
 
 
-    public static class POLL extends Tables {
-        public static final String NAME = "POLL";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_PROPERTIES =  NAME + ".PROPERTIES";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_PROPERTIES
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final POLL table  = new  POLL();
-    }
-
-
-
-    public static class PROJECT_FIELDNOTE extends Tables {
-        public static final String NAME = "PROJECT_FIELDNOTE";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_LOCATION =  NAME + ".LOCATION";
-        public static final String COL_WHO =  NAME + ".WHO";
-        public static final String COL_INSTRUMENT1 =  NAME + ".INSTRUMENT1";
-        public static final String COL_INSTRUMENT2 =  NAME + ".INSTRUMENT2";
-        public static final String COL_INSTRUMENT3 =  NAME + ".INSTRUMENT3";
-        public static final String COL_CONDITIONS =  NAME + ".CONDITIONS";
-        public static final String COL_NOTES =  NAME + ".NOTES";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_LOCATION,COL_WHO,COL_INSTRUMENT1,COL_INSTRUMENT2,COL_INSTRUMENT3,COL_CONDITIONS,COL_NOTES
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROJECT_FIELDNOTE table  = new  PROJECT_FIELDNOTE();
-    }
-
-
-
-    public static class PROJECT_GPS extends Tables {
-        public static final String NAME = "PROJECT_GPS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_FORMAT =  NAME + ".FORMAT";
-        public static final String COL_SITE_CODE =  NAME + ".SITE_CODE";
-        public static final String COL_ANTENNA_TYPE =  NAME + ".ANTENNA_TYPE";
-        public static final String COL_ANTENNA_HEIGHT =  NAME + ".ANTENNA_HEIGHT";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_FORMAT,COL_SITE_CODE,COL_ANTENNA_TYPE,COL_ANTENNA_HEIGHT
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROJECT_GPS table  = new  PROJECT_GPS();
-    }
-
-
-
-    public static class PROJECT_PROJECT extends Tables {
-        public static final String NAME = "PROJECT_PROJECT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_STATUS =  NAME + ".STATUS";
-        public static final String COL_PROJECT_TYPE =  NAME + ".PROJECT_TYPE";
-        public static final String COL_LOCATION =  NAME + ".LOCATION";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_STATUS,COL_PROJECT_TYPE,COL_LOCATION
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROJECT_PROJECT table  = new  PROJECT_PROJECT();
-    }
-
-
-
-    public static class PROJECT_SURVEYLOCATION extends Tables {
-        public static final String NAME = "PROJECT_SURVEYLOCATION";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_SURVEY_TYPE =  NAME + ".SURVEY_TYPE";
-        public static final String COL_EQUIPMENT =  NAME + ".EQUIPMENT";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_SURVEY_TYPE,COL_EQUIPMENT
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROJECT_SURVEYLOCATION table  = new  PROJECT_SURVEYLOCATION();
-    }
-
-
-
-    public static class PROJECT_TLS_SCAN extends Tables {
-        public static final String NAME = "PROJECT_TLS_SCAN";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_EQUIPMENT =  NAME + ".EQUIPMENT";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_EQUIPMENT
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROJECT_TLS_SCAN table  = new  PROJECT_TLS_SCAN();
-    }
-
-
-
-    public static class PROPERTIES_AGENDAITEMS extends Tables {
-        public static final String NAME = "PROPERTIES_AGENDAITEMS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_AGENDAITEMS table  = new  PROPERTIES_AGENDAITEMS();
-    }
-
-
-
-    public static class PROPERTIES_BOOKMARKS extends Tables {
-        public static final String NAME = "PROPERTIES_BOOKMARKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_BOOKMARKS table  = new  PROPERTIES_BOOKMARKS();
-    }
-
-
-
-    public static class PROPERTIES_CONTACT extends Tables {
-        public static final String NAME = "PROPERTIES_CONTACT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_CONTACT table  = new  PROPERTIES_CONTACT();
-    }
-
-
-
-    public static class PROPERTIES_DEVPLANS extends Tables {
-        public static final String NAME = "PROPERTIES_DEVPLANS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_DEVPLANS table  = new  PROPERTIES_DEVPLANS();
-    }
-
-
-
-    public static class PROPERTIES_DEVTASKS extends Tables {
-        public static final String NAME = "PROPERTIES_DEVTASKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_DEVTASKS table  = new  PROPERTIES_DEVTASKS();
-    }
-
-
-
-    public static class PROPERTIES_EXERCISE extends Tables {
-        public static final String NAME = "PROPERTIES_EXERCISE";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_EXERCISE table  = new  PROPERTIES_EXERCISE();
-    }
-
-
-
-    public static class PROPERTIES_FP_EQUIPMENT extends Tables {
-        public static final String NAME = "PROPERTIES_FP_EQUIPMENT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_FP_EQUIPMENT table  = new  PROPERTIES_FP_EQUIPMENT();
-    }
-
-
-
-    public static class PROPERTIES_LOCATIONS extends Tables {
-        public static final String NAME = "PROPERTIES_LOCATIONS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_LOCATIONS table  = new  PROPERTIES_LOCATIONS();
-    }
-
-
-
-    public static class PROPERTIES_NOTES extends Tables {
-        public static final String NAME = "PROPERTIES_NOTES";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_NOTES table  = new  PROPERTIES_NOTES();
-    }
-
-
-
-    public static class PROPERTIES_STATUSBOARD extends Tables {
-        public static final String NAME = "PROPERTIES_STATUSBOARD";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_STATUSBOARD table  = new  PROPERTIES_STATUSBOARD();
-    }
-
-
-
-    public static class PROPERTIES_TASKS extends Tables {
-        public static final String NAME = "PROPERTIES_TASKS";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_TASKS table  = new  PROPERTIES_TASKS();
-    }
-
-
-
-    public static class PROPERTIES_TODO extends Tables {
-        public static final String NAME = "PROPERTIES_TODO";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_CONTENTS =  NAME + ".CONTENTS";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_CONTENTS
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final PROPERTIES_TODO table  = new  PROPERTIES_TODO();
-    }
-
-
-
     public static class REMOTESERVERS extends Tables {
         public static final String NAME = "REMOTESERVERS";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_URL =  NAME + ".URL";
+        public static final String COL_NODOT_URL =   "URL";
         public static final String COL_TITLE =  NAME + ".TITLE";
+        public static final String COL_NODOT_TITLE =   "TITLE";
         public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
+        public static final String COL_NODOT_DESCRIPTION =   "DESCRIPTION";
         public static final String COL_EMAIL =  NAME + ".EMAIL";
+        public static final String COL_NODOT_EMAIL =   "EMAIL";
         public static final String COL_ISREGISTRY =  NAME + ".ISREGISTRY";
+        public static final String COL_NODOT_ISREGISTRY =   "ISREGISTRY";
         public static final String COL_SELECTED =  NAME + ".SELECTED";
+        public static final String COL_NODOT_SELECTED =   "SELECTED";
 
         public static final String[] ARRAY = new String[] {
             COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY,COL_SELECTED
@@ -1368,10 +501,15 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_URL =  NAME + ".URL";
+        public static final String COL_NODOT_URL =   "URL";
         public static final String COL_TITLE =  NAME + ".TITLE";
+        public static final String COL_NODOT_TITLE =   "TITLE";
         public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
+        public static final String COL_NODOT_DESCRIPTION =   "DESCRIPTION";
         public static final String COL_EMAIL =  NAME + ".EMAIL";
+        public static final String COL_NODOT_EMAIL =   "EMAIL";
         public static final String COL_ISREGISTRY =  NAME + ".ISREGISTRY";
+        public static final String COL_NODOT_ISREGISTRY =   "ISREGISTRY";
 
         public static final String[] ARRAY = new String[] {
             COL_URL,COL_TITLE,COL_DESCRIPTION,COL_EMAIL,COL_ISREGISTRY
@@ -1390,10 +528,15 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_SESSION_ID =  NAME + ".SESSION_ID";
+        public static final String COL_NODOT_SESSION_ID =   "SESSION_ID";
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_CREATE_DATE =  NAME + ".CREATE_DATE";
+        public static final String COL_NODOT_CREATE_DATE =   "CREATE_DATE";
         public static final String COL_LAST_ACTIVE_DATE =  NAME + ".LAST_ACTIVE_DATE";
+        public static final String COL_NODOT_LAST_ACTIVE_DATE =   "LAST_ACTIVE_DATE";
         public static final String COL_EXTRA =  NAME + ".EXTRA";
+        public static final String COL_NODOT_EXTRA =   "EXTRA";
 
         public static final String[] ARRAY = new String[] {
             COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
@@ -1406,39 +549,23 @@ public abstract class Tables {
 
 
 
-    public static class TWITTERSEARCH extends Tables {
-        public static final String NAME = "TWITTERSEARCH";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_SEARCHSTRING =  NAME + ".SEARCHSTRING";
-        public static final String COL_WIDTH =  NAME + ".WIDTH";
-        public static final String COL_HEIGHT =  NAME + ".HEIGHT";
-        public static final String COL_ORIENTATION =  NAME + ".ORIENTATION";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_SEARCHSTRING,COL_WIDTH,COL_HEIGHT,COL_ORIENTATION
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final TWITTERSEARCH table  = new  TWITTERSEARCH();
-    }
-
-
-
     public static class TYPE_COLUMN extends Tables {
         public static final String NAME = "TYPE_COLUMN";
 
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_INDEX =  NAME + ".INDEX";
+        public static final String COL_NODOT_INDEX =   "INDEX";
         public static final String COL_COLUMN_NAME =  NAME + ".COLUMN_NAME";
+        public static final String COL_NODOT_COLUMN_NAME =   "COLUMN_NAME";
         public static final String COL_DATATYPE =  NAME + ".DATATYPE";
+        public static final String COL_NODOT_DATATYPE =   "DATATYPE";
         public static final String COL_ENUMERATION_VALUES =  NAME + ".ENUMERATION_VALUES";
+        public static final String COL_NODOT_ENUMERATION_VALUES =   "ENUMERATION_VALUES";
         public static final String COL_PROPERTIES =  NAME + ".PROPERTIES";
+        public static final String COL_NODOT_PROPERTIES =   "PROPERTIES";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_INDEX,COL_COLUMN_NAME,COL_DATATYPE,COL_ENUMERATION_VALUES,COL_PROPERTIES
@@ -1457,7 +584,9 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_ROLE =  NAME + ".ROLE";
+        public static final String COL_NODOT_ROLE =   "ROLE";
 
         public static final String[] ARRAY = new String[] {
             COL_USER_ID,COL_ROLE
@@ -1476,16 +605,27 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".ID";
+        public static final String COL_NODOT_ID =   "ID";
         public static final String COL_NAME =  NAME + ".NAME";
+        public static final String COL_NODOT_NAME =   "NAME";
         public static final String COL_EMAIL =  NAME + ".EMAIL";
+        public static final String COL_NODOT_EMAIL =   "EMAIL";
         public static final String COL_QUESTION =  NAME + ".QUESTION";
+        public static final String COL_NODOT_QUESTION =   "QUESTION";
         public static final String COL_ANSWER =  NAME + ".ANSWER";
+        public static final String COL_NODOT_ANSWER =   "ANSWER";
         public static final String COL_PASSWORD =  NAME + ".PASSWORD";
+        public static final String COL_NODOT_PASSWORD =   "PASSWORD";
         public static final String COL_ADMIN =  NAME + ".ADMIN";
+        public static final String COL_NODOT_ADMIN =   "ADMIN";
         public static final String COL_LANGUAGE =  NAME + ".LANGUAGE";
+        public static final String COL_NODOT_LANGUAGE =   "LANGUAGE";
         public static final String COL_TEMPLATE =  NAME + ".TEMPLATE";
+        public static final String COL_NODOT_TEMPLATE =   "TEMPLATE";
         public static final String COL_ISGUEST =  NAME + ".ISGUEST";
+        public static final String COL_NODOT_ISGUEST =   "ISGUEST";
         public static final String COL_PROPERTIES =  NAME + ".PROPERTIES";
+        public static final String COL_NODOT_PROPERTIES =   "PROPERTIES";
 
         public static final String[] ARRAY = new String[] {
             COL_ID,COL_NAME,COL_EMAIL,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_PROPERTIES
@@ -1504,10 +644,15 @@ public abstract class Tables {
         public String getName() {return NAME;}
         public String getColumns() {return COLUMNS;}
         public static final String COL_USER_ID =  NAME + ".USER_ID";
+        public static final String COL_NODOT_USER_ID =   "USER_ID";
         public static final String COL_DATE =  NAME + ".DATE";
+        public static final String COL_NODOT_DATE =   "DATE";
         public static final String COL_WHAT =  NAME + ".WHAT";
+        public static final String COL_NODOT_WHAT =   "WHAT";
         public static final String COL_EXTRA =  NAME + ".EXTRA";
+        public static final String COL_NODOT_EXTRA =   "EXTRA";
         public static final String COL_IPADDRESS =  NAME + ".IPADDRESS";
+        public static final String COL_NODOT_IPADDRESS =   "IPADDRESS";
 
         public static final String[] ARRAY = new String[] {
             COL_USER_ID,COL_DATE,COL_WHAT,COL_EXTRA,COL_IPADDRESS
@@ -1516,89 +661,6 @@ public abstract class Tables {
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
     public static final USER_ACTIVITY table  = new  USER_ACTIVITY();
-    }
-
-
-
-    public static class WEATHER extends Tables {
-        public static final String NAME = "WEATHER";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_ZIPCODES =  NAME + ".ZIPCODES";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_ZIPCODES
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final WEATHER table  = new  WEATHER();
-    }
-
-
-
-    public static class WIKIPAGE extends Tables {
-        public static final String NAME = "WIKIPAGE";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_WIKITEXT =  NAME + ".WIKITEXT";
-        public static final String COL_CATEGORY =  NAME + ".CATEGORY";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_WIKITEXT,COL_CATEGORY
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final WIKIPAGE table  = new  WIKIPAGE();
-    }
-
-
-
-    public static class WIKIPAGEHISTORY extends Tables {
-        public static final String NAME = "WIKIPAGEHISTORY";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ENTRY_ID =  NAME + ".ENTRY_ID";
-        public static final String COL_USER_ID =  NAME + ".USER_ID";
-        public static final String COL_DATE =  NAME + ".DATE";
-        public static final String COL_DESCRIPTION =  NAME + ".DESCRIPTION";
-        public static final String COL_WIKITEXT =  NAME + ".WIKITEXT";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ENTRY_ID,COL_USER_ID,COL_DATE,COL_DESCRIPTION,COL_WIKITEXT
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final WIKIPAGEHISTORY table  = new  WIKIPAGEHISTORY();
-    }
-
-
-
-    public static class WORKSHOP_PARTICIPANT extends Tables {
-        public static final String NAME = "WORKSHOP_PARTICIPANT";
-
-        public String getName() {return NAME;}
-        public String getColumns() {return COLUMNS;}
-        public static final String COL_ID =  NAME + ".ID";
-        public static final String COL_EMAIL =  NAME + ".EMAIL";
-        public static final String COL_COUNTRY =  NAME + ".COUNTRY";
-        public static final String COL_POSITION =  NAME + ".POSITION";
-        public static final String COL_INTEREST =  NAME + ".INTEREST";
-
-        public static final String[] ARRAY = new String[] {
-            COL_ID,COL_EMAIL,COL_COUNTRY,COL_POSITION,COL_INTEREST
-        };
-        public static final String COLUMNS = SqlUtil.comma(ARRAY);
-        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
-        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final WORKSHOP_PARTICIPANT table  = new  WORKSHOP_PARTICIPANT();
     }
 
 

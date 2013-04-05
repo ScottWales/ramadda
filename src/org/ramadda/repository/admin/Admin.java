@@ -122,6 +122,7 @@ public class Admin extends RepositoryManager {
     public static final String ARG_LOCAL_NEW = "local.new";
     public static final String ARG_LOCAL_NEW_SURE = "local.new.sure";
     public static final String ARG_LOCAL_NAME = "local.name";
+    public static final String ARG_LOCAL_CONTACT = "local.contact";
     public static final String ARG_LOCAL_ID = "local.id";
 
     /** _more_ */
@@ -498,33 +499,8 @@ public class Admin extends RepositoryManager {
                         getRepository().installPlugin(plugin);
                     }
 
-                    String initEntriesXml = null;
-                    File   initFile       =
-                        new File(
-                            IOUtil.joinDir(
-                                getStorageManager().getRepositoryDir(),
-                                "initentries.xml"));
-                    if (initFile.exists()) {
-                        FileInputStream fis = new FileInputStream(initFile);
-                        initEntriesXml = IOUtil.readContents(fis);
-                        IOUtil.close(fis);
-                    }
-
-                    if (initEntriesXml == null) {
-                        initEntriesXml = getRepository().getResource(
-                            "/org/ramadda/repository/resources/examples/initentries.xml");
-                    }
-                    Element     root       = XmlUtil.getRoot(initEntriesXml);
-                    Request tmpRequest = getRepository().getRequest(user);
-                    System.err.println("processing initEntries");
-                    List<Entry> newEntries =
-                        getEntryManager().processEntryXml(
-                                                          tmpRequest, root,
-                            new Hashtable<String, Entry>(),
-                            new Hashtable<String, String>(), null);
+                    addInitEntries(user);
                     sb.append(getUserManager().makeLoginForm(request));
-
-
                     if (errorBuffer.length() > 0) {
                         sb.append(
                             getRepository().showDialogError(
@@ -532,8 +508,8 @@ public class Admin extends RepositoryManager {
                     }
 
                     return new Result("", sb);
+                    }
                 }
-            }
 
             if (errorBuffer.length() > 0) {
                 sb.append(getRepository().showDialogError(msg("Error")
@@ -648,6 +624,33 @@ public class Admin extends RepositoryManager {
 
 
 
+
+    public void addInitEntries(User user) throws Exception {
+        String initEntriesXml = null;
+        File   initFile       =
+            new File(
+                     IOUtil.joinDir(
+                                    getStorageManager().getRepositoryDir(),
+                                    "initentries.xml"));
+        if (initFile.exists()) {
+            FileInputStream fis = new FileInputStream(initFile);
+            initEntriesXml = IOUtil.readContents(fis);
+            IOUtil.close(fis);
+        }
+
+        if (initEntriesXml == null) {
+            initEntriesXml = getRepository().getResource(
+                                                         "/org/ramadda/repository/resources/examples/initentries.xml");
+        }
+        Element     root       = XmlUtil.getRoot(initEntriesXml);
+        Request tmpRequest = getRepository().getRequest(user);
+        System.err.println("processing initEntries");
+        List<Entry> newEntries =
+            getEntryManager().processEntryXml(
+                                              tmpRequest, root,
+                                              new Hashtable<String, Entry>(),
+                                              new Hashtable<String, String>(), null);
+    }
 
 
     /**
@@ -891,14 +894,13 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.formTable());
         List<Repository> children = getRepository().getChildRepositories();
         if(children.size()>0) {
-            sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>", "<b>Initialized</b>")));
+            sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>")));
         }
 
         for(Repository child: children) {
             boolean initialized = child.getAdmin().getInstallationComplete();
             String url  = child.getUrlBase();
-            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,child.getRepositoryName() + " - " + url),
-                                                   initialized?"yes":"no")));
+            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,child.getRepositoryName() + " - " + url))));
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
@@ -907,9 +909,13 @@ public class Admin extends RepositoryManager {
         sb.append(request.form(URL_ADMIN_LOCAL));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Name"),  HtmlUtils.input(ARG_LOCAL_NAME)));
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.checkbox(ARG_LOCAL_NEW_SURE, "true", false) + " " + msg("Yes, I am sure")));
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"))));
+        sb.append(HtmlUtils.formEntry(msgLabel("Repository Name"),  HtmlUtils.input(ARG_LOCAL_NAME)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Contact"),  HtmlUtils.input(ARG_LOCAL_CONTACT)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1)));
+
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"))+
+                                      " " + HtmlUtils.checkbox(ARG_LOCAL_NEW_SURE, "true", false) + " " + msg("Yes, I am sure")));
+
         sb.append(HtmlUtils.formTableClose());
 
         sb.append(HtmlUtils.formClose());
@@ -920,7 +926,6 @@ public class Admin extends RepositoryManager {
 
     private void processLocalNew(Request request, StringBuffer sb) throws Exception {
         String id  = request.getString(ARG_LOCAL_ID,"");
-        String name  = request.getString(ARG_LOCAL_NAME,"");
         if(!Utils.stringDefined(id)) {
             sb.append(getRepository().showDialogError("No ID given"));
             return;
@@ -930,7 +935,12 @@ public class Admin extends RepositoryManager {
             sb.append(getRepository().showDialogError("Server with id already exists"));
             return;
         }
-        getRepository().addChildRepository(id);
+        try {
+            getRepository().addChildRepository(request,sb, id);
+        } catch(Exception exc) {
+            sb.append(getRepository().showDialogError("Error:" + exc));
+
+        }
 
     }
 

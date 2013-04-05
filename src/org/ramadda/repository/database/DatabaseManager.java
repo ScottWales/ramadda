@@ -1673,6 +1673,20 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+    public Date getTimestamp(ResultSet results, String col, boolean makeDflt)
+            throws Exception {
+        Date date = results.getTimestamp(col, Repository.calendar);
+        if (date != null) {
+            return date;
+        }
+        if (makeDflt) {
+            return new Date();
+        }
+
+        return null;
+    }
+
+
 
     /**
      * _more_
@@ -2604,6 +2618,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 colNames.add("COL_" + COLNAME);
                 pw.append(sp2 + "public static final String COL_" + COLNAME
                           + " =  NAME + \"." + colName + "\";\n");
+
+                pw.append(sp2 + "public static final String COL_NODOT_" + COLNAME
+                          + " =   \"" + colName + "\";\n");
                 /*
                 pw.append(sp2 + "public static final String ORA_" + COLNAME
                           + " =  \"" + colName + "\";\n");
