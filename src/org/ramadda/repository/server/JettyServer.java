@@ -170,6 +170,7 @@ public class JettyServer implements Constants {
         if (password == null) {
             repository.getLogManager().logInfo(
                 "SSL: no password and keypassword property defined");
+            /*
             repository.getLogManager().logInfoAndPrint(
                 "SSL: define the properties:\n\t" + PROP_SSL_PASSWORD
                 + "=<the ssl password>\n" + "\t" + PROP_SSL_KEYPASSWORD
@@ -179,7 +180,7 @@ public class JettyServer implements Constants {
                 + "\nor as a System property on the java command line:"
                 + "-D" + PROP_SSL_PASSWORD + "=<the ssl password>  " + "-D"
                 + PROP_SSL_KEYPASSWORD + "=<the key password>");
-
+            */
             return;
         }
 

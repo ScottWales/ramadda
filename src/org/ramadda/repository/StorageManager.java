@@ -724,8 +724,6 @@ public class StorageManager extends RepositoryManager {
                     String logDirPath = tmpLogDir.toString();
                     //Replace for windows
                     logDirPath = logDirPath.replace("\\", "/");
-                    System.out.println("RAMADDA: log directory path:"
-                                       + logDirPath);
                     c = c.replace("${ramadda.logdir}", logDirPath);
                     c = c.replace("${file.separator}", File.separator);
                     IOUtil.writeFile(log4JFile, c);
@@ -739,9 +737,11 @@ public class StorageManager extends RepositoryManager {
             try {
                 //                System.err.println("RAMADDA: turning on log4j.debug");
                 //                System.setProperty("log4j.debug","");
+                /*
                 System.out.println(
                     "RAMADDA: Configuring log4j with properties:" + log4JFile
                     + " (this may print out a stack trace)");
+                */
                 org.apache.log4j.PropertyConfigurator.configure(
                     log4JFile.toString());
             } catch (Exception exc) {

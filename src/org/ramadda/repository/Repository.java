@@ -67,6 +67,7 @@ import org.ramadda.util.PropertyProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.ramadda.util.MyTrace;
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.CacheManager;
@@ -851,6 +852,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     });
         */
 
+        //        MyTrace.startTrace();
         //This stops jython from processing jars and printing out its annoying message
         System.setProperty("python.cachedir.skip", "true");
 
@@ -897,7 +899,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void initProperties(Properties contextProperties)
             throws Exception {
 
-        //        System.err.println("RAMADDA: initializing properties");
+
+        MyTrace.msg("RAMADDA: initializing properties");
         /*
           order in which we load properties files
           system
@@ -963,6 +966,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
+        MyTrace.msg("init-2");
+
         //Now look around the tomcat environment                                          
         String catalinaBase = null;
         for (String arg : new String[] { "CATALINA_BASE", "catalina.base",
@@ -1005,13 +1010,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
 
+        MyTrace.call1("plugin-init");
         //initialize the plugin manager with the properties
         getPluginManager().init(properties);
+        MyTrace.call2("plugin-init");
 
         //create the log dir
         getStorageManager().getLogDir();
 
 
+        MyTrace.msg("init-3");
         try {
             //Now load in the local properties file
             //First load in the repository.properties file
@@ -1178,7 +1186,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         readGlobals();
         checkVersion();
 
+        MyTrace.call1("Repository.loadPlugins");
         loadPlugins();
+        MyTrace.call2("Repository.loadPlugins");
 
         initDefaultOutputHandlers();
 
@@ -1377,13 +1387,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void loadPlugins() throws Exception {
         getPluginManager().loadPlugins();
         getPageHandler().clearTemplates();
+
+        MyTrace.call1("Repository.loadTypehandlers");
         loadTypeHandlers();
+        MyTrace.call2("Repository.loadTypehandlers");
+
         loadOutputHandlers();
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         getApiManager().loadApi();
         getPageHandler().loadLanguagePacks();
         loadSql();
+        MyTrace.call1("Repository.loadAdminHandlers");
         loadAdminHandlers();
+        MyTrace.call2("Repository.loadAdminHandlers");
     }
 
     /**
@@ -1513,6 +1529,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (getPluginManager().haveSeen(adminHandlerClass)) {
                 continue;
             }
+            MyTrace.call1("handler:" + adminHandlerClass.getName());
             Constructor ctor = Misc.findConstructor(adminHandlerClass,
                                    new Class[] { Repository.class });
             if (ctor != null) {
@@ -1523,6 +1540,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 getAdmin().addAdminHandler(
                     (AdminHandler) adminHandlerClass.newInstance());
             }
+            MyTrace.call2("handler:" + adminHandlerClass.getName());
         }
         //        getAdmin().addAdminHandler(new LdapAdminHandler());
     }

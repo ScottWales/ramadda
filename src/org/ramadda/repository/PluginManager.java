@@ -25,6 +25,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
+import org.ramadda.util.MyTrace;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MultiJarClassLoader;
@@ -216,7 +217,9 @@ public class PluginManager extends RepositoryManager {
             Misc.addClassLoader(classLoader);
         }
 
+        MyTrace.call1("PluginManager.loadPlugins");
         loadPlugins();
+        MyTrace.call2("PluginManager.loadPlugins");
         apiDefFiles.addAll(0, getRepository().getResourcePaths(PROP_API));
         typeDefFiles.addAll(0, getRepository().getResourcePaths(PROP_TYPES));
         outputDefFiles.addAll(

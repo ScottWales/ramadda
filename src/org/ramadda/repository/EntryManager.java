@@ -3648,7 +3648,7 @@ public class EntryManager extends RepositoryManager {
                                       HtmlUtils.fileInput(ARG_FILE,
                                           HtmlUtils.SIZE_70)));
         if(importTypes.size()>0) {
-            importTypes.add(0, new TwoFacedObject("--none--",""));
+            importTypes.add(0, new TwoFacedObject("RAMADDA will figure it out",""));
             sb.append(HtmlUtils.formEntry(msgLabel("Type"), HtmlUtils.select(ARG_IMPORT_TYPE,importTypes)));
         }
 
@@ -3695,7 +3695,6 @@ public class EntryManager extends RepositoryManager {
         }
 
         String file    = request.getUploadedFile(ARG_FILE);
-        String xmlFile = file;
         if (file == null) {
             throw new IllegalArgumentException("No file argument given");
         }
@@ -3722,9 +3721,7 @@ public class EntryManager extends RepositoryManager {
                 while ((ze = zin.getNextEntry()) != null) {
                     String entryName = ze.getName();
                     //                System.err.println ("ZIP: " + ze.getName());
-                    if (entryName.endsWith("/entries.xml") || entryName.equals("entries.xml")) {
-                        xmlFile = "entries.xml";
-
+                    if (entryName.endsWith("entries.xml")) {
                         InputStream entriesStream = zin;
                         //Check the import handlers
                         for (ImportHandler importHandler :
@@ -3769,7 +3766,6 @@ public class EntryManager extends RepositoryManager {
                                                 entriesStream);
                     if ((newStream != null) && (newStream != entriesStream)) {
                         entriesStream = newStream;
-
                         break;
                     }
                 }
