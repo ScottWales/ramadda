@@ -90,6 +90,19 @@ function RepositoryMap(mapId, params) {
         this.latlonReadout = latlonReadoutID;
     }
 
+    this.addImageLayer = function(name, url, north,west,south,east, width,height) {
+        var img_extent = new OpenLayers.Bounds(west, south,east,north);
+        var img_size = new OpenLayers.Size(width, height);
+
+        var image = new OpenLayers.Layer.Image(name, url, img_extent, img_size, {
+                isBaseLayer: false,
+                alwaysInRange: true // Necessary to always draw the image
+            });
+        //        alert("image:" + name + " -- " + url + " " + img_extent  + " "  + img_size);
+        this.map.addLayer(image);
+    }
+
+
     this.addWMSLayer = function(name, url, layer, isBaseLayer) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
             layers : layer
