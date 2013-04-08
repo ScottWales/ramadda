@@ -43,6 +43,8 @@ import ucar.unidata.util.IOUtil;
 
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
+    public static final String ARG_ANALYSIS_ID = "analysis_id";
+
     private List<Analysis> analysese = new ArrayList<Analysis>();
 
     private NCLOutputHandler nclOutputHandler;
@@ -113,9 +115,21 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         List<String> analysisTabs = new ArrayList<String>();
         List<String> analysisTitles = new ArrayList<String>();
 
+        StringBuffer settingsSB = new StringBuffer();
+        settingsSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, "none",true));
+        settingsSB.append(HtmlUtils.space(1));
+        settingsSB.append(msg("No Analysis"));
+        settingsSB.append(HtmlUtils.br());
+
+        analysisTitles.add(msg("Settings"));
+        analysisTabs.add(settingsSB.toString());
         for(Analysis analysis: analysese) {
             //TODO: add radio buttons
             StringBuffer tmpSB = new StringBuffer();
+            tmpSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, analysis.getAnalysisId(),false));
+            tmpSB.append(HtmlUtils.space(1));
+            tmpSB.append(msg("Select"));
+            tmpSB.append(HtmlUtils.br());
             analysis.addToForm(request, entry, tmpSB);
             analysisTabs.add(HtmlUtils.div(tmpSB.toString(),
                                            HtmlUtils.style("min-height:200px;")));
@@ -123,13 +137,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         }
 
         sb.append(header(msg("Analyze Selected Data")));
-        if(analysisTabs.size()==1) {
-            sb.append(analysisTitles.get(0));
-            sb.append(HtmlUtils.br());
-            sb.append(analysisTabs.get(0));
-        } else {
-            sb.append(OutputHandler.makeTabs(analysisTitles, analysisTabs, true));
-        }
+        HtmlUtils.makeAccordian(sb, analysisTitles, analysisTabs);
         sb.append(analysisButtons);
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_image")));
@@ -170,11 +178,17 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         
 
         boolean didAnalysis  = false;
-        for(Analysis analysis: analysese) {
-            didAnalysis   = true;
-            for(Entry granule: entries) {
-                File outFile =analysis.processRequest(request, granule);
-                files.add(outFile);
+        String selectedAnalysis = request.getString(ARG_ANALYSIS_ID, (String) null);
+        if(selectedAnalysis!=null) {
+            for(Analysis analysis: analysese) {
+                if(analysis.getAnalysisId().equals(selectedAnalysis)) {
+                    System.err.println("MODEL: applying analysis:" + analysis.getAnalysisLabel());
+                    didAnalysis   = true;
+                    for(Entry granule: entries) {
+                        File outFile =analysis.processRequest(request, granule);
+                        files.add(outFile);
+                    }
+                }
             }
         } 
         if(!didAnalysis) {
