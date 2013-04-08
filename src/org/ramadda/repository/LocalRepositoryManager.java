@@ -22,84 +22,30 @@
 package org.ramadda.repository;
 
 
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-
 import org.ramadda.repository.server.JettyServer;
 import org.ramadda.repository.server.RepositoryServlet;
 
 import org.ramadda.repository.admin.Admin;
-import org.ramadda.repository.admin.AdminHandler;
-import org.ramadda.repository.auth.AccessException;
-import org.ramadda.repository.auth.AccessManager;
-import org.ramadda.repository.auth.AuthorizationMethod;
-import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.SessionManager;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
-import org.ramadda.repository.ftp.FtpManager;
-import org.ramadda.repository.harvester.HarvesterManager;
-import org.ramadda.repository.map.MapManager;
-import org.ramadda.repository.metadata.ContentMetadataHandler;
-import org.ramadda.repository.metadata.Metadata;
-import org.ramadda.repository.metadata.MetadataManager;
-import org.ramadda.repository.monitor.MonitorManager;
-import org.ramadda.repository.output.CalendarOutputHandler;
-import org.ramadda.repository.output.HtmlOutputHandler;
-import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.output.PageStyle;
-import org.ramadda.repository.output.WikiManager;
-import org.ramadda.repository.output.XmlOutputHandler;
-import org.ramadda.repository.output.ZipOutputHandler;
-import org.ramadda.repository.search.SearchManager;
-import org.ramadda.repository.type.GroupTypeHandler;
-import org.ramadda.repository.type.TypeHandler;
-import org.ramadda.repository.util.ServerInfo;
+
+
 import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.PropertyProvider;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import org.ramadda.util.MyTrace;
 import ucar.unidata.sql.Clause;
 import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.CacheManager;
-import ucar.unidata.util.Counter;
-import ucar.unidata.util.DateUtil;
+
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlEncoder;
-import ucar.unidata.xml.XmlUtil;
 
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
 
-import java.lang.reflect.Constructor;
-
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.net.URLConnection;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -120,13 +66,11 @@ import java.util.TimeZone;
 
 
 /**
- * The main class.
- *
  */
 public class  LocalRepositoryManager extends RepositoryManager {
 
     public static final String ARG_LOCAL_NEW = "local.new";
-    public static final String ARG_LOCAL_NEW_SURE = "local.new.sure";
+    public static final String ARG_LOCAL_SURE = "local.sure";
     public static final String ARG_LOCAL_NAME = "local.name";
     public static final String ARG_LOCAL_CONTACT = "local.contact";
     public static final String ARG_LOCAL_ID = "local.id";
@@ -135,6 +79,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
 
     public static final String STATUS_ACTIVE = "active";
     public static final String STATUS_STOPPED = "stopped";
+    public static final String STATUS_DELETED = "deleted";
 
 
 
@@ -143,7 +88,6 @@ public class  LocalRepositoryManager extends RepositoryManager {
     }
 
     public void initializeLocalRepositories() throws Exception {
-        //        if(true) return;
         if(!getRepository().isMaster()) {
             return;
         }
@@ -151,6 +95,15 @@ public class  LocalRepositoryManager extends RepositoryManager {
             getLogManager().logError("RAMADDA is defined as a master but not running under Jetty", null);
             return;
         }
+        for(Local local: readLocals()) {
+            if(local.status.equals(STATUS_ACTIVE)) {
+                Repository childRepository =  startLocalRepository(local.id, new Properties());
+            }
+        }
+    }
+
+    private List<Local> readLocals() throws Exception {
+        List<Local> locals = new ArrayList<Local>();
         Statement stmt =
             getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
                                         Tables.LOCALREPOSITORIES.NAME,
@@ -158,13 +111,12 @@ public class  LocalRepositoryManager extends RepositoryManager {
         SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
-            String repositoryId = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
-            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
-            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
-            if(status.equals(STATUS_ACTIVE)) {
-                Repository childRepository =  startLocalRepository(repositoryId, new Properties());
-            }
-        }
+            locals.add(new Local(results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID),
+                                 results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL),
+                                 results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS)));
+
+       }
+        return locals;
     }
 
     public boolean hasServer(String otherServer) throws Exception {
@@ -181,43 +133,61 @@ public class  LocalRepositoryManager extends RepositoryManager {
         if(hasServer(repositoryId)) {
             throw new IllegalArgumentException("Already have a repository with id:" + repositoryId);
         }
-        String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
-        if(password.length()==0) {
-            throw new IllegalArgumentException("Bad admin password");
-        }
+
+
+
 
         String name  = request.getString(ARG_LOCAL_NAME,"");
         String contact = request.getString(ARG_LOCAL_CONTACT,"").trim();
         Properties properties = new Properties();
         properties.put(PROP_REPOSITORY_NAME, name);
+        File ramaddaHomeDir = getHomeDir(repositoryId);
+        boolean existedBefore = new File(IOUtil.joinDir(ramaddaHomeDir,"storage")).exists();
+
         Repository childRepository =  startLocalRepository(repositoryId, properties);
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
         childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
 
-        User user = new User(repositoryId+"_admin",
-                             "Administrator",
-                             "", "", "",
-                             childRepository.getUserManager().hashPassword(
-                                                                           password), true, "", "",
-                             false, null);
         sb.append(HtmlUtils.p());
         sb.append("Created repository: " + HtmlUtils.href("/" + repositoryId,"/" + repositoryId));
         sb.append("<br>");
-        sb.append("Created user: " + user.getId());
-        sb.append(HtmlUtils.p());
-        childRepository.getUserManager().makeOrUpdateUser(user, false);
-        childRepository.getAdmin().addInitEntries(user);
-        getRepository().addChildRepository(childRepository);
+
+        String userId = repositoryId+"_admin";
+
+        String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
+        if(password.length()>0) {
+            User user =         childRepository.getUserManager().findUser(userId);
+            if(user ==null) {
+                user = new User(repositoryId+"_admin",
+                                "Administrator",
+                                "", "", "",
+                                childRepository.getUserManager().hashPassword(
+                                                                              password), true, "", "",
+                                false, null);
+                childRepository.getUserManager().makeOrUpdateUser(user, false);
+                sb.append("Created user: " + user.getId());
+                sb.append(HtmlUtils.p());
+            }
+            if(!existedBefore) {
+                childRepository.getAdmin().addInitEntries(user);
+            }
+        }
+
         getDatabaseManager().executeInsert(Tables.LOCALREPOSITORIES.INSERT, new Object[]{repositoryId, contact, STATUS_ACTIVE});
+        getRepository().addChildRepository(childRepository);
+    }
+
+    private File getHomeDir(String repositoryId) throws Exception {
+        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
+        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
+        return new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
     }
 
     private Repository startLocalRepository(String repositoryId,  Properties properties) throws Exception {
         System.err.println("RAMADDA: starting local repository:" + repositoryId);
-        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
-        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
-        File otherServerDir = new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
-        otherServerDir.mkdirs();
-        File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
+        File ramaddaHomeDir = getHomeDir(repositoryId);
+        ramaddaHomeDir.mkdirs();
+        File otherPluginDir = new File(IOUtil.joinDir(ramaddaHomeDir, "plugins"));
         //TODO: Do we always copy the plugins on start up or just the first time
         //        if(!otherPluginDir.exists()) {
         otherPluginDir.mkdirs();
@@ -228,10 +198,10 @@ public class  LocalRepositoryManager extends RepositoryManager {
         //}
 
         properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
-        properties.put(PROP_REPOSITORY_HOME,otherServerDir.toString());
+        properties.put(PROP_REPOSITORY_HOME,ramaddaHomeDir.toString());
         //TODO: do we let the children also be masters?
         properties.put(PROP_REPOSITORY_PRIMARY,"false");
-        File propertiesFile = new File(IOUtil.joinDir(otherServerDir, "repository.properties"));
+        File propertiesFile = new File(IOUtil.joinDir(ramaddaHomeDir, "repository.properties"));
         properties.store(new FileOutputStream(propertiesFile),"Generated by RAMADDA");
         Repository childRepository =  new Repository(new String[]{}, getRepository().getJettyServer().getPort());
         childRepository.init(properties);
@@ -248,7 +218,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
 
         if(request.defined(ARG_LOCAL_NEW)) {
             request.ensureAuthToken();
-            if(request.get(ARG_LOCAL_NEW_SURE, false)) {
+            if(request.get(ARG_LOCAL_SURE, false)) {
                 processLocalNew(request, sb);
             } else {
                 sb.append(getRepository().showDialogNote("You didn't select 'Yes, I am sure'"));
@@ -262,36 +232,37 @@ public class  LocalRepositoryManager extends RepositoryManager {
            
         }
 
-        sb.append(HtmlUtils.formTable());
-        Statement stmt =
-            getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
-                                        Tables.LOCALREPOSITORIES.NAME,
-                                        (Clause) null);
+        sb.append(HtmlUtils.formTable(""));
         boolean didone = false;
-        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
-        ResultSet        results;
-        while ((results = iter.getNext()) != null) {
+        for(Local local: readLocals()) {
             if(!didone) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>","<b>Contact</b>","<b>Status</b>")));
+                sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>"/*,"<b>Contact</b>"*/,"<b>Status</b>","<b>Action</b>")));
             }
             didone = true;
-            String id = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
-            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
-            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
-
-            String changeTo = "";
             StringBuffer statusSB = new StringBuffer();
-            request.formPostWithAuthToken(sb, getAdmin().URL_ADMIN_LOCAL);
-            sb.append(HtmlUtils.hidden(ARG_LOCAL_ID, id));
-            if(status.equals(STATUS_ACTIVE)) {
+            StringBuffer statusSB2 = new StringBuffer();
+
+            request.formPostWithAuthToken(statusSB, getAdmin().URL_ADMIN_LOCAL);
+            statusSB.append(HtmlUtils.hidden(ARG_LOCAL_ID, local.id));
+            if(local.status.equals(STATUS_ACTIVE)) {
                 statusSB.append(HtmlUtils.submit(msg("Stop Repository"), ARG_LOCAL_CHANGE));
-                sb.append(HtmlUtils.hidden(ARG_LOCAL_STATUS, STATUS_STOPPED));
-            } else if(status.equals(STATUS_STOPPED)) {
+                statusSB.append(HtmlUtils.hidden(ARG_LOCAL_STATUS, STATUS_STOPPED));
+            } else if(local.status.equals(STATUS_STOPPED)) {
                 statusSB.append(HtmlUtils.submit(msg("Start Repository"),ARG_LOCAL_CHANGE));
-                sb.append(HtmlUtils.hidden(ARG_LOCAL_STATUS, STATUS_ACTIVE));
+                statusSB.append(HtmlUtils.hidden(ARG_LOCAL_STATUS, STATUS_ACTIVE));
             }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href("/" + id,id),contact,status, statusSB.toString())));
-            sb.append(HtmlUtils.formClose());
+            statusSB.append(HtmlUtils.formClose());
+
+            if(local.status.equals(STATUS_STOPPED)) {
+                request.formPostWithAuthToken(statusSB2, getAdmin().URL_ADMIN_LOCAL);
+                statusSB2.append(HtmlUtils.space(1));
+                statusSB2.append(HtmlUtils.hidden(ARG_LOCAL_ID, local.id));
+                statusSB2.append(HtmlUtils.hidden(ARG_LOCAL_STATUS, STATUS_DELETED));
+                statusSB2.append(HtmlUtils.submit(msg("Remove Repository"),ARG_LOCAL_CHANGE));
+                statusSB2.append(HtmlUtils.checkbox(ARG_LOCAL_SURE, "true", false) + " " + msg("Yes, remove this repository"));
+                statusSB2.append(HtmlUtils.formClose());
+            }
+            sb.append(HtmlUtils.rowTop(HtmlUtils.cols(HtmlUtils.href("/" + local.id,local.id)/*,contact*/,local.status, statusSB.toString(), statusSB2.toString())));
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
@@ -305,7 +276,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
         sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1)));
 
         sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"), ARG_LOCAL_NEW)+
-                                      " " + HtmlUtils.checkbox(ARG_LOCAL_NEW_SURE, "true", false) + " " + msg("Yes, I am sure")));
+                                      " " + HtmlUtils.checkbox(ARG_LOCAL_SURE, "true", false) + " " + msg("Yes, I am sure")));
 
         sb.append(HtmlUtils.formTableClose());
 
@@ -328,6 +299,14 @@ public class  LocalRepositoryManager extends RepositoryManager {
             }
             servlet.getRepository().close();
             getRepository().removeChildRepository(servlet.getRepository());
+        }  else if(status.equals(STATUS_DELETED)) {
+            if(!request.get(ARG_LOCAL_SURE, false)) {
+                sb.append(getRepository().showDialogError("Check on the 'Yes, remove this repository' box"));
+                return;
+            }
+            //TODO: make sure status is stopped
+            getDatabaseManager().delete(Tables.LOCALREPOSITORIES.NAME, Clause.eq(Tables.LOCALREPOSITORIES.COL_ID,  id));
+            return;
         } else  {
             sb.append(getRepository().showDialogError("Unknown status:" + status));
             return;
@@ -358,6 +337,16 @@ public class  LocalRepositoryManager extends RepositoryManager {
     }
 
 
+    private static class Local {
+        String id;
+        String contact;
+        String status;
+        public Local(String id,   String contact,  String status) {
+            this.id = id;
+            this.contact = contact;
+            this.status = status;
+        }
+    }
 
 
 }

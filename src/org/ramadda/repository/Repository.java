@@ -4374,7 +4374,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              HtmlUtils.tag(HtmlUtils.TAG_SPAN,
                                            HtmlUtils.cssClass("subheader"),
                                            header)) +
-            (onLabel==null?"":HtmlUtils.p() +RepositoryManager.formHeader(msg(onLabel)));
+            (onLabel==null?"":HtmlUtils.p() +msgHeader(onLabel));
     }
 
 
