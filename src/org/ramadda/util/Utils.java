@@ -21,6 +21,7 @@
 
 package org.ramadda.util;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.DateUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -202,6 +203,18 @@ public class Utils {
         }
     }
 
+    public static Date extractDate(String s) {
+        try {
+            String yyyymmdd = StringUtil.findPattern(s, "(\\d\\d\\d\\d-\\d\\d-\\d\\d)");
+            if(yyyymmdd !=null) {
+                return DateUtil.parse(yyyymmdd);
+            }
+            return null;
+        } catch(Exception exc) {
+            System.err.println ("Utils.extractDate:" + exc);
+            return null;
+        }
+    }
 
 
     public static void main(String args[]) {
