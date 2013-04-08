@@ -41,6 +41,13 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
                         return;
                     }
                 }
+                //A hack for now but 
+                if(this.type == 'radio') {
+                    if(!$(this).is(':checked')) {
+                        return;
+                    }
+                }
+
                 if(theForm.valueDefined(value)) {
                      url += "&" + this.name+ "=" + encodeURIComponent(value);
                 }
