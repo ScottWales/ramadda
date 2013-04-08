@@ -86,6 +86,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     private  Repository repository;
 
 
+    public RepositoryServlet() {
+        System.err.println("RepositoryServlet:ctor");
+    }
+
     /**
      * _more_
      *
