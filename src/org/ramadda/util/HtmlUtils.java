@@ -3741,5 +3741,36 @@ public class HtmlUtils {
     }
 
 
+    public static void makeAccordian(StringBuffer sb, List<String> titles, List<String> contents) {
+
+        String accordianId = "accordion_" + (tabCnt++);
+        sb.append(
+                  HtmlUtils.open(
+                                 HtmlUtils.TAG_DIV,
+                                 HtmlUtils.cssClass(
+                                                    "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
+                                                                                                             accordianId)));
+        for (int i = 0; i < titles.size(); i++) {
+            String title   = titles.get(i);
+            String content = contents.get(i);
+            sb.append(
+                      HtmlUtils.open(
+                                     HtmlUtils.TAG_H3,
+                                     HtmlUtils.cssClass(
+                                                        "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+            sb.append("<a href=\"#\">");
+            sb.append(title);
+            sb.append("</a></h3>");
+            sb.append(HtmlUtils.div(content, ""));
+        }
+        sb.append("</div>");
+        String args =
+            "autoHeight: false, navigation: true, collapsible: true";
+        sb.append(HtmlUtils.script("$(function() {\n$(\"#"
+                                   + accordianId + "\" ).accordion({"
+                                   + args + "});});\n"));
+    }
+
+
 
 }
