@@ -50,6 +50,16 @@
 
    </type>
 
+  <type name="project_site"  description="Site" handler="org.ramadda.reposiotry.type.ExtensibleGroupTypeHandler" category="Field Project">
+     <property name="icon" value="/fieldproject/site.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
+
+
+
 
     <type name="project_fieldnote" description="Field Note" category="Field Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
       <property name="icon" value="/fieldproject/notebook.png"/> 
