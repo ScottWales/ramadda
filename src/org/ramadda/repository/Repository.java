@@ -262,6 +262,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private RegistryManager registryManager;
 
+    private LocalRepositoryManager localRepositoryManager;
+
     /** _more_ */
     private StorageManager storageManager;
 
@@ -476,6 +478,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
     /**
      * _more_
      *
@@ -559,6 +562,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
        @return The JettyServer
     **/
+
     public JettyServer getJettyServer () {
         return jettyServer;
     }
@@ -583,17 +587,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return parentRepository;
     }
 
-    public boolean canHaveChildren() {
-        return (childRepositories.size()>0 || getProperty("repositories",(String)null)!=null);
-    }
-
     public List<Repository>getChildRepositories() {
        return childRepositories;
     }
 
     //
 
-    private void addChildRepository(Repository childRepository) throws Exception {
+    public void removeChildRepository(Repository childRepository) throws Exception {
+        childRepositories.remove(childRepository);
+        RepositoryServlet servlet = childrenServlets.get(childRepository.getUrlBase());
+        childrenServlets.remove(childRepository.getUrlBase());
+        if(servlet!=null) {
+            jettyServer.removeServlet(servlet);
+        }
+    }
+
+
+    public void addChildRepository(Repository childRepository) throws Exception {
         childRepositories.add(childRepository);
         childRepository.setParentRepository(this);
         RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
@@ -603,6 +613,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if(sslPort>0) {
             childRepository.setHttpsPort(sslPort);
         }
+    }
+
+    public RepositoryServlet getServlet(String url) {
+        return childrenServlets.get(url);
     }
 
     /**
@@ -783,6 +797,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void shutdown() {
         try {
+            if(!active) return;
             println("RAMADDA: shutting down");
             active = false;
             for (RepositoryManager repositoryManager : repositoryManagers) {
@@ -809,6 +824,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             accessManager      = null;
             metadataManager    = null;
             registryManager    = null;
+            localRepositoryManager    = null;
             storageManager     = null;
             apiManager         = null;
             pluginManager      = null;
@@ -1244,103 +1260,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (isPrimary()) {
             Misc.run(this, "getFtpManager");
         }
-    }
-
-    public void initializeLocalRepositories() throws Exception {
-        //        if(true) return;
-        if(!isMaster()) {
-            return;
-        }
-        if(jettyServer==null) {
-            getLogManager().logError("RAMADDA is defined as a master but not running under Jetty", null);
-            return;
-        }
-        Statement stmt =
-            getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
-                                        Tables.LOCALREPOSITORIES.NAME,
-                                        (Clause) null);
-        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
-        ResultSet        results;
-        while ((results = iter.getNext()) != null) {
-            String repositoryId = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
-            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
-            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
-            if(status.equals("active")) {
-                Repository childRepository =  startLocalRepository(repositoryId, new Properties());
-            }
-        }
-    }
-
-    public boolean hasServer(String otherServer) throws Exception {
-        return getDatabaseManager().tableContains(otherServer, Tables.LOCALREPOSITORIES.NAME, Tables.LOCALREPOSITORIES.COL_ID);
-    }
-
-
-    public void addChildRepository(Request request, StringBuffer sb, String repositoryId) throws Exception {
-        repositoryId = repositoryId.trim();
-        repositoryId= repositoryId.replaceAll("[^a-zA-Z_0-9]+","");
-        if(repositoryId.length()==0) {
-            throw new IllegalArgumentException("Bad id:" + repositoryId);
-        }
-        if(hasServer(repositoryId)) {
-            throw new IllegalArgumentException("Already have a repository with id:" + repositoryId);
-        }
-        String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
-        if(password.length()==0) {
-            throw new IllegalArgumentException("Bad admin password");
-        }
-
-        String name  = request.getString(Admin.ARG_LOCAL_NAME,"");
-        String contact = request.getString(Admin.ARG_LOCAL_CONTACT,"").trim();
-        Properties properties = new Properties();
-        properties.put(PROP_REPOSITORY_NAME, name);
-        Repository childRepository =  startLocalRepository(repositoryId, properties);
-        childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
-        childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
-
-        User user = new User(repositoryId+"_admin",
-                             "Administrator",
-                             "", "", "",
-                             childRepository.getUserManager().hashPassword(
-                                                                           password), true, "", "",
-                             false, null);
-        sb.append(HtmlUtils.p());
-        sb.append("Created repository: " + HtmlUtils.href("/" + repositoryId,"/" + repositoryId));
-        sb.append("<br>");
-        sb.append("Created user: " + user.getId());
-        sb.append(HtmlUtils.p());
-        childRepository.getUserManager().makeOrUpdateUser(user, false);
-        childRepository.getAdmin().addInitEntries(user);
-        addChildRepository(childRepository);
-        getDatabaseManager().executeInsert(Tables.LOCALREPOSITORIES.INSERT, new Object[]{repositoryId, contact, "active"});
-    }
-
-    private Repository startLocalRepository(String repositoryId,  Properties properties) throws Exception {
-        System.err.println("RAMADDA: starting local repository:" + repositoryId);
-        String repositoriesDir = getProperty("ramadda.master.dir", "%repositorydir%/repositories");
-        repositoriesDir = repositoriesDir.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
-        File otherServerDir = new File(IOUtil.joinDir(repositoriesDir, "repository_" + repositoryId));
-        otherServerDir.mkdirs();
-        File otherPluginDir = new File(IOUtil.joinDir(otherServerDir, "plugins"));
-        //TODO: Do we always copy the plugins on start up or just the first time
-        //        if(!otherPluginDir.exists()) {
-            otherPluginDir.mkdirs();
-            for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
-                if(!myPluginFile.isFile()) continue;
-                IOUtil.copyFile(myPluginFile, otherPluginDir);
-            }
-            //        }
-
-        properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
-        properties.put(PROP_REPOSITORY_HOME,otherServerDir.toString());
-        //TODO: do we let the children also be masters?
-        properties.put(PROP_REPOSITORY_PRIMARY,"false");
-        File propertiesFile = new File(IOUtil.joinDir(otherServerDir, "repository.properties"));
-        properties.store(new FileOutputStream(propertiesFile),"Generated by RAMADDA");
-        Repository childRepository =  new Repository(new String[]{}, jettyServer.getPort());
-        childRepository.init(properties);
-        addChildRepository(childRepository);
-        return childRepository;
     }
 
 
@@ -2015,6 +1934,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    protected LocalRepositoryManager doMakeLocalRepositoryManager() {
+        return new LocalRepositoryManager(this);
+    }
+
+
 
 
     /**
@@ -2028,6 +1952,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return registryManager;
+    }
+
+    public LocalRepositoryManager getLocalRepositoryManager() {
+        if (localRepositoryManager == null) {
+            localRepositoryManager = doMakeLocalRepositoryManager();
+        }
+        return localRepositoryManager;
     }
 
 
@@ -2659,6 +2590,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result handleRequest(Request request) throws Exception {
+        if(!getActive()) {
+            Result result = new Result(
+                                       msg("Error"),
+                                       new StringBuffer("Repository not active"));
+            result.setResponseCode(Result.RESPONSE_NOTFOUND);
+            return result;
+        }
+
         numberOfCurrentRequests.incr(request.getRequestPath());
         try {
             return handleRequestInner(request);
@@ -4407,6 +4346,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              String arg) {
         List<String> links = new ArrayList();
         String       type  = request.getRequestPath();
+        String onLabel = null;
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
             label = msg(label);
@@ -4415,14 +4355,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             String url = request.url(requestUrl) + arg;
             if (type.endsWith(requestUrl.getPath())) {
-                links.add(HtmlUtils.span(label,
-                                         HtmlUtils.cssClass("subheader-on")));
-            } else {
-                links.add(
-                    HtmlUtils.span(
-                        HtmlUtils.href(url, label),
-                        HtmlUtils.cssClass("subheader-off")));
+                //links.add(HtmlUtils.span(label,
+                // HtmlUtils.cssClass("subheader-on")));
+                onLabel = label;
+                //            } else {
             }
+            links.add(
+                      HtmlUtils.span(
+                                     HtmlUtils.href(url, label),
+                                     HtmlUtils.cssClass("subheader-off")));
+            //            }
         }
         String header =
             StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
@@ -4431,7 +4373,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              HtmlUtils.cssClass("subheader-container"),
                              HtmlUtils.tag(HtmlUtils.TAG_SPAN,
                                            HtmlUtils.cssClass("subheader"),
-                                           header));
+                                           header)) +
+            (onLabel==null?"":HtmlUtils.p() +RepositoryManager.formHeader(msg(onLabel)));
     }
 
 

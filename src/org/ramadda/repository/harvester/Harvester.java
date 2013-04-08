@@ -854,7 +854,7 @@ public abstract class Harvester extends RepositoryManager {
      * @return _more_
      */
     public boolean canContinueRunning(int timestamp) {
-        return getActive() && (timestamp == getCurrentTimestamp());
+        return getRepository().getActive() && getActive() && (timestamp == getCurrentTimestamp());
     }
 
     /**

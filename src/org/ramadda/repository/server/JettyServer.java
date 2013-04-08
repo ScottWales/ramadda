@@ -26,6 +26,7 @@ package org.ramadda.repository.server;
 
 import org.eclipse.jetty.server.*;
 
+import org.eclipse.jetty.servlet.*;
 import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.server.handler.*;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
@@ -54,6 +55,7 @@ import java.util.Enumeration;
 
 
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 
 import java.util.Properties;
@@ -75,6 +77,7 @@ public class JettyServer implements Constants {
     private RepositoryServlet baseServlet;
     private ServletContextHandler context;
     private Repository  baseRepository;
+    private Hashtable<RepositoryServlet,ServletHolder> servletToHolder = new Hashtable<RepositoryServlet,ServletHolder>();
 
     /**
      * _more_
@@ -107,7 +110,7 @@ public class JettyServer implements Constants {
         }
         baseRepository = baseServlet.getRepository();
         //Initialize the local repos in a thread
-        Misc.run(baseRepository, "initializeLocalRepositories");
+        Misc.run(baseRepository.getLocalRepositoryManager(), "initializeLocalRepositories");
         server.start();
         server.join();
     }
@@ -127,13 +130,18 @@ public class JettyServer implements Constants {
     public RepositoryServlet addServlet(RepositoryServlet servlet) throws Exception {
         Repository repository = servlet.getRepository();
         String path = repository.getUrlBase();
-        context.addServlet(new ServletHolder(servlet), path+"/*");
+        ServletHolder holder = new ServletHolder(servlet);
+        context.addServlet(holder, path+"/*");
+        servletToHolder.put(servlet, holder);
         repository.setJettyServer(this);
         return servlet;
     }
 
 
-
+    public void removeServlet(RepositoryServlet servlet) throws Exception {
+        ServletHolder holder = servletToHolder.get(servlet);
+        //TODO: Remove the servlet from the server
+    }
 
     /**
      * _more_

@@ -119,11 +119,6 @@ public class Admin extends RepositoryManager {
     public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
                                                        "Local Repositories");
 
-    public static final String ARG_LOCAL_NEW = "local.new";
-    public static final String ARG_LOCAL_NEW_SURE = "local.new.sure";
-    public static final String ARG_LOCAL_NAME = "local.name";
-    public static final String ARG_LOCAL_CONTACT = "local.contact";
-    public static final String ARG_LOCAL_ID = "local.id";
 
     /** _more_ */
     public RequestUrl URL_ADMIN_SQL = new RequestUrl(this, "/admin/sql",
@@ -878,78 +873,6 @@ public class Admin extends RepositoryManager {
         return makeResult(request, "Administration", sb);
     }
 
-
-    public Result adminLocal(Request request) throws Exception {
-        if (!getRepository().isMaster()) {
-            throw new IllegalArgumentException("Not a master repo");
-        }
-        
-        StringBuffer    sb         = new StringBuffer();
-
-        if(request.get(ARG_LOCAL_NEW_SURE, false)) {
-            processLocalNew(request, sb);
-        }
-
-
-        sb.append(HtmlUtils.formTable());
-        Statement stmt =
-            getDatabaseManager().select(Tables.LOCALREPOSITORIES.COLUMNS,
-                                        Tables.LOCALREPOSITORIES.NAME,
-                                        (Clause) null);
-        boolean didone = false;
-        SqlUtil.Iterator iter     = getDatabaseManager().getIterator(stmt);
-        ResultSet        results;
-        while ((results = iter.getNext()) != null) {
-            if(!didone) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols("<b>Repository</b>","<b>Contact</b>","<b>Status</b>")));
-            }
-            didone = true;
-            String id = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_ID);
-            String contact = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_EMAIL);
-            String status  = results.getString(Tables.LOCALREPOSITORIES.COL_NODOT_STATUS);
-            sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href("/" + id,id),contact,status)));
-        }
-        sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.p());
-
-        sb.append(formHeader(msg("New repository")));
-        sb.append(request.formPost(URL_ADMIN_LOCAL));
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Repository Name"),  HtmlUtils.input(ARG_LOCAL_NAME)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Contact"),  HtmlUtils.input(ARG_LOCAL_CONTACT)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1)));
-
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"))+
-                                      " " + HtmlUtils.checkbox(ARG_LOCAL_NEW_SURE, "true", false) + " " + msg("Yes, I am sure")));
-
-        sb.append(HtmlUtils.formTableClose());
-
-        sb.append(HtmlUtils.formClose());
-
-
-        return makeResult(request, "Administration", sb);
-    }
-
-    private void processLocalNew(Request request, StringBuffer sb) throws Exception {
-        String id  = request.getString(ARG_LOCAL_ID,"");
-        if(!Utils.stringDefined(id)) {
-            sb.append(getRepository().showDialogError("No ID given"));
-            return;
-        }
-
-        if(getRepository().hasServer(id)) {
-            sb.append(getRepository().showDialogError("Server with id already exists"));
-            return;
-        }
-        try {
-            getRepository().addChildRepository(request,sb, id);
-        } catch(Exception exc) {
-            sb.append(getRepository().showDialogError("Error:" + exc));
-
-        }
-
-    }
 
 
     /**

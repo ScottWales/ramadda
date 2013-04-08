@@ -128,7 +128,7 @@
       <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true"/>
       <api request="/admin/settings/do"  method="adminSettingsDo"     requires_auth_token="true" />
       <api request="/admin/tables"       method="adminDbTables"      />
-      <api request="/admin/local"        method="adminLocal"       />
+      <api request="/admin/local"        method="adminLocal"       handler="localrepositorymanager"/>
       <api request="/admin/dumpdb"       method="adminDbDump"        />
       <api request="/admin/actions"      method="adminActions"       />
       <api request="/admin/stats"        method="adminStats"         />

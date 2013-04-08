@@ -199,6 +199,8 @@ public class ApiManager extends RepositoryManager {
                 handler = getRepository().getLogManager();
             } else if (handlerName.equals("harvestermanager")) {
                 handler = getRepository().getHarvesterManager();
+            } else if (handlerName.equals("localrepositorymanager")) {
+                handler = getRepository().getLocalRepositoryManager();
             } else if (handlerName.equals("actionmanager")) {
                 handler = getRepository().getActionManager();
             } else if (handlerName.equals("graphmanager")) {
