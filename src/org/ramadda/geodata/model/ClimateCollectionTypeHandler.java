@@ -122,7 +122,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         settingsSB.append(HtmlUtils.br());
 
         analysisTitles.add(msg("Settings"));
-        analysisTabs.add(settingsSB.toString());
+            analysisTabs.add(HtmlUtils.div(settingsSB.toString(),
+                                           HtmlUtils.style("min-height:200px;")));
         for(Analysis analysis: analysese) {
             //TODO: add radio buttons
             StringBuffer tmpSB = new StringBuffer();
