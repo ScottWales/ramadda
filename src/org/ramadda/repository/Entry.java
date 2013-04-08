@@ -1414,6 +1414,11 @@ public class Entry implements Cloneable {
 
 
 
+    public boolean sameDate() {
+        return createDate == startDate && createDate == endDate;
+    }
+
+
     /**
      * Set the CreateDate property.
      *

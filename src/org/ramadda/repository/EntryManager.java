@@ -31,6 +31,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlTemplate;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
@@ -7957,6 +7958,7 @@ public class EntryManager extends RepositoryManager {
         String groupType = TypeHandler.TYPE_GROUP;
 
 
+
         //xxxx
         for (int i = 0; i < toks.size(); i++) {
             boolean      lastOne   = (i == toks.size() - 1);
@@ -8036,8 +8038,12 @@ public class EntryManager extends RepositoryManager {
     public Entry makeNewGroup(Entry parent, String name, User user,
                               Entry template)
             throws Exception {
+        String groupType = TypeHandler.TYPE_GROUP;
+        if(template!=null) { 
+            groupType = template.getTypeHandler().getType();
+        }
         return makeNewGroup(parent, name, user, template,
-                            TypeHandler.TYPE_GROUP);
+                           groupType);
     }
 
 
@@ -8080,19 +8086,29 @@ public class EntryManager extends RepositoryManager {
                               EntryInitializer initializer)
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
+        Date date = Utils.extractDate(name);
+        System.err.println("Date:" + date + " " + name);
+
+        if(date == null) {
+            date = new Date();
+        }
+
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
+
+
+
+
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
         if (template != null) {
             group.initWith(template);
             getRepository().getMetadataManager().newEntry(group);
         } else {
             group.setName(name);
-            group.setDate(new Date().getTime());
+            group.setDate(date.getTime());
         }
         group.setParentEntry(parent);
         group.setUser(user);
         if (initializer != null) {
-
             initializer.initEntry(group);
         }
         addNewEntry(null, group);

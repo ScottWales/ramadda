@@ -973,6 +973,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             String name     = ((template != null)
                                ? template.getName()
                                : filename);
+            if(!Utils.stringDefined(name)) {
+                name = filename;
+            }
             if (makeGroup && (parentGroup != null)) {
                 Entry group =
                     getEntryManager().findGroupFromName(getRequest(),
@@ -1165,10 +1168,14 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                            true);
         //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
         Entry  baseGroup = getBaseGroup();
+
         String dirGroup  =
             getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
                         false && !getTestMode()
                         && (groupTemplate.indexOf("${dirgroup}") >= 0));
+
+
+
         dirGroup = SqlUtil.cleanUp(dirGroup);
         dirGroup = dirGroup.replace("\\", "/");
 
@@ -1207,19 +1214,6 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         //        System.err.println("map:" + map);
         Object[] values = typeHandlerToUse.makeValues(map);
         //        Date     createDate = new Date();
-        Date createDate = new Date(f.lastModified());
-        if (fromDate == null) {
-            fromDate = toDate;
-        }
-        if (toDate == null) {
-            toDate = fromDate;
-        }
-        if (fromDate == null) {
-            fromDate = createDate;
-        }
-        if (toDate == null) {
-            toDate = createDate;
-        }
 
         String ext = IOUtil.getFileExtension(fileName);
         if (ext.startsWith(".")) {
@@ -1227,7 +1221,34 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         }
         tag = tag.replace("${extension}", ext);
         String filename = f.getName();
+
+
+        Date createDate = new Date(f.lastModified());
+        if (fromDate == null) {
+            fromDate = toDate;
+        }
+        if (toDate == null) {
+            toDate = fromDate;
+        }
+
+        if(fromDate == null) {
+            fromDate =  Utils.extractDate(applyMacros(name, createDate, fromDate, toDate, filename));
+        }
+        if (toDate == null) {
+            toDate = fromDate;
+        }
+
+        if (fromDate == null) {
+            fromDate = createDate;
+        }
+        if (toDate == null) {
+            toDate = createDate;
+        }
+
         groupName = groupName.replace("${dirgroup}", dirGroup);
+
+
+
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
                                 filename);
         name = applyMacros(name, createDate, fromDate, toDate, filename);
@@ -1254,6 +1275,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         Entry   group = getEntryManager().findEntryFromName(getRequest(),
                           groupName, getUser(), createIfNeeded,
                           getLastGroupType(), this);
+
+
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
             return null;
