@@ -1276,7 +1276,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                                                  false));
             } else if(layout.equals("accordian")) {
-                makeAccordian(sb, titles, contents);
+                HtmlUtils.makeAccordian(sb, titles, contents);
             } else {
                 throw new IllegalArgumentException("Unknown layout:" + layout);
             }
@@ -1379,7 +1379,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
 
 
             if (include.equals(WIKI_PROP_ACCORDIAN)) {
-                makeAccordian(sb, titles, contents);
+                HtmlUtils.makeAccordian(sb, titles, contents);
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
@@ -2851,35 +2851,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         }
     }
 
-    public void makeAccordian(StringBuffer sb, List<String> titles, List<String> contents) {
-
-        String accordianId = "accordion_" + (idCounter++);
-        sb.append(
-                  HtmlUtils.open(
-                                 HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass(
-                                                    "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                                                                                                             accordianId)));
-        for (int i = 0; i < titles.size(); i++) {
-            String title   = titles.get(i);
-            String content = contents.get(i);
-            sb.append(
-                      HtmlUtils.open(
-                                     HtmlUtils.TAG_H3,
-                                     HtmlUtils.cssClass(
-                                                        "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
-            sb.append("<a href=\"#\">");
-            sb.append(title);
-            sb.append("</a></h3>");
-            sb.append(HtmlUtils.div(content, ""));
-        }
-        sb.append("</div>");
-        String args =
-            "autoHeight: false, navigation: true, collapsible: true";
-        sb.append(HtmlUtils.script("$(function() {\n$(\"#"
-                                   + accordianId + "\" ).accordion({"
-                                   + args + "});});\n"));
-    }
 
 
 }
