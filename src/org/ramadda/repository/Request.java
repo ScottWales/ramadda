@@ -1936,6 +1936,11 @@ public class Request implements Constants, Cloneable {
         type = value;
     }
 
+
+    public void setRequestPath(String value) {
+        type = value;
+    }
+
     /**
      * Get the Type property.
      *
@@ -2033,7 +2038,7 @@ public class Request implements Constants, Cloneable {
      */
     public void setSessionId(String value) {
         sessionId       = value;
-        sessionIdWasSet = true;
+        sessionIdWasSet = (value!=null);
     }
 
     /**

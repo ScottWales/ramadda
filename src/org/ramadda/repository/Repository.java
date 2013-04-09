@@ -608,6 +608,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         childRepository.setParentRepository(this);
         RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
         jettyServer.addServlet(servlet);
+        System.err.println("Adding servlet:" +childRepository.getUrlBase()+":");
         childrenServlets.put(childRepository.getUrlBase(), servlet);
         int sslPort = getHttpsPort();
         if(sslPort>0) {

@@ -209,6 +209,33 @@ public class  LocalRepositoryManager extends RepositoryManager {
         return childRepository;
     }
 
+    public Result handleRepos(Request request) throws Exception {
+        if (!getRepository().isMaster()) {
+            throw new IllegalArgumentException("Not a master repo");
+        }
+        if(true) {
+            throw new IllegalArgumentException("Not implemented");
+        }
+        String path   = request.getRequestPath();
+        String prefix = getRepository().getUrlBase() +"/repos";
+        if (path.length() > prefix.length()) {
+            String suffix = path.substring(prefix.length());
+            for(Repository childRepository: getRepository().getChildRepositories()) {
+                if((childRepository.getUrlBase()+"/").startsWith(suffix) ||
+                   suffix.equals(childRepository.getUrlBase())) {
+                    request = request.cloneMe();
+                    request.setRequestPath(suffix);
+                    request.setUser(null);
+                    request.setSessionId(null);
+                    Result result =  childRepository.handleRequest(request);
+                    result.setShouldDecorate(false);
+                    return result;
+                }
+            }
+        }
+        return new Result("", new StringBuffer("Couldn't find repos"));
+    }
+
     public Result adminLocal(Request request) throws Exception {
         if (!getRepository().isMaster()) {
             throw new IllegalArgumentException("Not a master repo");
