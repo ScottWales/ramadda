@@ -90,6 +90,8 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
                        "", "/biblio/book.png");
 
 
+    public BiblioOutputHandler() {}
+
     /**
      * _more_
      *
