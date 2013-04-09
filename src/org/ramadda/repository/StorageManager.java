@@ -48,6 +48,7 @@ import javax.crypto.spec.DESKeySpec;
 
 import java.net.URL;
 
+import java.util.zip.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -966,6 +967,14 @@ public class StorageManager extends RepositoryManager {
         return getTmpDirFile(getScratchDir(),
                              getRepository().getGUID() + FILE_SEPARATOR
                              + name);
+    }
+
+    public String getOriginalFilename(String name) {
+        int idx = name.indexOf(FILE_SEPARATOR);
+        if(idx>=0) {
+            name = name.substring(idx+FILE_SEPARATOR.length());
+        }
+        return name;
     }
 
 
@@ -1893,6 +1902,40 @@ public class StorageManager extends RepositoryManager {
         IOUtil.close(is);
         IOUtil.close(os);
     }
+
+
+    public List<File> unpackZipfile(Request request, String zipFile) throws Exception {
+        List<File> files = new ArrayList<File>();
+        InputStream fis = getFileInputStream(zipFile);
+        OutputStream fos = null;
+        ZipInputStream   zin = new ZipInputStream(fis);
+        try {
+            ZipEntry         ze  = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                if (ze.isDirectory()) {
+                    continue;
+                }
+                String path = ze.getName();
+                String name = IOUtil.getFileTail(path);
+                if (name.equals("MANIFEST.MF")) {
+                    continue;
+                }
+                File f = getTmpFile(request, name);
+                files.add(f);
+                fos = getStorageManager().getFileOutputStream(f);
+                try {
+                    IOUtil.writeTo(zin, fos);
+                } finally {
+                    IOUtil.close(fos);
+                }
+            }
+        } finally {
+            IOUtil.close(fis);
+            IOUtil.close(zin);
+        }
+        return files;
+    }
+
 
 
 
