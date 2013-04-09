@@ -59,6 +59,8 @@ public class Entry implements Cloneable {
 
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
+    public static final int MAX_NAME_LENGTH = 200;
+
     /** List of comments */
     List<Comment> comments;
 

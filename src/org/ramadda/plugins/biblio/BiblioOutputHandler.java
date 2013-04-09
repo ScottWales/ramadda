@@ -198,8 +198,10 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
         cal.setTime(new Date(entry.getStartDate()));
         Object[] values = entry.getTypeHandler().getValues(entry);
         int idx =0;
-        appendTag(sb, TAG_BIBLIO_AUTHOR, values[idx++]);
-        appendTag(sb, TAG_BIBLIO_TYPE, values[idx++]);
+        Object author  = values[idx++];
+        Object type = values[idx++];
+        appendTag(sb, TAG_BIBLIO_TYPE, type);
+        appendTag(sb, TAG_BIBLIO_AUTHOR, author);
         appendTag(sb, TAG_BIBLIO_TITLE, entry.getName());
         appendTag(sb, TAG_BIBLIO_INSTITUTION, values[idx++]);
         if(values[idx]!=null) {

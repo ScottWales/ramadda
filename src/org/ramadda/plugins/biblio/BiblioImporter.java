@@ -54,7 +54,7 @@ import ucar.unidata.util.TwoFacedObject;
  */
 public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
-
+    public static final String TYPE_BIBLIO = "biblio";
 
 
     /**
@@ -68,23 +68,93 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
     @Override
     public void addImportTypes(List<TwoFacedObject>importTypes) {
         super.addImportTypes(importTypes);
-        importTypes.add(new TwoFacedObject("Bibliography Import","biblio"));
+        importTypes.add(new TwoFacedObject("Bibliography Import",TYPE_BIBLIO));
     }
 
 
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
             throws Exception {
-        if(!request.getString(ARG_IMPORT_TYPE,"").equals("biblio")) {
+        if(!request.getString(ARG_IMPORT_TYPE,"").equals(TYPE_BIBLIO)) {
             return null;
         }
-        return null;
+        List<Entry> entries = null;
+        List<File> files = new ArrayList<File>();
+        String biblioText = null;
+        if(uploadedFile.endsWith(".zip")) {
+            List<File> unzippedFiles = getStorageManager().unpackZipfile(request, uploadedFile);
+            for(File f:unzippedFiles) {
+                if(f.getName().endsWith(".txt")) {
+                    biblioText = new String(IOUtil.readBytes(getStorageManager().getFileInputStream(f)));
+                    //                    break;
+                } else {
+                    files.add(f);
+                    //                    System.err.println ("FILE:" + getStorageManager().getOriginalFilename(f.getName()));
+                }
+            }
+        } else {
+            biblioText = new String(IOUtil.readBytes(getStorageManager().getFileInputStream(uploadedFile)));
+        }
+
+        StringBuffer sb = new StringBuffer();
+
+        if(biblioText==null) {
+            sb.append(getRepository().showDialogError(msg("No biblio '.txt' file provided")));
+            return getEntryManager().addEntryHeader(request, parentEntry,
+                                                    new Result("", sb));
+        }
+
+        entries = process(request, parentEntry.getId(), biblioText, files,sb);
+
+        for(Entry entry: entries) {
+            entry.setUser(request.getUser());
+        }
+        getEntryManager().addNewEntries(request, entries);
+        boolean didone = false;
+        for(Entry entry: entries) {
+            if(entry.isFile()) {
+                if(!didone) {
+                    sb.append(msgHeader("Imported entries with files"));
+                    sb.append("<ul>");
+                    didone = true;
+               }
+                sb.append("<li> ");
+                sb.append(getEntryManager().getBreadCrumbs(request, entry, true, parentEntry)[1]);
+            }
+        }
+
+        if(didone) sb.append("</ul>");
+        didone = false;
+        for(Entry entry: entries) {
+            if(!entry.isFile()) {
+                if(!didone) {
+                    sb.append(msgHeader("Imported entries without files"));
+                    sb.append("<ul>");
+                    didone = true;
+                }
+                sb.append("<li> ");
+                sb.append(getEntryManager().getBreadCrumbs(request, entry, true, parentEntry)[1]);
+            }
+        }
+        if(didone) sb.append("</ul>");
+        if(files.size()>0) {
+            sb.append("<ul>");
+            sb.append(msgHeader("Files without entries"));
+            for(File f: files) {
+                sb.append("<li> ");
+                sb.append(getStorageManager().getOriginalFilename(f.getName()));
+            }
+            sb.append("</ul>");
+        }
+
+        sb.append("</ul> ");
+        return getEntryManager().addEntryHeader(request, parentEntry,
+                                                new Result("", sb));
     }
 
 
 
-
-    public void process(String s) throws Exception {
+    private List<Entry> process(Request request, String parentId, String s, List<File> files, StringBuffer sb) throws Exception {
         boolean inKeyword = false;
         List<Entry> entries= new ArrayList<Entry>();
         List<String> keywords = new ArrayList<String>();
@@ -96,6 +166,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
             if(toks.get(0).startsWith("%") && toks.size() ==2) {
                 String tag = toks.get(0);
                 String value = toks.get(1);
+                value  =value.replaceAll("[^ -~]","-");
                 if(tag.equals(TAG_BIBLIO_TYPE)) {
                     if(entry !=null) {
                         values[IDX_OTHER_AUTHORS]  = StringUtil.join("\n",authors);
@@ -105,13 +176,52 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                             }
                         }
                         entry.setValues(values);
+                        String  nameToMatch  = (""+values[IDX_PRIMARY_AUTHOR]).trim();
+                        if(nameToMatch.length()>0) {
+                            nameToMatch = StringUtil.splitUpTo(nameToMatch, ",", 2).get(0);
+                        }
+
+                        if(nameToMatch.indexOf(" ")>=0)  {
+                            nameToMatch = StringUtil.splitUpTo(nameToMatch, " ", 2).get(0);
+                        }
+                        nameToMatch = nameToMatch.toLowerCase().trim();
+
+
+                        File theFile = null;
+                        if(nameToMatch.length()>0) {
+                            for(File f: files) {
+                                String filename  =  getStorageManager().getOriginalFilename(f.getName()).toLowerCase().trim();
+                                if(filename.startsWith(nameToMatch)) {
+                                    theFile = f;
+                                    break;
+                                }
+                                if(filename.startsWith(entry.getName().toLowerCase())) {
+                                    theFile = f;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(theFile!=null) {
+                            files.remove(theFile);
+                            String targetName = getStorageManager().getOriginalFilename(theFile.toString());
+                            targetName = getStorageManager().getStorageFileName(targetName);
+                            theFile = getStorageManager().moveToStorage(request,
+                                                                        theFile, targetName);
+
+                            //                            System.err.println ("FOUND:" + theFile.getName() + " name=" + nameToMatch);
+                            entry.setResource(new Resource(theFile, Resource.TYPE_STOREDFILE));
+                        } else {
+                            //                            System.err.println ("NOT FOUND:" + nameToMatch);
+                        }
                         //Add authors and keywords
                         entries.add(entry);
                     }
                     keywords = new ArrayList<String>();
                     authors =  new ArrayList<String>();
-                    entry  = new Entry();
-                    values = new Object[10];
+                    entry    = getRepository().getTypeHandler(TYPE_BIBLIO).createEntry(getRepository().getGUID());
+                    entry.setParentEntryId(parentId);
+                    values = entry.getTypeHandler().getValues(entry);
                     values[IDX_TYPE]  =value;
                     continue;
                 }
@@ -126,6 +236,9 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 }
 
                 if(tag.equals(TAG_BIBLIO_TITLE)) {
+                    if(value.length()>Entry.MAX_NAME_LENGTH) {
+                        value  = value.substring(0,Entry.MAX_NAME_LENGTH-1);
+                    }
                     entry.setName(value);
                     continue;
                 }
@@ -165,6 +278,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 System.err.println ("LINE:" +line);
             }
         }
+        return entries;
     }
 
 
@@ -181,7 +295,9 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
     public static void main(String[] args) throws Exception {
         BiblioImporter importer = new BiblioImporter(null);
         for (String file : args) {
-            importer.process(IOUtil.readContents(file,(String)null));
+            List<File> files = new ArrayList<File>();
+            StringBuffer sb = new StringBuffer();
+            importer.process(null, "parent", IOUtil.readContents(file,(String)null),files, sb);
         }
     }
 

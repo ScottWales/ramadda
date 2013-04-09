@@ -6273,7 +6273,7 @@ public class EntryManager extends RepositoryManager {
         Entry newEntry = ((entry != null)
                           ? entry
                           : new Entry(
-                              getRepository().getTypeHandler(
+                                      getRepository().getTypeHandler(
                                   TypeHandler.TYPE_FILE), false));
         File newFile =
             getRepository().getStorageManager().moveToStorage(request, file);
