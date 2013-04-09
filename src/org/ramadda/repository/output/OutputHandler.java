@@ -125,6 +125,10 @@ public class OutputHandler extends RepositoryManager {
     /** total calls */
     private int totalCalls = 0;
 
+    public OutputHandler() {
+        super(null);
+    }
+
     /**
      * Construct an OutputHandler
      *
