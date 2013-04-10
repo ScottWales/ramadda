@@ -1630,6 +1630,8 @@ public class TypeHandler extends RepositoryManager {
 
 
         }
+
+        //For now only allow admins to export
         if (request.getUser().getAdmin()) {
             links.add(
                 new Link(
@@ -1643,15 +1645,18 @@ public class TypeHandler extends RepositoryManager {
                                         ICON_EXPORT), "Export " + LABEL_ENTRIES,
                                             OutputType.TYPE_FILE));
 
-            if (canDoNew) {
-                links.add(
-                    new Link(
-                        request.url(
-                            getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-                            entry.getId()), getRepository().iconUrl(
-                                                                    ICON_IMPORT), "Import " + LABEL_ENTRIES,
-                                    OutputType.TYPE_FILE));
-            }
+
+        }
+
+        //Allow users with the rights to import
+        if (canDoNew) {
+            links.add(
+                      new Link(
+                               request.url(
+                                           getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
+                                           entry.getId()), getRepository().iconUrl(
+                                                                                   ICON_IMPORT), "Import " + LABEL_ENTRIES,
+                               OutputType.TYPE_FILE));
             Link hr = new Link(true);
             hr.setLinkType(OutputType.TYPE_FILE);
             links.add(hr);
