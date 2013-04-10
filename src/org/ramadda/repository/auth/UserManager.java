@@ -323,6 +323,23 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    /**
+     * hash the given raw text password for storage into the database
+     *
+     * @param password raw text password
+     *
+     * @return hashed password
+     */
+    public String hashPassword_oldway(String password) {
+        if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
+            return RepositoryUtil.hashPasswordForOldMD5(password);
+        } else {
+            return RepositoryUtil.hashPassword(password);
+        }
+    }
+
+
+
 
     /**
      * hash the given raw text password for storage into the database
@@ -2632,19 +2649,19 @@ public class UserManager extends RepositoryManager {
     public boolean isPasswordValid(String userId, String rawPassword)
             throws Exception {
         String    hashedPassword = hashPassword(rawPassword);
-        Statement statement      = getDatabaseManager().select(
-                                  Tables.USERS.COLUMNS, Tables.USERS.NAME,
-                                  Clause.and(
-                                      Clause.eq(Tables.USERS.COL_ID, userId),
-                                      Clause.eq(
-                                          Tables.USERS.COL_PASSWORD,
-                                          hashedPassword)));
+        Clause clause = Clause.and(
+                                   Clause.eq(Tables.USERS.COL_ID, userId),
+                                   Clause.eq(
+                                             Tables.USERS.COL_PASSWORD,
+                                             hashedPassword));
+        if(getDatabaseManager().tableContains(clause,
+                                              Tables.USERS.NAME,
+                                              Tables.USERS.COLUMNS)) {
+            return true;
+        }
 
-        ResultSet results = statement.getResultSet();
-        boolean   valid   = results.next();
-        getDatabaseManager().closeAndReleaseConnection(statement);
-
-        return valid;
+        System.err.println ("not in db:" + clause);
+        return false;
     }
 
 
@@ -2683,37 +2700,7 @@ public class UserManager extends RepositoryManager {
             String password = request.getString(ARG_USER_PASSWORD, "").trim();
 
             if ((name.length() > 0) && (password.length() > 0)) {
-                String    hashedPassword = hashPassword(password);
-                Statement statement      =
-                    getDatabaseManager().select(Tables.USERS.COLUMNS,
-                        Tables.USERS.NAME,
-                        Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
-                                   Clause.eq(Tables.USERS.COL_PASSWORD,
-                                             hashedPassword)));
-
-                ResultSet results = statement.getResultSet();
-                if (results.next()) {
-                    user = getUser(results);
-                }
-                getDatabaseManager().closeAndReleaseConnection(statement);
-
-                //Chain up to the parent
-                if(user == null && getRepository().getParentRepository()!=null) {
-                    statement      =
-                        getRepository().getParentRepository().getDatabaseManager().select(Tables.USERS.COLUMNS,
-                                                                     Tables.USERS.NAME,
-                                                                     Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
-                                                                                Clause.eq(Tables.USERS.COL_PASSWORD,
-                                                                                          hashedPassword)));
-
-                    results = statement.getResultSet();
-                    if (results.next()) {
-                        user = getUser(results);
-                    }
-                    getRepository().getParentRepository().getDatabaseManager().closeAndReleaseConnection(statement);
-                }
-
-
+                user =  getUserFromDatabase(name, password);
                 //Check  the authenticators
                 if (user == null) {
                     //For testing - we can specify a ldap:... user name to force connecting through ldap
@@ -2821,6 +2808,60 @@ public class UserManager extends RepositoryManager {
         return addHeader(request, new Result(msg("Login"), sb));
 
     }
+
+
+    private User getUserFromDatabase(String name, String password) throws Exception {
+        User user = null;
+        ResultSet results;
+        Statement statement;
+        String    hashedPassword = hashPassword(password);
+
+        statement      =
+            getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                        Tables.USERS.NAME,
+                                        Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
+                                                   Clause.eq(Tables.USERS.COL_PASSWORD,
+                                                             hashedPassword)));
+        results = statement.getResultSet();
+        if (results.next()) {
+            user =  getUser(results);
+        }
+        getDatabaseManager().closeAndReleaseConnection(statement);
+
+        //Try the old hashing way
+        String oldWay =   hashPassword_oldway(password);
+        statement      =
+            getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                        Tables.USERS.NAME,
+                                        Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
+                                                   Clause.eq(Tables.USERS.COL_PASSWORD,
+                                                             oldWay)));
+        results = statement.getResultSet();
+        if (results.next()) {
+            user =  getUser(results);
+        }
+        getDatabaseManager().closeAndReleaseConnection(statement);
+
+
+        //Chain up to the parent
+        if(user == null && getRepository().getParentRepository()!=null) {
+            statement      =
+                getRepository().getParentRepository().getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                                                                  Tables.USERS.NAME,
+                                                                                  Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
+                                                                                             Clause.eq(Tables.USERS.COL_PASSWORD,
+                                                                                                       hashedPassword)));
+            
+            results = statement.getResultSet();
+            if (results.next()) {
+                user = getUser(results);
+            }
+            getRepository().getParentRepository().getDatabaseManager().closeAndReleaseConnection(statement);
+        }
+
+        return user;
+    }
+
 
 
 
