@@ -2428,13 +2428,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public boolean tableContains(String id, String tableName, String column)
             throws Exception {
-        Statement statement = select(column, tableName,
-                                     Clause.eq(column, id));
+        return tableContains(Clause.eq(column, id), tableName, column);
+    }
 
+
+    public boolean tableContains(Clause clause, String tableName, String column)
+            throws Exception {
+        Statement statement = select(column, tableName,clause);
         ResultSet results = statement.getResultSet();
         boolean   result  = results.next();
         closeAndReleaseConnection(statement);
-
         return result;
     }
 
