@@ -551,7 +551,9 @@ public class Admin extends RepositoryManager {
             String port     = "";
             if (request.getHttpServletRequest() != null) {
                 hostname = request.getHttpServletRequest().getServerName();
-                port = "" + request.getHttpServletRequest().getServerPort();
+                //Don't do this because the install can be running under https
+                //and this port is the httpport
+                //port = "" + request.getHttpServletRequest().getServerPort();
             }
             hostname = request.getString(PROP_HOSTNAME, hostname);
             port     = request.getString(PROP_PORT, port);
@@ -578,7 +580,7 @@ public class Admin extends RepositoryManager {
                 .formEntry(msgLabel("Hostname"), HtmlUtils
                     .input(PROP_HOSTNAME, hostname, HtmlUtils
                         .SIZE_60) + " (Use  &quot;ipaddress&quot; for dynamic IPS)"));
-            sb.append(HtmlUtils.formEntry(msgLabel("Port"),
+            sb.append(HtmlUtils.formEntry(msgLabel("HTTP Port"),
                                           HtmlUtils.input(PROP_PORT, port,
                                               HtmlUtils.SIZE_10)));
 

@@ -564,12 +564,6 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String url(RequestUrl theUrl) {
-        /*
-        if (collectionEntry != null) {
-            String collectionPath =
-                repository.getPathFromEntry(collectionEntry);
-            return theUrl.getUrl(collectionPath);
-            }*/
         return checkUrl(theUrl.toString(this));
     }
 

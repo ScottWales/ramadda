@@ -197,6 +197,9 @@ public class  LocalRepositoryManager extends RepositoryManager {
         }
         //}
 
+        //Copy the keystore and the ssl.properties
+
+
         properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
         properties.put(PROP_REPOSITORY_HOME,ramaddaHomeDir.toString());
         //TODO: do we let the children also be masters?

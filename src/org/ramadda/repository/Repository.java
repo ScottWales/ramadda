@@ -1360,7 +1360,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     addTypeHandler(typeHandler.getType(), typeHandler);
                 } catch (Exception exc) {
                     System.err.println("RAMADDA: Error loading type handler:"
-                                       + classPath);
+                                       + classPath +" file=" +file);
                     exc.printStackTrace();
 
                     throw exc;
@@ -2817,7 +2817,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         //        checkMemory("memory:");
         //        System.err.println("request:"  + request);
-        //        System.err.println("sslEnabled:" +sslEnabled + "  " + apiMethod.getNeedsSsl());
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
             return sslRedirect;
@@ -2947,6 +2946,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
         boolean sslEnabled = isSSLEnabled(request);
         boolean allSsl     = false;
+
+        //        System.err.println("sslEnabled:" +sslEnabled + "  " + apiMethod.getNeedsSsl() + " secure:" + request.getSecure());
+
         if (sslEnabled) {
             allSsl = getProperty(PROP_ACCESS_ALLSSL, false);
             if (allSsl && !request.getSecure()) {
@@ -2960,8 +2962,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     return new Result(httpsUrl(request.getUrl()));
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
-                    return new Result(
-                        request.getAbsoluteUrl(request.getUrl()));
+                    String url = request.getUrl();
+                    String redirectUrl;
+                    int port = getPort();
+                    if (port == 80) {
+                        redirectUrl  = getHttpProtocol() + "://" + request.getServerName()
+                            + url;
+                    } else {
+                        redirectUrl  = getHttpProtocol() + "://" + request.getServerName()
+                            + ":" + port + url;
+                    }
+                    return new Result(redirectUrl);
                 }
             }
         }
@@ -4417,13 +4428,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else {
                 url = request.url(apiMethod.getUrl());
             }
+
+
             String html = template.replace("${url}", url);
             html = html.replace("${label}", msg(apiMethod.getName()));
             html = html.replace("${topgroup}",
                                 getEntryManager().getTopGroup().getName());
             links.add(html);
         }
-
         return links;
     }
 

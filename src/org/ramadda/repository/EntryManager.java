@@ -8087,8 +8087,6 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
         Date date = Utils.extractDate(name);
-        System.err.println("Date:" + date + " " + name);
-
         if(date == null) {
             date = new Date();
         }
