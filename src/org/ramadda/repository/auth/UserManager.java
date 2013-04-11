@@ -2676,7 +2676,6 @@ public class UserManager extends RepositoryManager {
      */
     public Result processLogin(Request request) throws Exception {
 
-
         if ( !canDoLogin(request)) {
             return new Result(
                 msg("Login"),
@@ -2699,26 +2698,10 @@ public class UserManager extends RepositoryManager {
             String password = request.getString(ARG_USER_PASSWORD, "").trim();
 
             if ((name.length() > 0) && (password.length() > 0)) {
-                user =  getUserFromDatabase(name, password);
-                //Check  the authenticators
-                if (user == null) {
-                    //For testing - we can specify a ldap:... user name to force connecting through ldap
-                    if (name.startsWith("ldap:")) {
-                        name = name.substring(5);
-                    }
-                    for (UserAuthenticator userAuthenticator :
-                            userAuthenticators) {
-                        user = userAuthenticator.authenticateUser(
-                            getRepository(), request, loginFormExtra, name,
-                            password);
-                        if (user != null) {
-                            user.setIsLocal(false);
-
-                            break;
-                        }
-                    }
-                }
+                user =  authenticateUser(request, name, password, loginFormExtra);
             }
+
+
 
             if (user != null) {
                 addActivity(request, user, ACTIVITY_LOGIN, "");
@@ -2809,12 +2792,14 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    private User getUserFromDatabase(String name, String password) throws Exception {
+    private User authenticateUser(Request request, String name, String password, StringBuffer loginFormExtra) throws Exception {
         User user = null;
         ResultSet results;
         Statement statement;
-        String    hashedPassword = hashPassword(password);
 
+
+        //Try the database
+        String    hashedPassword = hashPassword(password);
         statement      =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
                                         Tables.USERS.NAME,
@@ -2826,6 +2811,10 @@ public class UserManager extends RepositoryManager {
             user =  getUser(results);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
+
+        if(user != null) {
+            return user;
+        }
 
         //Try the old hashing way
         String oldWay =   hashPassword_oldway(password);
@@ -2841,21 +2830,43 @@ public class UserManager extends RepositoryManager {
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
 
+        if(user != null) {
+            return user;
+        }
 
-        //Chain up to the parent
-        if(user == null && getRepository().getParentRepository()!=null) {
-            statement      =
-                getRepository().getParentRepository().getDatabaseManager().select(Tables.USERS.COLUMNS,
-                                                                                  Tables.USERS.NAME,
-                                                                                  Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
-                                                                                             Clause.eq(Tables.USERS.COL_PASSWORD,
-                                                                                                       hashedPassword)));
-            
-            results = statement.getResultSet();
-            if (results.next()) {
-                user = getUser(results);
+        //For testing - we can specify a ldap:... user name to force connecting through ldap
+        if (name.startsWith("ldap:")) {
+            name = name.substring(5);
+        }
+
+        //Try the authenticators
+        for (UserAuthenticator userAuthenticator :
+                 userAuthenticators) {
+            user = userAuthenticator.authenticateUser(
+                                                      getRepository(), request, loginFormExtra, name,
+                                                      password);
+            if (user != null) {
+                user.setIsLocal(false);
+                break;
             }
-            getRepository().getParentRepository().getDatabaseManager().closeAndReleaseConnection(statement);
+        }
+
+        if(user!=null) {
+            return user;
+        }
+
+        //
+        //!!IMPORTANT!!
+        //Chain up to the parent
+        //This allows anyone in a parent repository to have a login in the child repository
+        //If that user is an admin then they have admin rights here
+        //
+        if(getRepository().getParentRepository()!=null) {
+            user = getRepository().getParentRepository().getUserManager().authenticateUser(request, name, password, loginFormExtra);
+            if(user!=null) {
+                //Change the name to denote this user comes from above
+                user.setName(getRepository().getParentRepository().getUrlBase().substring(1) +":" +user.getName());
+            }
         }
 
         return user;

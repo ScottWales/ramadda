@@ -60,6 +60,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.TimeZone;
 
 
@@ -74,6 +75,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
     public static final String ARG_LOCAL_NAME = "local.name";
     public static final String ARG_LOCAL_CONTACT = "local.contact";
     public static final String ARG_LOCAL_ID = "local.id";
+    public static final String ARG_LOCAL_ADMIN = "local.admin";
     public static final String ARG_LOCAL_CHANGE = "local.change";
     public static final String ARG_LOCAL_STATUS = "local.status";
 
@@ -128,6 +130,8 @@ public class  LocalRepositoryManager extends RepositoryManager {
 
     public void addChildRepository(Request request, StringBuffer sb, String repositoryId) throws Exception {
         repositoryId = repositoryId.trim();
+
+        //clean up the name
         repositoryId= repositoryId.replaceAll("[^a-zA-Z_0-9]+","");
         if(repositoryId.length()==0) {
             throw new IllegalArgumentException("Bad id:" + repositoryId);
@@ -136,7 +140,11 @@ public class  LocalRepositoryManager extends RepositoryManager {
             throw new IllegalArgumentException("Already have a repository with id:" + repositoryId);
         }
 
-
+        String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
+        if(password.length()==0) {
+            sb.append(getRepository().showDialogError("Password is required"));
+            return;
+        }
 
 
         String name  = request.getString(ARG_LOCAL_NAME,"");
@@ -150,30 +158,37 @@ public class  LocalRepositoryManager extends RepositoryManager {
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
         childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
 
-        sb.append(HtmlUtils.p());
-        sb.append("Created repository: " + HtmlUtils.href("/" + repositoryId,"/" + repositoryId));
-        sb.append("<br>");
 
-        String userId = repositoryId+"_admin";
+        StringBuffer msg=new StringBuffer();
 
-        String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
-        if(password.length()>0) {
-            User user =         childRepository.getUserManager().findUser(userId);
-            if(user ==null) {
-                user = new User(repositoryId+"_admin",
-                                "Administrator",
-                                "", "", "",
-                                childRepository.getUserManager().hashPassword(
-                                                                              password), true, "", "",
-                                false, null);
-                childRepository.getUserManager().makeOrUpdateUser(user, false);
-                sb.append("Created user: " + user.getId());
-                sb.append(HtmlUtils.p());
-            }
+        msg.append("Created repository: " + HtmlUtils.href("/" + repositoryId,"/" + repositoryId));
+        msg.append("<br>");
+
+        String adminId = request.getString(ARG_LOCAL_ADMIN,"").trim();
+        if(adminId.length() == 0) {
+            adminId = repositoryId+"_admin";
+        }
+        
+        User user =         childRepository.getUserManager().findUser(adminId);
+        if(user ==null) {
+            user = new User(adminId,
+                            "Administrator",
+                            "", "", "",
+                            childRepository.getUserManager().hashPassword(
+                                                                          password), true, "", "",
+                            false, null);
+            childRepository.getUserManager().makeOrUpdateUser(user, false);
+            msg.append("Created admin: " + user.getId());
+            msg.append(HtmlUtils.p());
             if(!existedBefore) {
                 childRepository.getAdmin().addInitEntries(user);
             }
         }
+
+        if(msg.length()>0) {
+            sb.append(getRepository().showDialogNote(msg.toString()));
+        }
+
 
         getDatabaseManager().executeInsert(Tables.LOCALREPOSITORIES.INSERT, new Object[]{repositoryId, contact, STATUS_ACTIVE});
         getRepository().addChildRepository(childRepository);
@@ -199,8 +214,22 @@ public class  LocalRepositoryManager extends RepositoryManager {
         }
         //}
 
-        //Copy the keystore and the ssl.properties
+        StringBuffer propsSB = new StringBuffer();
+        String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        String seed1 = "";
+        String seed2 = "";
+        for(int i=0;i<20;i++) {
+            seed1+= alpha.charAt( random.nextInt(alpha.length()));
+            seed2+= alpha.charAt( random.nextInt(alpha.length()));
+        }
+        propsSB.append("#generated password salts\n#do not change these or your passwords will be invalidated\n\n");
+        propsSB.append(UserManager.PROP_PASSWORD_SALT1 +"=" + seed1 +"\n");
+        propsSB.append(UserManager.PROP_PASSWORD_SALT2 +"=" + seed2+"\n");
+        propsSB.append(UserManager.PROP_PASSWORD_ITERATIONS +"=" +(500+random.nextInt(200)));
+        IOUtil.writeFile(new File(IOUtil.joinDir(ramaddaHomeDir,"password.properties")), propsSB.toString());
 
+        //Copy the keystore and the ssl.properties??
 
         properties.put(PROP_HTML_URLBASE, "/" + repositoryId);
         properties.put(PROP_REPOSITORY_HOME,ramaddaHomeDir.toString());
@@ -253,7 +282,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
             if(request.get(ARG_LOCAL_SURE, false)) {
                 processLocalNew(request, sb);
             } else {
-                sb.append(getRepository().showDialogNote("You didn't select 'Yes, I am sure'"));
+                sb.append(getRepository().showDialogWarning("You didn't select 'Yes, I am sure'"));
             }
         }
 
@@ -301,12 +330,15 @@ public class  LocalRepositoryManager extends RepositoryManager {
 
         request.formPostWithAuthToken(sb, getAdmin().URL_ADMIN_LOCAL);
         sb.append(formHeader(msg("New repository")));
+        String required = " " + HtmlUtils.span("* required", HtmlUtils.cssClass(CSS_CLASS_REQUIRED));
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID, request.getString(ARG_LOCAL_ID,""))));
+        sb.append(HtmlUtils.formEntry(msgLabel("ID"),  HtmlUtils.input(ARG_LOCAL_ID, request.getString(ARG_LOCAL_ID,"")) + required));
         sb.append(HtmlUtils.formEntry(msgLabel("Repository Name"),  HtmlUtils.input(ARG_LOCAL_NAME, request.getString(ARG_LOCAL_NAME,""))));
         sb.append(HtmlUtils.formEntry(msgLabel("Contact"),  HtmlUtils.input(ARG_LOCAL_CONTACT, request.getString(ARG_LOCAL_CONTACT,""))));
-        sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1)));
 
+        sb.append(HtmlUtils.formEntry(msgLabel("Admin ID"),  HtmlUtils.input(ARG_LOCAL_ADMIN) +" Default is &lt;repository id&gt;_admin"));
+        sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1) +                                      required));
+        
         sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"), ARG_LOCAL_NEW)+
                                       " " + HtmlUtils.checkbox(ARG_LOCAL_SURE, "true", false) + " " + msg("Yes, I am sure")));
 

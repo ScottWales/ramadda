@@ -271,10 +271,13 @@ public class StorageManager extends RepositoryManager {
      * Do the final initialization
      */
     protected void doFinalInitialization() {
+
         getUploadDir();
         getCacheDir();
         getScratchDir();
         getThumbDir();
+
+
         Misc.run(new Runnable() {
             public void run() {
                 scourTmpDirs();
@@ -283,6 +286,20 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    public String getDiskUsage() {
+        //Note: this will break on systems without du
+        List<String> commands = new ArrayList<String>();
+        commands.add("du");
+        commands.add("-s");
+        commands.add("-h");
+        commands.add(getRepositoryDir().toString());
+        try {
+            String[] results = getRepository().executeCommand(commands, getRepositoryDir());
+            return results[0];
+        } catch(Exception exc) {
+            return ("Error getting disk usage:" + exc);
+        }
+    }
 
     /**
      * Initialize the manager
@@ -352,6 +369,9 @@ public class StorageManager extends RepositoryManager {
                                       getRepositoryDir().toString()));
         sb.append(HtmlUtils.formEntry("Storage Directory:",
                                       getStorageDir().toString()));
+        sb.append(HtmlUtils.formEntry("Disk Usage:",
+                                      getDiskUsage()));
+
     }
 
 

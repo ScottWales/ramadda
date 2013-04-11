@@ -1819,6 +1819,9 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.makeShowHideBlock(msg("System Status"),
                 statusSB.toString(), false));
 
+        sb.append(HtmlUtils.makeShowHideBlock(msg("System Disk"),
+                                              stateSB.toString(), false));
+
         StringBuffer pluginsSB = new StringBuffer();
         getRepository().getPluginManager().addStatusInfo(request, pluginsSB);
         sb.append(HtmlUtils.makeShowHideBlock(msg("Plugins"),
@@ -1830,8 +1833,7 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.makeShowHideBlock(msg("Output Handlers"),
                 outputSB.toString(), false));
 
-        sb.append(HtmlUtils.makeShowHideBlock(msg("Repository State"),
-                stateSB.toString(), false));
+
         sb.append(HtmlUtils.makeShowHideBlock(msg("Database Statistics"),
                 dbSB.toString(), false));
 
