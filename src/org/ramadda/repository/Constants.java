@@ -1593,6 +1593,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_ADMIN_SMTP = "ramadda.admin.smtp";
+    public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
+    public static final String PROP_SMTP_PASSWORD = "ramadda.admin.smtp.password";
 
     /** _more_ */
     public static final String PROP_API = "ramadda.api";

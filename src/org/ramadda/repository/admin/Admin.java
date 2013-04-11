@@ -1115,7 +1115,7 @@ public class Admin extends RepositoryManager {
         csb.append(
             HtmlUtils.formEntry(
                 msgLabel("Mail Server"), HtmlUtils.input(
-                    PROP_ADMIN_SMTP, getProperty(
+                                                         PROP_ADMIN_SMTP, getProperty(
                         PROP_ADMIN_SMTP, ""), HtmlUtils.SIZE_40) + " "
                             + msg("For sending password reset messages")));
 
@@ -1477,7 +1477,14 @@ public class Admin extends RepositoryManager {
         props.put("mail.smtp.host", smtpServer);
         props.put("mail.from", from.getAddress());
         javax.mail.Session session = javax.mail.Session.getInstance(props,
-                                         null);
+                                                                    null);
+        String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
+        String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
+        if(smtpUser!=null) {
+            props.put("mail.smtp.user", smtpUser);
+        }
+
+
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(from);
         Address[] array = new Address[to.size()];
@@ -1492,7 +1499,13 @@ public class Admin extends RepositoryManager {
         msg.setContent(contents, (asHtml
                                   ? "text/html"
                                   : "text/plain"));
-        Transport.send(msg);
+        if(smtpPassword!=null) {
+            Transport tr = session.getTransport();
+            tr.connect(null, smtpPassword);
+            tr.send(msg);
+        } else {
+            Transport.send(msg);
+        }
     }
 
 

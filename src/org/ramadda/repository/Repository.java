@@ -298,9 +298,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties mimeTypes;
 
-
     /** _more_ */
-    private Properties properties = new Properties();
+    private Properties localProperties = new Properties();
+
+    private Properties pluginProperties = new Properties();
 
     /** _more_ */
     private Properties cmdLineProperties = new Properties();
@@ -893,7 +894,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    public void loadProperties(Properties properties, String path)
+    public void loadProperties(Properties props, String path)
             throws Exception {
         //        System.err.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
@@ -902,7 +903,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             return;
         }
-        properties.load(inputStream);
+        props.load(inputStream);
         IOUtil.close(inputStream);
     }
 
@@ -929,14 +930,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
           cmd line
          */
 
-        properties = new Properties();
+        localProperties = new Properties();
         loadProperties(
-            properties,
+                       localProperties,
             "/org/ramadda/repository/resources/repository.properties");
 
         try {
             loadProperties(
-                properties,
+                           localProperties,
                 "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
@@ -979,7 +980,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Load the context and the command line properties now 
         //so the storage manager can get to them
         if (contextProperties != null) {
-            properties.putAll(contextProperties);
+            localProperties.putAll(contextProperties);
         }
 
 
@@ -999,15 +1000,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                              + "/conf/repository.properties");
             if (catalinaConfFile.exists()) {
                 println("RAMADDA: loading:" + catalinaConfFile);
-                loadProperties(properties, catalinaConfFile.toString());
-            } else {
-                //A hack to run on unavco facility server
-                if (new File("/export/home/jeffmc/ramaddadev").exists()) {
-                    println("RAMADDA:  Using /export/home/jeffmc/ramaddadev");
-                    properties.put(PROP_REPOSITORY_HOME,
-                                   "/export/home/jeffmc/ramaddadev");
-                }
-            }
+                loadProperties(localProperties, catalinaConfFile.toString());
+            } 
         }
 
         //check for glassfish, e.g.:
@@ -1019,7 +1013,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                          + "/glassfish/config/repository.properties");
             if (confFile.exists()) {
                 println("RAMADDA: loading:" + confFile);
-                loadProperties(properties, confFile.toString());
+                loadProperties(localProperties, confFile.toString());
             }
         }
 
@@ -1029,7 +1023,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         MyTrace.call1("plugin-init");
         //initialize the plugin manager with the properties
-        getPluginManager().init(properties);
+        getPluginManager().init(pluginProperties);
         MyTrace.call2("plugin-init");
 
         //create the log dir
@@ -1039,13 +1033,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         MyTrace.msg("init-3");
         try {
             //Now load in the local properties file
-            //First load in the repository.properties file
+            //First load lin the repository.properties file
             String localPropertyFile =
                 IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                "repository.properties");
 
             if (new File(localPropertyFile).exists()) {
-                loadProperties(properties, localPropertyFile);
+                loadProperties(localProperties, localPropertyFile);
             } else {}
 
             File[] localFiles =
@@ -1057,12 +1051,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (f.getName().equals("repository.properties")) {
                     continue;
                 }
-                loadProperties(properties, f.toString());
+                loadProperties(localProperties, f.toString());
             }
-
         } catch (Exception exc) {}
-
-
 
 
         debug = getProperty(PROP_DEBUG, false);
@@ -1077,13 +1068,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             println("RAMADDA: running with no in-memory cache");
         }
 
-        setUrlBase((String) properties.get(PROP_HTML_URLBASE));
+        setUrlBase((String) localProperties.get(PROP_HTML_URLBASE));
         if (getUrlBase() == null) {
             setUrlBase(BLANK);
         }
 
 
-        String derbyHome = (String) properties.get(PROP_DB_DERBY_HOME);
+        String derbyHome = (String) localProperties.get(PROP_DB_DERBY_HOME);
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
             File dir = new File(derbyHome);
@@ -3167,7 +3158,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String test = (String) cmdLineProperties.get(PROP_CACHERESOURCES);
 
             if (test == null) {
-                test = (String) properties.get(PROP_CACHERESOURCES);
+                test = (String) localProperties.get(PROP_CACHERESOURCES);
             }
 
             if (test == null) {
@@ -3208,10 +3199,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
         pw.print(out.toString());
         pw.close();
         fos.close();
-        //        String html = ":before:<include href=\"http://www.unavco.org/lib/uv-header-webapps.html\">:during:<include href=\"http://www.unavco.org/lib/uv-footer-webapps.html\">:after:";
-        //        System.err.println(processTemplate(html));
     }
 
+
+
+    /**
+     * Get properties from the local repository or cmd line properties - not from the plugins
+     */
+    public String getLocalProperty(String name, String dflt) {
+        Object value = localProperties.get(name);
+        if(value == null) 
+            value = cmdLineProperties.get(name);
+        if(value == null) 
+            return dflt;
+        return value.toString();
+    }
 
 
     /**
@@ -3242,7 +3244,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         /*
         if ( !cacheResources()) {
             try {
-            loadProperties(properties,
+            loadProperties(localProperties,
             "/org/ramadda/repository/resources/repository.properties");
             } catch (Exception exc) {}
             }*/
@@ -3254,7 +3256,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         if (prop == null) {
-            prop = (String) properties.get(override);
+            prop = (String) localProperties.get(override);
+        }
+
+        if (prop == null) {
+            prop = (String) pluginProperties.get(override);
         }
 
         //Then look at the command line
@@ -3271,7 +3277,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //then the  repository.properties 
         if (prop == null) {
-            prop = (String) properties.get(name);
+            prop = (String) localProperties.get(name);
+        }
+
+        //then the  plugin .properties 
+        if (prop == null) {
+            prop = (String) pluginProperties.get(name);
         }
 
         //Then look at system properties

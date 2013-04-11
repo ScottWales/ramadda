@@ -77,6 +77,8 @@ public class  LocalRepositoryManager extends RepositoryManager {
     public static final String ARG_LOCAL_CHANGE = "local.change";
     public static final String ARG_LOCAL_STATUS = "local.status";
 
+    //    public static final String ARG_LOCAL_ = "local.id";
+
     public static final String STATUS_ACTIVE = "active";
     public static final String STATUS_STOPPED = "stopped";
     public static final String STATUS_DELETED = "deleted";

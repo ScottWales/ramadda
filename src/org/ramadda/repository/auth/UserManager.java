@@ -292,11 +292,11 @@ public class UserManager extends RepositoryManager {
             makeOrUpdateUser(user, true);
         }
 
-        /*****
-              Keep this commented out as its too easy for a plugin to add an admin user account
+
         //If we have an admin property then it is of the form userid:password           
         //and is used to set the password of the admin                                  
-        String adminFromProperties = getProperty(PROP_ADMIN, null);
+        //Use localProperties so plugins can't slide in an admin password
+        String adminFromProperties = getRepository().getLocalProperty(PROP_ADMIN, null);
         if (adminFromProperties != null) {
             List<String> toks = StringUtil.split(adminFromProperties, ":");
             if (toks.size() != 2) {
@@ -315,7 +315,6 @@ public class UserManager extends RepositoryManager {
             }
             logInfo("Password for:" + user.getId() + " has been updated");
         }
-        *****/
 
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
             userAuthenticator.initUsers();
