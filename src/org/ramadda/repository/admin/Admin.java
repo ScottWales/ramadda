@@ -1473,6 +1473,8 @@ public class Admin extends RepositoryManager {
         String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
                                 "").trim();
 
+        System.err.println("sending mail from:" + from.getAddress());
+
         Properties props = new Properties();
         props.put("mail.smtp.host", smtpServer);
         props.put("mail.from", from.getAddress());
@@ -1481,6 +1483,7 @@ public class Admin extends RepositoryManager {
         String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
         String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
         if(smtpUser!=null) {
+            System.err.println("smtp user:" + smtpUser);
             props.put("mail.smtp.user", smtpUser);
         }
 
@@ -1499,7 +1502,9 @@ public class Admin extends RepositoryManager {
         msg.setContent(contents, (asHtml
                                   ? "text/html"
                                   : "text/plain"));
+
         if(smtpPassword!=null) {
+            System.err.println("password:" + smtpPassword);
             Transport tr = session.getTransport();
             tr.connect(null, smtpPassword);
             tr.send(msg);
