@@ -34,38 +34,17 @@ import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
-import ucar.unidata.sql.Clause;
 
-import ucar.unidata.sql.SqlUtil;
 
-import ucar.unidata.util.Counter;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
-
-
-import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
-import java.lang.management.*;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import java.text.DecimalFormat;
-
-import java.text.SimpleDateFormat;
 
 
 import java.util.ArrayList;
@@ -85,6 +64,9 @@ import javax.mail.internet.InternetAddress;
 
 import javax.mail.internet.MimeMessage;
 
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 
 /**
@@ -251,6 +233,69 @@ public class MailManager extends RepositoryManager {
             Transport.send(msg);
         }
     }
+
+
+    static final String HOST = "email-smtp.us-east-1.amazonaws.com";    
+    static final String SMTP_USERNAME = "AKIAI52FNJLLBLLX267A";  // Replace with your SMTP username credential.
+    static final String SMTP_PASSWORD = "Aur8J37f2lNaxu3KPF8t7oNyfWZJmwwy903yLkJkeG3f";  // Replace with your SMTP password.
+
+    public void sendMailNew(String to, String subject, String body) throws Exception {
+
+
+        Properties props = System.getProperties();
+        props.put("mail.transport.protocol", "smtp");
+
+        // Port we will connect to on the Amazon SES SMTP endpoint. We are choosing port 25 because we will use
+        // STARTTLS to encrypt the connection.
+        props.put("mail.smtp.port", 25); 
+
+        
+        // Set properties indicating that we want to use STARTTLS to encrypt the connection.
+        // The SMTP session will begin on an unencrypted connection, and then the client
+        // will issue a STARTTLS command to upgrade to an encrypted connection.
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
+
+        // Create a Session object to represent a mail session with the specified properties. 
+        Session session = Session.getDefaultInstance(props);
+
+        // Create a message with the specified information. 
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress("jeff.mcwhirter@gmail.com"));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress("jeff.mcwhirter@gmail.com"));
+        msg.setSubject(subject);
+        msg.setContent(body,"text/plain");
+            
+        // Create a transport.        
+        Transport transport = session.getTransport();
+                    
+        // Send the message.
+        try    {
+            System.out.println("Attempting to send an email");
+            
+            String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
+                                                            "").trim();
+            String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
+            String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
+            if(smtpUser!=null) {
+                // Connect to Amazon SES using the SMTP username and password you specified above.
+                transport.connect(smtpServer, smtpUser, smtpPassword);
+            } else  {
+                //TODO.....                transport.connect(smtpServer);
+            }
+            // Send the email.
+            transport.sendMessage(msg, msg.getAllRecipients());
+        }  catch (Exception ex) {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+        } finally {
+            // Close and terminate the connection.
+            transport.close();         
+        }
+    }
+
+
 
 
 }
