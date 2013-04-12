@@ -377,7 +377,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             Misc.run(new Runnable() {
                 public void run() {
                     try {
-                        getRepository().getAdmin().sendEmail(email,
+                        getRepository().getMailManager().sendEmail(email,
                                 "RAMADDA point data processing job", emailContents, false);
                     } catch (Exception exc) {}
                 }

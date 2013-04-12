@@ -148,7 +148,7 @@ public class EmailAction extends PasswordAction {
                     monitor.getRepository().getLogManager().logInfo(
                         "Monitor:" + this + " sending mail to: " + to);
                     String message = getMessage(monitor, entry);
-                    monitor.getRepository().getAdmin().sendEmail(to, from,
+                    monitor.getRepository().getMailManager().sendEmail(to, from,
                             "New Entry", message, false);
                 }
             } catch (Exception exc) {

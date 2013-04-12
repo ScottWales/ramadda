@@ -33,6 +33,7 @@ import org.ramadda.repository.server.RepositoryServlet;
 
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
+import org.ramadda.repository.admin.MailManager;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AccessManager;
 import org.ramadda.repository.auth.AuthorizationMethod;
@@ -261,6 +262,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private RegistryManager registryManager;
+
+    private MailManager mailManager;
 
     private LocalRepositoryManager localRepositoryManager;
 
@@ -825,6 +828,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             accessManager      = null;
             metadataManager    = null;
             registryManager    = null;
+            mailManager    = null;
             localRepositoryManager    = null;
             storageManager     = null;
             apiManager         = null;
@@ -1924,6 +1928,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new RegistryManager(this);
     }
 
+    protected MailManager doMakeMailManager() {
+        return new MailManager(this);
+    }
+
 
     protected LocalRepositoryManager doMakeLocalRepositoryManager() {
         return new LocalRepositoryManager(this);
@@ -1943,6 +1951,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return registryManager;
+    }
+
+    public MailManager getMailManager() {
+        if (mailManager == null) {
+            mailManager = doMakeMailManager();
+        }
+        return mailManager;
     }
 
     public LocalRepositoryManager getLocalRepositoryManager() {

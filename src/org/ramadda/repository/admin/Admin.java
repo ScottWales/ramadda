@@ -1112,13 +1112,7 @@ public class Admin extends RepositoryManager {
                                            getProperty(PROP_ADMIN_EMAIL, ""),
                                            HtmlUtils.SIZE_40)));
 
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Mail Server"), HtmlUtils.input(
-                                                         PROP_ADMIN_SMTP, getProperty(
-                        PROP_ADMIN_SMTP, ""), HtmlUtils.SIZE_40) + " "
-                            + msg("For sending password reset messages")));
-
+        getRepository().getMailManager().addAdminSettings(request, csb);
 
 
         csb.append(
@@ -1397,16 +1391,10 @@ public class Admin extends RepositoryManager {
      * @return _more_
      */
     public boolean isEmailCapable() {
-        String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
-                                "").trim();
-        String serverAdmin = getRepository().getProperty(PROP_ADMIN_EMAIL,
-                                 "").trim();
-        if ((serverAdmin.length() == 0) || (smtpServer.length() == 0)) {
-            return false;
-        }
-
-        return true;
+        return getRepository().getMailManager().isEmailCapable();
     }
+
+
 
     /**
      * _more_
@@ -1421,9 +1409,7 @@ public class Admin extends RepositoryManager {
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
             throws Exception {
-        String from = getRepository().getProperty(PROP_ADMIN_EMAIL,
-                          "").trim();
-        sendEmail(to, from, subject, contents, asHtml);
+        getRepository().getMailManager().sendEmail(to,subject,contents, asHtml);
     }
 
 
@@ -1441,9 +1427,7 @@ public class Admin extends RepositoryManager {
     public void sendEmail(String to, String from, String subject,
                           String contents, boolean asHtml)
             throws Exception {
-        sendEmail((List<Address>) Misc.newList(new InternetAddress(to)),
-                  new InternetAddress(from), subject, contents, false,
-                  asHtml);
+        getRepository().getMailManager().sendEmail(to,from,subject,contents, asHtml);
     }
 
 
@@ -1463,54 +1447,7 @@ public class Admin extends RepositoryManager {
                           String subject, String contents, boolean bcc,
                           boolean asHtml)
             throws Exception {
-        if ( !isEmailCapable()) {
-            throw new IllegalStateException(
-                "This RAMADDA server has not been configured to send email");
-        }
-
-        //        System.err.println("subject:" + subject);
-        //        System.err.println("contents:" + contents);
-        String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
-                                "").trim();
-
-        System.err.println("sending mail from:" + from.getAddress());
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host", smtpServer);
-        props.put("mail.from", from.getAddress());
-        javax.mail.Session session = javax.mail.Session.getInstance(props,
-                                                                    null);
-        String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
-        String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
-        if(smtpUser!=null) {
-            System.err.println("smtp user:" + smtpUser);
-            props.put("mail.smtp.user", smtpUser);
-        }
-
-
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(from);
-        Address[] array = new Address[to.size()];
-        for (int i = 0; i < to.size(); i++) {
-            array[i] = to.get(i);
-        }
-        msg.setRecipients((bcc
-                           ? Message.RecipientType.BCC
-                           : Message.RecipientType.TO), array);
-        msg.setSubject(subject);
-        msg.setSentDate(new Date());
-        msg.setContent(contents, (asHtml
-                                  ? "text/html"
-                                  : "text/plain"));
-
-        if(smtpPassword!=null) {
-            System.err.println("password:" + smtpPassword);
-            Transport tr = session.getTransport();
-            tr.connect(null, smtpPassword);
-            tr.send(msg);
-        } else {
-            Transport.send(msg);
-        }
+        getRepository().getMailManager().sendEmail(to, from, subject, contents, bcc, asHtml);
     }
 
 
@@ -1529,9 +1466,10 @@ public class Admin extends RepositoryManager {
 
         getRepository().getRegistryManager().applyAdminConfig(request);
 
+        getRepository().getMailManager().applyAdminConfig(request);
+
         getRepository().writeGlobal(request, PROP_PROPERTIES, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
-        getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
         getRepository().writeGlobal(request, PROP_LOGO_URL, true);
         getRepository().writeGlobal(request, PROP_LOGO_IMAGE, true);
         getRepository().writeGlobal(request, PROP_REPOSITORY_NAME, true);

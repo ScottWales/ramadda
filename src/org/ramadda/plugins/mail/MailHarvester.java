@@ -454,7 +454,7 @@ public class MailHarvester extends Harvester {
                 }
                 if(defined(response) && getAdmin().isEmailCapable()) {
                     String     to     = InternetAddress.toString(message.getFrom());
-                    getRepository().getAdmin().sendEmail(to, "harvested emails", result.toString(), false);
+                    getRepository().getMailManager().sendEmail(to, "harvested emails", result.toString(), false);
                 }
             }
          

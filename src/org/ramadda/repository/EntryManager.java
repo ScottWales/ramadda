@@ -2650,7 +2650,7 @@ public class EntryManager extends RepositoryManager {
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
                     sentNotification = true;
-                    getAdmin().sendEmail(metadata.getAttr2(),
+                    getRepository().getMailManager().sendEmail(metadata.getAttr2(),
                                          "Uploaded Entry",
                                          contents.toString(), true);
 
@@ -2658,7 +2658,7 @@ public class EntryManager extends RepositoryManager {
                
             }
             if(!sentNotification) {
-                getAdmin().sendEmail(parentUser.getEmail(), "Uploaded Entry",
+                getRepository().getMailManager().sendEmail(parentUser.getEmail(), "Uploaded Entry",
                                      contents.toString(), true);
             }
         }

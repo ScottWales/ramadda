@@ -1334,7 +1334,7 @@ public class UserManager extends RepositoryManager {
             if ((newUser.getEmail().length() > 0)
                     && request.get(ARG_USER_SENDMAIL, false)
                     && getAdmin().isEmailCapable()) {
-                getAdmin().sendEmail(newUser.getEmail(),
+                getRepository().getMailManager().sendEmail(newUser.getEmail(),
                                      "RAMADDA User Account", msg.toString(),
                                      true);
 
@@ -2410,7 +2410,7 @@ public class UserManager extends RepositoryManager {
                     "${url}", getRepository().URL_USER_LOGIN.getFullUrl(""));
                 String subject = getProperty(PROP_USER_RESET_ID_SUBJECT,
                                              "Your RAMADDA ID");
-                getAdmin().sendEmail(user.getEmail(), subject,
+                getRepository().getMailManager().sendEmail(user.getEmail(), subject,
                                      contents.toString(), true);
                 String message =
                     "You user id has been sent to your registered email address";
@@ -2582,7 +2582,7 @@ public class UserManager extends RepositoryManager {
         template = template.replace("${userid}", user.getId());
         String subject = getProperty(PROP_USER_RESET_PASSWORD_SUBJECT,
                                      "Your RAMADDA Password");
-        getAdmin().sendEmail(toUser, subject, template, true);
+        getRepository().getMailManager().sendEmail(toUser, subject, template, true);
         StringBuffer message = new StringBuffer();
         message.append(
             getRepository().showDialogNote(
