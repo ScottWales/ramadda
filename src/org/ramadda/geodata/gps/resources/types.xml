@@ -55,6 +55,11 @@
      <property name="icon" value="/gps/trimble.png"/>
    </type>
 
+  <type name="project_gps_trimble_zip"  description="Trimble Business Center zip" category="Field Project" pattern=".*\.tbc.*"
+        >
+     <property name="icon" value="/gps/trimble.png"/>
+   </type>
+
 
 
 </types>
