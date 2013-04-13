@@ -35,6 +35,7 @@ public class PointBounds extends RecordTool {
     private static boolean debug = false;
 
     private int   skip   = 0;
+    private int   max    = 0;
     private int   width   = 40;
     private int   height  = 40;
     private String kmlFile  = null;
@@ -129,6 +130,11 @@ public class PointBounds extends RecordTool {
                 skip = Integer.parseInt(args.get(i));
                 continue;
             }
+            if (arg.equals("-max")) {
+                i++;
+                max = Integer.parseInt(args.get(i));
+                continue;
+            }
             if (arg.equals("-height")) {
                 i++;
                 height = Integer.parseInt(args.get(i));
@@ -153,7 +159,7 @@ public class PointBounds extends RecordTool {
                 continue;
             }
             if (arg.equals("-kml") || arg.equals("-width")
-                    || arg.equals("-skip") || arg.equals("-height")
+                || arg.equals("-skip") ||arg.equals("-max") ||  arg.equals("-height")
                     || arg.equals("-name")) {
                 i++;
                 continue;
@@ -171,6 +177,9 @@ public class PointBounds extends RecordTool {
             VisitInfo              visitInfo = new VisitInfo();
             if (skip > 0) {
                 visitInfo.setSkip(skip);
+            }
+            if (max > 0) {
+                visitInfo.setMax(max);
             }
             pointFile.visit(metadata, visitInfo, null);
 
@@ -220,7 +229,13 @@ public class PointBounds extends RecordTool {
             west  = Math.min(west, metadata.getMinLongitude());
             south = Math.min(south, metadata.getMinLatitude());
             east  = Math.max(east, metadata.getMaxLongitude());
-            System.out.print(arg);
+            System.out.println("File:" + arg + " " +metadata.getMaxLatitude()
+                               + " " + 
+                               metadata.getMinLongitude()
+                               + " " + 
+                               metadata.getMinLatitude()
+                               + " " + 
+                               metadata.getMaxLongitude());
         }
 
         if ( !doPolygon) {
