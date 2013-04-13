@@ -155,7 +155,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="${exec_class}"/>
-              <attribute name="Class-Path" value="pointtools.jar ramadda.jar unidatautil.jar jmapproj.jar"/>
+              <attribute name="Class-Path" value="pointtools.jar ramadda.jar unidatautil.jar jmapproj.jar libext1.jar libext2.jar libext3.jar"/>
             </manifest> 
             <exclude name="*"/>
 <!-- Dummy so it doesn't include anything -->
