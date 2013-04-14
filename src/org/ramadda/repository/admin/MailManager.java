@@ -236,8 +236,8 @@ public class MailManager extends RepositoryManager {
 
 
     static final String HOST = "email-smtp.us-east-1.amazonaws.com";    
-    static final String SMTP_USERNAME = "AKIAI52FNJLLBLLX267A";  // Replace with your SMTP username credential.
-    static final String SMTP_PASSWORD = "Aur8J37f2lNaxu3KPF8t7oNyfWZJmwwy903yLkJkeG3f";  // Replace with your SMTP password.
+    static final String SMTP_USERNAME = "username";  // Replace with your SMTP username credential.
+    static final String SMTP_PASSWORD = "password";  // Replace with your SMTP password.
 
     public void sendMailNew(String to, String subject, String body) throws Exception {
 
