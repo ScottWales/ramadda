@@ -786,6 +786,7 @@ begin
     "lbLabelFontHeightF"   : lbar_fh
     "lbLabelAlignment"     : lbar_aln
     "lbLabelJust"          : lbar_ljust
+    "lbLabelFontColor"     : lbar_fc
     "lbJustification"      : lbar_just
     "lbBoxMinorExtentF"    : lbar_mnr
     "lbBoxMajorExtentF"    : lbar_mjr
@@ -817,6 +818,7 @@ begin
   lbres@lbOrientation        = lbar_orient
   lbres@lbLabelPosition      = lbar_side
   lbres@lbLabelFontHeightF   = lbar_fh
+  lbres@lbLabelFontColor     = lbar_fc
 
 ; Turn various features on and off.
   lbres@lbLabelsOn           = labels_on

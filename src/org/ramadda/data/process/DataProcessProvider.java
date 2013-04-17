@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.data.analysis;
+package org.ramadda.data.process;
 
 
 import org.ramadda.repository.Entry;
@@ -34,6 +34,6 @@ import java.util.List;
 
 /**
  */
-public interface AnalysisProvider {
-    public List<Analysis> getAnalysese();
+public interface DataProcessProvider {
+    public List<DataProcess> getDataProcesses();
 }

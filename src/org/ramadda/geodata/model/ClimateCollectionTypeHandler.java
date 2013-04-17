@@ -22,8 +22,8 @@ import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.type.*;
-import org.ramadda.data.analysis.AnalysisProvider;
-import org.ramadda.data.analysis.Analysis;
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessProvider;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.repository.type.Column;
@@ -45,15 +45,15 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
     public static final String ARG_ANALYSIS_ID = "analysis_id";
 
-    private List<Analysis> analysese = new ArrayList<Analysis>();
+    private List<DataProcess> analysese = new ArrayList<DataProcess>();
 
     private NCLOutputHandler nclOutputHandler;
 
     public ClimateCollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
         super(repository, entryNode);
-        analysese.addAll(new CDOOutputHandler(repository).getAnalysese());
-        analysese.addAll(new NCOOutputHandler(repository).getAnalysese());
+        analysese.addAll(new CDOOutputHandler(repository).getDataProcesses());
+        analysese.addAll(new NCOOutputHandler(repository).getDataProcesses());
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
@@ -124,17 +124,17 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         analysisTitles.add(msg("Settings"));
             analysisTabs.add(HtmlUtils.div(settingsSB.toString(),
                                            HtmlUtils.style("min-height:200px;")));
-        for(Analysis analysis: analysese) {
+        for(DataProcess analysis: analysese) {
             //TODO: add radio buttons
             StringBuffer tmpSB = new StringBuffer();
-            tmpSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, analysis.getAnalysisId(),false));
+            tmpSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, analysis.getDataProcessId(),false));
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
             analysis.addToForm(request, entry, tmpSB);
             analysisTabs.add(HtmlUtils.div(tmpSB.toString(),
                                            HtmlUtils.style("min-height:200px;")));
-            analysisTitles.add(analysis.getAnalysisLabel());
+            analysisTitles.add(analysis.getDataProcessLabel());
         }
 
         sb.append(header(msg("Analyze Selected Data")));
@@ -181,9 +181,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         boolean didAnalysis  = false;
         String selectedAnalysis = request.getString(ARG_ANALYSIS_ID, (String) null);
         if(selectedAnalysis!=null) {
-            for(Analysis analysis: analysese) {
-                if(analysis.getAnalysisId().equals(selectedAnalysis)) {
-                    System.err.println("MODEL: applying analysis:" + analysis.getAnalysisLabel());
+            for(DataProcess analysis: analysese) {
+                if(analysis.getDataProcessId().equals(selectedAnalysis)) {
+                    System.err.println("MODEL: applying analysis:" + analysis.getDataProcessLabel());
                     didAnalysis   = true;
                     for(Entry granule: entries) {
                         File outFile =analysis.processRequest(request, granule);

@@ -22,37 +22,28 @@
 package org.ramadda.repository.client;
 
 
-import org.ramadda.repository.Constants;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
-
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-
-
 
 import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.*;
 
 
 

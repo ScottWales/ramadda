@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.data.analysis;
+package org.ramadda.data.process;
 
 
 import org.ramadda.repository.Entry;
@@ -34,9 +34,9 @@ import java.util.List;
 
 /**
  */
-public interface Analysis {
-    public String getAnalysisId();
+public interface DataProcess {
+    public String getDataProcessId();
     public void addToForm(Request request, Entry entry, StringBuffer sb)  throws Exception;
     public File processRequest(Request request, Entry granule) throws Exception;
-    public String getAnalysisLabel();
+    public String getDataProcessLabel();
 }

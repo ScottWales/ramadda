@@ -28,8 +28,8 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.TempDir;
 
-import org.ramadda.data.analysis.AnalysisProvider;
-import org.ramadda.data.analysis.Analysis;
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessProvider;
 
 
 import org.w3c.dom.*;
@@ -56,7 +56,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter/ramadda.org
  */
-public class NCOOutputHandler extends OutputHandler implements AnalysisProvider, Analysis { 
+public class NCOOutputHandler extends OutputHandler implements DataProcessProvider, DataProcess { 
 
 
     /** _more_ */
@@ -224,8 +224,8 @@ public class NCOOutputHandler extends OutputHandler implements AnalysisProvider,
     /**
        The AnalysisProvider method. Just adds this
      */
-    public List<Analysis> getAnalysese() {
-        List<Analysis> analysese = new ArrayList<Analysis>();
+    public List<DataProcess> getDataProcesses() {
+        List<DataProcess> analysese = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
@@ -240,12 +240,12 @@ public class NCOOutputHandler extends OutputHandler implements AnalysisProvider,
      *
      * @return the ID
      */
-    public String getAnalysisId() {
+    public String getDataProcessId() {
         return "NCO";
     }
 
 
-    public String getAnalysisLabel() {
+    public String getDataProcessLabel() {
         return "NCO Weighted Average";
     }
 

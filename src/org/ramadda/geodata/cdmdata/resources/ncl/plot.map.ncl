@@ -56,6 +56,7 @@ begin
     if (doGoogle) then
         kml_map_defaults(rescf) ; set following suggested default plotting resources
         rescf@cnLinesOn = False ; turn off contour lines
+        rescf@lbLabelFontColor="White"
         
 ;        rescf@vpXF = .00
 ;        rescf@vpYF = 1.00

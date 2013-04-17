@@ -22,8 +22,8 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import org.ramadda.data.analysis.AnalysisProvider;
-import org.ramadda.data.analysis.Analysis;
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessProvider;
 
 
 import org.ramadda.repository.Entry;
@@ -72,7 +72,7 @@ import java.util.TreeSet;
 /**
  * Interface to the Climate Data Operators (CDO) package
  */
-public class CDOOutputHandler extends OutputHandler implements AnalysisProvider, Analysis {
+public class CDOOutputHandler extends OutputHandler implements DataProcessProvider, DataProcess {
 
     /** CDO program path */
     private static final String PROP_CDO_PATH = "cdo.path";
@@ -274,8 +274,8 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider,
     /**
        The AnalysisProvider method. Just adds this
      */
-    public List<Analysis> getAnalysese() {
-        List<Analysis> analysese = new ArrayList<Analysis>();
+    public List<DataProcess> getDataProcesses() {
+        List<DataProcess> analysese = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
@@ -290,11 +290,11 @@ public class CDOOutputHandler extends OutputHandler implements AnalysisProvider,
      *
      * @return the ID
      */
-    public String getAnalysisId() {
+    public String getDataProcessId() {
         return "CDO";
     }
 
-    public String getAnalysisLabel() {
+    public String getDataProcessLabel() {
         return "Climate Data Operator";
     }
 

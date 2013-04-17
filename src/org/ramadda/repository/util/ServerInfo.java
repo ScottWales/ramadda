@@ -22,17 +22,16 @@
 package org.ramadda.repository.util;
 
 
-import org.ramadda.repository.*;
+import java.net.URL;
 
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.RepositoryBase;
 import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.xml.XmlUtil;
-
-import java.net.URL;
 
 
 /**

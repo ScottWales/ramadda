@@ -22,61 +22,51 @@
 package org.ramadda.geodata.publisher;
 
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.geom.Rectangle2D;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 import org.ramadda.repository.client.InteractiveRepositoryClient;
-import org.ramadda.util.HtmlUtils;
-
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import ucar.unidata.data.DataSource;
-
-import ucar.unidata.idv.*;
-
-import ucar.unidata.idv.publish.IdvPublisher;
-
+import ucar.unidata.idv.IntegratedDataViewer;
+import ucar.unidata.idv.MapViewManager;
+import ucar.unidata.idv.ViewManager;
 import ucar.unidata.ui.DateTimePicker;
 import ucar.unidata.ui.HttpFormEntry;
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.ui.RovingProgress;
 import ucar.unidata.util.GuiUtils;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.view.geoloc.NavigatedDisplay;
-
 import ucar.unidata.xml.XmlUtil;
-
 import ucar.visad.Util;
 import ucar.visad.display.Animation;
-
-
 import visad.DateTime;
-
-import java.awt.*;
-
-import java.awt.geom.Rectangle2D;
-
-import java.io.*;
-
-import java.net.*;
-
-
-
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.zip.*;
-
-
-import javax.swing.*;
 
 
 /**
