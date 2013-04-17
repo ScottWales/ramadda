@@ -26,7 +26,9 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
+
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +37,43 @@ import java.util.List;
 /**
  */
 public interface DataProcess {
+
+    /**
+     * Get the DataProcess id
+     *
+     * @return  the ID
+     */
     public String getDataProcessId();
-    public void addToForm(Request request, Entry entry, StringBuffer sb)  throws Exception;
-    public File processRequest(Request request, Entry granule) throws Exception;
+
+    /**
+     * Add to form
+     *
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param sb       the form
+     *
+     * @throws Exception  problem adding to the form
+     */
+    public void addToForm(Request request, Entry entry, StringBuffer sb)
+     throws Exception;
+
+    /**
+     * Process the request
+     *
+     * @param request  The request
+     * @param granule  the granule
+     *
+     * @return  the processed data
+     *
+     * @throws Exception  problem processing
+     */
+    public File processRequest(Request request, Entry granule)
+     throws Exception;
+
+    /**
+     * Get the label for this process
+     *
+     * @return the label
+     */
     public String getDataProcessLabel();
 }
