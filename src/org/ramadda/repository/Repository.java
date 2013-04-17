@@ -216,7 +216,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private JettyServer jettyServer;
 
-    private Hashtable<String,RepositoryServlet> childrenServlets  = new Hashtable<String,RepositoryServlet>();
 
     /** _more_ */
     private UserManager userManager;
@@ -281,6 +280,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     private FtpManager ftpManager;
+
+    private static FtpManager globalFtpManager;
 
     /** _more_ */
     private Admin admin;
@@ -422,6 +423,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    public Repository(Repository parentRepository, String[] args, int port) throws Exception {
+        super(port);
+        this.parentRepository = parentRepository;
+        init(args, port);
+    }
+
+
     /**
      * _more_
      *
@@ -431,8 +439,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Repository(String[] args, int port) throws Exception {
-        super(port);
-        init(args, port);
+        this(null, args,port);
     }
 
 
@@ -576,12 +583,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public boolean isMaster() {
-        return getProperty("ramadda.master.enabled",false);
+        return getProperty(LocalRepositoryManager.PROP_MASTER_ENABLED,false);
     }
 
-    public boolean isPrimary() {
-        return getProperty(PROP_REPOSITORY_PRIMARY,true);
-    }
+
 
     private void setParentRepository(Repository parent) {
         this.parentRepository = parent;
@@ -592,36 +597,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public List<Repository>getChildRepositories() {
-       return childRepositories;
+        return new ArrayList<Repository>(childRepositories);
     }
 
     //
 
     public void removeChildRepository(Repository childRepository) throws Exception {
         childRepositories.remove(childRepository);
-        RepositoryServlet servlet = childrenServlets.get(childRepository.getUrlBase());
-        childrenServlets.remove(childRepository.getUrlBase());
-        if(servlet!=null) {
-            jettyServer.removeServlet(servlet);
-        }
     }
 
 
     public void addChildRepository(Repository childRepository) throws Exception {
         childRepositories.add(childRepository);
         childRepository.setParentRepository(this);
-        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
-        jettyServer.addServlet(servlet);
-        childrenServlets.put(childRepository.getUrlBase(), servlet);
+        //        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
+        //        jettyServer.addServlet(servlet);
         int sslPort = getHttpsPort();
         if(sslPort>0) {
             childRepository.setHttpsPort(sslPort);
         }
     }
 
-    public RepositoryServlet getServlet(String url) {
-        return childrenServlets.get(url);
-    }
 
     /**
      * _more_
@@ -793,7 +789,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getShutdownEnabled() {
-        return  jettyServer!=null && isPrimary();
+        return  jettyServer!=null;
     }
 
     /**
@@ -804,6 +800,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if(!active) return;
             println("RAMADDA: shutting down");
             active = false;
+            //Call this one first so it recurses if needed
+            if(localRepositoryManager!=null) {
+                try {
+                    localRepositoryManager.shutdown();
+                } catch (Throwable thr) {
+                    System.err.println("RAMADDA: Error shutting down local repository manager: " + thr);
+                }
+                repositoryManagers.remove(localRepositoryManager);
+            }
+
             for (RepositoryManager repositoryManager : repositoryManagers) {
                 try {
                     repositoryManager.shutdown();
@@ -1252,9 +1258,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getHarvesterManager().initHarvesters();
 
         //Do this in a thread because (on macs) it hangs sometimes)
-        if (isPrimary()) {
-            Misc.run(this, "getFtpManager");
-        }
+        Misc.run(this, "getFtpManager");
+
+        //Initialize the local repositories in a thread
+        Misc.run(getLocalRepositoryManager(), "initializeLocalRepositories");
     }
 
 
@@ -2018,9 +2025,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public FtpManager getFtpManager() {
         if (ftpManager == null) {
+            //Only the top-level ramaddas gets the ftpmanager
+            if(globalFtpManager!=null) {
+                return null;
+            }
             ftpManager = doMakeFtpManager();
+            globalFtpManager = ftpManager;
         }
-
         return ftpManager;
     }
 
@@ -2255,6 +2266,37 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String getHttpsUrl(String url) {
+        return getHttpsUrl(null, url);
+    }
+
+
+    public String getHttpsUrl(Request request, String url) {
+        String hostname = request!=null? request.getServerName():getHostname();
+        int port = getHttpsPort();
+        if (port < 0) {
+            return getHttpProtocol() + "://" + hostname + ":"
+                   + getPort() + url;
+            //            return url;
+            //            throw new IllegalStateException("Do not have ssl port defined");
+        }
+        if (port == 0) {
+            return "https://" + hostname + url;
+        } else {
+            return "https://" + hostname + ":" + port + url;
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -2262,15 +2304,48 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
-    @Override
+    //    @Override
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
             return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
-
         return getUrlBase() + requestUrl.getPath();
     }
 
+    public String httpsUrl(Request request, String url) {
+        String hostname = request!=null? request.getServerName():getHostname();
+        int port = getHttpsPort();
+        if (port < 0) {
+            return getHttpProtocol() + "://" + hostname + ":"
+                   + getPort() + url;
+            //            return url;
+            //            throw new IllegalStateException("Do not have ssl port defined");
+        }
+        if (port == 0) {
+            return "https://" + hostname + url;
+        } else {
+            return "https://" + hostname + ":" + port + url;
+        }
+    }
+
+
+    public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
+        if (requestUrl.getNeedsSsl()) {
+            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
+        }
+        return getUrlBase() + requestUrl.getPath();
+    }
+
+    public String getAbsoluteUrl(String url) {
+        int port = getPort();
+        if (port == 80) {
+            return getHttpProtocol() + "://" + getHostname()
+                   + url;
+        } else {
+            return getHttpProtocol() + "://" + getHostname()
+                   + ":" + port + url;
+        }
+    }
 
 
 
@@ -2771,18 +2846,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     new SimpleDateFormat("EEE, dd-MMM-yyyy");
                 cookieExpirationDate = sdf.format(future);
             }
-            result.addCookie(SessionManager.COOKIE_NAME,
+            //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
+            result.addCookie( getSessionManager().getSessionCookieName(),
                              sessionId + "; path=" + getUrlBase()
                              + "; expires=" + cookieExpirationDate
                              + " 23:59:59 GMT");
         }
-
-        if (request.get("gc", false) && (request.getUser() != null)
-                && request.getUser().getAdmin()) {
-            clearAllCaches();
-            Misc.gc();
-        }
-
         return result;
     }
 
@@ -2957,14 +3026,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sslEnabled) {
             allSsl = getProperty(PROP_ACCESS_ALLSSL, false);
             if (allSsl && !request.getSecure()) {
-                return new Result(httpsUrl(request.getUrl()));
+                return new Result(httpsUrl(request, request.getUrl()));
             }
         }
 
         if (sslEnabled) {
             if ( !request.get(ARG_NOREDIRECT, false)) {
                 if (apiMethod.getNeedsSsl() && !request.getSecure()) {
-                    return new Result(httpsUrl(request.getUrl()));
+                    return new Result(httpsUrl(request, request.getUrl()));
                 } else if ( !allSsl && !apiMethod.getNeedsSsl()
                             && request.getSecure()) {
                     String url = request.getUrl();

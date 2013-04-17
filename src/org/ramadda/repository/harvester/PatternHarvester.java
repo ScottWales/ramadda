@@ -969,6 +969,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         for (int i = 0; i < dirToks.size(); i++) {
             String filename = (String) dirToks.get(i);
             File   file     = new File(parentFile + "/" + filename);
+            if(!file.exists()) {
+                file     = new File(parentFile + "/" + filename.replaceAll(" ","_"));
+            }
             Entry  template = getEntryManager().getTemplateEntry(file);
             String name     = ((template != null)
                                ? template.getName()
@@ -984,6 +987,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 if (group == null) {
                     group = getEntryManager().makeNewGroup(parentGroup, name,
                             getUser(), template);
+                    
                 }
                 parentGroup = group;
             }
@@ -1171,9 +1175,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         String dirGroup  =
             getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
-                        false && !getTestMode()
+                        !getTestMode()
                         && (groupTemplate.indexOf("${dirgroup}") >= 0));
-
 
 
         dirGroup = SqlUtil.cleanUp(dirGroup);

@@ -1774,7 +1774,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_REPOSITORY_HOME = "ramadda_home";
 
-    public static final String PROP_REPOSITORY_PRIMARY = "ramadda.primary";
 
     /** _more_ */
     public static final String PROP_REPOSITORY_NAME =
@@ -2217,5 +2216,8 @@ public interface Constants {
     public static final String LABEL_NO_ENTRIES_FOUND = "No entries found";
 
     public static final String ARG_IMPORT_TYPE = "import.type";
+
+
+
 
 }

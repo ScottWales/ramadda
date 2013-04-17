@@ -671,7 +671,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     }
 
     public String makeJobUrl(Request dummy) {
-        return dummy.getFullUrl();
+        return dummy.getAbsoluteUrl();
     }
 
 

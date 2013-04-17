@@ -243,7 +243,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
         StringBuffer formSB   = new StringBuffer();
         formSB.append(formInfo.prefix);
 
-        String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String formUrl = getEntryManager().getFullEntryShowUrl(request);
         interp.set("formUrl", formUrl);
 
 

@@ -2407,7 +2407,7 @@ public class UserManager extends RepositoryManager {
                 String contents = userIdMailTemplate.replace("${userid}",
                                       user.getId());
                 contents = contents.replace(
-                    "${url}", getRepository().URL_USER_LOGIN.getFullUrl(""));
+                                            "${url}", request.getAbsoluteUrl(getRepository().URL_USER_LOGIN));
                 String subject = getProperty(PROP_USER_RESET_ID_SUBJECT,
                                              "Your RAMADDA ID");
                 getRepository().getMailManager().sendEmail(user.getEmail(), subject,
@@ -2575,8 +2575,8 @@ public class UserManager extends RepositoryManager {
                                           + 1000 * 60 * 60));
         passwordResets.put(key, resetInfo);
         String toUser = user.getEmail();
-        String url    = getRepository().URL_USER_RESETPASSWORD.getFullUrl("?"
-                         + ARG_USER_PASSWORDKEY + "=" + key);
+        String url    = request.getAbsoluteUrl(getRepository().URL_USER_RESETPASSWORD) + "?"
+                         + ARG_USER_PASSWORDKEY + "=" + key;
         String template = getProperty(PROP_USER_RESET_PASSWORD_TEMPLATE, "");
         template = template.replace("${url}", url);
         template = template.replace("${userid}", user.getId());
@@ -3309,9 +3309,9 @@ public class UserManager extends RepositoryManager {
             String redirect = formUrl;
             //If we are under ssl then redirect to non-ssl
             if (getRepository().isSSLEnabled(request)) {
-                //                redirect = getRepositoryBase().URL_USER_FORM.getFullUrl("");
+                //redirect = request.getAbsoluteUrl(getRepository().URL_USER_FORM));
             } else {
-                //                redirect = getRepositoryBase().URL_USER_FORM.toString();
+                //redirect = request.getAbsoluteUrl(getRepository().URL_USER_FORM));
             }
 
             return new Result(

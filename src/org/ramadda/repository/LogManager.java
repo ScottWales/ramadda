@@ -137,9 +137,12 @@ public class LogManager extends RepositoryManager {
      * @return _more_
      */
     public Logger getLogger(LogId logId) {
+        if(getRepository().getParentRepository()!=null) {
+            return getRepository().getParentRepository().getLogManager().getLogger();
+        }
         //Check if we've already had an error
-        if ( !LOGGER_OK) {
-            return null;
+        if(!isLoggingEnabled()) {
+            return  null;
         }
 
         Logger logger = loggers.get(logId.getId());
@@ -162,7 +165,7 @@ public class LogManager extends RepositoryManager {
 
 
     public boolean isLoggingEnabled() {
-        return LOGGER_OK;
+        return LOGGER_OK && getRepository().getParentRepository()==null;
     }
 
 

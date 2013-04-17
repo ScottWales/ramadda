@@ -703,10 +703,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             dataSource.close();
             dataSource = null;
         }
-        //TODO: Look at this
-        if (isDatabaseDerby() && getRepository().isPrimary()) {
+        //only shut down if this is the top-level ramadda
+        if (isDatabaseDerby() && getRepository().getParentRepository() == null) {
             try {
-
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
             } catch (Exception ignoreThis) {}
         }

@@ -548,16 +548,6 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public void initRequestUrl(RequestUrl requestUrl) {}
 
-    /**
-     * _more_
-     *
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     */
-    public String getUrlPath(Request request, RequestUrl requestUrl) {
-        return getUrlBase() + requestUrl.getPath();
-    }
 
     /**
      * _more_
@@ -579,27 +569,12 @@ public class RepositoryBase implements Constants, RepositorySource {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
-    public String httpsUrl(String url) {
-        return httpsUrl(null, url);
-    }
-
-
-    public String httpsUrl(Request request, String url) {
-        String hostname = request!=null? request.getServerName():getHostname();
+    public String getHttpsUrl(String url) {
+        String hostname = getHostname();
         int port = getHttpsPort();
         if (port < 0) {
             return getHttpProtocol() + "://" + hostname + ":"
                    + getPort() + url;
-            //            return url;
-            //            throw new IllegalStateException("Do not have ssl port defined");
         }
         if (port == 0) {
             return "https://" + hostname + url;
@@ -607,6 +582,7 @@ public class RepositoryBase implements Constants, RepositorySource {
             return "https://" + hostname + ":" + port + url;
         }
     }
+
 
     /**
      * _more_
@@ -676,7 +652,6 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return The Hostname
      */
     public String getHostname() {
-        ucar.unidata.util.Misc.printStack ("****  get host", 10);
         return hostname;
     }
 
@@ -856,6 +831,8 @@ public class RepositoryBase implements Constants, RepositorySource {
     }
 
 
-
+    public static void main(String[]args)  throws Exception {
+        
+    }
 
 }

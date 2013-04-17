@@ -69,6 +69,7 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager {
 
+    private static final WmsMapLayer dummyLayerToForceCompile = null;
 
     /** default height for GE plugin */
     public static int DFLT_EARTH_HEIGHT = 500;
@@ -518,7 +519,7 @@ public class MapManager extends RepositoryManager {
             }
 
             String detailsUrl =
-                HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getUrlPath(),
+                HtmlUtils.url(getRepository().getUrlPath(request, getRepository().URL_ENTRY_SHOW),
                               new String[] { ARG_ENTRYID,
                                              entry.getId(), ARG_OUTPUT,
                                              "mapinfo" });

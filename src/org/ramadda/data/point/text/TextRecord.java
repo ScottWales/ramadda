@@ -420,6 +420,7 @@ public class TextRecord extends PointRecord {
         //        System.err.println ("line:" + sourceString);
         while (true) {
             int    idx = sourceString.indexOf(delimiter, fromIndex);
+            //            System.err.println ("\tidx:" + idx +" delimiter:" + delimiter +":  str:" + sourceString);
             String theString;
             if (idx < 0) {
                 theString    = sourceString.substring(fromIndex);
@@ -441,8 +442,9 @@ public class TextRecord extends PointRecord {
             }
         }
         if(tokenCnt!=tokens.length) {
+            //            System.exit(0);
             if(skipCnt++<5) {
-                System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +"\nLine:" + line);
+                System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
             }
             return false;
         }

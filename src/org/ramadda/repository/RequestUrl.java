@@ -94,8 +94,8 @@ public class RequestUrl {
             return getHttpsUrl(suffix);
         }
 
-        return repositorySource.getRepositoryBase().absoluteUrl(
-            repositorySource.getRepositoryBase().getUrlBase()
+        return getRepositoryBase().absoluteUrl(
+            getRepositoryBase().getUrlBase()
             + path) + (suffix!=null?suffix:"");
     }
 
@@ -109,8 +109,8 @@ public class RequestUrl {
     }
 
 
-    public String getFullUrl(Request request, String suffix) {
-        return getFullUrl(suffix);
+    private RepositoryBase getRepositoryBase() {
+        return repositorySource.getRepositoryBase();
     }
 
     /**
@@ -121,9 +121,7 @@ public class RequestUrl {
      * @return _more_
      */
     public String getHttpsUrl(String suffix) {
-        return repositorySource.getRepositoryBase().httpsUrl(
-            repositorySource.getRepositoryBase().getUrlBase()
-            + path) + suffix;
+        return getRepositoryBase().getHttpsUrl(getRepositoryBase().getUrlBase()+ path) + suffix;
     }
 
     /**
@@ -132,10 +130,8 @@ public class RequestUrl {
      * @return _more_
      */
     public String getHttpsUrl() {
-        return repositorySource.getRepositoryBase().httpsUrl(
-            repositorySource.getRepositoryBase().getUrlBase() + path);
+        return getHttpsUrl("");
     }
-
 
 
 
@@ -147,10 +143,11 @@ public class RequestUrl {
     public String getUrlPath() {
         checkInit();
         if (needsSsl) {
+            System.err.println("https:" +getHttpsUrl());
             return getHttpsUrl();
         }
 
-        return repositorySource.getRepositoryBase().getUrlBase() + path;
+        return getRepositoryBase().getUrlBase() + path;
     }
 
     /**
@@ -158,7 +155,7 @@ public class RequestUrl {
      */
     private void checkInit() {
         if ( !haveInitialized) {
-            repositorySource.getRepositoryBase().initRequestUrl(this);
+            getRepositoryBase().initRequestUrl(this);
             haveInitialized = true;
         }
     }
@@ -171,12 +168,7 @@ public class RequestUrl {
      */
     public String toString() {
         checkInit();
-        return repositorySource.getRepositoryBase().getUrlPath(null, this);
-    }
-
-    public String toString(Request request) {
-        checkInit();
-        return repositorySource.getRepositoryBase().getUrlPath(request, this);
+        return getUrlPath();
     }
 
 
@@ -188,7 +180,7 @@ public class RequestUrl {
      * @return _more_
      */
     public String getUrl(String collectionPath) {
-        return repositorySource.getRepositoryBase().getUrlBase() + "/"
+        return getRepositoryBase().getUrlBase() + "/"
                + collectionPath + path;
     }
 

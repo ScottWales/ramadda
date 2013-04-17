@@ -109,8 +109,6 @@ public class JettyServer implements Constants {
                 "SSL: error opening ssl connection", exc);
         }
         baseRepository = baseServlet.getRepository();
-        //Initialize the local repos in a thread
-        Misc.run(baseRepository.getLocalRepositoryManager(), "initializeLocalRepositories");
         server.start();
         server.join();
     }

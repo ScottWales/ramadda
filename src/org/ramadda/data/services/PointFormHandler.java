@@ -93,6 +93,9 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static IdwGrid dummyField1 = null;
 
+    private static org.ramadda.data.analysis.AnalysisProvider dummyAnalysisProvider = null;
+
+
     /** _more_ */
     private static ObjectGrid dummyField2 = null;
 

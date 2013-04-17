@@ -427,7 +427,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                               DataSource dataSource)
             throws Exception {
 
-        String formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        
+        String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
         sb.append(HtmlUtils.p());
@@ -1144,7 +1145,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             throws Exception {
         StringBuffer sb      = new StringBuffer();
 
-        String       formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_GRID));
@@ -1326,7 +1327,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         String baseName = IOUtil.stripExtension(entry.getName());
         String product  = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
-        String url      = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String url      = getEntryManager().getFullEntryShowUrl(request);
 
 
         String islUrl   = url + "/" + baseName + ".isl";
@@ -2110,7 +2111,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
-        String       formUrl = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         StringBuffer formSB  = new StringBuffer();
 
         formSB.append(HtmlUtils.form(formUrl, ""));
@@ -2152,7 +2153,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         formSB.append(HtmlUtils.formClose());
 
 
-        String url    = getRepository().URL_ENTRY_SHOW.getFullUrl();
+        String url    = getEntryManager().getFullEntryShowUrl(request);
         String islUrl = url + "/" + IOUtil.stripExtension(entry.getName())
                         + ".isl";
         String jnlpUrl = url + "/" + IOUtil.stripExtension(entry.getName())

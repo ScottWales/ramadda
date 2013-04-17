@@ -85,6 +85,8 @@ public class SessionManager extends RepositoryManager {
     /** _more_ */
     public static final String COOKIE_NAME = "repositorysession";
 
+    
+    private String cookieName;
 
     /** _more_ */
     private Hashtable<String, Session> sessionMap = new Hashtable<String,
@@ -102,7 +104,6 @@ public class SessionManager extends RepositoryManager {
                                                      Object>(5000);
 
 
-
     /**
      * _more_
      *
@@ -110,6 +111,7 @@ public class SessionManager extends RepositoryManager {
      */
     public SessionManager(Repository repository) {
         super(repository);
+        this.cookieName = "ramadda" + repository.getUrlBase().replaceAll("/","_") +"_session";
     }
 
     /**
@@ -338,10 +340,14 @@ public class SessionManager extends RepositoryManager {
 
     public Session getSession(String sessionId, boolean checkAnonymous) throws Exception {
         Session session =  sessionMap.get(sessionId);
-        if(session!=null) return session;
+        if(session!=null) {
+            return session;
+        }
         session = anonymousSessionMap.get(sessionId);
-        if(session!=null) return session;
-        //            System.err.println ("getSession from db:" + sessionId);
+        if(session!=null) {
+            return session;
+        }
+
         Statement stmt = getDatabaseManager().select(
                                                      Tables.SESSIONS.COLUMNS,
                                                      Tables.SESSIONS.NAME,
@@ -406,7 +412,6 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void removeSession(String sessionId) throws Exception {
-        //        System.err.println("removeSession:" + sessionId);
         sessionMap.remove(sessionId);
         anonymousSessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
@@ -424,7 +429,6 @@ public class SessionManager extends RepositoryManager {
     public void addSession(Session session) throws Exception {
         sessionMap.put(session.getId(), session);
         //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
-        //        System.err.println("addSession:" + session.getId() +" " + session.getUserId());
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
                 session.getUserId(), new Date(), new Date(), "" });
@@ -573,7 +577,6 @@ public class SessionManager extends RepositoryManager {
             return cookies;
         }
 
-
         List toks = StringUtil.split(cookie, ";", true, true);
         for (int i = 0; i < toks.size(); i++) {
             String tok     = (String) toks.get(i);
@@ -583,7 +586,10 @@ public class SessionManager extends RepositoryManager {
             }
             String cookieName  = (String) subtoks.get(0);
             String cookieValue = (String) subtoks.get(1);
-            if (cookieName.equals(COOKIE_NAME)) {
+            if (cookieName.equals(getSessionCookieName())) {
+                cookies.add(cookieValue);
+            } else if (cookieName.equals(COOKIE_NAME)) {
+                //For backwards compatability
                 cookies.add(cookieValue);
             }
         }
@@ -594,7 +600,10 @@ public class SessionManager extends RepositoryManager {
 
 
 
-
+    public String getSessionCookieName() {
+        return cookieName;
+        //        return COOKIE_NAME;
+    }
 
 
 

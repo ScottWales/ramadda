@@ -433,7 +433,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                      group.getId(), ARG_LATESTOPENDAP,
                                      "true", ARG_OUTPUT, OUTPUT_CATALOG);
                 addService(catalogInfo, SERVICE_LATEST,
-                           getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                           getEntryManager().getFullEntryShowUrl(request),
                            "Resolver");
 
                 Node    firstChild    = topDataset.getFirstChild();
@@ -689,7 +689,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 HtmlUtils.url("/" + getStorageManager().getFileTail(entry),
                               ARG_ENTRYID, entry.getId());
             addService(catalogInfo, SERVICE_HTTP,
-                       getRepository().URL_ENTRY_GET.getFullUrl());
+                       getEntryManager().getFullEntryGetUrl(request));
             Element subDataset;
 
             if (cnt > 0) {

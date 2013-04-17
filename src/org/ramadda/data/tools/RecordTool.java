@@ -43,6 +43,14 @@ public  class RecordTool {
     }
 
     public RecordFile doMakeRecordFile(String inFile) throws Exception {
+
+        if(recordFileClass==null && getRecordFileFactory() == null) {
+            if(inFile.endsWith(".txt")) {
+                setRecordFileClass("org.ramadda.data.point.text.CsvFile");
+            }
+        }
+
+
         if(recordFileClass!=null) {
             Class c = Misc.findClass(recordFileClass);
             Constructor ctor = Misc.findConstructor(c,

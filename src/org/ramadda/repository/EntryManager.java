@@ -218,6 +218,15 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public String getFullEntryShowUrl(Request request) {
+        return request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW);
+    }
+
+    public String getFullEntryGetUrl(Request request) {
+        return request.getAbsoluteUrl(getRepository().URL_ENTRY_GET);
+    }
+
+
     public Entry getEntryFromMetadata(Request request, String metadataType, String value, int attrIndex)
             throws Exception {
         String column = (attrIndex==1?Tables.METADATA.COL_ATTR1:
@@ -1818,7 +1827,7 @@ public class EntryManager extends RepositoryManager {
         return null;
     }
 
-/**
+    /**
      * _more_
      *
      * @param entry _more_
@@ -1832,7 +1841,7 @@ public class EntryManager extends RepositoryManager {
         Date   toDate     = new Date(entry.getEndDate());
 
         String url        =
-            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+            HtmlUtils.url(getFullEntryShowUrl(null),
                           ARG_ENTRYID, entry.getId());
         //j-
         String[] macros = {
@@ -2633,13 +2642,13 @@ public class EntryManager extends RepositoryManager {
                 new StringBuffer(
                                  "A new entry has been uploaded to the RAMADDA server under the folder: ");
             String url1 =
-                HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+                HtmlUtils.url(getFullEntryShowUrl(request),
                               ARG_ENTRYID, parentEntry.getId());
 
             contents.append(HtmlUtils.href(url1, parentEntry.getFullName()));
             contents.append("<p>\n\n");
             String url =
-                HtmlUtils.url(getRepository().URL_ENTRY_FORM.getFullUrl(),
+                HtmlUtils.url(getFullEntryShowUrl(request),
                               ARG_ENTRYID, entry.getId());
             contents.append("Edit to confirm: ");
             contents.append(HtmlUtils.href(url, entry.getLabel()));
@@ -4222,7 +4231,7 @@ public class EntryManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         request.appendMessage(sb);
         String entryUrl =
-            HtmlUtils.url(getRepository().URL_ENTRY_SHOW.getFullUrl(),
+            HtmlUtils.url(getFullEntryShowUrl(request),
                           ARG_ENTRYID, entry.getId());
         String title = getEntryName(entry);
         String share =
@@ -6750,7 +6759,7 @@ public class EntryManager extends RepositoryManager {
             fileTail = entry.getFullName(true);
         }
         if (full) {
-            return HtmlUtils.url(getRepository().URL_ENTRY_GET.getFullUrl()
+            return HtmlUtils.url(getFullEntryGetUrl(request)
                                  + "/" + fileTail, ARG_ENTRYID,
                                      entry.getId());
         } else {
@@ -8094,15 +8103,12 @@ public class EntryManager extends RepositoryManager {
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
 
 
-
-
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
+        group.setName(name);
+        group.setDate(date.getTime());
         if (template != null) {
             group.initWith(template);
             getRepository().getMetadataManager().newEntry(group);
-        } else {
-            group.setName(name);
-            group.setDate(date.getTime());
         }
         group.setParentEntry(parent);
         group.setUser(user);

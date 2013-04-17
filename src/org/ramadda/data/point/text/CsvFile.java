@@ -106,6 +106,13 @@ public class CsvFile extends TextFile {
      */
     public boolean canLoad(String filename) {
         String f = filename.toLowerCase();
+        //A hack to not include lidar coordinate txt files
+        if(f.indexOf("coords")>=0 || f.indexOf("coordinates")>=0) {
+            return false;
+        }
+        if(f.indexOf("target")>=0 ) {
+            return false;
+        }
         return (f.endsWith(".csv") || f.endsWith(".txt")
                || f.endsWith(".xyz")  || f.endsWith(".tsv"));
     }

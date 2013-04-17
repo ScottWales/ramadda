@@ -251,11 +251,17 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public Request cloneMe() {
+        return cloneMe(null);
+    }
+
+    public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
             that.parameters         = new Hashtable(this.parameters);
             that.originalParameters = new Hashtable(this.originalParameters);
-
+            if(repository!=null) {
+                that.repository =  repository;
+            }
             return that;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -270,6 +276,9 @@ public class Request implements Constants, Cloneable {
     public Repository getRepository() {
         return repository;
     }
+
+
+
 
     /**
      * _more_
@@ -564,7 +573,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String url(RequestUrl theUrl) {
-        return checkUrl(theUrl.toString(this));
+        return getRepository().getUrlPath(this, theUrl);
     }
 
     /**
@@ -851,9 +860,10 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      */
-    public String getFullUrl() {
+    public String getAbsoluteUrl() {
         return getAbsoluteUrl(getUrl());
     }
+
 
     public String getAbsoluteUrl(RequestUrl url) {
         String path = repository.getUrlBase() + "/" +
@@ -1503,15 +1513,15 @@ public class Request implements Constants, Cloneable {
         //java.awt.Toolkit.getDefaultToolkit().beep();
 
         String authToken = getString(ARG_AUTHTOKEN, (String) null);
-        String sessionId = getSessionId();
-        if (sessionId == null) {
-            sessionId = getString(ARG_SESSIONID, (String) null);
+        String mySessionId = getSessionId();
+        if (mySessionId == null) {
+            mySessionId = getString(ARG_SESSIONID, (String) null);
         }
-        //        System.err.println("session:" + sessionId);
+        //        System.err.println("session:" + mySessionId);
         //        System.err.println("auth token:" + authToken);
-        //        System.err.println("session hashed:" + repository.getAuthToken(sessionId));
-        if ((authToken != null) && (sessionId != null)) {
-            if (authToken.equals(repository.getAuthToken(sessionId))) {
+        //        System.err.println("session hashed:" + repository.getAuthToken(mySessionId));
+        if ((authToken != null) && (mySessionId != null)) {
+            if (authToken.equals(repository.getAuthToken(mySessionId))) {
                 return;
             }
         }
@@ -2032,7 +2042,9 @@ public class Request implements Constants, Cloneable {
      */
     public void setSessionId(String value) {
         sessionId       = value;
-        sessionIdWasSet = (value!=null);
+        if(value!=null) {
+            sessionIdWasSet = true;
+        }
     }
 
     /**

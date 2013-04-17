@@ -3187,9 +3187,12 @@ public class HtmlUtils {
      * @param showImg _more_
      */
     public static void setBlockHideShowImage(String hideImg, String showImg) {
-        blockHideImageUrl = hideImg;
-        blockShowImageUrl = showImg;
+        if(blockHideImageUrl==null) {
+            blockHideImageUrl         = hideImg;
+            blockShowImageUrl = showImg;
+        }
     }
+
 
 
     /**
@@ -3200,8 +3203,10 @@ public class HtmlUtils {
      */
     public static void setInlineHideShowImage(String hideImg,
             String showImg) {
-        inlineHideImageUrl = hideImg;
-        inlineShowImageUrl = showImg;
+        if(inlineHideImageUrl==null) {
+            inlineHideImageUrl = hideImg;
+            inlineShowImageUrl = showImg;
+        }
     }
 
 

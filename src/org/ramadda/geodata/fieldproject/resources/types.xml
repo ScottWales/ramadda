@@ -59,6 +59,15 @@
    </type>
 
 
+  <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+     <property name="icon" value="/fieldproject/world_go.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
+
+
 
 
     <type name="project_fieldnote" description="Field Note" category="Field Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">

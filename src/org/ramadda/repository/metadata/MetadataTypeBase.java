@@ -213,9 +213,9 @@ public class MetadataTypeBase extends RepositoryManager {
                 continue;
             }
             String tail = getStorageManager().getFileTail(f.toString());
-            String path =
-                handler.getRepository().getMetadataManager().URL_METADATA_VIEW
-                    .getFullUrl("/" + tail);
+            String path =handler.getRepository().getAbsoluteUrl(null,
+                                                                handler.getRepository().getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
+
             String url = HtmlUtils.url(path, ARG_ELEMENT,
                                        element.getIndex() + "", ARG_ENTRYID,
                                        metadata.getEntryId(),

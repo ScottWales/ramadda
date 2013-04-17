@@ -254,6 +254,9 @@
           <include name="org/ramadda/data/**/*.class"/>
           <include name="org/ramadda/util/**/*.class"/>
        </jar>
+
+      <ant antfile="${src_dir}/org/ramadda/data/tools/build.xml" inheritAll="false"/>
+
     </target>
 
 

@@ -97,7 +97,6 @@ public class RepositoryManager implements RepositorySource, Constants,
     protected Repository repository;
 
 
-
     /**
      * _more_
      *
@@ -140,6 +139,11 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public RepositoryBase getRepositoryBase() {
         return repository;
+    }
+
+
+    public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
+        return "";
     }
 
 

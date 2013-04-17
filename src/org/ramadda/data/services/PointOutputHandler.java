@@ -1093,7 +1093,6 @@ public class PointOutputHandler extends RecordOutputHandler {
                                   bounds.x, bounds.y + bounds.height,
                                   bounds.x + bounds.width);
 
-        //        System.err.println("POINT Request:" + request.getFullUrl());
         //llg.fillValue(Double.NaN);
         //If nothing specified then default to 2 grid cells radius
         if ( !request.defined(ARG_GRID_RADIUS_DEGREES)
@@ -1120,8 +1119,6 @@ public class PointOutputHandler extends RecordOutputHandler {
             System.err.println("POINT: bad grid neighborhood size: "
                                + llg.getCellIndexDelta());
             System.err.println("POINT: llg: " + llg);
-            System.err.println("POINT: request:" + request.getFullUrl());
-
             throw new IllegalArgumentException("bad grid neighborhood size: "
                     + llg.getCellIndexDelta());
         }
