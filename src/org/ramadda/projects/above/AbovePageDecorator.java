@@ -25,6 +25,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import ucar.unidata.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,10 @@ import java.util.List;
  */
 public class AbovePageDecorator extends PageDecorator {
 
+    private List<WmsMapLayer> mapLayers = null;
+
     public AbovePageDecorator() {
+        this(null);
     }
 
 
@@ -46,42 +50,31 @@ public class AbovePageDecorator extends PageDecorator {
     }
 
 
+    private List<WmsMapLayer> getMapLayers() {
+        if(mapLayers == null) {
+            mapLayers = WmsMapLayer.makeLayers(getRepository(), "above.map");
+        }
+        return mapLayers;
+    }
+
+
 @Override
     public void addToMap(Request request, MapInfo mapInfo) {
-        //        if(mapInfo.forSelection()) return;
-
-        String[] legendLabels = {"Bailey's Division", 
-                           "Bailey's Domain",
-                           "Bailey's Province",};
-
-
-        String[] labels = {"Bailey's Ecosystem Division", 
-                           "Bailey's Ecosystem Domain",
-                           "Bailey's Ecosystem Province",};
-
-        String[] legends = {"http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_1&format=image/png&STYLE=default",
-                            "http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_2&format=image/png&STYLE=default",
-                            "http://webmap.ornl.gov/ogcbroker/wms?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=10010_3&format=image/png&STYLE=default",};
-
-        String[] layers = {"10010_1_band1", "10010_2_band1", "10010_3_band1",};
-
-        String[] urls = {"http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_1_wms.map",
-                         "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_2_wms.map",
-                         "http://webmap.ornl.gov/fcgi-bin/mapserv.exe?map=D:/CONFIG/OGCBROKER/mapfile//10010/10010_3_wms.map",};
+    //        if(mapInfo.forSelection()) return;
+    //http://wms.alaskamapped.org/extras?
 
         List<String>titles = new ArrayList<String>();
         List<String>tabs = new ArrayList<String>();
-
-
-
-
-        for(int i=0;i< labels.length;i++) {
-            titles.add(legendLabels[i]);
-            tabs.add(HtmlUtils.img(legends[i]));
-            String labelArg  = labels[i].replaceAll("'","\\\\'");
-            mapInfo.addJS(HtmlUtils.call(mapInfo.getVariableName() + ".addWMSLayer",
-                                         HtmlUtils.jsMakeArgs(new String[]{HtmlUtils.squote(labelArg), HtmlUtils.squote(urls[i]), HtmlUtils.squote(layers[i]),"true"},false)));
-            mapInfo.addJS("\n");
+        for(WmsMapLayer mapLayer: getMapLayers()) {
+            if(Utils.stringDefined(mapLayer.getLegendLabel())) {
+                titles.add(mapLayer.getLegendLabel());
+                StringBuffer sb = new StringBuffer(mapLayer.getLegendText());
+                if(Utils.stringDefined(mapLayer.getLegendImage())) {
+                    sb.append(HtmlUtils.img(mapLayer.getLegendImage()));
+                }
+                tabs.add(HtmlUtils.div(sb.toString(), HtmlUtils.cssClass("map-legend-div")));
+            }
+            mapLayer.addToMap(request, mapInfo);
         }
 
         StringBuffer rightSide = new StringBuffer();
@@ -94,6 +87,8 @@ public class AbovePageDecorator extends PageDecorator {
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
 
     }
+
+
 
 
 }
