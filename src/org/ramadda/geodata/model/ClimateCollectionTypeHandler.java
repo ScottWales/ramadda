@@ -43,17 +43,17 @@ import ucar.unidata.util.IOUtil;
 
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
 
-    public static final String ARG_ANALYSIS_ID = "analysis_id";
+    public static final String ARG_DATA_PROCESS_ID = "data_process_id";
 
-    private List<DataProcess> analysese = new ArrayList<DataProcess>();
+    private List<DataProcess> processes = new ArrayList<DataProcess>();
 
     private NCLOutputHandler nclOutputHandler;
 
     public ClimateCollectionTypeHandler(Repository repository, Element entryNode)
         throws Exception {
         super(repository, entryNode);
-        analysese.addAll(new CDOOutputHandler(repository).getDataProcesses());
-        analysese.addAll(new NCOOutputHandler(repository).getDataProcesses());
+        processes.addAll(new CDOOutputHandler(repository).getDataProcesses());
+        processes.addAll(new NCOOutputHandler(repository).getDataProcesses());
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
@@ -94,7 +94,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         selectorSB.append(HtmlUtils.formTable());
         addSelectorsToForm(request, entry, selectorSB, formId,js);
         String searchButton = JQ.button("Search", formId+"_search",js, HtmlUtils.call(formId +".search","event"));
-        String analysisButtons = 
+        String processButtons = 
             JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event")) + " " +
             JQ.button("Plot", formId+"_do_image",js, HtmlUtils.call(formId +".makeImage","event")) + " " +
             JQ.button("Google Earth", formId+"_do_kmz",js, HtmlUtils.call(formId +".makeKMZ","event"));
@@ -112,34 +112,34 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         sb.append("</td></tr>");
         sb.append("<tr valign=top><td>");
 
-        List<String> analysisTabs = new ArrayList<String>();
-        List<String> analysisTitles = new ArrayList<String>();
+        List<String> processTabs = new ArrayList<String>();
+        List<String> processTitles = new ArrayList<String>();
 
         StringBuffer settingsSB = new StringBuffer();
-        settingsSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, "none",true));
+        settingsSB.append(HtmlUtils.radio(ARG_DATA_PROCESS_ID, "none",true));
         settingsSB.append(HtmlUtils.space(1));
-        settingsSB.append(msg("No Analysis"));
+        settingsSB.append(msg("No Processing"));
         settingsSB.append(HtmlUtils.br());
 
-        analysisTitles.add(msg("Settings"));
-            analysisTabs.add(HtmlUtils.div(settingsSB.toString(),
+        processTitles.add(msg("Settings"));
+            processTabs.add(HtmlUtils.div(settingsSB.toString(),
                                            HtmlUtils.style("min-height:200px;")));
-        for(DataProcess analysis: analysese) {
+        for(DataProcess process: processes) {
             //TODO: add radio buttons
             StringBuffer tmpSB = new StringBuffer();
-            tmpSB.append(HtmlUtils.radio(ARG_ANALYSIS_ID, analysis.getDataProcessId(),false));
+            tmpSB.append(HtmlUtils.radio(ARG_DATA_PROCESS_ID, process.getDataProcessId(),false));
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
-            analysis.addToForm(request, entry, tmpSB);
-            analysisTabs.add(HtmlUtils.div(tmpSB.toString(),
+            process.addToForm(request, entry, tmpSB);
+            processTabs.add(HtmlUtils.div(tmpSB.toString(),
                                            HtmlUtils.style("min-height:200px;")));
-            analysisTitles.add(analysis.getDataProcessLabel());
+            processTitles.add(process.getDataProcessLabel());
         }
 
-        sb.append(header(msg("Analyze Selected Data")));
-        HtmlUtils.makeAccordian(sb, analysisTitles, analysisTabs);
-        sb.append(analysisButtons);
+        sb.append(header(msg("Process Selected Data")));
+        HtmlUtils.makeAccordian(sb, processTitles, processTabs);
+        sb.append(processButtons);
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("", HtmlUtils.cssClass("entryoutput") +HtmlUtils.id(formId+"_output_image")));
         sb.append("</td></tr></table>");
@@ -178,21 +178,21 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler  {
         //Process each one in turn
         
 
-        boolean didAnalysis  = false;
-        String selectedAnalysis = request.getString(ARG_ANALYSIS_ID, (String) null);
-        if(selectedAnalysis!=null) {
-            for(DataProcess analysis: analysese) {
-                if(analysis.getDataProcessId().equals(selectedAnalysis)) {
-                    System.err.println("MODEL: applying analysis:" + analysis.getDataProcessLabel());
-                    didAnalysis   = true;
+        boolean didProcess  = false;
+        String selectedProcess = request.getString(ARG_DATA_PROCESS_ID, (String) null);
+        if(selectedProcess!=null) {
+            for(DataProcess process: processes) {
+                if(process.getDataProcessId().equals(selectedProcess)) {
+                    System.err.println("MODEL: applying process: " + process.getDataProcessLabel());
+                    didProcess   = true;
                     for(Entry granule: entries) {
-                        File outFile =analysis.processRequest(request, granule);
+                        File outFile =process.processRequest(request, granule);
                         files.add(outFile);
                     }
                 }
             }
         } 
-        if(!didAnalysis) {
+        if(!didProcess) {
             for(Entry granule: entries) {
                 if(granule.isFile()) {
                     files.add(granule.getFile());

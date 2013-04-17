@@ -222,21 +222,21 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
     }
 
     /**
-       The AnalysisProvider method. Just adds this
+       The DataProcessProvider method. Just adds this
      */
     public List<DataProcess> getDataProcesses() {
-        List<DataProcess> analysese = new ArrayList<DataProcess>();
+        List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
-            analysese.add(this);
+            processes.add(this);
         }
-        return analysese;
+        return processes;
     }
 
 
     /**
-     * Get the Analysis id
+     * Get the DataProcess id
      *
      * @return the ID
      */

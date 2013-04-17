@@ -272,21 +272,21 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
 
     /**
-       The AnalysisProvider method. Just adds this
+       The DataProcessProvider method. Just adds this
      */
     public List<DataProcess> getDataProcesses() {
-        List<DataProcess> analysese = new ArrayList<DataProcess>();
+        List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
-            analysese.add(this);
+            processes.add(this);
         }
-        return analysese;
+        return processes;
     }
 
 
     /**
-     * Get the Analysis id
+     * Get the DataProcess id
      *
      * @return the ID
      */
@@ -408,7 +408,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         /*
         sb.append(HtmlUtils.form(formUrl,
                                  makeFormSubmitDialog(sb,
-                                     msg("Analyzing Data...."))));
+                                     msg("Processing Data...."))));
         */
 
         sb.append(HtmlUtils.formTable());
@@ -844,7 +844,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
             if ( !outFile.exists()) {
                 throw new IllegalArgumentException(
-                    "Humm, the CDO analysis failed for some reason");
+                    "Humm, the CDO processing failed for some reason");
             }
         }
 
