@@ -22,12 +22,6 @@
 package org.ramadda.data.process;
 
 
-import org.ramadda.repository.Entry;
-import org.ramadda.repository.Repository;
-import org.ramadda.repository.Request;
-import org.ramadda.repository.Result;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,5 +29,11 @@ import java.util.List;
 /**
  */
 public interface DataProcessProvider {
+
+    /**
+     * Get the DataProcesses that this supports
+     *
+     * @return the list of DataProcesses
+     */
     public List<DataProcess> getDataProcesses();
 }
