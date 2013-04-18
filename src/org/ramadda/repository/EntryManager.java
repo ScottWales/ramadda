@@ -511,6 +511,30 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Result processEntryDump(Request request) throws Exception {
+        OutputStream os = request.getHttpServletResponse().getOutputStream();
+        PrintWriter pw = new PrintWriter(os);
+        Statement stmt =
+            getDatabaseManager().select(
+                                        SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID, Tables.ENTRIES.COL_TYPE, Tables.ENTRIES.COL_NAME}), Tables.ENTRIES.NAME,
+                                        null, null);
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+        ResultSet        results;
+        request.setReturnFilename("entries.txt");
+        while ((results = iter.getNext()) != null) {
+            int col =1;
+            pw.append(results.getString(col++));
+            pw.append(",");
+            pw.append(results.getString(col++));
+            pw.append(",");
+            pw.append(results.getString(col++));
+            pw.append("\n");
+        }
+        pw.close();
+        return Result.makeNoOpResult();
+    }
+
+
     /**
      * _more_
      *

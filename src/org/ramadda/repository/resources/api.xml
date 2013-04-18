@@ -30,6 +30,7 @@
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>
       <api request="/entry/comments/edit"    method="processCommentsEdit"     actions="edit"/>
       <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
+      <api request="/entry/dump"             method="processEntryDump" />
   </group>
 
 
