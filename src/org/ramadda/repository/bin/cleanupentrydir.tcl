@@ -1,9 +1,13 @@
 
+set ::total 0
 proc walk {dir} {
     if {[file isdirectory $dir]} {
         set name [file tail $dir]
         if {$name != "entries" && ![regexp {^entry_} $name]} {
             if {![info exists ::entry($name)]} {
+		set duout [exec du -s  $dir]
+		regexp {^([^\s]+)\s+} $duout match size
+		incr ::total $size
                 puts "$dir"
             }
         }
@@ -31,3 +35,5 @@ foreach file $argv {
     if {$cnt == 1} continue
     walk $file
 }
+
+##puts "SIZE: [expr $::total/1000]"
