@@ -1345,7 +1345,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String classPath =
                     XmlUtil.getAttribute(
                         entryNode, TypeHandler.TAG_HANDLER,
-                        "org.ramadda.repository.type.GenericTypeHandler");
+                        (String)null);
+
+                if(classPath == null) {
+                    String superType = XmlUtil.getAttribute(entryNode, TypeHandler.ATTR_SUPER,
+                                                            (String) null);
+                    if (superType != null) {
+                        TypeHandler parent = getRepository().getTypeHandler(superType, false, false);
+                        if (parent == null) {
+                            throw new IllegalArgumentException("Cannot find parent type:"
+                                                               + superType);
+                        }
+                        classPath = parent.getClass().getName();
+                        //                        System.err.println ("Using parent class:" +  classPath +" " + XmlUtil.toString(entryNode));
+                    } else {
+                        classPath = "org.ramadda.repository.type.GenericTypeHandler";
+                    }
+                }
 
                 //System.err.println ("RAMADDA: loading type handler:" + classPath);
                 try {
