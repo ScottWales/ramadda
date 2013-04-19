@@ -51,12 +51,12 @@ import javax.swing.*;
  * @version        Enter version here..., Fri, May 21, '10
  * @author         Enter your name here...
  */
-public class FloatLatLonAltBinaryFile extends PointFile {
+public class FloatLatLonBinaryFile extends PointFile {
 
     /**
      * _more_
      */
-    public FloatLatLonAltBinaryFile() {}
+    public FloatLatLonBinaryFile() {}
 
 
 
@@ -71,7 +71,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public FloatLatLonAltBinaryFile(String filename) throws IOException {
+    public FloatLatLonBinaryFile(String filename) throws IOException {
         super(filename);
     }
 
@@ -87,7 +87,6 @@ public class FloatLatLonAltBinaryFile extends PointFile {
                     GeoRecord geoRecord = (GeoRecord) record;
                     dos.writeFloat((float)geoRecord.getLatitude());
                     dos.writeFloat((float)geoRecord.getLongitude());
-                    dos.writeFloat((float)geoRecord.getAltitude());
                     return true;
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -142,7 +141,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
      * @return _more_
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
-        return new FloatLatLonAltRecord(this);
+        return new FloatLatLonRecord(this);
     }
 
     /**
@@ -161,8 +160,8 @@ public class FloatLatLonAltBinaryFile extends PointFile {
             }
             try {
                 long t1 = System.currentTimeMillis();
-                FloatLatLonAltBinaryFile file =
-                    new FloatLatLonAltBinaryFile(arg);
+                FloatLatLonBinaryFile file =
+                    new FloatLatLonBinaryFile(arg);
                 final int[]   cnt      = { 0 };
                 RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
