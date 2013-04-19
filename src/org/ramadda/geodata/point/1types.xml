@@ -19,5 +19,9 @@ lse"/>
   </type>
 
 
+  <type name="point_text"  description="Text Point Data"  super="type_point"> 
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  </type>
+
 
 </types>

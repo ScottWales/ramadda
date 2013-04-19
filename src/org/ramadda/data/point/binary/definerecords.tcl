@@ -10,6 +10,12 @@ generateRecordClass org.ramadda.data.point.binary.DoubleLatLonAltRecord  -super 
 } 
 
 
+generateRecordClass org.ramadda.data.point.binary.DoubleLatLonRecord  -super org.ramadda.data.point.PointRecord   -fields  { 
+    { latitude double}
+    { longitude double}
+} 
+
+
 generateRecordClass org.ramadda.data.point.binary.DoubleLatLonAltIntensityRecord  -super org.ramadda.data.point.PointRecord   -fields  { 
     { latitude double}
     { longitude double}

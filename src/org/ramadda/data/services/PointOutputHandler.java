@@ -1192,6 +1192,54 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
+    public RecordVisitor makeLatLonBinVisitor(Request request,
+            Entry mainEntry, List<? extends PointEntry> pointEntries,
+                                                 final Object jobId, final DataOutputStream inputDos, final boolean doDouble)
+            throws Exception {
+
+        final int[]cnt ={0};
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
+            @Override
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record) {
+                try {
+                    if (!jobOK(jobId)) {
+                        return false;
+                    }
+                    GeoRecord geoRecord = (GeoRecord) record;
+                    synchronized (MUTEX) {
+                        DataOutputStream dos = inputDos;
+                        if (dos == null) {
+                            dos = getTheDataOutputStream();
+                        }
+                        //                        if(cnt[0]++<100) {
+                        //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
+                        //                        }
+                        //FIX
+                        if(doDouble) {
+                            dos.writeDouble(geoRecord.getLatitude());
+                            dos.writeDouble(geoRecord.getLongitude());
+                        } else {
+                            dos.writeFloat((float)geoRecord.getLatitude());
+                            dos.writeFloat((float)geoRecord.getLongitude());
+                        }
+                    }
+
+                    return true;
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+            public String toString() {
+                 return "LatLonAltBin visitor";
+           }
+        };
+
+        return visitor;
+    }
+
+
 
 
 
@@ -1827,28 +1875,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param outputFile file to write to
-     * @param pointFile file to read from
-     *
-     * @throws Exception On badness
-     */
-    public void writeBinaryFile(File outputFile, PointFile pointFile, boolean asDouble)
-            throws Exception {
-
-        if(asDouble) {
-            DoubleLatLonAltBinaryFile.writeBinaryFile(pointFile,
-                                                      getStorageManager().getUncheckedFileOutputStream(outputFile),
-                                                      null);
-        } else {
-            FloatLatLonAltBinaryFile.writeBinaryFile(pointFile,
-                                                     getStorageManager().getUncheckedFileOutputStream(outputFile),
-                                                     null);
-        }
-    }
 
 
 

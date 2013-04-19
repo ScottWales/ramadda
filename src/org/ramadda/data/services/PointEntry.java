@@ -45,8 +45,8 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
-    public static final String SUFFIX_BINARY_DOUBLE = ".llab";    
-    public static final String SUFFIX_BINARY_FLOAT = ".fllab";    
+    public static final String SUFFIX_BINARY_DOUBLE = ".llb";    
+    public static final String SUFFIX_BINARY_FLOAT = ".fllb";    
 
     public static final String FILE_BINARY_DOUBLE = "lightweight" + SUFFIX_BINARY_DOUBLE;
     public static final String FILE_BINARY_FLOAT = "lightweight" + SUFFIX_BINARY_FLOAT;
@@ -168,10 +168,10 @@ public class PointEntry extends RecordEntry {
      */
     public PointFile getBinaryPointFile() throws Exception {
         PointFile pointFile = getPointFile();
-        if (pointFile instanceof DoubleLatLonAltBinaryFile) {
+        if (pointFile instanceof DoubleLatLonBinaryFile) {
             return pointFile;
         }
-        if (pointFile instanceof FloatLatLonAltBinaryFile) {
+        if (pointFile instanceof FloatLatLonBinaryFile) {
             return pointFile;
         }
         if (binaryPointFile == null) {
@@ -185,21 +185,44 @@ public class PointEntry extends RecordEntry {
                                                        "tmpfile.bin"));
                 pointFile.setDefaultSkip(0);
                 System.err.println("POINT: making quickscan file ");
-                getPointOutputHandler().writeBinaryFile(tmpFile,
-                                                        pointFile,isDoubleBinaryFile(quickscanFile));
+                writeBinaryFile(tmpFile,
+                                pointFile,isDoubleBinaryFile(quickscanFile));
                 tmpFile.renameTo(quickscanFile);
                 System.err.println("POINT: done making quickscan file");
             }
 
             if(isDoubleBinaryFile(quickscanFile)) {
                 binaryPointFile =
-                    new DoubleLatLonAltBinaryFile(quickscanFile.toString());
+                    new DoubleLatLonBinaryFile(quickscanFile.toString());
             } else{
                 binaryPointFile =
-                    new FloatLatLonAltBinaryFile(quickscanFile.toString());
+                    new FloatLatLonBinaryFile(quickscanFile.toString());
             }
         }
         return binaryPointFile;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param outputFile file to write to
+     * @param pointFile file to read from
+     *
+     * @throws Exception On badness
+     */
+    public void writeBinaryFile(File outputFile, PointFile pointFile, boolean asDouble)
+            throws Exception {
+
+        if(asDouble) {
+            DoubleLatLonBinaryFile.writeBinaryFile(pointFile,
+                                                      getPointOutputHandler().getStorageManager().getUncheckedFileOutputStream(outputFile),
+                                                      null);
+        } else {
+            FloatLatLonBinaryFile.writeBinaryFile(pointFile,
+                                                  getPointOutputHandler().getStorageManager().getUncheckedFileOutputStream(outputFile),
+                                                  null);
+        }
     }
 
 

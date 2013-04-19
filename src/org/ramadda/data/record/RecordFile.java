@@ -587,6 +587,7 @@ public abstract class RecordFile {
                       RecordFilter filter)
             throws Exception {
 
+        System.err.println("RecordFile: " + getClass().getName() + ".visit");
         if (visitInfo == null) {
             visitInfo = new VisitInfo();
         }

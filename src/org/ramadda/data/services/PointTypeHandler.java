@@ -110,7 +110,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
         boolean quickscanDouble = PointEntry.isDoubleBinaryFile(quickScanFile);
         //Make the latlon binary file when we ingest the  datafile
         visitorGroup.addVisitor(
-            outputHandler.makeLatLonAltBinVisitor(
+            outputHandler.makeLatLonBinVisitor(
                                                   request, entry, pointEntries, null, dos, quickscanDouble));
         log("initializeNewEntry: visting file");
         System.err.println("POINT: pointFile.visit:"  + pointFile);
