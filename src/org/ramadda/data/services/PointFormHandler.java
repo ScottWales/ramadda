@@ -95,7 +95,6 @@ public class PointFormHandler extends RecordFormHandler {
 
     private static org.ramadda.data.process.DataProcessProvider dummyDataProcessProvider = null;
 
-
     /** _more_ */
     private static ObjectGrid dummyField2 = null;
 
@@ -282,7 +281,7 @@ public class PointFormHandler extends RecordFormHandler {
             };
 
             getRecordJobManager().visitSequential(request, recordEntry,
-                    visitor, new VisitInfo(true, skipFactor));
+                    visitor, new VisitInfo(VisitInfo.QUICKSCAN_YES, skipFactor));
             polyLine = pts;
             recordEntry.getEntry().putTransientProperty(polylineProperty,
                     polyLine);

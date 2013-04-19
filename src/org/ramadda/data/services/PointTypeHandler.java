@@ -89,6 +89,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
+        System.err.println ("POINT: initNewEntry");
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
         PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
@@ -106,12 +107,14 @@ public   class PointTypeHandler extends RecordTypeHandler {
         DataOutputStream dos           = new DataOutputStream(
                                    new BufferedOutputStream(
                                        new FileOutputStream(quickScanFile)));
+        boolean quickscanDouble = PointEntry.isDoubleBinaryFile(quickScanFile);
         //Make the latlon binary file when we ingest the  datafile
         visitorGroup.addVisitor(
             outputHandler.makeLatLonAltBinVisitor(
-                request, entry, pointEntries, null, dos));
+                                                  request, entry, pointEntries, null, dos, quickscanDouble));
         log("initializeNewEntry: visting file");
-        pointFile.visit(visitorGroup, new VisitInfo(false), null);
+        System.err.println("POINT: pointFile.visit:"  + pointFile);
+        pointFile.visit(visitorGroup, new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
         dos.close();
         log("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
@@ -189,6 +192,8 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry entry = pointEntry.getEntry();
+
+        //We need to do the polygon thing here so we have the geo bounds to make the grid
         if (pointEntry.getRecordFile().isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
             if ( !entry.hasMetadataOfType(
                     MetadataHandler.TYPE_SPATIAL_POLYGON)) {
@@ -201,8 +206,9 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
                 PointMetadataHarvester metadata2 =
                     new PointMetadataHarvester(llg);
+                System.err.println("POINT: visiting binary file");
                 pointEntry.getBinaryPointFile().visit(metadata2,
-                        new VisitInfo(false), null);
+                                                      new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
                 List<double[]> polygon = llg.getBoundingPolygon();
                 StringBuffer[] sb = new StringBuffer[] { new StringBuffer(),
                         new StringBuffer(), new StringBuffer(),

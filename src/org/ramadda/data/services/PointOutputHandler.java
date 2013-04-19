@@ -567,7 +567,6 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         List<RecordVisitor> visitors    = new ArrayList<RecordVisitor>();
-        boolean             quickScan   = false;
         Result              result      = null;
         JobInfo             info        = null;
         if (jobId != null) {
@@ -586,8 +585,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 return result;
             }
 
-            //For now don't use the quickscan file as things get screwed up with the Glas track search
-            quickScan = false;
+
+
 
             if ( !jobOK(jobId)) {
                 return result;
@@ -618,7 +617,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
                 memoryCheck("POINT: memory before:");
                 getRecordJobManager().visitSequential(request, pointEntries,
-                        groupVisitor, new VisitInfo(quickScan));
+                        groupVisitor, new VisitInfo(VisitInfo.QUICKSCAN_NO));
                 if ( !jobOK(jobId)) {
                     return result;
                 }
@@ -951,7 +950,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
             if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
                 visitors.add(makeLatLonAltBinVisitor(request, entry,
-                                                     pointEntries, jobInfo.getJobId(), null));
+                                                     pointEntries, jobInfo.getJobId(), null, true));
             }
 
             if (formats.contains(OUTPUT_NC.getId())) {
@@ -1145,9 +1144,10 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public RecordVisitor makeLatLonAltBinVisitor(Request request,
             Entry mainEntry, List<? extends PointEntry> pointEntries,
-            final Object jobId, final DataOutputStream inputDos)
+                                                 final Object jobId, final DataOutputStream inputDos, final boolean doDouble)
             throws Exception {
 
+        final int[]cnt ={0};
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
             @Override
@@ -1163,9 +1163,19 @@ public class PointOutputHandler extends RecordOutputHandler {
                         if (dos == null) {
                             dos = getTheDataOutputStream();
                         }
-                        dos.writeDouble(geoRecord.getLatitude());
-                        dos.writeDouble(geoRecord.getLongitude());
-                        dos.writeDouble(geoRecord.getAltitude());
+                        //                        if(cnt[0]++<100) {
+                        //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
+                        //                        }
+                        //FIX
+                        if(doDouble) {
+                            dos.writeDouble(geoRecord.getLatitude());
+                            dos.writeDouble(geoRecord.getLongitude());
+                            dos.writeDouble(geoRecord.getAltitude());
+                        } else {
+                            dos.writeFloat((float)geoRecord.getLatitude());
+                            dos.writeFloat((float)geoRecord.getLongitude());
+                            dos.writeFloat((float)geoRecord.getAltitude());
+                        }
                     }
 
                     return true;
@@ -1730,7 +1740,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             long numRecords = pointEntry.getNumRecords();
             int  skip       = (int) (numRecords / 1000);
             getRecordJobManager().visitSequential(request, pointEntry,
-                    visitor, new VisitInfo(true, skip));
+                    visitor, new VisitInfo(VisitInfo.QUICKSCAN_YES, skip));
 
             coords[0] = Misc.copy(coords[0], pointCnt[0]);
             Element folder = KmlUtil.folder(topFolder, entry.getName(),
@@ -1826,11 +1836,18 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception On badness
      */
-    public void writeBinaryFile(File outputFile, PointFile pointFile)
+    public void writeBinaryFile(File outputFile, PointFile pointFile, boolean asDouble)
             throws Exception {
-        DoubleLatLonAltBinaryFile.writeBinaryFile(pointFile,
-                getStorageManager().getUncheckedFileOutputStream(outputFile),
-                null);
+
+        if(asDouble) {
+            DoubleLatLonAltBinaryFile.writeBinaryFile(pointFile,
+                                                      getStorageManager().getUncheckedFileOutputStream(outputFile),
+                                                      null);
+        } else {
+            FloatLatLonAltBinaryFile.writeBinaryFile(pointFile,
+                                                     getStorageManager().getUncheckedFileOutputStream(outputFile),
+                                                     null);
+        }
     }
 
 
@@ -1923,7 +1940,7 @@ public class PointOutputHandler extends RecordOutputHandler {
       GridVisitor gridVisitor  =  makeGridVisitor(request,
       pointEntries,
       bounds);
-      getPointJobManager().visitConcurrent(request, pointEntries, gridVisitor, new VisitInfo(false));
+      getPointJobManager().visitConcurrent(request, pointEntries, gridVisitor, new VisitInfo(VisitInfo.QUICKSCAN_NO));
       IdwGrid latLonGrid = gridVisitor.getGrid();
 
 

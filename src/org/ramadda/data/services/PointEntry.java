@@ -45,6 +45,14 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
+    public static final String SUFFIX_BINARY_DOUBLE = ".llab";    
+    public static final String SUFFIX_BINARY_FLOAT = ".fllab";    
+
+    public static final String FILE_BINARY_DOUBLE = "lightweight" + SUFFIX_BINARY_DOUBLE;
+    public static final String FILE_BINARY_FLOAT = "lightweight" + SUFFIX_BINARY_FLOAT;
+
+
+
     /** This points to the  short lat/lon/alt binary file ramadda creates on the fly */
     private PointFile binaryPointFile;
 
@@ -100,6 +108,11 @@ public class PointEntry extends RecordEntry {
 
 
 
+    public static  boolean isDoubleBinaryFile(File f) {
+        return f.toString().endsWith(SUFFIX_BINARY_DOUBLE);
+    }
+
+
     /**
      * _more_
      *
@@ -108,10 +121,17 @@ public class PointEntry extends RecordEntry {
     public File getQuickScanFile() {
         File entryDir = getOutputHandler().getStorageManager().getEntryDir(
                             getEntry().getId(), true);
-        File quickscanFile = new File(IOUtil.joinDir(entryDir,
-                                 "lightweight.llab"));
-
-        return quickscanFile;
+        //Look for one that exists
+        for(String file: new String[]{FILE_BINARY_DOUBLE, FILE_BINARY_FLOAT}){
+            File quickscanFile = new File(IOUtil.joinDir(entryDir,
+                                                         file));
+            if(quickscanFile.exists()) {
+                return quickscanFile;
+            }
+        }
+        //Default to the float
+        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_FLOAT));
+        //return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DOUBLE));
     }
 
 
@@ -124,6 +144,7 @@ public class PointEntry extends RecordEntry {
      *
      * @throws Exception On badness
      */
+    @Override
     public void visit(RecordVisitor visitor, VisitInfo visitInfo)
             throws Exception {
         if ((visitInfo != null) && visitInfo.getQuickScan()) {
@@ -150,27 +171,34 @@ public class PointEntry extends RecordEntry {
         if (pointFile instanceof DoubleLatLonAltBinaryFile) {
             return pointFile;
         }
+        if (pointFile instanceof FloatLatLonAltBinaryFile) {
+            return pointFile;
+        }
         if (binaryPointFile == null) {
             File entryDir =
                 getOutputHandler().getStorageManager().getEntryDir(
                     getEntry().getId(), true);
             File quickscanFile = getQuickScanFile();
-            if ( !quickscanFile.exists()) {
+            if (!quickscanFile.exists()) {
                 //Write to a tmp file and only move it over when we are done
                 File tmpFile = new File(IOUtil.joinDir(entryDir,
-                                   "lightweight.llab.tmp"));
+                                                       "tmpfile.bin"));
                 pointFile.setDefaultSkip(0);
                 System.err.println("POINT: making quickscan file ");
-                getPointOutputHandler().writeBinaryFile(quickscanFile,
-                        pointFile);
+                getPointOutputHandler().writeBinaryFile(tmpFile,
+                                                        pointFile,isDoubleBinaryFile(quickscanFile));
                 tmpFile.renameTo(quickscanFile);
                 System.err.println("POINT: done making quickscan file");
             }
 
-            binaryPointFile =
-                new DoubleLatLonAltBinaryFile(quickscanFile.toString());
+            if(isDoubleBinaryFile(quickscanFile)) {
+                binaryPointFile =
+                    new DoubleLatLonAltBinaryFile(quickscanFile.toString());
+            } else{
+                binaryPointFile =
+                    new FloatLatLonAltBinaryFile(quickscanFile.toString());
+            }
         }
-
         return binaryPointFile;
     }
 
