@@ -67,7 +67,7 @@ import java.util.Properties;
  *
  *
  */
-public class WikiPageTypeHandler extends GenericTypeHandler {
+public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_          */
     public static final String ARG_WIKI_TEXTAREA = "wikipage.wikitext";
