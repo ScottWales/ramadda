@@ -281,9 +281,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                                                         request.getRequestURI(),
                                                         handler.formArgs, request,
                                                         response, this);
-                //            System.err.println ("request:" +   request.getRequestURI());
-                repositoryRequest.setProtocol(request.getProtocol());
-                repositoryRequest.setSecure(request.isSecure());
+                //                System.err.println ("request:" +   request.getRequestURI() + " secure:" + request.isSecure());
                 repositoryRequest.setIp(request.getRemoteAddr());
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);

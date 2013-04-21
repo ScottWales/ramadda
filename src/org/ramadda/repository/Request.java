@@ -116,12 +116,6 @@ public class Request implements Constants, Cloneable {
     private String ip;
 
     /** _more_ */
-    private String protocol;
-
-    /** _more_ */
-    private boolean secure = false;
-
-    /** _more_ */
     //    private Entry collectionEntry;
 
 
@@ -2303,35 +2297,16 @@ public class Request implements Constants, Cloneable {
         return extraProperties.get(key);
     }
 
-
-
-    /**
-     * Set the Protocol property.
-     *
-     * @param value The new value for Protocol
-     */
-    public void setProtocol(String value) {
-        protocol = value;
-    }
-
     /**
      * Get the Protocol property.
      *
      * @return The Protocol
      */
     public String getProtocol() {
-        return protocol;
+        return httpServletRequest.getProtocol();
     }
 
 
-    /**
-     * Set the Secure property.
-     *
-     * @param value The new value for Secure
-     */
-    public void setSecure(boolean value) {
-        secure = value;
-    }
 
     /**
      * Get the Secure property.
@@ -2339,7 +2314,7 @@ public class Request implements Constants, Cloneable {
      * @return The Secure
      */
     public boolean getSecure() {
-        return secure;
+        return httpServletRequest.isSecure();
     }
 
     /**

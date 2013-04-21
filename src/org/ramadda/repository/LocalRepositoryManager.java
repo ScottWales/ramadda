@@ -172,7 +172,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
         Repository childRepository =  startLocalRepository(repositoryId, properties);
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
         childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
-
+        childRepository.writeGlobal(PROP_PORT, ""+getRepository().getPort());
 
         StringBuffer msg=new StringBuffer();
         String childUrlPrefix = getChildUrlBase(repositoryId);
@@ -234,20 +234,24 @@ public class  LocalRepositoryManager extends RepositoryManager {
         }
         //}
 
-        StringBuffer propsSB = new StringBuffer();
-        String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        String seed1 = "";
-        String seed2 = "";
-        for(int i=0;i<20;i++) {
-            seed1+= alpha.charAt( random.nextInt(alpha.length()));
-            seed2+= alpha.charAt( random.nextInt(alpha.length()));
+        //Write out a random seed and iteration if we haven't done so already
+        File passwordPropertiesFile = new File(IOUtil.joinDir(ramaddaHomeDir,"password.properties"));
+        if(!passwordPropertiesFile.exists()) {
+            StringBuffer propsSB = new StringBuffer();
+            String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            String seed1 = "";
+            String seed2 = "";
+            for(int i=0;i<20;i++) {
+                seed1+= alpha.charAt( random.nextInt(alpha.length()));
+                seed2+= alpha.charAt( random.nextInt(alpha.length()));
+            }
+            propsSB.append("#generated password salts\n#do not change these or your passwords will be invalidated\n\n");
+            propsSB.append(UserManager.PROP_PASSWORD_SALT1 +"=" + seed1 +"\n");
+            propsSB.append(UserManager.PROP_PASSWORD_SALT2 +"=" + seed2+"\n");
+            propsSB.append(UserManager.PROP_PASSWORD_ITERATIONS +"=" +(500+random.nextInt(200)));
+            IOUtil.writeFile(passwordPropertiesFile, propsSB.toString());
         }
-        propsSB.append("#generated password salts\n#do not change these or your passwords will be invalidated\n\n");
-        propsSB.append(UserManager.PROP_PASSWORD_SALT1 +"=" + seed1 +"\n");
-        propsSB.append(UserManager.PROP_PASSWORD_SALT2 +"=" + seed2+"\n");
-        propsSB.append(UserManager.PROP_PASSWORD_ITERATIONS +"=" +(500+random.nextInt(200)));
-        IOUtil.writeFile(new File(IOUtil.joinDir(ramaddaHomeDir,"password.properties")), propsSB.toString());
 
         //Copy the keystore and the ssl.properties??
         properties.put(PROP_HTML_URLBASE, getChildUrlBase(repositoryId));
@@ -281,14 +285,16 @@ public class  LocalRepositoryManager extends RepositoryManager {
             //            System.err.println ("child:" + childUrl+":");
             if(path.startsWith(childUrl) ||
                childRepository.getUrlBase().equals(path)) {
+                Request originalRequest = request;
                 request = request.cloneMe(childRepository);
                 //                request.setRequestPath(suffix);
                 request.setUser(null);
                 request.setSessionId(null);
-
-                System.err.println (getRepository().getUrlBase() + ": Local dispatching:" + request);
+                //                System.err.println ("Dispatch:" + originalRequest + " " + originalRequest.getSecure() + " new:" +
+                //                                    request + " "  + request.getSecure());
+                //                System.err.println (getRepository().getUrlBase() + ": Local dispatching:" + request);
                 Result result =  childRepository.handleRequest(request);
-                System.err.println (getRepository().getUrlBase() + ": done dispatching:" + request.getSessionId());
+                //                System.err.println (getRepository().getUrlBase() + ": done dispatching:" + request.getSessionId());
 
                 result.setShouldDecorate(false);
                 return result;

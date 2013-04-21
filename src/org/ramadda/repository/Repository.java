@@ -549,6 +549,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean isSSLEnabled(Request request) {
+        //Defer to the parent
+        if(parentRepository!=null) {
+            return parentRepository.isSSLEnabled(request);
+        }
         if (ignoreSSL) {
             return false;
         }
@@ -2262,7 +2266,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                 return;
             }
-            if (isSSLEnabled(null) && apiMethod.getNeedsSsl()) {
+           if (isSSLEnabled(null) && apiMethod.getNeedsSsl()) {
                 requestUrl.setNeedsSsl(true);
             }
         } catch (Exception exc) {
@@ -2909,6 +2913,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        System.err.println("request:"  + request);
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
+            System.err.println(getUrlBase() +": redirecting to:" + sslRedirect.getRedirectUrl());
             return sslRedirect;
         }
         //        println(absoluteUrl(request.getUrl()));
@@ -3034,10 +3039,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
+
+
         boolean sslEnabled = isSSLEnabled(request);
         boolean allSsl     = false;
 
-        //        System.err.println("sslEnabled:" +sslEnabled + "  " + apiMethod.getNeedsSsl() + " secure:" + request.getSecure());
+        if(apiMethod.getRequest().startsWith("/repos/")) {
+            return null;
+        }
 
         if (sslEnabled) {
             allSsl = getProperty(PROP_ACCESS_ALLSSL, false);

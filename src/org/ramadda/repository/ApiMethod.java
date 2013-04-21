@@ -283,6 +283,10 @@ public class ApiMethod {
     }
 
 
+    public RequestHandler getRequestHandler() {
+        return requestHandler;
+    }
+
     /**
      * Set the Request property.
      *
