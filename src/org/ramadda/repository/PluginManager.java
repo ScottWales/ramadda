@@ -263,8 +263,13 @@ public class PluginManager extends RepositoryManager {
             if (haveSeen(pluginFile)) {
                 continue;
             }
-            processPluginFile(pluginFile, pluginSB, classLoader,
-                              tmpPluginsDir);
+            try {
+                processPluginFile(pluginFile, pluginSB, classLoader,
+                                  tmpPluginsDir);
+            } catch(Exception exc) {
+                System.err.println("RAMADDA: Error loading plugin:" + pluginFile);
+                throw exc;
+            }
         }
         loadPropertyFiles();
 
