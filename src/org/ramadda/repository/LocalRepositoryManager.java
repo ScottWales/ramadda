@@ -173,6 +173,9 @@ public class  LocalRepositoryManager extends RepositoryManager {
         childRepository.writeGlobal(Admin.ARG_ADMIN_INSTALLCOMPLETE, "true");
         childRepository.writeGlobal(PROP_HOSTNAME, getProperty(PROP_HOSTNAME,""));
         childRepository.writeGlobal(PROP_PORT, ""+getRepository().getPort());
+        childRepository.writeGlobal(PROP_ADMIN_SMTP, getProperty(PROP_ADMIN_SMTP,""));
+        childRepository.writeGlobal(PROP_ADMIN_EMAIL, getProperty(PROP_ADMIN_EMAIL,""));
+
 
         StringBuffer msg=new StringBuffer();
         String childUrlPrefix = getChildUrlBase(repositoryId);
