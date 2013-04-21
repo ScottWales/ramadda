@@ -403,7 +403,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    private boolean active = true;
+    private boolean isActive = true;
 
     /** _more_ */
     private boolean readOnly = false;
@@ -771,7 +771,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getActive() {
-        return active;
+        return isActive;
     }
 
 
@@ -801,9 +801,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void shutdown() {
         try {
-            if(!active) return;
+            if(!isActive) return;
             println("RAMADDA: shutting down");
-            active = false;
+            isActive = false;
             //Call this one first so it recurses if needed
             if(localRepositoryManager!=null) {
                 try {
