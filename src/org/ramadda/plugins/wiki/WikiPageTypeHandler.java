@@ -114,6 +114,14 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public Result getHtmlDisplay(Request request, Entry group,
+                                 List<Entry> subGroups, List<Entry> entries)
+        throws Exception {
+            return getRepository().getOutputHandler(
+            WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
+            request, request.getOutput(), group);
+    }
+
     /**
      * _more_
      *
