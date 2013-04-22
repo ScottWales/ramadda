@@ -149,7 +149,7 @@ public class NCLOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_NCL_MAPPLOT);
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
-        convertPath = getProperty(PROP_CONVERT_PATH, null);
+        convertPath = getProperty(PROP_CONVERT_PATH, "convert");
         if (ncargRoot != null) {
             // write out the templates
             for (int i = 0; i < SCRIPTS.length; i++) {
