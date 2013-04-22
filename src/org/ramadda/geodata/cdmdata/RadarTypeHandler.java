@@ -59,7 +59,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class Level3RadarTypeHandler extends RadarTypeHandler {
+public class RadarTypeHandler extends GenericTypeHandler {
 
 
     /**
@@ -70,53 +70,49 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Level3RadarTypeHandler(Repository repository, Element entryNode)
+    public RadarTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-
 
     /**
      * _more_
      *
      * @param entry _more_
+     * @param request _more_
+     * @param links _more_
+     *
      *
      * @throws Exception _more_
      */
-@Override
-    public void initializeNewEntry(Entry entry) throws Exception {
-        Object[] values = entry.getTypeHandler().getValues(entry);
-
-
-        
-
-        File f = entry.getFile();
-        System.err.println("Initialize new entry:"+  entry);
-        System.err.println("File:" + f);
-
-
-        String station = "station";
-        String product = "product";
-
-        Date startDate = new Date();
-        double north=0,south=0,east=0,west=0;
-
-        //Crack open the file and set metadata
-        //...
-        
-
-
-        values[0] = station;
-        values[1] = product;
-        entry.setStartDate(startDate.getTime());
-        entry.setEndDate(startDate.getTime());
-        entry.setSouth(south);
-        entry.setNorth(north);
-        entry.setEast(east);
-        entry.setWest(west);
-
+    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+            throws Exception {
+        super.getEntryLinks(request, entry, links);
+        /*
+        if (entry.getValues() == null) {
+            return;
+        }
+        Object[] values = entry.getValues();
+        if ((values.length >= 2) && (values[0] != null)
+                && (values[1] != null)) {
+            links.add(
+                new Link(
+                    HtmlUtils.url(
+                        "http://radar.weather.gov/radar.php", "rid",
+                        (String) entry.getValues()[0], "product",
+                        (String) entry.getValues()[1]), iconUrl(
+                            "/icons/radar.gif"), "Show NWS Radar Site"));
+        }
+        */
     }
+
+
+@Override
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry) throws Exception {
+        initializeNewEntry(entry);
+    }
+
 
 
 

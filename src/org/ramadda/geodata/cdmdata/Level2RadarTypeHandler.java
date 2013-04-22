@@ -59,7 +59,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class Level3RadarTypeHandler extends RadarTypeHandler {
+public class Level2RadarTypeHandler extends RadarTypeHandler {
 
 
     /**
@@ -70,7 +70,7 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
      *
      * @throws Exception _more_
      */
-    public Level3RadarTypeHandler(Repository repository, Element entryNode)
+    public Level2RadarTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -88,7 +88,6 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
     public void initializeNewEntry(Entry entry) throws Exception {
         Object[] values = entry.getTypeHandler().getValues(entry);
 
-
         
 
         File f = entry.getFile();
@@ -97,18 +96,15 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
 
 
         String station = "station";
-        String product = "product";
 
         Date startDate = new Date();
         double north=0,south=0,east=0,west=0;
 
         //Crack open the file and set metadata
         //...
-        
 
 
         values[0] = station;
-        values[1] = product;
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
         entry.setSouth(south);

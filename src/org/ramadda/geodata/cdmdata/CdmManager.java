@@ -683,6 +683,7 @@ public class CdmManager extends RepositoryManager {
      * @return Can the given entry be served by the tds
      */
     public boolean canLoadAsCdm(Entry entry) {
+
         if (entry.isType(OpendapLinkTypeHandler.TYPE_OPENDAPLINK)) {
             return true;
         }
@@ -718,6 +719,7 @@ public class CdmManager extends RepositoryManager {
         Boolean b = (Boolean) cdmEntries.get(entry.getId());
         if (b == null) {
             boolean ok = false;
+
             if (canLoadEntry(entry)) {
                 try {
                     String path = entry.getFile().toString();

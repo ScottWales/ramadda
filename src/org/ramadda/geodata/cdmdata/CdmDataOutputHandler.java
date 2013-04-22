@@ -447,6 +447,8 @@ public class CdmDataOutputHandler extends OutputHandler {
         } else if (getCdmManager().canLoadAsPoint(entry)) {
             addOutputLink(request, entry, links, OUTPUT_POINT_MAP);
             addOutputLink(request, entry, links, OUTPUT_POINT_SUBSET);
+        } else {
+            //            System.err.println ("Don't know what this is:"+ entry);
         }
 
         Object oldOutput = request.getOutput();
