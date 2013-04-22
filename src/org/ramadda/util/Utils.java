@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.text.StrTokenizer;
+import java.lang.reflect.*;
 
 
 /**
@@ -215,6 +216,58 @@ public class Utils {
             return null;
         }
     }
+
+
+    public static Constructor findConstructor(Class c, Class[] paramTypes) {
+        ArrayList     allCtors     = new ArrayList();
+        Constructor[] constructors = c.getConstructors();
+        if(constructors.length==0) {
+            System.err.println ("*** Could not find any constructors for class:" + c.getName());
+            return null;
+        }
+        for (int i = 0; i < constructors.length; i++) {
+            if (typesMatch(constructors[i].getParameterTypes(), paramTypes)) {
+                allCtors.add(constructors[i]);
+            }
+        }
+        if (allCtors.size() > 1) {
+            throw new IllegalArgumentException(
+                "More than one constructors matched for class:"
+                + c.getName());
+        }
+        if (allCtors.size() == 1) {
+            return (Constructor) allCtors.get(0);
+        }
+
+
+        for (int i = 0; i < constructors.length; i++) {
+            Class [] formals = constructors[i].getParameterTypes();
+            for (int j = 0; j < formals.length; j++) {
+                System.err.println ("param " + j +"  " + formals[j].getName() + " " + paramTypes[j].getName());
+            }
+        }
+
+
+
+
+        return null;
+    }
+
+    public static boolean typesMatch(Class[] formals, Class[] actuals) {
+        if (formals.length != actuals.length) {
+            return false;
+        }
+        for (int j = 0; j < formals.length; j++) {
+            if (actuals[j] == null) {
+                continue;
+            }
+            if ( !formals[j].isAssignableFrom(actuals[j])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 
     public static void main(String args[]) {

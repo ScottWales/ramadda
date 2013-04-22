@@ -31,6 +31,7 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -135,10 +136,14 @@ public class DbAdminHandler extends AdminHandlerImpl {
                     Misc.findClass(XmlUtil.getAttribute(tableNode,
                         ATTR_HANDLER,
                         "org.ramadda.plugins.db.DbTypeHandler"));
-                Constructor ctor = Misc.findConstructor(handlerClass,
-                                       new Class[] { this.getClass(),
+                Constructor ctor = Utils.findConstructor(handlerClass,
+                                                         new Class[] { this.getClass(),
                         Repository.class, String.class, tableNode.getClass(),
                         String.class });
+                if(ctor == null) {
+                    System.err.println ("failed to get ctor:" + handlerClass.getName() + " " + XmlUtil.toString(tableNode));
+                    throw new IllegalArgumentException ("DbAdminHandler: could not find constructor");
+                }
 
                 DbTypeHandler typeHandler =
                     (DbTypeHandler) ctor.newInstance(new Object[] { this,
