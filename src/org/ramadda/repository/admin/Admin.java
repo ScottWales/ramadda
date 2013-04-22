@@ -1503,7 +1503,9 @@ public class Admin extends RepositoryManager {
             getRepository().writeGlobal(PROP_FTP_PORT,
                                         request.getString(PROP_FTP_PORT,
                                             "").trim());
-            getRepository().getFtpManager().checkServer();
+            if(getRepository().getFtpManager()!=null) {
+                getRepository().getFtpManager().checkServer();
+            }
         }
 
 
