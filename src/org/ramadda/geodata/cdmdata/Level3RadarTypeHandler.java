@@ -107,7 +107,7 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
         String product = ncf.findAttValueIgnoreCase(null, "keywords_vocabulary", "XXX");
 
 
-        String sdate = ncf.findAttValueIgnoreCase(null, "time_coverage_start", "XXX, XX, XX");
+        String sdate = ncf.findAttValueIgnoreCase(null, "time_coverage_start", (new Date()).toString());
         Date  startDate = DateUnit.getStandardOrISO(sdate);
         //Crack open the file and set metadata
         //...
@@ -118,11 +118,11 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
 
         values[0] = station;
         values[1] = product;
-        values[2] = stId;
-        values[3] = stName;
-        values[4] = radarLat;
-        values[5] = radarLon;
-        values[6] = stId;
+        entry.setLatitude(radarLat);
+        entry.setLongitude(radarLon);
+        entry.setId(stId);
+        entry.setName(stName);
+
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
         entry.setSouth(lat_min);
