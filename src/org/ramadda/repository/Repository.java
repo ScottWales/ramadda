@@ -2913,7 +2913,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //        System.err.println("request:"  + request);
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
-            System.err.println(getUrlBase() +": redirecting to:" + sslRedirect.getRedirectUrl());
             return sslRedirect;
         }
         //        println(absoluteUrl(request.getUrl()));
