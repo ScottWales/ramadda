@@ -112,6 +112,47 @@ This section allows you to restrict the different entry outputs available.
 For example, you can hide the  Data views, the Calendar view, etc.
 
 
+
+<a name="repos"></a><div class="pagesubtitle">12.6.5 Virtual Repositories</div> 
+A RAMADDA repository has the ability to create new, self-contained "virtual" repositories. These children repositories
+are controlled by the parent repository but are fully self-contained RAMADDAs with their own database, file store and users.
+
+To enable virtual repository facility in RAMADDA you need to set the following property
+in either some properties file in the RAMADDA home directory or through the site Admin Settings form.
+<pre>
+ramadda.master.enabled=true
+</pre>
+
+Once enabled and with RAMADDA restarted there should be a "Local Repositories" section in the Admin pages.
+This page will list all of the children repositories and their status and allow you to create new repositories.
+When you create  a new repository you need to specify an ID (e.g. "testrepos"), and an admin account password.
+This results in a repository that can be accessed through the URL:
+<pre>
+http://hostname/repository/repos/testrepos/...
+</pre>
+
+Web login session is not shared among virtual repositories but
+you should be able to login with the user name and password from the parent repository as well as with the account information specified for the new repository.
+Note, the children repositories themselves can contain virtual repositories.
+
+It is easy to move a child repository into its own RAMADDA server.
+First, from the Admin Local Repositories page stop the RAMADDA that you want to move.
+On the file system of the server
+under the RAMADDA home directory there should be a sub-directory "repositories". 
+The RAMADDA home directories 
+for each virtual repository is placed there (e.g., "repository_testrepos"). 
+Simply move the virtual repository home  directory to another machine and use it
+as the main RAMADDA home dir. Note, for space reasons, when moving the directory you can delete 
+the plugins, resources, and tmp sub-directories. If you delete the plugins directory you will need to re-install
+the plugins on the new machine.
+
+You can also move a virtual repository into another RAMADDA as a new virtual repository.
+Simply copy (or move) the virtual repository home directory into the "repositories" sub-directory (create it if needed) 
+of the target RAMADDA. Then, through the target RAMADDA's admin screen add the new repository. RAMADDA will note that
+there is already a home directory with a database, etc., and will use that instead of creating a new one.
+
+
+
 <p>
 
 <p>&nbsp;<p>
