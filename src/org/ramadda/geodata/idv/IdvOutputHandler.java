@@ -198,8 +198,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                         .getLocalGraphicsEnvironment();
                 e.getDefaultScreenDevice();
                 idvOk     = true;
-                idvServer = new IdvServer(
-                    new File(getStorageManager().getDir("idv")));
+                idvServer = new IdvServer(getStorageManager().getPluginResourceDir("idv"));
                 //Only add the output types after we create the server
                 addType(OUTPUT_IDV_GRID);
                 addType(OUTPUT_IDV_POINT);

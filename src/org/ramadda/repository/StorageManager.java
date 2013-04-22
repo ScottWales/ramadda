@@ -358,6 +358,9 @@ public class StorageManager extends RepositoryManager {
         return new File(IOUtil.joinDir(repositoryDir, DIR_RESOURCES));
     }
 
+    public File getPluginResourceDir(String dirName) {
+        return  new File(IOUtil.joinDir(getResourceDir(),dirName));
+    }
 
     /**
      * Add repository info to the StringBuffer
