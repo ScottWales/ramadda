@@ -1661,6 +1661,11 @@ public class StorageManager extends RepositoryManager {
             return file;
         }
 
+        if(getRepository().getParentRepository()!=null) {
+            getRepository().getParentRepository().getStorageManager().checkReadFile(file);
+            return file;
+        }
+
         throwBadFile(file);
 
         return null;
