@@ -32,6 +32,8 @@ import org.ramadda.util.HtmlUtils;
 import org.w3c.dom.*;
 
 
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
@@ -89,32 +91,44 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
         Object[] values = entry.getTypeHandler().getValues(entry);
 
 
-        
-
         File f = entry.getFile();
         System.err.println("Initialize new entry:"+  entry);
         System.err.println("File:" + f);
 
 
+        NetcdfFile ncf =  NetcdfFile.open(f.toString());
+
+        String stId = ncf.findAttValueIgnoreCase(null, "ProductStation", "XXX");
+        String stName =  ncf.findAttValueIgnoreCase(null, "ProductStationName", "XXX, XX, XX");
+        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "RadarLatitude", "0.0"));
+        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "RadarLongitude", "0.0"));
+
         String station = "station";
-        String product = "product";
+        String product = ncf.findAttValueIgnoreCase(null, "keywords_vocabulary", "XXX");
 
-        Date startDate = new Date();
-        double north=0,south=0,east=0,west=0;
 
+        String sdate = ncf.findAttValueIgnoreCase(null, "time_coverage_start", "XXX, XX, XX");
+        Date  startDate = DateUnit.getStandardOrISO(sdate);
         //Crack open the file and set metadata
         //...
-        
-
+        float lat_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lat_min", "0.0f"));
+        float lat_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lat_max", "0.0f"));
+        float lon_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lon_min", "0.0f"));
+        float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lon_max", "0.0f"));
 
         values[0] = station;
         values[1] = product;
+        values[2] = stId;
+        values[3] = stName;
+        values[4] = radarLat;
+        values[5] = radarLon;
+        values[6] = stId;
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
-        entry.setSouth(south);
-        entry.setNorth(north);
-        entry.setEast(east);
-        entry.setWest(west);
+        entry.setSouth(lat_min);
+        entry.setNorth(lat_max);
+        entry.setEast(lon_max);
+        entry.setWest(lon_min);
 
     }
 
