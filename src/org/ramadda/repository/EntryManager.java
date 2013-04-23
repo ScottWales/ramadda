@@ -6693,12 +6693,12 @@ public class EntryManager extends RepositoryManager {
                                   entry.getResource().getPath());
                 Entry parentEntry = entry.getParentEntry();
                 if (parentEntry == null) {
+                    needToAdd.add(entry);
                     continue;
                 }
                 String key = parentEntry.getId() + "_" + path;
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
-
                     //                    System.out.println("seen resource:" + path);
                     continue;
                 }
@@ -6715,7 +6715,10 @@ public class EntryManager extends RepositoryManager {
                     } else {
                         nonUniqueOnes.add(entry);
                     }
+                } else {
+                    needToAdd.add(entry);
                 }
+
             }
             getDatabaseManager().closeStatement(select);
             getDatabaseManager().closeConnection(connection);
