@@ -7061,6 +7061,36 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
+                                         final boolean descending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+                if (e1.getCreateDate() < e2.getCreateDate()) {
+                    return (descending
+                            ? 1
+                            : -1);
+                }
+                if (e1.getStartDate() > e2.getStartDate()) {
+                    return (descending
+                            ? -1
+                            : 1);
+                }
+
+                return 0;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+
+        return (List<Entry>) Misc.toList(array);
+    }
+
+
     /**
      * _more_
      *
@@ -8578,7 +8608,7 @@ public class EntryManager extends RepositoryManager {
                                   Tables.ENTRIES.COLUMNS,
                                   Tables.ENTRIES.NAME,
                                   Clause.isNull(
-                                      Tables.ENTRIES.COL_PARENT_GROUP_ID));
+                                                Tables.ENTRIES.COL_PARENT_GROUP_ID));
 
         List<Entry> entries = readEntries(statement);
         //        for(Entry entry: entries) {
@@ -8589,9 +8619,18 @@ public class EntryManager extends RepositoryManager {
         if (entries.size() > 1) {
             System.err.println(
                 "RAMADDA: there are more than one top-level entries");
+            entries = sortEntriesOnCreateDate(entries, false);
+            for(Entry entry: entries) {
+                if(topEntry == null) {
+                    if(entry.getType().equals(TypeHandler.TYPE_GROUP)) {
+                        topEntry = entry;
+                    }
+                } 
+                System.err.println (entry.getType() + " - " + entry.getType() + " " + entry.getId());
+            }
         }
 
-        if (entries.size() > 0) {
+        if (topEntry!=null && entries.size() > 0) {
             topEntry = (Entry) entries.get(0);
         }
 
