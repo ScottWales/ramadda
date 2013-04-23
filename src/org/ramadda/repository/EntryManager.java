@@ -8061,14 +8061,12 @@ public class EntryManager extends RepositoryManager {
             }
         }
         if (currentEntry == null) {
-            System.err.println(" NO current entry:" + currentEntry);
             return null;
         }
-        System.err.println("current entry:" + currentEntry);
 
         Entry filteredEntry =getAccessManager().filterEntry(request, currentEntry);
         if(filteredEntry==null) {
-            System.err.println(request.getUser() + " cannot view entry:" + currentEntry);
+            System.err.println("EntryManger.findEntryFromName:" +   " cannot view entry:" + currentEntry+ " user:" + request.getUser());
         }
  
         return  filteredEntry;
@@ -8611,9 +8609,6 @@ public class EntryManager extends RepositoryManager {
                                                 Tables.ENTRIES.COL_PARENT_GROUP_ID));
 
         List<Entry> entries = readEntries(statement);
-        //        for(Entry entry: entries) {
-        //            System.err.println("TOP:" + entry);
-        //        }
 
         Entry topEntry = null;
         if (entries.size() > 1) {
@@ -8626,11 +8621,15 @@ public class EntryManager extends RepositoryManager {
                         topEntry = entry;
                     }
                 } 
-                System.err.println (entry.getType() + " - " + entry.getType() + " " + entry.getId());
+                System.err.println ("entry:" + entry.getType() + " - " + entry.getName() + " " + entry.getId() +" - " + new Date(entry.getCreateDate()));
             }
         }
 
-        if (topEntry!=null && entries.size() > 0) {
+        if(topEntry!=null) {
+            //            System.err.println ("TOP ENTRY:" + topEntry.getType() + " - " + topEntry.getName() + " " + topEntry.getId() +" - " + new Date(topEntry.getCreateDate()));
+        }
+
+        if (topEntry==null && entries.size() > 0) {
             topEntry = (Entry) entries.get(0);
         }
 

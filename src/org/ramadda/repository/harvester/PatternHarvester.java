@@ -828,19 +828,15 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 }
                 Entry entry = null;
                 try {
-                    System.err.println("processing file:"+ f);
                     entry = processFile(dirInfo, f);
                 } catch (Exception exc) {
-                    System.err.println("error processing file:"+ f);
                     logHarvesterError("Error creating entry:" + f, exc);
                 }
                 if (entry == null) {
-                    System.err.println("no entry for file:"+ f);
                     logHarvesterInfo("No entry created");
                     continue;
                 }
                 entries.add(entry);
-                System.err.println("Adding entry:" + entry.getResource());
                 entryCnt++;
                 if (getTestMode() && (entryCnt >= getTestCount())) {
                     return;
@@ -853,8 +849,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         List<Entry> uniqueEntries =
                             getEntryManager().getUniqueEntries(entries,
                                 nonUniqueOnes);
-                        System.err.println("non unique:" + nonUniqueOnes);
-                        System.err.println("uniqueunique:" + uniqueEntries);
+                        //                        System.err.println("non unique:" + nonUniqueOnes);
+                        //                        System.err.println("unique:" + uniqueEntries);
                         for (Entry e : nonUniqueOnes) {
                             logHarvesterInfo("Entry already exists:"
                                              + e.getResource());
@@ -1290,12 +1286,10 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                           getLastGroupType(), this);
 
         if(group == null) {
-            System.err.println ("NULL - Group name:" + groupName + " " + createIfNeeded);
             logHarvesterInfo ("Could not create group:" + groupName);
             return null;
-        } else {
-            System.err.println ("OK - Group name:" + groupName);
-        }
+        } 
+
 
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
