@@ -1289,6 +1289,13 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                           groupName, getUser(), createIfNeeded,
                           getLastGroupType(), this);
 
+        if(group == null) {
+            System.err.println ("NULL - Group name:" + groupName + " " + createIfNeeded);
+            logHarvesterInfo ("Could not create group:" + groupName);
+            return null;
+        } else {
+            System.err.println ("OK - Group name:" + groupName);
+        }
 
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
@@ -1326,6 +1333,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         } else {
             resource = new Resource(fileName, Resource.TYPE_FILE);
         }
+
 
 
         entry.initEntry(name, desc, group, getUser(), resource, "",

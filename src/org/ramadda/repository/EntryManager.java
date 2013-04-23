@@ -7993,9 +7993,6 @@ public class EntryManager extends RepositoryManager {
         }
         String groupType = TypeHandler.TYPE_GROUP;
 
-
-
-        //xxxx
         for (int i = 0; i < toks.size(); i++) {
             boolean      lastOne   = (i == toks.size() - 1);
             String       childName = Entry.decodeName(toks.get(i));
@@ -8034,8 +8031,10 @@ public class EntryManager extends RepositoryManager {
             }
         }
         if (currentEntry == null) {
+            System.err.println(" NO current entry:" + currentEntry);
             return null;
         }
+        System.err.println("current entry:" + currentEntry);
 
         return getAccessManager().filterEntry(request, currentEntry);
     }
