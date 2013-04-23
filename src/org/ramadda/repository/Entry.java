@@ -121,10 +121,10 @@ public class Entry implements Cloneable {
     private TypeHandler typeHandler;
 
     /** the start date */
-    private long startDate;
+    private long startDate = 0L;
 
     /** the end date */
-    private long endDate;
+    private long endDate  = 0L;
 
     /** the south value */
     private double south = NONGEO;
@@ -192,7 +192,7 @@ public class Entry implements Cloneable {
      */
     public Entry(Entry that) {
         //        super(that);
-        initWith(that);
+        initWith(that, true);
     }
 
 
@@ -383,13 +383,17 @@ public class Entry implements Cloneable {
     }
 
 
+    public void initWith(Entry template) {
+        initWith(template, false);
+    }
+
 
     /**
      *  Initialize the Entry with the template
      *
      *  @param template  the template
      */
-    public void initWith(Entry template) {
+    public void initWith(Entry template, boolean clone) {
         if(Utils.stringDefined(template.getName())) {
             setName(template.getName());
         }
@@ -405,10 +409,20 @@ public class Entry implements Cloneable {
             }
             setMetadata(thisMetadata);
         }
-        setCreateDate(template.getCreateDate());
-        setChangeDate(template.getChangeDate());
-        setStartDate(template.getStartDate());
-        setEndDate(template.getEndDate());
+
+        if(clone) {
+            setCreateDate(template.getCreateDate());
+            setChangeDate(template.getChangeDate());
+            setStartDate(template.getStartDate());
+            setEndDate(template.getEndDate());
+        }
+
+        if(template.hasDate()) {
+            System.err.println("Setting date from template:" + new Date(template.getStartDate()));
+            setStartDate(template.getStartDate());
+            setEndDate(template.getEndDate());
+        }
+
         setNorth(template.getNorth());
         setSouth(template.getSouth());
         setEast(template.getEast());
@@ -748,6 +762,10 @@ public class Entry implements Cloneable {
      */
     public String toString() {
         return name + " id:" + id + "  type:" + getTypeHandler();
+    }
+
+    public boolean hasDate() {
+        return startDate!=0L && startDate!=createDate;
     }
 
     /**
@@ -1505,15 +1523,6 @@ public class Entry implements Cloneable {
         parentEntryId = value;
     }
 
-    /**
-     * Get the ParentId property.
-     *
-     * @return The ParentId
-     * @deprecated use getParentEntryId
-     */
-    public String xxxgetParentGroupId() {
-        return getParentEntryId();
-    }
 
     /**
      * Get the ParenEntryId

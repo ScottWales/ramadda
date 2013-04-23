@@ -8042,16 +8042,10 @@ public class EntryManager extends RepositoryManager {
                 if ( !createIfNeeded) {
                     return null;
                 }
-                if (lastOne) {
-                    currentEntry = makeNewGroup(currentEntry, childName,
-                            user, null, lastGroupType, initializer);
-                } else {
-                    currentEntry = makeNewGroup(currentEntry, childName,
-                            user, null, groupType, initializer);
-                }
+                currentEntry = makeNewGroup(currentEntry, childName,
+                                            user, null, (lastOne?lastGroupType:groupType), initializer);
             }
 
-            //xxxx
             if(currentEntry.getTypeHandler().isSynthType()) {
                 List<String> subset = toks.subList(i+1, toks.size());
                 if(subset.size()==0) {
@@ -8155,13 +8149,12 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         //        synchronized (MUTEX_ENTRY) {
         Date date = Utils.extractDate(name);
+        System.err.println("Name:" + name + " date:" + date);
         if(date == null) {
             date = new Date();
         }
 
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
-
-
         Entry       group       = new Entry(getGroupId(parent), typeHandler);
         group.setName(name);
         group.setDate(date.getTime());
