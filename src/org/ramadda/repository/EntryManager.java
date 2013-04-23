@@ -8036,7 +8036,12 @@ public class EntryManager extends RepositoryManager {
         }
         System.err.println("current entry:" + currentEntry);
 
-        return getAccessManager().filterEntry(request, currentEntry);
+        Entry filteredEntry =getAccessManager().filterEntry(request, currentEntry);
+        if(filteredEntry==null) {
+            System.err.println(request.getUser() + " cannot view entry:" + currentEntry);
+        }
+ 
+        return  filteredEntry;
     }
 
 
