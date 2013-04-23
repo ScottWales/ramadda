@@ -132,13 +132,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public PointFile() {}
 
 
-    @Override
-    public String getPropertiesFileName() {
-        return DFLT_PROPERTIES_FILE;
-    }
-
-
-
 
 
     /**
@@ -182,6 +175,16 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         super(filename, properties);
     }
 
+
+
+    @Override
+    public String getPropertiesFileName() {
+        return DFLT_PROPERTIES_FILE;
+    }
+
+
+
+
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
         if(action.equals(ACTION_WAVEFORM)) return hasWaveform();
@@ -204,10 +207,13 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     }
 
     static int  printCnt = 0;
+
+
     /**
      * _more_
      */
     protected void initProperties() {
+        //        System.err.println ("PointFile.initProperties:" + getProperties());
         description  = getProperty(PROP_DESCRIPTION, description);
         crs          = getProperty(PROP_CRS, crs);
         isGeographic = crs.equals(CRS_GEOGRAPHIC);
@@ -298,9 +304,10 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             work[IDX_LAT] = llpi.getLatitude();
         } else if (isWgs84) {
             work = GeoUtils.wgs84XYZToLatLonAlt(x, y, z, work);
-            if(cnt++<100) {
+            //            if(cnt++<100) {
                 //                System.err.println("elev:" + work[IDX_ALT]);
-            }
+            //            }
+        } else {
         }
         work[IDX_LON] = GeoUtils.normalizeLongitude(work[IDX_LON]);
         return work;

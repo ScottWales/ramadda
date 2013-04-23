@@ -23,6 +23,8 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     private int cnt = 0;
 
+    private int badCnt = 0;
+
     private double minElevation = Double.NaN;
 
     private double maxElevation = Double.NaN;
@@ -124,7 +126,14 @@ public class PointMetadataHarvester extends RecordVisitor {
 
         //Skip this if it doesn't have a valid position
         if ( !pointRecord.isValidPosition()) {
-            System.err.println("bad position: " + lat +" " + lon);
+            badCnt++;
+            if(badCnt<10) {    
+                System.err.println("PointMetadataHarvester: bad position: " + lat +" " + lon);
+            }
+            if(badCnt>1000 && (cnt==0 || badCnt> 10*cnt)) {    
+                System.err.println("PointMetadataHarvester:Too many bad locations. Something must be wrong.");
+                return false;
+            }
             return true;
         }
 

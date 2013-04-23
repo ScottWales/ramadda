@@ -127,9 +127,9 @@ public abstract class PointRecord extends GeoRecord {
     public void setLocation(double x, double y, double z) {
         locWorkBuffer = getPointFile().getLatLonAlt(this, y, x, z,
                 locWorkBuffer);
-	if(cnt++<10) {
-	    //	    System.err.println("xyz:" + x + " " + y +" " + z +"   alt:" + locWorkBuffer[PointFile.IDX_ALT]);
-	}
+        //	if(cnt++<10) {
+            //            System.err.println("xyz:" + x + " " + y +" " + z +"   alt:" + locWorkBuffer[PointFile.IDX_ALT]);
+        //	}
         this.setLatitude(locWorkBuffer[PointFile.IDX_LAT]);
         this.setLongitude(locWorkBuffer[PointFile.IDX_LON]);
         this.setAltitude(locWorkBuffer[PointFile.IDX_ALT]);

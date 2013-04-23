@@ -45,12 +45,11 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
-    public static final String SUFFIX_BINARY_DOUBLE = ".llb";    
+    public static final String SUFFIX_BINARY_DOUBLE = ".dllb";    
     public static final String SUFFIX_BINARY_FLOAT = ".fllb";    
 
     public static final String FILE_BINARY_DOUBLE = "lightweight" + SUFFIX_BINARY_DOUBLE;
     public static final String FILE_BINARY_FLOAT = "lightweight" + SUFFIX_BINARY_FLOAT;
-
 
 
     /** This points to the  short lat/lon/alt binary file ramadda creates on the fly */
@@ -99,6 +98,7 @@ public class PointEntry extends RecordEntry {
         RecordFile recordFile = (RecordFile) super.getRecordFile();
         if (recordFile == null) {
             long records = getNumRecordsFromEntry(-1);
+            //            System.err.println ("PointEntry.getRecordFile");
             recordFile = getPointOutputHandler().createAndInitializeRecordFile(getRequest(),
                                                                                getEntry(), records);
             setRecordFile(recordFile);
@@ -130,8 +130,9 @@ public class PointEntry extends RecordEntry {
             }
         }
         //Default to the float
-        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_FLOAT));
-        //return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DOUBLE));
+        //return new File(IOUtil.joinDir(entryDir,FILE_BINARY_FLOAT));
+
+        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DOUBLE));
     }
 
 

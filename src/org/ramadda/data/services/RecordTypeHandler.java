@@ -56,6 +56,9 @@ import java.util.Properties;
  */
 public abstract  class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
 
+    public static final int IDX_RECORD_COUNT = 0;
+    public static final int IDX_PROPERTIES = 1;
+
     /** _more_ */
     private  RecordFileFactory recordFileFactory;
 
@@ -164,9 +167,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
             throws Exception {
         
         Hashtable existingProperties = getRecordProperties(entry);
-        System.err.println("initializeEntry:" + originalFile + " props:" + existingProperties);
         if ((existingProperties != null) && (existingProperties.size() > 0)) {
-            System.err.println("initializeEntry: props 1:" + existingProperties);
             return;
         }
 
@@ -175,19 +176,16 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         Hashtable properties =
             RecordFile.getPropertiesForFile(originalFile.toString(),
                                             PointFile.DFLT_PROPERTIES_FILE);
-        System.err.println("from file:" + existingProperties +" " + PointFile.DFLT_PROPERTIES_FILE);
-        //Make the properties string
 
+
+        //Make the properties string
         String contents = makePropertiesString(properties);
-        Object[] values   = entry.getValues();
-        if (values == null) {
-            values = new Object[2];
-        }
+        Object[] values = entry.getTypeHandler().getValues(entry);
         //Append the properties file contents
-        if(values[1]!=null) {
-            values[1] = "\n" + contents;
+        if(values[IDX_PROPERTIES]!=null) {
+            values[IDX_PROPERTIES] = "\n" + contents;
         } else {
-            values[1] =  contents;
+            values[IDX_PROPERTIES] =  contents;
         }
     }
 
@@ -257,15 +255,11 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        String   propertiesString = null;
-        Object[] values           = entry.getValues();
-        if ((values != null) && (values.length >= 2) && (values[1] != null)) {
-            propertiesString = values[1].toString();
-        }
+        Object[] values = entry.getTypeHandler().getValues(entry);
+        String   propertiesString =  values[IDX_PROPERTIES]!=null?values[IDX_PROPERTIES].toString():"";
         if (propertiesString != null) {
             Properties p = new Properties();
             p.load(new ByteArrayInputStream(propertiesString.getBytes()));
-
             return p;
         }
 
@@ -282,26 +276,35 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     public RecordFile doMakeRecordFile(Entry entry) throws Exception {
+        Hashtable properties = getRecordProperties(entry);
+        RecordFile recordFile = doMakeRecordFile(entry, properties);
+        //Explicitly set the properties to force a call to initProperties
+        recordFile.setProperties(properties);
+        return recordFile;
+    }
+
+    private RecordFile doMakeRecordFile(Entry entry, Hashtable properties) throws Exception {
         String recordFileClass= getProperty("record.file.class",(String) null);
         if(recordFileClass!= null)  {
-            return doMakeRecordFile(entry, recordFileClass);
+            return doMakeRecordFile(entry, recordFileClass,properties);
         }
         String path = entry.getFile().toString();
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(path,
-                                                                    getRecordProperties(entry));
+                                                                    properties);
     }
 
 
-    private RecordFile doMakeRecordFile(Entry entry, String className) throws Exception {
+    private RecordFile doMakeRecordFile(Entry entry, String className, Hashtable properties) throws Exception {
         Class c = Misc.findClass(className);
         Constructor ctor = Misc.findConstructor(c,
                                                 new Class[] { String.class, Hashtable.class });
         if(ctor!=null) {
             return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString(),
-                                                              getRecordProperties(entry)});
+                                                              properties});
         }
         ctor = Misc.findConstructor(c,
                                     new Class[] { String.class});
+
         if(ctor!=null) {
             return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString()});
             

@@ -296,6 +296,11 @@ public class TextRecord extends PointRecord {
         //Offset since the  field ids are 1 based not 0 based
         idx = idx-1;
         if ((idx >= 0) && (idx < values.length)) {
+            //Maybe just a number
+            if(objectValues[idx] == null) {
+                return ""+values[idx];
+            }
+
             return objectValues[idx].toString();
         }
         return super.getStringValue(attrId);
@@ -383,6 +388,8 @@ public class TextRecord extends PointRecord {
                     
                 }
             }
+
+
             setLocation(values[idxX], values[idxY], ((idxZ >= 0)
                                                      ? values[idxZ]
                                                      : 0));

@@ -69,6 +69,8 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
+    private Object[] fileMetadata;
+
 
     /**
      * ctor
@@ -96,8 +98,6 @@ public abstract class RecordFile {
         this.filename = filename;
     }
 
-    private Object[] fileMetadata;
-
 
     public Object[] getFileMetadata() {
         return fileMetadata;
@@ -118,6 +118,10 @@ public abstract class RecordFile {
         return that;
     }
 
+    public Hashtable getProperties() {
+        return properties;
+    }
+
     public String getPropertiesFileName() {
         return "record.properties";
     }
@@ -133,13 +137,10 @@ public abstract class RecordFile {
      */
     public static Hashtable getProperties(File[] files) {
         Properties p = new Properties();
-        //        System.err.println ("NLASTOOLS: Looking for .properties files");
         for (File f : files) {
             if ( !f.exists()) {
-                //                System.err.println ("\tfile does not exist:" + f);
                 continue;
             }
-            //            System.err.println ("NLAS: loading property file:" + f); 
             try {
                 FileInputStream fis = new FileInputStream(f);
                 p.load(fis);
@@ -587,7 +588,7 @@ public abstract class RecordFile {
                       RecordFilter filter)
             throws Exception {
 
-        System.err.println("RecordFile: " + getClass().getName() + ".visit");
+        //        System.err.println("RecordFile: " + getClass().getName() + ".visit");
         if (visitInfo == null) {
             visitInfo = new VisitInfo();
         }
