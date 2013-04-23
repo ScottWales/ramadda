@@ -61,12 +61,8 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 
 
+import ucar.nc2.dt.*;
 
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.TypedDatasetFactory;
 
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
@@ -82,6 +78,8 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
+
+
 
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.units.DateFormatter;
@@ -162,6 +160,9 @@ public class CdmManager extends RepositoryManager {
     /** TRAJECTORY type */
     public static final String TYPE_TRAJECTORY = "trajectory";
 
+    /** RADAR type */
+    public static final String TYPE_RADAR = "cdm_radar";
+
     /** POINT_TYPE */
     public static final String TYPE_POINT = "point";
 
@@ -194,7 +195,9 @@ public class CdmManager extends RepositoryManager {
     /** trajectory entries cache */
     private Cache<String, Boolean> trajectoryEntries = new Cache<String,
                                                            Boolean>(5000);
-
+    /** trajectory entries cache */
+    private Cache<String, Boolean> radarEntries = new Cache<String,
+                                                      Boolean>(5000);
 
     /** nj cache directory */
     private TempDir nj22Dir;
@@ -533,6 +536,37 @@ public class CdmManager extends RepositoryManager {
     };
 
 
+    /** radar pool */
+    private ObjectPool<String, RadialDatasetSweep> radarPool =
+        new ObjectPool<String, RadialDatasetSweep>(10) {
+            protected void removeValue(String key, RadialDatasetSweep dataset) {
+                try {
+                    super.removeValue(key, dataset);
+                    dataset.close();
+                } catch (Exception exc) {}
+            }
+
+
+
+            protected RadialDatasetSweep createValue(String path) {
+                try {
+                    Formatter buf = new Formatter();
+                    getStorageManager().dirTouched(nj22Dir, null);
+
+                    RadialDatasetSweep pods =
+                            (RadialDatasetSweep) TypedDatasetFactory.open(
+                                    ucar.nc2.constants.FeatureType.RADIAL, path, null,
+                                    new StringBuilder());
+
+                    return pods;
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+
+
+    };
+
     /** trajectory pool */
     private ObjectPool<String, TrajectoryObsDataset> trajectoryPool =
         new ObjectPool<String, TrajectoryObsDataset>(10) {
@@ -618,6 +652,7 @@ public class CdmManager extends RepositoryManager {
         gridEntries.clear();
         pointEntries.clear();
         trajectoryEntries.clear();
+        radarEntries.clear();
     }
 
     /**
@@ -702,7 +737,7 @@ public class CdmManager extends RepositoryManager {
             return false;
         }
 
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
+        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
         for (int i = 0; i < types.length; i++) {
             if (includedByPattern(entry, types[i])) {
                 return true;
@@ -784,6 +819,39 @@ public class CdmManager extends RepositoryManager {
         return b.booleanValue();
     }
 
+    /**
+     * Can the Entry be loaded a radar data?
+     *
+     * @param entry  the Entry
+     *
+     * @return true if can load as point
+     */
+    public boolean canLoadAsRadar(Entry entry) {
+        if (excludedByPattern(entry, TYPE_RADAR)) {
+            return false;
+        }
+        if (includedByPattern(entry, TYPE_RADAR)) {
+            return true;
+        }
+        if ( !canLoadAsCdm(entry)) {
+            return false;
+        }
+
+        Boolean b = (Boolean) radarEntries.get(entry.getId());
+        if (b == null) {
+            boolean ok = false;
+            if ( !canLoadEntry(entry)) {
+                ok = false;
+            } else {
+                try {
+                    ok = radarPool.containsOrCreate(getPath(entry));
+                } catch (Exception ignore) {}
+            }
+            radarEntries.put(entry.getId(), b = new Boolean(ok));
+        }
+
+        return b.booleanValue();
+    }
 
     /**
      * Can the Entry be loaded as a trajectory?
@@ -886,7 +954,7 @@ public class CdmManager extends RepositoryManager {
 
 
             String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY,
-                               TYPE_POINT };
+                               TYPE_POINT, TYPE_RADAR };
             for (int i = 0; i < types.length; i++) {
                 List toks = StringUtil.split(
                                 getRepository().getProperty(
@@ -1253,7 +1321,7 @@ public class CdmManager extends RepositoryManager {
         CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
                                        "test");
         CdmManager cdmManager = new CdmManager(repository);
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT };
+        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
         for (String f : args) {
             System.err.println("file:" + f);
             for (String type : types) {
