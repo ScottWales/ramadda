@@ -788,7 +788,12 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
             }
 
             logHarvesterInfo("Directory:" + dirInfo.getFile()
-                             + " * scanning *");
+                             + "  found " + files.length +" files");
+
+            for (File f : files) {
+                logHarvesterInfo("File:" + f);
+            }
+
 
             printTab = "\t\t";
             files    = IOUtil.sortFilesOnName(files);
@@ -823,16 +828,19 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                 }
                 Entry entry = null;
                 try {
+                    System.err.println("processing file:"+ f);
                     entry = processFile(dirInfo, f);
                 } catch (Exception exc) {
+                    System.err.println("error processing file:"+ f);
                     logHarvesterError("Error creating entry:" + f, exc);
                 }
                 if (entry == null) {
+                    System.err.println("no entry for file:"+ f);
                     logHarvesterInfo("No entry created");
-
                     continue;
                 }
                 entries.add(entry);
+                System.err.println("Adding entry:" + entry.getResource());
                 entryCnt++;
                 if (getTestMode() && (entryCnt >= getTestCount())) {
                     return;
@@ -845,6 +853,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         List<Entry> uniqueEntries =
                             getEntryManager().getUniqueEntries(entries,
                                 nonUniqueOnes);
+                        System.err.println("non unique:" + nonUniqueOnes);
+                        System.err.println("uniqueunique:" + uniqueEntries);
                         for (Entry e : nonUniqueOnes) {
                             logHarvesterInfo("Entry already exists:"
                                              + e.getResource());
