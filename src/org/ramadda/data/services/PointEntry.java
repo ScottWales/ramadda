@@ -50,6 +50,8 @@ public class PointEntry extends RecordEntry {
 
     public static final String FILE_BINARY_DOUBLE = "lightweight" + SUFFIX_BINARY_DOUBLE;
     public static final String FILE_BINARY_FLOAT = "lightweight" + SUFFIX_BINARY_FLOAT;
+    public static final String FILE_BINARY_DEFAULT = FILE_BINARY_FLOAT;
+
 
 
     /** This points to the  short lat/lon/alt binary file ramadda creates on the fly */
@@ -129,10 +131,7 @@ public class PointEntry extends RecordEntry {
                 return quickscanFile;
             }
         }
-        //Default to the float
-        //return new File(IOUtil.joinDir(entryDir,FILE_BINARY_FLOAT));
-
-        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DOUBLE));
+        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DEFAULT));
     }
 
 
