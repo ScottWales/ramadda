@@ -60,7 +60,12 @@ import java.util.Properties;
  * @version $Revision: 1.3 $
  */
 public class RadarTypeHandler extends GenericTypeHandler {
-
+    public static final String TYPE_RADAR = "cdm_radar";
+    public static final String TYPE_RADAR_LEVEL2 = "cdm_radar_level2";
+    public static final String TYPE_RADAR_LEVEL3 = "cdm_radar_level3";
+    public static final int IDX_STATION_ID = 0;
+    public static final int IDX_STATION_NAME = 1;
+    public static final int IDX_STATION_PRODUCT = 2;
 
     /**
      * _more_

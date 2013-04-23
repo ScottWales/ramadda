@@ -121,10 +121,9 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
             entry.setDescription(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_SUMMARY, ""));
         }
 
-        //I added a station name field
-        values[0] = stationId;
-        values[1] = stationName;
-        values[2] = product;
+        values[IDX_STATION_ID] = stationId;
+        values[IDX_STATION_NAME] = stationName;
+        values[IDX_STATION_PRODUCT] = product;
 
 
         //The name should be the name of the file. If all entries are named with the station name then

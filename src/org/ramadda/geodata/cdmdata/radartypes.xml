@@ -1,8 +1,7 @@
 <types>
 
 
-
-<type name="cdm_radar_base"  description="Base Radar File" foruser="false" category="Radar Data">
+<type name="cdm_radar"  description="Base Radar File" foruser="false" category="Radar Data">
     <property name="icon" value="/cdmdata/radar.gif"/>
     <property name="form.todate.show" value="false"/>
     <column name="station_id"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station ID" 
@@ -12,13 +11,13 @@
 
 
 
-<type name="cdm_radar_level3"  description="Level 3 Radar File" super="cdm_radar_base" handler="org.ramadda.geodata.cdmdata.Level3RadarTypeHandler">
+<type name="cdm_radar_level3"  description="Level 3 Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.Level3RadarTypeHandler">
     <column name="product" type="enumerationplus"          isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
                 properties="/org/ramadda/geodata/cdmdata/resources/level3radar.product.properties"/>
 </type>
 
 
-<type name="cdm_radar_level2" description="Level 2 Radar File" super="cdm_radar_base" handler="org.ramadda.geodata.cdmdata.Level2RadarTypeHandler">
+<type name="cdm_radar_level2" description="Level 2 Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.Level2RadarTypeHandler">
 </type>
 
 
