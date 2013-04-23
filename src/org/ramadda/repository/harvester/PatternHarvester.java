@@ -1334,6 +1334,11 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                         createDate.getTime(), createDate.getTime(),
                         fromDate.getTime(), toDate.getTime(), values);
 
+        Date date = Utils.extractDate(name);
+        if(date!=null &&!entry.hasDate()) {
+            entry.setDate(date);
+        }
+
         //If it is an image then we create a thumbnail for it in the JpegMetadataHandler
         //else we check if there is a .thm file
         if ( !ImageUtils.isImage(resource.getPath())) {
