@@ -123,8 +123,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
 
-
-
     /** _more_ */
     public static final String TYPE_CREATOR = "thredds.creator";
 
@@ -372,29 +370,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
 
-    /** _more_ */
-    public static final String ATTR_MINLAT = "geospatial_lat_min";
-
-    /** _more_ */
-    public static final String ATTR_MAXLAT = "geospatial_lat_max";
-
-    /** _more_ */
-    public static final String ATTR_MINLON = "geospatial_lon_min";
-
-    /** _more_ */
-    public static final String ATTR_MAXLON = "geospatial_lon_max";
-
-    /** _more_ */
-    public static final String ATTR_KEYWORDS = "keywords";
-
-    /** _more_          */
-    public static final String ATTR_TITLE = "title";
-
-    /** _more_          */
-    public static final String ATTR_DESCRIPTION = "description";
-
-    /** _more_          */
-    public static final String ATTR_ABSTRACT = "abstract";
 
 
     /**
@@ -447,25 +422,25 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 if (value == null) {
                     value = "" + attr.getNumericValue();
                 }
-                if (ATTR_MAXLON.equals(name)) {
+                if (CdmUtil.ATTR_MAXLON.equals(name)) {
                     //                    System.err.println ("maxlon:" + value);
                     extra.put(ARG_MAXLON, new Double(value));
 
                     continue;
                 }
-                if (ATTR_MINLON.equals(name)) {
+                if (CdmUtil.ATTR_MINLON.equals(name)) {
                     //                    System.err.println ("minlon:" + value);
                     extra.put(ARG_MINLON, new Double(value));
 
                     continue;
                 }
-                if (ATTR_MAXLAT.equals(name)) {
+                if (CdmUtil.ATTR_MAXLAT.equals(name)) {
                     //                    System.err.println ("maxlat:" + value);
                     extra.put(ARG_MAXLAT, new Double(value));
 
                     continue;
                 }
-                if (ATTR_MINLAT.equals(name)) {
+                if (CdmUtil.ATTR_MINLAT.equals(name)) {
                     //                    System.err.println ("minlat:" + value);
                     extra.put(ARG_MINLAT, new Double(value));
 
@@ -508,11 +483,11 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
                 if (entry.getDescription().length() == 0) {
-                    if (ATTR_ABSTRACT.equals(name)) {
+                    if (CdmUtil.ATTR_ABSTRACT.equals(name)) {
                         descriptionAttr.append(value);
 
                         continue;
-                    } else if (ATTR_DESCRIPTION.equals(name)) {
+                    } else if (CdmUtil.ATTR_DESCRIPTION.equals(name)) {
                         descriptionAttr.append(value);
 
                         continue;
@@ -520,12 +495,12 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
 
                 //Only set the name if its not different from the file name
-                //                if(ATTR_TITLE.equals(name) && entry.getTypeHandler().entryHasDefaultName(entry)) {
+                //                if(CdmUtil.ATTR_TITLE.equals(name) && entry.getTypeHandler().entryHasDefaultName(entry)) {
                 //                    entry.setName(value);
                 //                    continue;
                 //                }
 
-                if (ATTR_KEYWORDS.equals(name)) {
+                if (CdmUtil.ATTR_KEYWORDS.equals(name)) {
                     List<String> keywords =
                         (List<String>) StringUtil.split(value, ";", true,
                             true);

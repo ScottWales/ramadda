@@ -26,6 +26,7 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -89,42 +90,55 @@ public class Level3RadarTypeHandler extends RadarTypeHandler {
 @Override
     public void initializeNewEntry(Entry entry) throws Exception {
         Object[] values = entry.getTypeHandler().getValues(entry);
-
-
         File f = entry.getFile();
-        System.err.println("Initialize new entry:"+  entry);
-        System.err.println("File:" + f);
-
-
         NetcdfFile ncf =  NetcdfFile.open(f.toString());
 
-        String stId = ncf.findAttValueIgnoreCase(null, "ProductStation", "XXX");
-        String stName =  ncf.findAttValueIgnoreCase(null, "ProductStationName", "XXX, XX, XX");
-        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "RadarLatitude", "0.0"));
-        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "RadarLongitude", "0.0"));
-
-        String station = "station";
-        String product = ncf.findAttValueIgnoreCase(null, "keywords_vocabulary", "XXX");
+        String stationId = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONID, "XXX");
+        String stationName =  ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONNAME, "XXX, XX, XX");
+        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LATITUDE, "0.0"));
+        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LONGITUDE, "0.0"));
+        String product = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
 
 
-        String sdate = ncf.findAttValueIgnoreCase(null, "time_coverage_start", (new Date()).toString());
+        String sdate = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_TIME_START, (new Date()).toString());
         Date  startDate = DateUnit.getStandardOrISO(sdate);
-        //Crack open the file and set metadata
-        //...
-        float lat_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lat_min", "0.0f"));
-        float lat_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lat_max", "0.0f"));
-        float lon_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lon_min", "0.0f"));
-        float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, "geospatial_lon_max", "0.0f"));
+        float lat_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLAT, "0.0f"));
+        float lat_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLAT, "0.0f"));
+        float lon_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "0.0f"));
+        float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLON, "0.0f"));
 
-        values[0] = station;
-        values[1] = product;
-        entry.setLatitude(radarLat);
-        entry.setLongitude(radarLon);
-        entry.setId(stId);
-        entry.setName(stName);
+
+        System.err.println ("Attribute value:" + CdmUtil.ATTR_MINLON +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "NONE FOUND"));
+
+
+        float altitude = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "0.0f"));
+        entry.setAltitude(altitude);
+
+        System.err.println ("altitude:" + CdmUtil.ATTR_RADAR_ALTITUDE +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "NONE FOUND"));
+
+
+        if(!Utils.stringDefined(entry.getDescription())) {
+            entry.setDescription(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_SUMMARY, ""));
+        }
+
+        //I added a station name field
+        values[0] = stationId;
+        values[1] = stationName;
+        values[2] = product;
+
+
+        //The name should be the name of the file. If all entries are named with the station name then
+        //then it will be hard to tell them apart
+        //entry.setName(stationName);
+
+        //Don't set the ID. The entry ID is a RAMADDA thing
+        //        entry.setId(stId);
+
 
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
+        //        entry.setLatitude(radarLat);
+        //        entry.setLongitude(radarLon);
         entry.setSouth(lat_min);
         entry.setNorth(lat_max);
         entry.setEast(lon_max);

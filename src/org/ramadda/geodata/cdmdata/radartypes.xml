@@ -3,10 +3,11 @@
 
 
 <type name="cdm_radar_base"  description="Base Radar File" foruser="false" category="Radar Data">
-    <property name="icon" value="/cdmdata/opendap.gif"/>
+    <property name="icon" value="/cdmdata/radar.gif"/>
     <property name="form.todate.show" value="false"/>
-    <column name="station"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station" 
+    <column name="station_id"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station ID" 
            properties="/org/ramadda/geodata/cdmdata/resources/level3radar.station.properties"/>
+    <column name="station_name"  type="string"  cansearch="true" canlist="true" label="Station Name" />
 </type>
 
 
