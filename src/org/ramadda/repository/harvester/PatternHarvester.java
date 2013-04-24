@@ -1336,7 +1336,8 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         Date date = Utils.extractDate(name);
         if(date!=null &&!entry.hasDate()) {
-            entry.setDate(date);
+            entry.setStartDate(date.getTime());
+            entry.setEndDate(date.getTime());
         }
 
         //If it is an image then we create a thumbnail for it in the JpegMetadataHandler
