@@ -1260,10 +1260,13 @@ public class Column implements DataTypes, Constants {
                 //....,value,...
                 List<Clause> ors = new ArrayList<Clause>();
                 ors.add(Clause.eq(colName, value));
-                ors.add(Clause.like(colName, value+",%"));
-                ors.add(Clause.like(colName, "%," + value));
-                ors.add(Clause.like(colName, "%," + value+",%"));
+                ors.add(Clause.like(colName, "%" + value+"%"));
+                //                ors.add(Clause.like(colName, value+",%"));
+                //                ors.add(Clause.like(colName, "%," + value));
+                //                ors.add(Clause.like(colName, "%," + value+",%"));
                 where.add(Clause.or(ors));
+
+                //                System.err.println("ORS:" + Clause.or(ors));
             }
         } else if (isEnumeration()) {
             List<String> values = getSearchValues(request);
