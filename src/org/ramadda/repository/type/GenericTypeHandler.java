@@ -81,6 +81,8 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     List<Column> columns = new ArrayList<Column>();
 
+    private Column categoryColumn;
+
     /** _more_ */
     List colNames = new ArrayList();
 
@@ -216,6 +218,9 @@ public class GenericTypeHandler extends TypeHandler {
                     columnNode,
                     new Integer(valuesOffset + colNames.size() - 1) });
             columns.add(column);
+            if(categoryColumn == null && column.getIsCategory()) {
+                categoryColumn = column;
+            }
             colNames.addAll(column.getColumnNames());
             column.createTable(statement);
         }
@@ -270,21 +275,19 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @return _more_
      */
+    @Override
     public TwoFacedObject getCategory(Entry entry) {
-        for (Column column : columns) {
-            if (column.getIsCategory()) {
-                Object[] values = entry.getValues();
-                if (values != null) {
-                    String s = column.getString(values);
-                    if (s != null) {
-                        String label = column.getEnumLabel(s);
-                        return new TwoFacedObject(label, s);
-                    }
-                    break;
+        if(categoryColumn!=null) {
+
+            Object[] values = entry.getValues();
+            if (values != null) {
+                String s = categoryColumn.getString(values);
+                if (s != null) {
+                    String label = categoryColumn.getEnumLabel(s);
+                    return new TwoFacedObject(label, s);
                 }
             }
         }
-
         return super.getCategory(entry);
     }
 
