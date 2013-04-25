@@ -1594,6 +1594,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                    include.equals(WIKI_PROP_CHILDREN_ENTRIES) ||
                    include.equals(WIKI_PROP_CHILDREN) ||
                    include.equals(WIKI_PROP_TREE)) {
+
             if(include.equals(WIKI_PROP_CHILDREN_GROUPS))
                 props.put(ATTR_FOLDERS, "true");
             else  if (include.equals(WIKI_PROP_CHILDREN_ENTRIES)) 
@@ -1604,13 +1605,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             if (children.size() == 0) {
                 return null;
             }
+            boolean showCategories =  Misc.getProperty(props, ARG_SHOWCATEGORIES, false);
+            if(showCategories) {
+                request.put(ARG_SHOWCATEGORIES,"true");
+            }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, true, true, false);
+
+            if(showCategories) {
+                request.remove(ARG_SHOWCATEGORIES);
+            }
             if(Misc.getProperty(props, "form",false)) {
                 return link+HtmlUtils.br()+ sb.toString();
             } else {
                 return sb.toString();
             }
+
         } else if (include.equals(WIKI_PROP_TREEVIEW)) {
             List<Entry> children = getEntries(request, wikiUtil, entry,
                                        props);

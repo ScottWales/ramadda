@@ -52,6 +52,16 @@ form {
    margin-left:25px;
 }
 
+.ramadda-entry-list {
+    max-height: 200px; 
+    overflow-y: auto;
+    margin-left:20px;
+    border-left : 1px #ccc solid;
+    border-bottom : 1px #ccc solid;
+    border-top : 1px #ccc solid;
+}
+
+
 .shadow-box {
    border : 1px #ccc solid;
    padding: 10px;

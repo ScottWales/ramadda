@@ -28,6 +28,7 @@ import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -1391,9 +1392,12 @@ public class OutputHandler extends RepositoryManager {
             base = tuple[1];
             sb.append(tuple[2]);
         }
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
-        sb.append("\n\n");
+
+
+        boolean doCategories = request.get(ARG_SHOWCATEGORIES, false);
+        CategoryBuffer cb = new CategoryBuffer();
+
+
         int          cnt  = 0;
         StringBuffer jsSB = new StringBuffer();
         for (Entry entry : (List<Entry>) entries) {
@@ -1451,15 +1455,35 @@ public class OutputHandler extends RepositoryManager {
                                       entry, entry.getLabel(), null, true,
                                       crumbs);
             entryLink.setLink(cbxSB + entryLink.getLink());
-            decorateEntryRow(request, entry, sb, entryLink, rowId, "");
-        }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-        sb.append(HtmlUtils.script(jsSB.toString()));
-        sb.append("\n\n");
-        if (doFormClose) {
-            sb.append(getEntryFormEnd(request, base));
+
+            StringBuffer buffer = cb.get(doCategories?entry.getTypeHandler().getCategory(entry).getLabel().toString():"");
+            decorateEntryRow(request, entry, buffer, entryLink, rowId, "");
         }
 
+
+
+
+        for(String category: cb.getCategories()) {
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                     HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
+            sb.append("\n\n");
+            if(doCategories) {
+                if(category.length()>0) {
+                    sb.append(subHeader(category));
+                }
+                sb.append(HtmlUtils.div(cb.get(category).toString(),  HtmlUtils.cssClass("ramadda-entry-list")));
+                sb.append(HtmlUtils.p());
+            } else {
+                sb.append(cb.get(category));
+            }
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            if (doFormClose) {
+                sb.append(getEntryFormEnd(request, base));
+            }
+        }
+
+        sb.append(HtmlUtils.script(jsSB.toString()));
+        sb.append("\n\n");
         return link;
     }
 

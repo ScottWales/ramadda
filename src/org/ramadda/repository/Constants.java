@@ -347,6 +347,8 @@ public interface Constants {
 
 
 
+    public static final String ARG_SHOWCATEGORIES = "showcategories";
+
     /** _more_ */
     public static final String ATTR_ADDSHORTMETADATA = "addshortmetadata";
 
