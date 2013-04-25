@@ -1,57 +1,57 @@
 BODY {
 	MARGIN: 0px; 
-	FONT-SIZE: 11px; 
+        FONT-SIZE: 12px; 
 	COLOR: #000000; 
 	FONT-FAMILY: Arial, Helvetica, sans-serif;
 	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
 	}
 
 TABLE {
-	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+      COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
 	}
 
 TD {
-	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
-	}
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+        }
 
 FORM {
 	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
 	}
 	
 FORM {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	 COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
 	}
 
 INPUT {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
 	}
 
 SELECT {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
 	}
 
 H1 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 
 H2 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 
 H3 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 
 H4 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 
 H5 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 
 H6 {
-	FONT-SIZE: 11px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
 	}
 	
 ul {
@@ -78,7 +78,7 @@ A:visited {
 	}
 
 .boldTitle {
-	FONT-WEIGHT: bold; FONT-SIZE: 13px
+	FONT-WEIGHT: bold; FONT-SIZE: 13px;
 	}
 
 .italic {
@@ -102,13 +102,13 @@ A:visited {
 	}
 
 .sectionLnk {
-	FONT-SIZE: 12px; COLOR: #ffffff
+	XFONT-SIZE: 12px; COLOR: #ffffff
 	}
 
 .featureTitle
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 14px;
+   xfont-size: 14px;
    font-weight: bold;
    color: #000000;
 }
@@ -116,7 +116,7 @@ A:visited {
 .featureText
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 12px;
+   xfont-size: 12px;
    color: #000000;
 }
 
@@ -133,7 +133,7 @@ A:visited {
 	}
 
 .bannerLnk {
-	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ffffff
+	FONT-WEIGHT: bold; XFONT-SIZE: 12px; COLOR: #ffffff
 	}
 
 .bannerTxt {
@@ -178,7 +178,7 @@ a.navLnkBlack.visited {
 	}
 
 .fact {
-	FONT-SIZE: 13px; COLOR: #484848
+	XFONT-SIZE: 13px; COLOR: #484848
 	}
 
 .factBlue {
@@ -190,11 +190,11 @@ a.navLnkBlack.visited {
 	}
 
 .introLnk {
-	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #009eff
+	FONT-WEIGHT: bold; XFONT-SIZE: 12px; COLOR: #009eff
 	}
 
 .introTxt {
-	FONT-SIZE: 12px; COLOR: #ffffff
+	XFONT-SIZE: 12px; COLOR: #ffffff
 	}
 
 .featureLnkSelect {
@@ -238,47 +238,47 @@ a.navLnkBlack.visited {
 	COLOR: #cccccc; LETTER-SPACING: 1px
 	}
 
-.boldFeatureLg { FONT-WEIGHT: bolder; COLOR: #006699 ; font-size: medium; line-height: 60px	
+.boldFeatureLg { FONT-WEIGHT: bolder; COLOR: #006699 ; xfont-size: medium; line-height: 60px	
 	}
 
-.pageheader { FONT-WEIGHT: bolder; COLOR: #006699 ; font-size: medium; 
+.pageheader { FONT-WEIGHT: bolder; COLOR: #006699 ; xfont-size: medium; 
 	}
 	
-.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; font-size: large; 
+.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; xfont-size: large; 
 	}
 	
-.pageheader_te { FONT-WEIGHT: normal; COLOR: #006699 ; font-size: large; 
+.pageheader_te { FONT-WEIGHT: normal; COLOR: #006699 ; xfont-size: large; 
 	}
 	
 		
-.welcome_te { FONT-WEIGHT: normal; COLOR: #006699 ; font-size: x-large; 
+.welcome_te { FONT-WEIGHT: normal; COLOR: #006699 ; xfont-size: x-large; 
 	}
 
 .subsectionheader
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 14px;
+   xfont-size: 14px;
    color: #000000;
 }
 
 .sectionheader
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 14px;
+   xfont-size: 14px;
    font-weight: bold;
    color: #000000;
 }
 .default-style
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 12px;
+   xfont-size: 12px;
    color: #000000;
    line-height: 18px
 }
    .default-style_brown
 {
    FONT-FAMILY: Arial, Helvetica, sans-serif;
-   font-size: 12px;
+   xfont-size: 12px;
    color: #6F4A00;
    line-height: 18px
 }
@@ -289,7 +289,7 @@ td#bgtd {
 table#printfriendlydisclaimer {display: none}
 .pageheader_te_2010 {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 24px;
+	xfont-size: 24px;
 	font-style: normal;
 	line-height: 32px;
 	font-weight: lighter;
@@ -297,7 +297,7 @@ table#printfriendlydisclaimer {display: none}
 }
 .Welcome_te2010 {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 24px;
+	xfont-size: 24px;
 	color: #2C4A04;
 	font-weight: bold;
 }
@@ -309,31 +309,31 @@ table#printfriendlydisclaimer {display: none}
 .sectionheader_te2010 {
 	color: #360;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px;
+	xfont-size: 16px;
 	font-weight: bold;
 }
 .Welcome_te_2010_sm {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px;
+	xfont-size: 16px;
 	font-style: normal;
 	color: #666;
 }
 .subsectionheader_te2010 {
 	color: #360;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	xfont-size: 14px;
 }
 
 .heading_jsw2011 {
 FONT-FAMILY: Verdana, Arial, sans-serif;
-font-size: 20px;
+xfont-size: 20px;
 color: #CC6600;
 font-weight: bold;
 font-stretch: condensed; 
 }
 .heading_jsw2011_print {
 FONT-FAMILY: Verdana, Arial, sans-serif;
-font-size: 20px;
+xfont-size: 20px;
 color: #000000;
 font-weight: bold;
 font-stretch: condensed; 
@@ -341,42 +341,42 @@ font-stretch: condensed;
 
 .heading_cms {
 	font-family: Verdana, Arial, sans-serif;
-	font-size: 20px;
+	xfont-size: 20px;
 	color: #666666;
 	font-weight: normal;
 	font-stretch: condensed;
 }
 .text_cms {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	xfont-size: 14px;
 	font-style: normal;
 	color: #666666;
 	line-height: 120%
 }
 	
-.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; font-size: large; 
+.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; xfont-size: large; 
 	}
 	
 		
-.banner_ascends { COLOR: #FFFFFF; font-size: 36px; font-family: "Times New Roman", Times, serif;
+.banner_ascends { COLOR: #FFFFFF; xfont-size: 36px; font-family: "Times New Roman", Times, serif;
 	}
 
 .heading_jsw {
 	font-family: Verdana, Arial, sans-serif;
-	font-size: 20px;
+	xfont-size: 20px;
 	color: #000000;
 	font-weight: normal;
 	font-stretch: condensed;
 }
 .font_times {
-	FONT-SIZE: 14px; 
+	XFONT-SIZE: 14px; 
 	COLOR: #000000; 
 	FONT-FAMILY: "Times New Roman", Times, serif;
 	
 }
 .title_sm_org_jsw {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	xfont-size: 14px;
 	font-style: normal;
 	color: #CC6600;
 	line-height: 120%
@@ -384,7 +384,7 @@ font-stretch: condensed;
 
 .title_sm_org_jsw_print {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	xfont-size: 14px;
 	font-style: normal;
 	color: #000000;
 	line-height: 120%
