@@ -2485,28 +2485,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandler _more_
-     * @param textToSearch _more_
-     * @param searchCriteria _more_
-     * @param where _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addTextSearch(Request request, TypeHandler typeHandler,
-                              String textToSearch,
-                              StringBuffer searchCriteria, List<Clause> where)
-            throws Exception {
-        typeHandler.addTextSearch(request, textToSearch, searchCriteria,
-                                  where);
-    }
-
-
-
     /**
      * This writes out the full database table definition to a file called Tables.java
      *

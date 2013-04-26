@@ -22,6 +22,7 @@
 package org.ramadda.repository.search;
 
 
+
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.*;
@@ -193,7 +194,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //        request.put("atom.id", theType);
         Result result =
             getRepository().getSearchManager().processEntrySearch(request);
-
         return result;
     }
 
@@ -339,9 +339,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (showText) {
             formSB.append(
                 HtmlUtils.formEntry(
-                    msgLabel(
-                        typeHandler.getFormLabel(
-                            null, ARG_NAME, "Text")), HtmlUtils.input(
+                    msgLabel("Text"), HtmlUtils.input(
                                 ARG_TEXT, request.getString(ARG_TEXT, ""),
                                 HtmlUtils.SIZE_15 + " autofocus ")));
         }
@@ -355,14 +353,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (showArea) {
             String clearLink =
                 map.getSelectorClearLink(repository.msg("Clear"));
-            String searchType =
-                TypeHandler.getSpatialSearchTypeWidget(request);
-            String widget = map.getSelectorWidget(ARG_AREA, nwse);
+            String widget = map.makeSelector(ARG_AREA, true, nwse);
+            //            String widget = map.getSelectorWidget(ARG_AREA, nwse);
+
             formSB.append(HtmlUtils.formEntry(msgLabel("Location"),
                     HtmlUtils.table(new Object[] { widget,
                     clearLink })));
         }
-        //        formSB.append(HtmlUtils.formEntry("", searchType));
 
 
         typeHandler.addToSpecialSearchForm(request, formSB);

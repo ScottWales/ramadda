@@ -4050,8 +4050,6 @@ public class TypeHandler extends RepositoryManager {
                                        Tables.ENTRIES.COL_ID));
             subClauses.add(Clause.eq(subTable + ".type", type));
             subClauses.add(Clause.or(attrOrs));
-            System.err.println ("ORS:" + Clause.or(attrOrs));
-
             metadataAnds.add(Clause.and(subClauses));
         }
 
@@ -4067,11 +4065,10 @@ public class TypeHandler extends RepositoryManager {
 
 
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
-
         //A hook to allow the database manager do its own text search based on the dbms type
         if (textToSearch.length() > 0) {
-            getDatabaseManager().addTextSearch(request, this, textToSearch,
-                    searchCriteria, where);
+            addTextSearch(request, textToSearch, searchCriteria,
+                               where);
         }
 
         return where;
@@ -4211,6 +4208,8 @@ public class TypeHandler extends RepositoryManager {
                                     Tables.METADATA.COL_ATTR3,
                                     Tables.METADATA.COL_ATTR4*/
             };
+
+
             for (String nameTok : nameToks) {
                 boolean doNot = nameTok.startsWith("!");
                 if (doNot) {
@@ -4221,6 +4220,15 @@ public class TypeHandler extends RepositoryManager {
                     nameTok = "%" + nameTok + "%";
                 }
                 List<Clause> ors = new ArrayList<Clause>();
+
+                for (Column column : getColumns()) {
+                    if(column.isString()) {
+                        ors.add(Clause.like(column.getFullName(), nameTok));
+                    }
+                }
+
+
+
                 if (searchMetadata) {
                     List<Clause> metadataOrs = new ArrayList<Clause>();
                     for (String attrCol : attrCols) {
