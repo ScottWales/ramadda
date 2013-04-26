@@ -1330,6 +1330,9 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
 
 
+        if(getGenerateMd5()) {
+            resource.setMd5(IOUtil.getMd5(resource.getPath()));
+        }
         entry.initEntry(name, desc, group, getUser(), resource, "",
                         createDate.getTime(), createDate.getTime(),
                         fromDate.getTime(), toDate.getTime(), values);

@@ -110,6 +110,7 @@ public abstract class Harvester extends RepositoryManager {
     public static final String UNIT_DAY = "day";
 
 
+    public static final String ATTR_GENERATEMD5 = "generatemd5";
     /** _more_ */
     public static final String ATTR_CLASS = "class";
 
@@ -203,6 +204,7 @@ public abstract class Harvester extends RepositoryManager {
 
     /** _more_ */
     private boolean active = false;
+    private boolean generateMd5 = false;
 
     /** _more_ */
     private boolean activeOnStart = false;
@@ -505,6 +507,9 @@ public abstract class Harvester extends RepositoryManager {
                 ATTR_ADDSHORTMETADATA, addShortMetadata);
         this.activeOnStart = XmlUtil.getAttribute(element,
                 ATTR_ACTIVEONSTART, activeOnStart);
+
+        this.generateMd5 = XmlUtil.getAttribute(element,
+                                                ATTR_GENERATEMD5, generateMd5);
         this.testCount = XmlUtil.getAttribute(element, ATTR_TESTCOUNT,
                 testCount);
         this.testMode = XmlUtil.getAttribute(element, ATTR_TESTMODE,
@@ -568,6 +573,7 @@ public abstract class Harvester extends RepositoryManager {
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
         activeOnStart = request.get(ATTR_ACTIVEONSTART, false);
+        generateMd5 = request.get(ATTR_GENERATEMD5, false);
         testCount     = request.get(ATTR_TESTCOUNT, testCount);
         testMode      = request.get(ATTR_TESTMODE, false);
         monitor       = request.get(ATTR_MONITOR, false);
@@ -667,11 +673,16 @@ public abstract class Harvester extends RepositoryManager {
         runWidgets.append(HtmlUtils.br());
         runWidgets.append(HtmlUtils.checkbox(ATTR_MONITOR, "true", monitor)
                           + HtmlUtils.space(1) + msg("Run continually"));
+
         runWidgets.append(HtmlUtils.br() + HtmlUtils.space(5));
         runWidgets.append(
             msgLabel("Every") + HtmlUtils.space(1)
             + HtmlUtils.input(ATTR_SLEEP, "" + minutes, HtmlUtils.SIZE_5)
             + HtmlUtils.space(1) + sleepType + sleepLbl);
+        runWidgets.append(HtmlUtils.br());
+        runWidgets.append(HtmlUtils.checkbox(ATTR_GENERATEMD5, "true", generateMd5)
+                          + HtmlUtils.space(1) + msg("Generate MD5 Checksum"));
+
         sb.append(
             HtmlUtils.formEntryTop(
                 "",
@@ -708,6 +719,7 @@ public abstract class Harvester extends RepositoryManager {
         element.setAttribute(ATTR_CLASS, getClass().getName());
         element.setAttribute(ATTR_NAME, name);
         element.setAttribute(ATTR_ACTIVEONSTART, activeOnStart + "");
+        element.setAttribute(ATTR_GENERATEMD5, generateMd5 + "");
         element.setAttribute(ATTR_TESTMODE, testMode + "");
         element.setAttribute(ATTR_TESTCOUNT, testCount + "");
         element.setAttribute(ATTR_MONITOR, monitor + "");
@@ -1174,6 +1186,27 @@ public abstract class Harvester extends RepositoryManager {
     public boolean getActiveOnStart() {
         return activeOnStart;
     }
+
+
+/**
+Set the GenerateMd5 property.
+
+@param value The new value for GenerateMd5
+**/
+public void setGenerateMd5 (boolean value) {
+	generateMd5 = value;
+}
+
+/**
+Get the GenerateMd5 property.
+
+@return The GenerateMd5
+**/
+public boolean getGenerateMd5 () {
+	return generateMd5;
+}
+
+
 
 
     /**

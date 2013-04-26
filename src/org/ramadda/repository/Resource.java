@@ -391,5 +391,16 @@ public class Resource {
         return md5;
     }
 
+    public static void main(String[]args) throws Exception {
+        for(String arg: args) {
+            long t1  = System.currentTimeMillis();
+            String md5 = ucar.unidata.util.IOUtil.getMd5(arg);
+            long t2  = System.currentTimeMillis();
+            System.err.println("time:" + (t2-t1));
+        }
+    }
+
+
+
 
 }
