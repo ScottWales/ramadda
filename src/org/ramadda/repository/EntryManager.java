@@ -869,6 +869,8 @@ public class EntryManager extends RepositoryManager {
                                        makeButtonSubmitDialog(sb,
                                            "Deleting Entry...")));
 
+
+
             String cancelButton = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
                                    ? RepositoryUtil.buttons(submitButton,
@@ -913,6 +915,24 @@ public class EntryManager extends RepositoryManager {
             }
             typeHandler.addToEntryForm(request, sb, entry);
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
+
+            if (entry != null && entry.isGroup()) {
+                StringBuffer extraSB = new StringBuffer();
+                extraSB.append(HtmlUtils.checkbox(ARG_SETFROMCHILDREN, "true", false));
+                extraSB.append(" ");
+                extraSB.append(msg("Set spatial and temporal bounds"));
+                extraSB.append(HtmlUtils.space(2));
+                extraSB.append(HtmlUtils.checkbox(ARG_SETFROMCHILDREN_RECURSE, "true",
+                                                  false)); 
+                extraSB.append(" ");
+                extraSB.append(msg("Recurse"));
+                
+                sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.makeShowHideBlock(msg("More..."), extraSB.toString(), false), 2)));
+            }
+
+
+
+
         }
         sb.append(HtmlUtils.formTableClose());
         if (entry == null) {
@@ -1798,6 +1818,14 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
+
+        if (!newEntry && request.get(ARG_SETFROMCHILDREN, false)) {
+            boolean recurse = request.get(ARG_SETFROMCHILDREN_RECURSE, false);
+            setFromChildren(request, entry, recurse);
+        }
+
+
         if (forUpload) {
             entry = (Entry) entries.get(0);
 
@@ -2040,19 +2068,6 @@ public class EntryManager extends RepositoryManager {
 
         List<Entry> children = null;
 
-        if (request.get(ARG_SETBOUNDSFROMCHILDREN, false)) {
-            if (children == null) {
-                children = getChildren(request, entry);
-            }
-            Rectangle2D.Double rect = getBounds(children);
-            if (rect != null) {
-                entry.setBounds(rect);
-            }
-        }
-
-        if (request.get(ARG_SETTIMEFROMCHILDREN, false)) {
-            setTimeFromChildren(request, entry, children);
-        }
 
         double altitudeTop    = Entry.NONGEO;
         double altitudeBottom = Entry.NONGEO;
@@ -2075,6 +2090,39 @@ public class EntryManager extends RepositoryManager {
                 parent, newEntry);
     }
 
+    private void setFromChildren(Request request, Entry entry, boolean recurse) throws Exception {
+        if(!entry.isGroup()) return;
+        if(entry.getTypeHandler().isSynthType() || 
+           isSynthEntry(entry.getId())) return;
+
+        //        System.err.println ("setting from children:" + entry + "  " + recurse);
+        List<Entry> children = getChildren(request, entry);
+        if (children == null) {
+            return;
+        }
+        if(recurse) {
+            for(Entry child: children) {
+                setFromChildren(request, child, recurse);
+            }
+        }
+        boolean changed  = false;
+        Rectangle2D.Double rect = getBounds(children);
+        if (rect != null) {
+            if(!Misc.equals(rect, entry.getBounds())) {
+                System.err.println("Bounds changed: " + entry + " " + rect + " entry:" + entry.getBounds());
+                entry.setBounds(rect);
+                changed = true;
+            }
+        }
+        if(setTimeFromChildren(request, entry, children)) {
+            changed = true;
+        }
+        if(changed) {
+            updateEntry(request, entry);
+        }
+    }
+
+
     /**
      * _more_
      *
@@ -2084,8 +2132,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void setTimeFromChildren(Request request, Entry entry,
-                                    List<Entry> children)
+    public boolean setTimeFromChildren(Request request, Entry entry,
+                                       List<Entry> children)
             throws Exception {
         if (children == null) {
             children = getChildren(request, entry);
@@ -2096,10 +2144,20 @@ public class EntryManager extends RepositoryManager {
             minTime = Math.min(minTime, child.getStartDate());
             maxTime = Math.max(maxTime, child.getEndDate());
         }
+        boolean changed =  false;
+
         if (minTime != Long.MAX_VALUE) {
+            long diffStart = minTime - entry.getStartDate();
+            long diffEnd = maxTime - entry.getEndDate();
+            //We seem to lose some time resolution when we store so only assume a change
+            //when the time differs by more than 5 seconds
+            changed = diffStart<-10000 || diffStart>10000
+                || diffEnd<-10000 || diffEnd>10000;
             entry.setStartDate(minTime);
             entry.setEndDate(maxTime);
+
         }
+        return changed;
     }
 
 

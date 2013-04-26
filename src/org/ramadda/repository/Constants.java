@@ -1150,13 +1150,13 @@ public interface Constants {
     public static final String ARG_ALTITUDE_BOTTOM = "altitude.bottom";
 
 
-    /** _more_ */
-    public static final String ARG_SETBOUNDSFROMCHILDREN =
-        "setboundsfromchildren";
 
-    /** _more_ */
-    public static final String ARG_SETTIMEFROMCHILDREN =
-        "settimefromchildren";
+    public static final String ARG_SETFROMCHILDREN =
+        "setfromchildren";
+
+    public static final String ARG_SETFROMCHILDREN_RECURSE =
+        "setfromchildren.recurse";
+
 
     /** _more_ */
     public static final String ARG_NORTH = "north";

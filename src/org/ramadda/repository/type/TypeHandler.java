@@ -2561,16 +2561,6 @@ public class TypeHandler extends RepositoryManager {
 
             }
             String extraMapStuff = "";
-            if ((entry != null) && entry.isGroup()) {
-                if (okToShowInForm(entry, "setbounds")) {
-                    extraMapStuff = HtmlUtils.br()
-                                    + HtmlUtils.checkbox(
-                                        ARG_SETBOUNDSFROMCHILDREN, "true",
-                                        false) + " "
-                                            + msg("Set bounds from children");
-                }
-            }
-
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
             String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "",
@@ -2649,12 +2639,14 @@ public class TypeHandler extends RepositoryManager {
         boolean showTime = okToShowInForm(entry, "time", true);
         if (okToShowInForm(entry, ARG_DATE)) {
             String setTimeCbx = "";
+            /*
             if (okToShowInForm(entry, "settimerange") && entry != null && entry.isGroup()) {
                 setTimeCbx = HtmlUtils.checkbox(
                                                 ARG_SETTIMEFROMCHILDREN, "true",
                                                 false) + " "
                     + msg("Set time range from children");
             }
+            */
 
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
@@ -4221,9 +4213,12 @@ public class TypeHandler extends RepositoryManager {
                 }
                 List<Clause> ors = new ArrayList<Clause>();
 
-                for (Column column : getColumns()) {
-                    if(column.isString()) {
-                        ors.add(Clause.like(column.getFullName(), nameTok));
+                List<Column> columns = getColumns();
+                if(columns!=null) {
+                    for (Column column :columns ) {
+                        if(column.isString()) {
+                            ors.add(Clause.like(column.getFullName(), nameTok));
+                        }
                     }
                 }
 
