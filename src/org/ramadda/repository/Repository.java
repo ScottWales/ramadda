@@ -469,15 +469,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         this.args     = args;
 
         entryEditUrls = RepositoryUtil.toList(new RequestUrl[] {
-            URL_ENTRY_FORM, getMetadataManager().URL_METADATA_FORM,
-            getMetadataManager().URL_METADATA_ADDFORM,
-            URL_ACCESS_FORM  //,
-            //        URL_ENTRY_DELETE
-            //        URL_ENTRY_SHOW
+                URL_ENTRY_FORM, URL_ENTRY_WALK,getMetadataManager().URL_METADATA_FORM,
+                getMetadataManager().URL_METADATA_ADDFORM,
+                URL_ACCESS_FORM  //,
+                //        URL_ENTRY_DELETE
+                //        URL_ENTRY_SHOW
         });
 
         groupEditUrls = RepositoryUtil.toList(new RequestUrl[] {
-            URL_ENTRY_NEW, URL_ENTRY_FORM,
+                URL_ENTRY_NEW, URL_ENTRY_FORM,URL_ENTRY_WALK,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
             URL_ACCESS_FORM  //,

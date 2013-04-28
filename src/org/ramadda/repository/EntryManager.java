@@ -759,6 +759,124 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
+    public static final String ARG_WALK_METADATA = "walk.metadata";
+    public static final String ARG_WALK_MD5 = "walk.md5";
+    public static final String ARG_WALK_REPORT = "walk.report";
+    public static final String ARG_WALK_RECURSE = "walk.recurse";
+
+    public Result processEntryWalk(final Request request) throws Exception {
+        final Entry        entry = getEntry(request);
+        final boolean recurse = request.get(ARG_WALK_RECURSE, false);
+        final EntryManager entryManager = this;
+
+        if(request.exists(ARG_WALK_METADATA)) {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    EntryTreeWalker walker = new EntryTreeWalker(request, getRepository(),  actionId) {
+                            public  boolean processEntry(Entry entry, List<Entry> children) throws Exception {
+                                setFromChildren(this, entry, children);
+                                return true;
+                            }
+                        };
+                    walker.walk(entry);
+                    getActionManager().setContinueHtml(actionId,
+                                                       walker.getMessageBuffer().toString());
+                }
+            };
+            return getActionManager().doAction(request, action,
+                                               "Walking the tree", "", entry);
+
+        }
+
+
+        if(request.exists(ARG_WALK_MD5)) {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    StringBuffer sb = new StringBuffer();
+                    setMD5(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
+                    if(sb.length()==0) sb.append("No checksums set");
+                    getActionManager().setContinueHtml(actionId,
+                                                       sb.toString());
+                }
+            };
+            return getActionManager().doAction(request, action,
+                                               "Setting MD5 Checksum", "", entry);
+
+        }
+
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(request.form(getRepository().URL_ENTRY_WALK,
+                               HtmlUtils.attr("name", "entryform")));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+                            
+
+        sb.append(HtmlUtils.checkbox(ARG_WALK_RECURSE,"true", false));
+        sb.append(HtmlUtils.space(1));
+        sb.append(msg("Recurse"));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit(msg("Spatial and Temporal Metadata"),ARG_WALK_METADATA));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit(msg("Set MD5 Checksums"),ARG_WALK_MD5));
+        //sb.append(HtmlUtils.submit(msg("Generate Listing"),ARG_WALK_REPORT));
+        sb.append(HtmlUtils.formClose());
+
+
+
+
+        return makeEntryEditResult(request, entry, "Entry Walk", sb);
+    }
+
+    private void setMD5(Request request, Object actionId,  StringBuffer sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
+        if(!getRepository().getActionManager().getActionOk(actionId)) {
+            return;
+        }
+        Statement stmt = getDatabaseManager().select(SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID,
+                                                                                Tables.ENTRIES.COL_TYPE,
+                                                                                Tables.ENTRIES.COL_MD5,
+                                                                                Tables.ENTRIES.COL_RESOURCE}),
+            Tables.ENTRIES.NAME,
+            Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entryId));
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+        ResultSet        results;
+
+        while ((results = iter.getNext()) != null) {
+            totalCnt[0]++;
+            int col = 1;
+            String id = results.getString(col++);
+            String type= results.getString(col++);
+            String md5 = results.getString(col++);
+            String resource = results.getString(col++);
+            if(new File(resource).exists() && !Utils.stringDefined(md5)) {
+                setCnt[0]++;
+                Entry entry = getEntry(request, id);
+                if(!getAccessManager().canDoAction(request, entry,
+                                                   Permission.ACTION_EDIT)) {
+                    continue;
+                }
+                md5 = ucar.unidata.util.IOUtil.getMd5(resource);
+                getDatabaseManager().update(Tables.ENTRIES.NAME,
+                                            Tables.ENTRIES.COL_ID,
+                                            id, new String[]{Tables.ENTRIES.COL_MD5},
+                                            new String[]{md5});
+                sb.append(getRepository().getEntryManager().getConfirmBreadCrumbs(request, entry));
+                sb.append(HtmlUtils.br());
+            }
+            getActionManager().setActionMessage(actionId,
+                                                "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
+
+            if(recurse) {
+                TypeHandler typeHandler = getRepository().getTypeHandler(type);
+                if(typeHandler.isGroup()) {
+                    setMD5(request, actionId,  sb, recurse, id, totalCnt, setCnt);
+                }
+            }
+        }
+        getDatabaseManager().closeStatement(stmt);
+    }
+
+
     /**
      * _more_
      *
@@ -915,23 +1033,6 @@ public class EntryManager extends RepositoryManager {
             }
             typeHandler.addToEntryForm(request, sb, entry);
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
-
-            if (entry != null && entry.isGroup()) {
-                StringBuffer extraSB = new StringBuffer();
-                extraSB.append(HtmlUtils.checkbox(ARG_SETFROMCHILDREN, "true", false));
-                extraSB.append(" ");
-                extraSB.append(msg("Set spatial and temporal bounds"));
-                extraSB.append(HtmlUtils.space(2));
-                extraSB.append(HtmlUtils.checkbox(ARG_SETFROMCHILDREN_RECURSE, "true",
-                                                  false)); 
-                extraSB.append(" ");
-                extraSB.append(msg("Recurse"));
-                
-                sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.makeShowHideBlock(msg("More..."), extraSB.toString(), false), 2)));
-            }
-
-
-
 
         }
         sb.append(HtmlUtils.formTableClose());
@@ -1820,12 +1921,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        if (!newEntry && request.get(ARG_SETFROMCHILDREN, false)) {
-            boolean recurse = request.get(ARG_SETFROMCHILDREN_RECURSE, false);
-            setFromChildren(request, entry, recurse);
-        }
-
-
         if (forUpload) {
             entry = (Entry) entries.get(0);
 
@@ -2089,38 +2184,34 @@ public class EntryManager extends RepositoryManager {
         entry.getTypeHandler().initializeEntryFromForm(request, entry,
                 parent, newEntry);
     }
-
-    private void setFromChildren(Request request, Entry entry, boolean recurse) throws Exception {
-        if(!entry.isGroup()) return;
-        if(entry.getTypeHandler().isSynthType() || 
-           isSynthEntry(entry.getId())) return;
-
-        //        System.err.println ("setting from children:" + entry + "  " + recurse);
-        List<Entry> children = getChildren(request, entry);
-        if (children == null) {
-            return;
-        }
-        if(recurse) {
-            for(Entry child: children) {
-                setFromChildren(request, child, recurse);
-            }
-        }
+ 
+    private boolean setFromChildren(EntryTreeWalker walker,  Entry entry, List<Entry> children) throws Exception {
         boolean changed  = false;
         Rectangle2D.Double rect = getBounds(children);
         if (rect != null) {
             if(!Misc.equals(rect, entry.getBounds())) {
-                System.err.println("Bounds changed: " + entry + " " + rect + " entry:" + entry.getBounds());
+                //                System.err.println ("changed bounds:" + entry);
+                //                System.err.println ("old bounds:" + entry.getBounds());
+                //                System.err.println ("new bounds:" + rect);
                 entry.setBounds(rect);
+                //                System.err.println ("after set:" + entry.getBounds());
                 changed = true;
             }
         }
-        if(setTimeFromChildren(request, entry, children)) {
+        if(setTimeFromChildren(walker.getRequest(), entry, children)) {
+            System.err.println ("Changed from time");
             changed = true;
         }
         if(changed) {
-            updateEntry(request, entry);
+            walker.incrementProcessedCnt(1);
+            walker.append(getRepository().getEntryManager().getConfirmBreadCrumbs(walker.getRequest(), entry));
+            walker.append(HtmlUtils.br());
+            updateEntry(walker.getRequest(), entry);
         }
+        return true;
     }
+
+
 
 
     /**

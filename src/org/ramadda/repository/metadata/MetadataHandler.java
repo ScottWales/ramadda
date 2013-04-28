@@ -809,7 +809,7 @@ public class MetadataHandler extends RepositoryManager {
 
             String size = "";
             if(l.size()>=4) {
-                size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"4");
+                size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"6");
             }
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
                                           HtmlUtils.select(argName, l, value,

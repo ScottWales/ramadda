@@ -431,14 +431,22 @@ public class Entry implements Cloneable {
         this.altitudeBottom = template.altitudeBottom;
     }
 
+    private double cleanLat(double lat) {
+        return Math.max(Math.min(lat, 90), -90);
+    }
+
+    private double cleanLon(double lon) {
+        return Math.max(Math.min(lon, 180), -180);
+    }
+
     /**
      * Get the geographic bounds
      *
      * @return  the bounds
      */
     public Rectangle2D.Double getBounds() {
-        return new Rectangle2D.Double(west, south, east - west,
-                                      north - south);
+        return new Rectangle2D.Double(cleanLon(west), cleanLat(south), cleanLon(east) - cleanLon(west),
+                                      cleanLat(north) - cleanLat(south));
     }
 
 
@@ -448,10 +456,10 @@ public class Entry implements Cloneable {
      * @param rect  the bounds
      */
     public void setBounds(Rectangle2D.Double rect) {
-        west  = rect.getX();
-        south = rect.getY();
-        east  = west + rect.getWidth();
-        north = south + rect.getHeight();
+        west  = cleanLon(rect.getX());
+        south = cleanLat(rect.getY());
+        east  = cleanLon(west + rect.getWidth());
+        north = cleanLat(south + rect.getHeight());
     }
 
 

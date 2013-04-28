@@ -117,6 +117,7 @@ public class ActionManager extends RepositoryManager {
             return new Result(msg("Status"), sb);
         }
 
+
         sb.append(msgHeader("Action: " + action.getName()));
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
@@ -349,7 +350,7 @@ public class ActionManager extends RepositoryManager {
      * @author RAMADDA Development Team
      * @version $Revision: 1.3 $
      */
-    public static interface Action {
+    public interface Action {
 
         /**
          * _more_
@@ -358,7 +359,7 @@ public class ActionManager extends RepositoryManager {
          *
          * @throws Exception _more_
          */
-        public void run(Object actionId) throws Exception;
+        public abstract void run(Object actionId) throws Exception;
     }
 
 

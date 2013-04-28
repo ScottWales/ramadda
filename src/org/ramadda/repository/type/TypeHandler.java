@@ -1716,6 +1716,12 @@ public class TypeHandler extends RepositoryManager {
                     getRepository().iconUrl(ICON_ACCESS), "Access",
                     OutputType.TYPE_EDIT));
 
+            links.add(
+                new Link(
+                    request.entryUrl(getRepository().URL_ENTRY_WALK, entry),
+                    "/icons/sitemap.png", "Walk Tree",
+                    OutputType.TYPE_EDIT));
+
         }
 
         if (getAccessManager().canDoAction(request, entry,
