@@ -587,7 +587,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public boolean isMaster() {
-        return getProperty(LocalRepositoryManager.PROP_MASTER_ENABLED,false);
+        //For now always enable this
+        return true;
+        //        return getProperty(LocalRepositoryManager.PROP_MASTER_ENABLED,false);
     }
 
 
