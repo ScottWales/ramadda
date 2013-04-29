@@ -860,7 +860,7 @@ public class Request implements Constants, Cloneable {
 
 
     public String getAbsoluteUrl(RequestUrl url) {
-        String path = repository.getUrlBase() + "/" +
+        String path = repository.getUrlBase() + 
             url.getPath();
         return getAbsoluteUrl(path);
     }
