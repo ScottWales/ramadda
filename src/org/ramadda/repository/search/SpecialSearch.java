@@ -278,6 +278,49 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
+
+
+
+        StringBuffer formSB = new StringBuffer();
+        formSB.append("<div style=\"min-width:200px;\">");
+        formSB.append(request.form(URL_SEARCH,
+                                   HtmlUtils.attr(HtmlUtils.ATTR_NAME,
+                                       "apisearchform")));
+        formSB.append(HtmlUtils.br());
+        formSB.append(HtmlUtils.formTable());
+        if (showText) {
+            formSB.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Text"), HtmlUtils.input(
+                                ARG_TEXT, request.getString(ARG_TEXT, ""),
+                                HtmlUtils.SIZE_15 + " autofocus ")));
+        }
+
+        if (showDate) {
+            TypeHandler.addDateSearch(getRepository(), request, formSB,
+                                      Constants.dataDate);
+
+        }
+
+        if (showArea) {
+            MapInfo selectMap = getRepository().getMapManager().createMap(request, true);
+            String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
+            formSB.append(formEntry(request, msgLabel("Location"), mapSelector));
+        }
+
+
+        typeHandler.addToSpecialSearchForm(request, formSB);
+
+        for (String type : metadataTypes) {
+            MetadataType metadataType =
+                getRepository().getMetadataManager().findType(type);
+            if (metadataType != null) {
+                metadataType.getHandler().addToSearchForm(request, formSB,
+                        metadataType);
+            }
+        }
+
+
         MapInfo map = getRepository().getMapManager().createMap(request,
                           contentsWidth, contentsHeight, true);
 
@@ -318,6 +361,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         boolean georeferencedResults = tabs.contains(TAB_MAP) || tabs.contains(TAB_EARTH);
 
+
         StringBuffer buttons = new StringBuffer();
         buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
                        + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE));
@@ -327,51 +371,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             buttons.append(HtmlUtils.submit(msg("Get KML"), ARG_SEARCH_KML));
         }
 
-
-
-        StringBuffer formSB = new StringBuffer();
-        formSB.append("<div style=\"min-width:200px;\">");
-        formSB.append(request.form(URL_SEARCH,
-                                   HtmlUtils.attr(HtmlUtils.ATTR_NAME,
-                                       "apisearchform")));
-        formSB.append(HtmlUtils.br());
-        formSB.append(HtmlUtils.formTable());
-        if (showText) {
-            formSB.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Text"), HtmlUtils.input(
-                                ARG_TEXT, request.getString(ARG_TEXT, ""),
-                                HtmlUtils.SIZE_15 + " autofocus ")));
-        }
-
-        if (showDate) {
-            TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      Constants.dataDate);
-
-        }
-
-        if (showArea) {
-            String clearLink =
-                map.getSelectorClearLink(repository.msg("Clear"));
-            String widget = map.makeSelector(ARG_AREA, true, nwse);
-            //            String widget = map.getSelectorWidget(ARG_AREA, nwse);
-
-            formSB.append(HtmlUtils.formEntry(msgLabel("Location"),
-                    HtmlUtils.table(new Object[] { widget,
-                    clearLink })));
-        }
-
-
-        typeHandler.addToSpecialSearchForm(request, formSB);
-
-        for (String type : metadataTypes) {
-            MetadataType metadataType =
-                getRepository().getMetadataManager().findType(type);
-            if (metadataType != null) {
-                metadataType.getHandler().addToSearchForm(request, formSB,
-                        metadataType);
-            }
-        }
 
 
         formSB.append(

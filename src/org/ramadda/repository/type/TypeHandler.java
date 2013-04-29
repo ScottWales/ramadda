@@ -3384,9 +3384,9 @@ public class TypeHandler extends RepositoryManager {
             String  radio = getSpatialSearchTypeWidget(request);
 
 
+            SelectionRectangle bbox        = getSelectionBounds(request);
             MapInfo map   = getRepository().getMapManager().createMap(request,
                               true);
-            SelectionRectangle bbox        = getSelectionBounds(request);
             String             mapSelector = map.makeSelector(ARG_AREA, true,
                                      bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));

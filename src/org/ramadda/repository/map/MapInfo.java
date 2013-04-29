@@ -118,6 +118,7 @@ public class MapInfo {
                    boolean forSelection) {
         this.request       = request;
         this.repository   = repository;
+
         this.mapVarName   = "ramaddaMap" + (cnt++);
         this.width        = width;
         this.height       = height;
@@ -293,6 +294,7 @@ public class MapInfo {
     private StringBuffer getJS() {
         if (jsBuffer == null) {
             jsBuffer = new StringBuffer();
+            jsBuffer.append("//mapjs\n");
             jsBuffer.append("var " + mapVarName + " = new RepositoryMap("
                             + HtmlUtils.squote(mapVarName) + ");\n");
             jsBuffer.append("var theMap = " + mapVarName + ";\n");

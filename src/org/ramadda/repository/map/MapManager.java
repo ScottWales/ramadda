@@ -149,33 +149,34 @@ public class MapManager extends RepositoryManager {
         }
 
         if (request.getExtraProperty("initmap") == null) {
-            mapInfo.addHtml(
-                HtmlUtils.cssLink(
-                    fileUrl("/openlayers/theme/default/style.css")));
-            mapInfo.addHtml("\n");
-            mapInfo.addHtml("\n");
-            mapInfo.addHtml(
-                HtmlUtils.importJS(fileUrl("/openlayers/OpenLayers.js")));
-            mapInfo.addHtml("\n");
-            /*
-            mapInfo.addHtml(
-                HtmlUtils.importJS(
-                    "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"));
-            */
-            mapInfo.addHtml(
-                HtmlUtils.importJS(
-                    "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
-            mapInfo.addHtml("\n");
-            //            mapInfo.addHtml(HtmlUtils.importJS("http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"));
-            //            mapInfo.addHtml(HtmlUtils.importJS("http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false"));
-            mapInfo.addHtml(HtmlUtils.importJS(fileUrl("/ramaddamap.js")));
-            mapInfo.addHtml("\n");
-            mapInfo.addHtml(HtmlUtils.cssLink(fileUrl("/ramaddamap.css")));
-            mapInfo.addHtml("\n");
+            mapInfo.addHtml(getHtmlImports());
             request.putExtraProperty("initmap", "");
         }
 
         return mapInfo;
+    }
+
+
+    public String getHtmlImports() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(
+                  HtmlUtils.cssLink(
+                                    fileUrl("/openlayers/theme/default/style.css")));
+        sb.append("\n");
+        sb.append("\n");
+        sb.append(
+                  HtmlUtils.importJS(fileUrl("/openlayers/OpenLayers.js")));
+        sb.append("\n");
+        sb.append(
+                  HtmlUtils.importJS(
+                                     "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
+        sb.append("\n");
+        sb.append(HtmlUtils.importJS(fileUrl("/ramaddamap.js")));
+        sb.append("\n");
+        sb.append(HtmlUtils.cssLink(fileUrl("/ramaddamap.css")));
+        sb.append("\n");
+
+        return sb.toString();
     }
 
 
