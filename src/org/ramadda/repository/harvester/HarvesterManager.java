@@ -564,22 +564,45 @@ public class HarvesterManager extends RepositoryManager {
     public Result processList(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_ACTION)) {
+            boolean returnXml = request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
             String    action    = request.getString(ARG_ACTION);
+            String msg = "";
+            String returnStatus = CODE_OK;
             Harvester harvester =
                 findHarvester(request.getString(ARG_HARVESTER_ID));
-            if (action.equals(ACTION_STOP)) {
-                harvester.setActive(false);
-            } else if (action.equals(ACTION_REMOVE)) {
-                harvester.setActive(false);
-                harvesters.remove(harvester);
-            } else if (action.equals(ACTION_START)) {
-                if ( !harvester.getActive()) {
-                    getEntryManager().clearSeenResources();
-                    harvester.clearCache();
-                    harvester.setActive(true);
-                    Misc.run(harvester, "run");
+            if(harvester == null) {
+                returnStatus = CODE_ERROR;
+                msg = "Could not find harvester:" + request.getString(ARG_HARVESTER_ID);
+            } else {
+                if (action.equals(ACTION_STOP)) {
+                    harvester.setActive(false);
+                    msg = "Harvester stopped:" + harvester;
+                } else if (action.equals(ACTION_REMOVE)) {
+                    harvester.setActive(false);
+                    harvesters.remove(harvester);
+                } else if (action.equals(ACTION_START)) {
+                    if ( !harvester.getActive()) {
+                        getEntryManager().clearSeenResources();
+                        harvester.clearCache();
+                        harvester.setActive(true);
+                        Misc.run(harvester, "run");
+                        msg = "Harvester started:" + harvester;
+                    } else {
+                        returnStatus = CODE_ERROR;
+                        msg = "Harvester is already running";
+                    }
                 }
             }
+
+            if(returnXml) {
+                return new Result(XmlUtil.tag(TAG_RESPONSE,
+                                              XmlUtil.attr(ATTR_CODE, returnStatus),
+                                              msg), MIME_XML);
+            }
+
+
+
+
             if (request.get(ARG_HARVESTER_REDIRECTTOEDIT, false)) {
                 return new Result(request.url(URL_HARVESTERS_FORM,
                         ARG_HARVESTER_ID, harvester.getId()));

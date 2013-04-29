@@ -54,6 +54,10 @@ import ucar.unidata.xml.XmlUtil;
  */
 public class RepositoryClient extends RepositoryBase {
 
+    public static final String CMD_URL = "-url";
+
+
+
     /** _more_          */
     public static final String CMD_FETCH = "-fetch";
 
@@ -1122,7 +1126,7 @@ public class RepositoryClient extends RepositoryBase {
                                     new String[] { ARG_RESPONSE,
                                                    RESPONSE_XML, ARG_SESSIONID, sessionId });
             }
-            System.err.println("url:" + url);
+            //            System.err.println("isValidSession:" + url);
             String contents = IOUtil.readContents(url, getClass());
             //            System.err.println ("contents:" + contents);
             Element root = XmlUtil.getRoot(contents);
@@ -1491,6 +1495,7 @@ public class RepositoryClient extends RepositoryBase {
                            + "\t-addmetadata (Add full metadata to entry)\n"
                            + "\t-addshortmetadata (Add spatial/temporal metadata to entry)\n"
                            + "\n" + "Miscellaneous:\n"
+                           + "\t-url (login to server and access url)\n"
                            + "\t-debug (print out the generated xml)\n"
                            + "\t-exit (exit without adding anything to the repository\n");
 
@@ -1557,6 +1562,24 @@ public class RepositoryClient extends RepositoryBase {
         if (i >= length - howMany) {
             usage("Bad argument: " + arg);
         }
+    }
+
+
+
+    private void hitUrl(String url) throws Exception {
+        checkSession();
+        url = HtmlUtils.url(url, new String[]{ARG_RESPONSE, RESPONSE_XML,ARG_SESSIONID,getSessionId(), 
+                                              ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())}, false);
+        System.err.println("url:" + url);
+        String xml = IOUtil.readContents(url, getClass());
+        Element root = XmlUtil.getRoot(xml);
+        String  body     = XmlUtil.getChildText(root).trim();
+        if(responseOk(root)) {
+            System.err.println("OK:" + body);
+        } else {
+            System.err.println("ERROR:" + body);
+        }
+        //        System.out.println(xml);
     }
 
 
@@ -1670,6 +1693,14 @@ public class RepositoryClient extends RepositoryBase {
                 assertArgs(arg, i, args.length, 2);
                 importFile(new File(args[i + 1]), args[i + 2]);
 
+                return;
+            }
+
+            if (arg.equals(CMD_URL)) {
+                if (i == args.length) {
+                    usage("Bad argument: " + arg);
+                }
+                hitUrl(args[++i]);
                 return;
             }
 
