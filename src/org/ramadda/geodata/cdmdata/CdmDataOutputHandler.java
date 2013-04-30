@@ -264,6 +264,12 @@ public class CdmDataOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        ICON_MAP, GROUP_DATA);
 
+    /** Radar map Output Type */
+    public static final OutputType OUTPUT_RADAR_MAP =
+            new OutputType("Show radar on Map", "data.radar.map",
+                    OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                    ICON_MAP, GROUP_DATA);
+
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",

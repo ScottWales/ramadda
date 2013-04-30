@@ -154,6 +154,9 @@ public class CdmManager extends RepositoryManager {
     /** CDM Type */
     public static final String TYPE_CDM = "cdm";
 
+    /** CDM Type */
+    public static final String TYPE_CDM_GRID = "cdm_grid";
+
     /** GRID type */
     public static final String TYPE_GRID = "grid";
 
@@ -182,6 +185,9 @@ public class CdmManager extends RepositoryManager {
     /** cdm cache */
     private Cache<String, Boolean> cdmEntries = new Cache<String,
                                                     Boolean>(5000);
+    /** cdm cache */
+    private Cache<String, Boolean> cdmGridEntries = new Cache<String,
+            Boolean>(5000);
 
     /** grid entries cache */
     private Cache<String, Boolean> gridEntries = new Cache<String,
@@ -737,7 +743,7 @@ public class CdmManager extends RepositoryManager {
             return false;
         }
 
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
+        String[] types = { TYPE_CDM, TYPE_CDM_GRID, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
         for (int i = 0; i < types.length; i++) {
             if (includedByPattern(entry, types[i])) {
                 return true;
@@ -785,6 +791,17 @@ public class CdmManager extends RepositoryManager {
         return e.getType().equals(TYPE_GRADS);
     }
 
+
+    /**
+     *  Is this a CDM Grid entry
+     *
+     * @param e the Entry
+     *
+     * @return true if GrADS type
+     */
+    private boolean isCdmGrid(Entry e) {
+        return e.getType().equals(TYPE_CDM_GRID);
+    }
     /**
      * Can the Entry be loaded a point data?
      *
@@ -954,7 +971,7 @@ public class CdmManager extends RepositoryManager {
 
 
             String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY,
-                               TYPE_POINT, TYPE_RADAR };
+                               TYPE_POINT, TYPE_RADAR, TYPE_CDM_GRID };
             for (int i = 0; i < types.length; i++) {
                 List toks = StringUtil.split(
                                 getRepository().getProperty(
@@ -1076,8 +1093,54 @@ public class CdmManager extends RepositoryManager {
 
         return b.booleanValue();
     }
+    /**
+     * Check if this Entry can load as a CDM grid
+     *
+     * @param entry  the Entry
+     *
+     * @return true if grid is supported
+     */
+    public boolean canLoadAsCdmGrid(Entry entry) {
+        if (isCdmGrid(entry)) {
+            return true;
+        }
+        if (isAggregation(entry)) {
+            return true;
+        }
+        if (isGrads(entry)) {
+            return true;
+        }
+        if (excludedByPattern(entry, TYPE_CDM_GRID)) {
+            return false;
+        }
+        if (includedByPattern(entry, TYPE_CDM_GRID)) {
+            return true;
+        }
+        if ( !canLoadAsCdm(entry)) {
+            return false;
+        }
 
 
+        Boolean b = (Boolean) gridEntries.get(entry.getId());
+        if (b == null) {
+            boolean ok = false;
+            if ( !canLoadEntry(entry)) {
+                ok = false;
+            } else {
+                try {
+                    if (doGridPool) {
+                        ok = gridPool.containsOrCreate(getPath(entry));
+                    } else {
+                        ok = (createGrid(getPath(entry)) != null);
+                    }
+                } catch (Exception ignoreThis) {}
+            }
+            b = new Boolean(ok);
+            cdmGridEntries.put(entry.getId(), b);
+        }
+
+        return b.booleanValue();
+    }
     /**
      * Get the NetcdfDataset for the Entry
      *
@@ -1131,7 +1194,7 @@ public class CdmManager extends RepositoryManager {
      */
     public GridDataset getGridDataset(Entry entry, String path)
             throws Exception {
-        if ( !canLoadAsGrid(entry)) {
+        if ( !canLoadAsGrid(entry) || !canLoadAsCdmGrid(entry)) {
             return null;
         }
         //Don't cache the aggregations
@@ -1321,7 +1384,7 @@ public class CdmManager extends RepositoryManager {
         CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
                                        "test");
         CdmManager cdmManager = new CdmManager(repository);
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
+        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR, TYPE_CDM_GRID };
         for (String f : args) {
             System.err.println("file:" + f);
             for (String type : types) {
