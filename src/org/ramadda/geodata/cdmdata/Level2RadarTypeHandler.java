@@ -21,36 +21,14 @@
 
 package org.ramadda.geodata.cdmdata;
 
-
 import org.ramadda.repository.*;
-
 import org.ramadda.repository.type.*;
-
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
 
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
 
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
-
-
-import java.io.File;
-
-
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -75,44 +53,6 @@ public class Level2RadarTypeHandler extends RadarTypeHandler {
         super(repository, entryNode);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-@Override
-    public void initializeNewEntry(Entry entry) throws Exception {
-        Object[] values = entry.getTypeHandler().getValues(entry);
-
-        
-
-        File f = entry.getFile();
-        System.err.println("Initialize new entry:"+  entry);
-        System.err.println("File:" + f);
-
-
-        String station = "station";
-
-        Date startDate = new Date();
-        double north=0,south=0,east=0,west=0;
-
-        //Crack open the file and set metadata
-        //...
-
-
-        values[0] = station;
-        entry.setStartDate(startDate.getTime());
-        entry.setEndDate(startDate.getTime());
-        entry.setSouth(south);
-        entry.setNorth(north);
-        entry.setEast(east);
-        entry.setWest(west);
-
-    }
 
 
 

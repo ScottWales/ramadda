@@ -25,32 +25,19 @@ package org.ramadda.geodata.cdmdata;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
+import ucar.nc2.units.DateUnit;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
 
-
-import ucar.unidata.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
-
-
 import java.io.File;
-
-
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
+
+import ucar.nc2.NetcdfFile;
 
 
 /**
@@ -65,7 +52,9 @@ public class RadarTypeHandler extends GenericTypeHandler {
     public static final String TYPE_RADAR_LEVEL3 = "cdm_radar_level3";
     public static final int IDX_STATION_ID = 0;
     public static final int IDX_STATION_NAME = 1;
-    public static final int IDX_STATION_PRODUCT = 2;
+    public static final int IDX_STATION_LAT = 2;
+    public static final int IDX_STATION_LON = 3;
+    public static final int IDX_STATION_PRODUCT = 4;
 
     /**
      * _more_
@@ -120,6 +109,65 @@ public class RadarTypeHandler extends GenericTypeHandler {
 
 
 
+    public void initializeNewEntry(Entry entry) throws Exception {
+        Object[] values = entry.getTypeHandler().getValues(entry);
+        File f = entry.getFile();
+        NetcdfFile ncf =  NetcdfFile.open(f.toString());
+
+        String stationId = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONID, "XXX");
+        String stationName =  ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONNAME, "XXX, XX, XX");
+        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LATITUDE, "0.0"));
+        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LONGITUDE, "0.0"));
+        String product = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
+
+
+        String sdate = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_TIME_START, (new Date()).toString());
+        Date  startDate = DateUnit.getStandardOrISO(sdate);
+        float lat_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLAT, "0.0f"));
+        float lat_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLAT, "0.0f"));
+        float lon_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "0.0f"));
+        float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLON, "0.0f"));
+
+
+        System.err.println ("Attribute value:" + CdmUtil.ATTR_MINLON +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "NONE FOUND"));
+
+
+        double altitude = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "0.0"));
+        entry.setAltitude(altitude);
+
+        System.err.println ("altitude:" + CdmUtil.ATTR_RADAR_ALTITUDE +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "NONE FOUND"));
+
+
+        if(!Utils.stringDefined(entry.getDescription())) {
+            entry.setDescription(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_SUMMARY, ""));
+        }
+
+        values[IDX_STATION_ID] = stationId;
+        values[IDX_STATION_NAME] = stationName;
+        values[IDX_STATION_LAT] = radarLat;
+        values[IDX_STATION_LON] = radarLon;
+        values[IDX_STATION_PRODUCT] = product;
+
+
+
+        //The name should be the name of the file. If all entries are named with the station name then
+        //then it will be hard to tell them apart
+        //entry.setName(stationName);
+
+        //Don't set the ID. The entry ID is a RAMADDA thing
+        //        entry.setId(stId);
+
+
+        entry.setStartDate(startDate.getTime());
+        entry.setEndDate(startDate.getTime());
+        //        entry.setLatitude(radarLat);
+        //        entry.setLongitude(radarLon);
+        entry.setSouth(lat_min);
+        entry.setNorth(lat_max);
+        entry.setEast(lon_max);
+        entry.setWest(lon_min);
+
+    }
 
 
 }

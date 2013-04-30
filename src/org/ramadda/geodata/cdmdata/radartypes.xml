@@ -7,13 +7,14 @@
     <column name="station_id"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station ID" 
            properties="/org/ramadda/geodata/cdmdata/resources/level3radar.station.properties"/>
     <column name="station_name"  type="string"  cansearch="true" canlist="true" label="Station Name" />
+    <column name="station_location"  type="latlon"  canlist="true" label="Station Location" />
+    <column name="product" type="enumerationplus"          isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
+                properties="/org/ramadda/geodata/cdmdata/resources/level3radar.product.properties"/>
 </type>
 
 
 
 <type name="cdm_radar_level3"  description="Level 3 Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.Level3RadarTypeHandler">
-    <column name="product" type="enumerationplus"          isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
-                properties="/org/ramadda/geodata/cdmdata/resources/level3radar.product.properties"/>
 </type>
 
 
