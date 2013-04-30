@@ -803,7 +803,7 @@ public class CalendarOutputHandler extends OutputHandler {
             request.remove(ARG_DAY);
             sb.append(HtmlUtils.p());
             sb.append("<table  cellpadding=10 border=0><tr valign=top><td>");
-            getRepository().createMonthNav(sb, cal.getTime(),
+            getPageHandler().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
             if (request.isMobile()) {
@@ -1207,7 +1207,7 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.p());
             sb.append(
                 "<table  width=100% border=0 cellpadding=10><tr valign=top><td width=200>");
-            getRepository().createMonthNav(sb, cal.getTime(),
+            getPageHandler().createMonthNav(sb, cal.getTime(),
                                            request.getUrl(), dates);
             sb.append("</td><td>");
             if (request.isMobile()) {

@@ -245,6 +245,13 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public void initDateStuff() {
+        sdf = RepositoryUtil.makeDateFormat(getProperty(PROP_DATEFORMAT,
+                DEFAULT_TIME_FORMAT));
+        defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
+    }
+
     /**
      * _more_
      */
@@ -1089,6 +1096,157 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param date _more_
+     * @param url _more_
+     * @param dayLinks _more_
+     */
+    public void createMonthNav(StringBuffer sb, Date date, String url,
+                               Hashtable dayLinks) {
+
+        GregorianCalendar cal =
+            new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+        cal.setTime(date);
+        int[] theDate  = CalendarOutputHandler.getDayMonthYear(cal);
+        int   theDay   = cal.get(cal.DAY_OF_MONTH);
+        int   theMonth = cal.get(cal.MONTH);
+        int   theYear  = cal.get(cal.YEAR);
+        while (cal.get(cal.DAY_OF_MONTH) > 1) {
+            cal.add(cal.DAY_OF_MONTH, -1);
+        }
+        GregorianCalendar prev =
+            new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+        prev.setTime(date);
+        prev.add(cal.MONTH, -1);
+        GregorianCalendar next =
+            new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+        next.setTime(date);
+        next.add(cal.MONTH, 1);
+
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_BORDER, "1",
+                                     HtmlUtils.ATTR_CELLSPACING, "0",
+                                     HtmlUtils.ATTR_CELLPADDING, "0")));
+        String[] dayNames = {
+            "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
+        };
+        String prevUrl = HtmlUtils.space(1)
+                         + HtmlUtils.href(
+                             url + "&"
+                             + CalendarOutputHandler.getUrlArgs(
+                                 prev), "&lt;");
+        String nextUrl =
+            HtmlUtils.href(
+                url + "&" + CalendarOutputHandler.getUrlArgs(next),
+                HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                 HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+                                     HtmlUtils.VALUE_TOP)));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
+                                 HtmlUtils.attrs(HtmlUtils.ATTR_COLSPAN, "7",
+                                     HtmlUtils.ATTR_ALIGN,
+                                     HtmlUtils.VALUE_CENTER,
+                                     HtmlUtils.ATTR_CLASS,
+                                     "calnavmonthheader")));
+
+
+        sb.append(
+            HtmlUtils.open(
+                HtmlUtils.TAG_TABLE,
+                HtmlUtils.cssClass("calnavtable")
+                + HtmlUtils.attrs(
+                    HtmlUtils.ATTR_CELLSPACING, "0",
+                    HtmlUtils.ATTR_CELLPADDING, "0", HtmlUtils.ATTR_WIDTH,
+                    "100%")));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
+        sb.append(HtmlUtils.col(prevUrl,
+                                HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                    HtmlUtils.ATTR_CLASS,
+                                    "calnavmonthheader")));
+        sb.append(
+            HtmlUtils.col(
+                DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtils.space(1)
+                + theYear, HtmlUtils.attr(
+                    HtmlUtils.ATTR_CLASS, "calnavmonthheader")));
+
+
+
+        sb.append(HtmlUtils.col(nextUrl,
+                                HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
+                                    HtmlUtils.ATTR_CLASS,
+                                    "calnavmonthheader")));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
+        for (int colIdx = 0; colIdx < 7; colIdx++) {
+            sb.append(HtmlUtils.col(dayNames[colIdx],
+                                    HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH,
+                                        "14%", HtmlUtils.ATTR_CLASS,
+                                        "calnavdayheader")));
+        }
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+        int startDow = cal.get(cal.DAY_OF_WEEK);
+        while (startDow > 1) {
+            cal.add(cal.DAY_OF_MONTH, -1);
+            startDow--;
+        }
+        for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                     HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN,
+                                         HtmlUtils.VALUE_TOP)));
+            for (int colIdx = 0; colIdx < 7; colIdx++) {
+                int     thisDay    = cal.get(cal.DAY_OF_MONTH);
+                int     thisMonth  = cal.get(cal.MONTH);
+                int     thisYear   = cal.get(cal.YEAR);
+                boolean currentDay = false;
+                String  dayClass   = "calnavday";
+                if (thisMonth != theMonth) {
+                    dayClass = "calnavoffday";
+                } else if ((theMonth == thisMonth) && (theYear == thisYear)
+                           && (theDay == thisDay)) {
+                    dayClass   = "calnavtheday";
+                    currentDay = true;
+                }
+                String content;
+                if (dayLinks != null) {
+                    String key = thisYear + "/" + thisMonth + "/" + thisDay;
+                    if (dayLinks.get(key) != null) {
+                        content = HtmlUtils.href(url + "&"
+                                + CalendarOutputHandler.getUrlArgs(cal), ""
+                                    + thisDay);
+                        if ( !currentDay) {
+                            dayClass = "calnavoffday";
+                        }
+                    } else {
+                        content  = "" + thisDay;
+                        dayClass = "calnavday";
+                    }
+                } else {
+                    content = HtmlUtils.href(
+                        url + "&" + CalendarOutputHandler.getUrlArgs(cal),
+                        "" + thisDay);
+                }
+
+                sb.append(HtmlUtils.col(content,
+                                        HtmlUtils.cssClass(dayClass)));
+                sb.append("\n");
+                cal.add(cal.DAY_OF_MONTH, 1);
+            }
+            if (cal.get(cal.MONTH) > theMonth) {
+                break;
+            }
+            if (cal.get(cal.YEAR) > theYear) {
+                break;
+            }
+        }
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+
+    }
 
     /**
      * _more_
@@ -1938,6 +2096,7 @@ public class PageHandler extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
+
 
 
 

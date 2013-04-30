@@ -4294,18 +4294,18 @@ public class EntryManager extends RepositoryManager {
 
         //        System.err.println("node:" + XmlUtil.toString(node));
         if (XmlUtil.hasAttribute(node, ATTR_CREATEDATE)) {
-            createDate = getRepository().parseDate(XmlUtil.getAttribute(node,
+            createDate = getPageHandler().parseDate(XmlUtil.getAttribute(node,
                     ATTR_CREATEDATE));
         }
 
         Date fromDate = createDate;
         if (XmlUtil.hasAttribute(node, ATTR_FROMDATE)) {
-            fromDate = getRepository().parseDate(XmlUtil.getAttribute(node,
+            fromDate = getPageHandler().parseDate(XmlUtil.getAttribute(node,
                     ATTR_FROMDATE));
         }
         Date toDate = fromDate;
         if (XmlUtil.hasAttribute(node, ATTR_TODATE)) {
-            toDate = getRepository().parseDate(XmlUtil.getAttribute(node,
+            toDate = getPageHandler().parseDate(XmlUtil.getAttribute(node,
                     ATTR_TODATE));
         }
         if ( !canBeCreatedBy(request, typeHandler)) {

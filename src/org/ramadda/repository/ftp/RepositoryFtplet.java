@@ -193,7 +193,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      */
     public RepositoryFtplet(FtpManager ftpManager) {
         this.ftpManager = ftpManager;
-        sdf             = getRepository().makeSDF("MMM dd HH:mm");
+        sdf             = getRepository().getPageHandler().makeSDF("MMM dd HH:mm");
     }
 
     /**

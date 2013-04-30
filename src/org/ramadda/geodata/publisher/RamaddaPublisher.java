@@ -533,9 +533,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
 
                 String fromDate =
-                    repositoryClient.formatDate(fromDateFld.getDate());
+                    formatDate(fromDateFld.getDate());
                 String toDate =
-                    repositoryClient.formatDate(toDateFld.getDate());
+                    formatDate(toDateFld.getDate());
                 int      cnt = 0;
 
 
@@ -670,9 +670,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         });
                         if (dttm != null) {
                             attrs.addAll(Misc.newList(ATTR_FROMDATE,
-                                    repositoryClient.formatDate(dttm),
+                                                      formatDate(dttm),
                                     ATTR_TODATE,
-                                    repositoryClient.formatDate(dttm)));
+                                                      formatDate(dttm)));
                         }
                         node = XmlUtil.create(TAG_ENTRY, root, attrs);
                     }
@@ -742,6 +742,11 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         }
 
     }
+
+    private String formatDate(Date d) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(d);
+    }
+
 
     /**
      * _more_
