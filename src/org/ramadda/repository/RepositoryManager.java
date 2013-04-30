@@ -442,7 +442,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, Date d) {
-        return getRepository().formatDate(request, d);
+        return getPageHandler().formatDate(request, d);
     }
 
     /**
@@ -455,7 +455,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, Date d, Entry entry) {
-        return getRepository().formatDate(
+        return getPageHandler().formatDate(
             request, d, getEntryManager().getTimezone(entry));
     }
 
@@ -469,7 +469,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, long ms) {
-        return getRepository().formatDate(request, ms);
+        return getPageHandler().formatDate(request, ms);
     }
 
 
@@ -483,7 +483,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, long ms, Entry entry) {
-        return getRepository().formatDate(
+        return getPageHandler().formatDate(
             request, ms, getEntryManager().getTimezone(entry));
     }
 

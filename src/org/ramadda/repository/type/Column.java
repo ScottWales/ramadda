@@ -1472,7 +1472,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 date = new Date();
             }
-            widget = getRepository().makeDateInput(request, id, "", date,
+            widget = getRepository().getPageHandler().makeDateInput(request, id, "", date,
                     null);
         } else if (isType(DATATYPE_DATE)) {
             Date date;
@@ -1481,7 +1481,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 date = new Date();
             }
-            widget = getRepository().makeDateInput(request, id, "", date,
+            widget = getRepository().getPageHandler().makeDateInput(request, id, "", date,
                     null, false);
         } else if (isType(DATATYPE_ENUMERATION)) {
             String value = ((dflt != null)
@@ -1972,12 +1972,12 @@ public class Column implements DataTypes, Constants {
             String dateSelectInput = HtmlUtils.select(id + "_relative",
                                          dateSelect, dateSelectValue);
 
-            widget = getRepository().makeDateInput(request, id + "_fromdate",
+            widget = getRepository().getPageHandler().makeDateInput(request, id + "_fromdate",
                     "searchform", null, null,
                     isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
                         + HtmlUtils.img(getRepository().iconUrl(ICON_RANGE))
                         + HtmlUtils.space(1)
-                        + getRepository().makeDateInput(request,
+                        + getRepository().getPageHandler().makeDateInput(request,
                             id + "_todate", "searchform", null, null,
                             isType(DATATYPE_DATETIME)) + HtmlUtils.space(4)
                                 + msgLabel("Or") + dateSelectInput;

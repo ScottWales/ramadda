@@ -451,7 +451,7 @@ public class Admin extends RepositoryManager {
                     //                    getRegistryManager().applyInstallForm(request);
 
                     sb.append(
-                        getRepository().showDialogNote(
+                        getPageHandler().showDialogNote(
                             "Initial configuration process is complete."));
                     sb.append(HtmlUtils.p());
 
@@ -489,16 +489,14 @@ public class Admin extends RepositoryManager {
 
                     //Make sure we do this now before we do the final init entries
                     if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
-                        String plugin =
-                            "/org/ramadda/repository/resources/plugins/allplugins.jar";
-                        getRepository().installPlugin(plugin);
+                        getRepository().getPluginManager().installPlugin(PluginManager.PLUGIN_ALL);
                     }
 
                     addInitEntries(user);
                     sb.append(getUserManager().makeLoginForm(request));
                     if (errorBuffer.length() > 0) {
                         sb.append(
-                            getRepository().showDialogError(
+                            getPageHandler().showDialogError(
                                 msg("Error") + "<br>" + errorBuffer));
                     }
 
@@ -507,7 +505,7 @@ public class Admin extends RepositoryManager {
                 }
 
             if (errorBuffer.length() > 0) {
-                sb.append(getRepository().showDialogError(msg("Error")
+                sb.append(getPageHandler().showDialogError(msg("Error")
                         + "<br>" + errorBuffer));
             }
             sb.append("Please enter the following information.");
@@ -910,7 +908,7 @@ public class Admin extends RepositoryManager {
         //Only do one at a time
         if (amDumpingDb) {
             StringBuffer sb = new StringBuffer(
-                                  getRepository().showDialogWarning(
+                                  getPageHandler().showDialogWarning(
                                       "Currently exporting the database"));
 
             return makeResult(request, msg("Database export"), sb);
@@ -952,7 +950,7 @@ public class Admin extends RepositoryManager {
             IOUtil.close(fos);
 
             StringBuffer sb = new StringBuffer(
-                                  getRepository().showDialogNote(
+                                  getPageHandler().showDialogNote(
                                       "Database has been exported to:<br>"
                                       + tmp));
             //            return makeResult(request, msg("Database export"), sb);
@@ -994,7 +992,7 @@ public class Admin extends RepositoryManager {
      * @param sb _more_
      */
     public void addHeader(Request request, StringBuffer sb) {
-        sb.append(getRepository().makeHeader(request, adminUrls, ""));
+        sb.append(getPageHandler().makeHeader(request, adminUrls, ""));
     }
 
 
@@ -1100,7 +1098,7 @@ public class Admin extends RepositoryManager {
             HtmlUtils.formEntryTop(
                 msgLabel("SSL"),
                 allSslCbx + HtmlUtils.br()
-                + getRepository().showDialogNote(sslMsg)));
+                + getPageHandler().showDialogNote(sslMsg)));
 
 
 
@@ -2323,6 +2321,24 @@ public class Admin extends RepositoryManager {
     int ccnt = 0;
 
 
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void checkMemory(String msg) {
+        //        Misc.gc();
+        Runtime.getRuntime().gc();
+        double freeMemory    = (double) Runtime.getRuntime().freeMemory();
+        double highWaterMark = (double) Runtime.getRuntime().totalMemory();
+        double usedMemory    = (highWaterMark - freeMemory);
+        usedMemory = usedMemory / 1000000.0;
+
+        //        println("http://ramadda.org" +request);
+        System.err.println(msg + ((int) usedMemory));
+
+    }
 
 
 

@@ -1015,7 +1015,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 new File(request.getUploadedFile(ARG_POINT_UPLOAD_FILE));
             loadData(request, entry, file);
             sb.append(
-                getRepository().showDialogNote("New data has been loaded"));
+                getPageHandler().showDialogNote("New data has been loaded"));
         } else {
             sb.append(request.uploadForm(getRepository().URL_ENTRY_SHOW));
             sb.append(msgLabel("New data file"));
@@ -2840,14 +2840,14 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         basicSB.append(
             HtmlUtils.formEntry(
                 msgLabel("From Date"),
-                getRepository().makeDateInput(
+                getPageHandler().makeDateInput(
                     request, ARG_POINT_FROMDATE, "pointsearch", dateRange[0],
                     timezone)));
 
         basicSB.append(
             HtmlUtils.formEntry(
                 msgLabel("To Date"),
-                getRepository().makeDateInput(
+                getPageHandler().makeDateInput(
                     request, ARG_POINT_TODATE, "pointsearch", dateRange[1],
                     timezone)));
 

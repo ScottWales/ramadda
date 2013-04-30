@@ -134,7 +134,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         }
         if (id == null) {
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     "Could not find ID in YouTube URL"));
 
             return new Result(msg("YouTube Video"), sb);

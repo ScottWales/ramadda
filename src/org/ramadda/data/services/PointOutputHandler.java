@@ -721,7 +721,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 return getPointFormHandler().outputEntryForm(
                                                              request, entry,
                                                              new StringBuffer(
-                                                                              getRepository().showDialogError(
+                                                                              getPageHandler().showDialogError(
                                                                                                               "No products selected")));
             }
         }
@@ -764,7 +764,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 StringBuffer sb = new StringBuffer();
                 if ( !outputType.equals(OUTPUT_FORM)) {
                     sb.append(
-                              getRepository().showDialogError(
+                              getPageHandler().showDialogError(
                                                               "Unknown output type:" + outputType));
                 }
 
@@ -839,7 +839,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 return getPointFormHandler().outputGroupForm(
                                                              request, group, subGroups, entries,
                                                              new StringBuffer(
-                                                                              getRepository().showDialogError(
+                                                                              getPageHandler().showDialogError(
                                                                                                               "No products selected")));
             }
         }
@@ -887,7 +887,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                               "Too many points selected:" + pointCount);
             }
             StringBuffer sb = new StringBuffer(
-                                               getRepository().showDialogError(
+                                               getPageHandler().showDialogError(
                                                                                "Too many points selected: "
                                                                                + pointCount));
 
@@ -908,7 +908,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
-                          getRepository().showDialogError(
+                          getPageHandler().showDialogError(
                                                           "Unknown output type:" + outputType));
             }
 

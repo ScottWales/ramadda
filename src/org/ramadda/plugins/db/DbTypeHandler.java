@@ -785,7 +785,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
             sb.append(
-                getRepository().showDialogWarning(
+                      getPageHandler().showDialogWarning(
                     msg("You do not have permission to view database")));
 
             return new Result(getTitle(), sb);
@@ -972,7 +972,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         if (request.defined(ARG_MESSAGE)) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     request.getString(ARG_MESSAGE, "")));
             request.remove(ARG_MESSAGE);
         }
@@ -1788,7 +1788,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         if (dbids.size() == 0) {
             sb.append(
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     msg("No entries were selected")));
         } else {
             String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
@@ -1802,8 +1802,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
             addViewHeader(request, entry, sb, "", 0, false);
             sb.append(
-                getRepository()
-                    .showDialogQuestion(
+                      getPageHandler().showDialogQuestion(
                         msg(
                         "Are you sure you want to delete the selected entries?"), HtmlUtils
                             .submit(
@@ -2645,11 +2644,11 @@ public class DbTypeHandler extends BlobTypeHandler {
             if ( !fromSearch) {
                 sb.append(HtmlUtils.br());
                 sb.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         msgLabel("No entries in") + getTitle()));
             } else {
                 sb.append(
-                    getRepository().showDialogNote(msg("Nothing found")));
+                    getPageHandler().showDialogNote(msg("Nothing found")));
             }
 
 

@@ -685,78 +685,8 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public String showDialogNote(String h) {
-        return getMessage(h, Constants.ICON_INFORMATION, true);
-    }
-
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
-    public String showDialogWarning(String h) {
-        return getMessage(h, Constants.ICON_WARNING, true);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param buttons _more_
-     *
-     * @return _more_
-     */
-    public String showDialogQuestion(String h, String buttons) {
-        return getMessage(h + "<p><hr>" + buttons, Constants.ICON_QUESTION,
-                          false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
-    public String showDialogError(String h) {
-        h = getDialogString(h);
-
-        return getMessage(h, Constants.ICON_ERROR, true);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    public static String getDialogString(String s) {
-        s = HtmlUtils.entityEncode(s);
-        s = s.replace("&#60;msg&#32;", "<msg ");
-        s = s.replace("&#32;msg&#62;", " msg>");
-        s = s.replace("&#32;", " ");
-        s = s.replace("&#60;p&#62;", "<p>");
-        s = s.replace("&#60;br&#62;", "<br>");
-        s = s.replace("&#38;nbsp&#59;", "&nbsp;");
-
-        return s;
     }
 
 

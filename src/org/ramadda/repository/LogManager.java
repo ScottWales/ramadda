@@ -786,7 +786,7 @@ public class LogManager extends RepositoryManager {
 
             }
 
-            String dttm = getRepository().formatDate(logEntry.getDate());
+            String dttm = getPageHandler().formatDate(logEntry.getDate());
             dttm = dttm.replace(" ", "&nbsp;");
             String user = logEntry.getUser().getLabel();
             user = user.replace(" ", "&nbsp;");

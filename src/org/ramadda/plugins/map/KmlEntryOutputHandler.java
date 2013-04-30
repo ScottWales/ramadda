@@ -140,7 +140,7 @@ public class KmlEntryOutputHandler extends OutputHandler {
         Element      root = KmlTypeHandler.readKml(getRepository(), entry);
         if (root == null) {
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     "Could not read KML/KMZ file"));
 
             return new Result("KML/KMZ Error", sb);

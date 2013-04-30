@@ -369,7 +369,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     HtmlUtils.submit(msg("OK"), ARG_MONITOR_DELETE_CONFIRM),
                     HtmlUtils.submit(msg("Cancel"), ARG_CANCEL)));
             sb.append(
-                getRepository().showDialogQuestion(
+                getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the monitor?"),
                     fb.toString()));
             sb.append(HtmlUtils.formClose());

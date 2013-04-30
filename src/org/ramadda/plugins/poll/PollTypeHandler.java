@@ -242,7 +242,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             return new Result(
                 "Poll",
                 new StringBuffer(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         "No access to view poll")));
         }
 
@@ -289,7 +289,7 @@ public class PollTypeHandler extends BlobTypeHandler {
                 return new Result(
                     "Poll",
                     new StringBuffer(
-                        getRepository().showDialogError(
+                        getPageHandler().showDialogError(
                             "No access to change poll")));
             }
             PollResponse response =

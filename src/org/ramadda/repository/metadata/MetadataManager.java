@@ -1161,7 +1161,7 @@ public class MetadataManager extends RepositoryManager {
         sb.append(HtmlUtils.p());
         if (metadataList.size() == 0) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     msg("No metadata defined for entry")));
             sb.append(msgLabel("Add new metadata"));
             makeAddList(request, entry, sb);
@@ -1252,7 +1252,7 @@ public class MetadataManager extends RepositoryManager {
         if (request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
             List<Metadata> clipboard = getMetadataFromClipboard(request);
             if ((clipboard == null) || (clipboard.size() == 0)) {
-                sb.append(getRepository().showDialogError("Clipboard empty"));
+                sb.append(getPageHandler().showDialogError("Clipboard empty"));
             } else {
                 //TODO: file attachments
                 for (Metadata copiedMetadata : clipboard) {
@@ -1263,7 +1263,7 @@ public class MetadataManager extends RepositoryManager {
                 }
                 entry.setMetadata(null);
                 sb.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         "Metadata pasted from clipboard"));
             }
 

@@ -500,14 +500,14 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         xml.append(XmlUtil.openTag(TAG_JOB, jobAttrs));
         if (jobInfo.isInError()) {
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     "An error occurred while processing the request:<br>"
                     + jobInfo.getError()));
         } else if (stillRunning) {
             sb.append(getRepository().progress("Job is running"));
         } else {
             sb.append(
-                getRepository().showDialogNote("Processing is complete"));
+                getPageHandler().showDialogNote("Processing is complete"));
         }
         sb.append(HtmlUtils.formTable());
         //set the column width
@@ -630,7 +630,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 productSB.append("</table>");
             } else {
                 productSB.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         msg("No product files found")));
             }
 

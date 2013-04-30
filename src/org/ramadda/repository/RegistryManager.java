@@ -174,7 +174,7 @@ public class RegistryManager extends RepositoryManager {
                     Element root = XmlUtil.getRoot(contents);
                     if ( !responseOk(root)) {
                         sb.append(
-                            getRepository().showDialogError(
+                            getPageHandler().showDialogError(
                                 "Failed to read information from:"
                                 + fullUrl));
                     } else {
@@ -187,7 +187,7 @@ public class RegistryManager extends RepositoryManager {
                     }
                 } catch (Exception exc) {
                     sb.append(
-                        getRepository().showDialogError(
+                        getPageHandler().showDialogError(
                             "Failed to read information from:" + fullUrl));
                 }
             }

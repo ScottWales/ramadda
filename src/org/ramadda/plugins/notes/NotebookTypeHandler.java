@@ -209,7 +209,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append("</center>");
 
         if ((subGroups.size() == 0) && request.defined(ARG_LETTER)) {
-            sb.append(getRepository().showDialogNote(msg("No notes found")));
+            sb.append(getPageHandler().showDialogNote(msg("No notes found")));
         }
         sb.append(
             "<style type=\"text/css\">.note {margin:0px;margin-bottom:5px;}\n");

@@ -596,7 +596,7 @@ public class MetadataTypeBase extends RepositoryManager {
                                     metadata.getEntryId(), ARG_METADATA_ID,
                                     metadata.getId());
 
-                img = handler.getRepository().makePopupLink(img, bigimg,
+                img = handler.getPageHandler().makePopupLink(img, bigimg,
                         true, false);
             } else {
                 img = img + "\n<br>\n<b>" + tail + "</b>\n";

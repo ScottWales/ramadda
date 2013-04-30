@@ -639,15 +639,15 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         List formattedDates = new ArrayList();
         formattedDates.add(new TwoFacedObject("---", ""));
         for (Date date : dates) {
-            formattedDates.add(getRepository().formatDate(request, date));
+            formattedDates.add(getPageHandler().formatDate(request, date));
         }
         /*
           for now default to "" for dates
         String fromDate = request.getUnsafeString(ARG_CDO_FROMDATE,
-                              getRepository().formatDate(request,
+        getPageHandler().formatDate(request,
                                   dates.get(0)));
         String toDate = request.getUnsafeString(ARG_CDO_TODATE,
-                            getRepository().formatDate(request,
+                            getPageHandler().formatDate(request,
                                 dates.get(dates.size() - 1)));
         */
         String fromDate = request.getUnsafeString(ARG_CDO_FROMDATE, "");
@@ -978,7 +978,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                              ? request.get(ARG_CDO_ENDMONTH, startMonth)
                              : startMonth;
             if (endMonth < startMonth) {
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     "Start month is after end month");
             }
             selMonth = OP_SELMON + "," + startMonth;
@@ -1008,7 +1008,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
             if ((dates[0] != null) && (dates[1] != null)) {
                 if (dates[0].getTime() > dates[1].getTime()) {
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         "From date is after to date");
                 } else {
                     dateSelect = OP_SELDATE + ","
@@ -1035,7 +1035,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
             if ((years[0] != null) && (years[1] != null)) {
                 if (years[0].compareTo(years[1]) > 0) {
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         "Start year is after end year");
                 } else {
                     dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];

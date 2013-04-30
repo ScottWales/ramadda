@@ -1350,7 +1350,7 @@ public class EntryManager extends RepositoryManager {
                         ""), getEntryTimestamp(entry))) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         msg(
                         "Error: The entry you are editing has been edited since the time you began the edit")));
 
@@ -1557,7 +1557,7 @@ public class EntryManager extends RepositoryManager {
                 if ( !serverFile.exists()) {
                     StringBuffer message =
                         new StringBuffer(
-                            getRepository().showDialogError(
+                            getPageHandler().showDialogError(
                                 msg("File does not exist")));
 
                     return addEntryHeader(request, parentEntry,
@@ -1600,7 +1600,7 @@ public class EntryManager extends RepositoryManager {
                     if (fileCnt == 0) {
                         StringBuffer message =
                             new StringBuffer(
-                                getRepository().showDialogError(
+                                getPageHandler().showDialogError(
                                     msg("No files found matching pattern")));
 
                         return addEntryHeader(request, parentEntry,
@@ -2069,17 +2069,17 @@ public class EntryManager extends RepositoryManager {
         String[] macros = {
             "day", padZero(fromDay), "week", fromWeek + "", "month",
             padZero(fromMonth), "year", fromYear + "", "date",
-            getRepository().formatDate(fromDate), "fromdate",
-            getRepository().formatDate(fromDate), "monthname",
+            getPageHandler().formatDate(fromDate), "fromdate",
+            getPageHandler().formatDate(fromDate), "monthname",
             DateUtil.MONTH_NAMES[fromMonth - 1], "create_day",
             padZero(createDay), "from_day", padZero(fromDay), "to_day",
             padZero(toDay), "create_week", "" + createWeek, "from_week",
             "" + fromWeek, "to_week", "" + toWeek, "create_weekofyear",
             "" + createWeekOfYear, "from_weekofyear", "" + fromWeekOfYear,
             "to_weekofyear", "" + toWeekOfYear, "create_date",
-            getRepository().formatDate(createDate), "from_date",
-            getRepository().formatDate(fromDate), "to_date",
-            getRepository().formatDate(toDate), "create_month",
+            getPageHandler().formatDate(createDate), "from_date",
+            getPageHandler().formatDate(fromDate), "to_date",
+            getPageHandler().formatDate(toDate), "create_month",
             padZero(createMonth), "from_month", padZero(fromMonth),
             "to_month", padZero(toMonth), "create_year", createYear + "",
             "from_year", fromYear + "", "to_year", toYear + "",
@@ -2278,7 +2278,7 @@ public class EntryManager extends RepositoryManager {
         //        sb.append(makeEntryHeader(request, entry));
         if (entry.isTopEntry()) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     "Cannot delete top-level folder"));
 
             return makeEntryEditResult(request, entry, "Delete Entry", sb);
@@ -2336,7 +2336,7 @@ public class EntryManager extends RepositoryManager {
                     ARG_CANCEL)));
         fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         fb.append(HtmlUtils.formClose());
-        sb.append(getRepository().showDialogQuestion(inner.toString(),
+        sb.append(getPageHandler().showDialogQuestion(inner.toString(),
                 fb.toString()));
 
         return makeEntryEditResult(request, entry,
@@ -2368,7 +2368,7 @@ public class EntryManager extends RepositoryManager {
             if (entry.isTopEntry()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         msg("Cannot delete top-level folder")));
 
                 return new Result(msg("Entry Delete"), sb);
@@ -2415,7 +2415,7 @@ public class EntryManager extends RepositoryManager {
             return new Result(
                 "",
                 new StringBuffer(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg("No entries selected"))));
         }
 
@@ -2453,10 +2453,10 @@ public class EntryManager extends RepositoryManager {
                                       getRepository().URL_ENTRY_DELETELIST);
         StringBuffer hidden = new StringBuffer(HtmlUtils.hidden(ARG_ENTRYIDS,
                                   idBuffer.toString()));
-        String form = Repository.makeOkCancelForm(request,
+        String form = PageHandler.makeOkCancelForm(request,
                           getRepository().URL_ENTRY_DELETELIST,
                           ARG_DELETE_CONFIRM, hidden.toString());
-        sb.append(getRepository().showDialogQuestion(msgSB.toString(), form));
+        sb.append(getPageHandler().showDialogQuestion(msgSB.toString(), form));
 
 
         return new Result(msg("Delete Confirm"), sb);
@@ -3229,7 +3229,7 @@ public class EntryManager extends RepositoryManager {
             if (entry.isTopEntry()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         msg("Cannot copy top-level folder")));
 
                 return new Result(msg("Entry Delete"), sb);
@@ -3450,7 +3450,7 @@ public class EntryManager extends RepositoryManager {
             fb.append(HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
             fb.append(HtmlUtils.formClose());
             StringBuffer contents = new StringBuffer(
-                                        getRepository().showDialogQuestion(
+                                        getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
             contents.append(fromList);
 
@@ -3462,7 +3462,7 @@ public class EntryManager extends RepositoryManager {
             if ( !okToMove(fromEntry, toEntry)) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         msg("Cannot move a folder to its descendent")));
 
                 return addEntryHeader(request, fromEntry, new Result("", sb));
@@ -4588,7 +4588,7 @@ public class EntryManager extends RepositoryManager {
         comment = request.getEncodedString(ARG_COMMENT, BLANK).trim();
         if (comment.length() == 0) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     msg("Please enter a comment")));
         } else {
             request.ensureAuthToken();
@@ -4705,7 +4705,7 @@ public class EntryManager extends RepositoryManager {
                                 HtmlUtils.cssClass(
                                     CSS_CLASS_COMMENT_COMMENTER)) + " @ "
                                         + HtmlUtils.span(
-                                            formatDate(
+                                            getPageHandler().formatDate(
                                                 request,
                                                 comment.getDate()), HtmlUtils.cssClass(
                                                     CSS_CLASS_COMMENT_DATE)) + HtmlUtils.space(
@@ -5419,7 +5419,7 @@ public class EntryManager extends RepositoryManager {
                 String categoryName = link.getOutputType().getCategory();
                 //HtmlUtils.span(msg(categoryName), menuClass),
                 categoryMenu =
-                    getRepository().makePopupLink(msg(categoryName),
+                    getPageHandler().makePopupLink(msg(categoryName),
                         categoryMenu.toString(), menuClass, false, true);
 
                 break;
@@ -5450,7 +5450,7 @@ public class EntryManager extends RepositoryManager {
                 //                menuName="Folder";
             }
             //HtmlUtils.span(msg(menuName), menuClass), 
-            menuItems.add(getRepository().makePopupLink(msg(menuName),
+            menuItems.add(getPageHandler().makePopupLink(msg(menuName),
                     entryMenu, menuClass, false, true));
 
         }
@@ -5460,7 +5460,7 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getRepository().makePopupLink(msg("Edit"),
+            menuItems.add(getPageHandler().makePopupLink(msg("Edit"),
                     editMenu, menuClass, false, true));
         }
 
@@ -5469,7 +5469,7 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getRepository().makePopupLink(msg("Links"),
+            menuItems.add(getPageHandler().makePopupLink(msg("Links"),
                     exportMenu, menuClass, false, true));
         }
 
@@ -5478,7 +5478,7 @@ public class EntryManager extends RepositoryManager {
             if (menuItems.size() > 0) {
                 menuItems.add(sep);
             }
-            menuItems.add(getRepository().makePopupLink(msg("View"),
+            menuItems.add(getPageHandler().makePopupLink(msg("View"),
                     viewMenu, menuClass, false, true));
         }
 
@@ -5744,7 +5744,7 @@ public class EntryManager extends RepositoryManager {
             nav = StringUtil.join(separator, breadcrumbs);
             nav = HtmlUtils.div(nav, HtmlUtils.cssClass("breadcrumbs"));
         } else {
-            String img = getRepository().makePopupLink(
+            String img = getPageHandler().makePopupLink(
                              HtmlUtils.img(getIconUrl(request, entry)),
                              links, true, false);
 
@@ -6443,7 +6443,7 @@ public class EntryManager extends RepositoryManager {
             return new Result(
                 "",
                 new StringBuffer(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         msg("Could not find folder"))));
         }
 
@@ -7461,7 +7461,7 @@ public class EntryManager extends RepositoryManager {
         }
         if ( !didone) {
             sb.append(
-                getRepository().showDialogNote(msg("No entries to publish")));
+                getPageHandler().showDialogNote(msg("No entries to publish")));
         }
         updateEntries(request, publishedEntries);
 

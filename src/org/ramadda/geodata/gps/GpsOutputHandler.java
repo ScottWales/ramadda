@@ -997,11 +997,11 @@ public class GpsOutputHandler extends OutputHandler {
                 }
             }
             if (changed.size() > 0) {
-                sb.append(getRepository().showDialogNote(changed.size() + " "
+                sb.append(getPageHandler().showDialogNote(changed.size() + " "
                         + msg("entries have been updated")));
             } else if (selected.size() > 0) {
                 sb.append(
-                    getRepository().showDialogNote(
+                    getPageHandler().showDialogNote(
                         msg("No entries were changed")));
             }
         }
@@ -1520,7 +1520,7 @@ public class GpsOutputHandler extends OutputHandler {
 
         if ( !request.defined(ARG_OPUS_EMAIL)) {
             sb.append(
-                getRepository().showDialogWarning("No email specified"));
+                getPageHandler().showDialogWarning("No email specified"));
 
             return outputOpusForm(request, mainEntry, entries, sb);
         }
@@ -1877,7 +1877,7 @@ public class GpsOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         if (request.isAnonymous()) {
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     "You need to be logged in to add OPUS"));
 
             return new Result(OPUS_TITLE, sb);
@@ -1889,7 +1889,7 @@ public class GpsOutputHandler extends OutputHandler {
                                             msgBuff);
             if (newEntry == null) {
                 sb.append(
-                    getRepository().showDialogError(msgBuff.toString()));
+                    getPageHandler().showDialogError(msgBuff.toString()));
 
                 return processOpusForm(request, sb);
             }

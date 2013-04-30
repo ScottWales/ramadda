@@ -1431,10 +1431,10 @@ public class Request implements Constants, Cloneable {
         if (defined(ARG_MESSAGE)) {
             String message = getUnsafeString(ARG_MESSAGE, "");
             //            message = HtmlUtils.entityEncode(getUnsafeString(ARG_MESSAGE, "");
-            message = RepositoryBase.getDialogString(message);
+            message = PageHandler.getDialogString(message);
             //Encode this to keep from a spoof attack
             message = HtmlUtils.entityEncode(message);
-            sb.append(repository.showDialogNote(message));
+            sb.append(repository.getPageHandler().showDialogNote(message));
             remove(ARG_MESSAGE);
         }
     }
@@ -2427,7 +2427,7 @@ public class Request implements Constants, Cloneable {
      */
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
-            pageStyle = repository.doMakePageStyle(this, entry);
+            pageStyle = repository.getPageHandler().doMakePageStyle(this, entry);
         }
 
         return pageStyle;

@@ -2077,7 +2077,7 @@ public class OutputHandler extends RepositoryManager {
     public Result getErrorResult(Request request, String title, String msg) {
         return new Result(title,
                           new StringBuffer(
-                                           getRepository().showDialogError(
+                                           getPageHandler().showDialogError(
                                                                            msg)));
     }
 

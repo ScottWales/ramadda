@@ -364,7 +364,7 @@ public class PointFormHandler extends RecordFormHandler {
         entrySB.append("</table>");
 
         if (recordEntries.size() == 0) {
-            sb.append(getRepository().showDialogNote(msg("No data files")));
+            sb.append(getPageHandler().showDialogNote(msg("No data files")));
 
             return new Result("", sb);
         }
@@ -814,13 +814,13 @@ public class PointFormHandler extends RecordFormHandler {
                 subsetSB.append(
                                 formEntry(
                                           request,
-                                          msgLabel("Date Range"), getRepository().makeDateInput(
+                                          msgLabel("Date Range"), getPageHandler().makeDateInput(
                                                                                                 request, ARG_FROMDATE, "entryform",
                                                                                                 null, null,
                                                                                                 showTime) + HtmlUtils.space(1)
                                     + HtmlUtils.img(iconUrl(ICON_RANGE))
                                     + HtmlUtils.space(1) +
-                                    getRepository().makeDateInput(request, ARG_TODATE,
+                                    getPageHandler().makeDateInput(request, ARG_TODATE,
                                                                   "entryform", null, null,
                                                                   showTime)));
             }

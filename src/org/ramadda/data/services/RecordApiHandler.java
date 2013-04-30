@@ -147,7 +147,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         boolean isAdmin = request.getUser().getAdmin();
         if ( !isAdmin) {
             //Allow anyone to view metrics
-            //            sb.append(getRepository().showDialogError("You must be a site administrator to see metrics"));
+            //            sb.append(getPageHandler().showDialogError("You must be a site administrator to see metrics"));
             //            return makeResult(request, sb);
         }
 
@@ -275,7 +275,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             makeHeader(request, sb);
             if (request.getUser().getAnonymous()) {
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         "You must be logged in to see your jobs"));
 
                 return makeResult(request, sb);
@@ -301,7 +301,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1);
         if (values.length == 0) {
             if ( !csv) {
-                sb.append(getRepository().showDialogNote("You have no jobs"));
+                sb.append(getPageHandler().showDialogNote("You have no jobs"));
             }
 
             return makeResult(request, sb);

@@ -85,6 +85,8 @@ import java.util.zip.*;
  */
 public class PluginManager extends RepositoryManager {
 
+    public static final String PLUGIN_ALL = "/org/ramadda/repository/resources/plugins/allplugins.jar";
+
     /** _more_ */
     private StringBuffer pluginSB = new StringBuffer();
 
@@ -416,7 +418,7 @@ public class PluginManager extends RepositoryManager {
                 request, "Administration",
                 new StringBuffer("No plugin file provided"));
         }
-        if (getRepository().installPlugin(pluginFile)) {
+        if (installPlugin(pluginFile)) {
             return getAdmin().makeResult(
                 request, "Administration",
                 new StringBuffer(
@@ -427,6 +429,42 @@ public class PluginManager extends RepositoryManager {
                 new StringBuffer("Plugin installed"));
         }
     }
+
+
+    /**
+     * _more_
+     *
+     * @param pluginPath _more_
+     *
+     *
+     * @return _more_
+     * @throws Exception _more_
+     */
+    public boolean installPlugin(String pluginPath) throws Exception {
+        try {
+            //Remove any ..._file_ prefix
+            String tail = RepositoryUtil.getFileTail(pluginPath);
+            String newPluginFile =
+                IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
+            InputStream      inputStream = IOUtil.getInputStream(pluginPath);
+            FileOutputStream fos         =
+                new FileOutputStream(newPluginFile);
+            IOUtil.writeTo(inputStream, fos);
+            IOUtil.close(inputStream);
+            IOUtil.close(fos);
+            boolean haveLoadedBefore =
+                getPluginManager().reloadFile(newPluginFile);
+            loadPlugins();
+
+            return haveLoadedBefore;
+        } catch (Exception exc) {
+            getLogManager().logError("Error installing plugin:" + pluginPath,
+                                     exc);
+        }
+
+        return false;
+    }
+
 
 
     /**

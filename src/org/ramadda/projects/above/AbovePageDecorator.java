@@ -81,7 +81,7 @@ public class AbovePageDecorator extends PageDecorator {
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
 
-        mapInfo.addRightSide(getRepository().makeStickyPopup(HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")), 
+        mapInfo.addRightSide(getPageHandler().makeStickyPopup(HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")), 
                                                              rightSide.toString(),null));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));

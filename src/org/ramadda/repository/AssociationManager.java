@@ -188,7 +188,7 @@ public class AssociationManager extends RepositoryManager {
             return new Result(
                 msg("Delete Associations"),
                 new StringBuffer(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         "Could not find assocation")));
         }
 
@@ -216,11 +216,11 @@ public class AssociationManager extends RepositoryManager {
         StringBuffer hidden = new StringBuffer();
         getRepository().addAuthToken(request, hidden);
         hidden.append(HtmlUtils.hidden(ARG_ASSOCIATION, associationId));
-        String form = Repository.makeOkCancelForm(request,
+        String form = PageHandler.makeOkCancelForm(request,
                           getRepository().URL_ASSOCIATION_DELETE,
                           ARG_DELETE_CONFIRM, hidden.toString());
         sb.append(
-            getRepository().showDialogQuestion(
+            getPageHandler().showDialogQuestion(
                 msg("Are you sure you want to delete the assocation?"),
                 form));
 
@@ -881,7 +881,7 @@ public class AssociationManager extends RepositoryManager {
 
         if (associations.size() == 0) {
             sb.append(
-                getRepository().showDialogNote(msg("No associations found")));
+                getPageHandler().showDialogNote(msg("No associations found")));
             getAssociationsSearchForm(request, sb);
         } else {
             getAssociationsSearchForm(request, sb);

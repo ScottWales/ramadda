@@ -370,7 +370,7 @@ public class MapInfo {
                 ? selectionLabel:
                 HtmlUtils.img(repository.iconUrl("/icons/map.png"),  msg("Show Map"));
             rightSide = HtmlUtils.space(2)
-                        + repository.makeStickyPopup(popupLabel, sb.toString(),
+                + repository.getPageHandler().makeStickyPopup(popupLabel, sb.toString(),
                                        getVariableName()
                                        + ".selectionPopupInit();") + 
                 //                                              HtmlUtils.space(2) + clearLink

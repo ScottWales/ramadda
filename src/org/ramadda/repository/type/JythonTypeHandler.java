@@ -206,7 +206,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                 return new Result((formInfo.title != null)
                                   ? formInfo.title
                                   : entry.getName(), new StringBuffer(
-                                      repository.showDialogError(
+                                                                      repository.getPageHandler().showDialogError(
                                           "Bad password")));
             }
         }
@@ -303,7 +303,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         return new Result((formInfo.title != null)
                                           ? formInfo.title
                                           : entry.getName(), new StringBuffer(
-                                          repository.showDialogError(
+                                          repository.getPageHandler().showDialogError(
                                               "No file uploaded")));
                     }
                 } else if (info.type == InputInfo.TYPE_ENTRY) {
@@ -317,7 +317,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         return new Result((formInfo.title != null)
                                           ? formInfo.title
                                           : entry.getName(), new StringBuffer(
-                                          repository.showDialogError(
+                                          repository.getPageHandler().showDialogError(
                                               "No entry selected")));
                     }
 
@@ -353,7 +353,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
         if (formInfo.errorMessage != null) {
             formInfo.resultHtml =
-                getRepository().showDialogError(formInfo.errorMessage);
+                getPageHandler().showDialogError(formInfo.errorMessage);
         }
 
         if (formInfo.inputStream != null) {

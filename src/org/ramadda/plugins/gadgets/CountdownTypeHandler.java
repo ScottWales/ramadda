@@ -91,7 +91,7 @@ public class CountdownTypeHandler extends GenericTypeHandler {
         StringBuffer sb = new StringBuffer(countdownHtml);
         sb.append("<table><tr><td><center>");
         sb.append(
-            getRepository().formatDate(
+            getPageHandler().formatDate(
                 request, entry.getStartDate(),
                 getEntryManager().getTimezone(entry)));
         Date   to = new Date(entry.getStartDate());

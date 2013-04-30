@@ -1582,7 +1582,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (isSearchResults) {
             if ( !hasChildren) {
                 sb.append(
-                    getRepository().showDialogNote(msg("No pages found")));
+                    getPageHandler().showDialogNote(msg("No pages found")));
             }
         }
 
@@ -1649,7 +1649,7 @@ public class HtmlOutputHandler extends OutputHandler {
             } else {
                 if(!Utils.stringDefined(group.getDescription())) {
                     sb.append(
-                              getRepository().showDialogNote(msg(LABEL_EMPTY_FOLDER)));
+                              getPageHandler().showDialogNote(msg(LABEL_EMPTY_FOLDER)));
                 }
             }
 
@@ -1660,7 +1660,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     if ( !getAccessManager().canDoAction(request, group,
                             Permission.ACTION_VIEWCHILDREN)) {
                         sb.append(
-                            getRepository().showDialogWarning(
+                            getPageHandler().showDialogWarning(
                                 "You do not have permission to view the sub-folders of this entry"));
                     }
                 }

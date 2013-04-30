@@ -674,7 +674,7 @@ public class PhoneHarvester extends Harvester  {
             if (entry!=null) parent = entry;
         }
 
-        String      name        = "Voice Message  - " + getRepository().formatDate(request, new Date());
+        String      name        = "Voice Message  - " + getPageHandler().formatDate(request, new Date());
         String      type = "media_audiofile";
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
         Entry       entry = typeHandler.createEntry(getRepository().getGUID());

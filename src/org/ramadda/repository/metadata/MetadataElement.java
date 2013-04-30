@@ -804,7 +804,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 date = new Date();
             }
 
-            return getRepository().makeDateInput(request, arg, "", date);
+            return getPageHandler().makeDateInput(request, arg, "", date);
         } else if (dataType.equals(DATATYPE_DATE)) {
             Date date;
             if (values != null) {
@@ -813,7 +813,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 date = new Date();
             }
 
-            return getRepository().makeDateInput(request, arg, "", date,
+            return getPageHandler().makeDateInput(request, arg, "", date,
                     null, false);
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HtmlUtils.select(arg, values, value);

@@ -951,7 +951,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
 
         String       blockTitle   = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_TITLE, "");
         if (blockPopup) {
-            return getRepository().makePopupLink(blockTitle,
+            return getPageHandler().makePopupLink(blockTitle,
                                                  sb.toString());
         }
 
@@ -2561,7 +2561,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         String importMenuLabel = msg("Add property");
         //            HtmlUtils.img(iconUrl("/icons/wiki/button_import.png"),
         //                         "Import Entry Property");
-        String importButton = getRepository().makePopupLink(importMenuLabel,
+        String importButton = getPageHandler().makePopupLink(importMenuLabel,
                                   HtmlUtils.hbox(importMenu.toString(),
                                       importOutputMenu.toString()));
         String addEntry = OutputHandler.getSelect(request, textAreaId,

@@ -589,7 +589,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 getEntryManager().addInitialMetadata(request, entries, false,
                         request.get(ARG_SHORT, false));
                 getEntryManager().updateEntries(request, entries);
-                sb.append(getRepository().showDialogNote("Properties added"));
+                sb.append(getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
                         request, entry, false, false));
@@ -724,11 +724,11 @@ public class CdmDataOutputHandler extends OutputHandler {
         if ((dates[0] != null) && (dates[1] != null)
                 && (dates[0].getTime() > dates[1].getTime())) {
             sb.append(
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     "From date is after to date"));
         } else if (varNames.size() == 0) {
             sb.append(
-                getRepository().showDialogWarning("No variables selected"));
+                getPageHandler().showDialogWarning("No variables selected"));
         } else {
             //                System.err.println ("varNames:" + varNames);
 
@@ -908,7 +908,7 @@ public class CdmDataOutputHandler extends OutputHandler {
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
             for (Date date : dates) {
-                formattedDates.add(getRepository().formatDate(request, date));
+                formattedDates.add(getPageHandler().formatDate(request, date));
             }
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
             String toDate   = request.getUnsafeString(ARG_TODATE, "");
@@ -1185,11 +1185,11 @@ public class CdmDataOutputHandler extends OutputHandler {
             if ((dates[0] != null) && (dates[1] != null)
                     && (dates[0].getTime() > dates[1].getTime())) {
                 sb.append(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         "From date is after to date"));
             } else if (varNames.size() == 0) {
                 sb.append(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         "No variables selected"));
             } else {
                 NetcdfCFWriter writer = new NetcdfCFWriter();
@@ -1272,15 +1272,15 @@ public class CdmDataOutputHandler extends OutputHandler {
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
             for (Date date : dates) {
-                formattedDates.add(getRepository().formatDate(request, date));
+                formattedDates.add(getPageHandler().formatDate(request, date));
             }
             /*
               for now default to "" for dates
             String fromDate = request.getUnsafeString(ARG_FROMDATE,
-                                  getRepository().formatDate(request,
+                                  getPageHandler().formatDate(request,
                                       dates.get(0)));
             String toDate = request.getUnsafeString(ARG_TODATE,
-                                getRepository().formatDate(request,
+                                getPageHandler().formatDate(request,
                                     dates.get(dates.size() - 1)));
             */
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");

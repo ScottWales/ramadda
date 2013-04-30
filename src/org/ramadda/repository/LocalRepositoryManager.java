@@ -156,7 +156,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
 
         String password = request.getString(UserManager.ARG_USER_PASSWORD1,"").trim();
         if(password.length()==0) {
-            sb.append(getRepository().showDialogError("Password is required"));
+            sb.append(getPageHandler().showDialogError("Password is required"));
             return;
         }
 
@@ -205,7 +205,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
         }
 
         if(msg.length()>0) {
-            sb.append(getRepository().showDialogNote(msg.toString()));
+            sb.append(getPageHandler().showDialogNote(msg.toString()));
         }
 
 
@@ -321,7 +321,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
             if(request.get(ARG_LOCAL_SURE, false)) {
                 processLocalNew(request, sb);
             } else {
-                sb.append(getRepository().showDialogWarning("You didn't select 'Yes, I am sure'"));
+                sb.append(getPageHandler().showDialogWarning("You didn't select 'Yes, I am sure'"));
             }
         }
 
@@ -397,7 +397,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
         }  else if(status.equals(STATUS_STOPPED)) {
             Repository child = children.get(id);
             if(child  == null) {
-                sb.append(getRepository().showDialogError("Could not find running server with id: " + id));
+                sb.append(getPageHandler().showDialogError("Could not find running server with id: " + id));
                 return;
             }
             child.close();
@@ -406,14 +406,14 @@ public class  LocalRepositoryManager extends RepositoryManager {
             childrenIds.remove(id);
         }  else if(status.equals(STATUS_DELETED)) {
             if(!request.get(ARG_LOCAL_SURE, false)) {
-                sb.append(getRepository().showDialogError("Check on the 'Yes, remove this repository' box"));
+                sb.append(getPageHandler().showDialogError("Check on the 'Yes, remove this repository' box"));
                 return;
             }
             //TODO: make sure status is stopped
             getDatabaseManager().delete(Tables.LOCALREPOSITORIES.NAME, Clause.eq(Tables.LOCALREPOSITORIES.COL_ID,  id));
             return;
         } else  {
-            sb.append(getRepository().showDialogError("Unknown status:" + status));
+            sb.append(getPageHandler().showDialogError("Unknown status:" + status));
             return;
         }
         getDatabaseManager().update(Tables.LOCALREPOSITORIES.NAME, Tables.LOCALREPOSITORIES.COL_ID,  id, new String[] {
@@ -424,18 +424,18 @@ public class  LocalRepositoryManager extends RepositoryManager {
     private void processLocalNew(Request request, StringBuffer sb) throws Exception {
         String id  = request.getString(ARG_LOCAL_ID,"");
         if(!Utils.stringDefined(id)) {
-            sb.append(getRepository().showDialogError("No ID given"));
+            sb.append(getPageHandler().showDialogError("No ID given"));
             return;
         }
 
         if(hasServer(id)) {
-            sb.append(getRepository().showDialogError("Server with id already exists"));
+            sb.append(getPageHandler().showDialogError("Server with id already exists"));
             return;
         }
         try {
             addChildRepository(request,sb, id);
         } catch(Exception exc) {
-            sb.append(getRepository().showDialogError("Error:" + exc));
+            sb.append(getPageHandler().showDialogError("Error:" + exc));
             logError("adding repository:" + id, exc);
         }
 

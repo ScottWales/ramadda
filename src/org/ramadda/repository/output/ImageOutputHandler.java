@@ -789,7 +789,7 @@ public class ImageOutputHandler extends OutputHandler {
      * @return _more_
      */
     private String formatDate(Request request, Entry entry) {
-        return getRepository().formatDate(
+        return getPageHandler().formatDate(
             request, entry.getStartDate(),
             getEntryManager().getTimezone(entry));
     }

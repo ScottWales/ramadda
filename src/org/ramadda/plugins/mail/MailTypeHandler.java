@@ -238,7 +238,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 
 
         sb.append(HtmlUtils.formEntry(msgLabel("Date"),
-                                      getRepository().formatDate(request,
+                                      getPageHandler().formatDate(request,
                                           new Date(entry.getStartDate()),
                                           null)));
         StringBuffer attachmentsSB = new StringBuffer();

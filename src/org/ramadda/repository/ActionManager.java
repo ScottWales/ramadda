@@ -126,11 +126,11 @@ public class ActionManager extends RepositoryManager {
             JobManager.getManager().stopLoad(id);
         } else {
             if (action.getError() != null) {
-                sb.append(getRepository().showDialogError(msg("Error")
+                sb.append(getPageHandler().showDialogError(msg("Error")
                         + "<p>" + action.getError()));
                 actions.remove(id);
             } else if ( !action.getRunning()) {
-                sb.append(getRepository().showDialogNote(msg("Completed")));
+                sb.append(getPageHandler().showDialogNote(msg("Completed")));
                 sb.append(action.getContinueHtml());
                 actions.remove(id);
             } else {

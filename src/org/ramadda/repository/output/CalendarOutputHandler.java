@@ -582,7 +582,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
         if (entries.size() == 0) {
             sb.append(
-                getRepository().showDialogNote(msg(LABEL_NO_ENTRIES_FOUND)));
+                getPageHandler().showDialogNote(msg(LABEL_NO_ENTRIES_FOUND)));
         }
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));

@@ -99,7 +99,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         StringBuffer sb = new StringBuffer();
 
         if(biblioText==null) {
-            sb.append(getRepository().showDialogError(msg("No biblio '.txt' file provided")));
+            sb.append(getPageHandler().showDialogError(msg("No biblio '.txt' file provided")));
             return getEntryManager().addEntryHeader(request, parentEntry,
                                                     new Result("", sb));
         }

@@ -512,7 +512,7 @@ public class HarvesterManager extends RepositoryManager {
             StringBuffer sb = new StringBuffer();
             makeFormHeader(request, harvester, sb);
             sb.append(
-                getRepository().showDialogQuestion(
+                getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the harvester"),
                     RepositoryUtil.buttons(
                         HtmlUtils.submit(msg("Yes"), ARG_DELETE_CONFIRM),
@@ -618,7 +618,7 @@ public class HarvesterManager extends RepositoryManager {
 
         if (request.exists(ARG_MESSAGE)) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     request.getString(ARG_MESSAGE, "")));
         }
         makeHarvestersList(request, harvesters, sb);

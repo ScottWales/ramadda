@@ -229,7 +229,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
 
         if ((subGroups.size() == 0) && request.defined(ARG_LETTER)) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     msg("No glossary entries found")));
         }
         sb.append(

@@ -625,123 +625,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param ms _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, long ms) {
-        return formatDate(new Date(ms));
-    }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param ms _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, long ms, String timezone) {
-        return formatDate(new Date(ms), timezone);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, Date d) {
-        return formatDate(d);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, Date d, String timezone) {
-        return formatDate(d, timezone);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
-    public String formatDateShort(Request request, Date d, String timezone) {
-        return formatDateShort(request, d, timezone, "");
-    }
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     * @param extraAlt _more_
-     *
-     * @return _more_
-     */
-    public String formatDateShort(Request request, Date d, String timezone,
-                                  String extraAlt) {
-        SimpleDateFormat sdf = getSDF(getProperty(PROP_DATE_SHORTFORMAT,
-                                   DEFAULT_TIME_SHORTFORMAT), timezone);
-        if (d == null) {
-            return BLANK;
-        }
-
-        Date   now      = new Date();
-        long   diff     = now.getTime() - d.getTime();
-        double minutes  = DateUtil.millisToMinutes(diff);
-        String fullDate = formatDate(d, timezone);
-        String result;
-        if ((minutes > 0) && (minutes < 65) && (minutes > 55)) {
-            result = "about an hour ago";
-        } else if ((diff > 0) && (diff < DateUtil.minutesToMillis(1))) {
-            result = (int) (diff / (1000)) + " seconds ago";
-        } else if ((diff > 0) && (diff < DateUtil.hoursToMillis(1))) {
-            int value = (int) DateUtil.millisToMinutes(diff);
-            result = value + " minute" + ((value > 1)
-                                          ? "s"
-                                          : "") + " ago";
-        } else if ((diff > 0) && (diff < DateUtil.hoursToMillis(24))) {
-            int value = (int) (diff / (1000 * 60 * 60));
-            result = value + " hour" + ((value > 1)
-                                        ? "s"
-                                        : "") + " ago";
-        } else if ((diff > 0) && (diff < DateUtil.daysToMillis(6))) {
-            int value = (int) (diff / (1000 * 60 * 60 * 24));
-            result = value + " day" + ((value > 1)
-                                       ? "s"
-                                       : "") + " ago";
-        } else {
-            result = sdf.format(d);
-        }
-
-        return HtmlUtils.span(result,
-                              HtmlUtils.cssClass(CSS_CLASS_DATETIME)
-                              + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
-                                  fullDate + extraAlt));
-    }
 
 
     /**
@@ -1209,9 +1094,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         readGlobals();
         checkVersion();
 
-        MyTrace.call1("Repository.loadPlugins");
-        loadPlugins();
-        MyTrace.call2("Repository.loadPlugins");
+        MyTrace.call1("Repository.loadResources");
+        loadResources();
+        MyTrace.call2("Repository.loadResources");
 
         initDefaultOutputHandlers();
 
@@ -1271,47 +1156,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param pluginPath _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public boolean installPlugin(String pluginPath) throws Exception {
-        try {
-            //Remove any ..._file_ prefix
-            String tail = RepositoryUtil.getFileTail(pluginPath);
-            String newPluginFile =
-                IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
-            InputStream      inputStream = IOUtil.getInputStream(pluginPath);
-            FileOutputStream fos         =
-                new FileOutputStream(newPluginFile);
-            IOUtil.writeTo(inputStream, fos);
-            IOUtil.close(inputStream);
-            IOUtil.close(fos);
-            boolean haveLoadedBefore =
-                getPluginManager().reloadFile(newPluginFile);
-            loadPlugins();
-
-            return haveLoadedBefore;
-        } catch (Exception exc) {
-            getLogManager().logError("Error installing plugin:" + pluginPath,
-                                     exc);
-        }
-
-        return false;
-    }
-
 
     /**
      * _more_
      *
      * @throws Exception _more_
      */
-    private void loadPlugins() throws Exception {
+    private void loadResources() throws Exception {
         getPluginManager().loadPlugins();
         getPageHandler().clearTemplates();
 
@@ -2632,7 +2483,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     didOne = true;
                 }
                 if ( !didOne) {
-                    sb.append(showDialogNote("No files available"));
+                    sb.append(getPageHandler().showDialogNote("No files available"));
                 }
 
                 return makeLinksResult(request, msg("File Listing"), sb,
@@ -2752,7 +2603,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             boolean      badAccess = inner instanceof AccessException;
             StringBuffer sb        = new StringBuffer();
             if ( !badAccess) {
-                sb.append(showDialogError(getPageHandler().translate(request,
+                sb.append(getPageHandler().showDialogError(getPageHandler().translate(request,
                         "An error has occurred") + ":" + HtmlUtils.p()
                             + inner.getMessage()));
             } else {
@@ -2773,7 +2624,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 //              System.err.println ("auth:" + authMethod);
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
-                    sb.append(showDialogError(inner.getMessage()));
+                    sb.append(getPageHandler().showDialogError(inner.getMessage()));
                     String redirect = RepositoryUtil.encodeBase64(
                                           request.getUrl().getBytes());
                     sb.append(getUserManager().makeLoginForm(request,
@@ -2834,7 +2685,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((result != null) && (result.getInputStream() == null)
                 && result.isHtml() && result.getShouldDecorate()
                 && result.getNeedToWrite()) {
-            result.putProperty(PROP_NAVLINKS, getNavLinks(request));
+            result.putProperty(PROP_NAVLINKS, getPageHandler().getNavLinks(request));
             okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
             getPageHandler().decorateResult(request, result);
         }
@@ -2881,24 +2732,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param msg _more_
-     */
-    public void checkMemory(String msg) {
-        //        Misc.gc();
-        Runtime.getRuntime().gc();
-        double freeMemory    = (double) Runtime.getRuntime().freeMemory();
-        double highWaterMark = (double) Runtime.getRuntime().totalMemory();
-        double usedMemory    = (highWaterMark - freeMemory);
-        usedMemory = usedMemory / 1000000.0;
-
-        //        println("http://ramadda.org" +request);
-        System.err.println(msg + ((int) usedMemory));
-
-    }
-
-    /**
-     * _more_
-     *
      * @param request The request
      *
      * @return _more_
@@ -2911,7 +2744,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
-        //        checkMemory("memory:");
+        //        getAdmin().checkMemory("memory:");
         //        System.err.println("request:"  + request);
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
@@ -3126,7 +2959,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Result result = new Result(
                                 msg("Error"),
                                 new StringBuffer(
-                                    showDialogError(
+                                    getPageHandler().showDialogError(
                                         msgLabel("Unknown request") + "\""
                                         + path + "\"")));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
@@ -3237,7 +3070,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Result result = new Result(
                             msg("Error"),
                             new StringBuffer(
-                                showDialogError(
+                                getPageHandler().showDialogError(
                                     msgLabel("Unknown request") + path)));
         result.setResponseCode(Result.RESPONSE_NOTFOUND);
 
@@ -3281,34 +3114,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        FileInputStream is     = new FileInputStream("testfr.html");
-        final char[]    buffer = new char[0x10000];
-        StringBuilder   out    = new StringBuilder();
-        Reader          in     = new InputStreamReader(is, "UTF-8");
-        int             read;
-        do {
-            read = in.read(buffer, 0, buffer.length);
-            if (read > 0) {
-                out.append(buffer, 0, read);
-            }
-        } while (read >= 0);
-
-        FileOutputStream fos = new FileOutputStream("test.txt");
-        PrintWriter      pw  = new PrintWriter(fos);
-        pw.print(out.toString());
-        pw.close();
-        fos.close();
-    }
 
 
 
@@ -4143,28 +3948,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-    /** _more_ */
-    byte[] buffer = new byte[1048748];
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processTestMemory(Request request) throws Exception {
-        return new Result(
-            BLANK, new BufferedInputStream(new ByteArrayInputStream(buffer)),
-            "application/x-binary");
-    }
-
-
-
     /**
      * _more_
      *
@@ -4329,7 +4112,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<String[]> docUrls = getPluginManager().getDocUrls();
         sb.append(msgHeader("Available documentation"));
         if (docUrls.size() == 0) {
-            sb.append(showDialogNote(msg("No documentation available")));
+            sb.append(getPageHandler().showDialogNote(msg("No documentation available")));
         }
         sb.append("<ul>");
         for (String[] url : docUrls) {
@@ -4461,108 +4244,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param urls _more_
-     * @param arg _more_
-     *
-     * @return _more_
-     */
-    public String makeHeader(Request request, List<RequestUrl> urls,
-                             String arg) {
-        List<String> links = new ArrayList();
-        String       type  = request.getRequestPath();
-        String onLabel = null;
-        for (RequestUrl requestUrl : urls) {
-            String label = requestUrl.getLabel();
-            label = msg(label);
-            if (label == null) {
-                label = requestUrl.toString();
-            }
-            String url = request.url(requestUrl) + arg;
-            if (type.endsWith(requestUrl.getPath())) {
-                //links.add(HtmlUtils.span(label,
-                // HtmlUtils.cssClass("subheader-on")));
-                onLabel = label;
-                //            } else {
-            }
-            links.add(
-                      HtmlUtils.span(
-                                     HtmlUtils.href(url, label),
-                                     HtmlUtils.cssClass("subheader-off")));
-            //            }
-        }
-        String header =
-            StringUtil.join("<span class=\"subheader-sep\">|</span>", links);
-
-        return HtmlUtils.tag(HtmlUtils.TAG_CENTER,
-                             HtmlUtils.cssClass("subheader-container"),
-                             HtmlUtils.tag(HtmlUtils.TAG_SPAN,
-                                           HtmlUtils.cssClass("subheader"),
-                                           header)) +
-            (onLabel==null?"":HtmlUtils.p() +msgHeader(onLabel));
-    }
-
-
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @return _more_
-     */
-    public List getNavLinks(Request request) {
-        List    links   = new ArrayList();
-        boolean isAdmin = false;
-        if (request != null) {
-            User user = request.getUser();
-            isAdmin = user.getAdmin();
-        }
-
-        String template = getPageHandler().getTemplateProperty(request,
-                              "ramadda.template.link.wrapper", "");
-
-        ApiMethod homeApi = getApiManager().getHomeApi();
-        for (ApiMethod apiMethod : getApiManager().getTopLevelMethods()) {
-            if (apiMethod.getMustBeAdmin() && !isAdmin) {
-                continue;
-            }
-            if ( !apiMethod.getIsTopLevel()) {
-                continue;
-            }
-            String url;
-            if (apiMethod == homeApi) {
-                url = fileUrl(apiMethod.getRequest());
-            } else {
-                url = request.url(apiMethod.getUrl());
-            }
-
-
-            String html = template.replace("${url}", url);
-            html = html.replace("${label}", msg(apiMethod.getName()));
-            html = html.replace("${topgroup}",
-                                getEntryManager().getTopGroup().getName());
-            links.add(html);
-        }
-        return links;
-    }
-
-
-
-
-
     /**
      * _more_
      *
@@ -4626,105 +4307,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
-        request.setPageStyle(doMakePageStyle(request, entry));
+        request.setPageStyle(getPageHandler().doMakePageStyle(request, entry));
 
         return request;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public PageStyle doMakePageStyle(Request request, Entry entry) {
-        try {
-            PageStyle pageStyle = new PageStyle();
-            if (request.exists(PROP_NOSTYLE)
-                    || getProperty(PROP_NOSTYLE, false)) {
-                return pageStyle;
-            }
-            List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
-                    ContentMetadataHandler.TYPE_PAGESTYLE, true);
-            if ((metadataList == null) || (metadataList.size() == 0)) {
-                return pageStyle;
-            }
-
-            //menus -1, showbreadcrumbs-2, toolbar-3, entry header-4, layout toolbar-5, type-6,  apply to this-7, wiki-8
-            Metadata theMetadata = null;
-            for (Metadata metadata : metadataList) {
-                if (Misc.equals(metadata.getAttr(7), "false")) {
-                    if (metadata.getEntryId().equals(entry.getId())) {
-                        continue;
-                    }
-                }
-                String types = metadata.getAttr(6);
-                if ((types == null) || (types.trim().length() == 0)) {
-                    theMetadata = metadata;
-
-                    break;
-                }
-                for (String type : StringUtil.split(types, ",", true, true)) {
-                    if (type.equals("file") && !entry.isGroup()) {
-                        theMetadata = metadata;
-
-                        break;
-                    }
-                    if (type.equals("folder") && entry.isGroup()) {
-                        theMetadata = metadata;
-
-                        break;
-                    }
-                    if (entry.getTypeHandler().isType(type)) {
-                        theMetadata = metadata;
-
-                        break;
-                    }
-                }
-            }
-
-            if (theMetadata == null) {
-                return pageStyle;
-            }
-
-            pageStyle.setShowBreadcrumbs(Misc.equals(theMetadata.getAttr2(),
-                    "true"));
-            pageStyle.setShowToolbar(Misc.equals(theMetadata.getAttr3(),
-                    "true"));
-            pageStyle.setShowEntryHeader(Misc.equals(theMetadata.getAttr4(),
-                    "true"));
-            pageStyle.setShowLayoutToolbar(
-                Misc.equals(theMetadata.getAttr(5), "true"));
-
-            boolean canEdit = getAccessManager().canDoAction(request, entry,
-                                  Permission.ACTION_EDIT);
-            if ( !canEdit) {
-                String menus = theMetadata.getAttr1();
-                if ((menus != null) && (menus.trim().length() > 0)) {
-                    if (menus.equals("none")) {
-                        pageStyle.setShowMenubar(false);
-                    } else {
-                        for (String menu :
-                                StringUtil.split(menus, ",", true, true)) {
-                            pageStyle.setMenu(menu);
-                        }
-                    }
-                }
-            }
-            if ((theMetadata.getAttr(8) != null)
-                    && (theMetadata.getAttr(8).trim().length() > 0)) {
-                pageStyle.setWikiTemplate(theMetadata.getAttr(8));
-            }
-
-            return pageStyle;
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
 
 
     /**
@@ -5452,310 +5039,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param formName _more_
-     * @param fieldName _more_
-     *
-     * @return _more_
-     */
-    public String getCalendarSelector(String formName, String fieldName) {
-        String anchorName = "anchor." + fieldName;
-        String divName    = "div." + fieldName;
-        String call =
-            HtmlUtils.call("selectDate",
-                           HtmlUtils.comma(HtmlUtils.squote(divName),
-        //                              "document.forms['"  + formName + "']." + fieldName, 
-        "findFormElement('" + formName + "','" + fieldName
-                            + "')", HtmlUtils.squote(anchorName),
-                                    HtmlUtils.squote(
-                                        "yyyy-MM-dd"))) + "return false;";
-
-        return HtmlUtils
-            .href("#", HtmlUtils
-                .img(iconUrl(ICON_CALENDAR), " Choose date", HtmlUtils
-                    .attr(HtmlUtils.ATTR_BORDER, "0")), HtmlUtils
-                        .onMouseClick(call) + HtmlUtils
-                        .attrs(HtmlUtils.ATTR_NAME, anchorName, HtmlUtils
-                            .ATTR_ID, anchorName)) + HtmlUtils
-                                .div("", HtmlUtils
-                                    .attrs(HtmlUtils
-                                        .ATTR_ID, divName, HtmlUtils
-                                        .ATTR_STYLE, "position:absolute;visibility:hidden;background-color:white;layer-background-color:white;"));
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param name _more_
-     * @param formName _more_
-     * @param date _more_
-     *
-     * @return _more_
-     */
-    public String makeDateInput(Request request, String name,
-                                String formName, Date date) {
-        return makeDateInput(request, name, formName, date, null);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param name _more_
-     * @param formName _more_
-     * @param date _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
-    public String makeDateInput(Request request, String name,
-                                String formName, Date date, String timezone) {
-        return makeDateInput(request, name, formName, date, timezone, true);
-    }
-
-    /**
-     * Make the HTML for a date input widget
-     *
-     * @param request The request
-     * @param name    the name
-     * @param formName  the form name
-     * @param date      the default date
-     * @param timezone  the timezone
-     * @param includeTime  true to include a time box
-     *
-     * @return  the widget html
-     */
-    public String makeDateInput(Request request, String name,
-                                String formName, Date date, String timezone,
-                                boolean includeTime) {
-        String dateHelp = "e.g., yyyy-mm-dd,  now, -1 week, +3 days, etc.";
-        String           timeHelp   = "hh:mm:ss Z, e.g. 20:15:00 MST";
-
-        String           dateArg    = request.getString(name, "");
-        String           timeArg    = request.getString(name + ".time", "");
-        String           dateString = ((date == null)
-                                       ? dateArg
-                                       : dateSdf.format(date));
-        SimpleDateFormat timeFormat = ((timezone == null)
-                                       ? timeSdf
-                                       : getSDF("HH:mm:ss z", timezone));
-        String           timeString = ((date == null)
-                                       ? timeArg
-                                       : timeFormat.format(date));
-
-        String           inputId    = "dateinput" + (HtmlUtils.blockCnt++);
-
-
-        String js =
-            "<script>jQuery(function() {$( "
-            + HtmlUtils.squote("#" + inputId)
-            + " ).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100' });});</script>";
-        String extra = "";
-        if (includeTime) {
-            extra = " T:"
-                    + HtmlUtils.input(name + ".time", timeString,
-                                      HtmlUtils.sizeAttr(6)
-                                      + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
-                                          timeHelp));
-        }
-
-        return "\n" + js + "\n"
-               + HtmlUtils.input(name, dateString,
-                                 HtmlUtils.SIZE_10 + HtmlUtils.id(inputId)
-                                 + HtmlUtils.title(dateHelp)) + extra;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents) {
-        return makePopupLink(link, menuContents, false, false);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param makeClose _more_
-     * @param alignLeft _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                boolean makeClose, boolean alignLeft) {
-        return makePopupLink(link, menuContents, "", makeClose, alignLeft);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param linkAttributes _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                String linkAttributes) {
-        return makePopupLink(link, menuContents, linkAttributes, false,
-                             false);
-    }
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param menuContents _more_
-     * @param linkAttributes _more_
-     * @param makeClose _more_
-     * @param alignLeft _more_
-     *
-     * @return _more_
-     */
-    public String makePopupLink(String link, String menuContents,
-                                String linkAttributes, boolean makeClose,
-                                boolean alignLeft) {
-        String compId   = "menu_" + HtmlUtils.blockCnt++;
-        String linkId   = "menulink_" + HtmlUtils.blockCnt++;
-        String contents = makePopupDiv(menuContents, compId, makeClose);
-        String onClick = HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
-                             HtmlUtils.comma(new String[] { "event",
-                HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
-                ? "1"
-                : "0") })));
-        String href = HtmlUtils.href("javascript:noop();", link,
-                                     onClick + HtmlUtils.id(linkId)
-                                     + linkAttributes);
-
-        return href + contents;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param innerContents _more_
-     * @param initCall _more_
-     *
-     * @return _more_
-     */
-    public String makeStickyPopup(String link, String innerContents,
-                                  String initCall) {
-        boolean alignLeft = true;
-        String  compId    = "menu_" + HtmlUtils.blockCnt++;
-        String  linkId    = "menulink_" + HtmlUtils.blockCnt++;
-        String  contents  = makeStickyPopupDiv(innerContents, compId);
-        String onClick =
-            HtmlUtils.onMouseClick(HtmlUtils.call("showStickyPopup",
-                HtmlUtils.comma(new String[] { "event",
-                HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
-                ? "1"
-                : "0") })) + initCall);
-        String href = HtmlUtils.href("javascript:noop();", link,
-                                     onClick + HtmlUtils.id(linkId));
-
-        return href + contents;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param contents _more_
-     * @param compId _more_
-     *
-     * @return _more_
-     */
-    public String makeStickyPopupDiv(String contents, String compId) {
-        StringBuffer menu = new StringBuffer();
-        String cLink = HtmlUtils.jsLink(
-                           HtmlUtils.onMouseClick(
-                               HtmlUtils.call(
-                                   "hideElementById",
-                                   HtmlUtils.squote(compId))), HtmlUtils.img(
-                                       iconUrl(ICON_CLOSE)), "");
-        contents = cLink + HtmlUtils.br() + contents;
-
-        menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
-
-        return menu.toString();
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param contents _more_
-     * @param compId _more_
-     * @param makeClose _more_
-     *
-     * @return _more_
-     */
-    public String makePopupDiv(String contents, String compId,
-                               boolean makeClose) {
-        StringBuffer menu = new StringBuffer();
-        if (makeClose) {
-            String cLink = HtmlUtils.jsLink(
-                               HtmlUtils.onMouseClick("hidePopupObject();"),
-                               HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
-            contents = cLink + HtmlUtils.br() + contents;
-        }
-
-        menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
-
-        return menu.toString();
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param url _more_
-     * @param okArg _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
-    public static String makeOkCancelForm(Request request, RequestUrl url,
-                                          String okArg, String extra) {
-        StringBuffer fb = new StringBuffer();
-        fb.append(request.form(url));
-        fb.append(extra);
-        String okButton     = HtmlUtils.submit("OK", okArg);
-        String cancelButton = HtmlUtils.submit("Cancel",
-                                  Constants.ARG_CANCEL);
-        String buttons = RepositoryUtil.buttons(okButton, cancelButton);
-        fb.append(buttons);
-        fb.append(HtmlUtils.formClose());
-
-        return fb.toString();
-    }
 
     /**
      * _more_

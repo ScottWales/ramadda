@@ -1007,7 +1007,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         if ( !didone) {
             sb.append(
-                getRepository().showDialogNote(msg("No servers selected")));
+                getPageHandler().showDialogNote(msg("No servers selected")));
         } else {
             sb.append(
                 HtmlUtils.div(
@@ -1054,7 +1054,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     public Result makeResult(Request request, String title, StringBuffer sb)
             throws Exception {
         StringBuffer headerSB = new StringBuffer();
-        headerSB.append(getRepository().makeHeader(request, getSearchUrls(),
+        headerSB.append(getPageHandler().makeHeader(request, getSearchUrls(),
                 ""));
         headerSB.append(sb);
         sb = headerSB;
@@ -1227,7 +1227,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                           RepositoryUtil.inset(
                               searchForm.toString(), 0, 20, 0, 0), false);
         StringBuffer header = new StringBuffer();
-        header.append(getRepository().makeHeader(request, getSearchUrls(),
+        header.append(getPageHandler().makeHeader(request, getSearchUrls(),
                 ""));
         header.append(msgHeader("Search Results"));
 

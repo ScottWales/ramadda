@@ -236,8 +236,8 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             }
             wikiText = wph.getText();
             header   =
-                getRepository().showDialogNote(msgLabel("Text from version")
-                    + getRepository().formatDate(wph.getDate()));
+                getPageHandler().showDialogNote(msgLabel("Text from version")
+                    + getPageHandler().formatDate(wph.getDate()));
         } else {
             Object[] values = entry.getValues();
             if ((values != null) && (values.length > 0)
@@ -311,11 +311,11 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         }
 
         String lbl1 = "Revision as of "
-                      + getRepository().formatDate(wph1.getDate())
+                      + getPageHandler().formatDate(wph1.getDate())
                       + HtmlUtils.br() + wph1.getUser() + HtmlUtils.br()
                       + wph1.getDescription();
         String lbl2 = "Revision as of "
-                      + getRepository().formatDate(wph2.getDate())
+                      + getPageHandler().formatDate(wph2.getDate())
                       + HtmlUtils.br() + wph2.getUser() + HtmlUtils.br()
                       + wph2.getDescription();
         sb.append("<table width=100% border=0 cellspacing=5 cellpadding=4>");
@@ -399,7 +399,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             }
             sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
                 versionLabel, btns, edit, view, wph.getUser().getLabel(),
-                getRepository().formatDate(wph.getDate()),
+                getPageHandler().formatDate(wph.getDate()),
                 wph.getDescription()
             })));
         }

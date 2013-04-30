@@ -515,7 +515,7 @@ public class JobManager extends RepositoryManager  {
         }
         StringBuffer sb = new StringBuffer();
         addHtmlHeader(request, sb);
-        sb.append(getRepository().showDialogNote(message));
+        sb.append(getPageHandler().showDialogNote(message));
         return new Result("", sb);
     }
 

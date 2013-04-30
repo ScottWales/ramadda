@@ -263,10 +263,10 @@ public class EntryMonitor implements Constants {
         stateSB.append(
             HtmlUtils.formEntry(
                 getRepository().msgLabel("Valid Date Range"),
-                getRepository().makeDateInput(
+                getRepository().getPageHandler().makeDateInput(
                     request, ARG_MONITOR_FROMDATE, "monitorform",
                     getFromDate()) + " " + getRepository().msg("To") + " "
-                                   + getRepository().makeDateInput(
+                                   + getRepository().getPageHandler().makeDateInput(
                                        request, ARG_MONITOR_TODATE,
                                        "monitorform", getToDate())));
 

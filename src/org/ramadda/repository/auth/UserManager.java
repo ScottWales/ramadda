@@ -551,7 +551,7 @@ public class UserManager extends RepositoryManager {
         request.appendMessage(sb);
         if ( !canDoLogin(request)) {
             sb.append(
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     msg("Login is not allowed")));
 
             return sb.toString();
@@ -1005,7 +1005,7 @@ public class UserManager extends RepositoryManager {
             request.ensureAuthToken();
             if ( !checkPasswords(request, user)) {
                 sb.append(
-                    getRepository().showDialogWarning("Incorrect passwords"));
+                    getPageHandler().showDialogWarning("Incorrect passwords"));
             } else {
                 applyUserProperties(request, user, true);
             }
@@ -1019,7 +1019,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HtmlUtils.hidden(ARG_USER_ID, user.getId()));
         if (request.defined(ARG_USER_DELETE)) {
             sb.append(
-                getRepository().showDialogQuestion(
+                getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the user?"),
                     RepositoryUtil.buttons(
                         HtmlUtils.submit(
@@ -1191,7 +1191,7 @@ public class UserManager extends RepositoryManager {
             }
             if (toks.size() < 2) {
                 ok = false;
-                sb.append(getRepository().showDialogError("Bad line:"
+                sb.append(getPageHandler().showDialogError("Bad line:"
                         + line));
 
                 break;
@@ -1207,7 +1207,7 @@ public class UserManager extends RepositoryManager {
             if (findUser(id) != null) {
                 ok = false;
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         getRepository().translate(
                             request, "User already exists") + " " + id));
 
@@ -1350,7 +1350,7 @@ public class UserManager extends RepositoryManager {
 
         if (errorBuffer.toString().length() > 0) {
             sb.append(
-                getRepository().showDialogWarning(errorBuffer.toString()));
+                getPageHandler().showDialogWarning(errorBuffer.toString()));
         }
         makeNewUserForm(request, sb);
 
@@ -1800,7 +1800,7 @@ public class UserManager extends RepositoryManager {
         if (entries.size() == 0) {
             entries = new ArrayList<Entry>();
             sb.append(
-                getRepository().showDialogNote(msg("No entries in cart")));
+                getPageHandler().showDialogNote(msg("No entries in cart")));
             //            entries.add(getEntryManager().getTopGroup());
         }
 
@@ -2026,7 +2026,7 @@ public class UserManager extends RepositoryManager {
         } else if ( !user.getIsLocal()) {
             links = remoteUserUrls;
         }
-        sb.append(getRepository().makeHeader(request, links, ""));
+        sb.append(getPageHandler().makeHeader(request, links, ""));
     }
 
 
@@ -2143,7 +2143,7 @@ public class UserManager extends RepositoryManager {
                 new Result(
                     msg("Favorites"),
                     new StringBuffer(
-                        getRepository().showDialogError(
+                        getPageHandler().showDialogError(
                             "Favorites not allowed"))));
         }
         String entryId = request.getString(ARG_ENTRYID, BLANK);
@@ -2156,7 +2156,7 @@ public class UserManager extends RepositoryManager {
                     new Result(
                         msg("Favorites"),
                         new StringBuffer(
-                            getRepository().showDialogError(
+                            getPageHandler().showDialogError(
                                 getRepository().translate(
                                     request,
                                     "Cannot find or access entry")))));
@@ -2249,7 +2249,7 @@ public class UserManager extends RepositoryManager {
                 msg = msg + HtmlUtils.p()
                       + msg("If you had logged in perhaps you have cookies turned off?");
             }
-            sb.append(getRepository().showDialogWarning(msg));
+            sb.append(getPageHandler().showDialogWarning(msg));
             sb.append(makeLoginForm(request));
 
             return addHeader(request, new Result(msg("User Home"), sb));
@@ -2291,7 +2291,7 @@ public class UserManager extends RepositoryManager {
 
         if (request.getUser().canEditSettings() && (cnt == 0)) {
             sb.append(
-                getRepository().showDialogNote(
+                getPageHandler().showDialogNote(
                     "You have no favorite entries defined.<br>When you see an  entry or folder just click on the "
                     + HtmlUtils.img(iconUrl(ICON_FAVORITE))
                     + " icon to add it to your list of favorites"));
@@ -2393,7 +2393,7 @@ public class UserManager extends RepositoryManager {
             return makeResult(
                 request, "User Information",
                 new StringBuffer(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg(
                         "This RAMADDA server has not been configured to send email"))));
         }
@@ -2421,7 +2421,7 @@ public class UserManager extends RepositoryManager {
                         getRepository().translate(request, message)));
             }
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     getRepository().translate(
                         request,
                         "No user is registered with the given email address")));
@@ -2462,7 +2462,7 @@ public class UserManager extends RepositoryManager {
             return new Result(
                 msg("Password Reset"),
                 new StringBuffer(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg("Login is not allowed"))));
         }
 
@@ -2475,7 +2475,7 @@ public class UserManager extends RepositoryManager {
             if (resetInfo != null) {
                 if (new Date().getTime() > resetInfo.dttm.getTime()) {
                     sb.append(
-                        getRepository().showDialogError(
+                        getPageHandler().showDialogError(
                             getRepository().translate(
                                 request,
                                 "Password reset has timed out") + "<br>"
@@ -2486,7 +2486,7 @@ public class UserManager extends RepositoryManager {
                 }
             } else {
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         getRepository().translate(
                             request, "Password reset has timed out") + "<br>"
                                 + getRepository().translate(
@@ -2502,7 +2502,7 @@ public class UserManager extends RepositoryManager {
                 if (checkPasswords(request, user)) {
                     applyUserProperties(request, user, false);
                     sb.append(
-                        getRepository().showDialogNote(
+                        getPageHandler().showDialogNote(
                             msg("Your password has been reset")));
                     sb.append(makeLoginForm(request));
                     addActivity(request, request.getUser(),
@@ -2511,7 +2511,7 @@ public class UserManager extends RepositoryManager {
                     return new Result(msg("Password Reset"), sb);
                 }
                 sb.append(
-                    getRepository().showDialogWarning("Incorrect passwords"));
+                    getPageHandler().showDialogWarning("Incorrect passwords"));
             }
             sb.append(msgHeader("Please reset your password"));
             sb.append(HtmlUtils.p());
@@ -2537,7 +2537,7 @@ public class UserManager extends RepositoryManager {
             return new Result(
                 msg("Password Reset"),
                 new StringBuffer(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg(
                         "This RAMADDA server has not been configured to send email"))));
         }
@@ -2549,7 +2549,7 @@ public class UserManager extends RepositoryManager {
         if (user == null) {
             if (request.exists(ARG_USER_NAME)) {
                 sb.append(
-                    getRepository().showDialogError(
+                    getPageHandler().showDialogError(
                         getRepository().translate(
                             request, "Not a registered user")));
                 sb.append(HtmlUtils.p());
@@ -2585,7 +2585,7 @@ public class UserManager extends RepositoryManager {
         getRepository().getMailManager().sendEmail(toUser, subject, template, true);
         StringBuffer message = new StringBuffer();
         message.append(
-            getRepository().showDialogNote(
+            getPageHandler().showDialogNote(
                 "Instructions on how to reset your password have been sent to your registered email address."));
 
         return new Result("Password Reset", message);
@@ -2680,7 +2680,7 @@ public class UserManager extends RepositoryManager {
             return new Result(
                 msg("Login"),
                 new StringBuffer(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg("Login is not allowed"))));
         }
 
@@ -2715,7 +2715,7 @@ public class UserManager extends RepositoryManager {
                 String       destMsg;
                 StringBuffer response = new StringBuffer();
                 response.append(
-                    getRepository().showDialogNote(msg("You are logged in")));
+                    getPageHandler().showDialogNote(msg("You are logged in")));
                 if (request.exists(ARG_REDIRECT)) {
                     destUrl = new String(
                         RepositoryUtil.decodeBase64(
@@ -2759,7 +2759,7 @@ public class UserManager extends RepositoryManager {
                         password = results.getString(1);
                         if ((password == null) || (password.length() == 0)) {
                             sb.append(
-                                getRepository().showDialogNote(
+                                getPageHandler().showDialogNote(
                                     "Sorry, we were doing some cleanup and have reset your password"));
 
                             addPasswordResetForm(request, sb, name);
@@ -2775,7 +2775,7 @@ public class UserManager extends RepositoryManager {
 
                 //TODO: what to do when we have ssl here?
                 sb.append(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg("Incorrect user name or password")));
 
 
@@ -2889,7 +2889,7 @@ public class UserManager extends RepositoryManager {
         addActivity(request, request.getUser(), ACTIVITY_LOGOUT, "");
         getSessionManager().removeUserSession(request);
         request.setSessionId(getSessionManager().createSessionId());
-        sb.append(getRepository().showDialogNote(msg("You are logged out")));
+        sb.append(getPageHandler().showDialogNote(msg("You are logged out")));
         sb.append(makeLoginForm(request));
         Result result = new Result(msg("Logout"), sb);
 
@@ -3074,7 +3074,7 @@ public class UserManager extends RepositoryManager {
 
         if (user == null) {
             sb.append(
-                getRepository().showDialogError(
+                getPageHandler().showDialogError(
                     getRepository().translate(
                         request, "Could not find user")));
         } else {
@@ -3158,7 +3158,7 @@ public class UserManager extends RepositoryManager {
             String extra = results.getString(col++);
             String ip    = results.getString(col++);
             sb.append(HtmlUtils.row(HtmlUtils.cols(firstCol, what,
-                    getRepository().formatDate(dttm), ip)));
+                    getPageHandler().formatDate(dttm), ip)));
 
             cnt++;
         }
@@ -3244,7 +3244,7 @@ public class UserManager extends RepositoryManager {
         if (user.getAnonymous()) {
             StringBuffer sb = new StringBuffer();
             sb.append(
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     msg("You need to be logged in to change user settings")));
             sb.append(makeLoginForm(request));
 
@@ -3254,7 +3254,7 @@ public class UserManager extends RepositoryManager {
         if ( !user.canEditSettings()) {
             StringBuffer sb = new StringBuffer();
             sb.append(
-                getRepository().showDialogWarning(
+                getPageHandler().showDialogWarning(
                     msg("You cannot edit your settings")));
 
             return addHeader(request, new Result(msg("User Settings"), sb));
@@ -3290,7 +3290,7 @@ public class UserManager extends RepositoryManager {
             settingsOk = checkPasswords(request, user);
             if ( !settingsOk) {
                 sb.append(
-                    getRepository().showDialogWarning(
+                    getPageHandler().showDialogWarning(
                         msg("Incorrect passwords")));
                 message = "Incorrect passwords";
             } else {
