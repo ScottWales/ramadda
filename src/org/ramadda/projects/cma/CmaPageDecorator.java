@@ -19,7 +19,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.plugins.cma;
+package org.ramadda.projects.cma;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
