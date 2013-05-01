@@ -214,7 +214,8 @@ public class HarvesterManager extends RepositoryManager {
         ResultSet results;
         while ((results = iter.getNext()) != null) {
             String id        = results.getString(1);
-            String className = results.getString(2);
+            String origClassName = results.getString(2);
+            String className = origClassName;
             String content   = results.getString(3);
 
             Class  c         = null;
@@ -240,7 +241,7 @@ public class HarvesterManager extends RepositoryManager {
                 } catch (ClassNotFoundException cnfe2) {
                     getRepository().getLogManager().logError(
                         "HarvesterManager: Could not load harvester class: "
-                        + className);
+                        + origClassName);
 
                     continue;
                 }
