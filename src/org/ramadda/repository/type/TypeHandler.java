@@ -1718,8 +1718,8 @@ public class TypeHandler extends RepositoryManager {
 
             links.add(
                 new Link(
-                    request.entryUrl(getRepository().URL_ENTRY_WALK, entry),
-                    "/icons/sitemap.png", "Walk Tree",
+			 request.entryUrl(getRepository().URL_ENTRY_WALK, entry),
+			 getRepository().iconUrl("/icons/sitemap.png"), "Walk Tree",
                     OutputType.TYPE_EDIT));
 
         }

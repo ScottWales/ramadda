@@ -6,6 +6,7 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column  name="project_id"  type="string" label="Project ID"/>
      <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
      <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
