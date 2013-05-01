@@ -7610,14 +7610,12 @@ public class EntryManager extends RepositoryManager {
                            new File(IOUtil.joinDir(parent,
                                ".ramadda.xml")), };
 
-        Entry fileInfoEntry = null;
         for (File f : files) {
             if (f.exists()) {
-                fileInfoEntry = parseEntryXml(f, true);
+                return  parseEntryXml(f, true);
             }
         }
-
-        return fileInfoEntry;
+        return null;
     }
 
 
