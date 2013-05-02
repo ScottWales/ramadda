@@ -1998,7 +1998,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (db.equals(DB_MYSQL)) {
             sql = sql.replace("ramadda.double", "double");
             sql = sql.replace("ramadda.datetime", "datetime");
-p            sql = sql.replace("ramadda.clob", "text");
+            sql = sql.replace("ramadda.clob", "text");
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
             //sql = sql.replace("ramadda.datetime", "timestamp");
