@@ -157,15 +157,18 @@ public class MapManager extends RepositoryManager {
     }
 
 
+    private static final String OPENLAYERS_BASE = "/openlayers";
+    //    private static final String OPENLAYERS_BASE = "/openlayers2_12";
+
     public String getHtmlImports() {
         StringBuffer sb = new StringBuffer();
         sb.append(
                   HtmlUtils.cssLink(
-                                    fileUrl("/openlayers/theme/default/style.css")));
+                                    fileUrl(OPENLAYERS_BASE + "/theme/default/style.css")));
         sb.append("\n");
         sb.append("\n");
         sb.append(
-                  HtmlUtils.importJS(fileUrl("/openlayers/OpenLayers.js")));
+                  HtmlUtils.importJS(fileUrl(OPENLAYERS_BASE + "/OpenLayers.js")));
         sb.append("\n");
         sb.append(
                   HtmlUtils.importJS(

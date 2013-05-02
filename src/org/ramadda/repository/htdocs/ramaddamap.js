@@ -90,16 +90,25 @@ function RepositoryMap(mapId, params) {
         this.latlonReadout = latlonReadoutID;
     }
 
-    this.addImageLayer = function(name, url, north,west,south,east, width,height) {
-        var img_extent = new OpenLayers.Bounds(west, south,east,north);
-        var img_size = new OpenLayers.Size(width, height);
 
-        var image = new OpenLayers.Layer.Image(name, url, img_extent, img_size, {
-                isBaseLayer: false,
-                alwaysInRange: true // Necessary to always draw the image
-            });
-        //        alert("image:" + name + " -- " + url + " " + img_extent  + " "  + img_size);
-        this.map.addLayer(image);
+    this.addImageLayer = function(name, url, north,west,south,east, width,height) {
+        //Things go blooeey with lat up to 90
+        if(north>88) north = 88;
+        if(south<-88) south = -88;
+        var imageBounds = new OpenLayers.Bounds(west, south,east,north);
+        imageBounds = this.transformLLBounds(imageBounds);
+        var imageLayer = new OpenLayers.Layer.Image(
+                                                    name,url,
+                                                    imageBounds,
+                                                    new OpenLayers.Size(width, height),
+                                                    {numZoomLevels: 3, 
+                                                            isBaseLayer: false,
+                                                            resolutions:this.map.layers[0].resolutions,
+                                                            maxResolution:this.map.layers[0].resolutions[0]}
+                                                    );
+        
+        //        imageLayer.isBaseLayer = false;
+        this.map.addLayer(imageLayer);
     }
 
 
@@ -136,13 +145,15 @@ function RepositoryMap(mapId, params) {
     this.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [ 
+                              map_google_satellite,
                               map_google_terrain, 
                               map_google_streets, 
-                              map_google_satellite,
                               map_google_hybrid,
                               map_wms_openlayers,
             ];
         }
+
+        //        this.mapLayers = [map_wms_openlayers,];
 
         for (i = 0; i < this.mapLayers.length; i++) {
             mapLayer = this.mapLayers[i];
