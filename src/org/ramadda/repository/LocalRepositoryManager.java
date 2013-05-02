@@ -321,7 +321,7 @@ public class  LocalRepositoryManager extends RepositoryManager {
             if(request.get(ARG_LOCAL_SURE, false)) {
                 processLocalNew(request, sb);
             } else {
-                sb.append(getPageHandler().showDialogWarning("You didn't select 'Yes, I am sure'"));
+                sb.append(getPageHandler().showDialogWarning("You didn't select \"I'm sure\""));
             }
         }
 
@@ -378,8 +378,10 @@ public class  LocalRepositoryManager extends RepositoryManager {
         sb.append(HtmlUtils.formEntry(msgLabel("Admin ID"),  HtmlUtils.input(ARG_LOCAL_ADMIN) +" Default is &lt;repository id&gt;_admin"));
         sb.append(HtmlUtils.formEntry(msgLabel("Admin Password"),  HtmlUtils.input(UserManager.ARG_USER_PASSWORD1) +                                      required));
         
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"), ARG_LOCAL_NEW)+
-                                      " " + HtmlUtils.checkbox(ARG_LOCAL_SURE, "true", false) + " " + msg("Yes, I am sure")));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.checkbox(ARG_LOCAL_SURE, "true", false) + " " + msg("I'm sure")));
+
+
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Create new repository"), ARG_LOCAL_NEW)));
 
         sb.append(HtmlUtils.formTableClose());
 

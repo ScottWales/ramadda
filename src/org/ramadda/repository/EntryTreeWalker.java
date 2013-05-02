@@ -133,6 +133,7 @@ public abstract class EntryTreeWalker  implements Constants {
         processedCnt+=by;
     }
     public boolean isRunning() {
+        if(actionId==null) return true;
         return getRepository().getActionManager().getActionOk(actionId);
     }
 
@@ -144,8 +145,10 @@ public abstract class EntryTreeWalker  implements Constants {
     }
 
     public void updateMessage() {
-        getRepository().getActionManager().setActionMessage(actionId,
-                                            "# entries:" + totalCnt +"<br># changed entries:" + processedCnt);
+        if(actionId!=null) {
+            getRepository().getActionManager().setActionMessage(actionId,
+                                                                "# entries:" + totalCnt +"<br># changed entries:" + processedCnt);
+        }
     }
 
     public boolean walk(Entry entry) throws Exception {
@@ -159,7 +162,7 @@ public abstract class EntryTreeWalker  implements Constants {
         }
         if(recurse) {
             for(Entry child: children) {
-                if(!getRepository().getActionManager().getActionOk(actionId)) return false;
+                if(actionId !=null && !getRepository().getActionManager().getActionOk(actionId)) return false;
                 if(!walk(child)) return false;
             }
         }

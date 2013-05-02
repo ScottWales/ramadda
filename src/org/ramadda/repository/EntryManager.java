@@ -807,6 +807,43 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuffer sb = new StringBuffer();
+        if(request.exists(ARG_WALK_REPORT)) {
+            final long[]size = {0};
+            final int[]numFiles = {0};
+            EntryTreeWalker walker = new EntryTreeWalker(request, getRepository(),  null) {
+                    @Override
+                    public  boolean processEntry(Entry entry, List<Entry> children) throws Exception {
+                        for(Entry child: children) {
+                            if(child.isFile()) {
+                                append("<tr><td>");
+                                String url= request.entryUrl(
+                                                              getRepository().URL_ENTRY_SHOW, child);
+
+                                append(HtmlUtils.href(url, child.getName()));
+                                append("</td><td align=right>");
+                                File file = child.getFile();
+                                size[0]+=file.length();
+                                numFiles[0]++;
+                                append(""+file.length());
+                                append("</td></tr>");
+                            }
+                        }
+                        return true;
+                    }
+                };
+            
+            walker.walk(entry);
+            sb.append("<table><tr><td><b>" + msg("File") +"</b></td><td><b>" + msg("Size") +"</td></tr>");
+            sb.append(walker.getMessageBuffer());
+            
+
+            sb.append("<tr><td><b>" + msgLabel("Total") +"</td><td align=right>" + HtmlUtils.b(formatFileLength(size[0])) + "</td></tr>");
+            sb.append("</table>");
+            return makeEntryEditResult(request, entry, "Entry Report", sb);
+        }
+
+
+
         sb.append(request.form(getRepository().URL_ENTRY_WALK,
                                HtmlUtils.attr("name", "entryform")));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -816,10 +853,11 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.space(1));
         sb.append(msg("Recurse"));
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Spatial and Temporal Metadata"),ARG_WALK_METADATA));
+        sb.append(HtmlUtils.submit(msg("Set Spatial and Temporal Metadata"),ARG_WALK_METADATA));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit(msg("Set MD5 Checksums"),ARG_WALK_MD5));
-        //sb.append(HtmlUtils.submit(msg("Generate Listing"),ARG_WALK_REPORT));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit(msg("Generate File Listing"),ARG_WALK_REPORT));
         sb.append(HtmlUtils.formClose());
 
 
@@ -827,6 +865,9 @@ public class EntryManager extends RepositoryManager {
 
         return makeEntryEditResult(request, entry, "Entry Walk", sb);
     }
+
+
+
 
     private void setMD5(Request request, Object actionId,  StringBuffer sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
         if(!getRepository().getActionManager().getActionOk(actionId)) {
