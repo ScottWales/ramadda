@@ -84,6 +84,17 @@ CREATE INDEX METADATA_INDEX_ENTRYID ON metadata (ENTRY_ID);
 CREATE INDEX METADATA_INDEX_TYPE ON metadata (TYPE);
 CREATE INDEX METADATA_INDEX_ATTR1 ON metadata (ATTR1);
 
+CREATE TABLE  metadata_test1 (id varchar(200),
+			entry_id varchar(200),
+                        type varchar(200),
+                	inherited int,
+                        attr1 varchar(6000),
+                        attr2 varchar(6000),
+                        attr3 varchar(6000),
+                        attr4 varchar(6000),
+		        extra ramadda.bigclob);
+
+
 -----------------------------------------------------------------------
 --- comments 
 -----------------------------------------------------------------------

@@ -4178,6 +4178,7 @@ public class TypeHandler extends RepositoryManager {
                               StringBuffer searchCriteria, List<Clause> where)
             throws Exception {
 
+        DatabaseManager dbm = getDatabaseManager();
         List<Clause> textOrs = new ArrayList<Clause>();
         for (String textTok :
                 (List<String>) StringUtil.split(textToSearch, ",", true,
@@ -4264,12 +4265,12 @@ public class TypeHandler extends RepositoryManager {
                         getDatabaseManager().makeRegexpClause(
                             Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
                 } else if (doLike) {
-                    ors.add(Clause.like(Tables.ENTRIES.COL_NAME, nameTok,
-                                        doNot));
-                    ors.add(Clause.like(Tables.ENTRIES.COL_DESCRIPTION,
-                                        nameTok, doNot));
-                    ors.add(Clause.like(Tables.ENTRIES.COL_RESOURCE, nameTok,
-                                        doNot));
+                    ors.add(dbm.makeLikeTextClause(Tables.ENTRIES.COL_NAME, nameTok,
+                                                   doNot));
+                    ors.add(dbm.makeLikeTextClause(Tables.ENTRIES.COL_DESCRIPTION,
+                                                   nameTok, doNot));
+                    ors.add(dbm.makeLikeTextClause(Tables.ENTRIES.COL_RESOURCE, nameTok,
+                                                   doNot));
                 } else {
                     ors.add(Clause.eq(Tables.ENTRIES.COL_NAME, nameTok,
                                       doNot));
@@ -4281,6 +4282,7 @@ public class TypeHandler extends RepositoryManager {
                 }
                 ands.add(Clause.or(ors));
             }
+            System.err.println("clauses:" + ands);
             if (ands.size() > 1) {
                 //                System.err.println ("ands:" + ands);
                 textOrs.add(Clause.and(ands));
