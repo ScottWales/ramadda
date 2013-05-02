@@ -35,30 +35,11 @@ CREATE TABLE entries (id varchar(200),
                    altitudebottom ramadda.double); 
 
 
-ALTER table entries add column changedate ramadda.datetime;
-ALTER table entries add column md5 varchar(32);
-ALTER table entries add column filesize ramadda.bigint;
-ALTER table entries add column altitudetop ramadda.double;
-ALTER table entries add column altitudebottom ramadda.double;
----ALTER table entries alter column description set data type varchar(15000);
-
-
-
-
----- things to add????
----- file size
----- properties -  maybe a blob to hold a serialized hashtable
----- Then the DataOutputHandler could add a flag to the entry which is the data type, e.g., netcdf, grid, etc
-----
-
----- ALTER TABLE entries DROP COLUMN top_group_id;
-
-
+---- ALTER table entries add column changedate ramadda.datetime;
 --- for mysql
 --- alter table entries modify column resource varchar(500);
 --- for derby
 ---alter table entries alter column resource set data type varchar(500);
-
 
 
 
@@ -96,8 +77,6 @@ CREATE TABLE  metadata (id varchar(200),
                         attr3 varchar(6000),
                         attr4 varchar(6000),
 		        extra ramadda.bigclob);
-
-ALTER table metadata add column extra ramadda.bigclob;
 
 
 CREATE INDEX METADATA_INDEX_ID ON metadata (ID);
@@ -144,10 +123,6 @@ CREATE TABLE  users (id varchar(200),
                      isguest int,
                      properties varchar(10000));
 
-
-alter table users add column template varchar(200);
-alter table users add column isguest int;
-alter table users add column properties varchar(10000);
 
 
 
@@ -256,9 +231,6 @@ CREATE TABLE  serverregistry (
         email varchar(200),
 	isregistry int);
 
-alter table serverregistry add column email varchar(200);
-alter table serverregistry add column isregistry int;
-
 
 
 CREATE TABLE  remoteservers (
@@ -269,7 +241,7 @@ CREATE TABLE  remoteservers (
 	isregistry int,
         selected int);
 
-alter table remoteservers add column isregistry int;
+
 
 
 CREATE TABLE  localrepositories (
