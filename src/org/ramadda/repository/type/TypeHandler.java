@@ -4224,7 +4224,7 @@ public class TypeHandler extends RepositoryManager {
                 if(columns!=null) {
                     for (Column column :columns ) {
                         if(column.isString()) {
-                            ors.add(Clause.like(column.getFullName(), nameTok));
+                            ors.add(dbm.makeLikeTextClause(column.getFullName(), nameTok, doNot));
                         }
                     }
                 }
@@ -4239,7 +4239,7 @@ public class TypeHandler extends RepositoryManager {
                                 getDatabaseManager().makeRegexpClause(
                                     attrCol, nameTok, doNot));
                         } else if (doLike) {
-                            metadataOrs.add(Clause.like(attrCol, nameTok,
+                            metadataOrs.add(dbm.makeLikeTextClause(attrCol, nameTok,
                                     doNot));
                         } else {
                             metadataOrs.add(Clause.eq(attrCol, nameTok,
@@ -4282,7 +4282,7 @@ public class TypeHandler extends RepositoryManager {
                 }
                 ands.add(Clause.or(ors));
             }
-            System.err.println("clauses:" + ands);
+            //            System.err.println("clauses:" + ands);
             if (ands.size() > 1) {
                 //                System.err.println ("ands:" + ands);
                 textOrs.add(Clause.and(ands));

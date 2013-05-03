@@ -23,6 +23,7 @@ package org.ramadda.repository.type;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.database.DatabaseManager;
 
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.OutputType;
@@ -1156,7 +1157,7 @@ public class Column implements DataTypes, Constants {
     public void assembleWhereClause(Request request, List<Clause> where,
                                     StringBuffer searchCriteria)
             throws Exception {
-
+        DatabaseManager dbm = getRepository().getDatabaseManager();
         String id = getFullName();
         if (isType(DATATYPE_LATLON)) {
             double north = request.get(id + "_north", Double.NaN);
@@ -1260,7 +1261,7 @@ public class Column implements DataTypes, Constants {
                 //....,value,...
                 List<Clause> ors = new ArrayList<Clause>();
                 ors.add(Clause.eq(colName, value));
-                ors.add(Clause.like(colName, "%" + value+"%"));
+                ors.add(dbm.makeLikeTextClause(colName, "%" + value+"%", false));
                 //                ors.add(Clause.like(colName, value+",%"));
                 //                ors.add(Clause.like(colName, "%," + value));
                 //                ors.add(Clause.like(colName, "%," + value+",%"));
@@ -1289,7 +1290,7 @@ public class Column implements DataTypes, Constants {
                     value  = value.substring(1);
                     where.add(Clause.notLike(getFullName(), "%" + value + "%"));
                 } else {
-                    where.add(Clause.like(getFullName(), "%" + value + "%"));
+                    where.add(dbm.makeLikeTextClause(getFullName(), "%" + value + "%", false));
                 }
             }
             //            typeHandler.addOrClause(getFullName(),

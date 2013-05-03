@@ -103,6 +103,9 @@ public class Clause {
     /** database column name we are a clause for */
     private String column;
 
+    private String columnPrefix = null;
+    private String columnSuffix = null;
+
     /** the operand value */
     private Object value;
 
@@ -738,6 +741,9 @@ public class Clause {
             return sb;
         }
         String columnName = column;
+        if(columnPrefix!=null) {
+            columnName = columnPrefix + columnName + columnSuffix;
+        }
         if (subClauses != null) {
             List toks = new ArrayList();
             for (int i = 0; i < subClauses.length; i++) {
@@ -829,6 +835,11 @@ public class Clause {
 
 
 
+    public void setColumnModifier(String prefix, String suffix) {
+        this.columnPrefix = prefix;
+        this.columnSuffix = suffix;
+    }
+
     /**
      *  Set the Column property.
      *
@@ -890,13 +901,18 @@ public class Clause {
      */
     public String toString() {
         if (column != null) {
+            String columnName = column;
+            if(columnPrefix!=null) {
+                columnName = columnPrefix + columnName + columnSuffix;
+            }
+
             if (expr.equals(EXPR_IN)) {
                 if ((subClauses != null) && (subClauses.length > 0)) {
-                    return column + " " + expr + " ("
+                    return columnName + " " + expr + " ("
                            + extraSelectForInClause + " WHERE "
                            + subClauses[0] + ")";
                 } else {
-                    return column + " " + expr + " ("
+                    return columnName + " " + expr + " ("
                            + extraSelectForInClause + ")";
                 }
             }
@@ -906,7 +922,7 @@ public class Clause {
             } else {
                 svalue = "" + value;
             }
-            return column + " " + expr + " " + svalue;
+            return columnName + " " + expr + " " + svalue;
         } else if (subClauses != null) {
             if (subClauses.length == 1) {
                 return subClauses[0].toString();
