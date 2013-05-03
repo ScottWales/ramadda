@@ -23,7 +23,6 @@ package gov.noaa.esrl.psd.repository.data.model;
 
 import org.ramadda.geodata.model.ClimateModelFileTypeHandler;
 import org.ramadda.repository.Repository;
-import org.ramadda.repository.Request;
 
 import org.w3c.dom.Element;
 

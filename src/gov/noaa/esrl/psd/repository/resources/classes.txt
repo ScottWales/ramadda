@@ -1,1 +1,2 @@
 gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelFileHarvester
+gov.noaa.esrl.psd.repository.data.model.CMIP5ModelFileHarvester

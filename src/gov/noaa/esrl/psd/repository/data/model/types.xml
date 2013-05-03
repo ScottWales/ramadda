@@ -4,9 +4,9 @@
   <type name="noaa_facts_climate_collection"  description="NOAA FACTS Climate Data Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelCollectionTypeHandler" foruser="true">
      <property name="icon" value="/noaa/noaa.gif"/>
      <property name="granule_type" value="noaa_facts_climate_modelfile"/>
-     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/models.txt"/>
-     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/experiments.txt"/>
-     <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/vars.txt"/>
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_models.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_experiments.txt"/>
+     <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_vars.txt"/>
    </type>
 
 
@@ -14,6 +14,23 @@
      <property name="icon" value="/noaa/noaa.gif"/>
      <property name="collection_type" value="noaa_facts_climate_collection"/>
    </type>
+   
+  <type name="cmip5_model_collection"  description="CMIP5 Model Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5CollectionTypeHandler" foruser="true">
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="granule_type" value="cmip5_model_file"/>
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt"/>
+   </type>
+
+
+  <type name="cmip5_model_file"  description="CMIP5 Model File" super="climate_modelfile" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5ModelFileTypeHandler" >
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="collection_type" value="cmip5_model_collection"/>
+     <!--
+     <column name="miptable" type="enumeration"  label="MIP Table" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt" />
+     -->
+   </type>
+   
 
 </types>
 
