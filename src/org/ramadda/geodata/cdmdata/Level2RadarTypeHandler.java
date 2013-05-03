@@ -62,10 +62,11 @@ public class Level2RadarTypeHandler extends RadarTypeHandler {
         File f = entry.getFile();
         NetcdfFile ncf =  NetcdfFile.open(f.toString());
 
-        String stationId = ncf.findAttValueIgnoreCase(null, "Station", "XXX");
-        String stationName =  ncf.findAttValueIgnoreCase(null, "StationName", "XXX, XX, XX");
-        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "StationLatitude", "0.0"));
-        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, "StationLongitude", "0.0"));
+
+        String stationId = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_STATIONID, "XXX");
+        String stationName =  ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_STATIONNAME, "XXX, XX, XX");
+        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_STATION_LATITUDE, "0.0"));
+        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_STATION_LONGITUDE, "0.0"));
         String product = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
 
 
@@ -77,13 +78,7 @@ public class Level2RadarTypeHandler extends RadarTypeHandler {
         float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLON, "0.0f"));
 
 
-        System.err.println ("Attribute value:" + CdmUtil.ATTR_MINLON +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "NONE FOUND"));
-
-
-        double altitude = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "0.0"));
-        entry.setAltitude(altitude);
-
-        System.err.println ("altitude:" + CdmUtil.ATTR_RADAR_ALTITUDE +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "NONE FOUND"));
+        double altitude = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_STATION_ALTITUDE, "0.0"));
 
 
         if(!Utils.stringDefined(entry.getDescription())) {
@@ -108,16 +103,16 @@ public class Level2RadarTypeHandler extends RadarTypeHandler {
 
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
-        //        entry.setLatitude(radarLat);
-        //        entry.setLongitude(radarLon);
+        entry.setLatitude(radarLat);
+        entry.setLongitude(radarLon);
+        entry.setLocation(radarLat, radarLon, altitude);
+        entry.setAltitude(altitude);
         entry.setSouth(lat_min);
         entry.setNorth(lat_max);
         entry.setEast(lon_max);
         entry.setWest(lon_min);
 
     }
-
-
 
 
 }

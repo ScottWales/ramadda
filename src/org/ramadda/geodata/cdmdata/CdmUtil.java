@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.units.DateUnit;
-import org.ramadda.sql.SqlUtil;
+
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -88,6 +88,7 @@ public class CdmUtil {
 
     public static final String ATTR_SUMMARY = "summary";
 
+    //level3
     public static final String ATTR_RADAR_STATIONID = "ProductStation";
     public static final String ATTR_RADAR_STATIONNAME = "ProductStationName";
     public static final String ATTR_RADAR_LATITUDE = "RadarLatitude";
@@ -97,5 +98,10 @@ public class CdmUtil {
 
     public static final String ATTR_TIME_START = "time_coverage_start";
 
-
+    //level2
+    public static final String ATTR_STATIONID = "Station";
+    public static final String ATTR_STATIONNAME = "StationName";
+    public static final String ATTR_STATION_LATITUDE = "StationLatitude";
+    public static final String ATTR_STATION_LONGITUDE = "StationLongitude";
+    public static final String ATTR_STATION_ALTITUDE = "StationElevationInMeters";
 }
