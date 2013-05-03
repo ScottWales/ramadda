@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import ucar.nc2.units.DateUnit;
 
+import ucar.unidata.util.Misc;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -35,9 +36,11 @@ import org.w3c.dom.*;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Attribute;
 
 
 /**
@@ -114,32 +117,50 @@ public class RadarTypeHandler extends GenericTypeHandler {
         File f = entry.getFile();
         NetcdfFile ncf =  NetcdfFile.open(f.toString());
 
-        String stationId = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONID, "XXX");
-        String stationName =  ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_STATIONNAME, "XXX, XX, XX");
-        double radarLat = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LATITUDE, "0.0"));
-        double radarLon = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_LONGITUDE, "0.0"));
-        String product = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
+        //Merge all of the attributes into one map
+        Hashtable<String,String> attrMap = new Hashtable<String,String>();
+        List<Attribute> attrs      = ncf.getGlobalAttributes();
+        for (Attribute attr : attrs) {
+            String name  = attr.getName();
+            String value = attr.getStringValue();
+            if (value == null) {
+                value = "" + attr.getNumericValue();
+            }
+            attrMap.put(name, value);
+        }
 
 
-        String sdate = ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_TIME_START, (new Date()).toString());
-        Date  startDate = DateUnit.getStandardOrISO(sdate);
-        float lat_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLAT, "0.0f"));
-        float lat_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLAT, "0.0f"));
-        float lon_min = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "0.0f"));
-        float lon_max = Float.parseFloat(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MAXLON, "0.0f"));
+        
+        String stationId = Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_STATIONID, 
+                                            Misc.getProperty(attrMap, CdmUtil.ATTR_STATIONID, ""));
+        String stationName =  Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_STATIONNAME, 
+                                               Misc.getProperty(attrMap, CdmUtil.ATTR_STATIONNAME, ""));
+        double radarLat = Double.parseDouble(Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_LATITUDE, 
+                                                              Misc.getProperty(attrMap,CdmUtil.ATTR_STATION_LATITUDE, "0.0")));
+        double radarLon = Double.parseDouble(Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_LONGITUDE, 
+                                                              Misc.getProperty(attrMap, CdmUtil.ATTR_STATION_LONGITUDE, "0.0")));
+        String product = Misc.getProperty(attrMap, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
 
+        String sdate = Misc.getProperty(attrMap, CdmUtil.ATTR_TIME_START, (String)null);
+        Date  startDate = sdate==null?new Date():DateUnit.getStandardOrISO(sdate);
 
-        System.err.println ("Attribute value:" + CdmUtil.ATTR_MINLON +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_MINLON, "NONE FOUND"));
+        float latMin = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MINLAT, "0.0f"));
+        float latMax = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MAXLAT, "0.0f"));
+        float lonMin = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MINLON, "0.0f"));
+        float lonMax = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MAXLON, "0.0f"));
 
-
-        double altitude = Double.parseDouble(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "0.0"));
-        entry.setAltitude(altitude);
-
-        System.err.println ("altitude:" + CdmUtil.ATTR_RADAR_ALTITUDE +"=" + ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_RADAR_ALTITUDE, "NONE FOUND"));
+        //Flip them
+        if(lonMin>lonMax) {
+            float tmp = lonMin;
+            lonMin = lonMax;
+            lonMax = tmp;
+        }
+        double altitude = Double.parseDouble(Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_ALTITUDE, 
+                                                              Misc.getProperty(attrMap, CdmUtil.ATTR_STATION_ALTITUDE, "0.0")));
 
 
         if(!Utils.stringDefined(entry.getDescription())) {
-            entry.setDescription(ncf.findAttValueIgnoreCase(null, CdmUtil.ATTR_SUMMARY, ""));
+            entry.setDescription(Misc.getProperty(attrMap, CdmUtil.ATTR_SUMMARY, ""));
         }
 
         values[IDX_STATION_ID] = stationId;
@@ -148,24 +169,13 @@ public class RadarTypeHandler extends GenericTypeHandler {
         values[IDX_STATION_LON] = radarLon;
         values[IDX_STATION_PRODUCT] = product;
 
-
-
-        //The name should be the name of the file. If all entries are named with the station name then
-        //then it will be hard to tell them apart
-        //entry.setName(stationName);
-
-        //Don't set the ID. The entry ID is a RAMADDA thing
-        //        entry.setId(stId);
-
-
         entry.setStartDate(startDate.getTime());
         entry.setEndDate(startDate.getTime());
-        //        entry.setLatitude(radarLat);
-        //        entry.setLongitude(radarLon);
-        entry.setSouth(lat_min);
-        entry.setNorth(lat_max);
-        entry.setEast(lon_max);
-        entry.setWest(lon_min);
+        entry.setAltitude(altitude);
+        entry.setSouth(latMin);
+        entry.setNorth(latMax);
+        entry.setEast(lonMax);
+        entry.setWest(lonMin);
 
     }
 
