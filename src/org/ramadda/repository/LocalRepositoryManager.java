@@ -34,8 +34,8 @@ import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.MyTrace;
-import ucar.unidata.sql.Clause;
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.util.IOUtil;
 

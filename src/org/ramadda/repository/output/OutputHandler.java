@@ -39,7 +39,7 @@ import org.ramadda.util.WikiUtil;
 import org.w3c.dom.Element;
 
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;

@@ -44,7 +44,7 @@ import org.w3c.dom.*;
 import ucar.unidata.data.gis.KmlUtil;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.sql.*;
+import org.ramadda.sql.*;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;

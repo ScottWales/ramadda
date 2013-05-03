@@ -38,10 +38,10 @@ import org.ramadda.util.SelectionRectangle;
 
 import org.w3c.dom.Element;
 
-import ucar.unidata.sql.Clause;
+import org.ramadda.sql.Clause;
 
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;

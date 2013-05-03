@@ -1,7 +1,7 @@
 package org.ramadda.repository.type;
 
-import ucar.unidata.sql.Clause;
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
 import java.sql.*;
 import java.io.*;
 import java.util.zip.*;

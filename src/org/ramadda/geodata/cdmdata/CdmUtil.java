@@ -34,7 +34,7 @@ import org.w3c.dom.*;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.units.DateUnit;
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;

@@ -25,7 +25,7 @@ package org.ramadda.repository.auth;
 import org.ramadda.util.HtmlUtils;
 
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;

@@ -28,10 +28,10 @@ import org.ramadda.repository.database.*;
 
 import org.ramadda.util.HtmlUtils;
 
-import ucar.unidata.sql.Clause;
+import org.ramadda.sql.Clause;
 
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;

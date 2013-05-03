@@ -36,7 +36,6 @@ import org.w3c.dom.*;
 
 
 import org.ramadda.repository.type.*;
-import ucar.unidata.sql.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import java.text.DecimalFormat;

@@ -26,7 +26,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;

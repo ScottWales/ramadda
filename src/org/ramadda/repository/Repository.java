@@ -69,8 +69,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.ramadda.util.MyTrace;
-import ucar.unidata.sql.Clause;
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;

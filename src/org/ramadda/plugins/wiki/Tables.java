@@ -22,7 +22,7 @@
 package org.ramadda.plugins.wiki;
 
 
-import ucar.unidata.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
 
 
 /**
