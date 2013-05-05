@@ -763,6 +763,7 @@ public class EntryManager extends RepositoryManager {
     public static final String ARG_WALK_METADATA = "walk.metadata";
     public static final String ARG_WALK_MD5 = "walk.md5";
     public static final String ARG_WALK_REPORT = "walk.report";
+    public static final String ARG_WALK_SETPARENTID = "walk.setparentid";
     public static final String ARG_WALK_RECURSE = "walk.recurse";
 
     public Result processEntryWalk(final Request request) throws Exception {
@@ -802,6 +803,21 @@ public class EntryManager extends RepositoryManager {
             };
             return getActionManager().doAction(request, action,
                                                "Setting MD5 Checksum", "", entry);
+
+        }
+
+
+        if(request.exists(ARG_WALK_SETPARENTID)) {
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(Object actionId) throws Exception {
+                    StringBuffer sb = new StringBuffer();
+                    setParentId(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
+                    getActionManager().setContinueHtml(actionId,
+                                                       sb.toString());
+                }
+            };
+            return getActionManager().doAction(request, action,
+                                               "Setting parent ids", "", entry);
 
         }
 
@@ -858,6 +874,8 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.submit(msg("Set MD5 Checksums"),ARG_WALK_MD5));
         sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.submit(msg("Generate File Listing"),ARG_WALK_REPORT));
+        //        sb.append(HtmlUtils.p());
+        //        sb.append(HtmlUtils.submit(msg("Set Parent ID"),ARG_WALK_SETPARENTID));
         sb.append(HtmlUtils.formClose());
 
 
@@ -870,6 +888,55 @@ public class EntryManager extends RepositoryManager {
 
 
     private void setMD5(Request request, Object actionId,  StringBuffer sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
+        if(!getRepository().getActionManager().getActionOk(actionId)) {
+            return;
+        }
+        Statement stmt = getDatabaseManager().select(SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID,
+                                                                                Tables.ENTRIES.COL_TYPE,
+                                                                                Tables.ENTRIES.COL_MD5,
+                                                                                Tables.ENTRIES.COL_RESOURCE}),
+            Tables.ENTRIES.NAME,
+            Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entryId));
+        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+        ResultSet        results;
+
+        while ((results = iter.getNext()) != null) {
+            totalCnt[0]++;
+            int col = 1;
+            String id = results.getString(col++);
+            String type= results.getString(col++);
+            String md5 = results.getString(col++);
+            String resource = results.getString(col++);
+            if(new File(resource).exists() && !Utils.stringDefined(md5)) {
+                setCnt[0]++;
+                Entry entry = getEntry(request, id);
+                if(!getAccessManager().canDoAction(request, entry,
+                                                   Permission.ACTION_EDIT)) {
+                    continue;
+                }
+                md5 = ucar.unidata.util.IOUtil.getMd5(resource);
+                getDatabaseManager().update(Tables.ENTRIES.NAME,
+                                            Tables.ENTRIES.COL_ID,
+                                            id, new String[]{Tables.ENTRIES.COL_MD5},
+                                            new String[]{md5});
+                sb.append(getRepository().getEntryManager().getConfirmBreadCrumbs(request, entry));
+                sb.append(HtmlUtils.br());
+            }
+            getActionManager().setActionMessage(actionId,
+                                                "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
+
+            if(recurse) {
+                TypeHandler typeHandler = getRepository().getTypeHandler(type);
+                if(typeHandler.isGroup()) {
+                    setMD5(request, actionId,  sb, recurse, id, totalCnt, setCnt);
+                }
+            }
+        }
+        getDatabaseManager().closeStatement(stmt);
+    }
+
+
+    private void setParentId(Request request, Object actionId,  StringBuffer sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
         if(!getRepository().getActionManager().getActionOk(actionId)) {
             return;
         }
