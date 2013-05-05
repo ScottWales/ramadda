@@ -35,6 +35,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+import ucar.unidata.ui.ImageUtils;
+import java.awt.Image;
 
 
 import ucar.unidata.xml.XmlUtil;
@@ -65,6 +67,8 @@ import java.util.List;
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
+
+    public static final String ARG_THUMBNAIL_SCALEDOWN = "metadata.thumbnail.scaledown";
 
     /** _more_ */
     public static final String ATTR_REQUIRED = "required";
@@ -698,6 +702,17 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
             theFile = fileArg;
         }
+
+        if(getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false))  {
+            Image image = ImageUtils.readImage(theFile);
+            if(image.getWidth(null)>200) {
+                image = ImageUtils.resize(image, 200, -1);
+                ImageUtils.waitOnImage(image);
+                ImageUtils.writeImageToFile(image, theFile);
+            }
+        }
+
+
         theFile = getStorageManager().moveToEntryDir(entry,
                 new File(theFile)).getName();
 
@@ -836,9 +851,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 image = "<br>" + image;
             }
 
-            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
-                   + "<br>" + "Or download URL:"
-                   + HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70);
+            String extra = "";
+            if(getThumbnail()) {
+                extra = "<br>" +
+                    HtmlUtils.checkbox(ARG_THUMBNAIL_SCALEDOWN, "true", true) +
+                    HtmlUtils.space(1) +
+                    msg("Scale down image");
+            }
+            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + 
+                image +
+                "<br>" + msgLabel("Or download URL") +
+                HtmlUtils.space(1) +
+                HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70) +
+                extra;
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
             String         lastGroup     = null;
