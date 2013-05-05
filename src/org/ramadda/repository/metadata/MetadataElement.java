@@ -705,8 +705,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if(getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false))  {
             Image image = ImageUtils.readImage(theFile);
-            if(image.getWidth(null)>200) {
-                image = ImageUtils.resize(image, 200, -1);
+            if(image.getWidth(null)>400) {
+                image = ImageUtils.resize(image, 400, -1);
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, theFile);
             }
