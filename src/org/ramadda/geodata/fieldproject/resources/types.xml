@@ -246,7 +246,10 @@ features
   <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
      <property name="icon" value="/fieldproject/transmit_blue.png"/>
      <wiki><![CDATA[
-{{map  width="600"  height="500"  listentries="true"  details="false" level="2" }}
+{{description wikify="true"}}
+
+{{map  width="600"  height="500"  listentries="true"  details="false" level="2" message=""}}
+
 ==Links ==
 {{tree}}
 ]]>

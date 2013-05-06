@@ -1131,6 +1131,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             }
 
 
+            if(children.size()==0) {
+                String message = Misc.getProperty(props, ATTR_MESSAGE, (String) null);
+                if(message!=null) {
+                    return message;
+                }
+            }
+
             Request newRequest = makeRequest(request, props);
 
 
