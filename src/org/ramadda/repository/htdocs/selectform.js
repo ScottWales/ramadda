@@ -70,6 +70,13 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
         window.location.href = url;
     }
 
+    this.makeTimeSeries = function(event) {
+        var result = "";
+        var url = this.getUrl("timeseries");
+        var theForm = this;
+        $("#" + this.outputDivPrefix+"image").html("<img alt=\"Generating Image....\" src=\"" + url+"\">");
+        return false;
+    }
 
 
     this.search = function(event) {

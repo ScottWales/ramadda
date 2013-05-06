@@ -72,7 +72,7 @@ import java.util.TreeSet;
 /**
  * Interface to the Climate Data Operators (CDO) package
  */
-public class CDOOutputHandler extends OutputHandler implements DataProcessProvider, DataProcess {
+public class CDOOutputHandler extends OutputHandler implements DataProcessProvider {
 
     /** CDO program path */
     private static final String PROP_CDO_PATH = "cdo.path";
@@ -279,7 +279,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
-            processes.add(this);
+            processes.add(new CDOAreaStatistics());
         }
         return processes;
     }
@@ -1083,5 +1083,192 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         }
 
         return commands;
+    }
+    
+    protected class CDOAreaStatistics implements DataProcess {
+        
+        CDOAreaStatistics() {}
+        
+        /**
+         * Get the DataProcess id
+         *
+         * @return  the ID
+         */
+        public String getDataProcessId() {
+            return "CDO_AREA_STATS";
+        }
+
+        /**
+         * Add to form
+         *
+         * @param request  the Request
+         * @param entry    the Entry
+         * @param sb       the form
+         *
+         * @throws Exception  problem adding to the form
+         */
+        public void addToForm(Request request, Entry entry, StringBuffer sb)
+         throws Exception {
+            sb.append(HtmlUtils.formTable());
+            if (entry.getType().equals("noaa_climate_modelfile")) {
+                //values[1] = var;
+                //values[2] = model;
+                //values[3] = experiment;
+                //values[4] = member;
+                //values[5] = frequency;
+                Object[]     values = entry.getValues();
+                StringBuffer header = new StringBuffer();
+                header.append("Model: ");
+                header.append(values[2]);
+                header.append(" Experiment: ");
+                header.append(values[3]);
+                header.append(" Ensemble: ");
+                header.append(values[4]);
+                header.append(" Frequency: ");
+                header.append(values[5]);
+                //sb.append(HtmlUtils.h3(header.toString()));
+            }
+    
+            //addInfoWidget(request, sb);
+            CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
+            GridDataset dataset =
+                dataOutputHandler.getCdmManager().getGridDataset(entry,
+                    entry.getResource().getPath());
+    
+            if (dataset != null) {
+                addVarLevelWidget(request, sb, dataset);
+            }
+    
+            addStatsWidget(request, sb);
+    
+            //if(dataset != null)  {
+            addTimeWidget(request, sb, dataset, true);
+            //}
+    
+            LatLonRect llr = null;
+            if (dataset != null) {
+                llr = dataset.getBoundingBox();
+            } else {
+                llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                     new LatLonPointImpl(-90.0, 180.0));
+            }
+            addMapWidget(request, sb, llr);
+            sb.append(HtmlUtils.formTableClose());
+        }
+
+        /**
+         * Process the request
+         *
+         * @param request  The request
+         * @param granule  the granule
+         *
+         * @return  the processed data
+         *
+         * @throws Exception  problem processing
+         */
+        public File processRequest(Request request, Entry granule)
+         throws Exception {
+            
+            String tail    = getStorageManager().getFileTail(granule);
+            String newName = IOUtil.stripExtension(tail) + "_product.nc";
+            tail = getStorageManager().getStorageFileName(tail);
+            File outFile = new File(IOUtil.joinDir(getProductDir(), newName));
+            List<String> commands = new ArrayList<String>();
+            commands.add(cdoPath);
+            commands.add("-L");
+            commands.add("-s");
+            commands.add("-O");
+            String operation = request.getString(ARG_CDO_OPERATION, OP_INFO);
+            //commands.add(operation);
+    
+            // Select order (left to right) - operations go right to left:
+            //   - stats
+            //   - level
+            //   - region
+            //   - month range
+            //   - year or time range
+    
+            List<String> statCommands = createStatCommands(request, granule);
+            for (String cmd : statCommands) {
+                if ((cmd != null) && !cmd.isEmpty()) {
+                    commands.add(cmd);
+                }
+            }
+    
+            String levSelect = createLevelSelectCommand(request, granule);
+            if ((levSelect != null) && !levSelect.isEmpty()) {
+                commands.add(levSelect);
+            }
+            String areaSelect = createAreaSelectCommand(request, granule);
+            if ((areaSelect != null) && !areaSelect.isEmpty()) {
+                commands.add(areaSelect);
+            }
+    
+            List<String> dateCmds = createDateSelectCommands(request, granule);
+            for (String cmd : dateCmds) {
+                if ((cmd != null) && !cmd.isEmpty()) {
+                    commands.add(cmd);
+                }
+            }
+    
+            System.err.println("cmds:" + commands);
+    
+            commands.add(granule.getResource().getPath());
+            commands.add(outFile.toString());
+            String[] results = getRepository().executeCommand(commands, null,
+                                   getProductDir());
+            String errorMsg = results[1];
+            String outMsg   = results[0];
+            if ( !outFile.exists()) {
+                if (outMsg.length() > 0) {
+                    throw new IllegalArgumentException(outMsg);
+                }
+                if (errorMsg.length() > 0) {
+                    throw new IllegalArgumentException(errorMsg);
+                }
+                if ( !outFile.exists()) {
+                    throw new IllegalArgumentException(
+                        "Humm, the CDO processing failed for some reason");
+                }
+            }
+    
+            //The jeff is here for when I have a fake cdo.sh
+            boolean jeff = false;
+    
+            if (doingPublish(request)) {
+                return outFile;
+            }
+    
+            //Assuming this is some text - DOESN'T HAPPEN anymore
+            if (operation.equals(OP_INFO) && false) {
+                String info;
+    
+                if ( !jeff) {
+                    info = IOUtil.readInputStream(
+                        getStorageManager().getFileInputStream(outFile));
+                } else {
+                    info = outMsg;
+                }
+    
+                StringBuffer sb = new StringBuffer();
+                addForm(request, granule, sb);
+                sb.append(header(msg("CDO Information")));
+                sb.append(HtmlUtils.pre(info));
+    
+                //            return new Result("CDO", sb);
+            }
+
+            return outFile;
+        }
+
+        /**
+         * Get the label for this process
+         *
+         * @return the label
+         */
+        public String getDataProcessLabel() {
+            return "CDO Area Statistics";
+        }
+        
     }
 }

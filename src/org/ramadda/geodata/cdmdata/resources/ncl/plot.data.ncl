@@ -1,9 +1,7 @@
 ;************************************************
-; Program: plot.maps.ncl
-; Purpose: plot NCL maps 
-; Parameters: IMG_DIR - directory to store images (environ var)
-;             LAST_DATE  environment variable of last date file
-; Output:  plot or time series
+; Program: plot.data.ncl
+; Purpose: plot data using NCL 
+; Output:  map plot, kml or time series
 ; Author:  Don Murray, CU-CIRES
 ;***********************************************
 
@@ -106,7 +104,8 @@ begin
     wks = gsn_open_wks(wks_type,wks_name) 
     ;drawNDCGrid(wks)
     gsn_define_colormap(wks, "rainbow")
-    plot = gsn_csm_contour_map_ce(wks,data,rescf)
+    plotdata = data(0,:,:)
+    plot = gsn_csm_contour_map_ce(wks,plotdata,rescf)
     
     if (doGoogle) then
 
@@ -173,6 +172,98 @@ begin
 
 end
 
+undef("plotts")
+procedure plotts(data:float, wks_name:string, wks_type:string, rescf:logical, opts:logical)
+
+begin
+  ;printVarSummary(data)
+  ; weighted Area Mean (use the cosine of the latitudes for weight)
+  lat1   = data&lat
+  rad    = 4.0*atan(1.0)/180.0
+  clat1   = cos(lat1*rad)
+  data_FieldAvg_wgt = wgt_areaave(data, clat1, 1.0, 0)
+  ;printVarSummary(data_FieldAvg_wgt)
+
+  ;--- get the time dimension
+  tdim = data&time
+  ;printVarSummary(tdim)
+  tnum = dimsizes(tdim);
+  endindex = tnum(0)-1
+  cals = cd_calendar(tdim,-5)
+  yrs = cals(:,0)
+  ;print(yrs)
+  startYear = yrs(0)
+  endYear = yrs(tnum-1)
+  ;print(startYear)
+  ;print(endYear)
+
+  ;; Gaussian smoothing (21yr)
+;  if (nyrs.ge.11) then
+;    data_FieldAvg_wgt_21yr = Gauss_Filter_Pad (data_FieldAvg_wgt,21)
+;  else
+;    data_FieldAvg_wgt_21yr = new(11,float,data@_FillValue)
+;  end if
+   data_FieldAvg_wgt_21yr = runave(data_FieldAvg_wgt,1,0)
+
+  ;; ***  Create plot ***
+  ;; ***  create time series plot (overlay annual and 21yr Gauss smooth) ***
+  wks_type = "png"
+  wks_type@wkWidth = 800
+  wks_type@wkHeight = 600
+  wks = gsn_open_wks(wks_type,wks_name)
+
+ ;; *** 3.1: Annual Values
+
+  res                   = True
+  res@gsnDraw           = False         ; Don't draw plots (for overlay)
+  res@gsnFrame          = False         ; don't advance frame yet
+
+  ;res@tiMainString        = dataSet+" "+climateIndex+" "+season
+  res@txFontHeightF   = 0.017
+  ;res@gsnLeftString     = "area-weighted average: lat ( "+minLat+".."+maxLat+" ), lon ( "+minLon+".."+maxLon+" )"
+  res@tiYAxisFontHeightF = 0.017
+  ;res@tiYAxisString   = climateIndex+" [unit: "+Unit(climateIndex)+"]"
+
+  res@gsnMaximize   =True
+  res@vpHeightF= 0.4                    ; change aspect ratio of plot
+  res@vpWidthF = 0.8
+  res@vpXF     = 0.1                   ; start plot at x ndc coord
+
+  res@xyLineThicknesses = 0.5
+  ;res@xyDashPattern = 1               ; dashed/solid(=0)
+  res@trXMinF = startYear-1		; set minimum X-axis value
+  res@trXMaxF = endYear+1		; set maximum X-axis value
+
+  res@xyLineColors      = (/"black"/)
+
+  plot1  = gsn_csm_xy(wks,yrs,data_FieldAvg_wgt,res) ; create plot
+
+ ;; *** 3.2: Smoothed curves
+  sres = True                                 ; set up a second resource list
+  sres@gsnDraw = False                        ; do not draw the plot
+  sres@gsnFrame = False                       ; do not advance the frame
+
+  sres@xyLineThicknesses = 3.0
+  sres@xyDashPattern = 0               ; dashed/solid(=0)
+
+  sres@xyLineColors      = (/"black"/)
+
+  plot2 = gsn_csm_xy(wks,yrs,data_FieldAvg_wgt_21yr,sres)
+
+ ;; *** 3.3: Overlay
+  overlay(plot1,plot2)
+  draw(plot1)
+
+  ;; add text
+;  addCopyrightText(wks,outputType)
+
+  frame(wks)
+    
+  delete(wks) ;; closing the file
+  delete(plot1)
+  delete(plot2)
+;  addLogo(convertCmd,wks_name,logoFilePath)
+end
 ;**************************************************
 ; Main routine
 ;**************************************************
@@ -202,8 +293,8 @@ maxLat=stringtofloat(getenv("maxLat"))
 minLon=stringtofloat(getenv("minLon"))
 maxLon=stringtofloat(getenv("maxLon"))
 addCyclic=(getenv("addCyclic"))
-print(minLon)
-print(maxLon)
+;print(minLon)
+;print(maxLon)
 
 ;--  Open the data file
 datafile = addfile(ncfile ,"r")  ; open input data file
@@ -239,26 +330,25 @@ latdiff=abs(maxLat-minLat)
 londiff=abs(maxLon-minLon)
 
 ratio=(2*latdiff)/londiff
-print(ratio)
-
+;print(ratio)
 
 if (ismissing(level)) then
-;   vardata = datafile->$variable$(0,:,:)
+;   vardata = datafile->$variable$(:,:,:)
    if (vartype .eq. "short") then
-       vardata = short2flt(datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon}))
+       vardata = short2flt(datafile->$variable$(:,{minLat:maxLat},{minLon:maxLon}))
    else
-       vardata = datafile->$variable$(0,{minLat:maxLat},{minLon:maxLon})
+       vardata = datafile->$variable$(:,{minLat:maxLat},{minLon:maxLon})
    end if
 else
-;   vardata = datafile->$variable$(0,{level},:,:)
+;   vardata = datafile->$variable$(:,{level},:,:)
    if (vartype .eq. "short") then
-       vardata = short2flt(datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon}))
+       vardata = short2flt(datafile->$variable$(:,{level},{minLat:maxLat},{minLon:maxLon}))
    else
-       vardata = datafile->$variable$(0,{level},{minLat:maxLat},{minLon:maxLon})
+       vardata = datafile->$variable$(:,{level},{minLat:maxLat},{minLon:maxLon})
    end if
 end if
 
-printVarSummary(vardata)
+;printVarSummary(vardata)
 
 rescf = True;
 ;rescf@gsnAddCyclic          = (addCyclic .eq. "true")    ; turn off if subset
@@ -275,7 +365,13 @@ options@plottype=plotType
 options@ratio=ratio
 options@product_dir=productDir
 
-plotmap(vardata, wks_name, "png", rescf, options)
+if (plotType.eq."timeseries") then
+  print("plotting timeseries")
+  plotts(vardata, wks_name, "png", rescf, options)
+else
+  print("plotting map")
+  plotmap(vardata, wks_name, "png", rescf, options)
+end if
 status_exit(0)
 
 end

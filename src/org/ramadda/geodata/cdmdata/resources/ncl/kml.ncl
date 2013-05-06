@@ -676,11 +676,6 @@ begin
    AlphaColor = " -transparent "+res@kmlCropAlphaColor
   end if
   
-  productDir = ""
-  if (isatt(res,"product_dir")) then
-    productDir = res@product_dir
-  end if
-
   convertcmd = "%convert% "+cropbox(4)+" -crop "+cropbox(0)+"x"+cropbox(1)+"+"+cropbox(2)+"+"+cropbox(3)+" "+AlphaColor+" +repage -depth 8 "+cropbox(5)
   print(convertcmd)
   system(convertcmd)
@@ -819,6 +814,7 @@ begin
   lbres@lbLabelPosition      = lbar_side
   lbres@lbLabelFontHeightF   = lbar_fh
   lbres@lbLabelFontColor     = lbar_fc
+  print(lbar_fc)
 
 ; Turn various features on and off.
   lbres@lbLabelsOn           = labels_on

@@ -80,7 +80,7 @@ public class NCLOutputHandler extends OutputHandler {
     private static final String PROP_CONVERT_PATH = "ncl.convert.path";
 
     /** NCL map plot script */
-    private static final String SCRIPT_MAPPLOT = "plot.map.ncl";
+    private static final String SCRIPT_MAPPLOT = "plot.data.ncl";
 
     /** NCL map plot script */
     private static final String SCRIPT_KML = "kml.ncl";
@@ -414,8 +414,12 @@ sb.append(HtmlUtils.form(formUrl,
         if (plotType.equals("image")) {
             plotType = "png";
         }
+        String suffix = plotType;
+        if (plotType.equals("timeseries")) {
+            suffix = "png";
+        }
         File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
-                                + "." + plotType);
+                                + "." + suffix);
         //String wksName = IOUtil.joinDir(getProductDir(),
         //                                getRepository().getGUID());
         //File outFile = new File(wksName+".png");
