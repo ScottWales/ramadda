@@ -94,6 +94,10 @@ public class JpegMetadataHandler extends MetadataHandler {
         String path = entry.getResource().getPath();
         try {
             Image image = ImageUtils.readImage(path, false);
+            if(image == null) {
+                System.err.print("JpegMetadataHandler: image is null:" + entry.getResource());
+                return;
+            }
             System.err.print("JpegMetadataHandler: wait...");
             ImageUtils.waitOnImage(image);
             Image newImage = ImageUtils.resize(image, 150, -1);
