@@ -855,6 +855,33 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
+
+    public Object[] getValues(Clause clause) 
+        throws Exception {
+        return getValues(clause,  makeEntryValueArray());
+    }
+
+    public Object[] getValues(Clause clause, Object[]values) 
+        throws Exception {
+        Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
+                             getTableName(), clause);
+
+        try {
+            ResultSet results2 = stmt.getResultSet();
+            if (results2.next()) {
+                //We start at 2, skipping 1, because the first one is the id
+                int valueIdx = 2;
+                for (Column column : columns) {
+                    valueIdx = column.readValues(results2, values, valueIdx);
+                }
+            }
+        } finally {
+            getDatabaseManager().closeAndReleaseConnection(stmt);
+        }
+
+        return values;
+    }
+
     /**
      * _more_
      *

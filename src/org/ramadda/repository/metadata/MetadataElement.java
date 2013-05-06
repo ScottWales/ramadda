@@ -67,6 +67,7 @@ import java.util.List;
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
+    public static final int THUMBNAIL_WIDTH = 400;
 
     public static final String ARG_THUMBNAIL_SCALEDOWN = "metadata.thumbnail.scaledown";
 
@@ -705,8 +706,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if(getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false))  {
             Image image = ImageUtils.readImage(theFile);
-            if(image.getWidth(null)>400) {
-                image = ImageUtils.resize(image, 400, -1);
+            if(image.getWidth(null)>THUMBNAIL_WIDTH) {
+                image = ImageUtils.resize(image, THUMBNAIL_WIDTH, -1);
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, theFile);
             }
