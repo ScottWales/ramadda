@@ -35,6 +35,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
@@ -927,9 +928,23 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
         String llSelect = "";
         if (haveAllSpatialArgs && anySpatialDifferent) {
+            // Normalize longitude bounds to the data
+            double origLonMin = Double.parseDouble(request.getString(ARG_CDO_AREA_WEST+".original", "-180"));
+            double origLonMax = Double.parseDouble(request.getString(ARG_CDO_AREA_EAST+".original", "180"));
+            double lonMin = Double.parseDouble(request.getString(ARG_CDO_AREA_WEST, "-180"));
+            double lonMax = Double.parseDouble(request.getString(ARG_CDO_AREA_EAST, "180"));
+            if (origLonMin < 0) { // -180 to 180
+                lonMin = GeoUtils.normalizeLongitude(lonMin);
+                lonMax = GeoUtils.normalizeLongitude(lonMax);
+            } else {  // 0-360
+                lonMin = GeoUtils.normalizeLongitude360(lonMin);
+                lonMax = GeoUtils.normalizeLongitude360(lonMax);
+            }
             llSelect = OP_SELLLBOX + ","
-                       + request.getString(ARG_CDO_AREA_WEST, "-180") + ","
-                       + request.getString(ARG_CDO_AREA_EAST, "180") + ","
+                       + String.valueOf(lonMin) + "," 
+                       + String.valueOf(lonMax) + ","
+                       //+ request.getString(ARG_CDO_AREA_WEST, "-180") + ","
+                       //+ request.getString(ARG_CDO_AREA_EAST, "180") + ","
                        + request.getString(ARG_CDO_AREA_SOUTH, "-90") + ","
                        + request.getString(ARG_CDO_AREA_NORTH, "90");
         }
@@ -1170,7 +1185,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          throws Exception {
             
             String tail    = getStorageManager().getFileTail(granule);
-            String newName = IOUtil.stripExtension(tail) + "_product.nc";
+            String id = getRepository().getGUID();
+            String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
             File outFile = new File(IOUtil.joinDir(getProductDir(), newName));
             List<String> commands = new ArrayList<String>();
