@@ -233,6 +233,18 @@ public class GeoUtils {
         }
     }
 
+    /**
+     * Normalize the longitude to lie between 0 and 360
+     * @param lon east latitude in degrees
+     * @return normalized lon
+     */
+    static public double normalizeLongitude360(double lon) {
+        while ((lon < 0.) || (lon > 361.)) {
+            lon = 180. + Math.IEEEremainder(lon - 180., 360.0);
+        }
+        return lon;
+    }
+
 
 
 
