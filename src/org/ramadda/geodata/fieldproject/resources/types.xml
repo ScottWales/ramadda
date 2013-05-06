@@ -50,8 +50,6 @@
 <p>
 ]]>
 </wiki>
-
-
    </type>
 
   <type name="project_site"  description="Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
@@ -84,9 +82,7 @@
 {{mapentry width="350"}}
 
 <p>
-{{map entry="Locations"  width="350"}}
-<p>
-{{links entry="Links" message=""}}
+{{map entry="Locations"  width="350" message="" prefix="<b>Site Locations</b>"}}
 </td></tr>
 
 
@@ -95,7 +91,7 @@
 
 ==Properties==
 <block open="false" title="Click to view Properties">
-{{properties}}
+{{properties message="No properties"}}
 </block>
 
 <p>
@@ -168,7 +164,7 @@
 {{field name="conditions"}}
 
 ===Notes===
-{{field name="notes""}}
+{{field name="notes"}}
 </td>
 <td width="50%">
 {{image src="::*" message="" width="300"}}
@@ -185,7 +181,6 @@
 
 
     </type>
-
 
 
     <type name="project_surveylocation" description="Survey Location" category="Field Project" >
@@ -246,5 +241,17 @@ features
      <property name="form.altitude.show.top" value="false"/>
      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
    </type>
+
+
+  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+     <property name="icon" value="/fieldproject/transmit_blue.png"/>
+     <wiki><![CDATA[
+{{map  width="600"  height="500"  listentries="true"  details="false" level="2" }}
+==Links ==
+{{tree}}
+]]>
+</wiki>
+</type>
+
 
 </types>
