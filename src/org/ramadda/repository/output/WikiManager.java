@@ -80,6 +80,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
+    public static final String ATTR_METADATA_TYPES = "metadata.types";
+
     public static final String ATTR_PADDING = "padding";
 
     /** border color */
@@ -1055,7 +1057,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         } else if (include.equals(WIKI_PROP_ENTRYID)) {
             return entry.getId();
         } else if (include.equals(WIKI_PROP_PROPERTIES)) {
-            return makeEntryTabs(request, entry);
+            return makeEntryTabs(request, entry, props);
         } else if (include.equals(WIKI_PROP_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (include.equals(WIKI_PROP_URL)) {
@@ -1767,18 +1769,24 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
      *
      * @throws Exception  problems
      */
-    public String makeEntryTabs(Request request, Entry entry)
+    private String makeEntryTabs(Request request, Entry entry, Hashtable props)
             throws Exception {
+        String metadataTypesAttr = Misc.getProperty(props, ATTR_METADATA_TYPES,(String) null);
+        List<String> metadataTypes= null;
+        if(metadataTypesAttr!=null) {
+            metadataTypes = StringUtil.split(metadataTypesAttr,",",true, true);
+        }
         List tabTitles   = new ArrayList<String>();
         List tabContents = new ArrayList<String>();
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
-                    request, entry, true, false)) {
+                                                                       request, entry, true, false, metadataTypes)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
         if (tabTitles.size() == 0) {
-            return "none";
+            return  getMessage(props,
+                                 "No metadata found");
         }
         if (tabTitles.size() > 1) {
             return OutputHandler.makeTabs(tabTitles, tabContents, true);

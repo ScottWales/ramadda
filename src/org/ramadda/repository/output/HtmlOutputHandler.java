@@ -602,6 +602,12 @@ public class HtmlOutputHandler extends OutputHandler {
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
             boolean decorate, boolean addLink)
             throws Exception {
+        return getMetadataHtml(request, entry, decorate, addLink, null);
+    }
+
+    public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
+                                                boolean decorate, boolean addLink, List<String> onlyTheseTypes)
+            throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
@@ -621,6 +627,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
         boolean didone = false;
         for (Metadata metadata : metadataList) {
+            if(onlyTheseTypes!=null && onlyTheseTypes.size()>0) {
+                if(!onlyTheseTypes.contains(metadata.getType())) continue;
+            }
+
             MetadataType type = getRepository().getMetadataManager().findType(
                                     metadata.getType());
             if (type == null) {

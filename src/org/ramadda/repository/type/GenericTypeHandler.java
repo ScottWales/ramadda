@@ -808,22 +808,9 @@ public class GenericTypeHandler extends TypeHandler {
         if ( !haveDatabaseTable()) {
             return;
         }
-        getValues(Clause.eq(COL_ID, entry.getId()), values);
+        readValuesFromDatabase(entry, values);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Object[] getValues(Clause clause) throws Exception {
-        return getValues(clause, makeEntryValueArray());
-    }
 
 
     /**
@@ -836,8 +823,9 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    public Object[] getValues(Clause clause, Object[] values)
-            throws Exception {
+    private Object[] readValuesFromDatabase(Entry entry, Object[] values)
+        throws Exception {
+        Clause clause = Clause.eq(COL_ID, entry.getId());
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              getTableName(), clause);
 
@@ -848,6 +836,16 @@ public class GenericTypeHandler extends TypeHandler {
                 int valueIdx = 2;
                 for (Column column : columns) {
                     valueIdx = column.readValues(results2, values, valueIdx);
+                }
+            } else {
+                //If we didn't get anything and we have  a db table that means that the entry was created
+                //using an old types.xml that did not have any columns defined. 
+                if (haveDatabaseTable()) {
+                    String sql = SqlUtil.makeInsert(getTableName(),  COL_ID,
+                                                    SqlUtil.getQuestionMarks(1));
+                    getLogManager().logInfo("GenericTypeHandler: inserting id into database:" + getTableName());
+                    getDatabaseManager().executeInsert(sql,
+                                                       new Object[] {entry.getId()});
                 }
             }
         } finally {

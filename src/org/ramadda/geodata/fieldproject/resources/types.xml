@@ -23,8 +23,11 @@
 <tr><td align="right"><b>Location:</b></td><td> {{field name="location"}}</td></tr>
 </table>
 
-==Data==
-{{tree title="Data" showtoggle="false"}}
+
+{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
+
+
+{{tree title="Data" showtoggle="false" message="" prefix="==Data=="}}
 
 </td>
 <td width="50%">
@@ -57,11 +60,59 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column name="placeholder" label="dummy"/>
+     <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
+
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+
+{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
+
+{{tree title="Data" showtoggle="false" message="" prefix="==Data=="}}
+
+{{timeline}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350"}}
+
+<p>
+{{map entry="Locations"  width="350"}}
+<p>
+{{links entry="Links" message=""}}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+<block open="false" title="Click to view Properties">
+{{properties}}
+</block>
+
+<p>
+]]>
+</wiki>
+
+
+
    </type>
 
 
   <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+     <column name="placeholder" label="dummy"/>
+     <column name="results" label="Results" rows="5"/>
+     <column name="weather_conditions" label="Weather Conditions" rows="2"/>
      <property name="icon" value="/fieldproject/world_go.png"/>
+     <property name="form.description.label" value="Objective"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
