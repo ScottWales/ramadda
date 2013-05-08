@@ -33,6 +33,7 @@ import org.ramadda.repository.map.MapProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.CollectionTypeHandler;
+import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
@@ -467,10 +468,21 @@ sb.append(HtmlUtils.form(formUrl,
             envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
         }
         LatLonRect llb = dataset.getBoundingBox();
+        // Normalize longitude bounds to the data
+        double origLonMin = llb.getLonMin();
+        double lonMin = Double.parseDouble(request.getString(ARG_NCL_AREA_WEST, String.valueOf(llb.getLonMin())));
+        double lonMax = Double.parseDouble(request.getString(ARG_NCL_AREA_EAST, String.valueOf(llb.getLonMax())));
+        if (origLonMin < 0) { // -180 to 180
+            lonMin = GeoUtils.normalizeLongitude(lonMin);
+            lonMax = GeoUtils.normalizeLongitude(lonMax);
+        } else {  // 0-360
+            lonMin = GeoUtils.normalizeLongitude360(lonMin);
+            lonMax = GeoUtils.normalizeLongitude360(lonMax);
+        }
         envMap.put("maxLat", request.getString(ARG_NCL_AREA_NORTH, String.valueOf(llb.getLatMax())));
         envMap.put("minLat", request.getString(ARG_NCL_AREA_SOUTH, String.valueOf(llb.getLatMin())));
-        envMap.put("minLon", request.getString(ARG_NCL_AREA_WEST, String.valueOf(llb.getLonMin())));
-        envMap.put("maxLon", request.getString(ARG_NCL_AREA_EAST, String.valueOf(llb.getLonMax())));
+        envMap.put("minLon", String.valueOf(lonMin));
+        envMap.put("maxLon", String.valueOf(lonMax));
 
         boolean haveOriginalBounds = true;
         for (String spatialArg : NCL_SPATIALARGS) {
