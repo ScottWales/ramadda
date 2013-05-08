@@ -9,7 +9,7 @@
       <property name="tabs" value="map,list"/>
 
 <!--Add these metadata search elements to the search form -->
-    <property name="metadatatypes" value="above_monitoring_type,above_site_equipment,above_organization_sponsor"/>
+    <property name="metadatatypes" value="above_site_equipment,above_organization_sponsor"/>
 
 <!--The entry point. This corresponds to the below API entry -->
       <property name="searchurl" value="/above/sites/search"/>
