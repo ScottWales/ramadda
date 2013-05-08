@@ -787,35 +787,48 @@ public class MetadataHandler extends RepositoryManager {
      */
     public void addToSearchForm(Request request, StringBuffer sb,
                                 MetadataType type)
-            throws Exception {
+        throws Exception {
         boolean doSelect = true;
         //        sb.append(HtmlUtils.hidden(ARG_METADATA_TYPE + "." + type,
         //                                  type.toString()));
         String inheritedCbx = HtmlUtils.checkbox(ARG_METADATA_INHERITED + "."
-                                  + type, "true", false) + HtmlUtils.space(1)
-                                      + "inherited";
+                                                 + type, "true", false) + HtmlUtils.space(1)
+            + "inherited";
         inheritedCbx = "";
         String argName = ARG_METADATA_ATTR1 + "." + type;
 
         if (doSelect) {
             String[] values = getMetadataManager().getDistinctValues(request,
-                                  this, type);
+                                                                     this, type);
             if ((values == null) || (values.length == 0)) {
                 return;
             }
-            List l = trimValues((List<String>) Misc.toList(values));
-            l.add(0, new TwoFacedObject("-" + msg("all") + "-", ""));
-            String value = request.getString(argName, "");
 
-            String size = "";
-            if(l.size()>=4) {
-                size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"6");
+            List<TwoFacedObject> l = trimValues((List<String>) Misc.toList(values));
+            List<TwoFacedObject> selectList = new ArrayList<TwoFacedObject>();
+            selectList.add(new TwoFacedObject("-" + msg("all") + "-", ""));
+            MetadataElement element =  type.getChildren().get(0);
+            List enumValues = element.getValues();
+            if(enumValues !=null) {
+                for(TwoFacedObject o: l) {
+                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(), enumValues);
+                    if(tfo!=null) {
+                        selectList.add(tfo);
+                    } else {
+                        selectList.add(o);
+                    }
+                }
+                String value = request.getString(argName, "");
+                String size = "";
+                if(selectList.size()>=4) {
+                    size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"6");
+                }
+                sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
+                                              HtmlUtils.select(argName, selectList, value,
+                                                               size+
+                                                               HtmlUtils.ATTR_MULTIPLE,
+                                                               100) + inheritedCbx));
             }
-            sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                                          HtmlUtils.select(argName, l, value,
-                                                           size+
-                                                           HtmlUtils.ATTR_MULTIPLE,
-                                                           100) + inheritedCbx));
         } else {
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
                                           HtmlUtils.input(argName, "")
@@ -888,8 +901,8 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    protected List trimValues(List<String> l) {
-        List values = new ArrayList();
+    protected List<TwoFacedObject> trimValues(List<String> l) {
+        List<TwoFacedObject> values = new ArrayList();
         for (String s : l) {
             String label = s;
             if (label.length() > 50) {

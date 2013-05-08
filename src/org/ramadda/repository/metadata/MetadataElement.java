@@ -145,7 +145,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     private int columns = 60;
 
     /** _more_ */
-    private List values;
+    private List<TwoFacedObject> values;
 
     /** _more_ */
     private Hashtable<String, String> valueMap = new Hashtable<String,
@@ -248,7 +248,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         true, true);
             }
 
-            List enumValues = new ArrayList();
+            List<TwoFacedObject> enumValues = new ArrayList<TwoFacedObject>();
             for (String tok : tmpValues) {
                 //Check for comment line
                 if (tok.startsWith("#")) {
@@ -257,21 +257,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 int idx = tok.indexOf(delimiter);
                 if (idx < 0) {
                     valueMap.put(tok, tok);
-                    enumValues.add(tok);
-
+                    enumValues.add(new TwoFacedObject(tok));
                     continue;
                 }
                 String[] toks = StringUtil.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
-                    enumValues.add(tok);
-
+                    enumValues.add(new TwoFacedObject(tok));
                     continue;
                 }
                 valueMap.put(toks[0], toks[1]);
                 enumValues.add(new TwoFacedObject(toks[1], toks[0]));
             }
-            enumValues.add(0, "");
+            enumValues.add(0, new TwoFacedObject(""));
             setValues(enumValues);
         }
     }
@@ -1032,7 +1030,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @param value The new value for Values
      */
-    public void setValues(List value) {
+    public void setValues(List<TwoFacedObject> value) {
         values = value;
     }
 
@@ -1041,7 +1039,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @return The Values
      */
-    public List getValues() {
+    public List<TwoFacedObject> getValues() {
         return values;
     }
 

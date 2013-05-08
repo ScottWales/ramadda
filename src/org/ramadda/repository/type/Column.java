@@ -1631,13 +1631,16 @@ public class Column implements DataTypes, Constants {
      */
     private List getEnumPlusValues(Request request, Entry entry)
             throws Exception {
-        List enums = typeHandler.getEnumValues(request, this, entry);
-        //        System.err.print("ENUMS: " + enums);
+        List<TwoFacedObject> enums = typeHandler.getEnumValues(request, this, entry);
         //TODO: Check for Strings vs TwoFacedObjects
         if (enumValues != null) {
             List tmp = new ArrayList();
             for (Object o : enums) {
-                if ( !TwoFacedObject.contains(enumValues, o)) {
+                if(! (o instanceof TwoFacedObject)) {
+                    o = new TwoFacedObject(o);
+                }
+                //                if ( !TwoFacedObject.contains(enumValues, o)) {
+                if (!enumValues.contains(o)) {
                     tmp.add(o);
                 }
             }
@@ -1645,7 +1648,6 @@ public class Column implements DataTypes, Constants {
             enums = tmp;
             //            System.err.print("TMPS: " + enums);
         }
-
         return enums;
     }
 
@@ -1997,23 +1999,19 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues   = Misc.newList(TypeHandler.ALL_OBJECT);
-            List values      = typeHandler.getEnumValues(request, this, entry);
-            List valuesToUse = new ArrayList();
+            List<TwoFacedObject> values      = typeHandler.getEnumValues(request, this, entry);
             if (enumValues != null) {
-                for (Object value : values) {
-                    TwoFacedObject tfo = TwoFacedObject.findId(value,
-                                             enumValues);
-                    if (tfo != null) {
-                        valuesToUse.add(tfo);
+                for (TwoFacedObject o : values) {
+                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(), enumValues);
+                    if(tfo!=null) {
+                        tmpValues.add(tfo);
                     } else {
-                        valuesToUse.add(value);
+                        tmpValues.add(o);
                     }
-
                 }
             } else {
-                valuesToUse = values;
+                tmpValues.addAll(values);
             }
-            tmpValues.addAll(valuesToUse);
             widget = HtmlUtils.select(id, tmpValues, request.getString(id));
         } else if (isNumeric()) {
             String expr = HtmlUtils.select(id + "_expr", EXPR_ITEMS,
