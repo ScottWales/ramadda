@@ -191,9 +191,27 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    protected Hashtable getColumnEnumTable(Column column) throws Exception {
+        Hashtable map  = column.getEnumTable();
+        String key  = column.getName()+".values";
+        String vocabFile = getProperty(key,(String) null);
+        if(vocabFile!=null) {
+            Properties properties = labelCache.get(vocabFile);
+            if(properties == null) {
+                properties = new Properties();
+                getRepository().loadProperties(properties, vocabFile);
+                labelCache.put(vocabFile, properties);
+            }
+            map  = new Hashtable<String,String>();
+            map.putAll(properties);
+        }
+        return map;
+    }
 
 
     private List<TwoFacedObject> getValueList(Entry collectionEntry, List values, Column column) throws Exception {
+        Hashtable map  = getColumnEnumTable(column);
+        /*
         Hashtable map  = column.getEnumTable();
         String key  = column.getName()+".values";
         String vocabFile = getProperty(key,(String) null);
@@ -207,6 +225,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             map  = new Hashtable();
             map.putAll(properties);
         }
+        */
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         for(String value: (List<String>)values) {
             String label = (String) map.get(value);
