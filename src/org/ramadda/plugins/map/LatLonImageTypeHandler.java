@@ -84,9 +84,6 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map) {
-        //Skip this for now
-        if(true) return true;
-
         String url = getRepository().getHtmlOutputHandler().getImageUrl(request, entry);
         //        this.addImageLayer('Test', '/repository/images/dilbert.gif',88,-180,-88,180,500,500);
         //    this.addImageLayer = function(name, url, north,west,south,east, width,height) {

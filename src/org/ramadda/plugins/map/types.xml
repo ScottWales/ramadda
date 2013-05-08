@@ -8,6 +8,10 @@
 
   <type name="latlonimage"  description="WMS Image" datatype="latlonimage" category="GIS Data" handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
      <property name="icon" value="/icons/map.png"/>
+     <wiki><![CDATA[
+{{map width="600" height="450" details="true"}}
+]]>
+</wiki>
   </type>
 
 
