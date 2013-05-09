@@ -22,5 +22,12 @@
 </type>
 
 
+<type name="cdm_radar_UniversalFormat"  description="Universal Format Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.UFRadarTypeHandler">
+</type>
+
+
+<type name="cdm_radar_Dorade"  description="Dorade Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.DoradeRadarTypeHandler">
+</type>
+
 
 </types>
