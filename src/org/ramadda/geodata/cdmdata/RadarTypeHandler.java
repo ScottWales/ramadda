@@ -132,7 +132,10 @@ public class RadarTypeHandler extends GenericTypeHandler {
 
         
         String stationId = Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_STATIONID, 
-                                            Misc.getProperty(attrMap, CdmUtil.ATTR_STATIONID, ""));
+                                            Misc.getProperty(attrMap, CdmUtil.ATTR_STATIONID,
+                                                    "XXXX"));
+        System.out.println("station: " + stationId);
+
         String stationName =  Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_STATIONNAME, 
                                                Misc.getProperty(attrMap, CdmUtil.ATTR_STATIONNAME, ""));
         double radarLat = Double.parseDouble(Misc.getProperty(attrMap, CdmUtil.ATTR_RADAR_LATITUDE, 
