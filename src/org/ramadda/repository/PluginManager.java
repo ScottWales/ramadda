@@ -62,6 +62,7 @@ import java.net.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -253,6 +254,7 @@ public class PluginManager extends RepositoryManager {
                 plugins.add(files[i]);
             }
         }
+        Collections.sort(lastPlugins);
         plugins.addAll(lastPlugins);
 
         for (int i = 0; i < plugins.size(); i++) {
