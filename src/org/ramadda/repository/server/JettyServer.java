@@ -24,44 +24,24 @@ package org.ramadda.repository.server;
 
 
 
-import org.eclipse.jetty.server.*;
-
-import org.eclipse.jetty.servlet.*;
-import org.eclipse.jetty.server.bio.SocketConnector;
-import org.eclipse.jetty.server.handler.*;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
-//import org.eclipse.jetty.servlet.Context;
-
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-
-import org.ramadda.repository.*;
-
-
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.WrapperException;
-
-import java.io.*;
-
-import java.net.*;
-
-import java.util.Date;
-import java.util.Enumeration;
-
-
+import java.io.File;
 import java.util.Hashtable;
-import java.util.HashSet;
-import java.util.List;
-
 import java.util.Properties;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+// Jetty 8 
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+// Jetty 9
+//import org.eclipse.jetty.server.ServerConnector;
+//import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.ramadda.repository.Constants;
+import org.ramadda.repository.Repository;
+
+import ucar.unidata.util.LogUtil;
+//import org.eclipse.jetty.servlet.Context;
 
 
 
@@ -215,13 +195,36 @@ public class JettyServer implements Constants {
 
         repository.getLogManager().logInfo(
             "SSL: creating ssl connection on port:" + sslPort);
+        /* 
+        // Jetty <7
         SslSocketConnector sslSocketConnector = new SslSocketConnector();
         sslSocketConnector.setKeystore(keystore.toString());
+        // The password for the key store
         sslSocketConnector.setPassword(password);
+        // The password (if any) for the specific key within the key store
         sslSocketConnector.setKeyPassword(keyPassword);
         sslSocketConnector.setTrustPassword(password);
         sslSocketConnector.setPort(sslPort);
         server.addConnector(sslSocketConnector);
+        */
+        // Jetty 7&8
+        SslContextFactory sslContext = new SslContextFactory();
+        sslContext.setKeyStorePath(keystore.toString());
+        // The password for the key store
+        sslContext.setKeyStorePassword(password);
+        // The password (if any) for the specific key within the key store
+        sslContext.setKeyManagerPassword(keyPassword);
+        sslContext.setTrustStorePassword(password);
+        SslSocketConnector sslSocketConnector = new SslSocketConnector(sslContext);
+        sslSocketConnector.setPort(sslPort);
+        server.addConnector(sslSocketConnector);
+        /* Jetty 9 - not sure this is correct
+        SslConnectionFactory sslFactory = new SslConnectionFactory(sslContext, "http/1.1");
+        ServerConnector sslConnector = new ServerConnector(server, sslFactory);
+        sslConnector.setPort(sslPort);
+        server.addConnector(sslConnector);
+        */
+
         repository.setHttpsPort(sslPort);
     }
 
