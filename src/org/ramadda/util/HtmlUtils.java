@@ -2959,14 +2959,16 @@ public class HtmlUtils {
 
 
     /**
-     * _more_
+     * Enclose JavaScript code in a JavaScript tag
      *
-     * @param s _more_
+     * @param s  the JavaSript code
      *
-     * @return _more_
+     * @return  the script enclosed in a tag
      */
     public static String script(String s) {
-        return tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"), s);
+        s = be.belgampaul.tools.javascript.JsBeautify.jsBeautify(s,2);
+        String js = tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"), s);
+        return js;
     }
 
 
@@ -3007,7 +3009,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String importJS(String jsUrl) {
-        return tag(TAG_SCRIPT, attr(ATTR_SRC, jsUrl), "");
+        return tag(TAG_SCRIPT, attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
     }
 
 
