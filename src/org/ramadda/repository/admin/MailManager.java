@@ -202,6 +202,7 @@ public class MailManager extends RepositoryManager {
 
 
         Properties props = new Properties();
+        props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.host", smtpServer);
         props.put("mail.from", from.getAddress());
         javax.mail.Session session = Session.getInstance(props,
