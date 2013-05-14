@@ -250,9 +250,10 @@ public class MailManager extends RepositoryManager {
         try    {
             if(smtpUser!=null) {
                 transport.connect(smtpServer, smtpUser, smtpPassword);
+                transport.sendMessage(msg, msg.getAllRecipients());
+            } else {
+                Transport.send(msg);
             }
-            // Send the email.
-            transport.sendMessage(msg, msg.getAllRecipients());
         } finally {
             // Close and terminate the connection.
             transport.close();         
