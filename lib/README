@@ -48,7 +48,9 @@ visad.jar:
   org/ramadda/geodata/fits plugin
 
 jetty.jar:
-This is the jetty-all-server.jar
+
+This is the combination of the following all the jetty modules:
+    jetty-<module>-<version>.jar
 
 tika-app-1.1.jar
   The tika-app-1.1.jar  has been modified. I (jeffmc) removed the
@@ -76,3 +78,8 @@ This was built from  https://github.com/mbjones/ezid
   Synthesis at the University of California Santa Barbara (UCSB).
   Copyright 2011 Regents of the University of California
  
+jsbeautify.jar
+This was built from https://github.com/belgampaul/JsBeautifier.git
+
+  took the js.jar from the lib directory and updated it with the compiled JsBeautifier
+  beautify.js.
