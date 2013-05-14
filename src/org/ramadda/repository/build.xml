@@ -336,6 +336,8 @@
         <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/slf4j-simple-1.6.4.jar" dest="${tmpjar_dir}"/>
 
+        <unjar src="${lib_dir}/jsbeautify.jar" dest="${tmpjar_dir}"/>
+
 <!--
         <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
 -->
