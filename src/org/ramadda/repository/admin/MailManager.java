@@ -275,7 +275,7 @@ public class MailManager extends RepositoryManager {
 
     public static void main(String[]args) throws Exception {
 	List<Address>    to = (List<Address>) Misc.newList(new InternetAddress("jeff.mcwhirter@gmail.com"));
-	InternetAddress from = new InternetAddress("jeff.mcwhiter@gmail.com");
+	InternetAddress from = new InternetAddress("jeff.mcwhirter@gmail.com");
         sendEmailNew(to, from, "test", "message", false,true);
     }
 
