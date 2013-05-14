@@ -78,6 +78,9 @@ import javax.mail.internet.*;
  */
 public class MailManager extends RepositoryManager {
 
+    public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
+    public static final String PROP_SMTP_PASSWORD = "ramadda.admin.smtp.password";
+    public static final String PROP_SMTP_STARTTLS = "ramadda.admin.smtp.starttls";
 
     /**
      * _more_
@@ -189,22 +192,36 @@ public class MailManager extends RepositoryManager {
                 "This RAMADDA server has not been configured to send email");
         }
 
-        //        System.err.println("subject:" + subject);
-        //        System.err.println("contents:" + contents);
+
         String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
                                 "").trim();
+        String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
+        String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
+        boolean startTls = getRepository().getProperty(PROP_SMTP_STARTTLS, false);
 
-        System.err.println("sending mail from:" + from.getAddress());
+
 
         Properties props = new Properties();
         props.put("mail.smtp.host", smtpServer);
         props.put("mail.from", from.getAddress());
         javax.mail.Session session = Session.getInstance(props,
                                                          null);
-        String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
-        String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
+	if(startTls) {
+	    // Port we will connect to on the Amazon SES SMTPendpoint. We are choosing port 25 because we will use
+	    // STARTTLS to encrypt the connection.
+	    props.put("mail.smtp.port", 25); 
+
+        
+	    // Set properties indicating that we want to use STARTTLS to encrypt the connection.
+	    // The SMTP session will begin on an unencrypted connection, and then the client
+	    // will issue a STARTTLS command to upgrade to an encrypted connection.
+	    props.put("mail.smtp.auth", "true");
+	    props.put("mail.smtp.starttls.enable", "true");
+	    props.put("mail.smtp.starttls.required", "true");
+	}
+
+
         if(smtpUser!=null) {
-            System.err.println("smtp user:" + smtpUser);
             props.put("mail.smtp.user", smtpUser);
         }
 
@@ -224,6 +241,24 @@ public class MailManager extends RepositoryManager {
                                   ? "text/html"
                                   : "text/plain"));
 
+
+        // Create a transport.        
+        Transport transport = session.getTransport();
+                    
+        // Send the message.
+        try    {
+            if(smtpUser!=null) {
+                transport.connect(smtpServer, smtpUser, smtpPassword);
+            }
+            // Send the email.
+            transport.sendMessage(msg, msg.getAllRecipients());
+        } finally {
+            // Close and terminate the connection.
+            transport.close();         
+        }
+
+        /*
+
         if(smtpPassword!=null) {
             System.err.println("password:" + smtpPassword);
             Transport tr = session.getTransport();
@@ -232,67 +267,83 @@ public class MailManager extends RepositoryManager {
         } else {
             Transport.send(msg);
         }
+        */
     }
 
 
-    static final String HOST = "email-smtp.us-east-1.amazonaws.com";    
-    static final String SMTP_USERNAME = "username";  // Replace with your SMTP username credential.
-    static final String SMTP_PASSWORD = "password";  // Replace with your SMTP password.
 
     public static void main(String[]args) throws Exception {
-        sendEmailMailNew("jeff.mcwhirter@gmail.com", "test", "message");
+	List<Address>    to = (List<Address>) Misc.newList(new InternetAddress("jeff.mcwhirter@gmail.com"));
+	InternetAddress from = new InternetAddress("jeff.mcwhiter@gmail.com");
+        sendEmailNew(to, from, "test", "message", false,true);
     }
 
-    public void sendEmailNew(String to, String subject, String body) throws Exception {
-
+    public static void sendEmailNew(List<Address> to, InternetAddress from,
+				    String subject, String body, boolean bcc,
+				    boolean asHtml) throws Exception {
 
         Properties props = System.getProperties();
         props.put("mail.transport.protocol", "smtp");
 
-        // Port we will connect to on the Amazon SES SMTP endpoint. We are choosing port 25 because we will use
-        // STARTTLS to encrypt the connection.
-        props.put("mail.smtp.port", 25); 
+	
+
+
+	boolean startTls = true;
+	String smtpServer = "email-smtp.us-east-1.amazonaws.com";    
+	String smtpUser = "";
+	String smtpPassword = "";
+
+
+
+	if(startTls) {
+	    // Port we will connect to on the Amazon SES SMTPendpoint. We are choosing port 25 because we will use
+	    // STARTTLS to encrypt the connection.
+	    props.put("mail.smtp.port", 25); 
 
         
-        // Set properties indicating that we want to use STARTTLS to encrypt the connection.
-        // The SMTP session will begin on an unencrypted connection, and then the client
-        // will issue a STARTTLS command to upgrade to an encrypted connection.
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.starttls.required", "true");
+	    // Set properties indicating that we want to use STARTTLS to encrypt the connection.
+	    // The SMTP session will begin on an unencrypted connection, and then the client
+	    // will issue a STARTTLS command to upgrade to an encrypted connection.
+	    props.put("mail.smtp.auth", "true");
+	    props.put("mail.smtp.starttls.enable", "true");
+	    props.put("mail.smtp.starttls.required", "true");
+	}
 
         // Create a Session object to represent a mail session with the specified properties. 
-        Session session = Session.getDefaultInstance(props);
+	//        Session session = Session.getDefaultInstance(props);
+	//        props.put("mail.smtp.host", smtpServer);
+        props.put("mail.from", from.getAddress());
+        javax.mail.Session session = Session.getInstance(props,
+                                                         null);
 
         // Create a message with the specified information. 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress("jeff.mcwhirter@gmail.com"));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        Address[] array = new Address[to.size()];
+        for (int i = 0; i < to.size(); i++) {
+            array[i] = to.get(i);
+        }
+        msg.setRecipients((bcc
+                           ? Message.RecipientType.BCC
+                           : Message.RecipientType.TO), array);
+
         msg.setSubject(subject);
-        msg.setContent(body,"text/plain");
+        msg.setSentDate(new Date());
+        msg.setContent(body, (asHtml
+                                  ? "text/html"
+                                  : "text/plain"));
+
             
         // Create a transport.        
         Transport transport = session.getTransport();
                     
         // Send the message.
         try    {
-            System.out.println("Attempting to send an email");
-            
-            String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
-                                                            "").trim();
-            String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
-            String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
             if(smtpUser!=null) {
-                // Connect to Amazon SES using the SMTP username and password you specified above.
                 transport.connect(smtpServer, smtpUser, smtpPassword);
-            } else  {
-                //TODO.....                transport.connect(smtpServer);
             }
             // Send the email.
             transport.sendMessage(msg, msg.getAllRecipients());
-        }  catch (Exception ex) {
-            System.out.println("The email was not sent.");
-            System.out.println("Error message: " + ex.getMessage());
         } finally {
             // Close and terminate the connection.
             transport.close();         
