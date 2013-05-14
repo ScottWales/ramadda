@@ -46,16 +46,16 @@ public class CMIP5ModelFileTypeHandler extends ClimateModelFileTypeHandler {
         super.initializeEntry(entry);
         Object[] values = getEntryValues(entry);
         if(values[1]!=null && !values[1].toString().isEmpty()) {
-            System.err.println ("already have  values set");
+            //System.err.println ("already have  values set");
             return;
         }
-        System.err.println ("no values set");
+        //System.err.println ("no values set");
         String filepath = entry.getFile().toString();
         String filename = IOUtil.getFileTail(entry.getFile().toString());
         // Filename looks like  var_model_scenario_ens??_<date>.nc
         Matcher m = pattern.matcher(filename);
         if (!m.find()) {
-            System.err.println ("no match");
+            System.err.println ("no match for: "+filename);
             return;
         }
         String var = m.group(1);
