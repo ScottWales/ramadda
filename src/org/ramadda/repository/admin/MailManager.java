@@ -199,8 +199,8 @@ public class MailManager extends RepositoryManager {
         Properties props = new Properties();
         props.put("mail.smtp.host", smtpServer);
         props.put("mail.from", from.getAddress());
-        javax.mail.Session session = javax.mail.Session.getInstance(props,
-                                                                    null);
+        javax.mail.Session session = Session.getInstance(props,
+                                                         null);
         String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
         String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
         if(smtpUser!=null) {
@@ -239,7 +239,11 @@ public class MailManager extends RepositoryManager {
     static final String SMTP_USERNAME = "username";  // Replace with your SMTP username credential.
     static final String SMTP_PASSWORD = "password";  // Replace with your SMTP password.
 
-    public void sendMailNew(String to, String subject, String body) throws Exception {
+    public static void main(String[]args) throws Exception {
+        sendEmailMailNew("jeff.mcwhirter@gmail.com", "test", "message");
+    }
+
+    public void sendEmailNew(String to, String subject, String body) throws Exception {
 
 
         Properties props = System.getProperties();
@@ -263,7 +267,7 @@ public class MailManager extends RepositoryManager {
         // Create a message with the specified information. 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress("jeff.mcwhirter@gmail.com"));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress("jeff.mcwhirter@gmail.com"));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
         msg.setContent(body,"text/plain");
             
