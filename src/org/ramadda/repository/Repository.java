@@ -311,6 +311,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties cmdLineProperties = new Properties();
 
+    private Properties coreProperties = new Properties();
+
     /** _more_ */
     private Map<String, String> systemEnv;
 
@@ -831,14 +833,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
           cmd line
          */
 
+        coreProperties = new Properties();
         localProperties = new Properties();
         loadProperties(
-                       localProperties,
+                       coreProperties,
             "/org/ramadda/repository/resources/repository.properties");
 
         try {
             loadProperties(
-                           localProperties,
+                           coreProperties,
                 "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
@@ -969,13 +972,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             println("RAMADDA: running with no in-memory cache");
         }
 
-        setUrlBase((String) localProperties.get(PROP_HTML_URLBASE));
+        setUrlBase(getLocalProperty(PROP_HTML_URLBASE,"/repository"));
         if (getUrlBase() == null) {
             setUrlBase(BLANK);
         }
 
 
-        String derbyHome = (String) localProperties.get(PROP_DB_DERBY_HOME);
+        String derbyHome = getLocalProperty(PROP_DB_DERBY_HOME, (String) null);
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
             File dir = new File(derbyHome);
@@ -3084,8 +3087,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /** _more_ */
-    private Boolean cacheResources = null;
 
     /**
      * _more_
@@ -3093,22 +3094,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean cacheResources() {
-        //DEBUG
-        //        if(true) return false;
-        if (cacheResources == null) {
-            String test = (String) cmdLineProperties.get(PROP_CACHERESOURCES);
-
-            if (test == null) {
-                test = (String) localProperties.get(PROP_CACHERESOURCES);
-            }
-
-            if (test == null) {
-                test = "true";
-            }
-            cacheResources = new Boolean(test.equals("true"));
-        }
-
-        return cacheResources.booleanValue();
+        return true;
     }
 
 
@@ -3123,6 +3109,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Object value = localProperties.get(name);
         if(value == null) 
             value = cmdLineProperties.get(name);
+
+        if(value == null) 
+            value = coreProperties.get(name);
+
         if(value == null) 
             return dflt;
         return value.toString();
@@ -3154,64 +3144,55 @@ public class Repository extends RepositoryBase implements RequestHandler,
             systemEnv = System.getenv();
         }
         String prop = null;
-        /*
-        if ( !cacheResources()) {
-            try {
-            loadProperties(localProperties,
-            "/org/ramadda/repository/resources/repository.properties");
-            } catch (Exception exc) {}
-            }*/
-
         String override = "override." + name;
+
         //Check if there is an override 
-        if (prop == null) {
-            prop = (String) cmdLineProperties.get(override);
-        }
+        prop = (String) cmdLineProperties.get(override);
+        if (prop != null) return prop;
 
-        if (prop == null) {
-            prop = (String) localProperties.get(override);
-        }
+        prop = (String) localProperties.get(override);
+        if (prop != null) return prop;
 
-        if (prop == null) {
-            prop = (String) pluginProperties.get(override);
-        }
+        prop = (String) pluginProperties.get(override);
+        if (prop != null) return prop;
 
-        //Then look at the command line
-        if (prop == null) {
-            prop = (String) cmdLineProperties.get(name);
-        }
+        prop = (String) coreProperties.get(override);
+        if (prop != null) return prop;        
 
 
-        //Then the  database properties  
-        if (checkDb && (prop == null)) {
+        //Order:  command line, database, local (e.g., ramadda home .properties files), plugins, core
+        prop = (String) cmdLineProperties.get(name);
+        if (prop != null) return prop;
+
+        if (checkDb) {
             prop = (String) dbProperties.get(name);
+            if (prop != null) return prop;
         }
 
+        prop = (String) localProperties.get(name);
+        if (prop != null) return prop;
 
-        //then the  repository.properties 
-        if (prop == null) {
-            prop = (String) localProperties.get(name);
-        }
+        prop = (String) pluginProperties.get(name);
+        if (prop != null) return prop;
 
-        //then the  plugin .properties 
-        if (prop == null) {
-            prop = (String) pluginProperties.get(name);
-        }
+        prop = (String) coreProperties.get(name);
+        if (prop != null) return prop;
 
-        //Then look at system properties
-        if (prop == null) {
-            prop = System.getProperty(name);
-        }
+        prop = System.getProperty(name);
+        if (prop != null) return prop;
+        
+        prop = systemEnv.get(name);
+        if (prop != null) return prop;
 
-        //Then env vars
-        if (prop == null) {
-            prop = systemEnv.get(name);
-        }
 
         return prop;
     }
 
 
+    /**
+       this gets the property from this repository if defined. Else it will get the 
+       property from the parent repository if defined. Else this returns the dflt
+     */
     public String getPropertyFromTree(String name, String dflt) {
         String value = getProperty(name, (String) null);
         if(Utils.stringDefined(value)) return value;
