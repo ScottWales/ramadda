@@ -115,16 +115,28 @@ public class MailManager extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
     }
 
+
+    public String getSmtpServer() {
+        return getPropertyFromTree(PROP_ADMIN_SMTP,"");
+    }
+
+    public String getAdminEmail() {
+        return getPropertyFromTree(PROP_ADMIN_EMAIL, "");
+    }
+
+
     /**
      * _more_
      *
      * @return _more_
      */
     public boolean isEmailCapable() {
-        String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
-                                "").trim();
-        String serverAdmin = getRepository().getProperty(PROP_ADMIN_EMAIL,
-                                 "").trim();
+        if(getRepository().getParentRepository()!=null) {
+            return getRepository().getParentRepository().getMailManager().isEmailCapable();
+        }
+
+        String smtpServer = getSmtpServer();
+        String serverAdmin = getAdminEmail();
         if ((serverAdmin.length() == 0) || (smtpServer.length() == 0)) {
             return false;
         }
@@ -145,9 +157,7 @@ public class MailManager extends RepositoryManager {
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
             throws Exception {
-        String from = getRepository().getProperty(PROP_ADMIN_EMAIL,
-                          "").trim();
-        sendEmail(to, from, subject, contents, asHtml);
+        sendEmail(to, getAdminEmail(), subject, contents, asHtml);
     }
 
 
@@ -187,17 +197,21 @@ public class MailManager extends RepositoryManager {
                           String subject, String contents, boolean bcc,
                           boolean asHtml)
             throws Exception {
+        if(getRepository().getParentRepository()!=null) {
+            getRepository().getParentRepository().getMailManager().sendEmail(to, from, subject, contents, bcc, asHtml);
+        }
+
+
         if ( !isEmailCapable()) {
             throw new IllegalStateException(
                 "This RAMADDA server has not been configured to send email");
         }
 
 
-        String smtpServer = getRepository().getProperty(PROP_ADMIN_SMTP,
-                                "").trim();
-        String smtpUser = getRepository().getProperty(PROP_SMTP_USER, (String) null);
-        String smtpPassword = getRepository().getProperty(PROP_SMTP_PASSWORD, (String) null);
-        boolean startTls = getRepository().getProperty(PROP_SMTP_STARTTLS, false);
+        String smtpServer = getSmtpServer();
+        String smtpUser = getPropertyFromTree(PROP_SMTP_USER, (String) null);
+        String smtpPassword = getPropertyFromTree(PROP_SMTP_PASSWORD, (String) null);
+        boolean startTls = getPropertyFromTree(PROP_SMTP_STARTTLS, "false").equals("true");
 
 
 

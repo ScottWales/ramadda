@@ -62,6 +62,7 @@ import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
 
@@ -2061,8 +2062,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String value = results.getString(2);
             if (name.equals(PROP_PROPERTIES)) {
                 tmp.load(new ByteArrayInputStream(value.getBytes()));
+            } else {
+                tmp.put(name, value);
             }
-            tmp.put(name, value);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
         dbProperties = tmp;
@@ -3207,6 +3209,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return prop;
+    }
+
+
+    public String getPropertyFromTree(String name, String dflt) {
+        String value = getProperty(name, (String) null);
+        if(Utils.stringDefined(value)) return value;
+        if(getParentRepository()!=null) {
+            return getParentRepository().getPropertyFromTree(name, dflt);
+        }
+        return dflt;
     }
 
 

@@ -507,6 +507,11 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    public String getPropertyFromTree(String name, String dflt) {
+        return  repository.getPropertyFromTree(name, dflt);
+    }
+
+
     /**
      * _more_
      *

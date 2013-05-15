@@ -1524,14 +1524,13 @@ public class Admin extends RepositoryManager {
 
 
 
-        if (request.exists(PROP_LOCALFILEPATHS)) {
-            getRepository().writeGlobal(
-                PROP_LOCALFILEPATHS,
-                request.getString(PROP_LOCALFILEPATHS, ""));
-            getRepository().setLocalFilePaths();
-            getRepository().clearCache();
-        }
+        getRepository().writeGlobal(
+                                    PROP_LOCALFILEPATHS,
+                                    request.getString(PROP_LOCALFILEPATHS, ""));
 
+
+        getRepository().setLocalFilePaths();
+        getRepository().clearCache();
         getMapManager().applyAdminConfig(request);
 
         List<OutputHandler> outputHandlers =
@@ -1566,11 +1565,15 @@ public class Admin extends RepositoryManager {
             adminHandler.applyAdminSettingsForm(request);
         }
 
+        //Now re-read all of the globals so we pick up any deletes
+        getRepository().readGlobals();
+
         //Tell the other repositoryManagers that the settings changed
         for (RepositoryManager repositoryManager :
                 getRepository().getRepositoryManagers()) {
             repositoryManager.adminSettingsChanged();
         }
+
 
         return new Result(request.url(URL_ADMIN_SETTINGS));
 
