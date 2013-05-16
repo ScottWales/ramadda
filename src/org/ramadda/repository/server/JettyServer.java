@@ -207,7 +207,7 @@ public class JettyServer implements Constants {
         sslSocketConnector.setPort(sslPort);
         server.addConnector(sslSocketConnector);
         */
-        // Jetty 7&8
+        // Jetty 7,8,&9
         SslContextFactory sslContext = new SslContextFactory();
         sslContext.setKeyStorePath(keystore.toString());
         // The password for the key store
@@ -215,6 +215,7 @@ public class JettyServer implements Constants {
         // The password (if any) for the specific key within the key store
         sslContext.setKeyManagerPassword(keyPassword);
         sslContext.setTrustStorePassword(password);
+        // Jetty 7&8
         SslSocketConnector sslSocketConnector = new SslSocketConnector(sslContext);
         sslSocketConnector.setPort(sslPort);
         server.addConnector(sslSocketConnector);

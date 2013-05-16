@@ -93,6 +93,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.DiskCache2;
 
@@ -1200,7 +1201,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 writer.makeFile(f.toString(), gds, varNames, llr,
                                 ((dates[0] == null)
                                  ? null
-                                 : new ucar.nc2.units.DateRange(dates[0],
+                                 : CalendarDateRange.of(dates[0],
                                  dates[1])), includeLatLon, hStride, zStride,
                                              timeStride);
                 getCdmManager().returnGridDataset(path, gds);
@@ -1371,7 +1372,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         } else if (fc instanceof NestedPointFeatureCollection) {
             NestedPointFeatureCollection npfc =
                 (NestedPointFeatureCollection) fc;
-            collection = npfc.flatten(null, null);
+            collection = npfc.flatten(null, (CalendarDateRange) null);
         } else {
             throw new IllegalArgumentException(
                 "Can't handle collection of type " + fc.getClass().getName());
@@ -2323,6 +2324,15 @@ public class CdmDataOutputHandler extends OutputHandler {
         public String getServerVersion() {
             return "opendap/3.7";
         }
+
+        /**
+         * Each sever subclass must tell what its default context path should be.
+         public String getDefaultContextPath() {
+             return "/thredds";
+         }
+         */
+
+
     }
 
 

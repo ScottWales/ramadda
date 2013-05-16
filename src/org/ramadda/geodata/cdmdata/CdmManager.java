@@ -317,13 +317,13 @@ public class CdmManager extends RepositoryManager {
         protected NetcdfDataset getFromPool(List<NetcdfDataset> list) {
             NetcdfDataset dataset = super.getFromPool(list);
             ncGetCounter.incr();
-            try {
-                dataset.sync();
+            //try {
+            //    dataset.sync();
 
                 return dataset;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            //} catch (Exception exc) {
+            //    throw new RuntimeException(exc);
+            //}
         }
 
 
@@ -365,13 +365,13 @@ public class CdmManager extends RepositoryManager {
         protected NetcdfFile getFromPool(List<NetcdfFile> list) {
             NetcdfFile ncFile = super.getFromPool(list);
             ncGetCounter.incr();
-            try {
-                ncFile.sync();
+            //try {
+            //    ncFile.sync();
 
                 return ncFile;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            //} catch (Exception exc) {
+            //    throw new RuntimeException(exc);
+            //}
         }
 
         protected NetcdfFile createValue(String path) {
@@ -412,13 +412,13 @@ public class CdmManager extends RepositoryManager {
 
         protected GridDataset getFromPool(List<GridDataset> list) {
             GridDataset dataset = super.getFromPool(list);
-            try {
-                dataset.sync();
+            //try {
+            //    dataset.sync();
 
                 return dataset;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            //} catch (Exception exc) {
+            //    throw new RuntimeException(exc);
+            //}
 
         }
 
@@ -513,7 +513,7 @@ public class CdmManager extends RepositoryManager {
         /*
         protected  FeatureDatasetPoint getFromPool(List<FeatureDatasetPoint> list) {
             FeatureDatasetPoint dataset = super.getFromPool(list);
-            dataset.sync();
+            //dataset.sync();
             return dataset;
             }*/
 
@@ -586,7 +586,7 @@ public class CdmManager extends RepositoryManager {
         /*
         protected  TrajectoryObsDataset getFromPool(List<TrajectoryObsDataset> list) {
             TrajectoryObsDataset dataset = super.getFromPool(list);
-            dataset.sync();
+            //dataset.sync();
             return dataset;
             }*/
 

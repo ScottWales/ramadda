@@ -14,14 +14,18 @@ foreach jar [glob ../lib/*.jar] {
         puts "skipping $jar"
         continue
     }
+    if {[regexp jcommon $jar]} {
+        puts "skipping $jar"
+        continue
+    }
     if {[regexp unidatacommon $jar]} {
         puts "skipping $jar"
         continue
     }
-    if {[regexp netcdf $jar]} {
-        puts "skipping $jar"
-        continue
-    }
+#    if {[regexp netcdf $jar]} {
+#        puts "skipping $jar"
+#        continue
+#    }
 
     if {[regexp slf4j $jar]} {
         puts "skipping $jar"
@@ -32,11 +36,12 @@ foreach jar [glob ../lib/*.jar] {
 }
 
 ##unjar the common jar
-puts "Unjarring unidatacommon.jar"
-exec jar -xvf ../../../unidatacommon.jar
+#puts "Unjarring unidatacommon.jar"
+#exec jar -xvf ../../../unidatacommon.jar
 
-puts "Unjarring ncIdv.jar"
-exec jar -xvf ../../../ncIdv.jar
+#puts "Unjarring ncIdv.jar"
+#exec jar -xvf ../../../ncIdv.jar
+
 file delete -force org/slf4j
 
 

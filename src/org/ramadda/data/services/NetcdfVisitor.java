@@ -40,8 +40,10 @@ import java.util.List;
 
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.ft.point.writer.CFPointObWriter;
-import ucar.nc2.ft.point.writer.PointObVar;
+//import ucar.nc2.ft.point.writer.CFPointObWriter;
+//import ucar.nc2.ft.point.writer.PointObVar;
+import ucar.nc2.dt.point.CFPointObWriter;
+import ucar.nc2.dt.point.PointObVar;
 
 
 /**
