@@ -243,6 +243,7 @@ public class MailManager extends RepositoryManager {
 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(from);
+        System.err.println ("Sending mail to:" + to);
         Address[] array = new Address[to.size()];
         for (int i = 0; i < to.size(); i++) {
             array[i] = to.get(i);
@@ -264,7 +265,12 @@ public class MailManager extends RepositoryManager {
         try    {
             if(smtpUser!=null) {
                 transport.connect(smtpServer, smtpUser, smtpPassword);
-                transport.sendMessage(msg, msg.getAllRecipients());
+                Address[] recipients = msg.getAllRecipients();
+                System.err.println ("recipients:"+ recipients.length);
+                for(Address addr: recipients) {
+                    System.err.println ("    addr:" + addr);
+                }
+                transport.sendMessage(msg, recipients);
             } else {
                 Transport.send(msg);
             }
