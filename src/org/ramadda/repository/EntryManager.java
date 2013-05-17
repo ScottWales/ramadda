@@ -1742,6 +1742,10 @@ public class EntryManager extends RepositoryManager {
                         if (name.equals("MANIFEST.MF")) {
                             continue;
                         }
+                        //Skip dot files as well
+                        if (name.startsWith(".")) {
+                            continue;
+                        }
                         Entry parent = parentEntry;
                         if (request.get(ARG_FILE_PRESERVEDIRECTORY, false)) {
                             List<String> toks = StringUtil.split(path, "/",

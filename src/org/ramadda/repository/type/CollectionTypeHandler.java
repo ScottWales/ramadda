@@ -100,7 +100,9 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         if(granuleTypeHandler ==null) {
             granuleTypeHandler = getRepository().getTypeHandler(getProperty(PROP_GRANULE_TYPE,""));
             columns = new ArrayList<Column>(granuleTypeHandler.getColumns());
-            dbColumnCollectionId = columns.get(0).getName();
+            dbColumnCollectionId = columns.get(0).getFullName();
+            System.err.println ("id:" + dbColumnCollectionId);
+            System.err.println ("columns: " + columns);
             columns.remove(0);
         }
         return granuleTypeHandler;
@@ -414,7 +416,8 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             Column column = columns.get(i);
             String dbTableName =  column.getTableName();
             if(!seenTable.contains(dbTableName)) {
-                clauses.add(Clause.eq(dbTableName +"." + dbColumnCollectionId, group.getId()));
+                //xxxxx             clauses.add(Clause.eq(dbTableName +"." + dbColumnCollectionId, group.getId()));
+                clauses.add(Clause.eq(dbColumnCollectionId, group.getId()));
                 clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
                                         dbTableName + ".id"));
                 seenTable.add(dbTableName);
