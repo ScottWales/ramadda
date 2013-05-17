@@ -197,8 +197,12 @@ public class MailManager extends RepositoryManager {
                           String subject, String contents, boolean bcc,
                           boolean asHtml)
             throws Exception {
+
+        //Defer to the parent
         if(getRepository().getParentRepository()!=null) {
             getRepository().getParentRepository().getMailManager().sendEmail(to, from, subject, contents, bcc, asHtml);
+            //Make sure we return!!!!
+            return;
         }
 
 
@@ -243,7 +247,6 @@ public class MailManager extends RepositoryManager {
 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(from);
-        System.err.println ("Sending mail to:" + to);
         Address[] array = new Address[to.size()];
         for (int i = 0; i < to.size(); i++) {
             array[i] = to.get(i);
@@ -266,10 +269,6 @@ public class MailManager extends RepositoryManager {
             if(smtpUser!=null) {
                 transport.connect(smtpServer, smtpUser, smtpPassword);
                 Address[] recipients = msg.getAllRecipients();
-                System.err.println ("recipients:"+ recipients.length);
-                for(Address addr: recipients) {
-                    System.err.println ("    addr:" + addr);
-                }
                 transport.sendMessage(msg, recipients);
             } else {
                 Transport.send(msg);
