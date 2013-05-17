@@ -865,7 +865,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                               + ".png";
                 icon = icon.replace(" ", "_");
                 String img = "<img border=0 src="
-                             + getRepository().getUrlBase() + "/colortables/"
+                             + getRepository().getUrlBase() + "/idv/colortables/"
                              + icon + ">";
                 String div = HtmlUtils.div(img + " " + colorTable.getName(),
                                            "");
