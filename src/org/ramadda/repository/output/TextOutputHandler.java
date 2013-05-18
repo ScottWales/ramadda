@@ -311,9 +311,9 @@ public class TextOutputHandler extends OutputHandler {
         head.append(
             "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
         head.append(
-            HtmlUtils.importJS(getRepository().fileUrl("/prettify.js")));
+            HtmlUtils.importJS(getRepository().fileUrl("/prettify/prettify.js")));
         head.append(
-            HtmlUtils.cssLink(getRepository().fileUrl("/prettify.css")));
+            HtmlUtils.cssLink(getRepository().fileUrl("/prettify/prettify.css")));
 
 
         sb.append(head);
