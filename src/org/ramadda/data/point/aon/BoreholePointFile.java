@@ -88,6 +88,7 @@ public class BoreholePointFile extends SingleSiteTextFile  {
     }
 
     /*
+http://www.aoncadis.org/dataset/network_of_permafrost_observatories_in_north_america_and_russia__deep_boreholes_.html
 Soil temperature  at different depths,,,,NSF projects ARC-0520578_COMMA_ ARC-0632400 and ARC 0856864,,,
 Ilu_COMMA_ Greenland,,,,PI/Data contact =Vladimir E. Romanovsky,,,
 Location: N 69.2390  W 51.0623,,,,Professor,,,

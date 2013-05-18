@@ -45,7 +45,7 @@ public  class RecordTool {
     public RecordFile doMakeRecordFile(String inFile) throws Exception {
 
         if(recordFileClass==null && getRecordFileFactory() == null) {
-            if(inFile.endsWith(".txt")) {
+            if(inFile.endsWith(".txt") || inFile.endsWith(".csv")) {
                 setRecordFileClass("org.ramadda.data.point.text.CsvFile");
             }
         }
