@@ -831,6 +831,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     entry = processFile(dirInfo, f);
                 } catch (Exception exc) {
                     logHarvesterError("Error creating entry:" + f, exc);
+                    throw exc;
                 }
                 if (entry == null) {
                     logHarvesterInfo("No entry created");

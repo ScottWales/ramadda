@@ -6846,10 +6846,15 @@ public class EntryManager extends RepositoryManager {
             metadataStmt.executeBatch();
             for (Enumeration keys = typeStatements.keys();
                     keys.hasMoreElements(); ) {
+                Object key  = keys.nextElement();
                 PreparedStatement typeStatement =
-                    (PreparedStatement) typeStatements.get(
-                        keys.nextElement());
-                typeStatement.executeBatch();
+                    (PreparedStatement) typeStatements.get(key);
+                try {
+                    typeStatement.executeBatch();
+                } catch(Exception exc) {
+                    System.err.println ("ERROR: " + key);
+                    throw exc;
+                }
             }
         }
         connection.commit();
