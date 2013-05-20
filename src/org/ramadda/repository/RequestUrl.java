@@ -143,7 +143,6 @@ public class RequestUrl {
     public String getUrlPath() {
         checkInit();
         if (needsSsl) {
-            System.err.println("https:" +getHttpsUrl());
             return getHttpsUrl();
         }
 
