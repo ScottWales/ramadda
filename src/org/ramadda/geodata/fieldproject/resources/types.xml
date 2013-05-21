@@ -58,7 +58,6 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
-     <column name="placeholder" label="dummy"/>
      <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
 
      <wiki><![CDATA[
@@ -104,7 +103,6 @@
 
 
   <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
-     <column name="placeholder" label="dummy"/>
      <column name="results" label="Results" rows="5"/>
      <column name="weather_conditions" label="Weather Conditions" rows="2"/>
      <property name="icon" value="/fieldproject/world_go.png"/>
