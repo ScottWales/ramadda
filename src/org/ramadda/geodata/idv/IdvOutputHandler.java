@@ -917,7 +917,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     IOUtil.cleanFileName(request.getString(ARG_COLORTABLE
                         + displayIdx, "")) + ".png";
                 String img = HtmlUtils.img(getRepository().getUrlBase()
-                                           + "/colortables/" + icon);
+                                           + "/idv/colortables/" + icon);
                 ctDiv = request.getString(ARG_COLORTABLE + displayIdx,
                                           "-default-") + " " + img;
 
