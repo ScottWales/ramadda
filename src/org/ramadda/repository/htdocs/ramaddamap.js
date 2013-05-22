@@ -272,7 +272,7 @@ function RepositoryMap(mapId, params) {
         this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
         this.map.addControl(new OpenLayers.Control.LayerSwitcher());
 
-        var latLonReadout = util.getDomObject(this.latlonReadout);
+        var latLonReadout = ramaddaUtil.getDomObject(this.latlonReadout);
         if(latLonReadout) {
             this.map.addControl(new OpenLayers.Control.MousePosition( {
                         numDigits : 3,
@@ -357,31 +357,31 @@ function RepositoryMap(mapId, params) {
     this.setSelection = function(argBase, doRegion, absolute) {
     	this.selectRegion = doRegion;
         this.argBase = argBase;
-        if (!util) {
+        if (!ramaddaUtil) {
             return;
         }
-        this.fldNorth = util.getDomObject(this.argBase + "_north");
+        this.fldNorth = ramaddaUtil.getDomObject(this.argBase + "_north");
         if (!this.fldNorth)
-            this.fldNorth = util.getDomObject(this.argBase + ".north");
-        this.fldSouth = util.getDomObject(this.argBase + "_south");
+            this.fldNorth = ramaddaUtil.getDomObject(this.argBase + ".north");
+        this.fldSouth = ramaddaUtil.getDomObject(this.argBase + "_south");
         if (!this.fldSouth)
-            this.fldSouth = util.getDomObject(this.argBase + ".south");
+            this.fldSouth = ramaddaUtil.getDomObject(this.argBase + ".south");
 
-        this.fldEast = util.getDomObject(this.argBase + "_east");
+        this.fldEast = ramaddaUtil.getDomObject(this.argBase + "_east");
         if (!this.fldEast)
-            this.fldEast = util.getDomObject(this.argBase + ".east");
+            this.fldEast = ramaddaUtil.getDomObject(this.argBase + ".east");
 
-        this.fldWest = util.getDomObject(this.argBase + "_west");
+        this.fldWest = ramaddaUtil.getDomObject(this.argBase + "_west");
         if (!this.fldWest)
-            this.fldWest = util.getDomObject(this.argBase + ".west");
+            this.fldWest = ramaddaUtil.getDomObject(this.argBase + ".west");
 
-        this.fldLat = util.getDomObject(this.argBase + "_latitude");
+        this.fldLat = ramaddaUtil.getDomObject(this.argBase + "_latitude");
         if (!this.fldLat)
-            this.fldLat = util.getDomObject(this.argBase + ".latitude");
+            this.fldLat = ramaddaUtil.getDomObject(this.argBase + ".latitude");
 
-        this.fldLon = util.getDomObject(this.argBase + "_longitude");
+        this.fldLon = ramaddaUtil.getDomObject(this.argBase + "_longitude");
         if (!this.fldLon)
-            this.fldLon = util.getDomObject(this.argBase + ".longitude");
+            this.fldLon = ramaddaUtil.getDomObject(this.argBase + ".longitude");
 
         if (this.fldLon) {
             this.addClickHandler(this.fldLon.id, this.fldLat.id);
@@ -537,7 +537,7 @@ function RepositoryMap(mapId, params) {
         if (theMap.selectorControl)
             return;
         theMap.selectorControl = new OpenLayers.Control();
-        OpenLayers.Util.extend(theMap.selectorControl, {
+        OpenLayers.RamaddaUtil.extend(theMap.selectorControl, {
             draw : function() {
                 // this Handler.Box will intercept the shift-mousedown
                 // before Control.MouseDefault gets to see it
@@ -801,9 +801,9 @@ function RepositoryMap(mapId, params) {
     }
 
     this.addPolygon = function(id, points, attrs) {
-        var base_style = OpenLayers.Util.extend( {},
+        var base_style = OpenLayers.RamaddaUtil.extend( {},
                 OpenLayers.Feature.Vector.style['default']);
-        var style = OpenLayers.Util.extend( {}, base_style);
+        var style = OpenLayers.RamaddaUtil.extend( {}, base_style);
         style.strokeColor = "blue";
         style.strokeWidth = 3;
         if (attrs) {
@@ -888,7 +888,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     initialize : function(options) {
-        this.handlerOptions = OpenLayers.Util.extend( {},
+        this.handlerOptions = OpenLayers.RamaddaUtil.extend( {},
                 this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.handler = new OpenLayers.Handler.Click(this, {
@@ -914,9 +914,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             this.latFldId = "latfld";
             this.zoomFldId = "zoomfld";
         }
-        lonFld = util.getDomObject(this.lonFldId);
-        latFld = util.getDomObject(this.latFldId);
-        zoomFld = util.getDomObject(this.zoomFldId);
+        lonFld = ramaddaUtil.getDomObject(this.lonFldId);
+        latFld = ramaddaUtil.getDomObject(this.latFldId);
+        zoomFld = ramaddaUtil.getDomObject(this.zoomFldId);
         if (latFld && lonFld) {
             latFld.obj.value = formatLocationValue(lonlat.lat);
             lonFld.obj.value = formatLocationValue(lonlat.lon);

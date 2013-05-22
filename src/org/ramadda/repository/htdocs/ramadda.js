@@ -115,7 +115,7 @@ function Util () {
 
 
     this.getKeyChar = function(event) {
-        event = util.getEvent(event);
+        event = ramaddaUtil.getEvent(event);
         if(event.keyCode) {
             return String.fromCharCode(event.keyCode);
         }
@@ -127,7 +127,7 @@ function Util () {
 
 
     this.print = function (s, clear) {
-        var obj = util.getDomObject("output");
+        var obj = ramaddaUtil.getDomObject("output");
         if(!obj) {
             alert('could not find print output\n'+  s);
             return;
@@ -199,7 +199,7 @@ function Util () {
 
 }
 
-util = new Util();
+ramaddaUtil = new Util();
 
 
 function HtmlUtil() {
@@ -309,7 +309,7 @@ function mouseDown(event) {
             setTimeout(callback,250);
         }
     }
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     mouseIsDown = 1;
     mouseMoveCnt =0;
     return true;
@@ -318,16 +318,16 @@ function mouseDown(event) {
 
 
 function mouseUp(event) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     mouseIsDown = 0;
     draggedEntry   = null;
-    util.setCursor('default');
-    var obj = util.getDomObject('floatdiv');
+    ramaddaUtil.setCursor('default');
+    var obj = ramaddaUtil.getDomObject('floatdiv');
     if(obj) {
-        var dragSourceObj= util.getDomObject(dragSource);
+        var dragSourceObj= ramaddaUtil.getDomObject(dragSource);
         if(dragSourceObj) {
-            var tox = util.getLeft(dragSourceObj.obj);
-            var toy = util.getTop(dragSourceObj.obj);
+            var tox = ramaddaUtil.getLeft(dragSourceObj.obj);
+            var toy = ramaddaUtil.getTop(dragSourceObj.obj);
             var fromx = parseInt(obj.style.left);
             var fromy = parseInt(obj.style.top);
             var steps = 10;
@@ -345,7 +345,7 @@ function mouseUp(event) {
 
 
 function flyBackAndHide(id, step,steps,fromx,fromy,dx,dy) {
-    var obj = util.getDomObject(id);
+    var obj = ramaddaUtil.getDomObject(id);
     if(!obj) {
         return;
     }
@@ -353,7 +353,7 @@ function flyBackAndHide(id, step,steps,fromx,fromy,dx,dy) {
     obj.style.left = fromx+dx*step+"px";
     obj.style.top = fromy+dy*step+"px";
     var opacity = 80*(steps-step)/steps;
-    //    util.print(opacity);
+    //    ramaddaUtil.print(opacity);
     //    obj.style.filter="alpha(opacity="+opacity+")";
     //    obj.style.opacity="0." + opacity;
 
@@ -367,7 +367,7 @@ function flyBackAndHide(id, step,steps,fromx,fromy,dx,dy) {
 }
 
 function finalHide(id) {
-    var obj = util.getDomObject(id);
+    var obj = ramaddaUtil.getDomObject(id);
     if(!obj) {
         return;
     }
@@ -377,15 +377,15 @@ function finalHide(id) {
 }
 
 function mouseMove(event) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     if(draggedEntry && mouseIsDown) {
         mouseMoveCnt++;
-        var obj = util.getDomObject('floatdiv');
+        var obj = ramaddaUtil.getDomObject('floatdiv');
         if(mouseMoveCnt==6) {
-            util.setCursor('move');
+            ramaddaUtil.setCursor('move');
         }
         if(mouseMoveCnt>=6&& obj) {
-            moveFloatDiv(util.getEventX(event),util.getEventY(event));
+            moveFloatDiv(ramaddaUtil.getEventX(event),ramaddaUtil.getEventY(event));
         }
     }    
     return false;
@@ -397,7 +397,7 @@ function mouseMove(event) {
 
 
 function moveFloatDiv(x,y) {
-    var obj = util.getDomObject('floatdiv');
+    var obj = ramaddaUtil.getDomObject('floatdiv');
     if(obj) {
         if(obj.style.visibility!="visible") {
             obj.style.visibility = "visible";
@@ -415,10 +415,10 @@ function moveFloatDiv(x,y) {
 
 
 function mouseOverOnEntry(event, entryId, targetId) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     if(entryId == draggedEntry) return;
     if(mouseIsDown)  {
-        var obj = util.getDomObject(targetId);
+        var obj = ramaddaUtil.getDomObject(targetId);
         if(!obj)  return;
         //       if(obj.style && obj.style.borderBottom) {
         obj.style.borderBottom="2px black solid";
@@ -427,9 +427,9 @@ function mouseOverOnEntry(event, entryId, targetId) {
 }
 
 function mouseOutOnEntry(event, entryId,targetId) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     if(entryId == draggedEntry) return;
-    var obj = util.getDomObject(targetId);
+    var obj = ramaddaUtil.getDomObject(targetId);
     if(!obj)  return;
     if(mouseIsDown)  {
         obj.style.borderBottom="";
@@ -440,7 +440,7 @@ function mouseOutOnEntry(event, entryId,targetId) {
 
 
 function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     dragSource  = sourceIconId;
     draggedEntry = entryId;
     draggedEntryName=name;
@@ -456,11 +456,11 @@ function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
 
 
 function mouseUpOnEntry(event, entryId, targetId) {
-    event = util.getEvent(event);
+    event = ramaddaUtil.getEvent(event);
     if(entryId == draggedEntry) {
         return;
     }
-    var obj = util.getDomObject(targetId);
+    var obj = ramaddaUtil.getDomObject(targetId);
     if(!obj)  {
         return;
     }
@@ -480,7 +480,7 @@ function mouseUpOnEntry(event, entryId, targetId) {
 
 
 function setImage(id,url) {
-    img = util.getDomObject(id);
+    img = ramaddaUtil.getDomObject(id);
     if(img) {
         img.obj.src  = url;
     }
@@ -499,13 +499,13 @@ function Tooltip () {
     var showDelay = 1000;
 
     this.debug = function(msg) {
-        util.print(msg);
+        ramaddaUtil.print(msg);
     }
     this.keyPressed = function (event) {
         tooltip.doHide();
         return;
         if(state==STATE_INIT) return;
-        c =util.getKeyChar(event);
+        c =ramaddaUtil.getKeyChar(event);
         if(c == '\r' && state == STATE_TIP) {
             tooltip.doHide();
         }
@@ -514,8 +514,8 @@ function Tooltip () {
     this.onMouseMove = function (event,id,linkId) {
         lastMove++;
         if(state!=STATE_INIT) return;
-        event = util.getEvent(event);
-        setTimeout("tooltip.showLink(" + lastMove+"," +util.getEventX(event)+","+ util.getEventY(event) +"," + "'" + id +"'"+  ",'" + linkId +"')", showDelay);
+        event = ramaddaUtil.getEvent(event);
+        setTimeout("tooltip.showLink(" + lastMove+"," +ramaddaUtil.getEventX(event)+","+ ramaddaUtil.getEventY(event) +"," + "'" + id +"'"+  ",'" + linkId +"')", showDelay);
     }
 
     this.onMouseOut = function (event,id,linkId) {
@@ -526,7 +526,7 @@ function Tooltip () {
 
 
     this.onMouseOver = function(event,id,linkId) {
-        event = util.getEvent(event);
+        event = ramaddaUtil.getEvent(event);
 
         if(state ==STATE_LINK && currentID && id!=currentID) {
             this.doHide();
@@ -535,7 +535,7 @@ function Tooltip () {
         }
         lastMove++;
         if(state!=STATE_INIT) return;
-        setTimeout("tooltip.showLink(" + lastMove+"," +util.getEventX(event)+","+ util.getEventY(event) +"," + "'" + id +"'"+",'" + linkId +"')", showDelay);
+        setTimeout("tooltip.showLink(" + lastMove+"," +ramaddaUtil.getEventX(event)+","+ ramaddaUtil.getEventY(event) +"," + "'" + id +"'"+",'" + linkId +"')", showDelay);
     }
 
 
@@ -549,14 +549,14 @@ function Tooltip () {
         if(state !=STATE_LINK && state!=STATE_TIP)
             return;
         state = STATE_INIT;
-        hideObject(util.getDomObject("tooltipdiv"));
+        hideObject(ramaddaUtil.getDomObject("tooltipdiv"));
     }
 
 
     this.getX = function(link,eventX) {
         if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
             return eventX-15;
-            return util.getLeft(link.obj);
+            return ramaddaUtil.getLeft(link.obj);
         } else {
             return eventX+20;
         }
@@ -564,7 +564,7 @@ function Tooltip () {
 
     this.getY = function(link,eventY) {
         if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
-            return  link.obj.offsetHeight+util.getTop(link.obj)-2;
+            return  link.obj.offsetHeight+ramaddaUtil.getTop(link.obj)-2;
         } else {
             return eventY;
         }
@@ -573,14 +573,14 @@ function Tooltip () {
 
     this.onClick  = function(event,id) {
 	state = STATE_TIP;
-        var link = util.getDomObject(id);
+        var link = ramaddaUtil.getDomObject(id);
         x = this.getX(link);
         y = this.getY(link);
-        var obj = util.getDomObject("tooltipdiv");
+        var obj = ramaddaUtil.getDomObject("tooltipdiv");
         if(!obj) return;
-        //        util.setPosition(obj, x,y);
+        //        ramaddaUtil.setPosition(obj, x,y);
         url = "${urlroot}/entry/show?entryid=" + id +"&output=metadataxml";
-	util.loadXML( url, handleTooltip,obj);
+	ramaddaUtil.loadXML( url, handleTooltip,obj);
     }
 
 
@@ -590,13 +590,13 @@ function Tooltip () {
         if(lastMove!=moveId) return;
 	if(state!=STATE_INIT) return;
         currentID = id;
-        var obj = util.getDomObject("tooltipdiv");
+        var obj = ramaddaUtil.getDomObject("tooltipdiv");
         if(!obj) return;
         state = STATE_LINK;
-        var link = util.getDomObject(linkId);
+        var link = ramaddaUtil.getDomObject(linkId);
         x = this.getX(link,x);
         y = this.getY(link,y);
-        util.setPosition(obj, x,y);
+        ramaddaUtil.setPosition(obj, x,y);
         var imgEvents = " onMouseOver=\"tooltip.onMouseOver(event,'" + id +"')\" " +
         " onMouseOut=\"tooltip.onMouseOut(event,'" + id +"')\" " +
         " onMouseMove=\"tooltip.onMouseMove(event,'" + id +"')\" " +
@@ -622,8 +622,8 @@ var keyEvent;
 
 function handleKeyPress(event) {
     keyEvent = event;
-    c =util.getKeyChar(event);
-    div = util.getDomObject("tooltipdiv");
+    c =ramaddaUtil.getKeyChar(event);
+    div = ramaddaUtil.getDomObject("tooltipdiv");
     if(!div) return;
     hideObject(div);
 }
@@ -705,15 +705,15 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
         if(event.shiftKey) {
             if(this.lastEntryRowClicked) {
-                 var pos1 = util.getTop(this.lastEntryRowClicked.cbx);
-	         var pos2 = util.getTop(entryRow.cbx);
+                 var pos1 = ramaddaUtil.getTop(this.lastEntryRowClicked.cbx);
+	         var pos2 = ramaddaUtil.getTop(entryRow.cbx);
 		 if(pos1>pos2) {
 		    var tmp = pos1;
 		    pos1 =pos2;
 		    pos2=tmp;
                  }
 		 for (i = 0; i < this.entryRows.length; i++) {
-        		var top = util.getTop(this.entryRows[i].cbx);
+        		var top = ramaddaUtil.getTop(this.entryRows[i].cbx);
 			if(top>=pos1 && top<=pos2) {
 		            this.entryRows[i].setCheckbox(value);
 			}
@@ -726,7 +726,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
     this.setVisibility = function  () {
         if(this.toggleImg) {
-	    var img = util.getDomObject(this.toggleImg);
+	    var img = ramaddaUtil.getDomObject(this.toggleImg);
             if(img) {
 		if(this.on) {
    		    img.obj.src =  icon_downdart;
@@ -737,7 +737,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
             }
         }
 
-        var form = util.getDomObject(this.formId);
+        var form = ramaddaUtil.getDomObject(this.formId);
         if(form) {
             form = form.obj;
             for(i=0;i<form.elements.length;i++) { 
@@ -753,7 +753,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
 
         for(i=0;i<this.entries.length;i++) {
-            obj = util.getDomObject(this.entries[i]);
+            obj = ramaddaUtil.getDomObject(this.entries[i]);
             if(!obj) continue;
             if(this.on) {
                 showObject(obj,"inline");
@@ -767,7 +767,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
 function entryRowCheckboxClicked(event,cbxId) {
 
-    var cbx = util.getDomObject(cbxId);
+    var cbx = ramaddaUtil.getDomObject(cbxId);
     if(!cbx) return;
     cbx = cbx.obj;
     if(!cbx.form) return;
@@ -797,8 +797,8 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     this.rowId = rowId;
     this.cbxId = cbxId;
     this.cbxWrapperId = cbxWrapperId;
-    this.cbx = util.getDomObject(cbxId);
-    this.row = util.getDomObject(rowId);
+    this.cbx = ramaddaUtil.getDomObject(cbxId);
+    this.row = ramaddaUtil.getDomObject(rowId);
     if(this.row) {
         this.row = this.row.obj;
     }
@@ -838,7 +838,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
 
 
     this.mouseOver = function(event) {
-        img = util.getDomObject("entrymenuarrow_" +rowId);
+        img = ramaddaUtil.getDomObject("entrymenuarrow_" +rowId);
         if(img) {
             img.obj.src =  icon_menuarrow;
         }
@@ -848,20 +848,20 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     }
 
     this.mouseClick = function(event) {
-        left = util.getLeft(this.row);
-        eventX = util.getEventX(event);
+        left = ramaddaUtil.getLeft(this.row);
+        eventX = ramaddaUtil.getEventX(event);
         //Don't pick up clicks on the left side
         if(eventX-left<150) return;
         var url = "${urlroot}/entry/show?entryid=" + entryId +"&output=metadataxml";
-	util.loadXML( url, this.handleTooltip,this);
+	ramaddaUtil.loadXML( url, this.handleTooltip,this);
     }
 
     this.handleTooltip = function(request,entryRow) {
         var xmlDoc=request.responseXML.documentElement;
         text = getChildText(xmlDoc);
-        div = util.getDomObject("tooltipdiv");
+        div = ramaddaUtil.getDomObject("tooltipdiv");
         if(!div) return;
-        util.setPosition(obj, util.getLeft(entryRow.row), util.getBottom(entryRow.row));
+        ramaddaUtil.setPosition(obj, ramaddaUtil.getLeft(entryRow.row), ramaddaUtil.getBottom(entryRow.row));
 
         div.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>";
 
@@ -873,7 +873,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
 
 
     this.mouseOut = function(event) {
-        img = util.getDomObject("entrymenuarrow_" +rowId);
+        img = ramaddaUtil.getDomObject("entrymenuarrow_" +rowId);
         if(img) {
             img.obj.src =  icon_blank;
         }
@@ -919,7 +919,7 @@ function xxxcheckTabs(html) {
 
 
 function hideEntryPopup() {
-    hideObject(util.getDomObject("tooltipdiv"));
+    hideObject(ramaddaUtil.getDomObject("tooltipdiv"));
 }
 
 function findEntryRow(rowId) {
@@ -963,7 +963,7 @@ var lastCbxClicked;
 
 function checkboxClicked(event, cbxPrefix, id) {
     if(!event) return;
-    var cbx = util.getDomObject(id);
+    var cbx = ramaddaUtil.getDomObject(id);
     if(!cbx) return;
     cbx = cbx.obj;
 
@@ -987,15 +987,15 @@ function checkboxClicked(event, cbxPrefix, id) {
 
     if(event.shiftKey) {
         if(lastCbxClicked) {
-	    var pos1 = util.getTop(cbx);
-	    var pos2 = util.getTop(lastCbxClicked);
+	    var pos1 = ramaddaUtil.getTop(cbx);
+	    var pos2 = ramaddaUtil.getTop(lastCbxClicked);
 	    if(pos1>pos2) {
 		var tmp = pos1;
 		pos1 =pos2;
 		pos2=tmp;
 	    }
 	    for (i = 0; i < checkBoxes.length; i++) {
-		var top = util.getTop(checkBoxes[i]);
+		var top = ramaddaUtil.getTop(checkBoxes[i]);
 		if(top>=pos1 && top<=pos2) {
 	                checkBoxes[i].checked = value;
 		}
@@ -1012,7 +1012,7 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
-    var img = util.getDomObject(imgid);
+    var img = ramaddaUtil.getDomObject(imgid);
     if(toggleVisibility(id,'block')) {
         if(img) img.obj.src = showimg;
     } else {
@@ -1023,7 +1023,7 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
 
 
 function toggleInlineVisibility(id, imgid, showimg, hideimg) {
-    var img = util.getDomObject(imgid);
+    var img = ramaddaUtil.getDomObject(imgid);
     if(toggleVisibility(id,'inline')) {
         if(img) img.obj.src = showimg;
     } else {
@@ -1043,23 +1043,23 @@ var changeImages = new Array();
 
 function folderClick(uid, url, changeImg) {
     changeImages[uid] = changeImg;
-    var block = util.getDomObject('block_'+uid);
+    var block = ramaddaUtil.getDomObject('block_'+uid);
     if(!block) {
-	block = util.getDomObject(uid);    
+	block = ramaddaUtil.getDomObject(uid);    
     }
 
     if(!block) {
 //        alert("no block " + uid);
 	return;
     }
-    var img = util.getDomObject("img_" +uid);
+    var img = ramaddaUtil.getDomObject("img_" +uid);
     if(!block.obj.isOpen) {
 	originalImages[uid] = img.obj.src;
         block.obj.isOpen = 1;
         //        Effect.SlideDown(block.obj.id, {'duration' : 0.4});
         showObject(block);
         if(img) img.obj.src = icon_progress;
-	util.loadXML( url, handleFolderList,uid);
+	ramaddaUtil.loadXML( url, handleFolderList,uid);
     } else {
 	if(changeImg && img) {
             if(originalImages[uid]) {
@@ -1076,11 +1076,11 @@ function folderClick(uid, url, changeImg) {
 
 
 function  handleFolderList(request, uid) {
-    var block = util.getDomObject('block_'+uid);
+    var block = ramaddaUtil.getDomObject('block_'+uid);
     if(!block) {
-	block = util.getDomObject(uid);    
+	block = ramaddaUtil.getDomObject(uid);    
     }
-    var img = util.getDomObject("img_" +uid);
+    var img = ramaddaUtil.getDomObject("img_" +uid);
     if(request.responseXML!=null) {
         var xmlDoc=request.responseXML.documentElement;
 	var script;
@@ -1117,7 +1117,7 @@ function  handleFolderList(request, uid) {
 }
 
 function scrollObject(id,cnt,lastHeight) {
-    var block = util.getDomObject(id);
+    var block = ramaddaUtil.getDomObject(id);
     cnt--;
     if(cnt>0) {
           block.style.maxHeight=parseInt(block.style.maxHeight)+20;
@@ -1140,12 +1140,12 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.localeId = localeId;
     this.allEntries = allEntries;
     this.selecttype = selecttype;
-    this.textComp = util.getDomObject(this.elementId);
+    this.textComp = ramaddaUtil.getDomObject(this.elementId);
      if (!this.textComp) {
 //	alert("cannot find text comp " + this.elementId);
 	return false;
     }
-    this.hiddenComp = util.getDomObject(this.elementId+"_hidden");
+    this.hiddenComp = ramaddaUtil.getDomObject(this.elementId+"_hidden");
 
     this.clearInput = function() {
 	if(this.hiddenComp) {
@@ -1158,30 +1158,30 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 
     this.handleClick = function(event) {
-        event = util.getEvent(event);
-        x = util.getEventX(event);
-        y = util.getEventY(event);
+        event = ramaddaUtil.getEvent(event);
+        x = ramaddaUtil.getEventX(event);
+        y = ramaddaUtil.getEventY(event);
 
-        var link = util.getDomObject(this.id+'.selectlink');
+        var link = ramaddaUtil.getDomObject(this.id+'.selectlink');
         if(!link) {
         //Don:  alert('Selector.handleClick can't find link'):
             return false;
         }
-        this.div = util.getDomObject('selectdiv');
+        this.div = ramaddaUtil.getDomObject('selectdiv');
         if(!this.div) {
         //Don:  alert('Selector.handleClick can't find div'):
             return false;
         }
 
         if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
-            x= util.getLeft(link.obj);
-            y = link.obj.offsetHeight+util.getTop(link.obj) + 2;
+            x= ramaddaUtil.getLeft(link.obj);
+            y = link.obj.offsetHeight+ramaddaUtil.getTop(link.obj) + 2;
         } else {
             x+=20;
         }
         
         hidePopupObject();
-        util.setPosition(this.div, x+10,y);
+        ramaddaUtil.setPosition(this.div, x+10,y);
         //        popupObject = this.div;
         //        popupSrcId = "";
         showObject(this.div);
@@ -1190,7 +1190,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
             url = url+"&localeid=" + localeId;
         }
         //Don:  alert('loading url '):
-        util.loadXML( url, handleSelect,this.id);
+        ramaddaUtil.loadXML( url, handleSelect,this.id);
         return false;
     }
     this.handleClick(event);
@@ -1199,7 +1199,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 
 function insertText(id,value) {
-    var textComp = util.getDomObject(id);
+    var textComp = ramaddaUtil.getDomObject(id);
     if(textComp) {
 	insertAtCursor(textComp.obj, value);
     }
@@ -1227,7 +1227,7 @@ function selectClick(id,entryId,value) {
 }
 
 function selectCancel() {
-    var div = util.getDomObject('selectdiv');
+    var div = ramaddaUtil.getDomObject('selectdiv');
     if(!div)return false;
     hideObject(div);
 }
@@ -1256,8 +1256,8 @@ function clearSelect(id) {
         selector.clearInput();
     } else {
         //In case the user never clicked select
-        var textComp = util.getDomObject(id);
-        var hiddenComp = util.getDomObject(id+"_hidden");
+        var textComp = ramaddaUtil.getDomObject(id);
+        var hiddenComp = ramaddaUtil.getDomObject(id+"_hidden");
 	if(hiddenComp) {
             hiddenComp.obj.value =""
         }
@@ -1291,7 +1291,7 @@ function  getChildText(node) {
 
 function toggleVisibility(id,style) {
     if(!style) style='block';
-    var obj = util.getDomObject(id);
+    var obj = ramaddaUtil.getDomObject(id);
     return toggleVisibilityOnObject(obj,style);
 }
 
@@ -1301,29 +1301,29 @@ function hide(id) {
 }
 
 function hideElementById(id) {
-    hideObject(util.getDomObject(id));
+    hideObject(ramaddaUtil.getDomObject(id));
 }
 
 function setFormValue(id, value) {
-    var obj = util.getDomObject(id);
+    var obj = ramaddaUtil.getDomObject(id);
     obj.obj.value   = value;
 }
 
 
 function setHtml(id, html) {
-    var obj = util.getDomObject(id);
+    var obj = ramaddaUtil.getDomObject(id);
     obj.obj.innerHTML = html;
 }
 
 function showAjaxPopup(event,srcId,url) {
-    util.loadXML(url, handleAjaxPopup,srcId);
+    ramaddaUtil.loadXML(url, handleAjaxPopup,srcId);
 }
 
 function handleAjaxPopup(request, srcId) {
     var xmlDoc=request.responseXML.documentElement;
     text = getChildText(xmlDoc);
-    var srcObj = util.getDomObject(srcId);
-    var obj = util.getDomObject("tooltipdiv");
+    var srcObj = ramaddaUtil.getDomObject(srcId);
+    var obj = ramaddaUtil.getDomObject("tooltipdiv");
     obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
     checkTabs(text);
     showObject(obj);
@@ -1350,8 +1350,8 @@ function showPopup(event, srcId, popupId, alignLeft) {
 
     popupTime = new Date();
     hidePopupObject();
-    var popup = util.getDomObject(popupId);
-    var srcObj = util.getDomObject(srcId);
+    var popup = ramaddaUtil.getDomObject(popupId);
+    var srcObj = ramaddaUtil.getDomObject(srcId);
     if(!popup || !srcObj) return;
     popupObject = popup;
     popupSrcId = srcId;
@@ -1376,32 +1376,32 @@ function showPopup(event, srcId, popupId, alignLeft) {
 
 
 function showStickyPopup(event, srcId, popupId, alignLeft) {
-    var popup = util.getDomObject(popupId);
-    var srcObj = util.getDomObject(srcId);
+    var popup = ramaddaUtil.getDomObject(popupId);
+    var srcObj = ramaddaUtil.getDomObject(srcId);
     if(!popup || !srcObj) return;
-    event = util.getEvent(event);
-    x = util.getEventX(event);
-    y = util.getEventY(event);
+    event = ramaddaUtil.getEvent(event);
+    x = ramaddaUtil.getEventX(event);
+    y = ramaddaUtil.getEventY(event);
     if(srcObj.obj.offsetLeft && srcObj.obj.offsetWidth) {
-        x = util.getLeft(srcObj.obj);
-        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
+        x = ramaddaUtil.getLeft(srcObj.obj);
+        y = srcObj.obj.offsetHeight+ramaddaUtil.getTop(srcObj.obj) + 2;
     } 
 
     if(alignLeft) {
-        x = util.getLeft(srcObj.obj);
-        y = srcObj.obj.offsetHeight+util.getTop(srcObj.obj) + 2;
+        x = ramaddaUtil.getLeft(srcObj.obj);
+        y = srcObj.obj.offsetHeight+ramaddaUtil.getTop(srcObj.obj) + 2;
     } else {
         x+=2;
         x+=3;
     }
 
     showObject(popup);
-    util.setPosition(popup, x,y);
+    ramaddaUtil.setPosition(popup, x,y);
 }
 
 
 function show(id) {
-    showObject(util.getDomObject(id));
+    showObject(ramaddaUtil.getDomObject(id));
 }
 
 function hideObject(obj) {
@@ -1409,7 +1409,7 @@ function hideObject(obj) {
         return 0;
     }
 
-    var style = util.getStyle(obj);
+    var style = ramaddaUtil.getStyle(obj);
     if(!style) {
         return 0;
     }
@@ -1420,16 +1420,16 @@ function hideObject(obj) {
 
 
 function hideMore(base) {
-    var link = util.getDomObject("morelink_" + base);
-    var div = util.getDomObject("morediv_" + base);
+    var link = ramaddaUtil.getDomObject("morelink_" + base);
+    var div = ramaddaUtil.getDomObject("morediv_" + base);
     hideObject(div);
     showObject(link);
 }
 
 
 function showMore(base) {
-    var link = util.getDomObject("morelink_" + base);
-    var div = util.getDomObject("morediv_" + base);
+    var link = ramaddaUtil.getDomObject("morelink_" + base);
+    var div = ramaddaUtil.getDomObject("morediv_" + base);
     hideObject(link);
     showObject(div);
 }
@@ -1440,7 +1440,7 @@ function showMore(base) {
 function showObject(obj, display) {
     if(!obj) return 0;
     if(!display) display = "block";
-    var style = util.getStyle(obj);
+    var style = ramaddaUtil.getStyle(obj);
     if(!style) {
         //        alert("no style");
         return 0;
@@ -1475,7 +1475,7 @@ function findFormElement(form, id) {
     if(form) {
         if(form[id]) return form[id];
     }
-    obj = util.getDomObject(id);
+    obj = ramaddaUtil.getDomObject(id);
     if(obj) return obj.obj;
     return null;
 }
@@ -1507,9 +1507,9 @@ function Tab(ids) {
 
     for(i=0;i<ids.length;i++) {
         var contentId  = 'content_'+ids[i];
-        var content = util.getDomObject(contentId);
+        var content = ramaddaUtil.getDomObject(contentId);
         var titleId  = 'title_'+ids[i];
-        var title = util.getDomObject(titleId);
+        var title = ramaddaUtil.getDomObject(titleId);
         if(i==0) {
             this.onStyle = title.style;
             if(title.style.backgroundColor) {
@@ -1529,9 +1529,9 @@ function toggleTab(mainId) {
     var mainContentId = 'content_' + mainId;
     for(i=0;i<this.ids.length;i++) {
 	var contentId  = 'content_'+this.ids[i];
-        var content = util.getDomObject(contentId);
+        var content = ramaddaUtil.getDomObject(contentId);
 	var titleId  = 'title_'+this.ids[i];
-	var title = util.getDomObject(titleId);
+	var title = ramaddaUtil.getDomObject(titleId);
         if(!content) {
             continue;
         }
@@ -1580,7 +1580,7 @@ function insertAtCursor(myField, myValue) {
 
 
 function insertTags(id, tagOpen, tagClose, sampleText) {
-    var textComp = util.getDomObject(id);
+    var textComp = ramaddaUtil.getDomObject(id);
     if(textComp) {
 	insertTagsInner(textComp.obj, tagOpen,tagClose,sampleText);
     }
