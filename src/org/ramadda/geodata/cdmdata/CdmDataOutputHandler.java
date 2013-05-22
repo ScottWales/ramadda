@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -45,9 +45,9 @@ import org.jfree.ui.RectangleInsets;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
+import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
-import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.Service;
 import org.ramadda.repository.auth.AccessException;
@@ -55,28 +55,31 @@ import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapProperties;
-import org.ramadda.repository.metadata.ContentMetadataHandler;
-import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputHandler.State;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.TempDir;
 
 import org.w3c.dom.Element;
 
-import thredds.server.ncSubset.GridPointWriter;
-import thredds.server.ncSubset.QueryParams;
+import thredds.server.ncSubset.exception
+    .VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.format.SupportedFormat;
+import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.util.NcssRequestUtils;
+import thredds.server.ncSubset.view.PointDataStream;
 import thredds.server.opendap.GuardedDatasetImpl;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.Range;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
@@ -84,6 +87,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
+import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.ft.FeatureCollection;
@@ -93,15 +97,15 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.util.DiskCache2;
 
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.GuiUtils;
@@ -128,9 +132,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
@@ -185,6 +191,9 @@ public class CdmDataOutputHandler extends OutputHandler {
 
     /** format */
     public static final String ARG_IMAGE_HEIGHT = "image_height";
+
+    /** calendar */
+    public static final String ARG_CALENDAR = "calendar";
 
     /** spatial arguments */
     private static final String[] SPATIALARGS = new String[] { ARG_AREA_NORTH,
@@ -267,9 +276,9 @@ public class CdmDataOutputHandler extends OutputHandler {
 
     /** Radar map Output Type */
     public static final OutputType OUTPUT_RADAR_MAP =
-            new OutputType("Show radar on Map", "data.radar.map",
-                    OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                    ICON_MAP, GROUP_DATA);
+        new OutputType("Show radar on Map", "data.radar.map",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       ICON_MAP, GROUP_DATA);
 
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
@@ -590,7 +599,8 @@ public class CdmDataOutputHandler extends OutputHandler {
                 getEntryManager().addInitialMetadata(request, entries, false,
                         request.get(ARG_SHORT, false));
                 getEntryManager().updateEntries(request, entries);
-                sb.append(getPageHandler().showDialogNote("Properties added"));
+                sb.append(
+                    getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
                         request, entry, false, false));
@@ -705,15 +715,20 @@ public class CdmDataOutputHandler extends OutputHandler {
                 request.getLatOrLonValue(
                     ARG_LOCATION + ".longitude", deflon));
         }
-        double levelVal   = request.get(ARG_LEVEL, Double.NaN);
+        double         levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
-        int    timeStride = 1;
-        Date[] dates      = new Date[] { request.defined(ARG_FROMDATE)
-                                         ? request.getDate(ARG_FROMDATE, null)
-                                         : null,
-                                         request.defined(ARG_TODATE)
-                                         ? request.getDate(ARG_TODATE, null)
-                                         : null };
+        int            timeStride = 1;
+        CalendarDate[] dates      = new CalendarDate[2];
+        Calendar       cal        = null;
+        String         calString  = request.getString(ARG_CALENDAR, null);
+        if (request.defined(ARG_FROMDATE)) {
+            String fromDateString = request.getString(ARG_FROMDATE, null);
+            dates[0] = CalendarDate.parseISOformat(calString, fromDateString);
+        }
+        if (request.defined(ARG_TODATE)) {
+            String toDateString = request.getString(ARG_TODATE, null);
+            dates[1] = CalendarDate.parseISOformat(calString, toDateString);
+        }
         //have to have both dates
         if ((dates[0] != null) && (dates[1] == null)) {
             dates[0] = null;
@@ -723,7 +738,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
 
         if ((dates[0] != null) && (dates[1] != null)
-                && (dates[0].getTime() > dates[1].getTime())) {
+                && (dates[0].isAfter(dates[1]))) {
             sb.append(
                 getPageHandler().showDialogWarning(
                     "From date is after to date"));
@@ -732,48 +747,63 @@ public class CdmDataOutputHandler extends OutputHandler {
                 getPageHandler().showDialogWarning("No variables selected"));
         } else {
             //                System.err.println ("varNames:" + varNames);
-
-            QueryParams qp = new QueryParams();
-            String format  = request.getString(ARG_FORMAT, QueryParams.NETCDF);
-            qp.acceptType = (format.equals(FORMAT_TIMESERIES_CHART)
-                             || format.equals(FORMAT_TIMESERIES_IMAGE))
-                            ? QueryParams.CSV
-                            : format;
-
-            qp.vars           = varNames;
-
-            qp.hasLatlonPoint = true;
-            qp.lat            = llp.getLatitude();
-            qp.lon            = llp.getLongitude();
-
+            // modelled after thredds.server.ncSubset.controller.PointDataController
+            String format =
+                request.getString(
+                    ARG_FORMAT,
+                    SupportedFormat.NETCDF3.getResponseContentType());
+            SupportedFormat sf = getSupportedFormat(format);
+            if (format.equals(FORMAT_TIMESERIES_CHART)
+                    || format.equals(FORMAT_TIMESERIES_IMAGE)) {
+                sf = SupportedFormat.CSV;
+            }
+            PointDataRequestParamsBean pdrb =
+                new PointDataRequestParamsBean();
+            GridAsPointDataset gapds =
+                NcssRequestUtils.buildGridAsPointDataset(gds, varNames);
+            pdrb.setVar(varNames);
+            pdrb.setAccept((format.equals(FORMAT_TIMESERIES_CHART)
+                            || format.equals(FORMAT_TIMESERIES_IMAGE))
+                           ? SupportedFormat.CSV.getResponseContentType()
+                           : format);
+            pdrb.setPoint(true);
+            pdrb.setLatitude(llp.getLatitude());
+            pdrb.setLongitude(llp.getLongitude());
             if (dates[0] != null) {
-                qp.time_start = new DateType(false, dates[0]);
+                pdrb.setTime_start(dates[0].toString());
                 if (dates[1] != null) {
-                    qp.time_end     = new DateType(false, dates[1]);
-                    qp.hasDateRange = true;
+                    pdrb.setTime_end(dates[1].toString());
                 } else {
-                    qp.hasTimePoint = true;
-                    qp.hasDateRange = false;
-                    qp.time         = qp.time_start;
+                    pdrb.setTime(pdrb.getTime_start());
                 }
+            } else {  // dates weren't specified
+                List<CalendarDate> allDates = gapds.getDates();
+                dates[0] = allDates.get(0);
+                dates[1] = allDates.get(allDates.size() - 1);
+                pdrb.setTemporal("all");
             }
             if (levelVal == levelVal) {
-                qp.hasVerticalCoord = true;
-                qp.vertCoord        = levelVal;
+                pdrb.setVertCoord(levelVal);
             }
+            Map<String, List<String>> groupVars = groupVarsByVertLevels(gds,
+                                                      pdrb);
+
             String suffix = ".nc";
-            if (qp.acceptType.equals(QueryParams.CSV)
-                    || format.equals(FORMAT_TIMESERIES_CHART_DATA)
-                    || format.equals(FORMAT_TIMESERIES_IMAGE)) {
+            if (pdrb.getAccept()
+                    .equals(SupportedFormat.CSV
+                        .getResponseContentType()) || format
+                            .equals(FORMAT_TIMESERIES_CHART_DATA) || format
+                            .equals(FORMAT_TIMESERIES_IMAGE)) {
                 suffix = ".csv";
-            } else if (qp.acceptType.equals(QueryParams.XML)) {
+            } else if (pdrb.getAccept().equals(
+                    SupportedFormat.XML.getResponseContentType())) {
                 suffix = ".xml";
             }
 
             String baseName = IOUtil.stripExtension(entry.getName());
             if (format.equals(FORMAT_TIMESERIES_CHART)) {
-                StringBuffer buf           = new StringBuffer();
-                String       chartTemplate =
+                StringBuffer buf = new StringBuffer();
+                String chartTemplate =
                     getRepository().getResource(
                         "/org/ramadda/repository/resources/chart/dycharts.html");
                 chartTemplate = chartTemplate.replaceAll("\\$\\{urlroot\\}",
@@ -787,7 +817,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 chartTemplate = chartTemplate.replace("${title}", title);
                 StringBuffer vizsb =
                     new StringBuffer("visibility: [false, false");
-                if (qp.hasVerticalCoord) {
+                if (pdrb.getVertCoord() != null) {
                     vizsb.append(", false");
                 }
                 for (int var = 0; var < varNames.size(); var++) {
@@ -798,7 +828,8 @@ public class CdmDataOutputHandler extends OutputHandler {
                         vizsb.toString());
 
                 String html = chartTemplate;
-                request.put(ARG_FORMAT, QueryParams.CSV);
+                request.put(ARG_FORMAT,
+                            SupportedFormat.CSV.getResponseContentType());
                 String dataUrl = request.getRequestPath() + "/" + baseName
                                  + suffix + "?" + request.getUrlArgs();
                 html = html.replace("${dataurl}", dataUrl);
@@ -811,22 +842,29 @@ public class CdmDataOutputHandler extends OutputHandler {
             File tmpFile = getStorageManager().getTmpFile(request,
                                "pointsubset" + suffix);
 
-            GridPointWriter writer =
-                new GridPointWriter(gds,
-                                    new DiskCache2(getRepository()
-                                        .getStorageManager().getScratchDir()
-                                        .getDir().toString(), false, 0, 0));
             OutputStream outStream =
-                (qp.acceptType.equals(QueryParams.NETCDF))
-                ? System.out
-                : getStorageManager().getUncheckedFileOutputStream(tmpFile);
+                getStorageManager().getUncheckedFileOutputStream(tmpFile);
+            PointDataStream pds = PointDataStream.createPointDataStream(sf,
+                                      outStream);
+            List<CalendarDate> wantedDates =
+                NcssRequestUtils.wantedDates(gapds,
+                                             CalendarDateRange.of(dates[0],
+                                                 dates[1]), 0);
 
-            PrintWriter pw = new PrintWriter(outStream);
-            File        f  = writer.write(qp, pw);
-            if (f == null) {
+            boolean allWritten = false;
+            allWritten = pds.stream(gds, llp, wantedDates, groupVars,
+                                    pdrb.getVertCoord());
+
+            File f = null;
+            if (allWritten) {
                 outStream.close();
                 f = tmpFile;
+
+            } else {
+                //Something went wrong...
+                System.err.println("something went wrong");
             }
+
             if (doingPublish(request)) {
                 return getEntryManager().processEntryPublish(request, f,
                         (Entry) entry.clone(), entry, "point series of");
@@ -837,7 +875,7 @@ public class CdmDataOutputHandler extends OutputHandler {
             } else {
                 result =
                     new Result(getStorageManager().getFileInputStream(f),
-                               qp.acceptType);
+                               pdrb.getAccept());
                 //Set return filename sets the Content-Disposition http header so the browser saves the file
                 //with the correct name and suffix
                 result.setReturnFilename(baseName + "_pointsubset" + suffix);
@@ -847,6 +885,71 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
 
         return new Result("", sb);
+    }
+
+
+    /**
+     * Get the SupportedFormat from the name
+     * @param name
+     * @return the corresponding format
+     */
+    private SupportedFormat getSupportedFormat(String name) {
+        for (SupportedFormat sf : SupportedFormat.values()) {
+            List<String> aliases = sf.getAliases();
+            if (aliases.contains(name)) {
+                return sf;
+            }
+        }
+
+        // default to netCDF 3
+        return SupportedFormat.NETCDF3;
+    }
+
+    /**
+     * Group the variables by level.  Copied from  thredds.server.ncSubset.controller.PointDataController
+     * @param gds   GridDataSet
+     * @param params list of parameter names
+     * @return map by levels
+     * @throws VariableNotContainedInDatasetException
+     */
+    private Map<String, List<String>> groupVarsByVertLevels(GridDataset gds,
+            PointDataRequestParamsBean params)
+            throws VariableNotContainedInDatasetException {
+        String       no_vert_levels = "no_vert_level";
+        List<String> vars           = params.getVar();
+        Map<String, List<String>> varsGroupsByLevels = new HashMap<String,
+                                                           List<String>>();
+
+        for (String var : vars) {
+            GridDatatype grid = gds.findGridDatatype(var);
+
+            //Variables should have been checked before...  
+            if (grid == null) {
+                throw new VariableNotContainedInDatasetException("Variable: "
+                        + var + " is not contained in the requested dataset");
+            }
+
+
+            CoordinateAxis1D axis =
+                grid.getCoordinateSystem().getVerticalAxis();
+
+            String axisKey = null;
+            if (axis == null) {
+                axisKey = no_vert_levels;
+            } else {
+                axisKey = axis.getShortName();
+            }
+
+            if (varsGroupsByLevels.containsKey(axisKey)) {
+                varsGroupsByLevels.get(axisKey).add(var);
+            } else {
+                List<String> varListForVerlLevel = new ArrayList<String>();
+                varListForVerlLevel.add(var);
+                varsGroupsByLevels.put(axisKey, varListForVerlLevel);
+            }
+        }
+
+        return varsGroupsByLevels;
     }
 
 
@@ -884,16 +987,13 @@ public class CdmDataOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
 
+        List<CalendarDate> dates = getGridDates(dataset);
 
+        StringBuffer       varSB = getVariableForm(dataset, true);
 
-        Date[]       dateRange = null;
-        List<Date>   dates     = getGridDates(dataset);
-
-        StringBuffer varSB     = getVariableForm(dataset, true);
-
-        LatLonRect   llr       = dataset.getBoundingBox();
-        String       lat       = "";
-        String       lon       = "";
+        LatLonRect         llr   = dataset.getBoundingBox();
+        String             lat   = "";
+        String             lon   = "";
         if (llr != null) {
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
@@ -905,33 +1005,27 @@ public class CdmDataOutputHandler extends OutputHandler {
                 lon });
         sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
 
-        if ((dates != null) && (dates.size() > 0)) {
-            List formattedDates = new ArrayList();
-            formattedDates.add(new TwoFacedObject("---", ""));
-            for (Date date : dates) {
-                formattedDates.add(getPageHandler().formatDate(request, date));
-            }
-            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate   = request.getUnsafeString(ARG_TODATE, "");
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Time Range"),
-                    HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(iconUrl(ICON_ARROW))
-                    + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
-        }
-        List formats = Misc.toList(new Object[] {
-                           new TwoFacedObject("NetCDF", QueryParams.NETCDF),
-                           new TwoFacedObject("XML", QueryParams.XML),
-                           new TwoFacedObject("Time Series Image",
-                               FORMAT_TIMESERIES),
-        // Comment out until it works better to handled dates
-        //new TwoFacedObject("Interactive Time Series",
-        //                   FORMAT_TIMESERIES_CHART),
-        new TwoFacedObject("Comma Separated Values (CSV)",
-                           QueryParams.CSV) });
+        addTimeWidget(request, dates, sb);
 
-        String format = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+        List formats = Misc.toList(new Object[] {
+            new TwoFacedObject(
+                "NetCDF3", SupportedFormat.NETCDF3.getResponseContentType()),
+            // requires JNI
+            //new TwoFacedObject(
+            //    "NetCDF4", SupportedFormat.NETCDF4.getResponseContentType()),
+            new TwoFacedObject("XML",
+                               SupportedFormat.XML.getResponseContentType()),
+            new TwoFacedObject("Time Series Image", FORMAT_TIMESERIES),
+            new TwoFacedObject("Comma Separated Values (CSV)",
+                               SupportedFormat.CSV.getResponseContentType()),
+            // Comment out until it works better to handled dates
+            //new TwoFacedObject("Interactive Time Series",
+            //                   FORMAT_TIMESERIES_CHART),
+        });
+
+        String format = request.getString(
+                            ARG_FORMAT,
+                            SupportedFormat.NETCDF3.getResponseContentType());
 
         sb.append(HtmlUtils.formEntry(msgLabel("Format"),
                                       HtmlUtils.select(ARG_FORMAT, formats,
@@ -963,11 +1057,11 @@ public class CdmDataOutputHandler extends OutputHandler {
      *
      * @return  the dates or null
      */
-    private List<Date> getGridDates(GridDataset dataset) {
-        List<Date>                 gridDates = null;
-        List<GridDatatype>         grids     = dataset.getGrids();
-        HashSet<Date>              dateHash  = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes  =
+    public static List<CalendarDate> getGridDates(GridDataset dataset) {
+        List<CalendarDate>    gridDates = null;
+        List<GridDatatype>    grids     = dataset.getGrids();
+        HashSet<CalendarDate> dateHash  = new HashSet<CalendarDate>();
+        List<CoordinateAxis1DTime> timeAxes =
             new ArrayList<CoordinateAxis1DTime>();
 
         for (GridDatatype grid : grids) {
@@ -976,15 +1070,15 @@ public class CdmDataOutputHandler extends OutputHandler {
             if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
                 timeAxes.add(timeAxis);
 
-                Date[] timeDates = timeAxis.getTimeDates();
-                for (Date timeDate : timeDates) {
+                List<CalendarDate> timeDates = timeAxis.getCalendarDates();
+                for (CalendarDate timeDate : timeDates) {
                     dateHash.add(timeDate);
                 }
             }
         }
         if ( !dateHash.isEmpty()) {
-            gridDates =
-                Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
+            gridDates = Arrays.asList(
+                dateHash.toArray(new CalendarDate[dateHash.size()]));
             Collections.sort(gridDates);
         }
 
@@ -1009,7 +1103,7 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
-            String call  =
+            String call =
                 HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
                                HtmlUtils.call("checkboxClicked",
                                    HtmlUtils.comma("event",
@@ -1072,7 +1166,9 @@ public class CdmDataOutputHandler extends OutputHandler {
      */
     public Result outputGridAsPoint(Request request, Entry entry)
             throws Exception {
-        String format   = request.getString(ARG_FORMAT, QueryParams.NETCDF);
+        String format = request.getString(
+                            ARG_FORMAT,
+                            SupportedFormat.NETCDF3.getResponseContentType());
         String baseName = IOUtil.stripExtension(entry.getName());
         if (format.equals(FORMAT_TIMESERIES)) {
             request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
@@ -1127,8 +1223,19 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         OutputType   output = request.getOutput();
         if (output.equals(OUTPUT_GRIDSUBSET)) {
-            List      varNames = new ArrayList();
-            Hashtable args     = request.getArgs();
+            String format = request.getString(ARG_FORMAT,
+                                NetcdfFileWriter.Version.netcdf3.toString());
+            // There's gotta be a better way to do this
+            NetcdfFileWriter.Version ncVersion =
+                NetcdfFileWriter.Version.netcdf3;
+            for (NetcdfFileWriter.Version ver :
+                    NetcdfFileWriter.Version.values()) {
+                if (format.equals(ver.toString())) {
+                    ncVersion = ver;
+                }
+            }
+            List<String> varNames = new ArrayList<String>();
+            Hashtable    args     = request.getArgs();
             for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
                 String arg = (String) keys.nextElement();
                 if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
@@ -1166,16 +1273,23 @@ public class CdmDataOutputHandler extends OutputHandler {
                                     ARG_AREA_EAST, 180.0)));
                 //                System.err.println("llr:" + llr);
             }
-            int     hStride       = request.get(ARG_HSTRIDE, 1);
-            int     zStride       = 1;
-            boolean includeLatLon = request.get(ARG_ADDLATLON, false);
-            int     timeStride    = 1;
-            Date[]  dates = new Date[] { request.defined(ARG_FROMDATE)
-                                         ? request.getDate(ARG_FROMDATE, null)
-                                         : null,
-                                         request.defined(ARG_TODATE)
-                                         ? request.getDate(ARG_TODATE, null)
-                                         : null };
+            int            hStride       = request.get(ARG_HSTRIDE, 1);
+            Range          zStride       = null;
+            boolean        includeLatLon = request.get(ARG_ADDLATLON, false);
+            int            timeStride    = 1;
+            CalendarDate[] dates         = new CalendarDate[2];
+            Calendar       cal           = null;
+            String         calString = request.getString(ARG_CALENDAR, null);
+            if (request.defined(ARG_FROMDATE)) {
+                String fromDateString = request.getString(ARG_FROMDATE, null);
+                dates[0] = CalendarDate.parseISOformat(calString,
+                        fromDateString);
+            }
+            if (request.defined(ARG_TODATE)) {
+                String toDateString = request.getString(ARG_TODATE, null);
+                dates[1] = CalendarDate.parseISOformat(calString,
+                        toDateString);
+            }
             //have to have both dates
             if ((dates[0] != null) && (dates[1] == null)) {
                 dates[0] = null;
@@ -1184,7 +1298,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 dates[1] = null;
             }
             if ((dates[0] != null) && (dates[1] != null)
-                    && (dates[0].getTime() > dates[1].getTime())) {
+                    && (dates[0].isAfter(dates[1]))) {
                 sb.append(
                     getPageHandler().showDialogWarning(
                         "From date is after to date"));
@@ -1194,16 +1308,16 @@ public class CdmDataOutputHandler extends OutputHandler {
                         "No variables selected"));
             } else {
                 NetcdfCFWriter writer = new NetcdfCFWriter();
-                File           f      =
+                File f =
                     getRepository().getStorageManager().getTmpFile(request,
-                        "subset.nc");
+                        "subset" + ncVersion.getSuffix());
                 GridDataset gds = getCdmManager().getGridDataset(entry, path);
-                writer.makeFile(f.toString(), gds, varNames, llr,
-                                ((dates[0] == null)
-                                 ? null
-                                 : CalendarDateRange.of(dates[0],
-                                 dates[1])), includeLatLon, hStride, zStride,
-                                             timeStride);
+                writer.makeFile(f.toString(), gds, varNames, llr, hStride,
+                                zStride, ((dates[0] == null)
+                                          ? null
+                                          : CalendarDateRange.of(dates[0],
+                                          dates[1])), timeStride,
+                                              includeLatLon, ncVersion);
                 getCdmManager().returnGridDataset(path, gds);
 
                 if (doingPublish(request)) {
@@ -1217,16 +1331,17 @@ public class CdmDataOutputHandler extends OutputHandler {
                 }
 
                 Result result =
-                    new Result(entry.getName() + ".nc",
+                    new Result(entry.getName() + ncVersion.getSuffix(),
                                getStorageManager().getFileInputStream(f),
                                "application/x-netcdf");
-                result.setReturnFilename(entry.getName() + "_subset.nc");
+                result.setReturnFilename(entry.getName() + "_subset"
+                                         + ncVersion.getSuffix());
 
                 return result;
             }
         }
 
-        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
+        String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName())
                           + "_subset.nc";
 
@@ -1246,11 +1361,16 @@ public class CdmDataOutputHandler extends OutputHandler {
                                           request.getString(ARG_HSTRIDE,
                                               "1"), HtmlUtils.SIZE_3)));
 
-        GridDataset  dataset   = getCdmManager().getGridDataset(entry, path);
-        Date[]       dateRange = null;
-        List<Date>   dates     = getGridDates(dataset);
-        StringBuffer varSB     = getVariableForm(dataset, false);
-        LatLonRect   llr       = dataset.getBoundingBox();
+        GridDataset dataset      = getCdmManager().getGridDataset(entry,
+                                       path);
+        List<CalendarDate> dates = getGridDates(dataset);
+        CalendarDate       cd    = dates.get(0);
+        Calendar           cal   = cd.getCalendar();
+        if (cal != null) {
+            sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
+        }
+        StringBuffer varSB = getVariableForm(dataset, false);
+        LatLonRect   llr   = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
@@ -1268,36 +1388,31 @@ public class CdmDataOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
+        addTimeWidget(request, dates, sb);
 
-        if ((dates != null) && (dates.size() > 0)) {
-            List formattedDates = new ArrayList();
-            formattedDates.add(new TwoFacedObject("---", ""));
-            for (Date date : dates) {
-                formattedDates.add(getPageHandler().formatDate(request, date));
-            }
-            /*
-              for now default to "" for dates
-            String fromDate = request.getUnsafeString(ARG_FROMDATE,
-                                  getPageHandler().formatDate(request,
-                                      dates.get(0)));
-            String toDate = request.getUnsafeString(ARG_TODATE,
-                                getPageHandler().formatDate(request,
-                                    dates.get(dates.size() - 1)));
-            */
-            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
-            String toDate   = request.getUnsafeString(ARG_TODATE, "");
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Time Range"),
-                    HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(iconUrl(ICON_ARROW))
-                    + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
-        }
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Add Lat/Lon Variables"),
+                HtmlUtils.checkbox(
+                    ARG_ADDLATLON, HtmlUtils.VALUE_TRUE,
+                    request.get(
+                        ARG_ADDLATLON,
+                        true)) + " (if needed for CF compliance)"));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Add Lat/Lon Variables"),
-                                      HtmlUtils.checkbox(ARG_ADDLATLON,
-                                          HtmlUtils.VALUE_TRUE,
-                                          request.get(ARG_ADDLATLON, true))));
+        /*
+        // TODO: check if we can use this.
+        // This uses JNI, so not available everywhere
+        List formats = Misc.toList(new Object[] {
+                           new TwoFacedObject("NetCDF3", NetcdfFileWriter.Version.netcdf3.toString()),
+                           new TwoFacedObject("NetCDF4", NetcdfFileWriter.Version.netcdf4.toString()),
+                           new TwoFacedObject("NetCDF4 Classic", NetcdfFileWriter.Version.netcdf4_classic.toString())});
+
+        String format = request.getString(ARG_FORMAT, SupportedFormat.NETCDF3.getResponseContentType());
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Format"),
+                                      HtmlUtils.select(ARG_FORMAT, formats,
+                                          format)));
+        */
 
         addPublishWidget(request, entry, sb,
                          msg("Select a folder to publish the results to"));
@@ -1318,6 +1433,60 @@ public class CdmDataOutputHandler extends OutputHandler {
                                new State(entry));
     }
 
+    /**
+     * Make a time widget for grid subsetting
+     *
+     * @param request  the Request
+     * @param dates    the list of dates
+     * @param sb       the HTML to add to
+     */
+    private void addTimeWidget(Request request, List<CalendarDate> dates,
+                               StringBuffer sb) {
+        long millis = System.currentTimeMillis();
+        if ((dates != null) && (dates.size() > 0)) {
+            List formattedDates = new ArrayList();
+            formattedDates.add(new TwoFacedObject("---", ""));
+            for (CalendarDate date : dates) {
+                //formattedDates.add(getPageHandler().formatDate(request, date.toDate()));
+                formattedDates.add(formatDate(request, date));
+            }
+            String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
+            String toDate   = request.getUnsafeString(ARG_TODATE, "");
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Time Range"),
+                    HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
+                    + HtmlUtils.img(iconUrl(ICON_ARROW))
+                    + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
+        }
+        System.err.println("Times took "
+                           + (System.currentTimeMillis() - millis) + " ms");
+    }
+
+    /**
+     * Format a date
+     *
+     * @param request  the request
+     * @param date     the date object (CalendarDate or Date)
+     *
+     * @return the formatted date
+     */
+    public String formatDate(Request request, Object date) {
+        if (date == null) {
+            return BLANK;
+        }
+        if (date instanceof CalendarDate) {
+            String dateFormat = getProperty(PROP_DATE_FORMAT,
+                                            PageHandler.DEFAULT_TIME_FORMAT);
+
+            return new CalendarDateFormatter(dateFormat).toString(
+                (CalendarDate) date);
+        } else if (date instanceof Date) {
+            return getPageHandler().formatDate(request, (Date) date);
+        } else {
+            return date.toString();
+        }
+    }
 
     /**
      * Sort the grids
@@ -1341,10 +1510,6 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
-
-
 
 
     /**
@@ -1401,7 +1566,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         MapInfo map = getRepository().getMapManager().createMap(request,
                           false);
         String              path = getPath(request, entry);
-        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+        FeatureDatasetPoint pod = getCdmManager().getPointDataset(entry,
                                       path);
 
         StringBuffer         sb             = new StringBuffer();
@@ -1605,7 +1770,8 @@ public class CdmDataOutputHandler extends OutputHandler {
     public Result outputTrajectoryMap(Request request, Entry entry)
             throws Exception {
         String               path = getPath(request, entry);
-        TrajectoryObsDataset tod  = getCdmManager().getTrajectoryDataset(path);
+        TrajectoryObsDataset tod  =
+            getCdmManager().getTrajectoryDataset(path);
         StringBuffer         sb   = new StringBuffer();
 
         MapInfo map = getRepository().getMapManager().createMap(request, 800,
@@ -1613,8 +1779,8 @@ public class CdmDataOutputHandler extends OutputHandler {
         List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
-            List                  allVariables = tod.getDataVariables();
-            TrajectoryObsDatatype todt         =
+            List allVariables = tod.getDataVariables();
+            TrajectoryObsDatatype todt =
                 (TrajectoryObsDatatype) trajectories.get(i);
             float[] lats    = toFloatArray(todt.getLatitude(null));
             float[] lons    = toFloatArray(todt.getLongitude(null));
@@ -1847,8 +2013,8 @@ public class CdmDataOutputHandler extends OutputHandler {
      */
     private void outputPointCsv(Request request, Entry entry, PrintWriter pw)
             throws Exception {
-        String              path = getPath(request, entry);
-        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+        String path = getPath(request, entry);
+        FeatureDatasetPoint pod = getCdmManager().getPointDataset(entry,
                                       path);;
         List                 vars         = pod.getDataVariables();
         PointFeatureIterator dataIterator = getPointIterator(pod);
@@ -1922,13 +2088,14 @@ public class CdmDataOutputHandler extends OutputHandler {
     private void outputPointKml(Request request, Entry entry, PrintWriter pw)
             throws Exception {
         String              path = getPath(request, entry);
-        FeatureDatasetPoint pod  = getCdmManager().getPointDataset(entry,
+        FeatureDatasetPoint pod = getCdmManager().getPointDataset(entry,
                                       path);
         List                 vars         = pod.getDataVariables();
         PointFeatureIterator dataIterator = getPointIterator(pod);
 
         Element              root         = KmlUtil.kml(entry.getName());
-        Element              docNode = KmlUtil.document(root, entry.getName());
+        Element              docNode = KmlUtil.document(root,
+                                           entry.getName());
 
         while (dataIterator.hasNext()) {
             PointFeature po = (PointFeature) dataIterator.next();
@@ -2196,8 +2363,8 @@ public class CdmDataOutputHandler extends OutputHandler {
      * @return  the handler
      */
     public OpendapApiHandler getOpendapHandler() {
-        return (OpendapApiHandler) getRepository().getApiManager().getApiHandler(
-            OpendapApiHandler.API_ID);
+        return (OpendapApiHandler) getRepository().getApiManager()
+            .getApiHandler(OpendapApiHandler.API_ID);
     }
 
 
@@ -2325,14 +2492,6 @@ public class CdmDataOutputHandler extends OutputHandler {
             return "opendap/3.7";
         }
 
-        /**
-         * Each sever subclass must tell what its default context path should be.
-         public String getDefaultContextPath() {
-             return "/thredds";
-         }
-         */
-
-
     }
 
 
@@ -2355,17 +2514,17 @@ public class CdmDataOutputHandler extends OutputHandler {
         //sb.append(getHeader(request, entry));
         sb.append(header(msg("Chart")));
 
-        TimeSeriesCollection            dummy     = new TimeSeriesCollection();
+        TimeSeriesCollection dummy  = new TimeSeriesCollection();
         JFreeChart chart = createChart(request, entry, dummy);
-        XYPlot                          xyPlot    = (XYPlot) chart.getPlot();
+        XYPlot               xyPlot = (XYPlot) chart.getPlot();
 
         Hashtable<String, MyTimeSeries> seriesMap = new Hashtable<String,
                                                         MyTimeSeries>();
         List<MyTimeSeries> allSeries = new ArrayList<MyTimeSeries>();
-        int                                paramCount = 0;
-        int                                colorCount = 0;
-        boolean                            axisLeft   = true;
-        Hashtable<String, List<ValueAxis>> axisMap    = new Hashtable<String,
+        int     paramCount = 0;
+        int     colorCount = 0;
+        boolean axisLeft   = true;
+        Hashtable<String, List<ValueAxis>> axisMap = new Hashtable<String,
                                                          List<ValueAxis>>();
         Hashtable<String, double[]> rangeMap = new Hashtable<String,
                                                    double[]>();
@@ -2374,9 +2533,10 @@ public class CdmDataOutputHandler extends OutputHandler {
         List<String> paramNames = new ArrayList<String>();
 
         long         t1         = System.currentTimeMillis();
-        String       contents   =
+        String contents =
             IOUtil.readContents(getStorageManager().getFileInputStream(f));
-        List<String> lines      = StringUtil.split(contents, "\n", true, true);
+        List<String> lines      = StringUtil.split(contents, "\n", true,
+                                      true);
         String       header     = lines.get(0);
         String[]     headerToks = header.split(",");
         for (int i = 0; i < headerToks.length; i++) {
@@ -2479,7 +2639,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
 
 
-        long          t2       = System.currentTimeMillis();
+        long t2 = System.currentTimeMillis();
 
         BufferedImage newImage =
             chart.createBufferedImage(request.get(ARG_IMAGE_WIDTH, 1000),

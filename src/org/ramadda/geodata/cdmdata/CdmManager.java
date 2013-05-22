@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,124 +22,49 @@
 package org.ramadda.geodata.cdmdata;
 
 
-
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-
-import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryManager;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ObjectPool;
-
 import org.ramadda.util.TempDir;
 
-import org.w3c.dom.*;
-
-
-
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-
-import ucar.nc2.Attribute;
+import thredds.servlet.ThreddsConfig;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
-
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
-
-
-import ucar.nc2.dt.*;
-
-
+import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.dt.TrajectoryObsDataset;
+import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
-import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
-
-import ucar.nc2.ft.FeatureCollection;
-
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.NestedPointFeatureCollection;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.point.*;
-
-
-
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateType;
-import ucar.nc2.util.DiskCache2;
-
-import ucar.unidata.data.gis.KmlUtil;
-import ucar.unidata.geoloc.LatLonPointImpl;
-
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.ui.ImageUtils;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.util.WrapperException;
-import ucar.unidata.xml.XmlUtil;
 
-import ucar.visad.Util;
-
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
-import java.io.*;
-
-import java.net.*;
-
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.*;
-
-import javax.servlet.*;
-
-import javax.servlet.http.*;
+import java.util.regex.Pattern;
 
 
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * A manager for netCDF-Java CDM data
  */
 public class CdmManager extends RepositoryManager {
 
@@ -185,9 +110,10 @@ public class CdmManager extends RepositoryManager {
     /** cdm cache */
     private Cache<String, Boolean> cdmEntries = new Cache<String,
                                                     Boolean>(5000);
+
     /** cdm cache */
     private Cache<String, Boolean> cdmGridEntries = new Cache<String,
-            Boolean>(5000);
+                                                        Boolean>(5000);
 
     /** grid entries cache */
     private Cache<String, Boolean> gridEntries = new Cache<String,
@@ -201,6 +127,7 @@ public class CdmManager extends RepositoryManager {
     /** trajectory entries cache */
     private Cache<String, Boolean> trajectoryEntries = new Cache<String,
                                                            Boolean>(5000);
+
     /** trajectory entries cache */
     private Cache<String, Boolean> radarEntries = new Cache<String,
                                                       Boolean>(5000);
@@ -266,6 +193,20 @@ public class CdmManager extends RepositoryManager {
         nj22Dir = getRepository().getStorageManager().makeTempDir("nj22");
         nj22Dir.setMaxFiles(500);
 
+        String tdsConfig =
+            getStorageManager().readSystemResource(
+                "/org/ramadda/geodata/cdmdata/resources/threddsConfig.xml");
+        String outdir =
+            getRepository().getStorageManager().getScratchDir().getDir()
+                .toString();
+        tdsConfig = tdsConfig.replaceAll("%ncssdir%", outdir);
+        File outputFile = new File(IOUtil.joinDir(nj22Dir.getDir(),
+                              "threddsConfig.xml"));
+        InputStream  is = new ByteArrayInputStream(tdsConfig.getBytes());
+        OutputStream os = getStorageManager().getFileOutputStream(outputFile);
+        IOUtil.writeTo(is, os);
+        ThreddsConfig.init(outputFile.toString());
+
         // Apply settings for the NetcdfDataset
         //        ucar.nc2.dataset.NetcdfDataset.setHttpClient(getRepository().getHttpClient());
 
@@ -320,7 +261,7 @@ public class CdmManager extends RepositoryManager {
             //try {
             //    dataset.sync();
 
-                return dataset;
+            return dataset;
             //} catch (Exception exc) {
             //    throw new RuntimeException(exc);
             //}
@@ -368,7 +309,7 @@ public class CdmManager extends RepositoryManager {
             //try {
             //    ncFile.sync();
 
-                return ncFile;
+            return ncFile;
             //} catch (Exception exc) {
             //    throw new RuntimeException(exc);
             //}
@@ -415,7 +356,7 @@ public class CdmManager extends RepositoryManager {
             //try {
             //    dataset.sync();
 
-                return dataset;
+            return dataset;
             //} catch (Exception exc) {
             //    throw new RuntimeException(exc);
             //}
@@ -545,30 +486,30 @@ public class CdmManager extends RepositoryManager {
     /** radar pool */
     private ObjectPool<String, RadialDatasetSweep> radarPool =
         new ObjectPool<String, RadialDatasetSweep>(10) {
-            protected void removeValue(String key, RadialDatasetSweep dataset) {
-                try {
-                    super.removeValue(key, dataset);
-                    dataset.close();
-                } catch (Exception exc) {}
+        protected void removeValue(String key, RadialDatasetSweep dataset) {
+            try {
+                super.removeValue(key, dataset);
+                dataset.close();
+            } catch (Exception exc) {}
+        }
+
+
+
+        protected RadialDatasetSweep createValue(String path) {
+            try {
+                Formatter buf = new Formatter();
+                getStorageManager().dirTouched(nj22Dir, null);
+
+                RadialDatasetSweep pods =
+                    (RadialDatasetSweep) TypedDatasetFactory.open(
+                        ucar.nc2.constants.FeatureType.RADIAL, path, null,
+                        new StringBuilder());
+
+                return pods;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
             }
-
-
-
-            protected RadialDatasetSweep createValue(String path) {
-                try {
-                    Formatter buf = new Formatter();
-                    getStorageManager().dirTouched(nj22Dir, null);
-
-                    RadialDatasetSweep pods =
-                            (RadialDatasetSweep) TypedDatasetFactory.open(
-                                    ucar.nc2.constants.FeatureType.RADIAL, path, null,
-                                    new StringBuilder());
-
-                    return pods;
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
+        }
 
 
     };
@@ -743,7 +684,10 @@ public class CdmManager extends RepositoryManager {
             return false;
         }
 
-        String[] types = { TYPE_CDM, TYPE_CDM_GRID, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR };
+        String[] types = {
+            TYPE_CDM, TYPE_CDM_GRID, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT,
+            TYPE_RADAR
+        };
         for (int i = 0; i < types.length; i++) {
             if (includedByPattern(entry, types[i])) {
                 return true;
@@ -802,6 +746,7 @@ public class CdmManager extends RepositoryManager {
     private boolean isCdmGrid(Entry e) {
         return e.getType().equals(TYPE_CDM_GRID);
     }
+
     /**
      * Can the Entry be loaded a point data?
      *
@@ -970,8 +915,10 @@ public class CdmManager extends RepositoryManager {
 
 
 
-            String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY,
-                               TYPE_POINT, TYPE_RADAR, TYPE_CDM_GRID };
+            String[] types = {
+                TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR,
+                TYPE_CDM_GRID
+            };
             for (int i = 0; i < types.length; i++) {
                 List toks = StringUtil.split(
                                 getRepository().getProperty(
@@ -1093,6 +1040,7 @@ public class CdmManager extends RepositoryManager {
 
         return b.booleanValue();
     }
+
     /**
      * Check if this Entry can load as a CDM grid
      *
@@ -1141,6 +1089,7 @@ public class CdmManager extends RepositoryManager {
 
         return b.booleanValue();
     }
+
     /**
      * Get the NetcdfDataset for the Entry
      *
@@ -1355,7 +1304,7 @@ public class CdmManager extends RepositoryManager {
                 }
                 //                System.err.println("ncml:" + ncml);
                 //Use the last modified time of the ncml file so we pick up any updated file
-                String dttm     = templateNcmlFile.lastModified() + "";
+                String dttm = templateNcmlFile.lastModified() + "";
                 String fileName = dttm + "_" + entry.getId() + "_"
                                   + metadata.getId() + (isNcml
                         ? SUFFIX_NCML
@@ -1384,7 +1333,10 @@ public class CdmManager extends RepositoryManager {
         CdmDataOutputHandler dop = new CdmDataOutputHandler(repository,
                                        "test");
         CdmManager cdmManager = new CdmManager(repository);
-        String[] types = { TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR, TYPE_CDM_GRID };
+        String[]   types      = {
+            TYPE_CDM, TYPE_GRID, TYPE_TRAJECTORY, TYPE_POINT, TYPE_RADAR,
+            TYPE_CDM_GRID
+        };
         for (String f : args) {
             System.err.println("file:" + f);
             for (String type : types) {
