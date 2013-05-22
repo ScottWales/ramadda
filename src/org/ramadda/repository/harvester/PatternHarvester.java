@@ -834,7 +834,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
                     throw exc;
                 }
                 if (entry == null) {
-                    logHarvesterInfo("No entry created");
+                    //                    logHarvesterInfo("No entry created");
                     continue;
                 }
                 entries.add(entry);
@@ -1064,7 +1064,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
         boolean isPlaceholder = f.getName().equals(".placeholder");
 
         if (f.getName().startsWith(".") && !isPlaceholder) {
-            logHarvesterInfo("File is hidden file:" + f);
+            //            logHarvesterInfo("File is hidden file:" + f);
             return null;
         }
 

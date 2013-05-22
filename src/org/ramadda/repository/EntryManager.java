@@ -6759,17 +6759,9 @@ public class EntryManager extends RepositoryManager {
         int       batchCnt       = 0;
         connection.setAutoCommit(false);
         for (Entry entry : entries) {
-            //            System.err.println("EntryManager.insertEntries:" + new Date(entry.getStartDate()));
-            // if (entry.isCollectionGroup()) {
-            //                getTopGroup()s = null;
-            //                }
             TypeHandler typeHandler = entry.getTypeHandler();
-            //I don't think we want to do this here since it screws up the type
-            //typeHandler = typeHandler.getTypeHandlerForCopy(entry);
-
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();
-            //            String            sql           = typeHandler.getInsertSql(isNew);
             typeHandler.getInsertSql(isNew, typeInserts);
             for (TypeInsertInfo tif : typeInserts) {
                 PreparedStatement typeStatement =
