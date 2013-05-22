@@ -776,7 +776,6 @@ public class GenericTypeHandler extends TypeHandler {
                             PreparedStatement stmt, boolean isNew)
             throws Exception {
 
-        System.err.println ("setStatement values==null? " + (values == null));
         int stmtIdx = 1;
         stmt.setString(stmtIdx++, entry.getId());
         if (values != null) {
