@@ -357,7 +357,7 @@ function RepositoryMap(mapId, params) {
     this.setSelection = function(argBase, doRegion, absolute) {
     	this.selectRegion = doRegion;
         this.argBase = argBase;
-        if (!ramaddaUtil) {
+        if (!util) {
             return;
         }
         this.fldNorth = ramaddaUtil.getDomObject(this.argBase + "_north");
@@ -537,7 +537,7 @@ function RepositoryMap(mapId, params) {
         if (theMap.selectorControl)
             return;
         theMap.selectorControl = new OpenLayers.Control();
-        OpenLayers.RamaddaUtil.extend(theMap.selectorControl, {
+        OpenLayers.Util.extend(theMap.selectorControl, {
             draw : function() {
                 // this Handler.Box will intercept the shift-mousedown
                 // before Control.MouseDefault gets to see it
@@ -801,9 +801,9 @@ function RepositoryMap(mapId, params) {
     }
 
     this.addPolygon = function(id, points, attrs) {
-        var base_style = OpenLayers.RamaddaUtil.extend( {},
+        var base_style = OpenLayers.Util.extend( {},
                 OpenLayers.Feature.Vector.style['default']);
-        var style = OpenLayers.RamaddaUtil.extend( {}, base_style);
+        var style = OpenLayers.Util.extend( {}, base_style);
         style.strokeColor = "blue";
         style.strokeWidth = 3;
         if (attrs) {
@@ -888,7 +888,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     initialize : function(options) {
-        this.handlerOptions = OpenLayers.RamaddaUtil.extend( {},
+        this.handlerOptions = OpenLayers.Util.extend( {},
                 this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.handler = new OpenLayers.Handler.Click(this, {
