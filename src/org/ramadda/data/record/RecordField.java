@@ -106,6 +106,8 @@ public class RecordField {
     private double defaultDoubleValue = Double.NaN;
     private String defaultStringValue = null;
 
+    private String headerPattern = null;
+
     private String type = TYPE_NUMERIC;
 
     private double missingValue  =Double.NaN;
@@ -669,6 +671,25 @@ Get the RoundingFactor property.
     public double getMissingValue () {
 	return missingValue;
     }
+
+    /**
+       Set the HeaderPattern property.
+
+       @param value The new value for HeaderPattern
+    **/
+    public void setHeaderPattern (String value) {
+	headerPattern = value;
+    }
+
+    /**
+       Get the HeaderPattern property.
+
+       @return The HeaderPattern
+    **/
+    public String getHeaderPattern () {
+	return headerPattern;
+    }
+
 
 
 }
