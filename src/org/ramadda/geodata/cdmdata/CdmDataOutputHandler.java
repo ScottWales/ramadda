@@ -1459,8 +1459,8 @@ public class CdmDataOutputHandler extends OutputHandler {
                     + HtmlUtils.img(iconUrl(ICON_ARROW))
                     + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
         }
-        System.err.println("Times took "
-                           + (System.currentTimeMillis() - millis) + " ms");
+        //System.err.println("Times took "
+        //                   + (System.currentTimeMillis() - millis) + " ms");
     }
 
     /**
