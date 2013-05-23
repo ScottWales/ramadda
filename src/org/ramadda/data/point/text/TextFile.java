@@ -72,6 +72,7 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_ = "";
 
     public static final String ATTR_TYPE = "type";
+    public static final String ATTR_MISSING = "missing";
     public static final String ATTR_VALUE = "value";
     public static final String ATTR_FORMAT = "format";
 
@@ -268,6 +269,9 @@ public abstract class TextFile extends PointFile {
 
     public String attrType(String v) {
         return HtmlUtils.attr(ATTR_TYPE, v);
+    }
+    public String attrMissing(double v) {
+        return HtmlUtils.attr(ATTR_MISSING, ""+v);
     }
     public String attrFormat(String v) {
         return HtmlUtils.attr(ATTR_FORMAT, v);

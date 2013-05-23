@@ -43,6 +43,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
 
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
+    public static final double MISSING = 444.0;
 
     /**
      * ctor
@@ -156,9 +157,6 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 argosId
             });
 
-
-        //Make the field definition 
-        //The attrValue defines a default value for that field. 
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
                 makeField(FIELD_LATITUDE, attrValue(lat)),
@@ -169,14 +167,13 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 makeField(FIELD_MONTH,""),
                 makeField(FIELD_DAY,""),
                 makeField(FIELD_TIME,attrType(TYPE_STRING)),
-                makeField("Temperature", attrUnit("Celsius"), attrChartable()),
-                makeField("Pressure", attrUnit("hPa"), attrChartable()),
-                makeField("Wind_Speed", attrUnit("m/s"), attrChartable()),
-                makeField("Wind_Direction", attrUnit("degrees")),
-                makeField("Relative_Humidity", attrUnit("%"), attrChartable()),
-                makeField("Delta_T", attrUnit("Celsius"), attrChartable()),
+                makeField("Temperature", attrUnit("Celsius"), attrChartable(), attrMissing(MISSING)),
+                makeField("Pressure", attrUnit("hPa"), attrChartable(), attrMissing(MISSING)),
+                makeField("Wind_Speed", attrUnit("m/s"), attrChartable(), attrMissing(MISSING)),
+                makeField("Wind_Direction", attrUnit("degrees"), attrMissing(MISSING)),
+                makeField("Relative_Humidity", attrUnit("%"), attrChartable(), attrMissing(MISSING)),
+                makeField("Delta_T", attrUnit("Celsius"), attrChartable(), attrMissing(MISSING)),
             });
-        System.err.println(fields);
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }

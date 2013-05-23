@@ -195,6 +195,14 @@ public class CsvFile extends TextFile {
             if(precision!=null) {
                 field.setRoundingFactor(Math.pow(10,Integer.parseInt(precision)));
             }
+
+
+            String missing = getProperty(properties, "missing",(String)null);
+            if(missing!=null) {
+                field.setMissingValue(Double.parseDouble(missing));
+            }
+
+
             String fmt = getProperty(properties, "fmt", (String) null);
             if(fmt==null) {
                 fmt = getProperty(properties, "format", (String) null);
