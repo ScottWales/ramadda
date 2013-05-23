@@ -96,7 +96,7 @@ import java.util.Properties;
 import java.util.regex.*;
 
 
-public abstract class EntryTreeWalker  implements Constants {
+public abstract class EntryVisitor  implements Constants {
     private Repository repository;
     private Request request;
     private boolean recurse;
@@ -106,7 +106,7 @@ public abstract class EntryTreeWalker  implements Constants {
     private StringBuffer sb = new StringBuffer();
 
 
-    public EntryTreeWalker(Request request, Repository repository, Object actionId) {
+    public EntryVisitor(Request request, Repository repository, Object actionId) {
         this.repository = repository;
         this.request = request;
         this.actionId  =actionId;

@@ -760,6 +760,8 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public static final String ARG_WALK = "walk";
+
     public static final String ARG_WALK_METADATA = "walk.metadata";
     public static final String ARG_WALK_MD5 = "walk.md5";
     public static final String ARG_WALK_REPORT = "walk.report";
@@ -774,7 +776,7 @@ public class EntryManager extends RepositoryManager {
         if(request.exists(ARG_WALK_METADATA)) {
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(Object actionId) throws Exception {
-                    EntryTreeWalker walker = new EntryTreeWalker(request, getRepository(),  actionId) {
+                    EntryVisitor walker = new EntryVisitor(request, getRepository(),  actionId) {
                             public  boolean processEntry(Entry entry, List<Entry> children) throws Exception {
                                 setFromChildren(this, entry, children);
                                 return true;
@@ -826,7 +828,7 @@ public class EntryManager extends RepositoryManager {
         if(request.exists(ARG_WALK_REPORT)) {
             final long[]size = {0};
             final int[]numFiles = {0};
-            EntryTreeWalker walker = new EntryTreeWalker(request, getRepository(),  null) {
+            EntryVisitor walker = new EntryVisitor(request, getRepository(),  null) {
                     @Override
                     public  boolean processEntry(Entry entry, List<Entry> children) throws Exception {
                         for(Entry child: children) {
@@ -2297,7 +2299,7 @@ public class EntryManager extends RepositoryManager {
                 parent, newEntry);
     }
  
-    private boolean setFromChildren(EntryTreeWalker walker,  Entry entry, List<Entry> children) throws Exception {
+    private boolean setFromChildren(EntryVisitor walker,  Entry entry, List<Entry> children) throws Exception {
         boolean changed  = false;
         Rectangle2D.Double rect = getBounds(children);
         if (rect != null) {
