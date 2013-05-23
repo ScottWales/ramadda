@@ -31,6 +31,7 @@ import org.w3c.dom.*;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.DateUtil;
 
+
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -38,6 +39,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -154,19 +156,33 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
 
 
+    private static class EntryInfo {
+        Entry entry;
+        String author;
+        String file;
+
+        public EntryInfo(Entry entry, String author, String file) {
+            this.entry = entry;
+            this.author = author;
+            this.file= file;
+        }
+    }
+
     private List<Entry> process(Request request, String parentId, String s, List<File> files, StringBuffer sb) throws Exception {
         boolean inKeyword = false;
-        List<Entry> entries= new ArrayList<Entry>();
+        List<EntryInfo> entryInfos = new ArrayList<EntryInfo>();
         List<String> keywords = new ArrayList<String>();
         List<String> authors = new ArrayList<String>();
         Entry entry  = null; 
         Object[] values = new Object[10];
+        String filenameFromBiblio = null;
         for(String line: StringUtil.split(s, "\n",true,true)) {
             List<String> toks = StringUtil.splitUpTo(line," ",2);
-            if(toks.get(0).startsWith("%") && toks.size() ==2) {
+            if(toks.get(0).trim().startsWith("%") && toks.size() ==2) {
                 String tag = toks.get(0);
                 String value = toks.get(1);
                 value  =value.replaceAll("[^ -~]","-");
+                value = value.trim();
                 if(tag.equals(TAG_BIBLIO_TYPE)) {
                     if(entry !=null) {
                         values[IDX_OTHER_AUTHORS]  = StringUtil.join("\n",authors);
@@ -181,44 +197,18 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                             nameToMatch = StringUtil.splitUpTo(nameToMatch, ",", 2).get(0);
                         }
 
-                        if(nameToMatch.indexOf(" ")>=0)  {
+                        if(nameToMatch.indexOf(" ")>=4)  {
                             nameToMatch = StringUtil.splitUpTo(nameToMatch, " ", 2).get(0);
                         }
                         nameToMatch = nameToMatch.toLowerCase().trim();
-
-
-                        File theFile = null;
-                        if(nameToMatch.length()>0) {
-                            for(File f: files) {
-                                String filename  =  getStorageManager().getOriginalFilename(f.getName()).toLowerCase().trim();
-                                if(filename.startsWith(nameToMatch)) {
-                                    theFile = f;
-                                    break;
-                                }
-                                if(filename.startsWith(entry.getName().toLowerCase())) {
-                                    theFile = f;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if(theFile!=null) {
-                            files.remove(theFile);
-                            String targetName = getStorageManager().getOriginalFilename(theFile.toString());
-                            targetName = getStorageManager().getStorageFileName(targetName);
-                            theFile = getStorageManager().moveToStorage(request,
-                                                                        theFile, targetName);
-
-                            //                            System.err.println ("FOUND:" + theFile.getName() + " name=" + nameToMatch);
-                            entry.setResource(new Resource(theFile, Resource.TYPE_STOREDFILE));
-                        } else {
-                            //                            System.err.println ("NOT FOUND:" + nameToMatch);
-                        }
-                        //Add authors and keywords
-                        entries.add(entry);
+                        nameToMatch = nameToMatch.replaceAll(" ","");
+                        nameToMatch = nameToMatch.replaceAll("é","e");
+                        nameToMatch = nameToMatch.replaceAll("[^a-zA-Z0-9_]+","");
+                        entryInfos.add(new EntryInfo(entry, nameToMatch, filenameFromBiblio));
                     }
                     keywords = new ArrayList<String>();
                     authors =  new ArrayList<String>();
+                    filenameFromBiblio = null;
                     entry    = getRepository().getTypeHandler(TYPE_BIBLIO).createEntry(getRepository().getGUID());
                     entry.setParentEntryId(parentId);
                     values = entry.getTypeHandler().getValues(entry);
@@ -247,6 +237,11 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     continue;
                 }
 
+                if(tag.equals(TAG_BIBLIO_URL)) {
+                    entry.setResource(new Resource(value, Resource.TYPE_URL));
+                    continue;
+                }
+
                 if(tag.equals(TAG_BIBLIO_DATE)) {
                     Date date  = DateUtil.parse(value);
                     entry.setStartDate(date.getTime());
@@ -259,6 +254,16 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     keywords.add(value);
                     continue;
                 }
+                if(tag.equals(TAG_BIBLIO_EXTRA)) {
+                    if(value.toLowerCase().startsWith("file:")) {
+                        filenameFromBiblio  = new File(value.substring("file:".length()).trim()).getName();
+                        //                        System.err.println("FILE:" + filenameFromBiblio);
+                    } else {
+                        //                        System.err.println ("UNK:" + value);
+                    }
+                    continue;
+                }
+
                 boolean gotone = false;
                 for(int idx=0;idx<TAGS.length && !gotone;idx++) {
                     if(tag.equals(TAGS[idx])) {
@@ -266,18 +271,105 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                         gotone = true;
                     }
                 }
-
                 if(gotone) {
                     continue;
                 }
-                //                System.err.println ("Unknown tag:" + tag + "=" + value);
             } else if(inKeyword) {
                 keywords.add(line);
                 continue;
             } else {
-                System.err.println ("LINE:" +line);
+                System.err.println ("LINE:" +line + " toks:" + toks.size() +" " + toks);
             }
         }
+
+        List<Entry> entries= new ArrayList<Entry>();
+        for(EntryInfo entryInfo: entryInfos) {
+            entries.add(entryInfo.entry);
+        }
+
+        for(EntryInfo entryInfo: entryInfos) {
+            File theFile = null;
+            entry = entryInfo.entry;
+            if(entryInfo.file!=null) {
+                System.err.println ("looking for:" + entryInfo.file +":");
+                for(File f: files) {
+                    String filename  =  getStorageManager().getOriginalFilename(f.getName()).toLowerCase().trim();
+                    if(entryInfo.file.equalsIgnoreCase(filename)) {
+                        System.err.println ("GOT IT:" + entryInfo.file);
+                        theFile = f;
+                        break;
+                    }
+                }
+                if(theFile != null) {
+                    files.remove(theFile);
+                    String targetName = getStorageManager().getOriginalFilename(theFile.toString());
+                    targetName = getStorageManager().getStorageFileName(targetName);
+                    theFile = getStorageManager().moveToStorage(request,
+                                                                theFile, targetName);
+                    entry.setResource(new Resource(theFile, Resource.TYPE_STOREDFILE));
+                }
+            }
+        }
+
+        for(int attempt=1;attempt<=2;attempt++) {
+            for(EntryInfo entryInfo: entryInfos) {
+                File theFile = null;
+                entry = entryInfo.entry;
+                if(entry.isFile()) continue;
+                for(File f: files) {
+                    String filename  =  getStorageManager().getOriginalFilename(f.getName()).toLowerCase().trim();
+                    filename = filename.replaceAll("[^a-zA-Z0-9_.]+","");
+                    if(entryInfo.author.length()>0) {
+                        boolean matches = false;
+                        if(entryInfo.author.length()<=2) {
+                            matches = filename.startsWith(entryInfo.author+"_");
+                        } else {
+                            matches = filename.startsWith(entryInfo.author);
+                        }
+                        if(matches) {
+                            if(attempt == 1) {
+                                String yearPattern = StringUtil.findPattern(filename, "(19\\d{2})");
+                                if(yearPattern == null) {
+                                    yearPattern = StringUtil.findPattern(filename, "(20\\d{2})");
+                                }
+
+                                if(yearPattern!=null && entry.getStartDate()!=entry.getCreateDate()) {
+                                    GregorianCalendar cal = new GregorianCalendar();
+                                    cal.setTime(new Date(entry.getStartDate()));
+                                    if(!yearPattern.equals(""+cal.get(cal.YEAR))) {
+                                        System.out.println ("skipping year:" + yearPattern +" cal:" + cal.get(cal.YEAR) +"   " + entry.getName() + " " + filename);
+                                        continue;
+                                    }
+                                }
+                            }
+                            theFile = f;
+                            System.out.println("from author:" + entryInfo.author +" entry:" + entry.getName() + " file:" + filename);
+                            break;
+                        }
+                    }
+                    if(filename.startsWith(entry.getName().toLowerCase())) {
+                        theFile = f;
+                        break;
+                    }
+                }
+
+                if(theFile!=null) {
+                    files.remove(theFile);
+                    String targetName = getStorageManager().getOriginalFilename(theFile.toString());
+                    System.out.println ("found: " +entry.getName() + " file=" + targetName + " author=" + entryInfo.author );
+                    targetName = getStorageManager().getStorageFileName(targetName);
+
+                    theFile = getStorageManager().moveToStorage(request,
+                                                                theFile, targetName);
+                    entry.setResource(new Resource(theFile, Resource.TYPE_STOREDFILE));
+                } else {
+                    if(attempt == 2) {
+                        System.out.println ("not found: " + entry.getName() +" name=" + entryInfo.author);
+                    }
+                }
+            }
+        }
+
         return entries;
     }
 

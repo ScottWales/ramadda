@@ -42,6 +42,8 @@ public interface BiblioConstants  {
     public static final String TAG_BIBLIO_DOI = "%R";
     public static final String TAG_BIBLIO_DESCRIPTION = "%X";
     public static final String TAG_BIBLIO_URL = "%U";
+    public static final String TAG_BIBLIO_EXTRA = "%>";
+
 
     public static final int IDX_PRIMARY_AUTHOR = 0;
     public static final int IDX_TYPE = 1;
