@@ -22,8 +22,31 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import opendap.dap.DAP2Exception;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import opendap.dap.DAP2Exception;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
@@ -42,7 +65,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.PageHandler;
@@ -59,23 +81,19 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
-
 import org.w3c.dom.Element;
 
-import thredds.server.ncSubset.exception
-    .VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.server.ncSubset.view.PointDataStream;
 import thredds.server.opendap.GuardedDatasetImpl;
-
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
@@ -101,7 +119,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -115,33 +132,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
-
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -723,6 +713,9 @@ public class CdmDataOutputHandler extends OutputHandler {
         CalendarDate[]     dates      = new CalendarDate[2];
         Calendar           cal        = null;
         String             calString  = request.getString(ARG_CALENDAR, null);
+        if (calString == null) {
+            calString = allDates.get(0).getCalendar().toString();
+        }
         if (request.defined(ARG_FROMDATE)) {
             String fromDateString = request.getString(ARG_FROMDATE,
                                         formatDate(request, allDates.get(0)));
@@ -1280,20 +1273,30 @@ public class CdmDataOutputHandler extends OutputHandler {
                                     ARG_AREA_EAST, 180.0)));
                 //                System.err.println("llr:" + llr);
             }
-            int            hStride       = request.get(ARG_HSTRIDE, 1);
-            Range          zStride       = null;
-            boolean        includeLatLon = request.get(ARG_ADDLATLON, false);
-            int            timeStride    = 1;
-            CalendarDate[] dates         = new CalendarDate[2];
-            Calendar       cal           = null;
-            String         calString = request.getString(ARG_CALENDAR, null);
+            int                hStride    = request.get(ARG_HSTRIDE, 1);
+            Range              zStride    = null;
+            boolean includeLatLon         = request.get(ARG_ADDLATLON, false);
+            int                timeStride = 1;
+            GridDataset gds = getCdmManager().getGridDataset(entry, path);
+            List<CalendarDate> allDates   = getGridDates(gds);
+            CalendarDate[]     dates      = new CalendarDate[2];
+            Calendar           cal        = null;
+            String calString = request.getString(ARG_CALENDAR, null);
+            if (calString == null) {
+                calString = allDates.get(0).getCalendar().toString();
+            }
             if (request.defined(ARG_FROMDATE)) {
-                String fromDateString = request.getString(ARG_FROMDATE, null);
+                String fromDateString = request.getString(ARG_FROMDATE,
+                                            formatDate(request,
+                                                allDates.get(0)));
                 dates[0] = CalendarDate.parseISOformat(calString,
                         fromDateString);
             }
             if (request.defined(ARG_TODATE)) {
-                String toDateString = request.getString(ARG_TODATE, null);
+                String toDateString = request.getString(ARG_TODATE,
+                                          formatDate(request,
+                                              allDates.get(allDates.size()
+                                                  - 1)));
                 dates[1] = CalendarDate.parseISOformat(calString,
                         toDateString);
             }
@@ -1318,7 +1321,6 @@ public class CdmDataOutputHandler extends OutputHandler {
                 File f =
                     getRepository().getStorageManager().getTmpFile(request,
                         "subset" + ncVersion.getSuffix());
-                GridDataset gds = getCdmManager().getGridDataset(entry, path);
                 writer.makeFile(f.toString(), gds, varNames, llr, hStride,
                                 zStride, ((dates[0] == null)
                                           ? null
@@ -1371,11 +1373,13 @@ public class CdmDataOutputHandler extends OutputHandler {
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
         List<CalendarDate> dates = getGridDates(dataset);
+        /*
         CalendarDate       cd    = dates.get(0);
         Calendar           cal   = cd.getCalendar();
         if (cal != null) {
             sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
         }
+        */
         StringBuffer varSB = getVariableForm(dataset, false);
         LatLonRect   llr   = dataset.getBoundingBox();
         if (llr != null) {
@@ -1451,6 +1455,11 @@ public class CdmDataOutputHandler extends OutputHandler {
                                StringBuffer sb) {
         long millis = System.currentTimeMillis();
         if ((dates != null) && (dates.size() > 0)) {
+            CalendarDate cd  = dates.get(0);
+            Calendar     cal = cd.getCalendar();
+            if (cal != null) {
+                sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
+            }
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
             for (CalendarDate date : dates) {
