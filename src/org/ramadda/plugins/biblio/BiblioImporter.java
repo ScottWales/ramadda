@@ -202,7 +202,6 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                         }
                         nameToMatch = nameToMatch.toLowerCase().trim();
                         nameToMatch = nameToMatch.replaceAll(" ","");
-                        nameToMatch = nameToMatch.replaceAll("é","e");
                         nameToMatch = nameToMatch.replaceAll("[^a-zA-Z0-9_]+","");
                         entryInfos.add(new EntryInfo(entry, nameToMatch, filenameFromBiblio));
                     }
