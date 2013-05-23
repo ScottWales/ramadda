@@ -357,7 +357,7 @@ function RepositoryMap(mapId, params) {
     this.setSelection = function(argBase, doRegion, absolute) {
     	this.selectRegion = doRegion;
         this.argBase = argBase;
-        if (!util) {
+        if (!ramaddaUtil) {
             return;
         }
         this.fldNorth = ramaddaUtil.getDomObject(this.argBase + "_north");
