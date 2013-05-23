@@ -2065,9 +2065,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String value = results.getString(2);
             if (name.equals(PROP_PROPERTIES)) {
                 tmp.load(new ByteArrayInputStream(value.getBytes()));
-            } else {
-                tmp.put(name, value);
-            }
+            } 
+            //Always store the value even if its PROP_PROPERTIES
+            tmp.put(name, value);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
         dbProperties = tmp;
