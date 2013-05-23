@@ -28,6 +28,7 @@ import org.ramadda.data.process.DataProcessProvider;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
+import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
@@ -47,6 +48,9 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -54,6 +58,8 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
+
+import ucar.visad.data.CalendarDateTime;
 
 import visad.DateTime;
 
@@ -78,47 +84,63 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     /** CDO program path */
     private static final String PROP_CDO_PATH = "cdo.path";
 
-    private static final String ARG_CDO_PREFIX= "cdo.";
+    /** prefix for cdo args */
+    private static final String ARG_CDO_PREFIX = "cdo.";
 
 
     /** operation identifier */
-    private static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX + "operation";
+    private static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX
+                                                    + "operation";
 
     /** start month identifier */
-    private static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX +  "startmonth";
+    private static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
+                                                     + "startmonth";
 
     /** end month identifier */
-    private static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX +"endmonth";
+    private static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX
+                                                   + "endmonth";
 
     /** start month identifier */
-    private static final String ARG_CDO_STARTYEAR = ARG_CDO_PREFIX +"startyear";
+    private static final String ARG_CDO_STARTYEAR = ARG_CDO_PREFIX
+                                                    + "startyear";
 
     /** end month identifier */
-    private static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX +"endyear";
+    private static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX + "endyear";
 
     /** variable identifier */
-    private static final String ARG_CDO_PARAM = ARG_CDO_PREFIX +"param";
+    private static final String ARG_CDO_PARAM = ARG_CDO_PREFIX + "param";
 
     /** end month identifier */
-    private static final String ARG_CDO_LEVEL = ARG_CDO_PREFIX +"level";
+    private static final String ARG_CDO_LEVEL = ARG_CDO_PREFIX + "level";
 
     /** statistic identifier */
-    private static final String ARG_CDO_STAT = ARG_CDO_PREFIX +"stat";
+    private static final String ARG_CDO_STAT = ARG_CDO_PREFIX + "stat";
 
-    private static final String ARG_CDO_FROMDATE = ARG_CDO_PREFIX +"fromdate";
-    private static final String ARG_CDO_TODATE = ARG_CDO_PREFIX +"todate";
+    /** from date arg */
+    private static final String ARG_CDO_FROMDATE = ARG_CDO_PREFIX
+                                                   + "fromdate";
+
+    /** to date arg */
+    private static final String ARG_CDO_TODATE = ARG_CDO_PREFIX + "todate";
 
 
     /** period identifier */
-    private static final String ARG_CDO_PERIOD = ARG_CDO_PREFIX +"period";
+    private static final String ARG_CDO_PERIOD = ARG_CDO_PREFIX + "period";
 
-    private static final String ARG_CDO_AREA  = ARG_CDO_PREFIX +"area";
-    private static final String ARG_CDO_AREA_NORTH  = ARG_CDO_AREA+"_north";
-    private static final String ARG_CDO_AREA_SOUTH  = ARG_CDO_AREA+"_south";
-    private static final String ARG_CDO_AREA_EAST  = ARG_CDO_AREA+"_east";
-    private static final String ARG_CDO_AREA_WEST  = ARG_CDO_AREA+"_west";
+    /** area argument */
+    private static final String ARG_CDO_AREA = ARG_CDO_PREFIX + "area";
 
+    /** area argument - north */
+    private static final String ARG_CDO_AREA_NORTH = ARG_CDO_AREA + "_north";
 
+    /** area argument - south */
+    private static final String ARG_CDO_AREA_SOUTH = ARG_CDO_AREA + "_south";
+
+    /** area argument - east */
+    private static final String ARG_CDO_AREA_EAST = ARG_CDO_AREA + "_east";
+
+    /** area argument - west */
+    private static final String ARG_CDO_AREA_WEST = ARG_CDO_AREA + "_west";
 
 
     /** CDO Output Type */
@@ -235,7 +257,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         TwoFacedObject.createList(MONTH_NUMBERS, MONTH_NAMES);
 
     /** spatial arguments */
-    private static final String[] SPATIALARGS = new String[] { ARG_CDO_AREA_NORTH,
+    private static final String[] SPATIALARGS = new String[] {
+                                                    ARG_CDO_AREA_NORTH,
             ARG_CDO_AREA_WEST, ARG_CDO_AREA_SOUTH, ARG_CDO_AREA_EAST, };
 
 
@@ -273,15 +296,18 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
 
     /**
-       The DataProcessProvider method. Just adds this
+     *  The DataProcessProvider method. Just adds this
+     *
+     * @return List of DataProcesses
      */
     public List<DataProcess> getDataProcesses() {
         List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
-        if(true) {
+        if (true) {
             processes.add(new CDOAreaStatistics());
         }
+
         return processes;
     }
 
@@ -295,6 +321,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         return "CDO";
     }
 
+    /**
+     * Get the label for the DataProcess
+     *
+     * @return the label
+     */
     public String getDataProcessLabel() {
         return "Climate Data Operator";
     }
@@ -500,13 +531,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param sb       the HTML
      */
     private void addStatsWidget(Request request, StringBuffer sb) {
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Statistic"),
-                new String[]{msgLabel("Period"),
-                             HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES),
-                             msgLabel("Type"),
-                             HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES)}));
+        sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
+                                      new String[] { msgLabel("Period"),
+                HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES),
+                msgLabel("Type"),
+                HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES) }));
     }
 
 
@@ -557,44 +586,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
 
     /**
-     * Get the grid dates
-     *
-     * @param dataset  the dataset
-     *
-     * @return  the dates or empty list if dataset is null
-     */
-    private List<Date> getGridDates(GridDataset dataset) {
-        List<Date> gridDates = null;
-        if (dataset == null) {
-            return new ArrayList<Date>();
-        }
-        List<GridDatatype> grids    = dataset.getGrids();
-        HashSet<Date>      dateHash = new HashSet<Date>();
-        List<CoordinateAxis1DTime> timeAxes =
-            new ArrayList<CoordinateAxis1DTime>();
-
-        for (GridDatatype grid : grids) {
-            GridCoordSystem      gcs      = grid.getCoordinateSystem();
-            CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-            if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
-                timeAxes.add(timeAxis);
-
-                Date[] timeDates = timeAxis.getTimeDates();
-                for (Date timeDate : timeDates) {
-                    dateHash.add(timeDate);
-                }
-            }
-        }
-        if ( !dateHash.isEmpty()) {
-            gridDates =
-                Arrays.asList(dateHash.toArray(new Date[dateHash.size()]));
-            Collections.sort(gridDates);
-        }
-
-        return gridDates;
-    }
-
-    /**
      * Add the months widget
      *
      * @param request  the Request
@@ -616,8 +607,15 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     private void addTimeWidget(Request request, StringBuffer sb,
                                GridDataset dataset, boolean useYYMM) {
-        List<Date> dates = getGridDates(dataset);
-
+        List<CalendarDate> dates = CdmDataOutputHandler.getGridDates(dataset);
+        if ( !dates.isEmpty()) {
+            CalendarDate cd  = dates.get(0);
+            Calendar     cal = cd.getCalendar();
+            if (cal != null) {
+                sb.append(HtmlUtils.hidden(CdmDataOutputHandler.ARG_CALENDAR,
+                                           cal.toString()));
+            }
+        }
         //if ((dates != null) && (!dates.size() > 0)) {
         if (useYYMM) {
             makeMonthsWidget(request, sb, dates);
@@ -629,6 +627,31 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     }
 
     /**
+     * Format a date
+     *
+     * @param request  the request
+     * @param date     the date object (CalendarDate or Date)
+     *
+     * @return the formatted date
+     */
+    public String formatDate(Request request, Object date) {
+        if (date == null) {
+            return BLANK;
+        }
+        if (date instanceof CalendarDate) {
+            String dateFormat = getProperty(PROP_DATE_FORMAT,
+                                            PageHandler.DEFAULT_TIME_FORMAT);
+
+            return new CalendarDateFormatter(dateFormat).toString(
+                (CalendarDate) date);
+        } else if (date instanceof Date) {
+            return getPageHandler().formatDate(request, (Date) date);
+        } else {
+            return date.toString();
+        }
+    }
+
+    /**
      * Add at time widget
      *
      * @param request  the Request
@@ -636,11 +659,12 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param dates    the list of Dates
      */
     private void makeTimesWidget(Request request, StringBuffer sb,
-                                 List<Date> dates) {
+                                 List<CalendarDate> dates) {
         List formattedDates = new ArrayList();
         formattedDates.add(new TwoFacedObject("---", ""));
-        for (Date date : dates) {
-            formattedDates.add(getPageHandler().formatDate(request, date));
+        for (CalendarDate date : dates) {
+            //formattedDates.add(getPageHandler().formatDate(request, date));
+            formattedDates.add(formatDate(request, date));
         }
         /*
           for now default to "" for dates
@@ -669,15 +693,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param dates    the list of dates (just in case)
      */
     private void makeMonthsWidget(Request request, StringBuffer sb,
-                                  List<Date> dates) {
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Months"),
-                new String[]{
-                    msgLabel("Start"),
-                    HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS),
-                    msgLabel("End"),
-                    HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)}));
+                                  List<CalendarDate> dates) {
+        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
+                                      new String[] { msgLabel("Start"),
+                HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS), msgLabel("End"),
+                HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS) }));
     }
 
     /**
@@ -688,14 +708,15 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param dates    the list of dates
      */
     private void makeYearsWidget(Request request, StringBuffer sb,
-                                 List<Date> dates) {
+                                 List<CalendarDate> dates) {
         SortedSet<String> uniqueYears =
             Collections.synchronizedSortedSet(new TreeSet<String>());
-        if (dates != null) {
-            for (Date d : dates) {
+        if ((dates != null) && !dates.isEmpty()) {
+            for (CalendarDate d : dates) {
                 try {  // shouldn't get an exception
-                    String year = new DateTime(d).formattedString("yyyy",
-                                      DateTime.DEFAULT_TIMEZONE);
+                    String year = new CalendarDateTime(d).formattedString(
+                                      "yyyy",
+                                      CalendarDateTime.DEFAULT_TIMEZONE);
                     uniqueYears.add(year);
                 } catch (Exception e) {}
             }
@@ -708,13 +729,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
         }
 
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Years"),
-                new String[]{msgLabel("Start"),
-                             HtmlUtils.select(ARG_CDO_STARTYEAR, years),
-                             msgLabel("End"),
-                             HtmlUtils.select(ARG_CDO_ENDYEAR, years)}));
+        sb.append(HtmlUtils.formEntry(msgLabel("Years"),
+                                      new String[] { msgLabel("Start"),
+                HtmlUtils.select(ARG_CDO_STARTYEAR, years), msgLabel("End"),
+                HtmlUtils.select(ARG_CDO_ENDYEAR, years) }));
     }
 
     /**
@@ -741,7 +759,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         }
         //ARG_PREFIX +
         String llb = map.makeSelector(ARG_CDO_AREA, true, points);
-        sb.append(HtmlUtils.formEntry(msgLabel("Region"), llb,4));
+        sb.append(HtmlUtils.formEntry(msgLabel("Region"), llb, 4));
     }
 
     /**
@@ -929,24 +947,31 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         String llSelect = "";
         if (haveAllSpatialArgs && anySpatialDifferent) {
             // Normalize longitude bounds to the data
-            double origLonMin = Double.parseDouble(request.getString(ARG_CDO_AREA_WEST+".original", "-180"));
-            double origLonMax = Double.parseDouble(request.getString(ARG_CDO_AREA_EAST+".original", "180"));
-            double lonMin = Double.parseDouble(request.getString(ARG_CDO_AREA_WEST, "-180"));
-            double lonMax = Double.parseDouble(request.getString(ARG_CDO_AREA_EAST, "180"));
-            if (origLonMin < 0) { // -180 to 180
+            double origLonMin =
+                Double.parseDouble(request.getString(ARG_CDO_AREA_WEST
+                    + ".original", "-180"));
+            double origLonMax =
+                Double.parseDouble(request.getString(ARG_CDO_AREA_EAST
+                    + ".original", "180"));
+            double lonMin =
+                Double.parseDouble(request.getString(ARG_CDO_AREA_WEST,
+                    "-180"));
+            double lonMax =
+                Double.parseDouble(request.getString(ARG_CDO_AREA_EAST,
+                    "180"));
+            if (origLonMin < 0) {  // -180 to 180
                 lonMin = GeoUtils.normalizeLongitude(lonMin);
                 lonMax = GeoUtils.normalizeLongitude(lonMax);
-            } else {  // 0-360
+            } else {               // 0-360
                 lonMin = GeoUtils.normalizeLongitude360(lonMin);
                 lonMax = GeoUtils.normalizeLongitude360(lonMax);
             }
-            llSelect = OP_SELLLBOX + ","
-                       + String.valueOf(lonMin) + "," 
+            llSelect = OP_SELLLBOX + "," + String.valueOf(lonMin) + ","
                        + String.valueOf(lonMax) + ","
-                       //+ request.getString(ARG_CDO_AREA_WEST, "-180") + ","
-                       //+ request.getString(ARG_CDO_AREA_EAST, "180") + ","
-                       + request.getString(ARG_CDO_AREA_SOUTH, "-90") + ","
-                       + request.getString(ARG_CDO_AREA_NORTH, "90");
+            //+ request.getString(ARG_CDO_AREA_WEST, "-180") + ","
+            //+ request.getString(ARG_CDO_AREA_EAST, "180") + ","
+            + request.getString(ARG_CDO_AREA_SOUTH, "-90") + ","
+                    + request.getString(ARG_CDO_AREA_NORTH, "90");
         }
 
         return llSelect;
@@ -1006,14 +1031,22 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         }
 
         String dateSelect = null;
-        if (request.defined(ARG_CDO_FROMDATE) || request.defined(ARG_CDO_TODATE)) {
+        if (request.defined(ARG_CDO_FROMDATE)
+                || request.defined(ARG_CDO_TODATE)) {
+            CalendarDate[] dates = new CalendarDate[2];
+            String calString =
+                request.getString(CdmDataOutputHandler.ARG_CALENDAR, null);
+            if (request.defined(ARG_FROMDATE)) {
+                String fromDateString = request.getString(ARG_FROMDATE, null);
+                dates[0] = CalendarDate.parseISOformat(calString,
+                        fromDateString);
+            }
+            if (request.defined(ARG_TODATE)) {
+                String toDateString = request.getString(ARG_TODATE, null);
+                dates[1] = CalendarDate.parseISOformat(calString,
+                        toDateString);
+            }
 
-            Date[] dates = new Date[] { request.defined(ARG_CDO_FROMDATE)
-                                        ? request.getDate(ARG_CDO_FROMDATE, null)
-                                        : null,
-                                        request.defined(ARG_CDO_TODATE)
-                                        ? request.getDate(ARG_CDO_TODATE, null)
-                                        : null };
             //have to have both dates
             if ((dates[0] != null) && (dates[1] == null)) {
                 dates[0] = null;
@@ -1022,13 +1055,15 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                 dates[1] = null;
             }
             if ((dates[0] != null) && (dates[1] != null)) {
-                if (dates[0].getTime() > dates[1].getTime()) {
+                if (dates[0].isAfter(dates[1])) {
                     getPageHandler().showDialogWarning(
                         "From date is after to date");
                 } else {
-                    dateSelect = OP_SELDATE + ","
-                                 + DateUtil.getTimeAsISO8601(dates[0]) + ","
-                                 + DateUtil.getTimeAsISO8601(dates[1]);
+                    dateSelect =
+                        OP_SELDATE + ","
+                        + CalendarDateFormatter.toDateTimeStringISO(dates[0])
+                        + ","
+                        + CalendarDateFormatter.toDateTimeStringISO(dates[1]);
                 }
             }
         } else if (request.defined(ARG_CDO_STARTYEAR)
@@ -1038,8 +1073,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                                                 ARG_CDO_STARTYEAR, null)
                                             : null,
                                             request.defined(ARG_CDO_ENDYEAR)
-                                            ? request.getString(ARG_CDO_ENDYEAR,
-                                                null)
+                                            ? request.getString(
+                                                ARG_CDO_ENDYEAR, null)
                                             : null };
             //have to have both dates
             if ((years[0] != null) && (years[1] == null)) {
@@ -1076,7 +1111,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public List<String> createStatCommands(Request request, Entry entry) {
         List<String> commands = new ArrayList<String>();
-        if (request.defined(ARG_CDO_PERIOD) && request.defined(ARG_CDO_STAT)) {
+        if (request.defined(ARG_CDO_PERIOD)
+                && request.defined(ARG_CDO_STAT)) {
             String period = request.getString(ARG_CDO_PERIOD);
             String stat   = request.getString(ARG_CDO_STAT);
             if ((period == null) || (stat == null)) {
@@ -1099,11 +1135,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
         return commands;
     }
-    
+
+    /**
+     * Class description
+     *
+     *
+     */
     protected class CDOAreaStatistics implements DataProcess {
-        
+
+        /**
+         * Area statistics DataProcess
+         */
         CDOAreaStatistics() {}
-        
+
         /**
          * Get the DataProcess id
          *
@@ -1123,7 +1167,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * @throws Exception  problem adding to the form
          */
         public void addToForm(Request request, Entry entry, StringBuffer sb)
-         throws Exception {
+                throws Exception {
             sb.append(HtmlUtils.formTable());
             if (entry.getType().equals("noaa_climate_modelfile")) {
                 //values[1] = var;
@@ -1143,23 +1187,23 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                 header.append(values[5]);
                 //sb.append(HtmlUtils.h3(header.toString()));
             }
-    
+
             //addInfoWidget(request, sb);
             CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
             GridDataset dataset =
                 dataOutputHandler.getCdmManager().getGridDataset(entry,
                     entry.getResource().getPath());
-    
+
             if (dataset != null) {
                 addVarLevelWidget(request, sb, dataset);
             }
-    
+
             addStatsWidget(request, sb);
-    
+
             //if(dataset != null)  {
             addTimeWidget(request, sb, dataset, true);
             //}
-    
+
             LatLonRect llr = null;
             if (dataset != null) {
                 llr = dataset.getBoundingBox();
@@ -1182,10 +1226,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * @throws Exception  problem processing
          */
         public File processRequest(Request request, Entry granule)
-         throws Exception {
-            
+                throws Exception {
+
             String tail    = getStorageManager().getFileTail(granule);
-            String id = getRepository().getGUID();
+            String id      = getRepository().getGUID();
             String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
             File outFile = new File(IOUtil.joinDir(getProductDir(), newName));
@@ -1196,21 +1240,21 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             commands.add("-O");
             String operation = request.getString(ARG_CDO_OPERATION, OP_INFO);
             //commands.add(operation);
-    
+
             // Select order (left to right) - operations go right to left:
             //   - stats
             //   - level
             //   - region
             //   - month range
             //   - year or time range
-    
+
             List<String> statCommands = createStatCommands(request, granule);
             for (String cmd : statCommands) {
                 if ((cmd != null) && !cmd.isEmpty()) {
                     commands.add(cmd);
                 }
             }
-    
+
             String levSelect = createLevelSelectCommand(request, granule);
             if ((levSelect != null) && !levSelect.isEmpty()) {
                 commands.add(levSelect);
@@ -1219,16 +1263,17 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             if ((areaSelect != null) && !areaSelect.isEmpty()) {
                 commands.add(areaSelect);
             }
-    
-            List<String> dateCmds = createDateSelectCommands(request, granule);
+
+            List<String> dateCmds = createDateSelectCommands(request,
+                                        granule);
             for (String cmd : dateCmds) {
                 if ((cmd != null) && !cmd.isEmpty()) {
                     commands.add(cmd);
                 }
             }
-    
+
             System.err.println("cmds:" + commands);
-    
+
             commands.add(granule.getResource().getPath());
             commands.add(outFile.toString());
             String[] results = getRepository().executeCommand(commands, null,
@@ -1247,30 +1292,30 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         "Humm, the CDO processing failed for some reason");
                 }
             }
-    
+
             //The jeff is here for when I have a fake cdo.sh
             boolean jeff = false;
-    
+
             if (doingPublish(request)) {
                 return outFile;
             }
-    
+
             //Assuming this is some text - DOESN'T HAPPEN anymore
             if (operation.equals(OP_INFO) && false) {
                 String info;
-    
+
                 if ( !jeff) {
                     info = IOUtil.readInputStream(
                         getStorageManager().getFileInputStream(outFile));
                 } else {
                     info = outMsg;
                 }
-    
+
                 StringBuffer sb = new StringBuffer();
                 addForm(request, granule, sb);
                 sb.append(header(msg("CDO Information")));
                 sb.append(HtmlUtils.pre(info));
-    
+
                 //            return new Result("CDO", sb);
             }
 
@@ -1285,6 +1330,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         public String getDataProcessLabel() {
             return "CDO Area Statistics";
         }
-        
+
     }
 }

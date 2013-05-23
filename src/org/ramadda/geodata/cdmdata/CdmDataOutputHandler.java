@@ -715,18 +715,23 @@ public class CdmDataOutputHandler extends OutputHandler {
                 request.getLatOrLonValue(
                     ARG_LOCATION + ".longitude", deflon));
         }
-        double         levelVal   = request.get(ARG_LEVEL, Double.NaN);
+        double             levelVal   = request.get(ARG_LEVEL, Double.NaN);
 
-        int            timeStride = 1;
-        CalendarDate[] dates      = new CalendarDate[2];
-        Calendar       cal        = null;
-        String         calString  = request.getString(ARG_CALENDAR, null);
+        int                timeStride = 1;
+        List<CalendarDate> allDates   =
+            CdmDataOutputHandler.getGridDates(gds);
+        CalendarDate[]     dates      = new CalendarDate[2];
+        Calendar           cal        = null;
+        String             calString  = request.getString(ARG_CALENDAR, null);
         if (request.defined(ARG_FROMDATE)) {
-            String fromDateString = request.getString(ARG_FROMDATE, null);
+            String fromDateString = request.getString(ARG_FROMDATE,
+                                        formatDate(request, allDates.get(0)));
             dates[0] = CalendarDate.parseISOformat(calString, fromDateString);
         }
         if (request.defined(ARG_TODATE)) {
-            String toDateString = request.getString(ARG_TODATE, null);
+            String toDateString = request.getString(ARG_TODATE,
+                                      formatDate(request,
+                                          allDates.get(allDates.size() - 1)));
             dates[1] = CalendarDate.parseISOformat(calString, toDateString);
         }
         //have to have both dates
@@ -777,7 +782,6 @@ public class CdmDataOutputHandler extends OutputHandler {
                     pdrb.setTime(pdrb.getTime_start());
                 }
             } else {  // dates weren't specified
-                List<CalendarDate> allDates = gapds.getDates();
                 dates[0] = allDates.get(0);
                 dates[1] = allDates.get(allDates.size() - 1);
                 pdrb.setTemporal("all");
@@ -1058,9 +1062,12 @@ public class CdmDataOutputHandler extends OutputHandler {
      * @return  the dates or null
      */
     public static List<CalendarDate> getGridDates(GridDataset dataset) {
-        List<CalendarDate>    gridDates = null;
-        List<GridDatatype>    grids     = dataset.getGrids();
-        HashSet<CalendarDate> dateHash  = new HashSet<CalendarDate>();
+        List<CalendarDate> gridDates = new ArrayList<CalendarDate>();
+        if (dataset == null) {
+            return gridDates;
+        }
+        List<GridDatatype>    grids    = dataset.getGrids();
+        HashSet<CalendarDate> dateHash = new HashSet<CalendarDate>();
         List<CoordinateAxis1DTime> timeAxes =
             new ArrayList<CoordinateAxis1DTime>();
 
