@@ -174,10 +174,10 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** GrADS CTL suffix */
     public static final String SUFFIX_CTL = ".ctl";
 
-    /** CSV suffix*/
+    /** CSV suffix */
     public static final String SUFFIX_CSV = ".csv";
-    
-    /** CSV suffix*/
+
+    /** CSV suffix */
     public static final String SUFFIX_XML = ".xml";
 
     /** bounding box argument */
@@ -1038,6 +1038,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         formats.add(
             new TwoFacedObject(
                 "NetCDF", SupportedFormat.NETCDF3.getFormatName()));
+        /* comment out until file sizes are smaller
         //Check if netcdf4 is available
         try {
             if (Nc4Iosp.isClibraryPresent()) {
@@ -1045,7 +1046,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                         SupportedFormat.NETCDF4.getFormatName()));
             }
         } catch (UnsatisfiedLinkError e) {}
-
+        */
         formats.add(new TwoFacedObject("Comma Separated Values (CSV)",
                                        SupportedFormat.CSV.getFormatName()));
         formats.add(new TwoFacedObject("Time Series Image",
@@ -1300,12 +1301,12 @@ public class CdmDataOutputHandler extends OutputHandler {
             }
 
             if (haveAllSpatialArgs && anySpatialDifferent) {
-                llr = new LatLonRect(
-                    new LatLonPointImpl(
-                        request.get(ARG_AREA_NORTH, 90.0), request.get(
-                            ARG_AREA_WEST, -180.0)), new LatLonPointImpl(
-                                request.get(ARG_AREA_SOUTH, 0.0), request.get(
-                                    ARG_AREA_EAST, 180.0)));
+                llr = new LatLonRect(new LatLonPointImpl(request
+                    .getLatOrLonValue(ARG_AREA_NORTH, 90.0), request
+                    .getLatOrLonValue(ARG_AREA_WEST,
+                        -180.0)), new LatLonPointImpl(request
+                            .getLatOrLonValue(ARG_AREA_SOUTH, 0.0), request
+                                .getLatOrLonValue(ARG_AREA_EAST, 180.0)));
                 //                System.err.println("llr:" + llr);
             }
             int                hStride    = request.get(ARG_HSTRIDE, 1);
@@ -1408,15 +1409,8 @@ public class CdmDataOutputHandler extends OutputHandler {
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
         List<CalendarDate> dates = getGridDates(dataset);
-        /*
-        CalendarDate       cd    = dates.get(0);
-        Calendar           cal   = cd.getCalendar();
-        if (cal != null) {
-            sb.append(HtmlUtils.hidden(ARG_CALENDAR, cal.toString()));
-        }
-        */
-        StringBuffer varSB = getVariableForm(dataset, false);
-        LatLonRect   llr   = dataset.getBoundingBox();
+        StringBuffer       varSB = getVariableForm(dataset, false);
+        LatLonRect         llr   = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
