@@ -179,7 +179,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         //Call this in a thread because if there is any problem with xvfb this will just hang
         //Run in a couple of seconds because we are deadlocking deep down in Java on the mac
         if (getRepository().getProperty(PROP_IDV_ENABLED, true)) {
-            Misc.runInABit(2000, this, "checkIdv", null);
+            Misc.runInABit(5000, this, "checkIdv", null);
         }
     }
 
