@@ -176,7 +176,10 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         Entry entry  = null; 
         Object[] values = new Object[10];
         String filenameFromBiblio = null;
-        for(String line: StringUtil.split(s, "\n",true,true)) {
+        List<String> lines = StringUtil.split(s, "\n",true,true);
+        //Add a dummy line so we pick up the last biblio entry in the loop
+        lines.add("%0 dummy");
+        for(String line: lines) {
             List<String> toks = StringUtil.splitUpTo(line," ",2);
             if(toks.get(0).trim().startsWith("%") && toks.size() ==2) {
                 String tag = toks.get(0);
