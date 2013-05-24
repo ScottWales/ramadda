@@ -23,6 +23,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.search.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
 
@@ -291,6 +292,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     /** wiki import */
     public static final String WIKI_PROP_MENU = "menu";
 
+    public static final String WIKI_PROP_SEARCH = "search";
+
     /** wiki import */
     public static final String WIKI_PROP_TREE = "tree";
 
@@ -487,7 +490,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         prop(WIKI_PROP_TAGCLOUD,
              attrs("type", "","threshold","0")),
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
-        WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID
+        WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH
     };
 
 
@@ -1178,7 +1181,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                            true, true));
             return  getEntryManager().getEntryActionsTable(request,
                                                            entry, type);
-
+        } else if (include.equals(WIKI_PROP_SEARCH)) {
+            String id  = Misc.getProperty(props, "id","");
+            SpecialSearch ss =(SpecialSearch) getRepository().getApiManager().getApiHandler(id);
+            Request clonedRequest = request.cloneMe();
+            ss.processSearchRequest(clonedRequest, sb);
+            return sb.toString();
         } else if (include.equals(WIKI_PROP_APPLY)) {
             StringBuffer style       = new StringBuffer(Misc.getProperty(props, APPLY_PREFIX + ATTR_STYLE, ""));
             int    padding      = Misc.getProperty(props, APPLY_PREFIX + ATTR_PADDING, 5);

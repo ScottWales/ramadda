@@ -804,13 +804,16 @@ public class MetadataHandler extends RepositoryManager {
                 return;
             }
 
-            List<TwoFacedObject> l = trimValues((List<String>) Misc.toList(values));
+            List<TwoFacedObject> existingValues = trimValues((List<String>) Misc.toList(values));
             List<TwoFacedObject> selectList = new ArrayList<TwoFacedObject>();
             selectList.add(new TwoFacedObject("-" + msg("all") + "-", ""));
             MetadataElement element =  type.getChildren().get(0);
             List enumValues = element.getValues();
+            if(enumValues ==null) {
+                enumValues = new ArrayList();
+            }
             if(enumValues !=null) {
-                for(TwoFacedObject o: l) {
+                for(TwoFacedObject o: existingValues) {
                     TwoFacedObject tfo = TwoFacedObject.findId(o.getId(), enumValues);
                     if(tfo!=null) {
                         selectList.add(tfo);

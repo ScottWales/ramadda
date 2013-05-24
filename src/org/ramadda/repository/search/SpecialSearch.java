@@ -219,7 +219,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      * @throws Exception _more_
      */
     public Result processSearchRequest(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        Result result=  processSearchRequest(request, sb);
+        if(result!=null) return result;
+        result = new Result("Search", sb);
+        return getRepository().getEntryManager().addEntryHeader(request,
+                getRepository().getEntryManager().getTopGroup(), result);
+    }
 
+
+    public Result processSearchRequest(Request request, StringBuffer sb) throws Exception {
 
         int contentsWidth  = 750;
         int contentsHeight = 450;
@@ -261,7 +270,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 .outputTimelineXml(request, group, allEntries);
         }
 
-        StringBuffer sb = new StringBuffer();
+
         StringBuffer js = new StringBuffer();
         if (URL_SEARCH == null) {
             URL_SEARCH = new RequestUrl(this, searchUrl);
@@ -315,8 +324,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             MetadataType metadataType =
                 getRepository().getMetadataManager().findType(type);
             if (metadataType != null) {
-                metadataType.getHandler().addToSearchForm(request, formSB,
+                StringBuffer tmpsb = new StringBuffer();
+                metadataType.getHandler().addToSearchForm(request, tmpsb,
                         metadataType);
+                formSB.append(tmpsb);
             }
         }
 
@@ -483,15 +494,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             //            sb.append(getPageHandler().showDialogNote("No entries found"));
         }
 
+        //        for (Entry entry : allEntries) {}
 
-
-        for (Entry entry : allEntries) {}
-
-        Result result = new Result("Search", sb);
-
-        return getRepository().getEntryManager().addEntryHeader(request,
-                getRepository().getEntryManager().getTopGroup(), result);
+        return null;
     }
+
+
 
 
     /**
