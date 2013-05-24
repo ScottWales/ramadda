@@ -22,31 +22,8 @@
 package org.ramadda.geodata.cdmdata;
 
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 import opendap.dap.DAP2Exception;
+
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
@@ -65,6 +42,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
+
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.PageHandler;
@@ -81,19 +59,23 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.Element;
 
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.exception
+    .VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.server.ncSubset.view.PointDataStream;
 import thredds.server.opendap.GuardedDatasetImpl;
+
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
+
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
@@ -114,11 +96,13 @@ import ucar.nc2.ft.NestedPointFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+
 import ucar.unidata.data.gis.KmlUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -132,6 +116,33 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
+
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -154,8 +165,20 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** NCML suffix */
     public static final String SUFFIX_NCML = ".ncml";
 
+    /** netcdf suffix */
+    public static final String SUFFIX_NC = ".nc";
+
+    /** netcdf4 suffix */
+    public static final String SUFFIX_NC4 = ".nc4";
+
     /** GrADS CTL suffix */
     public static final String SUFFIX_CTL = ".ctl";
+
+    /** CSV suffix*/
+    public static final String SUFFIX_CSV = ".csv";
+    
+    /** CSV suffix*/
+    public static final String SUFFIX_XML = ".xml";
 
     /** bounding box argument */
     public static final String ARG_POINT_BBOX = "bbox";
@@ -746,24 +769,20 @@ public class CdmDataOutputHandler extends OutputHandler {
         } else {
             //                System.err.println ("varNames:" + varNames);
             // modelled after thredds.server.ncSubset.controller.PointDataController
-            String format =
-                request.getString(
-                    ARG_FORMAT,
-                    SupportedFormat.NETCDF3.getResponseContentType());
-            SupportedFormat sf = getSupportedFormat(format);
-            if (format.equals(FORMAT_TIMESERIES_CHART)
-                    || format.equals(FORMAT_TIMESERIES_IMAGE)) {
-                sf = SupportedFormat.CSV;
-            }
+            String format = request.getString(ARG_FORMAT,
+                                SupportedFormat.NETCDF3.toString());
+            SupportedFormat            sf   = getSupportedFormat(format);
             PointDataRequestParamsBean pdrb =
                 new PointDataRequestParamsBean();
             GridAsPointDataset gapds =
                 NcssRequestUtils.buildGridAsPointDataset(gds, varNames);
             pdrb.setVar(varNames);
-            pdrb.setAccept((format.equals(FORMAT_TIMESERIES_CHART)
-                            || format.equals(FORMAT_TIMESERIES_IMAGE))
-                           ? SupportedFormat.CSV.getResponseContentType()
-                           : format);
+            // accept uses the response type
+            pdrb.setAccept(
+                (format.equalsIgnoreCase(FORMAT_TIMESERIES_CHART)
+                 || format.equalsIgnoreCase(FORMAT_TIMESERIES_IMAGE))
+                ? SupportedFormat.CSV.getResponseContentType()
+                : sf.getResponseContentType());
             pdrb.setPoint(true);
             pdrb.setLatitude(llp.getLatitude());
             pdrb.setLongitude(llp.getLongitude());
@@ -785,20 +804,22 @@ public class CdmDataOutputHandler extends OutputHandler {
             Map<String, List<String>> groupVars = groupVarsByVertLevels(gds,
                                                       pdrb);
 
-            String suffix = ".nc";
-            if (pdrb.getAccept()
+            String suffix = SUFFIX_NC;
+            if (sf.equals(SupportedFormat.NETCDF4)) {
+                suffix = SUFFIX_NC4;
+            } else if (pdrb.getAccept()
                     .equals(SupportedFormat.CSV
                         .getResponseContentType()) || format
                             .equals(FORMAT_TIMESERIES_CHART_DATA) || format
                             .equals(FORMAT_TIMESERIES_IMAGE)) {
-                suffix = ".csv";
+                suffix = SUFFIX_CSV;
             } else if (pdrb.getAccept().equals(
                     SupportedFormat.XML.getResponseContentType())) {
-                suffix = ".xml";
+                suffix = SUFFIX_XML;
             }
 
             String baseName = IOUtil.stripExtension(entry.getName());
-            if (format.equals(FORMAT_TIMESERIES_CHART)) {
+            if (format.equalsIgnoreCase(FORMAT_TIMESERIES_CHART)) {
                 StringBuffer buf = new StringBuffer();
                 String chartTemplate =
                     getRepository().getResource(
@@ -825,8 +846,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                         vizsb.toString());
 
                 String html = chartTemplate;
-                request.put(ARG_FORMAT,
-                            SupportedFormat.CSV.getResponseContentType());
+                request.put(ARG_FORMAT, SupportedFormat.CSV.getFormatName());
                 String dataUrl = request.getRequestPath() + "/" + baseName
                                  + suffix + "?" + request.getUrlArgs();
                 html = html.replace("${dataurl}", dataUrl);
@@ -867,7 +887,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                         (Entry) entry.clone(), entry, "point series of");
             }
             Result result = null;
-            if (format.equals(FORMAT_TIMESERIES_IMAGE)) {
+            if (format.equalsIgnoreCase(FORMAT_TIMESERIES_IMAGE)) {
                 result = outputTimeSeriesImage(request, entry, f);
             } else {
                 result =
@@ -891,7 +911,17 @@ public class CdmDataOutputHandler extends OutputHandler {
      * @return the corresponding format
      */
     private SupportedFormat getSupportedFormat(String name) {
+
+        if (name.equalsIgnoreCase(FORMAT_TIMESERIES_CHART)
+                || name.equalsIgnoreCase(FORMAT_TIMESERIES_IMAGE)) {
+            return SupportedFormat.CSV;
+        }
         for (SupportedFormat sf : SupportedFormat.values()) {
+            // check for the name
+            if (name.equalsIgnoreCase(sf.getFormatName())) {
+                return sf;
+            }
+            // check for aliases
             List<String> aliases = sf.getAliases();
             if (aliases.contains(name)) {
                 return sf;
@@ -1004,25 +1034,30 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         addTimeWidget(request, dates, sb);
 
-        List formats = Misc.toList(new Object[] {
+        List<TwoFacedObject> formats = new ArrayList<TwoFacedObject>();
+        formats.add(
             new TwoFacedObject(
-                "NetCDF3", SupportedFormat.NETCDF3.getResponseContentType()),
-            // requires JNI
-            //new TwoFacedObject(
-            //    "NetCDF4", SupportedFormat.NETCDF4.getResponseContentType()),
-            new TwoFacedObject("XML",
-                               SupportedFormat.XML.getResponseContentType()),
-            new TwoFacedObject("Time Series Image", FORMAT_TIMESERIES),
-            new TwoFacedObject("Comma Separated Values (CSV)",
-                               SupportedFormat.CSV.getResponseContentType()),
-            // Comment out until it works better to handled dates
-            //new TwoFacedObject("Interactive Time Series",
-            //                   FORMAT_TIMESERIES_CHART),
-        });
+                "NetCDF", SupportedFormat.NETCDF3.getFormatName()));
+        //Check if netcdf4 is available
+        try {
+            if (Nc4Iosp.isClibraryPresent()) {
+                formats.add(new TwoFacedObject("NetCDF4",
+                        SupportedFormat.NETCDF4.getFormatName()));
+            }
+        } catch (UnsatisfiedLinkError e) {}
 
-        String format = request.getString(
-                            ARG_FORMAT,
-                            SupportedFormat.NETCDF3.getResponseContentType());
+        formats.add(new TwoFacedObject("Comma Separated Values (CSV)",
+                                       SupportedFormat.CSV.getFormatName()));
+        formats.add(new TwoFacedObject("Time Series Image",
+                                       FORMAT_TIMESERIES));
+        formats.add(new TwoFacedObject("XML",
+                                       SupportedFormat.XML.getFormatName()));
+        // Comment out until it works better to handled dates
+        // formats.add(new TwoFacedObject("Interactive Time Series", FORMAT_TIMESERIES_CHART));
+
+        String format =
+            request.getString(ARG_FORMAT,
+                              SupportedFormat.NETCDF3.getFormatName());
 
         sb.append(HtmlUtils.formEntry(msgLabel("Format"),
                                       HtmlUtils.select(ARG_FORMAT, formats,
@@ -1121,7 +1156,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                             ARG_VARIABLE + "." + var.getShortName(),
                             HtmlUtils.VALUE_TRUE, (grids.size() == 1),
                             HtmlUtils.id(cbxId) + call) + HtmlUtils.space(1)
-                                + var.getName() + HtmlUtils.space(1)
+                                + var.getShortName() + HtmlUtils.space(1)
                                 + ((var.getUnitsString() != null)
                                    ? "(" + var.getUnitsString() + ")"
                                    : ""), "<i>" + var.getDescription()
@@ -1166,11 +1201,11 @@ public class CdmDataOutputHandler extends OutputHandler {
      */
     public Result outputGridAsPoint(Request request, Entry entry)
             throws Exception {
-        String format = request.getString(
-                            ARG_FORMAT,
-                            SupportedFormat.NETCDF3.getResponseContentType());
+        String format =
+            request.getString(ARG_FORMAT,
+                              SupportedFormat.NETCDF3.getFormatName());
         String baseName = IOUtil.stripExtension(entry.getName());
-        if (format.equals(FORMAT_TIMESERIES)) {
+        if (format.equalsIgnoreCase(FORMAT_TIMESERIES)) {
             request.put(ARG_FORMAT, FORMAT_TIMESERIES_IMAGE);
             String redirectUrl = request.getRequestPath() + "/" + baseName
                                  + ".png" + "?" + request.getUrlArgs();
@@ -1418,7 +1453,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                            new TwoFacedObject("NetCDF4", NetcdfFileWriter.Version.netcdf4.toString()),
                            new TwoFacedObject("NetCDF4 Classic", NetcdfFileWriter.Version.netcdf4_classic.toString())});
 
-        String format = request.getString(ARG_FORMAT, SupportedFormat.NETCDF3.getResponseContentType());
+        String format = request.getString(ARG_FORMAT, SupportedFormat.NETCDF3.getFormatName());
 
         sb.append(HtmlUtils.formEntry(msgLabel("Format"),
                                       HtmlUtils.select(ARG_FORMAT, formats,
@@ -1622,7 +1657,8 @@ public class CdmDataOutputHandler extends OutputHandler {
             List          columnData = new ArrayList();
             StructureData structure  = po.getData();
             StringBuffer  info       = new StringBuffer("");
-            info.append("<b>Date:</b> " + po.getNominalTimeAsDate() + "<br>");
+            info.append("<b>Date:</b> " + po.getNominalTimeAsCalendarDate()
+                        + "<br>");
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 //{name:\"Ashley\",breed:\"German Shepherd\",age:12}
                 StructureMembers.Member member =
@@ -1632,12 +1668,12 @@ public class CdmDataOutputHandler extends OutputHandler {
                     String value = structure.getScalarString(member);
                     columnData.add(var.getShortName() + ":"
                                    + HtmlUtils.quote(value));
-                    info.append("<b>" + var.getName() + ": </b>" + value
+                    info.append("<b>" + var.getShortName() + ": </b>" + value
                                 + "</br>");
 
                 } else {
                     float value = structure.convertScalarFloat(member);
-                    info.append("<b>" + var.getName() + ": </b>" + value
+                    info.append("<b>" + var.getShortName() + ": </b>" + value
                                 + "</br>");
 
                     columnData.add(var.getShortName() + ":" + value);
@@ -1658,7 +1694,7 @@ public class CdmDataOutputHandler extends OutputHandler {
             columnNames.add(HtmlUtils.quote(var.getShortName()));
             String label = var.getDescription();
             //            if(label.trim().length()==0)
-            label = var.getName();
+            label = var.getShortName();
             columnDefs.add("{key:" + HtmlUtils.quote(var.getShortName())
                            + "," + "sortable:true," + "label:"
                            + HtmlUtils.quote(label) + "}");
@@ -1990,7 +2026,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         if (format.equals(FORMAT_CSV)) {
             request.getHttpServletResponse().setContentType("text/csv");
             request.setReturnFilename(IOUtil.stripExtension(entry.getName())
-                                      + ".csv");
+                                      + SUFFIX_CSV);
         } else {
             request.getHttpServletResponse().setContentType(
                 "application/vnd.google-earth.kml+xml");
@@ -2066,7 +2102,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                 pw.print("\n");
             }
 
-            pw.print(HtmlUtils.quote("" + po.getNominalTimeAsDate()));
+            pw.print(HtmlUtils.quote("" + po.getNominalTimeAsCalendarDate()));
             pw.print(",");
             pw.print(el.getLatitude());
             pw.print(",");
@@ -2128,22 +2164,24 @@ public class CdmDataOutputHandler extends OutputHandler {
 
             StructureData structure = po.getData();
             StringBuffer  info      = new StringBuffer("");
-            info.append("<b>Date:</b> " + po.getNominalTimeAsDate() + "<br>");
+            info.append("<b>Date:</b> " + po.getNominalTimeAsCalendarDate()
+                        + "<br>");
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 StructureMembers.Member member =
                     structure.findMember(var.getShortName());
                 if ((var.getDataType() == DataType.STRING)
                         || (var.getDataType() == DataType.CHAR)) {
-                    info.append("<b>" + var.getName() + ": </b>"
+                    info.append("<b>" + var.getShortName() + ": </b>"
                                 + structure.getScalarString(member) + "<br>");
                 } else {
-                    info.append("<b>" + var.getName() + ": </b>"
+                    info.append("<b>" + var.getShortName() + ": </b>"
                                 + structure.convertScalarFloat(member)
                                 + "<br>");
 
                 }
             }
-            KmlUtil.placemark(docNode, "" + po.getNominalTimeAsDate(),
+            KmlUtil.placemark(docNode,
+                              "" + po.getNominalTimeAsCalendarDate(),
                               info.toString(), lat, lon, alt, null);
         }
         pw.print(XmlUtil.toString(root));
