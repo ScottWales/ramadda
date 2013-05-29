@@ -2,15 +2,16 @@ package gov.noaa.esrl.psd.repository.data.model;
 
 
 import java.io.File;
+import java.util.regex.Matcher;
 
-import org.ramadda.geodata.model.ClimateModelFileHarvester;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.harvester.FileInfo;
+import org.ramadda.repository.harvester.PatternHarvester;
 import org.ramadda.repository.type.TypeHandler;
 import org.w3c.dom.Element;
 
-public class CMIP5ModelFileHarvester extends ClimateModelFileHarvester {
+public class CMIP5ModelFileHarvester extends PatternHarvester {
 
     public CMIP5ModelFileHarvester(Repository repository, String id)
             throws Exception {
@@ -77,6 +78,28 @@ public class CMIP5ModelFileHarvester extends ClimateModelFileHarvester {
             throw new RuntimeException(exc);
         }
     }
+
+    /**
+     * Should this harvester harvest the given file
+     *
+     * @param fileInfo file information
+     * @param f the actual file
+     * @param matcher pattern matcher
+     * @param originalFile  the original file
+     * @param entry   the Entry
+     *
+     * @return the new entry or null if nothing is harvested
+     *
+     * @throws Exception on badness
+     * @Override
+     */
+     public Entry harvestFile(FileInfo fileInfo, File f, Matcher matcher)
+           throws Exception {
+       if (!f.toString().endsWith(".nc")) {
+           return null;
+       }
+       return super.harvestFile(fileInfo, f, matcher);
+     }
 
 
 }

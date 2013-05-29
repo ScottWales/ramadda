@@ -52,13 +52,14 @@ public class CMIP5ModelFileTypeHandler extends ClimateModelFileTypeHandler {
         //System.err.println ("no values set");
         String filepath = entry.getFile().toString();
         String filename = IOUtil.getFileTail(entry.getFile().toString());
-        // Filename looks like  var_model_scenario_ens??_<date>.nc
+        // Filename looks like  var_mip_model_scenario_ens??_<date>.nc
         Matcher m = pattern.matcher(filename);
         if (!m.find()) {
             System.err.println ("no match for: "+filename);
             return;
         }
         String var = m.group(1);
+        String miptable = m.group(2);
         String model = m.group(3);
         String experiment = m.group(4);
         String member = m.group(5);
@@ -72,17 +73,17 @@ public class CMIP5ModelFileTypeHandler extends ClimateModelFileTypeHandler {
         /*
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
      <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" />
+     <column name="miptable" type="enumeration"  label="MIP Table" />
      <column name="experiment" type="enumerationplus"  label="Experiment" />
-     <column name="ensemble" type="string"  label="Ensemble Member"/>
-     <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
-     <column name="variable" type="enumerationplus"  label="Variable"  />
+     <column name="ensemble" type="string"  label="Ensemble"/>
+     <column name="variable" type="enumerationplus"  label="Variable"/>
         */
 
         int idx=1;
         values[idx++] = model;
+        values[idx++] = miptable;
         values[idx++] = experiment;
         values[idx++] = member;
-        values[idx++] = frequency;
         values[idx++] = var;
 
     }

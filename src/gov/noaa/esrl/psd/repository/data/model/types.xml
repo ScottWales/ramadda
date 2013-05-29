@@ -18,17 +18,24 @@
   <type name="cmip5_model_collection"  description="CMIP5 Model Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5CollectionTypeHandler" foruser="true">
      <property name="icon" value="/images/ipcc.png"/>
      <property name="granule_type" value="cmip5_model_file"/>
+     <!-- since this is defined in the granule, define below -->
+     <!--
      <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
+     <property name="miptable.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt"/>
      <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt"/>
+     -->
    </type>
 
 
-  <type name="cmip5_model_file"  description="CMIP5 Model File" super="climate_modelfile" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5ModelFileTypeHandler" >
+  <type name="cmip5_model_file"  description="CMIP5 Model File" super="climate_granule" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5ModelFileTypeHandler" >
      <property name="icon" value="/images/ipcc.png"/>
      <property name="collection_type" value="cmip5_model_collection"/>
-     <!--
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
      <column name="miptable" type="enumeration"  label="MIP Table" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt" />
-     -->
+     <column name="experiment" type="enumerationplus"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble"/>
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
    </type>
    
 
