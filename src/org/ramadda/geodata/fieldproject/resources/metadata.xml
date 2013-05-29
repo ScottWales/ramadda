@@ -11,13 +11,14 @@
     </type>
 
 
-    <type id="project_funding" name="Funding Information">
+    <type id="project_funding" name="Funding Information" searchable="true">
+      <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA" />
       <element id="title" name="Title"/>
       <element id="id" name="ID"/>
-      <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA"/>
       <element id="url" datatype="url" name="URL"/>
       <element id="notes" name="Notes" rows="5"/>
     </type>
+
 
 
   </handler>

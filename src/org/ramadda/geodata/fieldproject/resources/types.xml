@@ -1,15 +1,25 @@
 <types>
 
-  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Field Project">
+  <type name="project_program"  description="Program" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/chart_organisation.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
+
+
+  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/page_world.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
-     <column  name="project_id"  type="string" label="Project ID"/>
-     <column  name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
+     <column name="project_id"  type="string" label="Project ID"/>
+     <column name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
      <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
      <wiki><![CDATA[
 {{noheading}}
 <table width="100%">
@@ -52,13 +62,18 @@
 </wiki>
    </type>
 
-  <type name="project_site"  description="Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+  <type name="project_site"  description="Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/site.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/sitetypes.txt"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
+
+     <column name="short_name"   label="Short Name"    cansearch="true"/>
      <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
+     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"/>
 
      <wiki><![CDATA[
 {{noheading}}
@@ -102,7 +117,7 @@
    </type>
 
 
-  <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+  <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
      <column name="results" label="Results" rows="5"/>
      <column name="weather_conditions" label="Weather Conditions" rows="2"/>
      <property name="icon" value="/fieldproject/world_go.png"/>
@@ -116,7 +131,7 @@
 
 
 
-    <type name="project_fieldnote" description="Field Note" category="Field Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
+    <type name="project_fieldnote" description="Field Note" category="Science Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
       <property name="icon" value="/fieldproject/notebook.png"/> 
       <property name="form.name.label" value="Title"/>
       <property name="form.description.label" value="Objective"/>
@@ -181,7 +196,7 @@
     </type>
 
 
-    <type name="project_surveylocation" description="Survey Location" category="Field Project" >
+    <type name="project_surveylocation" description="Survey Location" category="Science Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
       <property name="form.file.label" value="Location Image"/>
       <property name="form.url.show" value="false"/>
@@ -229,7 +244,7 @@ features
     </type>
 
 
-  <type name="project_tls_scan"  description="TLS Scan" category="Field Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
+  <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
      <property name="icon" value="/fieldproject/tripod.png"/>
      <property name="form.url.show" value="false"/>
      <property name="form.resource.label" value="Site Photo"/>
@@ -241,7 +256,7 @@ features
    </type>
 
 
-  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Field Project">
+  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/transmit_blue.png"/>
      <wiki><![CDATA[
 {{description wikify="true"}}
@@ -253,6 +268,64 @@ features
 ]]>
 </wiki>
 </type>
+
+
+  <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Project" >
+     <property name="icon" value="/fieldproject/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/organizationtypes.txt"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt"/>
+     <column name="short_name"   label="Short Name"    cansearch="false"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
+
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div class="wiki-h1">
+{{field name="short_name"}}  {{name}}
+</div>
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>Url:</b></td><td>{{resource}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="organization_type"}}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
+<tr><td align="right"><b>Notes:</b></td><td> {{field name="notes"}}</td></tr>
+</table>
+
+{{tree prefix="==Contents==" message="" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  entry="Sites" message="" width="300" suffix="<b>Site Map</b>"}}
+<p>
+{{links  entry="Links" message="" prefix="==Links=="}}
+<p>
+{{comments prefix="==Comments==" }}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+{{properties block.show="true" block.open="false"}}
+<p>
+]]>
+</wiki>
+
+
+   </type>
+
 
 
 </types>

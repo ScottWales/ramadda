@@ -1,7 +1,4 @@
-proposed:Proposed
-planning:In Planning
 active:Active
-complete:Complete
-
-
-
+in_development:In Development
+inactive:Inactive
+unknown:Unknown

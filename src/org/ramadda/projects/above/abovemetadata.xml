@@ -16,6 +16,7 @@
       <element id="affiliation" name="Affiliation"/>
     </type>
 
+
     <type id="above_site_equipment" name="Site Equipment" searchable="true" browsable="true">
       <element id="equipment" name="Equipment" datatype="enumerationplus"/>
     </type>
