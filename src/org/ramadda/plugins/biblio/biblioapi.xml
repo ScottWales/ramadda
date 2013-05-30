@@ -18,7 +18,7 @@
       <property name="searchurl" value="/biblio/search"/>
       <property name="initsearch" value="true"/>
       <property name="form.area.show" value="false"/>
-      <property name="form.date.show" value="false"/>
+      <property name="form.date.show" value="true"/>
 
 <!--The entry type to search for -->
       <property name="type" value="biblio"/>
