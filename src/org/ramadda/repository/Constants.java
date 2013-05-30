@@ -192,6 +192,9 @@ public interface Constants {
     public static final String ICON_IMAGE = "ramadda.icon.image";
 
     /** _more_ */
+    public static final String ICON_MOVIE = "ramadda.icon.movie";
+
+    /** _more_ */
     public static final String ICON_IMPORT = "ramadda.icon.import";
 
     /** _more_ */

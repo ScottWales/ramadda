@@ -206,7 +206,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
      *
      * @return  true if a bundle
      */
-    private boolean isBundle(Entry entry) {
+    public static boolean isBundle(Entry entry) {
         return (entry.getResource().getPath().endsWith(".xidv")
                 || entry.getResource().getPath().endsWith(".zidv"));
     }

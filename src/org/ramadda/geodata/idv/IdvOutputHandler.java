@@ -117,6 +117,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         new OutputType("Point Displays", "idv.point", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE, ICON_PLANVIEW, GROUP_DATA);
 
+    /** bundle image id */
+    public static final OutputType OUTPUT_IDV_BUNDLE_IMAGE =
+        new OutputType("Show as Image", "idv.bundle.image", OutputType.TYPE_OTHER,
+                       OutputType.SUFFIX_NONE, ICON_IMAGE, GROUP_DATA);
+
+    /** bundle movie id */
+    public static final OutputType OUTPUT_IDV_BUNDLE_MOVIE =
+        new OutputType("Show as Movie", "idv.bundle.movie", OutputType.TYPE_OTHER,
+                       OutputType.SUFFIX_NONE, ICON_MOVIE, GROUP_DATA);
+
 
     /** false if there is no graphics environment */
     private boolean idvOk = false;
@@ -202,6 +212,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 //Only add the output types after we create the server
                 addType(OUTPUT_IDV_GRID);
                 addType(OUTPUT_IDV_POINT);
+                addType(OUTPUT_IDV_BUNDLE_IMAGE);
+                addType(OUTPUT_IDV_BUNDLE_MOVIE);
             } catch (java.awt.HeadlessException jahe) {
                 idvOk = false;
                 //                jahe.printStackTrace();
@@ -274,6 +286,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         if (entry != null) {
+            if (IdvBundlesOutputHandler.isBundle(entry)) {
+                //links.add(makeLink(request,entry, OUTPUT_IDV_BUNDLE_IMAGE));
+                //links.add(makeLink(request,entry, OUTPUT_IDV_BUNDLE_MOVIE));
+                return;
+            }
             if ( !getCdmManager().canLoadAsGrid(entry)) {
                 if (getCdmManager().canLoadAsPoint(entry)) {
                     links.add(makeLink(request, entry, OUTPUT_IDV_POINT));
@@ -336,8 +353,143 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         if (output.equals(OUTPUT_IDV_POINT)) {
             return outputPoint(request, entry);
         }
+        if (output.equals(OUTPUT_IDV_BUNDLE_IMAGE)) {
+            return outputBundleImage(request, entry);
+        }
+        if (output.equals(OUTPUT_IDV_BUNDLE_MOVIE)) {
+            return outputBundleMovie(request, entry);
+        }
 
         return super.outputEntry(request, outputType, entry);
+    }
+
+
+    private Result outputBundleMovie(Request request, Entry entry) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    private Result outputBundleImage(Request request, Entry entry) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        String action = request.getString(ARG_IDV_ACTION, "");
+        if (action.equals(ACTION_BUNDLE_MAKEIMAGE)) {
+            
+            StringBuffer isl = new StringBuffer();
+            boolean isMovie = request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
+            isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
+            isl.append("<bundle file=\""+getEntryManager().getEntryResourceUrl(request, entry, true)+"\"");
+            isl.append(" clear=\"true\"");
+            if (!isMovie) {
+                String timeIdx = request.getString(ARG_TIME_STEP,"1");
+                int tidx = 0;
+                try {
+                    tidx = Integer.parseInt(timeIdx) - 1;
+                    tidx = Math.max(tidx, 0);
+                } catch (NumberFormatException nfe) {
+                    tidx = 0;
+                }
+                isl.append(" times=\""+tidx+"\"");
+            }
+            isl.append(" />\n");
+            isl.append("<pause/>\n");
+            if (isMovie) {
+                isl.append("<movie ");
+            } else {
+                isl.append("<image ");
+            }
+            String suffix = getImageSuffix(request);
+            isl.append(" file=\"");
+            File imageFile = getStorageManager().getTmpFile(request, "gridimage" + suffix);
+            isl.append(imageFile.toString());
+            isl.append("\" ");
+            isl.append(" />\n");
+            isl.append("</isl>\n");
+            System.err.println(isl);
+            
+            long t1 = System.currentTimeMillis();
+            idvServer.evaluateIsl(isl);
+            long t2 = System.currentTimeMillis();
+            System.err.println("isl time:" + (t2 - t1));
+
+            return new Result("preview.gif",
+                              getStorageManager().getFileInputStream(imageFile),
+                               getRepository().getMimeTypeFromSuffix(suffix));
+
+        }
+
+        String formUrl = getEntryManager().getFullEntryShowUrl(request);
+        sb.append(HtmlUtils.form(formUrl, ""));
+        sb.append(entry.getDescription());
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_BUNDLE_IMAGE));
+        sb.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_BUNDLE_MAKEIMAGE));
+        sb.append(HtmlUtils.formTable());
+        List<TwoFacedObject>   imageTypes = new ArrayList<TwoFacedObject>();
+        imageTypes.add(new TwoFacedObject("GIF", "gif"));
+        imageTypes.add(new TwoFacedObject("PNG", "png"));
+        imageTypes.add(new TwoFacedObject("JPEG", "jpg"));
+
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Format"), htmlSelect(
+                    request, ARG_IMAGE_TYPE, imageTypes)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Time Step"), 
+                htmlInput(request, ARG_TIME_STEP, "1")));
+        if ( !request.getUser().getAnonymous()) {
+            try {
+            addPublishWidget(
+                request, entry, sb,
+                msg("Select a folder to publish the product to"));
+            } catch (Exception e) {}
+        }
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.formClose());
+        return new Result("Bundle As Image", sb);
+
+    }
+
+    private StringBuffer makeBundleIsl(Request request, Entry entry) {
+            StringBuffer isl = new StringBuffer();
+            boolean isMovie = request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
+            isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
+            isl.append("<bundle file=\""+getEntryManager().getFullEntryGetUrl(request)+"\"");
+            isl.append(" clear=\"true\"");
+            if (!isMovie) {
+                String timeIdx = request.getString(ARG_TIME_STEP,"1");
+                int tidx = 0;
+                try {
+                    tidx = Integer.parseInt(timeIdx) - 1;
+                    tidx = Math.max(tidx, 0);
+                } catch (NumberFormatException nfe) {
+                    tidx = 0;
+                }
+                isl.append("times=\""+tidx+"\"");
+            }
+            isl.append(" />\n");
+            isl.append("<pause/>\n");
+            if (isMovie) {
+                isl.append("<movie ");
+            } else {
+                isl.append("<image ");
+            }
+            String suffix = getImageSuffix(request);
+            isl.append(" file=\"");
+            isl.append(getStorageManager().getStorageFileName("bundleimage_"+getRepository().getGUID()));
+            isl.append(suffix);
+            isl.append("\" ");
+            isl.append(" />\n");
+            isl.append("</isl>\n");
+            System.err.println(isl);
+            return isl;
+    }
+
+    private String getImageSuffix(Request request) {
+        String type = request.getString(ARG_IMAGE_TYPE, "gif");
+        return "."+type;
     }
 
 

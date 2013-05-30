@@ -254,6 +254,12 @@ public interface IdvConstants {
     /** height arg id */
     public static final String ARG_IMAGE_HEIGHT = "height";
 
+    /** image type arg id */
+    public static final String ARG_IMAGE_TYPE = "imagetype";
+
+    /** time step arg id */
+    public static final String ARG_TIME_STEP = "ts";
+    
     /** transparent background arg id */
     public static final String ARG_BACKGROUND_TRANSPARENT = "bgTrans";
 
@@ -284,6 +290,11 @@ public interface IdvConstants {
     /** make image action id */
     public static final String ACTION_MAKEIMAGE = "action.makeimage";
 
+    /** make bundle image action id */
+    public static final String ACTION_BUNDLE_MAKEIMAGE = "action.bundle.makeimage";
+
+    /** make bundle movie action id */
+    public static final String ACTION_BUNDLE_MAKEMOVIE = "action.bundle.makemovie";
 
     /** make point page action id */
     public static final String ACTION_POINT_MAKEPAGE =
