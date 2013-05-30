@@ -1,28 +1,28 @@
 
-<api handler="org.ramadda.repository.search.SpecialSearch" id="project_project">
+<api handler="org.ramadda.repository.search.SpecialSearch" id="project_dataset">
 
 <!--The search form label -->
-      <property name="label" value="Projects"/>
+      <property name="label" value="Datasets"/>
       <property name="searchopen" value="true"/>
 
 <!--What tabs to display results in -->
-      <property name="tabs" value="list,map"/>
+      <property name="tabs" value="map,list"/>
 
 <!--Add these metadata search elements to the search form -->
     <property name="metadatatypes" value="project_person"/>
 
 <!--The entry point. This corresponds to the below API entry -->
-      <property name="searchurl" value="/project/project/search"/>
+      <property name="searchurl" value="/project/dataset/search"/>
       <property name="initsearch" value="true"/>
       <property name="form.date.show" value="false"/>
 
 <!--The entry type to search for -->
-      <property name="type" value="project_project"/>
+      <property name="type" value="project_dataset"/>
 
 
 <!-- None of the API entry points defined below require admin privileges -->
       <property name="admin" value="false"/>
 
-      <api request="/project/project/search"    method="processSearchRequest" toplevel="false" name="Search Projects"/>
+      <api request="/project/dataset/search"    method="processSearchRequest" toplevel="false" name="Search Datasets"/>
 
 </api>

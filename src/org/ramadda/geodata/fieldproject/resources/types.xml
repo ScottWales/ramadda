@@ -243,31 +243,14 @@ features
 
     </type>
 
-
-  <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
-     <property name="icon" value="/fieldproject/tripod.png"/>
-     <property name="form.url.show" value="false"/>
-     <property name="form.resource.label" value="Site Photo"/>
-     <property name="form.datatype.show" value="false"/>
+  <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/dataset.png"/>
+     <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
-     <property name="form.altitude.show.top" value="false"/>
-     <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
+     <property name="form.altitude.show.top" value="true"/>
    </type>
 
-
-  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
-     <property name="icon" value="/fieldproject/transmit_blue.png"/>
-     <wiki><![CDATA[
-{{description wikify="true"}}
-
-{{map  width="600"  height="500"  listentries="true"  details="false" level="2" message=""}}
-
-==Links ==
-{{tree}}
-]]>
-</wiki>
-</type>
 
 
   <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Project" >
@@ -325,6 +308,35 @@ features
 
 
    </type>
+
+
+
+  <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
+     <property name="icon" value="/fieldproject/tripod.png"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.resource.label" value="Site Photo"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
+   </type>
+
+
+  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/transmit_blue.png"/>
+     <wiki><![CDATA[
+{{description wikify="true"}}
+
+{{map  width="600"  height="500"  listentries="true"  details="false" level="2" message=""}}
+
+==Links ==
+{{tree}}
+]]>
+</wiki>
+</type>
+
+
 
 
 
