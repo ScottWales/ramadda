@@ -348,8 +348,8 @@ public class TextRecord extends PointRecord {
                 break;
             }
             if(!split(line)) {
-                throw new IllegalArgumentException("Could not tokenize line:" + line);
-                //                return ReadStatus.SKIP;
+                //throw new IllegalArgumentException("Could not tokenize line:" + line);
+                return ReadStatus.SKIP;
             }
             int tokenCnt = 0;
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
@@ -458,10 +458,12 @@ public class TextRecord extends PointRecord {
             if(badCnt>10 && goodCnt<=0) {
                 System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
 
-                return false;
+                throw new IllegalArgumentException("Could not tokenize line:" + line);
+                //                return false;
             }
-            return true;
+            return false;
         }
+        badCnt = 0;
         goodCnt++;
         return true;
         
