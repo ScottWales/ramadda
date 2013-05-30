@@ -117,6 +117,7 @@ Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West   
 
         boolean oldFormat = false;
         
+        //        System.err.println ("SIZE:" + header.size());
 
         if(header.size() == 8) {
             //Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West            2012-5-5 / 1525 UTC
@@ -125,7 +126,9 @@ Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West   
             siteId =  StringUtil.findPattern(line,"Station\\s*([^\\s]+)\\s");
             List<String> toks = StringUtil.split(line, " ", true, true);
             int ntoks = toks.size();
+
             dttm = toks.get(ntoks-4) +" " + toks.get(ntoks-2);
+
             try {
                 Date  date = makeDateFormat("yyyy-MM-dd HHmm").parse(dttm);
                 dttm  = makeDateFormat("yyyy-MM-dd HH:mm").format(date);
@@ -134,26 +137,78 @@ Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West   
             }
             latString =  StringUtil.findPattern(line,"([\\d\\.]+)\\s*degrees\\s*North");
             lonString =  StringUtil.findPattern(line,"([\\d\\.]+)\\s*degrees\\s*West");
-        } else if(header.size() == 6) {
+        } else if(header.size() == 6 || header.size() == 7) {
             oldFormat = true;
             //Station 1 (Cast 2)              84deg 01.763min N   65deg 09.247min W              2003-5-6/1730 GMT
+            //or:
+            //Cast 10 Station Juliet         83 deg 59.10 min North   58 deg 12.37 min West              5/4/2004   2036 UTC
+
             line =  header.get(1);
             siteId =  StringUtil.findPattern(line,"^(.*)\\(");
+            if(siteId == null) {
+                siteId =  StringUtil.findPattern(line,"^.*Station ([^\\s]+) .*");
+            }
+            if(siteId == null) {
+                line =  header.get(2);
+                siteId =  StringUtil.findPattern(line,"^(.*)\\(");
+                if(siteId == null) {
+                    siteId =  StringUtil.findPattern(line,"^.*Station ([^\\s]+) .*");
+                }
+            }
+
+
+
+            if(siteId == null) {
+                throw new IllegalArgumentException("Could not find site id in line: " + line);
+            }
+
             cast =  StringUtil.findPattern(line,"\\((.*)\\)");
+            if(cast == null) {
+                cast =  StringUtil.findPattern(line,"^(Cast\\s+[^\\s]+) .*");
+            }
+
+            if(cast == null) {
+                throw new IllegalArgumentException("Could not find cast in line: " + line);
+            }
             List<String> toks = StringUtil.split(line, " ", true, true);
             int ntoks = toks.size();
-            dttm =  toks.get(ntoks-2);
-            try {
-                Date  date = makeDateFormat("yyyy-MM-dd/HHmm").parse(dttm);
-                dttm  = makeDateFormat("yyyy-MM-dd HH:mm").format(date);
-            } catch(Exception exc) {
-                throw new RuntimeException(exc);
+            System.err.println ("LINE:" + line);
+            dttm = StringUtil.findPattern(line, ".*(\\d?\\d/\\d\\d/\\d\\d\\d\\d\\s*(_|/\\s)\\s*\\d\\d\\d\\d)\\s*UTC$");
+
+            //Cast 10 Station Juliet         83 deg 59.10 min North   58 deg 12.37 min West              5/4/2004   2036 UTC
+            if(dttm == null) 
+                dttm = StringUtil.findPattern(line, ".*(\\d?\\d/\\d?\\d/\\d\\d\\d\\d\\s+\\d\\d\\d\\d)\\s*UTC$");
+            System.err.println ("DTTM:" + dttm);
+            if(dttm!=null) {
+                try {
+                    dttm = dttm.replaceAll("\\s","");
+                    dttm = dttm.replaceAll("_","");
+                    Date  date = makeDateFormat("MM/dd/yyyyHHmm").parse(dttm);
+                    dttm  = makeDateFormat("yyyy-MM-dd HH:mm").format(date);
+                } catch(Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            } else {
+                dttm =  toks.get(ntoks-2);
+                try {
+                    Date  date = makeDateFormat("yyyy-MM-dd/HHmm").parse(dttm);
+                    dttm  = makeDateFormat("yyyy-MM-dd HH:mm").format(date);
+                } catch(Exception exc) {
+                    throw new RuntimeException(exc);
+                }
             }
-            Pattern p = Pattern.compile(".*\\s+([0-9]+)deg\\s+([0-9\\.]+)min.*\\s+([0-9]+)deg\\s+([0-9\\.]+)min.*");
+
+
+
+
+
+//Cast 10 Station Juliet         83 deg 59.10 min North   58 deg 12.37 min West              5/4/2004   2036 UTC
+
+            Pattern p = Pattern.compile(".*\\s+([0-9]+)\\s*deg\\s+([0-9\\.]+)\\s*min.*\\s+([0-9]+)\\s*deg\\s+([0-9\\.]+)\\s*min.*");
             
             Matcher m = p.matcher(line);
             if(!m.matches()) {
-                throw new IllegalArgumentException("Could not read location" + line);
+                throw new IllegalArgumentException("Could not read location from line:\n" + line);
             }
             latString = ""+(Double.parseDouble(m.group(1)) +  Double.parseDouble(m.group(2))/60.0);
             lonString = ""+(Double.parseDouble(m.group(3)) +  Double.parseDouble(m.group(4))/60.0);
@@ -161,7 +216,7 @@ Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West   
             //            System.err.println ("lat:" + latString);
             //            System.err.println ("lon:" + lonString);
         } else {
-            throw new IllegalArgumentException("unknown header:" + header);
+            throw new IllegalArgumentException("unknown header size:" + header.size() +"\n***" + header);
         }
 
         

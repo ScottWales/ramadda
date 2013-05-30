@@ -512,8 +512,9 @@ public abstract class PointFile extends RecordFile implements Cloneable {
                 System.err.println("time:" + (t2 - t1) / 1000.0
                                    + " # record:" + cnt[0] +" " + metadata);
             } catch (Exception exc) {
-                System.err.println("Error:" + exc);
+                System.err.println("Error:" + exc +" file:" + arg);
                 exc.printStackTrace();
+                return;
             }
         }
     }
