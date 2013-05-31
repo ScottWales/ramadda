@@ -189,15 +189,19 @@ public abstract class TextFile extends PointFile {
      * @throws IOException _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+
         boolean haveReadHeader = headerLines.size()>0;
         int skipCnt = getSkipLines(visitInfo);
+        System.err.println("prepareToVisit skip cnt:" + skipCnt + " have read:" + haveReadHeader + " header:" + headerLines);
         for (int i = 0; i < skipCnt; i++) {
             String line = visitInfo.getRecordIO().readLine();
+            System.err.println("\tline:" + line);
             if(!haveReadHeader) {
                 headerLines.add(line);
             }
         }
         if(headerLines.size()!=skipCnt) {
+            System.err.println("\tbad:" + headerLines.size());
             throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
         }
         return visitInfo;
