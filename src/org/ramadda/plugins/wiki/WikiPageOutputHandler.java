@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,53 +22,43 @@
 package org.ramadda.plugins.wiki;
 
 
-import org.incava.util.diff.*;
+import org.incava.util.diff.Diff;
+import org.incava.util.diff.Difference;
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.output.*;
-
+import org.ramadda.repository.Association;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.output.HtmlOutputHandler;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.WikiUtil;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
-
-
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import ucar.unidata.xml.XmlUtil;
 
-import java.sql.*;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
-
-
-
-
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
- *
+ * A class to handle wiki pages
  */
 public class WikiPageOutputHandler extends HtmlOutputHandler {
 
 
-    /** _more_ */
+    /** the change description argument */
     public static final String ARG_WIKI_CHANGEDESCRIPTION =
         "wiki.changedescription";
-
-
 
 
     /** _more_ */
@@ -97,7 +87,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public static final String ARG_WIKI_VERSION = "wiki.version";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String GROUP_WIKI = "Wiki";
 
 
@@ -113,12 +103,12 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         new OutputType("Wiki History", "wiki.history", OutputType.TYPE_OTHER,
                        "", ICON_WIKI, GROUP_WIKI);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_WIKI_DETAILS =
         new OutputType("Entry Details", "wiki.details",
                        OutputType.TYPE_OTHER, "", ICON_WIKI, GROUP_WIKI);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_WIKI_TEXT =
         new OutputType("Wiki Text", "wiki.text", OutputType.TYPE_OTHER, "",
                        ICON_WIKI, GROUP_WIKI);
@@ -156,18 +146,17 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-        if (state.entry == null) {
+        Entry stateEntry = state.getEntry();
+        if (stateEntry == null) {
             return;
         }
         if (canAccessDetails(request)) {
-            if (state.entry.getType().equals(
+            if (stateEntry.getType().equals(
                     WikiPageTypeHandler.TYPE_WIKIPAGE)) {
-                links.add(makeLink(request, state.entry, OUTPUT_WIKI));
-                links.add(makeLink(request, state.entry,
-                                   OUTPUT_WIKI_DETAILS));
-                links.add(makeLink(request, state.entry,
-                                   OUTPUT_WIKI_HISTORY));
-                links.add(makeLink(request, state.entry, OUTPUT_WIKI_TEXT));
+                links.add(makeLink(request, stateEntry, OUTPUT_WIKI));
+                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_DETAILS));
+                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_HISTORY));
+                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_TEXT));
             }
         }
     }
@@ -235,7 +224,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                     "Could not find wiki history");
             }
             wikiText = wph.getText();
-            header   =
+            header =
                 getPageHandler().showDialogNote(msgLabel("Text from version")
                     + getPageHandler().formatDate(wph.getDate()));
         } else {
@@ -250,8 +239,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             if (request.get(ARG_WIKI_RAW, false)) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(HtmlUtils.form(""));
-                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 50,
-                                             80,
+                sb.append(HtmlUtils.textArea(ARG_WIKI_TEXT, wikiText, 50, 80,
                                              HtmlUtils.id(ARG_WIKI_TEXT)));
                 sb.append(HtmlUtils.formClose());
 
@@ -292,7 +280,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      */
     public Result outputWikiCompare(Request request, Entry entry)
             throws Exception {
-        StringBuffer    sb   = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
         Date dttm1 = new Date((long) request.get(ARG_WIKI_COMPARE1, 0.0));
         WikiPageHistory wph1 =
@@ -341,7 +329,8 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
     public Result outputWikiHistory(Request request, Entry entry)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
-        boolean      canEdit = getAccessManager().canEditEntry(request, entry);
+        boolean      canEdit = getAccessManager().canEditEntry(request,
+                                   entry);
 
         if (request.exists(ARG_WIKI_COMPARE1)
                 && request.exists(ARG_WIKI_COMPARE2)) {
@@ -470,12 +459,12 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
             int        addEnd   = diff.getAddedEnd();
             String     from     = toString(delStart, delEnd);
             String     to       = toString(addStart, addEnd);
-            String     type     = ((delEnd != Difference.NONE)
+            String type = ((delEnd != Difference.NONE)
                            && (addEnd != Difference.NONE))
-                                  ? "c"
-                                  : ((delEnd == Difference.NONE)
-                                     ? "a"
-                                     : "d");
+                          ? "c"
+                          : ((delEnd == Difference.NONE)
+                             ? "a"
+                             : "d");
 
 
             if (delEnd != Difference.NONE) {
