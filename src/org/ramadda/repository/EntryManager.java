@@ -3374,6 +3374,9 @@ public class EntryManager extends RepositoryManager {
             groups.addAll(getGroups(favorites));
             groups.addAll(getSessionFolders(request));
             HashSet seen = new HashSet();
+            String separator = getPageHandler().getTemplateProperty(request,
+                                                                    "ramadda.template.breadcrumbs.separator",
+                                                                    BREADCRUMB_SEPARATOR);
             for (Entry group : groups) {
                 if (seen.contains(group.getId())) {
                     continue;
@@ -3400,12 +3403,17 @@ public class EntryManager extends RepositoryManager {
                 }
                 sb.append(HtmlUtils.img(getIconUrl(request, group)));
                 sb.append(HtmlUtils.space(1));
+                String label =group.getLabel();
+                if(group.getParentEntry()!=null) {
+                    label = group.getParentEntry().getLabel() + separator +
+                        label;
+                }
                 sb.append(
                     HtmlUtils.href(
                         request.url(
                             getRepository().URL_ENTRY_COPY, ARG_FROM,
                             fromIds, ARG_TO,
-                            group.getId()), group.getLabel()));
+                            group.getId()), label));
                 sb.append(HtmlUtils.br());
                 didOne = true;
             }
