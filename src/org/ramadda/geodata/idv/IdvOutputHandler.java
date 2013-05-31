@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -65,6 +65,7 @@ import ucar.unidata.ui.symbol.StationModel;
 import ucar.unidata.ui.symbol.StationModelManager;
 import ucar.unidata.util.ColorTable;
 import ucar.unidata.util.ContourInfo;
+import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Range;
@@ -119,13 +120,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
     /** bundle image id */
     public static final OutputType OUTPUT_IDV_BUNDLE_IMAGE =
-        new OutputType("Show as Image", "idv.bundle.image", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, ICON_IMAGE, GROUP_DATA);
+        new OutputType("Show as Image", "idv.bundle.image",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       ICON_IMAGE, GROUP_DATA);
 
     /** bundle movie id */
     public static final OutputType OUTPUT_IDV_BUNDLE_MOVIE =
-        new OutputType("Show as Movie", "idv.bundle.movie", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, ICON_MOVIE, GROUP_DATA);
+        new OutputType("Show as Movie", "idv.bundle.movie",
+                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       ICON_MOVIE, GROUP_DATA);
 
 
     /** false if there is no graphics environment */
@@ -151,6 +154,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     /** Holds previously generated images */
     private Hashtable<String, File> imageCache = new Hashtable<String,
                                                      File>();
+
+    /** frame rate argument */
+    private static final String ARG_FRAMERATE = "framerate";
+
+    /** end frame pause argument */
+    private static final String ARG_ENDPAUSE = "endframepause";
 
     /**
      *    Ctor
@@ -207,8 +216,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                     java.awt.GraphicsEnvironment
                         .getLocalGraphicsEnvironment();
                 e.getDefaultScreenDevice();
-                idvOk     = true;
-                idvServer = new IdvServer(getStorageManager().getPluginResourceDir("idv"));
+                idvOk = true;
+                idvServer = new IdvServer(
+                    getStorageManager().getPluginResourceDir("idv"));
                 //Only add the output types after we create the server
                 addType(OUTPUT_IDV_GRID);
                 addType(OUTPUT_IDV_POINT);
@@ -287,8 +297,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         if (entry != null) {
             if (IdvBundlesOutputHandler.isBundle(entry)) {
-                //links.add(makeLink(request,entry, OUTPUT_IDV_BUNDLE_IMAGE));
-                //links.add(makeLink(request,entry, OUTPUT_IDV_BUNDLE_MOVIE));
+                links.add(makeLink(request, entry, OUTPUT_IDV_BUNDLE_IMAGE));
+                links.add(makeLink(request, entry, OUTPUT_IDV_BUNDLE_MOVIE));
+
                 return;
             }
             if ( !getCdmManager().canLoadAsGrid(entry)) {
@@ -364,32 +375,41 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     }
 
 
-    private Result outputBundleMovie(Request request, Entry entry) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    /**
+     * Output a bundle movie
+     *
+     * @param request  the Request
+     * @param entry    the Entry
+     *
+     * @return  the image
+     *
+     * @throws Exception  problem loading image
+     */
+    private Result outputBundleMovie(Request request, Entry entry)
+            throws Exception {
+        StringBuffer sb     = new StringBuffer();
+        String       action = request.getString(ARG_IDV_ACTION, "");
+        if (action.equals(ACTION_BUNDLE_MAKEMOVIE)) {
 
-
-    private Result outputBundleImage(Request request, Entry entry) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        String action = request.getString(ARG_IDV_ACTION, "");
-        if (action.equals(ACTION_BUNDLE_MAKEIMAGE)) {
-            
             StringBuffer isl = new StringBuffer();
-            boolean isMovie = request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
-            isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
-            isl.append("<bundle file=\""+getEntryManager().getEntryResourceUrl(request, entry, true)+"\"");
+            boolean isMovie =
+                request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
+            isl.append(
+                "<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
+            isl.append("<bundle file=\""
+                       + getEntryManager().getEntryResourceUrl(request,
+                           entry, true) + "\"");
             isl.append(" clear=\"true\"");
-            if (!isMovie) {
-                String timeIdx = request.getString(ARG_TIME_STEP,"1");
-                int tidx = 0;
+            if ( !isMovie) {
+                String timeIdx = request.getString(ARG_TIME_STEP, "1");
+                int    tidx    = 0;
                 try {
                     tidx = Integer.parseInt(timeIdx) - 1;
                     tidx = Math.max(tidx, 0);
                 } catch (NumberFormatException nfe) {
                     tidx = 0;
                 }
-                isl.append(" times=\""+tidx+"\"");
+                isl.append(" times=\"" + tidx + "\"");
             }
             isl.append(" />\n");
             isl.append("<pause/>\n");
@@ -400,21 +420,132 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             String suffix = getImageSuffix(request);
             isl.append(" file=\"");
-            File imageFile = getStorageManager().getTmpFile(request, "gridimage" + suffix);
+            File imageFile = getStorageManager().getTmpFile(request,
+                                 "gridimage" + suffix);
             isl.append(imageFile.toString());
+            isl.append("\" ");
+            isl.append(" framerate=\"");
+            isl.append(request.getString(ARG_FRAMERATE, "2"));
+            isl.append("\" ");
+            isl.append(" endframepause=\"");
+            isl.append(request.getString(ARG_ENDPAUSE, "2"));
             isl.append("\" ");
             isl.append(" />\n");
             isl.append("</isl>\n");
             System.err.println(isl);
-            
+
             long t1 = System.currentTimeMillis();
             idvServer.evaluateIsl(isl);
             long t2 = System.currentTimeMillis();
             System.err.println("isl time:" + (t2 - t1));
 
-            return new Result("preview.gif",
-                              getStorageManager().getFileInputStream(imageFile),
-                               getRepository().getMimeTypeFromSuffix(suffix));
+            return new Result(
+                "preview.gif",
+                getStorageManager().getFileInputStream(imageFile),
+                getRepository().getMimeTypeFromSuffix(suffix));
+
+        }
+
+        String formUrl = getEntryManager().getFullEntryShowUrl(request);
+        sb.append(HtmlUtils.form(formUrl, ""));
+        sb.append(entry.getDescription());
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_BUNDLE_MOVIE));
+        sb.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_BUNDLE_MAKEMOVIE));
+        sb.append(HtmlUtils.formTable());
+        List<TwoFacedObject> imageTypes = new ArrayList<TwoFacedObject>();
+        imageTypes.add(new TwoFacedObject("Animated GIF", "gif"));
+        imageTypes.add(new TwoFacedObject("QuickTime Movie", "mov"));
+        imageTypes.add(new TwoFacedObject("AVI Movie", "avi"));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Format"),
+                                      htmlSelect(request, ARG_IMAGE_TYPE,
+                                          imageTypes)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Frames per second"),
+                                      htmlInput(request, ARG_FRAMERATE,
+                                          "2")));
+        sb.append(HtmlUtils.formEntry(msgLabel("End Frame Pause"),
+                                      htmlInput(request, ARG_ENDPAUSE, "2")
+                                      + HtmlUtil.space(2) + "seconds"));
+        if ( !request.getUser().getAnonymous()) {
+            try {
+                addPublishWidget(
+                    request, entry, sb,
+                    msg("Select a folder to publish the product to"));
+            } catch (Exception e) {}
+        }
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
+        sb.append(HtmlUtils.formClose());
+
+        return new Result("Bundle As Image", sb);
+    }
+
+
+    /**
+     * Output a bundle as an image
+     *
+     * @param request  the Request
+     * @param entry    the entry
+     *
+     * @return  an image
+     *
+     * @throws Exception  problems generating the image
+     */
+    private Result outputBundleImage(Request request, Entry entry)
+            throws Exception {
+        StringBuffer sb     = new StringBuffer();
+        String       action = request.getString(ARG_IDV_ACTION, "");
+        if (action.equals(ACTION_BUNDLE_MAKEIMAGE)) {
+
+            StringBuffer isl = new StringBuffer();
+            boolean isMovie =
+                request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
+            isl.append(
+                "<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
+            isl.append("<bundle file=\""
+                       + getEntryManager().getEntryResourceUrl(request,
+                           entry, true) + "\"");
+            isl.append(" clear=\"true\"");
+            if ( !isMovie) {
+                String timeIdx = request.getString(ARG_TIME_STEP, "1");
+                int    tidx    = 0;
+                try {
+                    tidx = Integer.parseInt(timeIdx) - 1;
+                    tidx = Math.max(tidx, 0);
+                } catch (NumberFormatException nfe) {
+                    tidx = 0;
+                }
+                isl.append(" times=\"" + tidx + "\"");
+            }
+            isl.append(" />\n");
+            isl.append("<pause/>\n");
+            if (isMovie) {
+                isl.append("<movie ");
+            } else {
+                isl.append("<image ");
+            }
+            String suffix = getImageSuffix(request);
+            isl.append(" file=\"");
+            File imageFile = getStorageManager().getTmpFile(request,
+                                 "gridimage" + suffix);
+            isl.append(imageFile.toString());
+            isl.append("\" ");
+            isl.append(" />\n");
+            isl.append("</isl>\n");
+            System.err.println(isl);
+
+            long t1 = System.currentTimeMillis();
+            idvServer.evaluateIsl(isl);
+            long t2 = System.currentTimeMillis();
+            System.err.println("isl time:" + (t2 - t1));
+
+            return new Result(
+                "preview.gif",
+                getStorageManager().getFileInputStream(imageFile),
+                getRepository().getMimeTypeFromSuffix(suffix));
 
         }
 
@@ -427,69 +558,90 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_IDV_BUNDLE_IMAGE));
         sb.append(HtmlUtils.hidden(ARG_IDV_ACTION, ACTION_BUNDLE_MAKEIMAGE));
         sb.append(HtmlUtils.formTable());
-        List<TwoFacedObject>   imageTypes = new ArrayList<TwoFacedObject>();
+        List<TwoFacedObject> imageTypes = new ArrayList<TwoFacedObject>();
         imageTypes.add(new TwoFacedObject("GIF", "gif"));
         imageTypes.add(new TwoFacedObject("PNG", "png"));
         imageTypes.add(new TwoFacedObject("JPEG", "jpg"));
 
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Format"), htmlSelect(
-                    request, ARG_IMAGE_TYPE, imageTypes)));
-        sb.append(HtmlUtils.formEntry(msgLabel("Time Step"), 
-                htmlInput(request, ARG_TIME_STEP, "1")));
+        sb.append(HtmlUtils.formEntry(msgLabel("Format"),
+                                      htmlSelect(request, ARG_IMAGE_TYPE,
+                                          imageTypes)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Time Step"),
+                                      htmlInput(request, ARG_TIME_STEP,
+                                          "1")));
         if ( !request.getUser().getAnonymous()) {
             try {
-            addPublishWidget(
-                request, entry, sb,
-                msg("Select a folder to publish the product to"));
+                addPublishWidget(
+                    request, entry, sb,
+                    msg("Select a folder to publish the product to"));
             } catch (Exception e) {}
         }
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
+
         return new Result("Bundle As Image", sb);
 
     }
 
+    /**
+     * Make the bundle isl
+     *
+     * @param request the Request
+     * @param entry   the bundle entry
+     *
+     * @return  the isl 
+     */
     private StringBuffer makeBundleIsl(Request request, Entry entry) {
-            StringBuffer isl = new StringBuffer();
-            boolean isMovie = request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
-            isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
-            isl.append("<bundle file=\""+getEntryManager().getFullEntryGetUrl(request)+"\"");
-            isl.append(" clear=\"true\"");
-            if (!isMovie) {
-                String timeIdx = request.getString(ARG_TIME_STEP,"1");
-                int tidx = 0;
-                try {
-                    tidx = Integer.parseInt(timeIdx) - 1;
-                    tidx = Math.max(tidx, 0);
-                } catch (NumberFormatException nfe) {
-                    tidx = 0;
-                }
-                isl.append("times=\""+tidx+"\"");
+        StringBuffer isl = new StringBuffer();
+        boolean isMovie  =
+            request.getOutput().equals(OUTPUT_IDV_BUNDLE_MOVIE);
+        isl.append("<isl debug=\"true\" loop=\"1\" offscreen=\"true\">\n");
+        isl.append("<bundle file=\""
+                   + getEntryManager().getFullEntryGetUrl(request) + "\"");
+        isl.append(" clear=\"true\"");
+        if ( !isMovie) {
+            String timeIdx = request.getString(ARG_TIME_STEP, "1");
+            int    tidx    = 0;
+            try {
+                tidx = Integer.parseInt(timeIdx) - 1;
+                tidx = Math.max(tidx, 0);
+            } catch (NumberFormatException nfe) {
+                tidx = 0;
             }
-            isl.append(" />\n");
-            isl.append("<pause/>\n");
-            if (isMovie) {
-                isl.append("<movie ");
-            } else {
-                isl.append("<image ");
-            }
-            String suffix = getImageSuffix(request);
-            isl.append(" file=\"");
-            isl.append(getStorageManager().getStorageFileName("bundleimage_"+getRepository().getGUID()));
-            isl.append(suffix);
-            isl.append("\" ");
-            isl.append(" />\n");
-            isl.append("</isl>\n");
-            System.err.println(isl);
-            return isl;
+            isl.append("times=\"" + tidx + "\"");
+        }
+        isl.append(" />\n");
+        isl.append("<pause/>\n");
+        if (isMovie) {
+            isl.append("<movie ");
+        } else {
+            isl.append("<image ");
+        }
+        String suffix = getImageSuffix(request);
+        isl.append(" file=\"");
+        isl.append(getStorageManager().getStorageFileName("bundleimage_"
+                + getRepository().getGUID()));
+        isl.append(suffix);
+        isl.append("\" ");
+        isl.append(" />\n");
+        isl.append("</isl>\n");
+        System.err.println(isl);
+
+        return isl;
     }
 
+    /**
+     * Get the image suffix
+     *
+     * @param request  the request with the suffix parameter
+     *
+     * @return  the image file suffix
+     */
     private String getImageSuffix(Request request) {
         String type = request.getString(ARG_IMAGE_TYPE, "gif");
-        return "."+type;
+
+        return "." + type;
     }
 
 
@@ -578,7 +730,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                               DataSource dataSource)
             throws Exception {
 
-        
+
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
@@ -730,9 +882,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         basic.append(HtmlUtils.formTableClose());
 
 
-        StringBuffer  mapSB = new StringBuffer();
-        List<MapData> maps  =
-            getIdv().getResourceManager().getMaps();
+        StringBuffer mapSB = new StringBuffer();
+        List<MapData> maps = getIdv().getResourceManager().getMaps();
         Hashtable<String, List<TwoFacedObject>> mapCatMap =
             new Hashtable<String, List<TwoFacedObject>>();
         List<String> mapCats = new ArrayList<String>();
@@ -833,7 +984,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabContents.add(basic.toString());
 
         StringBuffer bounds = new StringBuffer();
-        MapInfo      map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
         map.addBox(entry, new MapProperties("blue", false));
         map.centerOn(entry);
@@ -851,8 +1002,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabLabels.add(msg("Maps and Background"));
         tabContents.add(mapSB.toString());
 
-        List colorTables =
-            getIdv().getColorTableManager().getColorTables();
+        List colorTables = getIdv().getColorTableManager().getColorTables();
 
 
         Hashtable<String, DataChoice> idToChoice = new Hashtable<String,
@@ -950,7 +1100,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
             List spatialComps = new ArrayList();
-            List ensMembers   = (List) choice.getProperty(
+            List ensMembers = (List) choice.getProperty(
                                   GeoGridDataSource.PROP_ENSEMBLEMEMBERS);
             if ((ensMembers != null) && !ensMembers.isEmpty()) {
                 spatialComps.add(msgLabel("Ensemble Member"));
@@ -992,18 +1142,18 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             spatialComps.add(strideComp);
 
             String spatial =
-                HtmlUtils.table(StringUtil.listToStringArray(spatialComps), 5);
+                HtmlUtils.table(StringUtil.listToStringArray(spatialComps),
+                                5);
             innerTabTitles.add(msg("Coordinates"));
             innerTabContents.add(spatial);
 
             ColorTable dfltColorTable =
                 getIdv().getDisplayConventions().getParamColorTable(
                     choice.getName());
-            Range range =
-                getIdv().getDisplayConventions().getParamRange(
-                    choice.getName(), null);
+            Range range = getIdv().getDisplayConventions().getParamRange(
+                              choice.getName(), null);
 
-            List<String>                    ctCats   = new ArrayList<String>();
+            List<String> ctCats = new ArrayList<String>();
             Hashtable<String, StringBuffer> ctCatMap = new Hashtable<String,
                                                            StringBuffer>();
             for (ColorTable colorTable : (List<ColorTable>) colorTables) {
@@ -1017,8 +1167,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                               + ".png";
                 icon = icon.replace(" ", "_");
                 String img = "<img border=0 src="
-                             + getRepository().getUrlBase() + "/idv/colortables/"
-                             + icon + ">";
+                             + getRepository().getUrlBase()
+                             + "/idv/colortables/" + icon + ">";
                 String div = HtmlUtils.div(img + " " + colorTable.getName(),
                                            "");
                 String call1 = HtmlUtils.call(
@@ -1111,9 +1261,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
             StringBuffer contoursb = new StringBuffer();
-            ContourInfo  ci        =
-                getIdv().getDisplayConventions()
-                    .findDefaultContourInfo(choice.getName());
+            ContourInfo ci =
+                getIdv().getDisplayConventions().findDefaultContourInfo(
+                    choice.getName());
             contoursb.append(HtmlUtils.formTable());
             contoursb.append(HtmlUtils.formEntry(msgLabel("Interval"),
                     htmlInput(request, ARG_CONTOUR_INTERVAL + displayIdx,
@@ -1158,8 +1308,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                             htmlInput(request,
                                                 ARG_DISPLAYLISTLABEL
                                                     + displayIdx, "", 30)));
-            String unitString  = "";
-            Unit   displayUnit =
+            String unitString = "";
+            Unit displayUnit =
                 getIdv().getDisplayConventions().getDisplayUnit(
                     choice.getName(), null);
             if (displayUnit != null) {
@@ -1310,7 +1460,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer fields  = new StringBuffer();
         List         options = new ArrayList();
         //            options.add(new TwoFacedObject("--Pick one--", ""));
-        List<String>                            cats = new ArrayList<String>();
+        List<String> cats = new ArrayList<String>();
         Hashtable<String, List<TwoFacedObject>> catMap =
             new Hashtable<String, List<TwoFacedObject>>();
         for (DataChoice dataChoice : choices) {
@@ -1630,9 +1780,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                      DataSource dataSource)
             throws Exception {
 
-        String  id      = entry.getId();
-        String  product = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
-        boolean forIsl  = request.getString(ARG_IDV_TARGET,
+        String id      = entry.getId();
+        String product = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
+        boolean forIsl = request.getString(ARG_IDV_TARGET,
                                            "").equals(TARGET_ISL);
         boolean forJnlp = request.getString(ARG_IDV_TARGET,
                                             "").equals(TARGET_JNLP);
@@ -1780,7 +1930,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String bgTrans  = "";
         String bgSuffix = "";
         if (request.get(ARG_BACKGROUND_TRANSPARENT, false)) {
-            bgTrans  = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
+            bgTrans = XmlUtil.tag(ImageGenerator.TAG_BGTRANSPARENT, "");
             bgSuffix = XmlUtil.attr(ImageSequenceGrabber.ATTR_IMAGESUFFIX,
                                     ".png");
         }
@@ -2304,7 +2454,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         formSB.append(HtmlUtils.formClose());
 
 
-        String url    = getEntryManager().getFullEntryShowUrl(request);
+        String url = getEntryManager().getFullEntryShowUrl(request);
         String islUrl = url + "/" + IOUtil.stripExtension(entry.getName())
                         + ".isl";
         String jnlpUrl = url + "/" + IOUtil.stripExtension(entry.getName())
@@ -2386,8 +2536,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         try {
 
 
-            String id    = entry.getId();
-            File   image = getStorageManager().getThumbFile("preview_"
+            String id = entry.getId();
+            File image = getStorageManager().getThumbFile("preview_"
                              + id.replace("/", "_") + ".gif");
 
             boolean forIsl = request.getString(ARG_IDV_TARGET,
