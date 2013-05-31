@@ -140,6 +140,13 @@ public class CsvFile extends TextFile {
     }
 
 
+    public void initAfterClone() {
+        super.initAfterClone();
+        fields  =null;
+        delimiter = null;
+    }
+
+
     public List<RecordField> getFields() {
        if(fields == null) {
             fields = doMakeFields();

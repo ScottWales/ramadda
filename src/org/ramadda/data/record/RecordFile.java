@@ -107,9 +107,13 @@ public abstract class RecordFile {
         fileMetadata = metadata;
     }
 
+    public void initAfterClone() {
+    }
+
     public RecordFile cloneMe(String filename, Hashtable properties)
             throws CloneNotSupportedException {
         RecordFile that = cloneMe();
+        that.initAfterClone();
         that.setFilename(filename);
         if(properties == null) {
             properties = getPropertiesForFile(filename, that.getPropertiesFileName());

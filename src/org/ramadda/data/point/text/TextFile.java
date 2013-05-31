@@ -17,11 +17,6 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  */
-/*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- *
- */
-
 package org.ramadda.data.point.text;
 
 
@@ -49,13 +44,12 @@ import javax.swing.*;
 
 
 /**
- * Class description
  *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
  */
 public abstract class TextFile extends PointFile {
+
+    static int cnt =0;
+    int mycnt = cnt++;
 
     public static final String FIELD_SITE_ID = "Site_Id";
     public static final String FIELD_LATITUDE ="Latitude";
@@ -90,10 +84,12 @@ public abstract class TextFile extends PointFile {
     /** _more_          */
     private List<String> headerLines = new ArrayList<String>();
 
+
     /**
      * _more_
      */
-    public TextFile() {}
+    public TextFile() {
+    }
 
     /**
      * ctor
@@ -179,8 +175,13 @@ public abstract class TextFile extends PointFile {
         return headerLines;
     }
 
-    public void setHeaderLines( List<String> lines) {
+    public void setHeaderLines(List<String> lines) {
         headerLines = lines;
+    }
+
+    public void initAfterClone() {
+        super.initAfterClone();
+        headerLines = new ArrayList<String>();
     }
 
     /**
@@ -193,10 +194,9 @@ public abstract class TextFile extends PointFile {
      * @throws IOException _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
-
         boolean haveReadHeader = headerLines.size()>0;
         int skipCnt = getSkipLines(visitInfo);
-        System.err.println("prepareToVisit " + getClass().getName() + " skip cnt:" + skipCnt + " have read:" + haveReadHeader);
+        System.err.println(mycnt +" prepareToVisit " + getClass().getName() + " skip cnt:" + skipCnt + " have read:" + haveReadHeader);
         for(String line: headerLines)
             System.err.println("\theader:" + line);
             
