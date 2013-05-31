@@ -1139,6 +1139,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 if(message!=null) {
                     return message;
                 }
+            } else  {
+                boolean anyHaveLatLon = false;
+                for(Entry child: children) {
+                    if(child.hasLocationDefined() || child.hasAreaDefined()) {
+                        anyHaveLatLon = true;
+                        break;
+                    }
+                }
+                if(!anyHaveLatLon) {
+                    String message = Misc.getProperty(props, ATTR_MESSAGE, (String) null);
+                    if(message!=null) {
+                        return message;
+                    }
+                }
             }
 
             Request newRequest = makeRequest(request, props);

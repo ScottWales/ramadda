@@ -25,7 +25,9 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
+</div>
 
 ==Information==
 <table>
@@ -43,7 +45,7 @@
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="350"}}
+{{mapentry width="350" message=""}}
 <p>
 {{links entry="Links" message=""}}
 </td></tr>
@@ -93,7 +95,7 @@
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="350"}}
+{{mapentry width="350" message=""}}
 
 <p>
 {{map entry="Locations"  width="350" message="" prefix="<b>Site Locations</b>"}}
@@ -182,7 +184,7 @@
 <td width="50%">
 {{image src="::*" message="" width="300"}}
 <p>
-{{mapentry width="350"}}
+{{mapentry width="350" message=""}}
 <p>
 {{tree showtoggle="false" title=""}}
 </td>
@@ -232,7 +234,7 @@ features
 
 </td>
 <td width="50%">
-{{mapentry width="350"}}
+{{mapentry width="350" message=""}}
 </td></tr>
 </table>
 
