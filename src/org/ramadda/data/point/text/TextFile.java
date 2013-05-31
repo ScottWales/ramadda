@@ -88,7 +88,7 @@ public abstract class TextFile extends PointFile {
     public static final String PROP_SKIPLINES = "skiplines";
 
     /** _more_          */
-    protected List<String> headerLines = new ArrayList<String>();
+    private List<String> headerLines = new ArrayList<String>();
 
     /**
      * _more_
@@ -179,6 +179,10 @@ public abstract class TextFile extends PointFile {
         return headerLines;
     }
 
+    public void setHeaderLines( List<String> lines) {
+        headerLines = lines;
+    }
+
     /**
      * _more_
      *
@@ -192,11 +196,15 @@ public abstract class TextFile extends PointFile {
 
         boolean haveReadHeader = headerLines.size()>0;
         int skipCnt = getSkipLines(visitInfo);
-        System.err.println("prepareToVisit skip cnt:" + skipCnt + " have read:" + haveReadHeader + " header:" + headerLines);
+        System.err.println("prepareToVisit " + getClass().getName() + " skip cnt:" + skipCnt + " have read:" + haveReadHeader);
+        for(String line: headerLines)
+            System.err.println("\theader:" + line);
+            
         for (int i = 0; i < skipCnt; i++) {
             String line = visitInfo.getRecordIO().readLine();
-            System.err.println("\tline:" + line);
+            System.err.println("\tread:" + line);
             if(!haveReadHeader) {
+                System.err.println("\tadding:" + line);
                 headerLines.add(line);
             }
         }

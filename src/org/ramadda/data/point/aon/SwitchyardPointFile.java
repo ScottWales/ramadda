@@ -96,16 +96,16 @@ Cast 6  Station U0W6           85.8520 degrees North  _  028.140 degrees West   
      * @throws IOException on badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
-        boolean haveHeader = headerLines.size() > 0;
+        List<String>header = getHeaderLines();
+        boolean haveHeader = header.size() > 0;
         while(true) {
             String line = visitInfo.getRecordIO().readLine();
             if(line.trim().equals("#")) break;
             if(!haveHeader) {
-                headerLines.add(line);
+                header.add(line);
             }
         }
-        List<String>header = headerLines;
-
+        setHeaderLines(header);
 
         String line;
         String cast;
