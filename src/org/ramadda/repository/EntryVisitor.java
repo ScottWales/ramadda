@@ -110,7 +110,7 @@ public abstract class EntryVisitor  implements Constants {
         this.repository = repository;
         this.request = request;
         this.actionId  =actionId;
-        recurse = request.get(EntryManager.ARG_WALK_RECURSE, false);
+        recurse = request.get(EntryManager.ARG_EXTEDIT_RECURSE, false);
     }
 
     public StringBuffer getMessageBuffer() {

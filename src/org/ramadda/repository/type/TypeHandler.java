@@ -1162,6 +1162,10 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public  boolean canChangeTo(TypeHandler newType) {
+        return true;
+    }
+
     /**
      * _more_
      *
@@ -1718,8 +1722,8 @@ public class TypeHandler extends RepositoryManager {
 
             links.add(
                 new Link(
-			 request.entryUrl(getRepository().URL_ENTRY_WALK, entry),
-			 getRepository().iconUrl("/icons/sitemap.png"), "Walk Tree",
+			 request.entryUrl(getRepository().URL_ENTRY_EXTEDIT, entry),
+			 getRepository().iconUrl("/icons/sitemap.png"), "Extended Edit",
                     OutputType.TYPE_EDIT));
 
         }
