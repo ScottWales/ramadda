@@ -937,7 +937,7 @@ public class EntryManager extends RepositoryManager {
                 if(!entry.getTypeHandler().canChangeTo(typeHandler)) {
                     continue;
                 }
-                tfos.add(new TwoFacedObject(typeHandler.getLabel(), typeHandler.getType()));
+                tfos.add(new TwoFacedObject(typeHandler.getCategory() +" - " + typeHandler.getLabel(), typeHandler.getType()));
             }
             TwoFacedObject.sort(tfos);
             sb.append(HtmlUtils.p());
@@ -946,7 +946,18 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.space(1));
             sb.append(HtmlUtils.select(ARG_EXTEDIT_NEWTYPE, tfos));
             sb.append(HtmlUtils.p());
-            sb.append(msg("Note: any extra information beyond the core name/description/file/etc will be lost"));
+            List<Column> columns = entry.getTypeHandler().getColumns();
+            if(columns !=null && columns.size()>0) {
+                StringBuffer note  = new StringBuffer();
+                for(Column col: columns) {
+                    if(note.length()>0) note.append(", ");
+                    note.append(col.getLabel());
+                }
+                sb.append(msgLabel("Note: this metadata would be lost") +note);
+            }
+
+
+
             sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.submit(msg("Change Type"),  ARG_EXTEDIT_CHANGETYPE));
         }
