@@ -1622,6 +1622,12 @@ public class HtmlUtils {
         return checkbox(name, value, checked, "");
     }
 
+
+    public static String labeledCheckbox(String name, String value,
+                                         boolean checked, String label) {
+        return checkbox(name, value, checked, "") +space(1) + label;
+    }
+
     /**
      * _more_
      *
