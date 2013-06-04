@@ -42,11 +42,15 @@ RAMADDA what this path is. You do that in a properties file (see below) with:
 ramadda.html.urlbase=/repository
 </pre>
 
-<li> Depending on what plugins are loaded you may need to change the Java configuration in your Tomcat 
-start up. (especially the IDV plugin)
-Add this argument to your Java properties:<pre>
-java ... -XX:MaxPermSize=256m ...
+<li> Depending on what plugins are loaded you may need to change the 
+Java configuration in your Tomcat start up (especially the IDV plugin).  
+You can add/modify the following arguments of the JAVA_OPTS environment 
+variable in the catalina start script (catalina.sh or catalina.bat):
+<pre>
+     -Xmx1024m -XX:MaxPermSize=256m 
 </pre>
+to set the memory and permgen size. Consult the tomcat documentation for
+more information.
 
 
 </ol>
@@ -109,7 +113,7 @@ Wherever you define the arguments that are passed to <i>java</i> when starting T
    -Dramadda_home=/home/dir
 </pre>
 e.g.:<pre>
-    java -Xmx512m  -Dramadda_home=/home/dir
+    java -Xmx1024m  -XX:MaxPermSize=256m -Dramadda_home=/home/dir
 </pre>
 
 <li> As a process environment variable.<br>
