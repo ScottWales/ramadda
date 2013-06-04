@@ -231,6 +231,10 @@ public class  LocalRepositoryManager extends RepositoryManager {
         //TODO: Do we always copy the plugins on start up or just the first time
         //        if(!otherPluginDir.exists()) {
         otherPluginDir.mkdirs();
+        for(File currentPluginFile: otherPluginDir.listFiles()) {
+            currentPluginFile.delete();
+        }
+
         for(File myPluginFile: getStorageManager().getPluginsDir().listFiles()) {
             if(!myPluginFile.isFile()) continue;
             IOUtil.copyFile(myPluginFile, otherPluginDir);
