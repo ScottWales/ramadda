@@ -6,6 +6,31 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+{{properties metadata.types="content.url" message="" prefix="==Links=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  entry="Sites" message="" width="300" prefix="==Sites=="}}
+<p>
+{{links entry="Projects" prefix="==Projects=="   message=""}}
+<p>
+{{links entry="Links" prefix="==Links=="   message=""}}
+</td></tr>
+</table>
+]]>
+</wiki>
+
    </type>
 
 
