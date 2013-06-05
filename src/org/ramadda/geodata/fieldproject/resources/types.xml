@@ -15,7 +15,7 @@
 {{description wikify="true"}}
 </div>
 
-{{properties metadata.types="content.url" message="" prefix="==Links=="}}
+{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
 
 </td>
 <td width="50%">
