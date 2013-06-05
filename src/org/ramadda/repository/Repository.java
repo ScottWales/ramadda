@@ -4678,7 +4678,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Metadata       sortMetadata = null;
         if ((forEntry != null) && !request.exists(ARG_ORDERBY)) {
             try {
-                metadataList = getMetadataManager().findMetadata(forEntry,
+                metadataList = getMetadataManager().findMetadata(request, forEntry,
                         ContentMetadataHandler.TYPE_SORT, true);
                 if ((metadataList != null) && (metadataList.size() > 0)) {
                     sortMetadata = metadataList.get(0);

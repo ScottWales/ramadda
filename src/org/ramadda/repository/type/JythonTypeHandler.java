@@ -165,7 +165,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                 : new Integer(0)));
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
+            getMetadataManager().findMetadata(request, entry,
                 ContentMetadataHandler.TYPE_JYTHON, true);
         if (metadataList != null) {
             for (Metadata metadata : metadataList) {

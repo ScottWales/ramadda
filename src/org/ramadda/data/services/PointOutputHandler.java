@@ -1590,7 +1590,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         try {
             //Don't include the tracks if it has  polygon metadata
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(request, entry,
                     MetadataHandler.TYPE_SPATIAL_POLYGON, true);
 
             if ((metadataList == null) || (metadataList.size() > 0)) {

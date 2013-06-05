@@ -332,10 +332,10 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Metadata> findMetadata(Entry entry, String type,
+    public List<Metadata> findMetadata(Request request, Entry entry, String type,
                                        boolean checkInherited)
             throws Exception {
-        return findMetadata(entry, type, checkInherited, true);
+        return findMetadata(request, entry, type, checkInherited, true);
     }
 
 
@@ -351,12 +351,12 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Metadata> findMetadata(Entry entry, String type,
+    public List<Metadata> findMetadata(Request request, Entry entry, String type,
                                        boolean checkInherited,
                                        boolean firstOk)
             throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
-        findMetadata(entry, type, result, checkInherited, firstOk);
+        findMetadata(request, entry, type, result, checkInherited, firstOk);
         if (result.size() == 0) {
             return null;
         }
@@ -435,7 +435,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void findMetadata(Entry entry, String type,
+    private void findMetadata(Request request, Entry entry, String type,
                               List<Metadata> result, boolean checkInherited,
                               boolean firstTime)
             throws Exception {
@@ -456,7 +456,7 @@ public class MetadataManager extends RepositoryManager {
             }
         }
         if (checkInherited) {
-            findMetadata(getEntryManager().getParent(null, entry), type,
+            findMetadata(request, getEntryManager().getParent(request, entry), type,
                          result, checkInherited, false);
         }
     }
@@ -472,7 +472,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Metadata findMetadata(Entry entry, String id) throws Exception {
+    public Metadata findMetadata(Request request, Entry entry, String id) throws Exception {
         if (entry == null) {
             return null;
         }
@@ -1105,7 +1105,7 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataView(Request request) throws Exception {
         Entry          entry        = getEntryManager().getEntry(request);
         List<Metadata> metadataList = getMetadata(entry);
-        Metadata       metadata     = findMetadata(entry,
+        Metadata       metadata     = findMetadata(request, entry,
                                          request.getString(ARG_METADATA_ID,
                                              ""));
         if (metadata == null) {

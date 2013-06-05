@@ -228,7 +228,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (mainEntry != null) {
             try {
                 List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(mainEntry,
+                    getMetadataManager().findMetadata(request, mainEntry,
                         ContentMetadataHandler.TYPE_SORT, true);
                 if ((metadataList != null) && (metadataList.size() > 0)) {
                     sortMetadata = metadataList.get(0);

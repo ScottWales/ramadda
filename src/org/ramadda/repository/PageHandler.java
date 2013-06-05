@@ -992,7 +992,7 @@ public class PageHandler extends RepositoryManager {
         if((templateId==null || templateId.length()==0)  && entry!=null) {
             try {
                 List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(entry,
+                    getMetadataManager().findMetadata(request, entry,
                                                       ContentMetadataHandler.TYPE_TEMPLATE, true);
                 if(metadataList!=null) {
                     for(Metadata metadata: metadataList) {
@@ -2019,7 +2019,7 @@ public class PageHandler extends RepositoryManager {
                 return pageStyle;
             }
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(request, entry,
                     ContentMetadataHandler.TYPE_PAGESTYLE, true);
             if ((metadataList == null) || (metadataList.size() == 0)) {
                 return pageStyle;

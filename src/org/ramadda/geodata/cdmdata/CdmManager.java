@@ -1268,7 +1268,7 @@ public class CdmManager extends RepositoryManager {
         getStorageManager().checkPath(location);
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
+            getMetadataManager().findMetadata(request, entry,
                 ContentMetadataHandler.TYPE_ATTACHMENT, true);
         //        System.err.println("getPath");
         if (metadataList == null) {

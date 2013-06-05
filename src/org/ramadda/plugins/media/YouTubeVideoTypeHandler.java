@@ -171,7 +171,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         sb.append("</iframe>\n");
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry, "video_cue", false);
+            getMetadataManager().findMetadata(request, entry, "video_cue", false);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             StringBuffer links = new StringBuffer();
             for (Metadata metadata : metadataList) {

@@ -403,7 +403,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             Entry entry = this.createEntryFromDatabase(results, false);
 
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(null, entry,
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
             System.err.println("Initializing point database entry:"
                                + entry.getFullName());
@@ -3313,11 +3313,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
+            getMetadataManager().findMetadata(null, entry,
                 ContentMetadataHandler.TYPE_ATTACHMENT, true);
         if (metadataList == null) {
             if (parent != null) {
-                metadataList = getMetadataManager().findMetadata(parent,
+                metadataList = getMetadataManager().findMetadata(null, parent,
                         ContentMetadataHandler.TYPE_ATTACHMENT, true, false);
             }
         }

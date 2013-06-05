@@ -1454,7 +1454,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
+            getMetadataManager().findMetadata(request, entry,
                 METADATA_TYPE_VISUALIZATION, false);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             sb.append(HtmlUtils.p());
@@ -1533,7 +1533,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         if (request.defined(ARG_PREDEFINED)) {
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(request, entry,
                     METADATA_TYPE_VISUALIZATION, false);
             String args = null;
             if ((metadataList != null) && (metadataList.size() > 0)) {

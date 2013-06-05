@@ -232,7 +232,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
         } else {
 
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(request,entry,
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
 
             if (getCdmManager().canLoadAsCdm(entry)) {

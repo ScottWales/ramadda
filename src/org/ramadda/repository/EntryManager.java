@@ -582,7 +582,7 @@ public class EntryManager extends RepositoryManager {
             //            }
 
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(request, entry,
                     ContentMetadataHandler.TYPE_LOGO, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata        metadata = metadataList.get(0);
@@ -1179,7 +1179,7 @@ public class EntryManager extends RepositoryManager {
                                            getEntryTimestamp(entry)));
                 if (isAnonymousUpload(entry)) {
                     List<Metadata> metadataList =
-                        getMetadataManager().findMetadata(entry,
+                        getMetadataManager().findMetadata(request, entry,
                             AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD,
                             false);
                     String extra = "";
@@ -2885,7 +2885,7 @@ public class EntryManager extends RepositoryManager {
     private void publishAnonymousEntry(Request request, Entry entry)
             throws Exception {
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(entry,
+            getMetadataManager().findMetadata(request, entry,
                 AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false);
         //Reset the category
         if (metadataList != null) {
@@ -2981,7 +2981,7 @@ public class EntryManager extends RepositoryManager {
             contents.append(HtmlUtils.href(url, entry.getLabel()));
             boolean sentNotification = false;
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(parentEntry,
+                getMetadataManager().findMetadata(request, parentEntry,
                                                   ContentMetadataHandler.TYPE_CONTACT, true);
             if (metadataList != null) {
                 for (Metadata metadata : metadataList) {
@@ -7567,7 +7567,7 @@ public class EntryManager extends RepositoryManager {
     public String getTimezone(Entry entry) {
         try {
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(entry,
+                getMetadataManager().findMetadata(null, entry,
                     ContentMetadataHandler.TYPE_TIMEZONE, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
