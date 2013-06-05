@@ -63,6 +63,8 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_DAY = "Day";
     public static final String FIELD_JULIAN_DAY = "Julian_Day";
     public static final String FIELD_HOUR = "Hour";
+    public static final String FIELD_MINUTE = "Minute";
+    public static final String FIELD_SECOND = "Second";
     public static final String FIELD_ = "";
 
     public static final String ATTR_TYPE = "type";
