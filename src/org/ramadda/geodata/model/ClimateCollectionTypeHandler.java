@@ -152,7 +152,6 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         selectorSB.append(HtmlUtils.formTableClose());
 
 
-
         sb.append(
             "<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
         sb.append("<td width=30%>");

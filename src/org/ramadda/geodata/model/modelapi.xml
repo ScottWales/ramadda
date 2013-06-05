@@ -1,5 +1,12 @@
 
 <api handler="org.ramadda.geodata.model.ClimateModelApiHandler" id="model.analysis">
+<!--
+    this specifies the collection entry type
+-->
       <property name="collectiontype" value="climate_collection"/>
-      <api request="/model/analysis"    method="processClimateModelRequest"  name="Model Process" admin="false"/>
+
+<!--
+Use the entry type in the path
+-->
+      <api request="/model/climate_collection/analysis"    method="processClimateModelRequest"  name="Model Process" admin="false"/>
 </api>

@@ -28,14 +28,19 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.StringUtil;
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
+import java.sql.*;
+
 
 
 import java.io.*;
@@ -47,6 +52,7 @@ import java.util.Hashtable;
 
 import java.util.regex.*;
 
+import org.ramadda.util.TTLCache;
 
 /**
  * Provides a top-level API
@@ -56,6 +62,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
     private String collectionType;
 
+    private TTLCache<Object, Object> cache = new TTLCache<Object, Object>(60*60*1000);
 
     /**
      * ctor
@@ -84,26 +91,87 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @throws Exception on badness
      */
     public Result processClimateModelRequest(Request request) throws Exception {
-
-        TypeHandler collectionTypeHandler  =getRepository().getTypeHandler(collectionType);
-        if(collectionTypeHandler == null) {
+        if(getTypeHandler() == null) {
             throw new IllegalStateException("Unknown collection type:" +collectionType);
         }
+        return processFormRequest(request);
+    }
 
-        StringBuffer sb = new StringBuffer();
-        
+    public static final String ARG_COLLECTION1 = "collection1";
+    public static final String ARG_COLLECTION2 = "collection2";
+    private String selectArg = "select";
+
+    private Result processFormRequest(Request request) throws Exception {
+        CollectionTypeHandler typeHandler = getTypeHandler();
         List<Entry> collections =  getCollections(request);
-        sb.append("<ul>");
-        for(Entry collection: collections) {
-            sb.append("<li>" + getEntryManager().getEntryLink(request,collection));
-        }
-        sb.append("</ul>");
         if(collections.size()==0) {
-            sb.append(getPageHandler().showDialogWarning(msg("No climate collections found")));
+            return new Result("Climate Model Analysis", new StringBuffer(getPageHandler().showDialogWarning(msg("No climate collections found"))));
         }
+        StringBuffer sb = new StringBuffer();
+
+        String formId = "selectform" + HtmlUtils.blockCnt++;
+        sb.append(HtmlUtils.importJS(fileUrl("/model/analysis.js")));
+        sb.append(HtmlUtils.form(getUrlPath()));
+        sb.append(HtmlUtils.formTable());
+
+        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        tfos.add(new TwoFacedObject("----",""));
+        for(Entry collection: collections) {
+            tfos.add(new TwoFacedObject(collection.getLabel(), collection.getId()));
+        }
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Collection"), HtmlUtils.select(ARG_COLLECTION1, tfos)));
+
+
+
+        Entry entry  = collections.get(0);
+        List<Column> columns = typeHandler.getGranuleColumns();
+        for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
+            Column column = columns.get(selectIdx);
+            String key = "values::" + entry.getId()+"::" +column.getName();
+            List values = (List)cache.get(key);
+            if(values == null) {
+                Statement stmt = getRepository().getDatabaseManager().select(
+                                                                             SqlUtil.distinct(column.getTableName()+"."+column.getName()),
+                                                                             column.getTableName(), Clause.eq(typeHandler.getCollectionIdColumn(), entry.getId()));
+                values = typeHandler.getValueList(entry, Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1)), column);
+                values.add(0, new TwoFacedObject("-- Select " + Utils.getArticle(column.getLabel()) +" " +column.getLabel() + " --",""));
+                //                values.add(0, new TwoFacedObject("FOOBAR","foobar"));
+                cache.put(key, values);
+            }
+            String selectId = formId +"_"  + selectArg + selectIdx;
+            String selectedValue = request.getString(selectArg+selectIdx,"");
+            String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
+                                                " style=\"min-width:250px;\" " +
+                                                HtmlUtils.attr("id",selectId));
+            sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
+            //            js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
+        }
+
+
+
+
+
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
         return new Result("Climate Model Analysis", sb);
     }
 
+
+
+    /**
+       return the main entry point URL
+     */
+    private String getUrlPath() {
+        //Use the collection type in the path. This is defined in the api.xml file
+        return getRepository().getUrlBase()+"/model/" + collectionType +"/analysis";
+    }
+
+
+
+    private ClimateCollectionTypeHandler  getTypeHandler() throws Exception {
+        return (ClimateCollectionTypeHandler) getRepository().getTypeHandler(collectionType);
+    }
 
 
 

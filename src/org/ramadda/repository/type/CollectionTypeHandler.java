@@ -96,13 +96,21 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return         zipOutputHandler;
     }
 
+    public List<Column> getGranuleColumns() throws Exception {
+        getGranuleTypeHandler();
+        return columns;
+    }
+
+
+    public String getCollectionIdColumn() {
+        return dbColumnCollectionId;
+    }
+
     public TypeHandler getGranuleTypeHandler() throws Exception {
         if(granuleTypeHandler ==null) {
             granuleTypeHandler = getRepository().getTypeHandler(getProperty(PROP_GRANULE_TYPE,""));
             columns = new ArrayList<Column>(granuleTypeHandler.getColumns());
             dbColumnCollectionId = columns.get(0).getFullName();
-            System.err.println ("id:" + dbColumnCollectionId);
-            System.err.println ("columns: " + columns);
             columns.remove(0);
         }
         return granuleTypeHandler;
@@ -211,7 +219,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    private List<TwoFacedObject> getValueList(Entry collectionEntry, List values, Column column) throws Exception {
+    public List<TwoFacedObject> getValueList(Entry collectionEntry, List values, Column column) throws Exception {
         Hashtable map  = getColumnEnumTable(column);
         /*
         Hashtable map  = column.getEnumTable();
