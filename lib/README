@@ -1,5 +1,12 @@
 Custom JAR files in the lib directory:
 
+jfreechart.jar:
+Note: for now I (jeffmc) fixed s ticky bug in AbstractXYItemRenderer where it passed in 
+NaN coordinates. This caused some JVMs to never return from the java2d draw call.
+I will submit the fix to the jfreechart folks but for now we're good (I think)
+
+
+
 ramaddalib.jar:
   This holds all of the 3rd party libs  used by ramadda. It is made
   with the ant target ramaddalib in src/org/ramadda/repository
