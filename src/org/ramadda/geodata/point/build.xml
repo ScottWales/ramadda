@@ -15,7 +15,7 @@
     </target>
 
    <target name="docs" depends="init">
-      <echo message="Generating ppoint docs."/>
+      <echo message="Generating point docs."/>
       <exec dir="${basedir}/src/org/ramadda/geodata/point/docsrc"
             executable="${tclsh}" failifexecutionfails="false" >
           <arg value="${basedir}/bin/idvdocgen/generate.tcl"/>
