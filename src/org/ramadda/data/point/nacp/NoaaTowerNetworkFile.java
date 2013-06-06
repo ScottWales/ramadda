@@ -126,7 +126,7 @@ public class NoaaTowerNetworkFile extends CsvFile  {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        String filename = new File(getFilename()).getName();
+        String filename = getOriginalFilename(getFilename());
         String siteId =  StringUtil.findPattern(filename,"^(.*)_.*");
         //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
