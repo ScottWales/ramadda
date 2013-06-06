@@ -29,7 +29,7 @@
 
 
     <target name="initcore" if="core">
-       <property name="classpath" value="${lib_dir}/jfreechart.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="${tika_jar} jfreechart.jar ramaddalib.jar   servlet-api.jar allplugins_classes.jar"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
@@ -37,7 +37,7 @@
     </target>
 
     <target name="initfull">
-       <property name="classpath" value="${lib_dir}/jfreechart.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
        <property name="manifestjars" value="idv.jar ${tika_jar}  jfreechart.jar ramaddalib.jar   ramaddatds.jar servlet-api.jar allplugins_classes.jar" />
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
@@ -327,9 +327,7 @@
 -->
         <unjar src="${lib_dir}/metadata-extractor-2.6.2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/xmpcore.jar" dest="${tmpjar_dir}"/>
-<!--
         <unjar src="${lib_dir}/jfreechart.jar" dest="${tmpjar_dir}"/>
--->
         <unjar src="${lib_dir}/jcommon.jar" dest="${tmpjar_dir}"/>
 
         <unjar src="${lib_dir}/ftplet-api-1.0.3.jar" dest="${tmpjar_dir}"/>
