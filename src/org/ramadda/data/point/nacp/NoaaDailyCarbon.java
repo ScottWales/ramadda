@@ -27,17 +27,19 @@ import java.util.List;
 public class NoaaDailyCarbon extends CsvFile  {
 
 
-    public static final int IDX_SITE_CODE = 0;
-    public static final int IDX_YEAR = 1;
-    public static final int IDX_MONTH = 2;
-    public static final int IDX_DAY = 3;
-    public static final int IDX_HOUR = 4;
-    public static final int IDX_MEAN_VALUE = 5;
-    public static final int IDX_STANDARD_DEVIATION = 6;
-    public static final int IDX_NUMBER_OF_MEASUREMENTS =7 ;
-    public static final int IDX_QC_FLAG = 8;
-    public static final int IDX_INTAKE_HEIGHT = 9;
-    public static final int IDX_INSTRUMENT = 10;
+    public static final int IDX_SITE_CODE = 1;
+    public static final int IDX_LATITUDE = 2;
+    public static final int IDX_LONGITUDE = 3;
+    public static final int IDX_YEAR = 4;
+    public static final int IDX_MONTH = 5;
+    public static final int IDX_DAY = 6;
+    public static final int IDX_HOUR = 7;
+    public static final int IDX_MEAN_VALUE = 8;
+    public static final int IDX_STANDARD_DEVIATION = 9;
+    public static final int IDX_NUMBER_OF_MEASUREMENTS =10 ;
+    public static final int IDX_QC_FLAG = 11;
+    public static final int IDX_INTAKE_HEIGHT =12;
+    public static final int IDX_INSTRUMENT = 13;
 
 
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HH");
@@ -142,23 +144,28 @@ public class NoaaDailyCarbon extends CsvFile  {
         //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
         double latitude=0.0;
         double longitude=0.0;
+        double elevation=0.0;
         
         if(siteId.equals("brw")) {
-            latitude = 71.3003;
-            longitude = -156.7358;
+            latitude = 71.323;
+            longitude = -156.611;
+            elevation = 11;
         } else if(siteId.equals("mlo")) {
-            latitude = 19.5391667;
-            longitude = -155.5788889;
+            latitude = 19.536;
+            longitude = -155.576;
+            elevation = 3397;
         } else if(siteId.equals("smo")) {
-            latitude = -14.3000;
-            longitude = -170.7000;
+            latitude = -14.247;
+            longitude = -170.564;
+            elevation = 42;
         } else if(siteId.equals("spo")) {
-            latitude = -90;
-            longitude = 0;
+            latitude = -89.98;
+            longitude = -24.8;
+            elevation = 2810;
         } else {
             System.err.println("Unknwon site id:" + siteId);
         }
-        setLocation(latitude, longitude,0);
+        setLocation(latitude, longitude,elevation);
 
         setFileMetadata(new Object[]{
                 siteId,
@@ -199,6 +206,7 @@ public class NoaaDailyCarbon extends CsvFile  {
             ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_HOUR);
 
         Date date = sdf.parse(dttm);
+        //        System.err.println("dttm:" + dttm +" date:" + date);
         record.setRecordTime(date.getTime());
         return true;
     }
