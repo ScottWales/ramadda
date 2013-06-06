@@ -65,6 +65,7 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_HOUR = "Hour";
     public static final String FIELD_MINUTE = "Minute";
     public static final String FIELD_SECOND = "Second";
+    public static final String FIELD_STANDARD_DEVIATION = "Standard_Deviation";
     public static final String FIELD_ = "";
 
     public static final String ATTR_TYPE = "type";

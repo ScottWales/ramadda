@@ -24,7 +24,7 @@ import java.util.List;
 /**
  */
 
-public class NoaaInsituDailyCarbonFile extends CsvFile  {
+public class NoaaDailyCarbon extends CsvFile  {
 
 
     public static final int IDX_SITE_CODE = 0;
@@ -46,7 +46,7 @@ public class NoaaInsituDailyCarbonFile extends CsvFile  {
     /**
      * ctor
      */
-    public NoaaInsituDailyCarbonFile() {
+    public NoaaDailyCarbon() {
     }
 
     /**
@@ -58,7 +58,7 @@ public class NoaaInsituDailyCarbonFile extends CsvFile  {
      *
      * @throws IOException On badness
      */
-    public NoaaInsituDailyCarbonFile(String filename) throws IOException {
+    public NoaaDailyCarbon(String filename) throws IOException {
         super(filename);
     }
 
@@ -70,7 +70,7 @@ public class NoaaInsituDailyCarbonFile extends CsvFile  {
      *
      * @throws IOException On badness
      */
-    public NoaaInsituDailyCarbonFile(String filename,
+    public NoaaDailyCarbon(String filename,
                                      Hashtable properties)
         throws IOException {
         super(filename, properties);
@@ -205,7 +205,7 @@ public class NoaaInsituDailyCarbonFile extends CsvFile  {
 
 
     public static void main(String[]args) {
-        PointFile.test(args, NoaaInsituDailyCarbonFile.class);
+        PointFile.test(args, NoaaDailyCarbon.class);
     }
 
 }

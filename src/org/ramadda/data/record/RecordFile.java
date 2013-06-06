@@ -969,7 +969,17 @@ public abstract class RecordFile {
     }
 
 
+    public static final String FILE_SEPARATOR = "_file_";
 
+    public String getOriginalFilename(String name) {
+        File f = new File(name);
+        name = f.getName();
+        int idx = name.indexOf(FILE_SEPARATOR);
+        if(idx>=0) {
+            name = name.substring(idx+FILE_SEPARATOR.length());
+        }
+        return name;
+    }
 
 
 

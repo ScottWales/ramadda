@@ -369,6 +369,7 @@ public class TextRecord extends PointRecord {
                     continue;
                 }
                 String tok = tokens[tokenCnt++];
+                //                System.err.println ("field:" + field +" " + tok);
                 if(field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
                     continue;
