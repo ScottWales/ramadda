@@ -139,6 +139,7 @@
             update="false"
             compress="true"
             jarfile="${plugindestdir}/${jarfile}">
+            <exclude name="${plugin_dir}/bin/**/*"/>
             <include name="${plugin_dir}/**/*.class"/>
             <include name="${plugin_extra}"/>
             <include name="${plugin_dir}/htdocs/**/*"/>
