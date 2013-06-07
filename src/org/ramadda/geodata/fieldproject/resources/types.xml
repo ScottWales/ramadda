@@ -26,6 +26,12 @@
 {{links entry="Projects" prefix="==Projects=="   message=""}}
 <p>
 {{links entry="Links" prefix="==Links=="   message=""}}
+
+<p>
+{{links entry="Documents" prefix="==Documents=="   message=""}}
+
+<p>
+{{tree prefix="==All Content=="   message=""}}
 </td></tr>
 </table>
 ]]>
