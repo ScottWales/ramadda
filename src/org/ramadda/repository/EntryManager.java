@@ -872,18 +872,23 @@ public class EntryManager extends RepositoryManager {
                     @Override
                     public  boolean processEntry(Entry entry, List<Entry> children) throws Exception {
                         for(Entry child: children) {
+                            String url= request.entryUrl(
+                                                         getRepository().URL_ENTRY_SHOW, child);
                             if(child.isFile()) {
                                 append("<tr><td>");
-                                String url= request.entryUrl(
-                                                              getRepository().URL_ENTRY_SHOW, child);
-
+                                boolean isManagedByRamadda = child.getResource().isStoredFile();
                                 append(HtmlUtils.href(url, child.getName()));
                                 append("</td><td align=right>");
                                 File file = child.getFile();
                                 size[0]+=file.length();
                                 numFiles[0]++;
                                 append(""+file.length());
+                                if(isManagedByRamadda) {
+                                    append(" (managed by RAMADDA)"); 
+                                }
                                 append("</td></tr>");
+                            } else if(child.isGroup()) {
+                            } else  {
                             }
                         }
                         return true;
@@ -917,11 +922,10 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.submit(msg("Apply"),  ARG_EXTEDIT_EDIT));
         sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_RECURSE,"true", true, "Recurse"));
 
-        /*
         sb.append(HtmlUtils.p());
         sb.append(msgHeader("Generate File Listing"));
         sb.append(HtmlUtils.submit(msg("Generate File Listing"),ARG_EXTEDIT_REPORT));
-        */
+
 
 
         //For now only support changing types for folders
