@@ -244,6 +244,15 @@ public class GpxTypeHandler extends GenericTypeHandler {
             minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
         }
 
+        for (Element child :
+                ((List<Element>) XmlUtil.findChildren(root,
+                    GpxUtil.TAG_TRKPT))) {
+            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
+            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
+            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
+            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+        }
+
         if (minTime > 0) {
             entry.setStartDate(minTime);
             entry.setEndDate(maxTime);
