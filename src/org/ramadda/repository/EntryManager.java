@@ -876,17 +876,19 @@ public class EntryManager extends RepositoryManager {
                                                          getRepository().URL_ENTRY_SHOW, child);
                             if(child.isFile()) {
                                 append("<tr><td>");
-                                boolean isManagedByRamadda = child.getResource().isStoredFile();
                                 append(HtmlUtils.href(url, child.getName()));
                                 append("</td><td align=right>");
                                 File file = child.getFile();
                                 size[0]+=file.length();
                                 numFiles[0]++;
                                 append(""+file.length());
-                                if(isManagedByRamadda) {
-                                    append(" (managed by RAMADDA)"); 
+                                append("</td>");
+                                append("<td>");
+                                if(child.getResource().isStoredFile()) {
+                                    append("***"); 
                                 }
-                                append("</td></tr>");
+                                append("</td>");
+                                append("</tr>");
                             } else if(child.isGroup()) {
                             } else  {
                             }
@@ -894,14 +896,12 @@ public class EntryManager extends RepositoryManager {
                         return true;
                     }
                 };
-            
             walker.walk(entry);
-            sb.append("<table><tr><td><b>" + msg("File") +"</b></td><td><b>" + msg("Size") +"</td></tr>");
+            sb.append("<table><tr><td><b>" + msg("File") +"</b></td><td><b>" + msg("Size") +"</td><td></td></tr>");
             sb.append(walker.getMessageBuffer());
-            
-
             sb.append("<tr><td><b>" + msgLabel("Total") +"</td><td align=right>" + HtmlUtils.b(formatFileLength(size[0])) + "</td></tr>");
             sb.append("</table>");
+            sb.append("**** - File managed by RAMADDA");
             return makeEntryEditResult(request, entry, "Entry Report", sb);
         }
 
