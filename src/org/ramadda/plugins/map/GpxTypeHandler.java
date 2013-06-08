@@ -114,6 +114,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
         }
         boolean hasBounds  = false;
         if (bounds != null) {
+            System.err.println("bounds:" + bounds);
             hasBounds = true;
             entry.setNorth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
                     Entry.NONGEO));
@@ -187,7 +188,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
 
 
         //        <time>2012-11-24T14:47:34</time>
-        System.err.println ("Looking for time");
+        //        System.err.println ("Looking for time");
              
         for (Element child :
                 ((List<Element>) XmlUtil.findDescendants(root,
@@ -245,7 +246,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
         }
 
         for (Element child :
-                ((List<Element>) XmlUtil.findChildren(root,
+                ((List<Element>) XmlUtil.findDescendants(root,
                     GpxUtil.TAG_TRKPT))) {
             maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
             minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
@@ -259,8 +260,9 @@ public class GpxTypeHandler extends GenericTypeHandler {
         }
 
         if(!hasBounds) {
-            if(maxLat != Double.NEGATIVE_INFINITY) 
+            if(maxLat != Double.NEGATIVE_INFINITY)  {
                 entry.setNorth(maxLat);
+            }
             if(minLat != Double.POSITIVE_INFINITY) 
                 entry.setSouth(minLat);
             if(maxLon != Double.NEGATIVE_INFINITY) 
