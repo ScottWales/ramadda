@@ -249,37 +249,6 @@ public class MyTrace {
         tabs.put(Thread.currentThread(), new Integer(v + delta));
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public static String[] changeFilters() {
-        String    notTheseStr  = StringUtil.join("\n", notThese);
-        String    onlyTheseStr = StringUtil.join("\n", onlyThese);
-        JTextArea notTheseFld  = new JTextArea(notTheseStr, 10, 50);
-        JTextArea onlyTheseFld = new JTextArea(onlyTheseStr, 10, 50);
-        JPanel contents =
-            GuiUtils.vbox(new JLabel("Not these:"),
-                          GuiUtils.makeScrollPane(notTheseFld, 100, 50),
-                          new JLabel("Only these:"),
-                          GuiUtils.makeScrollPane(onlyTheseFld, 100, 50));
-
-        contents = GuiUtils.inset(contents, 5);
-        if ( !GuiUtils.showOkCancelDialog(null, "Trace filters", contents,
-                                          null)) {
-            return null;
-        }
-
-        setFilters(notTheseFld.getText().trim(),
-                   onlyTheseFld.getText().trim());
-
-        return new String[] { notTheseFld.getText().trim(),
-                              onlyTheseFld.getText().trim() };
-    }
-
-
     /**
      * _more_
      *

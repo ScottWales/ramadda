@@ -37,7 +37,6 @@ import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;

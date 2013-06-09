@@ -109,7 +109,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -2645,10 +2644,10 @@ public class CdmDataOutputHandler extends OutputHandler {
                     }
                     XYItemRenderer renderer =
                         new XYAreaRenderer(XYAreaRenderer.LINES);
-                    if (colorCount >= GuiUtils.COLORS.length) {
+                    if (colorCount >= HtmlUtils.COLORS.length) {
                         colorCount = 0;
                     }
-                    renderer.setSeriesPaint(0, GuiUtils.COLORS[colorCount]);
+                    renderer.setSeriesPaint(0, HtmlUtils.COLORS[colorCount]);
                     colorCount++;
                     xyPlot.setRenderer(paramCount, renderer);
                     xyPlot.setRangeAxis(paramCount, rangeAxis, false);

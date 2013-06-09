@@ -100,7 +100,6 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -1967,10 +1966,10 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                     }
                     XYItemRenderer renderer =
                         new XYAreaRenderer(XYAreaRenderer.LINES);
-                    if (colorCount >= GuiUtils.COLORS.length) {
+                    if (colorCount >= HtmlUtils.COLORS.length) {
                         colorCount = 0;
                     }
-                    renderer.setSeriesPaint(0, GuiUtils.COLORS[colorCount]);
+                    renderer.setSeriesPaint(0, HtmlUtils.COLORS[colorCount]);
                     colorCount++;
                     xyPlot.setRenderer(paramCount, renderer);
                     xyPlot.setRangeAxis(paramCount, rangeAxis, false);

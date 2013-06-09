@@ -50,7 +50,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;

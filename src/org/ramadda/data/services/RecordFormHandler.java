@@ -46,7 +46,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -257,7 +256,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             if ( !cs.startsWith("#")) {
                 cs = "#" + cs;
             }
-            c = GuiUtils.decodeColor(cs, (Color) null);
+            c = HtmlUtils.decodeColor(cs, (Color) null);
         }
         if (c == null) {
             c = COLORS[colorCnt[0] % COLORS.length];

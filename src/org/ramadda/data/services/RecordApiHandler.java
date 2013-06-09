@@ -31,7 +31,6 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;

@@ -32,7 +32,6 @@ import org.w3c.dom.*;
 
 
 
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;

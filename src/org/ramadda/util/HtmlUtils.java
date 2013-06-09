@@ -25,7 +25,6 @@
 package org.ramadda.util;
 
 
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -51,6 +50,20 @@ import java.util.List;
  */
 
 public class HtmlUtils {
+
+    /** Used to map named colors to color */
+    public static final Color[] COLORS = {
+        Color.blue, Color.black, Color.red, Color.gray, Color.lightGray,
+        Color.white, Color.green, Color.orange, Color.cyan, Color.magenta,
+        Color.pink, Color.yellow
+    };
+
+    /** Used to map named colors to color */
+    public static final String[] COLORNAMES = {
+        "blue", "black", "red", "gray", "light gray", "white", "green",
+        "orange", "cyan", "magenta", "pink", "yellow"
+    };
+
 
     //j-
 
@@ -2292,9 +2305,9 @@ public class HtmlUtils {
         sb.append(tag(TAG_OPTION, attrs(ATTR_TITLE, value, ATTR_VALUE, ""),
                       value));
 
-        for (int i = 0; i < GuiUtils.COLORS.length; i++) {
-            Color  c     = GuiUtils.COLORS[i];
-            String label = GuiUtils.COLORNAMES[i];
+        for (int i = 0; i < COLORS.length; i++) {
+            Color  c     = COLORS[i];
+            String label = COLORNAMES[i];
             value = StringUtil.toHexString(c);
             value = value.replace("#", "");
             String selectedAttr = "";
@@ -3784,6 +3797,62 @@ public class HtmlUtils {
                                    + args + "});});\n"));
     }
 
+
+
+    /**
+     * This takes the  given String and tries to convert it to a color.
+     * The string may be a space or comma separated triple of RGB integer
+     * values. It may be an integer or it may be a color name defined in
+     * the COLORNAMES array
+     *
+     * @param value String value
+     * @param dflt This is returned if the value cannot be converted
+     * @return Color defined by the String value or the dflt
+     */
+    public static Color decodeColor(String value, Color dflt) {
+        if (value == null) {
+            return dflt;
+        }
+        value = value.trim();
+        if (value.equals("null")) {
+            return null;
+        }
+        String s       = value;
+        String lookFor = ",";
+        int    i1      = s.indexOf(lookFor);
+        if (i1 < 0) {
+            lookFor = " ";
+            i1      = s.indexOf(lookFor);
+        }
+        if (i1 > 0) {
+            String red = s.substring(0, i1);
+            s = s.substring(i1 + 1).trim();
+            int i2 = s.indexOf(lookFor);
+            if (i2 > 0) {
+                String green = s.substring(0, i2);
+                String blue  = s.substring(i2 + 1);
+                try {
+                    return new Color(Integer.decode(red).intValue(),
+                                     Integer.decode(green).intValue(),
+                                     Integer.decode(blue).intValue());
+                } catch (Exception exc) {
+                    System.err.println("Bad color:" + value);
+                }
+            }
+        }
+
+        try {
+            return new Color(Integer.decode(s).intValue());
+        } catch (Exception e) {
+            s = s.toLowerCase();
+            for (int i = 0; i < COLORNAMES.length; i++) {
+                if (s.equals(COLORNAMES[i])) {
+                    return COLORS[i];
+                }
+            }
+        }
+        return dflt;
+    }
 
 
 }

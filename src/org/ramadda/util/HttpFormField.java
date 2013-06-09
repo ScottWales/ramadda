@@ -30,7 +30,6 @@ import ucar.unidata.util.*;
 
 
 
-import ucar.unidata.util.GuiUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -276,61 +275,6 @@ public class HttpFormField {
     }
 
 
-    /**
-     * Add the label/gui component into the list of components
-     *
-     * @param guiComps A list.
-     */
-    public void addToGui(List guiComps) {
-        if (type == TYPE_HIDDEN) {
-            return;
-        }
-        if (type == TYPE_AREA) {
-            guiComps.add(GuiUtils.top(GuiUtils.rLabel(label)));
-            if (component == null) {
-                component = new JTextArea(value, rows, cols);
-                ((JTextArea) component).setLineWrap(true);
-            }
-            JScrollPane sp = new JScrollPane(component);
-            sp.setPreferredSize(new Dimension(500, 200));
-            guiComps.add(sp);
-        } else if (type == TYPE_INPUT) {
-            guiComps.add(GuiUtils.rLabel(label));
-            if (component == null) {
-                component = new JTextField(value, cols);
-            }
-            guiComps.add(component);
-        } else if (type == TYPE_LABEL) {
-            guiComps.add(new JLabel(""));
-            guiComps.add(new JLabel(label));
-        } else if (type == TYPE_FILE) {
-            if (filePartSource == null) {
-                guiComps.add(GuiUtils.rLabel(label));
-                if (component == null) {
-                    component = new JTextField(value);
-                }
-                JButton btn = GuiUtils.makeButton("Browse...", this,
-                                  "browse", component);
-                GuiUtils.setHFill();
-                guiComps.add(GuiUtils.doLayout(new Component[] { component,
-                        btn }, 2, GuiUtils.WT_YN, GuiUtils.WT_N));
-            }
-        }
-    }
-
-    /**
-     * Open a file browser associated with the text field
-     *
-     * @param fld  the JTextField
-     */
-    public void browse(JTextField fld) {
-        String       f       = fld.getText();
-        JFileChooser chooser = new FileManager.MyFileChooser(f);
-        if (chooser.showOpenDialog(fld) == JFileChooser.APPROVE_OPTION) {
-            fld.setText(chooser.getSelectedFile().toString());
-        }
-    }
-
 
 
 
@@ -387,22 +331,7 @@ public class HttpFormField {
     }
 
 
-    /**
-     * Create the GUI from the list of entries
-     *
-     * @param entries List of entries
-     *
-     * @return The gui
-     */
-    public static JComponent makeUI(List entries) {
-        List guiComps = new ArrayList();
-        for (int i = 0; i < entries.size(); i++) {
-            ((HttpFormField) entries.get(i)).addToGui(guiComps);
-        }
-        GuiUtils.tmpInsets = new Insets(5, 5, 5, 5);
 
-        return GuiUtils.doLayout(guiComps, 2, GuiUtils.WT_NY, GuiUtils.WT_N);
-    }
 
     /**
      * Check the entries to make sure they have been filled in
@@ -426,125 +355,6 @@ public class HttpFormField {
     }
 
 
-
-
-    /**
-     * Show the UI in a modeful dialog.
-     * Note: this method <b>should not</b> be called
-     * from a swing process. It does a busy wait on the dialog and does not rely on
-     * the modality of the dialog to do its wait.
-     *
-     * @param entries List of entries
-     * @param title The dialog title
-     * @param window The parent window
-     * @param extraTop If non-null then this is added to the top of the gui. It allows
-     * you to provide a label, etc.
-     *
-     * @return Did user press ok
-     */
-    public static boolean showUI(List entries, String title, Window window,
-                                 JComponent extraTop) {
-        return showUI(entries, title, window, extraTop, null);
-    }
-
-
-
-
-    /**
-     * Show the UI in a modeful dialog.
-     * Note: this method <b>should not</b> be called
-     * from a swing process. It does a busy wait on the dialog and does not rely on
-     * the modality of the dialog to do its wait.
-     *
-     * @param entries List of entries
-     * @param title The dialog title
-     * @param parent The parent window
-     * @param extraTop If non-null then this is added to the top of the gui. It allows
-     * you to provide a label, etc.
-     * @param extraBottom Like extraTop but on the bottom of the window
-     *
-     * @return Did user press ok
-     */
-    public static boolean showUI(List entries, String title, Window parent,
-                                 JComponent extraTop,
-                                 JComponent extraBottom) {
-
-        JDialog dialog = GuiUtils.createDialog(parent, title, true);
-        boolean ok     = showUI(entries, extraTop, extraBottom, dialog, false);
-        dialog.dispose();
-
-        return ok;
-    }
-
-
-
-
-    /**
-     * Show the UI in a modeful dialog. Note: The calling method is responsible
-     * for disposing of the dialog. Also: This method <b>should not</b> be called
-     * from a swing process. It does a busy wait on the dialog and does not rely on
-     * the modality of the dialog to do its wait.
-     *
-     * @param entries List of entries
-     * @param extraTop If non-null then this is added to the top of the gui.
-     *                 It allows you to provide a label, etc.
-     * @param extraBottom Like extraTop but on the bottom of the window
-     * @param dialog  the dialog
-     * @param shouldDoBusyWait true to wait
-     *
-     * @return Did user press ok
-     */
-    public static boolean showUI(final List entries, JComponent extraTop,
-                                 JComponent extraBottom,
-                                 final JDialog dialog,
-                                 final boolean shouldDoBusyWait) {
-
-
-        dialog.getContentPane().removeAll();
-        JComponent contents = makeUI(entries);
-        if (extraTop != null) {
-            contents = GuiUtils.topCenter(extraTop, contents);
-        }
-
-        if (extraBottom != null) {
-            contents = GuiUtils.centerBottom(contents, extraBottom);
-        }
-        final boolean[] done     = { false };
-        final boolean[] ok       = { false };
-
-        ActionListener  listener = new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                String cmd = ae.getActionCommand();
-                if (cmd.equals(GuiUtils.CMD_CANCEL)) {
-                    done[0] = true;
-                }
-                if (cmd.equals(GuiUtils.CMD_SUBMIT)) {
-                    if (checkEntries(entries)) {
-                        done[0] = true;
-                        ok[0]   = true;
-                    }
-                }
-                if (done[0] && !shouldDoBusyWait) {
-                    dialog.dispose();
-                }
-            }
-        };
-
-        JComponent buttons = GuiUtils.makeButtons(listener,
-                                 new String[] { GuiUtils.CMD_SUBMIT,
-                GuiUtils.CMD_CANCEL });
-        contents = GuiUtils.centerBottom(contents, buttons);
-        dialog.getContentPane().add(contents);
-        dialog.pack();
-        GuiUtils.showInCenter(dialog);
-        if (shouldDoBusyWait) {
-            while ( !done[0]) {
-                Misc.sleep(100);
-            }
-        }
-
-        return ok[0];
-    }
 
 
     /**

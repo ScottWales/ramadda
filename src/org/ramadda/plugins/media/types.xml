@@ -28,6 +28,15 @@
 </type>
 
 
+  <type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+     <property name="icon" value="/media/pictures.png"/>
+     <wiki><![CDATA[
+{{noheading}}
+{{gallery columns="4"}}
+</wiki>
+</type>
+
+
 
 
 </types>
