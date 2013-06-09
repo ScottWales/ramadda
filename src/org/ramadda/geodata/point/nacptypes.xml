@@ -14,29 +14,17 @@ this gets it from the type_point super class
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
   </type>
 
-  <type name="type_point_nacp_noaa_carbon_daily"  super="type_point_nacp" description="NOAA Daily Carbon"  handler="org.ramadda.data.services.PointTypeHandler">
+
+  <type name="type_point_nacp_noaa_carbon"  super="type_point_nacp" description="NOAA Carbon Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/noaa.gif"/>
 
-     <property name="record.file.class" value="org.ramadda.data.point.nacp.NoaaDailyCarbon"/>
+     <property name="record.file.class" value="org.ramadda.data.point.nacp.NoaaCarbonPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
      <column  name="project"  type="string" label="Project" cansearch="true"/>
      <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
      <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
   </type>
-
-
-  <type name="type_point_nacp_noaa_carbon_monthly"  super="type_point_nacp" description="NOAA Monthly Carbon"  handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="icon" value="/point/noaa.gif"/>
-
-     <property name="record.file.class" value="org.ramadda.data.point.nacp.NoaaMonthlyCarbon"/>
-     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
-     <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
-     <column  name="project"  type="string" label="Project" cansearch="true"/>
-     <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
-     <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
-  </type>
-
 
 
 
