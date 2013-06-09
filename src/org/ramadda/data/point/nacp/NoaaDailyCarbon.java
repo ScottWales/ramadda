@@ -1,7 +1,6 @@
 
 package org.ramadda.data.point.nacp;
 
-
 import java.text.SimpleDateFormat;
 
 
@@ -24,25 +23,25 @@ import java.util.List;
 /**
  */
 
-public class NoaaDailyCarbon extends CsvFile  {
+public class NoaaDailyCarbon extends NoaaCarbonPointFile  {
+
+    private static int IDX = 1;
+    public static final int IDX_SITE_CODE = IDX++;
+    public static final int IDX_LATITUDE = IDX++;
+    public static final int IDX_LONGITUDE = IDX++;
+    public static final int IDX_YEAR = IDX++;
+    public static final int IDX_MONTH = IDX++;
+    public static final int IDX_DAY = IDX++;
+    public static final int IDX_HOUR = IDX++;
+    public static final int IDX_MEAN_VALUE = IDX++;
+    public static final int IDX_STANDARD_DEVIATION = IDX++;
+    public static final int IDX_NUMBER_OF_MEASUREMENTS =IDX++ ;
+    public static final int IDX_QC_FLAG = IDX++;
+    public static final int IDX_INTAKE_HEIGHT =IDX++;
+    public static final int IDX_INSTRUMENT = IDX++;
 
 
-    public static final int IDX_SITE_CODE = 1;
-    public static final int IDX_LATITUDE = 2;
-    public static final int IDX_LONGITUDE = 3;
-    public static final int IDX_YEAR = 4;
-    public static final int IDX_MONTH = 5;
-    public static final int IDX_DAY = 6;
-    public static final int IDX_HOUR = 7;
-    public static final int IDX_MEAN_VALUE = 8;
-    public static final int IDX_STANDARD_DEVIATION = 9;
-    public static final int IDX_NUMBER_OF_MEASUREMENTS =10 ;
-    public static final int IDX_QC_FLAG = 11;
-    public static final int IDX_INTAKE_HEIGHT =12;
-    public static final int IDX_INSTRUMENT = 13;
-
-
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HH");
+    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd");
 
 
     /**
@@ -80,37 +79,6 @@ public class NoaaDailyCarbon extends CsvFile  {
 
 
     /**
-     * This is used by RAMADDA to determine what kind of services are available for this type of point IDX_data  = 1;
-     * @return is this file capable of the action
-     */
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
-    }
-
-
-    /*
-     * Get the delimiter (space)
-     *      @return the column delimiter
-     */
-    public String getDelimiter() {
-        return " ";
-    }
-
-
-    /**
-     * There are  2 header lines
-     *
-     * @param visitInfo file visit info
-     *
-     * @return how many lines to skip
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 0;
-    }
-
-    /**
      * This  gets called before the file is visited. It reads the header and pulls out metadata
      *
      * @param visitInfo visit info
@@ -121,60 +89,6 @@ public class NoaaDailyCarbon extends CsvFile  {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        String filename = getOriginalFilename(getFilename());
-        //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
-        //site year month day hour value unc n flag intake_ht inst
-        //BRW 1973 01 01 00   -999.990    -99.990   0 I..       0.00      N/A
-
-        //co2_brw_surface
-        /*
-          co2      Carbon dioxide
-          ch4      Methane
-          co2c13   d13C (co2)
-          merge
-        */
-
-        List<String> toks = StringUtil.split(filename,"_",true,true);
-        //[parameter]_[site]_[project]_[lab ID number]_[measurement group]
-        String siteId =  toks.get(1);
-        String parameter =  toks.get(0);
-        String project=  toks.get(2);
-        String labIdNumber =  toks.get(3);
-        String measurementGroup =  toks.get(4);
-        //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
-        double latitude=0.0;
-        double longitude=0.0;
-        double elevation=0.0;
-        
-        if(siteId.equals("brw")) {
-            latitude = 71.323;
-            longitude = -156.611;
-            elevation = 11;
-        } else if(siteId.equals("mlo")) {
-            latitude = 19.536;
-            longitude = -155.576;
-            elevation = 3397;
-        } else if(siteId.equals("smo")) {
-            latitude = -14.247;
-            longitude = -170.564;
-            elevation = 42;
-        } else if(siteId.equals("spo")) {
-            latitude = -89.98;
-            longitude = -24.8;
-            elevation = 2810;
-        } else {
-            System.err.println("Unknwon site id:" + siteId);
-        }
-        setLocation(latitude, longitude,elevation);
-
-        setFileMetadata(new Object[]{
-                siteId,
-                parameter,
-                project,
-                labIdNumber,
-                measurementGroup,
-            });
-
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE, attrValue(""+ latitude)),
@@ -182,11 +96,10 @@ public class NoaaDailyCarbon extends CsvFile  {
                 makeField(FIELD_YEAR,""),
                 makeField(FIELD_MONTH,""),
                 makeField(FIELD_DAY,""),
-                makeField(FIELD_HOUR,attrType(TYPE_STRING)),
                 makeField(parameter,  attrChartable(), attrMissing(-999.990)),
                 makeField(FIELD_STANDARD_DEVIATION,  attrChartable(), attrMissing(-99.990)),
-                makeField("number_of_measurements",  attrChartable()),
-                makeField("qc_flag",attrType(TYPE_STRING)),
+                makeField(FIELD_NUMBER_OF_MEASUREMENTS,  attrChartable()),
+                makeField(FIELD_QC_FLAG,attrType(TYPE_STRING)),
                 makeField("intake_height"),
                 makeField("instrument",attrType(TYPE_STRING)),
             });
@@ -203,10 +116,9 @@ public class NoaaDailyCarbon extends CsvFile  {
         if(!super.processAfterReading(visitInfo, record)) return false;
         TextRecord textRecord = (TextRecord) record;
         String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
-            ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_HOUR);
+            ((int)textRecord.getValue(IDX_DAY));
 
         Date date = sdf.parse(dttm);
-        //        System.err.println("dttm:" + dttm +" date:" + date);
         record.setRecordTime(date.getTime());
         return true;
     }

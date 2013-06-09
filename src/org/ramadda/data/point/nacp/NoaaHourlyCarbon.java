@@ -24,7 +24,7 @@ import java.util.List;
 /**
  */
 
-public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
+public class NoaaHourlyCarbon extends NoaaCarbonPointFile  {
 
 
     private static int IDX = 1;
@@ -33,19 +33,23 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
     public static final int IDX_LONGITUDE = IDX++;
     public static final int IDX_YEAR = IDX++;
     public static final int IDX_MONTH = IDX++;
+    public static final int IDX_DAY = IDX++;
+    public static final int IDX_HOUR = IDX++;
     public static final int IDX_MEAN_VALUE = IDX++;
     public static final int IDX_STANDARD_DEVIATION = IDX++;
     public static final int IDX_NUMBER_OF_MEASUREMENTS =IDX++ ;
     public static final int IDX_QC_FLAG = IDX++;
+    public static final int IDX_INTAKE_HEIGHT =IDX++;
+    public static final int IDX_INSTRUMENT = IDX++;
 
 
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM");
+    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HH");
 
 
     /**
      * ctor
      */
-    public NoaaMonthlyCarbon() {
+    public NoaaHourlyCarbon() {
     }
 
     /**
@@ -57,7 +61,7 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
      *
      * @throws IOException On badness
      */
-    public NoaaMonthlyCarbon(String filename) throws IOException {
+    public NoaaHourlyCarbon(String filename) throws IOException {
         super(filename);
     }
 
@@ -69,7 +73,7 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
      *
      * @throws IOException On badness
      */
-    public NoaaMonthlyCarbon(String filename,
+    public NoaaHourlyCarbon(String filename,
                                      Hashtable properties)
         throws IOException {
         super(filename, properties);
@@ -87,36 +91,20 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        String filename = getOriginalFilename(getFilename());
-        //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
-
-        List<String> toks = StringUtil.split(filename,"_",true,true);
-        //[parameter]_[site]_[project]_[lab ID number]_[measurement group]
-        String siteId =  toks.get(1);
-        String parameter =  toks.get(0);
-        String project=  toks.get(2);
-        String labIdNumber =  toks.get(3);
-        String measurementGroup =  toks.get(4);
-        setLocation(siteId);
-        setFileMetadata(new Object[]{
-                siteId,
-                parameter,
-                project,
-                labIdNumber,
-                measurementGroup,
-            });
-
-        //        # data_fields: site year month value unc n flag
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE, attrValue(""+ latitude)),
                 makeField(FIELD_LONGITUDE, attrValue(""+ longitude)),
                 makeField(FIELD_YEAR,""),
                 makeField(FIELD_MONTH,""),
+                makeField(FIELD_DAY,""),
+                makeField(FIELD_HOUR,attrType(TYPE_STRING)),
                 makeField(parameter,  attrChartable(), attrMissing(-999.990)),
                 makeField(FIELD_STANDARD_DEVIATION,  attrChartable(), attrMissing(-99.990)),
-                makeField(FIELD_NUMBER_OF_MEASUREMENTS,  attrChartable()),
-                makeField(FIELD_QC_FLAG,attrType(TYPE_STRING)),
+                makeField("number_of_measurements",  attrChartable()),
+                makeField("qc_flag",attrType(TYPE_STRING)),
+                makeField("intake_height"),
+                makeField("instrument",attrType(TYPE_STRING)),
             });
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
@@ -130,7 +118,9 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
         TextRecord textRecord = (TextRecord) record;
-        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH));
+        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
+            ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_HOUR);
+
         Date date = sdf.parse(dttm);
         record.setRecordTime(date.getTime());
         return true;
@@ -138,7 +128,7 @@ public class NoaaMonthlyCarbon extends NoaaCarbonPointFile  {
 
 
     public static void main(String[]args) {
-        PointFile.test(args, NoaaMonthlyCarbon.class);
+        PointFile.test(args, NoaaHourlyCarbon.class);
     }
 
 }
