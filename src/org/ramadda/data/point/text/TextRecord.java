@@ -124,6 +124,9 @@ public class TextRecord extends PointRecord {
     }
 
 
+    public String getLine() {
+        return line;
+    }
 
     /**
      *  Set the Delimiter property.
