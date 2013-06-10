@@ -73,6 +73,10 @@
        </copy>
 
         <copy overwrite="true"  todir="${point_lib_dir}">
+          <fileset file="${lib_dir}/ncIdv.jar"/>
+       </copy>
+
+        <copy overwrite="true"  todir="${point_lib_dir}">
           <fileset file="${lib_dir}/ramadda.jar"/>
        </copy>
 
@@ -82,7 +86,12 @@
 
         <antcall target="execjar">
           <param name="exec_jar" value="point2csv.jar"/>
-          <param name="exec_class" value="org.ramadda.data..tools.Point2Csv"/>
+          <param name="exec_class" value="org.ramadda.data.tools.Point2Csv"/>
+        </antcall>
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="point2netcdf.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.Point2Netcdf"/>
         </antcall>
 
         <antcall target="execjar">
@@ -159,7 +168,7 @@
               <attribute name="Implementation-Version" value="1.0"/>
               <attribute name="Implementation-Vendor" value="RAMADDA"/>
               <attribute name="Main-class" value="${exec_class}"/>
-              <attribute name="Class-Path" value="pointtools.jar ramadda.jar unidatautil.jar jmapproj.jar libext1.jar libext2.jar libext3.jar"/>
+              <attribute name="Class-Path" value="pointtools.jar ramadda.jar unidatautil.jar ncIdv.jar jmapproj.jar libext1.jar libext2.jar libext3.jar"/>
             </manifest> 
             <exclude name="*"/>
 <!-- Dummy so it doesn't include anything -->

@@ -27,7 +27,6 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.job.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.util.Utils;
 
 
@@ -72,6 +71,11 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
         super(handler, request, processId, mainEntry, ".nc");
     }
     
+    public NetcdfVisitor(File tmpFile) {
+        this.tmpFile = tmpFile;
+    }
+
+
 
     private void init(RecordFile file, Record record)
         throws Exception {
@@ -112,12 +116,22 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             dvals = new double[numDouble];
             svals = new String[numString];
             cacheRecord= new PointDataRecord((RecordFile)null);
-            tmpFile = getHandler().getStorageManager().getTmpFile(null, "tmp.nc");
-            tmpFileIO = new RecordIO(getHandler().getStorageManager().getFileOutputStream(tmpFile));
+            if(tmpFile == null) {
+                tmpFile = getHandler().getStorageManager().getTmpFile(null, "tmp.nc");
+            }                
+            tmpFileIO = new RecordIO(new FileOutputStream(tmpFile));
             cacheRecord.dvalsSize = dvals.length;
             cacheRecord.svalsSize = svals.length;
     }
 
+
+    private boolean jobOK() {
+        Object jobId =  getProcessId();
+        if(jobId!=null && getHandler()!=null) {
+            return getHandler().jobOK(jobId);
+        }
+        return true;
+    }
 
     public boolean doVisitRecord(RecordFile file,
                                  VisitInfo visitInfo, Record record)
@@ -125,7 +139,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
         if (tmpFileIO == null) {
             init(file, record);
         }
-        if ( !getHandler().jobOK(getProcessId())) {
+        if ( !jobOK()) {
             return false;
         }
         int dcnt = 0;
@@ -166,7 +180,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             List<Attribute> globalAttributes = new ArrayList<Attribute>();
             DataOutputStream dos = getTheDataOutputStream();
             writer = new CFPointObWriter(dos, globalAttributes,"m", dataVars, recordCnt);
-            tmpFileIO = new RecordIO(getHandler().getStorageManager().getFileInputStream(tmpFile));
+            tmpFileIO = new RecordIO(new FileInputStream(tmpFile));
             System.err.println ("writing " + recordCnt);
             for(int i=0;i<recordCnt;i++) {
                 cacheRecord.read(tmpFileIO);

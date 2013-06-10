@@ -122,6 +122,9 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     }
 
 
+    public BridgeRecordVisitor() {
+    }
+
     public RecordOutputHandler getHandler() {
         return handler;
     }
@@ -242,7 +245,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     public final boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                      Record record) {
         numPoints++;
-        if ( !handler.jobOK(processId)) {
+        if (handler !=null &&  !handler.jobOK(processId)) {
             return false;
         }
         try {
