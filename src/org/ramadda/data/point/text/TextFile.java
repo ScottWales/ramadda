@@ -161,6 +161,10 @@ public abstract class TextFile extends PointFile {
         return false;
     }
 
+    public boolean isHeaderStandard() {
+        return false;
+    }
+
 
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         return recordIO;
@@ -212,6 +216,24 @@ public abstract class TextFile extends PointFile {
                     headerLines.add(line);
                 }
             }
+        } else if(isHeaderStandard()) {
+            while(true) {
+                String line = visitInfo.getRecordIO().readLine().trim();
+                if(line == null || line.length()==0) break;
+                if(!line.startsWith("#")) {
+                    throw new IllegalArgumentException("Bad header line:" + line);
+                }
+                if(!haveReadHeader) {
+                    headerLines.add(line);
+                    line  = line.substring(1);
+                    int idx = line.indexOf("=");
+                    if(idx>=0)  {
+                        List<String> toks = StringUtil.splitUpTo(line,"=",2);
+                        putProperty(toks.get(0),toks.get(1));
+                    }
+                }
+            }
+
         } else {
             int skipCnt = getSkipLines(visitInfo);
             for (int i = 0; i < skipCnt; i++) {
