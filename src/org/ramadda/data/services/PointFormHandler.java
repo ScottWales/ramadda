@@ -1266,9 +1266,11 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                 String  colorSelect = HtmlUtils.colorSelect(carg, color);
 
 
-                timeSeriesImageUrl.append("&" + arg + "=" + value);
-                timeSeriesImageUrl.append("&" + carg + "="
-                                          + HtmlUtils.urlEncode(color));
+                if(value) {
+                    timeSeriesImageUrl.append("&" + arg + "=" + value);
+                    timeSeriesImageUrl.append("&" + carg + "="
+                                              + HtmlUtils.urlEncode(color));
+                }
 
                 attrShow.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
                     tuple[1],

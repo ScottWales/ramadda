@@ -176,10 +176,10 @@ public interface RecordConstants extends Constants {
     public static final String ARG_COLORTABLE = "colortable";
 
     /** url arg */
-    public static final String ARG_CHART_SHOW = "chart.show.";
+    public static final String ARG_CHART_SHOW = "c.s.";
 
     /** url arg */
-    public static final String ARG_CHART_COLOR = "chart.color.";
+    public static final String ARG_CHART_COLOR = "c.c.";
 
 
     /** url arg */
