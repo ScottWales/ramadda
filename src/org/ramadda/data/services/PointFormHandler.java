@@ -1188,8 +1188,9 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(HtmlUtils.script("var pointDataDomainBase = \"" + getOutputHandler().getDomainBase() +"\";\n"));
 
         StringBuffer mapSB   = new StringBuffer();
-        boolean      showMap = request.get(ARG_MAP_SHOW, true)
-                          && getRepository().getMapManager().shouldShowMaps();
+        boolean      showMap = pointEntry.getPointFile().isCapable(PointFile.ACTION_MAPINCHART) &&
+            request.get(ARG_MAP_SHOW, true)
+            && getRepository().getMapManager().shouldShowMaps();
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
                           300, false);
         if (showMap) {

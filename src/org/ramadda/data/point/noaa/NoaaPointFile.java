@@ -66,6 +66,25 @@ public  class NoaaPointFile extends CsvFile  {
     }
 
 
+    public void   setLocation(String siteId) {
+        Station station = getStation(siteId);
+        if(station==null) return;
+        setLocation(station.getLatitude(), station.getLongitude(), station.getElevation());
+    }
+
+
+    public Station getStation(String id) {
+        Station station = getStationMap().get(id);
+        if(station==null) {
+            station = getStationMap().get(id.toUpperCase());
+        }
+        if(station==null) {
+            station = getStationMap().get(id.toLowerCase());
+        }
+        return station;
+    }
+
+
     public Hashtable<String,Station> getStationMap() {
         if(stations == null) {
             stations = readStations("/org/ramadda/data/point/noaa/stations.txt");
@@ -82,6 +101,7 @@ public  class NoaaPointFile extends CsvFile  {
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
         if(action.equals(ACTION_GRID)) return false;
+        if(action.equals(ACTION_MAPINCHART)) return false;
         return super.isCapable(action);
     }
 

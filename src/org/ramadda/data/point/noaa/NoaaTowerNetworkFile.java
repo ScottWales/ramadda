@@ -24,7 +24,7 @@ import java.util.List;
 /**
  */
 
-public class NoaaTowerNetworkFile extends CsvFile  {
+public class NoaaTowerNetworkFile extends NoaaPointFile  {
 
     public static final int IDX_SITE_CODE  = 1;
     public static final int IDX_YEAR  = 2;
@@ -83,37 +83,6 @@ public class NoaaTowerNetworkFile extends CsvFile  {
         super(filename, properties);
     }
 
-
-    /**
-     * This is used by RAMADDA to determine what kind of services are available for this type of point IDX_data  = 1;
-     * @return is this file capable of the action
-     */
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
-    }
-
-
-    /*
-     * Get the delimiter (space)
-     *      @return the column delimiter
-     */
-    public String getDelimiter() {
-        return " ";
-    }
-
-
-    /**
-     * There are  2 header lines
-     *
-     * @param visitInfo file visit info
-     *
-     * @return how many lines to skip
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 0;
-    }
 
     /**
      * This  gets called before the file is visited. It reads the header and pulls out metadata

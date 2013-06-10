@@ -27,5 +27,17 @@ this gets it from the type_point super class
   </type>
 
 
+  <type name="type_point_noaa_flask_event"  super="type_point_noaa" description="NOAA Flask Event Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/noaa.gif"/>
+
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaFlaskEventPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
+     <column  name="project"  type="string" label="Project" cansearch="true"/>
+     <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
+     <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
+  </type>
+
+
 
 </types>

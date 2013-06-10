@@ -24,7 +24,7 @@ import java.util.List;
 /**
  */
 
-public  class NoaaCarbonPointFile extends CsvFile  {
+public  class NoaaCarbonPointFile extends NoaaPointFile  {
 
 
     private static int IDX = 1;
@@ -172,28 +172,6 @@ public  class NoaaCarbonPointFile extends CsvFile  {
     }
 
 
-    public void   setLocation(String siteId) {
-        if(siteId.equals("brw")) {
-            latitude = 71.323;
-            longitude = -156.611;
-            elevation = 11;
-        } else if(siteId.equals("mlo")) {
-            latitude = 19.536;
-            longitude = -155.576;
-            elevation = 3397;
-        } else if(siteId.equals("smo")) {
-            latitude = -14.247;
-            longitude = -170.564;
-            elevation = 42;
-        } else if(siteId.equals("spo")) {
-            latitude = -89.98;
-            longitude = -24.8;
-            elevation = 2810;
-        } else {
-            System.err.println("Unknwon site id:" + siteId);
-        }
-        setLocation(latitude, longitude,elevation);
-    }
 
 
     /*
@@ -221,39 +199,6 @@ public  class NoaaCarbonPointFile extends CsvFile  {
 
     public static void main(String[]args) {
         PointFile.test(args, NoaaCarbonPointFile.class);
-    }
-
-
-
-    /**
-     * This is used by RAMADDA to determine what kind of services are available for this type of point IDX_data  = 1;
-     * @return is this file capable of the action
-     */
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
-    }
-
-
-    /*
-     * Get the delimiter (space)
-     *      @return the column delimiter
-     */
-    public String getDelimiter() {
-        return " ";
-    }
-
-
-    /**
-     * There are  2 header lines
-     *
-     * @param visitInfo file visit info
-     *
-     * @return how many lines to skip
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 0;
     }
 
 }

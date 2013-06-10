@@ -59,6 +59,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public static final String ACTION_TRACKS = "action.tracks";
     public static final String ACTION_WAVEFORM = "action.waveform";
     public static final String ACTION_BOUNDINGPOLYGON = "action.boundingpolygon";
+    public static final String ACTION_MAPINCHART = "action.mapinchart";
 
 
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
@@ -190,6 +191,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
+        if(action.equals(ACTION_MAPINCHART)) return true;
         if(action.equals(ACTION_WAVEFORM)) return hasWaveform();
         return super.isCapable(action);
     }
