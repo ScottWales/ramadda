@@ -157,6 +157,11 @@ public abstract class TextFile extends PointFile {
         return skipLines;
     }
 
+    public boolean isHeaderNewLineDelmited() {
+        return false;
+    }
+
+
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         return recordIO;
     }
@@ -197,16 +202,27 @@ public abstract class TextFile extends PointFile {
      * @throws IOException _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+
         boolean haveReadHeader = headerLines.size()>0;
-        int skipCnt = getSkipLines(visitInfo);
-        for (int i = 0; i < skipCnt; i++) {
-            String line = visitInfo.getRecordIO().readLine();
-            if(!haveReadHeader) {
-                headerLines.add(line);
+        if(isHeaderNewLineDelmited()) {
+            while(true) {
+                String line = visitInfo.getRecordIO().readLine().trim();
+                if(line == null || line.length()==0) break;
+                if(!haveReadHeader) {
+                    headerLines.add(line);
+                }
             }
-        }
-        if(headerLines.size()!=skipCnt) {
-            throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
+        } else {
+            int skipCnt = getSkipLines(visitInfo);
+            for (int i = 0; i < skipCnt; i++) {
+                String line = visitInfo.getRecordIO().readLine();
+                if(!haveReadHeader) {
+                    headerLines.add(line);
+                }
+            }
+            if(headerLines.size()!=skipCnt) {
+                throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
+            }
         }
         return visitInfo;
     }
