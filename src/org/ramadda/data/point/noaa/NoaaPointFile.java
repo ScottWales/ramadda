@@ -68,7 +68,19 @@ public  class NoaaPointFile extends CsvFile  {
 
     public Station   setLocation(String siteId) {
         Station station = getStation(siteId);
-        if(station==null) return null;
+        if(station==null) {
+            station = getStation("SCS" +siteId);
+        }
+
+        if(station==null) {
+            station = getStation("POC" +siteId);
+        }
+
+        if(station==null) {
+            //            throw new IllegalArgumentException("Unknown station:" + siteId);
+            System.out.println("Unknown station:" + siteId);
+            return null;
+        }
         setLocation(station.getLatitude(), station.getLongitude(), station.getElevation());
         return station;
     }

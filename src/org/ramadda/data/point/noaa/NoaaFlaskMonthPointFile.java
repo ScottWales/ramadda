@@ -5,6 +5,8 @@ package org.ramadda.data.point.noaa;
 import java.text.SimpleDateFormat;
 
 
+import org.ramadda.util.Station;
+
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -89,6 +91,7 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
         String filename = getOriginalFilename(getFilename());
         //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
         List<String> toks = StringUtil.split(filename,"_",true,true);
+
         String siteId =  toks.get(1);
         String parameter =  toks.get(0);
         String project=  toks.get(2);
@@ -124,9 +127,11 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
             textRecord.getStringValue(IDX_MONTH);
         String site =  textRecord.getStringValue(1);
         Station station = setLocation(site);
-        textRecord.setValue(IDX_LATITUDE, station.getLatitude());
-        textRecord.setValue(IDX_LONGITUDE, station.getLongitude());
-        textRecord.setValue(IDX_ELEVATION, station.getElevation());
+        if(station!=null) {
+            textRecord.setValue(IDX_LATITUDE, station.getLatitude());
+            textRecord.setValue(IDX_LONGITUDE, station.getLongitude());
+            textRecord.setValue(IDX_ELEVATION, station.getElevation());
+        }
         Date date = sdf.parse(dttm);
         record.setRecordTime(date.getTime());
         return true;
