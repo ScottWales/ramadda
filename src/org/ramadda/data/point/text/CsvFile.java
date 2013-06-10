@@ -240,6 +240,9 @@ public class CsvFile extends TextFile {
             if(getProperty(properties,"skip","false").equals("true")) {
                 field.setSkip(true);
             }
+            if(getProperty(properties,"synthetic","false").equals("true")) {
+                field.setSynthetic(true);
+            }
             if(getProperty(properties,"searchable","false").equals("true")) {
                 field.setSearchable(true);
             }

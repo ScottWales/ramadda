@@ -6,10 +6,12 @@ import java.text.SimpleDateFormat;
 
 import java.util.GregorianCalendar;
 
+import org.ramadda.util.Station;
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
@@ -29,6 +31,8 @@ import java.util.List;
 public  class GCNetPointFile extends CsvFile  {
 
     private static String header;
+    private static Hashtable<String,Station> stations;
+
     private SimpleDateFormat sdf;
 
     /**
@@ -70,12 +74,36 @@ public  class GCNetPointFile extends CsvFile  {
         return true;
     }
 
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
-        super.prepareToVisit(visitInfo);
-        if(header== null) {
-            header = IOUtil.readContents("/org/ramadda/data/point/gcnet/header.txt", getClass()).trim();
-            header = header.replaceAll("\n",",");
+    private void initHeader() throws IOException {
+        if(header!=null) return;
+        stations = new Hashtable<String,Station>();
+        for(String line:StringUtil.split(IOUtil.readContents("/org/ramadda/data/point/gcnet/stations.txt", getClass()),"\n",true,true)) {
+            List<String> toks   = StringUtil.split(line, ",",true,true);
+            Station station  = new Station(toks.get(0),toks.get(1),
+                                           Double.parseDouble(toks.get(2)),
+                                           Double.parseDouble(toks.get(3)),
+                                           Double.parseDouble(toks.get(4)));
+
+            System.out.println("<entry " + 
+                               XmlUtil.attr("name", station.getName()) +
+                               XmlUtil.attr("type", "project_site") +
+                               XmlUtil.attr("latitude", ""+station.getLatitude()) +
+                               XmlUtil.attr("longitude", ""+station.getLongitude()) +
+                               ">");
+            System.out.println("<short_name>" +"GCNET-" +  toks.get(0) + "</short_name>");
+            System.out.println("<status>active</status>");
+            System.out.println("<network>GCNET</network>");
+            System.out.println("<location>Greenland</location>");
+            System.out.println("</entry>");
+            stations.put(toks.get(0), station);
         }
+        header = IOUtil.readContents("/org/ramadda/data/point/gcnet/header.txt", getClass()).trim();
+        header = header.replaceAll("\n",",");
+    }
+
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        initHeader();
+        super.prepareToVisit(visitInfo);
         sdf = makeDateFormat("yyyy-MM-dd HH");
         String fields = header;
         putProperty(PROP_FIELDS, fields);
@@ -92,8 +120,19 @@ public  class GCNetPointFile extends CsvFile  {
         TextRecord textRecord = (TextRecord) record;
 
         int site = (int)textRecord.getValue(1);
-        int year = (int)textRecord.getValue(4);
-        double julianDay = textRecord.getValue(5);
+        String siteId = ""+site;
+        
+        Station station = stations.get(siteId);
+        textRecord.setValue(2, station.getLatitude());
+        textRecord.setValue(3, station.getLongitude());
+        textRecord.setValue(4, station.getElevation());
+        textRecord.setLocation(station.getLongitude(),
+                               station.getLatitude(),
+                               station.getElevation());
+
+
+        int year = (int)textRecord.getValue(5);
+        double julianDay = textRecord.getValue(6);
         int day = (int) julianDay;
         double remainder =  julianDay-day;
         int hour = (int)remainder;
@@ -109,11 +148,6 @@ public  class GCNetPointFile extends CsvFile  {
         //        System.out.println(gc.getTime() +" " + textRecord.getLine());
         record.setRecordTime(gc.getTime().getTime());
         return true;
-    }
-
-
-    public static void main(String[]args) {
-        PointFile.test(args, GCNetPointFile.class);
     }
 
 
@@ -148,5 +182,13 @@ public  class GCNetPointFile extends CsvFile  {
     public int getSkipLines(VisitInfo visitInfo) {
         return 0;
     }
+
+
+    public static void main(String[]args) {
+        PointFile.test(args, GCNetPointFile.class);
+    }
+
+
+
 
 }

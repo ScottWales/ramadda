@@ -57,6 +57,7 @@ public class TextRecord extends PointRecord {
     private String[] tokens;
     private boolean[] hasDefault;
     private boolean[] skip;
+    private boolean[] synthetic;
 
     private String     line   = "";
 
@@ -171,15 +172,17 @@ public class TextRecord extends PointRecord {
         objectValues      = new Object[fields.size()];
         hasDefault = new boolean[fields.size()];
         skip = new boolean[fields.size()];
-        idxX        = idxY = idxZ = idxTime = -1;
-        int numTokens = 0;
+        synthetic = new boolean[fields.size()];
+        idxX    = idxY = idxZ = idxTime = -1;
+        int numFields = 0;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
 
             hasDefault[i] = field.hasDefaultValue();
             skip[i] = field.getSkip();
-            if(!skip[i] && !hasDefault[i]) {
-                numTokens++;
+            synthetic[i] = field.getSynthetic();
+            if(!synthetic[i] && !skip[i] && !hasDefault[i]) {
+                numFields++;
             }
             if(field.isTypeDate() && idxTime==-1) {
                 idxTime = i;
@@ -220,7 +223,7 @@ public class TextRecord extends PointRecord {
         }
 
 
-        tokens      = new String[numTokens];
+        tokens      = new String[numFields];
 
         if (idxX == -1) {
             throw new IllegalArgumentException(
@@ -293,6 +296,14 @@ public class TextRecord extends PointRecord {
             return values[idx];
         }
         return super.getValue(attrId);
+    }
+
+
+    public void setValue(int attrId, double value) {
+        int idx = attrId - ATTR_FIRST;
+        //Offset since the  field ids are 1 based not 0 based
+        idx = idx-1;
+        values[idx] = value;
     }
 
 
@@ -371,8 +382,14 @@ public class TextRecord extends PointRecord {
                     }
                     continue;
                 }
-                String tok = tokens[tokenCnt++];
+
                 //                System.err.println ("field:" + field +" " + tok);
+                if(synthetic[fieldCnt]) {
+                    continue;
+                }
+
+
+                String tok = tokens[tokenCnt++];
                 if(field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
                     continue;
@@ -396,7 +413,6 @@ public class TextRecord extends PointRecord {
                     
                 }
             }
-
 
             setLocation(values[idxX], values[idxY], ((idxZ >= 0)
                                                      ? values[idxZ]
