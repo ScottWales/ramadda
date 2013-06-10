@@ -4,21 +4,21 @@
 all point types need to have numberoofpoints and properties fields
 this gets it from the type_point super class
 --> 
-  <type name="type_point_nacp"  description="" super="type_point" category="Point Data" foruser="false">
+  <type name="type_point_noaa"  description="" super="type_point" category="Point Data" foruser="false">
   </type>
 
 
-  <type name="type_point_nacp_noaatowernetwork"  super="type_point_nacp" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_noaa_towernetwork"  super="type_point_noaa" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/tower.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.nacp.NoaaTowerNetworkFile"/>
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerNetworkFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
   </type>
 
 
-  <type name="type_point_nacp_noaa_carbon"  super="type_point_nacp" description="NOAA Carbon Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_noaa_carbon"  super="type_point_noaa" description="NOAA Carbon Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/noaa.gif"/>
 
-     <property name="record.file.class" value="org.ramadda.data.point.nacp.NoaaCarbonPointFile"/>
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaCarbonPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
      <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
      <column  name="project"  type="string" label="Project" cansearch="true"/>
