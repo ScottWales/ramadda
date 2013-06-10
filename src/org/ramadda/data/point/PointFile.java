@@ -26,7 +26,9 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
+import ucar.unidata.util.StringUtil;
 import org.ramadda.util.GeoUtils;
+import org.ramadda.util.Station;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -39,6 +41,7 @@ import java.awt.geom.*;
 import java.io.*;
 
 
+import java.util.List;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -518,6 +521,38 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             }
         }
     }
+
+    public Hashtable<String,Station> readStations(String path)  {
+        try {
+            Hashtable<String,Station> stations = new Hashtable<String,Station>();
+            for(String line:StringUtil.split(IOUtil.readContents(path, getClass()),"\n",true,true)) {
+                List<String> toks   = StringUtil.split(line, ",",true,true);
+                Station station  = new Station(toks.get(0),toks.get(1),
+                                               Double.parseDouble(toks.get(2)),
+                                               Double.parseDouble(toks.get(3)),
+                                               Double.parseDouble(toks.get(4)));
+
+                /*
+                  System.out.println("<entry " + 
+                  XmlUtil.attr("name", station.getName()) +
+                  XmlUtil.attr("type", "project_site") +
+                  XmlUtil.attr("latitude", ""+station.getLatitude()) +
+                  XmlUtil.attr("longitude", ""+station.getLongitude()) +
+                  ">");
+                  System.out.println("<short_name>" +"GCNET-" +  toks.get(0) + "</short_name>");
+                  System.out.println("<status>active</status>");
+                  System.out.println("<network>GCNET</network>");
+                  System.out.println("<location>Greenland</location>");
+                  System.out.println("</entry>");
+                */
+                stations.put(toks.get(0), station);
+            }
+            return stations;
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
 
 

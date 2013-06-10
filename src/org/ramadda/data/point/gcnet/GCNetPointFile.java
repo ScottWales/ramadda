@@ -76,27 +76,7 @@ public  class GCNetPointFile extends CsvFile  {
 
     private void initHeader() throws IOException {
         if(header!=null) return;
-        stations = new Hashtable<String,Station>();
-        for(String line:StringUtil.split(IOUtil.readContents("/org/ramadda/data/point/gcnet/stations.txt", getClass()),"\n",true,true)) {
-            List<String> toks   = StringUtil.split(line, ",",true,true);
-            Station station  = new Station(toks.get(0),toks.get(1),
-                                           Double.parseDouble(toks.get(2)),
-                                           Double.parseDouble(toks.get(3)),
-                                           Double.parseDouble(toks.get(4)));
-
-            System.out.println("<entry " + 
-                               XmlUtil.attr("name", station.getName()) +
-                               XmlUtil.attr("type", "project_site") +
-                               XmlUtil.attr("latitude", ""+station.getLatitude()) +
-                               XmlUtil.attr("longitude", ""+station.getLongitude()) +
-                               ">");
-            System.out.println("<short_name>" +"GCNET-" +  toks.get(0) + "</short_name>");
-            System.out.println("<status>active</status>");
-            System.out.println("<network>GCNET</network>");
-            System.out.println("<location>Greenland</location>");
-            System.out.println("</entry>");
-            stations.put(toks.get(0), station);
-        }
+        stations = readStations("/org/ramadda/data/point/gcnet/stations.txt");
         header = IOUtil.readContents("/org/ramadda/data/point/gcnet/header.txt", getClass()).trim();
         header = header.replaceAll("\n",",");
     }
