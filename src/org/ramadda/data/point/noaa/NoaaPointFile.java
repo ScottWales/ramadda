@@ -66,10 +66,11 @@ public  class NoaaPointFile extends CsvFile  {
     }
 
 
-    public void   setLocation(String siteId) {
+    public Station   setLocation(String siteId) {
         Station station = getStation(siteId);
-        if(station==null) return;
+        if(station==null) return null;
         setLocation(station.getLatitude(), station.getLongitude(), station.getElevation());
+        return station;
     }
 
 
