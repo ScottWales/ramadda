@@ -1826,6 +1826,7 @@ public class EntryManager extends RepositoryManager {
                                 toks.remove(toks.size() - 1);
                             }
                             for (String parentName : toks) {
+                                parentName = parentName.replaceAll("_"," ");
                                 ancestors = ancestors + "/" + parentName;
                                 Entry group = nameToGroup.get(ancestors);
                                 if (group == null) {
