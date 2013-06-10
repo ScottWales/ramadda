@@ -1,5 +1,5 @@
 
-package org.ramadda.data.point.nacp;
+package org.ramadda.data.point.noaa;
 
 
 import java.text.SimpleDateFormat;
@@ -68,7 +68,7 @@ public  class NoaaPointFile extends CsvFile  {
 
     public Hashtable<String,Station> getStationMap() {
         if(stations == null) {
-            stations = readStations("/org/ramadda/data/point/nacp/stations.txt");
+            stations = readStations("/org/ramadda/data/point/noaa/stations.txt");
         }
         return stations;
     }
