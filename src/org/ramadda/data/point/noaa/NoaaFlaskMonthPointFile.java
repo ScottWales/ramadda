@@ -131,6 +131,11 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
             textRecord.setValue(IDX_LATITUDE, station.getLatitude());
             textRecord.setValue(IDX_LONGITUDE, station.getLongitude());
             textRecord.setValue(IDX_ELEVATION, station.getElevation());
+            textRecord.setLocation(station.getLatitude(),
+                                   station.getLongitude(),
+                                   station.getElevation());
+        } else {
+            //            System.err.println("NO station: " + site);
         }
         Date date = sdf.parse(dttm);
         record.setRecordTime(date.getTime());

@@ -127,5 +127,7 @@ public class Station {
 	return elevation;
     }
 
-
+    public String toString() {
+        return id +" lat:" + latitude +" lon:" + longitude;
+    }
 }

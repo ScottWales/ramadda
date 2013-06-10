@@ -169,8 +169,13 @@ public class PointMetadataHarvester extends RecordVisitor {
             maxTime = Math.max(maxTime, time);
         } 
 
+        
+
         minLatitude  = getMin(minLatitude, pointRecord.getLatitude());
         maxLatitude  = getMax(maxLatitude, pointRecord.getLatitude());
+        System.out.println ("minLatitude :" + minLatitude  + " " +
+                            pointRecord.getLatitude());
+
         minLongitude = getMin(minLongitude, pointRecord.getLongitude());
         maxLongitude = getMax(maxLongitude, pointRecord.getLongitude());
 	minElevation  = getMin(minElevation, pointRecord.getAltitude());
