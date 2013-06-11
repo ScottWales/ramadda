@@ -1,5 +1,4 @@
 package org.ramadda.data.point.noaa;
-import java.text.SimpleDateFormat;
 
 import org.ramadda.util.Station;
 import org.ramadda.data.record.*;
@@ -9,7 +8,6 @@ import org.ramadda.data.point.text.*;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -32,17 +30,7 @@ public  class NoaaCarbonPointFile extends NoaaPointFile  {
     public static final int TYPE_MONTHLY = 3;
 
     int type  = TYPE_HOURLY;
-    String siteId; 
-    String parameter;
-    String project;
-    String labIdNumber;
-    String measurementGroup;
 
-    /**
-     * ctor
-     */
-    public NoaaCarbonPointFile() {
-    }
 
     /**
      * ctor
@@ -57,19 +45,6 @@ public  class NoaaCarbonPointFile extends NoaaPointFile  {
         super(filename);
     }
 
-    /**
-     * ctor
-     *
-     * @param filename filename
-     * @param properties properties
-     *
-     * @throws IOException On badness
-     */
-    public NoaaCarbonPointFile(String filename,
-                               Hashtable properties)
-        throws IOException {
-        super(filename, properties);
-    }
 
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
@@ -106,8 +81,8 @@ public  class NoaaCarbonPointFile extends NoaaPointFile  {
                 makeField(FIELD_STANDARD_DEVIATION,  attrChartable(), attrMissing(-99.990)),
                 makeField(FIELD_NUMBER_OF_MEASUREMENTS,  attrChartable()),
                 makeField(FIELD_QC_FLAG,attrType(TYPE_STRING)),
-                makeField("intake_height"),
-                makeField("instrument",attrType(TYPE_STRING)),
+                makeField(FIELD_INTAKE_HEIGHT),
+                makeField(FIELD_INSTRUMENT,attrType(TYPE_STRING)),
             });
         } else if(type == TYPE_DAILY) {
             dateIndices =   new int[]{IDX_YEAR, IDX_MONTH, IDX_DAY};

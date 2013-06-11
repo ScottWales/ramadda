@@ -1003,13 +1003,18 @@ public abstract class RecordFile {
         makeDateFormat("yyyy-MM-dd-HH-mm-ss"),
     };
 
+    public SimpleDateFormat getDateFormat(Record record, int [] indices) {
+        return sdfs[indices.length-1];
+    }
+
+
     /*
      * This gets called after a record has been read
      * It extracts and creates the record date/time
      */
     public void setDateFromFields(Record record, int [] indices) throws Exception {
         StringBuffer dttm=new StringBuffer();
-        SimpleDateFormat sdf = sdfs[indices.length-1];
+        SimpleDateFormat sdf = getDateFormat(record, indices);
         for(int i=0;i<indices.length;i++) {
             if(i>0) {
                 dttm.append("-");

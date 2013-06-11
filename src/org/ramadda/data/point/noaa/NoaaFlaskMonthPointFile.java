@@ -1,7 +1,6 @@
 
 package org.ramadda.data.point.noaa;
 
-import java.text.SimpleDateFormat;
 import org.ramadda.util.Station;
 
 import org.ramadda.data.record.*;
@@ -9,24 +8,17 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
 
 /**
  */
-
 public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
-
-
     private static int IDX = 1;
     public static final int IDX_SITE_CODE = IDX++;
     public static final int IDX_LATITUDE = IDX++;
@@ -35,47 +27,18 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
     public static final int IDX_YEAR = IDX++;
     public static final int IDX_MONTH = IDX++;
 
-
-    //    int type  = TYPE_HOURLY;
-
-
-
     private static String header;
 
-
-
     /**
      * ctor
-     */
-    public NoaaFlaskMonthPointFile() {
-    }
-
-    /**
-     * ctor
-     *
      *
      * @param filename _more_
-     * @throws Exception On badness
-     *
      * @throws IOException On badness
      */
     public NoaaFlaskMonthPointFile(String filename) throws IOException {
         super(filename);
     }
 
-    /**
-     * ctor
-     *
-     * @param filename filename
-     * @param properties properties
-     *
-     * @throws IOException On badness
-     */
-    public NoaaFlaskMonthPointFile(String filename,
-                                   Hashtable properties)
-        throws IOException {
-        super(filename, properties);
-    }
 
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
@@ -110,21 +73,10 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
 
     /*
      * This gets called after a record has been read
-     * It extracts and creates the record date/time
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
-        TextRecord textRecord = (TextRecord) record;
-        String site =  textRecord.getStringValue(1);
-        Station station = setLocation(site);
-        if(station!=null) {
-            textRecord.setValue(IDX_LATITUDE, station.getLatitude());
-            textRecord.setValue(IDX_LONGITUDE, station.getLongitude());
-            textRecord.setValue(IDX_ELEVATION, station.getElevation());
-            textRecord.setLocation(station.getLongitude(),
-                                   station.getLatitude(),
-                                   station.getElevation());
-        }
+        setLocation(record.getStringValue(1), (TextRecord)record);
         return true;
     }
 

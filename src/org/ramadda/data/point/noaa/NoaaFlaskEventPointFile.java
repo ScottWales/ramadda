@@ -17,7 +17,6 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -39,12 +38,6 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
 
     /**
      * ctor
-     */
-    public NoaaFlaskEventPointFile() {
-    }
-
-    /**
-     * ctor
      *
      *
      * @param filename _more_
@@ -55,21 +48,6 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
     public NoaaFlaskEventPointFile(String filename) throws IOException {
         super(filename);
     }
-
-    /**
-     * ctor
-     *
-     * @param filename filename
-     * @param properties properties
-     *
-     * @throws IOException On badness
-     */
-    public NoaaFlaskEventPointFile(String filename,
-                               Hashtable properties)
-        throws IOException {
-        super(filename, properties);
-    }
-
 
 
     private static String header;

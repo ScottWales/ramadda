@@ -8,9 +8,9 @@ this gets it from the type_point super class
   </type>
 
 
-  <type name="type_point_noaa_towernetwork"  super="type_point_noaa" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_noaa_tower"  super="type_point_noaa" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/tower.png"/>
-     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerNetworkFile"/>
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerPointFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
   </type>
 

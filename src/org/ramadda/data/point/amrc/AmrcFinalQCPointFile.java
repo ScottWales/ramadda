@@ -1,7 +1,6 @@
 
 package org.ramadda.data.point.amrc;
 
-
 import java.text.SimpleDateFormat;
 
 
@@ -25,31 +24,26 @@ import java.util.List;
  */
 public class AmrcFinalQCPointFile extends CsvFile  {
 
-    public static final int IDX_SITE_ID = 1;
-    public static final int IDX_LATITUDE = 2;
-    public static final int IDX_LONGITUDE = 3;
-    public static final int IDX_ELEVATION = 4;
-    public static final int IDX_YEAR = 5;
-    public static final int IDX_JULIAN_DAY = 6;
-    public static final int IDX_MONTH = 7;
-    public static final int IDX_DAY = 8;
-    public static final int IDX_TIME = 9;
-    public static final int IDX_TEMPERATURE =10;
-    public static final int IDX_PRESSURE = 11;
-    public static final int IDX_WIND_SPEED = 12;
-    public static final int IDX_WIND_DIRECTION = 13;
-    public static final int IDX_RELATIVE_HUMIDITY = 14;
-    public static final int IDX_DELTA_T = 15;
+    private static int IDX=1;
+    public static final int IDX_SITE_ID = IDX++;
+    public static final int IDX_LATITUDE = IDX++;
+    public static final int IDX_LONGITUDE = IDX++;
+    public static final int IDX_ELEVATION = IDX++;
+    public static final int IDX_YEAR = IDX++;
+    public static final int IDX_JULIAN_DAY = IDX++;
+    public static final int IDX_MONTH = IDX++;
+    public static final int IDX_DAY = IDX++;
+    public static final int IDX_TIME = IDX++;
+    public static final int IDX_TEMPERATURE =IDX++;
+    public static final int IDX_PRESSURE = IDX++;
+    public static final int IDX_WIND_SPEED = IDX++;
+    public static final int IDX_WIND_DIRECTION = IDX++;
+    public static final int IDX_RELATIVE_HUMIDITY = IDX++;
+    public static final int IDX_DELTA_T = IDX++;
 
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
     public static final double MISSING = 444.0;
-
-    /**
-     * ctor
-     */
-    public AmrcFinalQCPointFile() {
-    }
 
     /**
      * ctor
@@ -62,31 +56,6 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      */
     public AmrcFinalQCPointFile(String filename) throws IOException {
         super(filename);
-    }
-
-    /**
-     * ctor
-     *
-     * @param filename filename
-     * @param properties properties
-     *
-     * @throws IOException On badness
-     */
-    public AmrcFinalQCPointFile(String filename,
-                                Hashtable properties)
-            throws IOException {
-        super(filename, properties);
-    }
-
-
-    /**
-     * This is used by RAMADDA to determine what kind of services are available for this type of point data
-     * @return is this file capable of the action
-     */
-    public boolean isCapable(String action) {
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
-        if(action.equals(ACTION_GRID)) return false;
-        return super.isCapable(action);
     }
 
 
@@ -146,7 +115,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
         }
         double lat = Misc.decodeLatLon(latString);
         double lon = Misc.decodeLatLon(lonString);
-        double elevation = Misc.decodeLatLon(elevString);
+        double elevation = Double.parseDouble(elevString);
 
         setLocation(lat,lon,elevation);
 
@@ -157,7 +126,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 argosId
             });
 
-        String fields = makeFields(new String[]{
+        putFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
                 makeField(FIELD_LATITUDE, attrValue(lat)),
                 makeField(FIELD_LONGITUDE, attrValue(lon)),
@@ -167,21 +136,20 @@ public class AmrcFinalQCPointFile extends CsvFile  {
                 makeField(FIELD_MONTH,""),
                 makeField(FIELD_DAY,""),
                 makeField(FIELD_TIME,attrType(TYPE_STRING)),
-                makeField("Temperature", attrUnit("Celsius"), attrChartable(), attrMissing(MISSING)),
-                makeField("Pressure", attrUnit("hPa"), attrChartable(), attrMissing(MISSING)),
-                makeField("Wind_Speed", attrUnit("m/s"), attrChartable(), attrMissing(MISSING)),
-                makeField("Wind_Direction", attrUnit("degrees"), attrMissing(MISSING)),
-                makeField("Relative_Humidity", attrUnit("%"), attrChartable(), attrMissing(MISSING)),
-                makeField("Delta_T", attrUnit("Celsius"), attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_TEMPERATURE, attrUnit(UNIT_CELSIUS), attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_PRESSURE, attrUnit(UNIT_HPA), attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_WIND_SPEED, attrUnit(UNIT_M_S), attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_WIND_DIRECTION, attrUnit(UNIT_DEGREES), attrMissing(MISSING)),
+                makeField(FIELD_RELATIVE_HUMIDITY, attrUnit(UNIT_PERCENT), attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_DELTA_T, attrUnit(UNIT_CELSIUS), attrChartable(), attrMissing(MISSING)),
             });
-        putProperty(PROP_FIELDS, fields);
+
         return visitInfo;
     }
 
 
     /*
      * This gets called after a record has been read
-     * It extracts and creates the record date/time
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
@@ -193,6 +161,11 @@ public class AmrcFinalQCPointFile extends CsvFile  {
         return true;
     }
 
+
+    @Override
+    public SimpleDateFormat getDateFormat(Record record, int [] indices) {
+        return sdf;
+    }
 
     public static void main(String[]args) {
         PointFile.test(args, AmrcFinalQCPointFile.class);

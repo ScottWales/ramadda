@@ -23,6 +23,7 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 
+import org.ramadda.util.Station;
 import java.io.*;
 import java.util.Date;
 
@@ -428,6 +429,20 @@ public class TextRecord extends PointRecord {
             System.err.println("Line:" + line);
             throw new RuntimeException(exc);
         }
+
+    }
+
+
+    public void setLocation(Station station) {
+        this.setLocation(station.getLongitude(),
+                         station.getLatitude(),
+                         station.getElevation());
+        if(idxX>=0) 
+            this.setValue(idxX, station.getLongitude());
+        if(idxY>=0)
+            this.setValue(idxY, station.getLatitude());
+        if(idxZ>=0) 
+            this.setValue(idxZ, station.getElevation());
 
     }
 

@@ -124,6 +124,7 @@ public abstract class PointRecord extends GeoRecord {
      * @param y _more_
      * @param z _more_
      */
+
     public void setLocation(double x, double y, double z) {
         locWorkBuffer = getPointFile().getLatLonAlt(this, y, x, z,
                 locWorkBuffer);

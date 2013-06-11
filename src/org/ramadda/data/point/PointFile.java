@@ -554,14 +554,33 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     }
 
 
+
+
+    public Station   setLocation(String siteId) {
+        Station station = getStation(siteId);
+
+        if(station==null) {
+            //            throw new IllegalArgumentException("Unknown station:" + siteId);
+            System.out.println("Unknown station:" + siteId);
+            return null;
+        }
+
+        setLocation(station.getLatitude(), station.getLongitude(), station.getElevation());
+        return station;
+    }
+
+
+
+
     public Hashtable<String,Station> readStations(String path)  {
         try {
             Hashtable<String,Station> stations = new Hashtable<String,Station>();
             for(String line:StringUtil.split(IOUtil.readContents(path, getClass()),"\n",true,true)) {
+                if(line.startsWith("#")) continue;
                 List<String> toks   = StringUtil.split(line, ",",true,true);
                 Station station  = new Station(toks.get(0),toks.get(1),
-                                               Double.parseDouble(toks.get(2)),
-                                               Double.parseDouble(toks.get(3)),
+                                               Misc.decodeLatLon(toks.get(2)),
+                                               Misc.decodeLatLon(toks.get(3)),
                                                Double.parseDouble(toks.get(4)));
 
                 /*

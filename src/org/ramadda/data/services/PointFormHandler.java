@@ -1474,6 +1474,9 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         final int numPointsToPlot = request.get(ARG_NUMPOINTS,
                                         TIMESERIES_POINTS);
         final boolean        hasWaveform    = pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
+        //XXXX
+        System.err.println("WAVE:" + hasWaveform);
+
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
 
         final int[]          cnt            = { 0 };
@@ -1505,6 +1508,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         }
 
         for (RecordField attr : fields) {
+            System.err.println("series:" + attr.getLabel());
             series.add(new XYSeries(attr.getLabel()));
         }
 
@@ -1521,6 +1525,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                     } else {
                         value = record.getValue(field.getParamId());
                     }
+                    System.err.println (".add: " + fieldCnt + " " + value);
                     series.get(fieldCnt).add(cnt[0], value);
                 }
                 //                System.err.println(pointRecord.index);
@@ -1562,6 +1567,10 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             String      unit     = field.getUnit();
             if ((unit != null) && (unit.length() == 0)) {
                 unit = null;
+            }
+
+            if(unit == null) {
+                unit = extraCnt + "";
             }
             if (unit == null) {
                 continue;
@@ -1706,6 +1715,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                             y = byteIdx;
                         }
                         //                        if(y>40)
+                        System.err.println("draw:" + x + " " + barWidthToUse + " " + y  );
                         g2.drawLine(x - barWidthToUse, y, x + barWidthToUse,
                                     y);
                     }

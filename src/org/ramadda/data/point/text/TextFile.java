@@ -25,6 +25,7 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 
+import org.ramadda.util.Station;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.Misc;
@@ -59,9 +60,9 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_LONGITUDE  = "Longitude";
     public static final String FIELD_ELEVATION  = "Elevation";
     public static final String FIELD_DEPTH  = "Depth";
-    public static final String FIELD_YEAR = "Year";
     public static final String FIELD_DATE = "Date";
     public static final String FIELD_TIME = "Time";
+    public static final String FIELD_YEAR = "Year";
     public static final String FIELD_MONTH = "Month";
     public static final String FIELD_DAY = "Day";
     public static final String FIELD_JULIAN_DAY = "Julian_Day";
@@ -69,7 +70,23 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_MINUTE = "Minute";
     public static final String FIELD_SECOND = "Second";
     public static final String FIELD_STANDARD_DEVIATION = "Standard_Deviation";
-    public static final String FIELD_ = "";
+
+
+    public static final String FIELD_TEMPERATURE = "Temperature";
+    public static final String FIELD_PRESSURE = "Pressure";
+    public static final String FIELD_WIND_SPEED = "Wind_Speed";
+    public static final String FIELD_WIND_DIRECTION = "Wind_Direction";
+    public static final String FIELD_RELATIVE_HUMIDITY = "Relative_Humidity";
+    public static final String FIELD_DELTA_T = "Delta_T";
+
+    public static final String UNIT_CELSIUS = "Celsius";
+    public static final String UNIT_HPA = "hPa";
+    public static final String UNIT_PERCENT = "%";
+    public static final String UNIT_DEGREES = "degrees";
+    public static final String UNIT_M_S = "m/s";
+    public static final String UNIT_ = "";
+
+
 
     public static final String ATTR_TYPE = "type";
     public static final String ATTR_MISSING = "missing";
@@ -189,6 +206,16 @@ public abstract class TextFile extends PointFile {
     public List<String> getHeaderLines() {
         return headerLines;
     }
+
+    public Station  setLocation(String siteId, TextRecord record) {
+        Station station = setLocation(siteId);
+        if(station!=null) {
+            record.setLocation(station);
+        }
+        return station;
+    }
+
+
 
     public void setHeaderLines(List<String> lines) {
         headerLines = lines;

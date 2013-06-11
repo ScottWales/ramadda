@@ -1,82 +1,48 @@
-
 package org.ramadda.data.point.noaa;
-
-
-import java.text.SimpleDateFormat;
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 import java.io.*;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
 
 
 /**
  */
+public class NoaaTowerPointFile extends NoaaPointFile  {
 
-public class NoaaTowerNetworkFile extends NoaaPointFile  {
+    private static int IDX = 1;
+    public static final int IDX_SITE_CODE  = IDX++;
+    public static final int IDX_YEAR  = IDX++;
+    public static final int IDX_MONTH  = IDX++;
+    public static final int IDX_DAY  = IDX++;
+    public static final int IDX_HOUR  = IDX++;
+    public static final int IDX_MINUTE  = IDX++;
+    public static final int IDX_SECOND  = IDX++;
+    public static final int IDX_LATITUDE  = IDX++;
+    public static final int IDX_LONGITUDE  = IDX++;
+    public static final int IDX_ELEVATION  = IDX++;
+    public static final int IDX_INTAKE_HEIGHT  = IDX++;
+    public static final int IDX_MEASURED_VALUE  = IDX++;
+    public static final int IDX_TOTAL_UNCERTAINTY_ESTIMATE  = IDX++;
+    public static final int IDX_ATMOSPHERIC_VARIABILTY  = IDX++;
+    public static final int IDX_MEASUREMENT_UNCERTAINTY  = IDX++;
+    public static final int IDX_SCALE_UNCERTAINTY  = IDX++;
+    public static final int IDX_QC_FLAG  = IDX++;
 
-    public static final int IDX_SITE_CODE  = 1;
-    public static final int IDX_YEAR  = 2;
-    public static final int IDX_MONTH  = 3;
-    public static final int IDX_DAY  = 4;
-    public static final int IDX_HOUR  = 5;
-    public static final int IDX_MINUTE  = 6;
-    public static final int IDX_SECOND  = 7;
-    public static final int IDX_LATITUDE  = 8;
-    public static final int IDX_LONGITUDE  = 9;
-    public static final int IDX_ELEVATION  = 10;
-    public static final int IDX_INTAKE_HEIGHT  = 11;
-    public static final int IDX_MEASURED_VALUE  = 12;
-    public static final int IDX_TOTAL_UNCERTAINTY_ESTIMATE  = 13;
-    public static final int IDX_ATMOSPHERIC_VARIABILTY  = 14;
-    public static final int IDX_MEASUREMENT_UNCERTAINTY  = 15;
-    public static final int IDX_SCALE_UNCERTAINTY  = 16;
-    public static final int IDX_QC_FLAG  = 17;
+    public static final double MISSING1 = -999.0;
+    public static final double MISSING2 = -999.99;
 
-    public static final double MISSING = -999.0;
-
-    /**
-     * ctor
-     */
-    public NoaaTowerNetworkFile() {
-    }
 
     /**
      * ctor
-     *
      *
      * @param filename _more_
-     * @throws Exception On badness
-     *
      * @throws IOException On badness
      */
-    public NoaaTowerNetworkFile(String filename) throws IOException {
+    public NoaaTowerPointFile(String filename) throws IOException {
         super(filename);
-    }
-
-    /**
-     * ctor
-     *
-     * @param filename filename
-     * @param properties properties
-     *
-     * @throws IOException On badness
-     */
-    public NoaaTowerNetworkFile(String filename,
-                                Hashtable properties)
-            throws IOException {
-        super(filename, properties);
     }
 
 
@@ -110,12 +76,12 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
                 makeField(FIELD_SECOND,attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE),
                 makeField(FIELD_LONGITUDE),
-                makeField("intake_height"),
-                makeField(parameter,  attrChartable(), attrMissing(MISSING)),
-                makeField("total_uncertainty_estimate", attrChartable(), attrMissing(MISSING)),
-                makeField("atmospheric_variablitility",  attrMissing(MISSING)),
-                makeField("measurement_uncertainty",  attrChartable(), attrMissing(MISSING)),
-                makeField("scale_uncertainty",  attrChartable(), attrMissing(MISSING)),
+                makeField(FIELD_INTAKE_HEIGHT),
+                makeField(parameter,  attrChartable(), attrMissing(MISSING1)),
+                makeField("total_uncertainty_estimate", attrChartable(), attrMissing(MISSING1)),
+                makeField("atmospheric_variablitility",  attrMissing(MISSING2)),
+                makeField("measurement_uncertainty",  attrChartable(), attrMissing(MISSING2)),
+                makeField("scale_uncertainty",  attrChartable(), attrMissing(MISSING2)),
                 makeField(FIELD_QC_FLAG,attrType(TYPE_STRING)),
             });
         setDateIndices(new int[]{IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR,IDX_MINUTE,IDX_SECOND});
@@ -123,7 +89,7 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
     }
 
     public static void main(String[]args) {
-        PointFile.test(args, NoaaTowerNetworkFile.class);
+        PointFile.test(args, NoaaTowerPointFile.class);
     }
 
 }
