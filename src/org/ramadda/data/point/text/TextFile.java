@@ -177,7 +177,7 @@ public abstract class TextFile extends PointFile {
         return skipLines;
     }
 
-    public boolean isHeaderNewLineDelmited() {
+    public boolean isHeaderBlankLineDelmited() {
         return false;
     }
 
@@ -238,7 +238,7 @@ public abstract class TextFile extends PointFile {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
 
         boolean haveReadHeader = headerLines.size()>0;
-        if(isHeaderNewLineDelmited()) {
+        if(isHeaderBlankLineDelmited()) {
             while(true) {
                 String line = visitInfo.getRecordIO().readLine().trim();
                 if(line == null || line.length()==0) break;

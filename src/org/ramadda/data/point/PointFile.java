@@ -41,7 +41,9 @@ import java.awt.geom.*;
 import java.io.*;
 
 
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -606,6 +608,21 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
 
 
+    public Date getDateFromJulianDay(int year, double julianDay) {
+        int day = (int) julianDay;
+        double remainder =  julianDay-day;
+        int hour = (int)remainder;
+        remainder = remainder - hour;
+        int minute = (int)(remainder*60);
+        remainder = remainder - minute;
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.set(GregorianCalendar.YEAR, year);
+        gc.set(GregorianCalendar.DAY_OF_YEAR, day);
+        gc.set(GregorianCalendar.HOUR, hour);
+        gc.set(GregorianCalendar.MINUTE, minute);
+        gc.set(GregorianCalendar.SECOND,0);
+        return gc.getTime();
+    }
 
 
 
