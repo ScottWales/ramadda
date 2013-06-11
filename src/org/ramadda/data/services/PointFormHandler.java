@@ -524,7 +524,10 @@ public class PointFormHandler extends RecordFormHandler {
 
         String paramWidget = null;
         List   params      = new ArrayList();
+        //TODO: we need a better way to say this is a elevation point cloud
+        //        if(pointEntry.getPointFile().isCapable(PointFile.ACTION_ELEVATION)) {
         params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
+        //        }
         if (recordEntry != null) {
             for (RecordField attr :
                     recordEntry.getRecordFile().getChartableFields()) {
@@ -1227,7 +1230,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         StringBuffer formSB = new StringBuffer();
         formSB.append(HtmlUtils.formTable());
         formSB.append(HtmlUtils.form(formUrl));
-        formSB.append(HtmlUtils.hidden(ARG_OUTPUT, getPointOutputHandler().OUTPUT_MAP.toString()));
+        formSB.append(HtmlUtils.hidden(ARG_OUTPUT, getPointOutputHandler().OUTPUT_CHART.toString()));
         formSB.append(HtmlUtils.hidden(ARG_ENTRYID,
                                        pointEntry.getEntry().getId()));
 
@@ -1245,8 +1248,10 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             attrShow.append("<table>");
 
             List<String[]> names = new ArrayList<String[]>();
-            names.add(new String[] { FIELD_ALTITUDE, LABEL_ALTITUDE,
-                                     "true" });
+            if(pointEntry.isArealCoverage()) {
+                names.add(new String[] { FIELD_ALTITUDE, LABEL_ALTITUDE,
+                                         "true" });
+            }
 
             for (RecordField attr : fields) {
                 names.add(new String[] { attr.getName(), attr.getLabel(),
@@ -1488,7 +1493,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
 
         final List<RecordField> fields = new ArrayList<RecordField>();
 
-        if (request.get(ARG_CHART_SHOW + FIELD_ALTITUDE, true)) {
+        if (request.get(ARG_CHART_SHOW + FIELD_ALTITUDE, false)) {
             fields.add(new RecordField(FIELD_ALTITUDE, LABEL_ALTITUDE, "",
                                        -1, UNIT_M));
         }

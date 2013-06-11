@@ -58,12 +58,12 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     public static final String ACTION_DECIMATE = "action.decimate";
     public static final String ACTION_TRACKS = "action.tracks";
     public static final String ACTION_WAVEFORM = "action.waveform";
-    public static final String ACTION_BOUNDINGPOLYGON = "action.boundingpolygon";
-    public static final String ACTION_MAPINCHART = "action.mapinchart";
+    public static final String ACTION_BOUNDINGPOLYGON = "action.bounding_polygon";
+    public static final String ACTION_MAPINCHART = "action.map_in_chart";
+    public static final String ACTION_AREAL_COVERAGE = "action.areal_coverage";
 
 
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 = null;
-
 
 
 
@@ -191,7 +191,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
-        if(action.equals(ACTION_MAPINCHART)) return true;
         if(action.equals(ACTION_WAVEFORM)) return hasWaveform();
         return super.isCapable(action);
     }
@@ -524,6 +523,37 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         }
     }
 
+    //Cough, cough
+    private static Hashtable<String,Hashtable<String,Station>> stationsMapMap = new Hashtable<String,Hashtable<String,Station>>();
+
+    public Hashtable<String,Station> getStationMap() {
+        String path = getStationsPath();
+        if(path == null) return null;
+        Hashtable<String,Station>stations = stationsMapMap.get(path);
+        if(stations == null) {
+            stations = readStations(path);
+            stationsMapMap.put(path, stations);
+        }
+        return stations;
+    }
+
+    public String getStationsPath() {
+        return null;
+    }
+
+
+    public Station getStation(String id) {
+        Station station = getStationMap().get(id);
+        if(station==null) {
+            station = getStationMap().get(id.toUpperCase());
+        }
+        if(station==null) {
+            station = getStationMap().get(id.toLowerCase());
+        }
+        return station;
+    }
+
+
     public Hashtable<String,Station> readStations(String path)  {
         try {
             Hashtable<String,Station> stations = new Hashtable<String,Station>();
@@ -554,6 +584,8 @@ public abstract class PointFile extends RecordFile implements Cloneable {
             throw new RuntimeException(exc);
         }
     }
+
+
 
 
 

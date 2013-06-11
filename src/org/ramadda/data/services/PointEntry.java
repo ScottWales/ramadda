@@ -115,6 +115,10 @@ public class PointEntry extends RecordEntry {
     }
 
 
+    public boolean isArealCoverage() throws Exception {
+        return getRecordFile().isCapable(PointFile.ACTION_AREAL_COVERAGE);
+    }
+
     /**
      * _more_
      *

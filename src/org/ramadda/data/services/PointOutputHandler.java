@@ -106,7 +106,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public final  OutputType OUTPUT_POINTCOUNT;
 
     /** output type */
-    public final  OutputType OUTPUT_MAP;
+    public final  OutputType OUTPUT_CHART;
 
     /** output type */
     public final  OutputType OUTPUT_FORM;
@@ -280,8 +280,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             new OutputType("Point Count", base +".count", OutputType.TYPE_OTHER);
 
 
-        OUTPUT_MAP =
-            new OutputType("Map and Chart ", base +".map",
+        OUTPUT_CHART =
+            new OutputType("Chart ", base +".chart",
                            OutputType.TYPE_OTHER, "", ICON_MAP, category);
 
         OUTPUT_FORM =
@@ -326,7 +326,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_GETLATLON);
         addType(OUTPUT_GETPOINTINDEX);
         addType(OUTPUT_ASC);
-        addType(OUTPUT_MAP);
+        addType(OUTPUT_CHART);
         addType(OUTPUT_FORM);
         
 
@@ -728,7 +728,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-        if (outputType.equals(OUTPUT_MAP)) {
+        if (outputType.equals(OUTPUT_CHART)) {
             return getPointFormHandler().outputEntryMap(request, outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
@@ -2200,7 +2200,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             return;
         }
 
-        links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_CHART));
         links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
         links.add(makeLink(request, state.getEntry(), OUTPUT_VIEW));
         links.add(makeLink(request, state.getEntry(), OUTPUT_METADATA));

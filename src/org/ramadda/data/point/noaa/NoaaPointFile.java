@@ -28,8 +28,6 @@ import java.util.List;
 
 public  class NoaaPointFile extends CsvFile  {
 
-    private static Hashtable<String,Station> stations;
-
 
     /**
      * ctor
@@ -60,11 +58,15 @@ public  class NoaaPointFile extends CsvFile  {
      * @throws IOException On badness
      */
     public NoaaPointFile(String filename,
-                               Hashtable properties)
+                         Hashtable properties)
         throws IOException {
         super(filename, properties);
     }
 
+
+    public String getStationsPath() {
+        return "/org/ramadda/data/point/noaa/stations.txt";
+    }
 
     public Station   setLocation(String siteId) {
         Station station = getStation(siteId);
@@ -78,36 +80,6 @@ public  class NoaaPointFile extends CsvFile  {
         setLocation(station.getLatitude(), station.getLongitude(), station.getElevation());
         return station;
     }
-
-
-    public Station getStation(String id) {
-        Station station = getStationMap().get(id);
-        if(station==null) {
-            station = getStationMap().get(id.toUpperCase());
-        }
-        if(station==null) {
-            station = getStationMap().get(id.toLowerCase());
-        }
-        if(station==null) {
-            station =  getStationMap().get("SCS" +id.toUpperCase());
-        }
-
-        if(station==null) {
-            station =  getStationMap().get("POC" +id.toUpperCase());
-        }
-
-
-        return station;
-    }
-
-
-    public Hashtable<String,Station> getStationMap() {
-        if(stations == null) {
-            stations = readStations("/org/ramadda/data/point/noaa/stations.txt");
-        }
-        return stations;
-    }
-
 
 
     /**

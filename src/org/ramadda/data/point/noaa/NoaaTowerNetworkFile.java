@@ -46,7 +46,7 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
 
 
 
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmmss");
+
 
     public static final double MISSING = -999.0;
 
@@ -102,7 +102,7 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
                 siteId,
             });
 
-        String fields = makeFields(new String[]{
+        putFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_YEAR,""),
                 makeField(FIELD_MONTH,""),
@@ -120,27 +120,10 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
                 makeField("scale_uncertainty",  attrChartable(), attrMissing(MISSING)),
                 makeField("qc_flag",attrType(TYPE_STRING)),
             });
-        putProperty(PROP_FIELDS, fields);
+        dateIndices = new int[]{
+            IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR,IDX_MINUTE,IDX_SECOND};
         return visitInfo;
     }
-
-
-    /*
-     * This gets called after a record has been read
-     * It extracts and creates the record date/time
-     */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
-        if(!super.processAfterReading(visitInfo, record)) return false;
-        TextRecord textRecord = (TextRecord) record;
-        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
-           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_HOUR) +
-            textRecord.getStringValue(IDX_MINUTE) +
-            textRecord.getStringValue(IDX_SECOND);
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
-        return true;
-    }
-
 
     public static void main(String[]args) {
         PointFile.test(args, NoaaTowerNetworkFile.class);

@@ -360,7 +360,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         }
 
 
-        links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
+        links.add(makeLink(request, state.getEntry(), OUTPUT_CHART));
         links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
         links.add(makeLink(request, state.getEntry(), OUTPUT_VIEW));
         links.add(makeLink(request, state.getEntry(), OUTPUT_METADATA));

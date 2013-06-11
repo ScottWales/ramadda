@@ -51,6 +51,9 @@ public abstract class TextFile extends PointFile {
     static int cnt =0;
     int mycnt = cnt++;
 
+    /** _more_          */
+    public static final String PROP_FIELDS = "fields";
+
     public static final String FIELD_SITE_ID = "Site_Id";
     public static final String FIELD_LATITUDE ="Latitude";
     public static final String FIELD_LONGITUDE  = "Longitude";
@@ -247,6 +250,14 @@ public abstract class TextFile extends PointFile {
             }
         }
         return visitInfo;
+    }
+
+
+
+
+
+    public void putFields(String[] fields) {
+        putProperty(PROP_FIELDS, makeFields(fields));
     }
 
 

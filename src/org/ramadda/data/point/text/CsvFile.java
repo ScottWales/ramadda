@@ -55,8 +55,6 @@ import javax.swing.*;
  */
 public class CsvFile extends TextFile {
 
-    /** _more_          */
-    public static final String PROP_FIELDS = "fields";
 
     /** _more_          */
     private List<RecordField> fields;

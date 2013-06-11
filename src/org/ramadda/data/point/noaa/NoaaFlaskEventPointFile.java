@@ -37,11 +37,6 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
     public static final int IDX_MINUTE = IDX++;
     public static final int IDX_SECOND = IDX++;
 
-
-    //    int type  = TYPE_HOURLY;
-
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmmss");
-
     /**
      * ctor
      */
@@ -107,30 +102,13 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
 
         putProperty(PROP_FIELDS, fields);
 
+        dateIndices = new int[]{IDX_YEAR,
+                                IDX_MONTH,
+                                IDX_DAY,
+                                IDX_HOUR,
+                                IDX_MINUTE,
+                                IDX_SECOND};
         return visitInfo;
-    }
-
-
-
-
-    /*
-     * This gets called after a record has been read
-     * It extracts and creates the record date/time
-     */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
-        if(!super.processAfterReading(visitInfo, record)) return false;
-        TextRecord textRecord = (TextRecord) record;
-        String dttm = 
-            ((int)textRecord.getValue(IDX_YEAR))+"-" + 
-            textRecord.getStringValue(IDX_MONTH) +"-"+ 
-            textRecord.getStringValue(IDX_DAY) +" "+ 
-            textRecord.getStringValue(IDX_HOUR) +""+ 
-                textRecord.getStringValue(IDX_MINUTE) +""+ 
-                textRecord.getStringValue(IDX_SECOND);
-
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
-        return true;
     }
 
 

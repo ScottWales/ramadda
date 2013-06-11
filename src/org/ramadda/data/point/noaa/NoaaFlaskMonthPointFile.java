@@ -1,10 +1,7 @@
 
 package org.ramadda.data.point.noaa;
 
-
 import java.text.SimpleDateFormat;
-
-
 import org.ramadda.util.Station;
 
 import org.ramadda.data.record.*;
@@ -41,7 +38,11 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
 
     //    int type  = TYPE_HOURLY;
 
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM");
+
+
+    private static String header;
+
+
 
     /**
      * ctor
@@ -71,17 +72,14 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
      * @throws IOException On badness
      */
     public NoaaFlaskMonthPointFile(String filename,
-                               Hashtable properties)
+                                   Hashtable properties)
         throws IOException {
         super(filename, properties);
     }
 
-
-
-    private static String header;
-
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
+        dateIndices= new int[]{IDX_YEAR,IDX_MONTH};
         if(header == null) {
             header = IOUtil.readContents("/org/ramadda/data/point/noaa/flaskmonthheader.txt", getClass()).trim();
             header = header.replaceAll("\n",",");
@@ -91,7 +89,6 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
         String filename = getOriginalFilename(getFilename());
         //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
         List<String> toks = StringUtil.split(filename,"_",true,true);
-
         String siteId =  toks.get(1);
         String parameter =  toks.get(0);
         String project=  toks.get(2);
@@ -105,13 +102,9 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
                 measurementGroup,
             });
         fields = fields.replace("${parameter}", parameter);
-
-
         putProperty(PROP_FIELDS, fields);
-
         return visitInfo;
     }
-
 
 
 
@@ -122,9 +115,6 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
         TextRecord textRecord = (TextRecord) record;
-        String dttm = 
-            ((int)textRecord.getValue(IDX_YEAR))+"-" + 
-            textRecord.getStringValue(IDX_MONTH);
         String site =  textRecord.getStringValue(1);
         Station station = setLocation(site);
         if(station!=null) {
@@ -134,11 +124,7 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
             textRecord.setLocation(station.getLongitude(),
                                    station.getLatitude(),
                                    station.getElevation());
-        } else {
-            //            System.err.println("NO station: " + site);
         }
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
         return true;
     }
 

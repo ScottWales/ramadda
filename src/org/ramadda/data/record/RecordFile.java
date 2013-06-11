@@ -30,6 +30,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -202,8 +203,11 @@ public abstract class RecordFile {
     }
 
     public boolean isCapable(String action) {
+        String p = (String)getProperty(action);
+        if(p!=null) {
+            return p.trim().equals("true");
+        }
         return false;
-        //        if(action.equals(ACTION_
     }
 
     public boolean canLoad(String file, String[] suffixes, boolean checkForNumberSuffix) {
@@ -676,8 +680,15 @@ public abstract class RecordFile {
         }
     }
 
+    public void setDateIndices(int[]indices) {
+        dateIndices = indices;
+    }
+
 
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+        if(dateIndices!=null) {
+            setDateFromFields(record, dateIndices);
+        }
         return true;
     }
 
@@ -979,6 +990,36 @@ public abstract class RecordFile {
             name = name.substring(idx+FILE_SEPARATOR.length());
         }
         return name;
+    }
+
+
+    protected int[] dateIndices;
+    private static SimpleDateFormat[] sdfs = new SimpleDateFormat[]{
+        makeDateFormat("yyyy"),
+        makeDateFormat("yyyy-MM"),
+        makeDateFormat("yyyy-MM-dd"),
+        makeDateFormat("yyyy-MM-dd-HH"),
+        makeDateFormat("yyyy-MM-dd-HH-mm"),
+        makeDateFormat("yyyy-MM-dd-HH-mm-ss"),
+    };
+
+    /*
+     * This gets called after a record has been read
+     * It extracts and creates the record date/time
+     */
+    public void setDateFromFields(Record record, int [] indices) throws Exception {
+        StringBuffer dttm=new StringBuffer();
+        SimpleDateFormat sdf = sdfs[indices.length-1];
+        for(int i=0;i<indices.length;i++) {
+            if(i>0) {
+                dttm.append("-");
+            }
+            int v =(int)record.getValue(indices[i]);
+            if(v<10) dttm.append("0");
+            dttm.append(v);
+        }
+        Date date = sdf.parse(dttm.toString());
+        record.setRecordTime(date.getTime());
     }
 
 
