@@ -25,8 +25,7 @@ public  class NoaaCarbonPointFile extends NoaaPointFile  {
     public static final int IDX_DAY = IDX++;
     public static final int IDX_HOUR = IDX++;
 
-    public static final String FIELD_NUMBER_OF_MEASUREMENTS = "number_of_measurements";
-    public static final String FIELD_QC_FLAG = "qc_flag";
+
 
     public static final int TYPE_HOURLY = 1;
     public static final int TYPE_DAILY = 2;

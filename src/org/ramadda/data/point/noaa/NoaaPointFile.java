@@ -28,6 +28,8 @@ import java.util.List;
 
 public  class NoaaPointFile extends CsvFile  {
 
+    public static final String FIELD_NUMBER_OF_MEASUREMENTS = "number_of_measurements";
+    public static final String FIELD_QC_FLAG = "qc_flag";
 
     /**
      * ctor
@@ -89,7 +91,6 @@ public  class NoaaPointFile extends CsvFile  {
     public boolean isCapable(String action) {
         if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
         if(action.equals(ACTION_GRID)) return false;
-        if(action.equals(ACTION_MAPINCHART)) return false;
         return super.isCapable(action);
     }
 

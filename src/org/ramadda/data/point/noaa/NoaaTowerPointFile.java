@@ -44,10 +44,6 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
     public static final int IDX_SCALE_UNCERTAINTY  = 16;
     public static final int IDX_QC_FLAG  = 17;
 
-
-
-
-
     public static final double MISSING = -999.0;
 
     /**
@@ -97,9 +93,11 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
         super.prepareToVisit(visitInfo);
         String filename = getOriginalFilename(getFilename());
         String siteId =  StringUtil.findPattern(filename,"^(.*)_.*");
+        String parameter =  StringUtil.findPattern(filename,".*\\.(.*)");
         //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
                 siteId,
+                parameter
             });
 
         putFields(new String[]{
@@ -113,15 +111,14 @@ public class NoaaTowerNetworkFile extends NoaaPointFile  {
                 makeField(FIELD_LATITUDE),
                 makeField(FIELD_LONGITUDE),
                 makeField("intake_height"),
-                makeField("measured_value",  attrChartable(), attrMissing(MISSING)),
+                makeField(parameter,  attrChartable(), attrMissing(MISSING)),
                 makeField("total_uncertainty_estimate", attrChartable(), attrMissing(MISSING)),
                 makeField("atmospheric_variablitility",  attrMissing(MISSING)),
                 makeField("measurement_uncertainty",  attrChartable(), attrMissing(MISSING)),
                 makeField("scale_uncertainty",  attrChartable(), attrMissing(MISSING)),
-                makeField("qc_flag",attrType(TYPE_STRING)),
+                makeField(FIELD_QC_FLAG,attrType(TYPE_STRING)),
             });
-        dateIndices = new int[]{
-            IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR,IDX_MINUTE,IDX_SECOND};
+        setDateIndices(new int[]{IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR,IDX_MINUTE,IDX_SECOND});
         return visitInfo;
     }
 
