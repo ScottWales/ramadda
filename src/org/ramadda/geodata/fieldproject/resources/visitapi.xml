@@ -1,19 +1,10 @@
 <api handler="org.ramadda.repository.search.SpecialSearch" id="project_visit">
 
-<!--The search form label -->
-      <property name="label" value="Visits"/>
-      <property name="searchopen" value="true"/>
 
-<!--What tabs to display results in -->
-      <property name="tabs" value="map,list"/>
-
-<!--Add these metadata search elements to the search form -->
-    <property name="metadatatypes" value="project_person"/>
 
 <!--The entry point. This corresponds to the below API entry -->
       <property name="searchurl" value="/project/visit/search"/>
-      <property name="initsearch" value="true"/>
-      <property name="form.date.show" value="false"/>
+
 
 <!--The entry type to search for -->
       <property name="type" value="project_visit"/>

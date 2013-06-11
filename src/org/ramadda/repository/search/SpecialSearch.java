@@ -137,6 +137,37 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         init(node, props);
     }
 
+    public SpecialSearch(TypeHandler typeHandler) {
+        super(typeHandler.getRepository());
+        this.typeHandler = typeHandler;
+        String types = (String) typeHandler.getProperty("search.metadatatypes", null);
+        if (types != null) {
+            for (String type : StringUtil.split(types, ",", true, true)) {
+                metadataTypes.add(type);
+            }
+        }
+        String tabsToUse = (String) typeHandler.getProperty("search.tabs", null);
+        if (tabsToUse != null) {
+            tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
+        } else {
+            tabs.add(TAB_LIST);
+            tabs.add(TAB_MAP);
+            tabs.add(TAB_EARTH);
+            tabs.add(TAB_TIMELINE);
+        }
+
+        searchOpen  = typeHandler.getProperty("search.searchopen", "true").equals("true");
+        doSearchInitially  = typeHandler.getProperty("search.initsearch", "true").equals("true");
+        showText    = typeHandler.getProperty("search.form.text.show", "true").equals("true");
+        showArea    = typeHandler.getProperty("search.form.area.show", "true").equals("true");
+        showDate    = typeHandler.getProperty("search.form.date.show", "true").equals("true");
+        searchUrl   = "/search/type/" + typeHandler.getType();
+        label       = typeHandler.getProperty("search.label",null);
+        if(label == null) label = "Search for " + typeHandler.getDescription();
+        theType     = typeHandler.getType();
+    }
+
+
     /**
      * _more_
      *
@@ -172,6 +203,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         label       = (String) props.get("label");
         theType     = (String) props.get("type");
         typeHandler = getRepository().getTypeHandler(theType);
+        if(label == null) label = "Search for " + typeHandler.getDescription();
     }
 
 
@@ -477,6 +509,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         String tabs = (tabContents.size() == 1)
                       ? tabContents.get(0)
                       : OutputHandler.makeTabs(tabTitles, tabContents, true);
+        sb.append(header(label));
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
         String searchHtml =

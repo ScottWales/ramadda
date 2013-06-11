@@ -21,10 +21,10 @@
 
 package org.ramadda.repository.search;
 
+import org.ramadda.util.CategoryBuffer;
+
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-
-
 import org.apache.lucene.document.DateTools;
 
 import org.apache.lucene.document.Field;
@@ -144,6 +144,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                                   "/search/form",
                                                   "Advanced Search");
 
+    public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
+                                                  "/search/type",
+                                                  "Type Search");
+
     /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS =
         new RequestUrl(this, "/search/associations/do",
@@ -177,7 +181,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     /** _more_ */
     public final List<RequestUrl> searchUrls =
         RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
+                                                 URL_SEARCH_FORM, URL_SEARCH_BROWSE, URL_SEARCH_TYPE,
             URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
@@ -926,6 +930,67 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         }
 
         return tfos;
+    }
+
+
+    public Result processSearchType(Request request) throws Exception {
+        StringBuffer sb  = new StringBuffer();
+
+        CategoryBuffer cb  = new CategoryBuffer();
+        List<String> toks  = StringUtil.split(request.getRequestPath(), "/",true,true);
+        if(toks.get(toks.size()-1).equals("type")) {
+            for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
+                if ( !typeHandler.getForUser()) {
+                    continue;
+                }
+                if (typeHandler.isAnyHandler()) {
+                    continue;
+                }
+                String icon = typeHandler.getProperty("icon", (String) null);
+                String img;
+                if (icon == null) {
+                    icon = ICON_BLANK;
+                    img  = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                                         HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                                        "16"));
+                } else {
+                    img = HtmlUtils.img(typeHandler.iconUrl(icon));
+                }
+                StringBuffer buff   = new StringBuffer();
+
+                buff.append("<li> ");
+                buff.append(img);
+                buff.append(" ");
+                buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), typeHandler.getDescription()));
+                cb.append(typeHandler.getCategory(), buff);
+            }
+            sb.append("<table width=100%><tr valign=top>");
+            int catCnt = 0;
+            for(String cat: cb.getCategories()) {
+                if(catCnt++>3) {
+                    sb.append("</tr><tr valign=top>");
+                    catCnt = 0;
+                }
+                sb.append("<td>");
+                sb.append(HtmlUtils.b(msg(cat)));
+                sb.append("<ul>");
+                sb.append(cb.get(cat));
+                sb.append("</ul>");
+                sb.append("</td>");
+            }
+            sb.append("</table>");
+        } else {
+            String type = toks.get(toks.size()-1);
+            TypeHandler typeHandler = getRepository().getTypeHandler(type);
+            SpecialSearch ss = typeHandler.getSpecialSearch();
+            if(ss == null) {
+                ss = new SpecialSearch(typeHandler);
+                typeHandler.setSpecialSearch(ss);
+
+            }
+            typeHandler.getSpecialSearch().processSearchRequest(request, sb);
+        }
+        return makeResult(request, msg("Search by Type"), sb);
     }
 
 

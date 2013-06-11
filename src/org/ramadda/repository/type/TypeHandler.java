@@ -27,6 +27,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.map.*;
+import org.ramadda.repository.search.SpecialSearch;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -169,6 +170,9 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     private TypeHandler parent;
+
+    private SpecialSearch specialSearch;
+
 
     /** _more_ */
     private static String tinyMceTemplate;
@@ -4852,5 +4856,23 @@ public class TypeHandler extends RepositoryManager {
                                                getEntryManager().getTimezone(entry), extra);
 
     }
+    /**
+       Set the SpecialSearch property.
+
+       @param value The new value for SpecialSearch
+    **/
+    public void setSpecialSearch (SpecialSearch value) {
+	specialSearch = value;
+    }
+
+    /**
+       Get the SpecialSearch property.
+
+       @return The SpecialSearch
+    **/
+    public SpecialSearch getSpecialSearch () {
+	return specialSearch;
+    }
+
 
 }

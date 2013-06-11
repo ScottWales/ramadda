@@ -158,6 +158,15 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
+
+     <property name="search.label" value="Search Visits"/>
+     <property name="search.searchopen" value="true"/>
+     <property name="search.tabs" value="map,list"/>
+     <property name="search.metadatatypes" value="project_person"/>
+     <property name="search.initsearch" value="true"/>
+     <property name="search.form.date.show" value="false"/>
+
+
    </type>
 
 
