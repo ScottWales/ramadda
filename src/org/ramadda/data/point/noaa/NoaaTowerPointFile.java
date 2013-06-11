@@ -63,7 +63,6 @@ public class NoaaTowerPointFile extends NoaaPointFile  {
         //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
                 siteId,
-                parameter
             });
 
         putFields(new String[]{
