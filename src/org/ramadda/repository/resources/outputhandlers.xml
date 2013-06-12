@@ -15,6 +15,7 @@
   <outputhandler class="org.ramadda.repository.output.TextOutputHandler" name="Text"/>
   <outputhandler class="org.ramadda.repository.output.ZipFileOutputHandler" name="Zip/Jar Listing"/>
   <outputhandler class="org.ramadda.repository.output.JpegMetadataOutputHandler" name="JPEG Metadata"/>
+  <outputhandler class="org.ramadda.repository.output.CsvOutputHandler" name="CSV"/>
 <!--
   <outputhandler class="org.ramadda.repository.output.ExampleOutputHandler"  name="Example"/>
 -->

@@ -151,6 +151,9 @@ public class JsonOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+        if(group.isDummy()) {
+            request.setReturnFilename("Search_Results.json");
+        }
         List<Entry> allEntries = new ArrayList<Entry>();
         if (request.get(ARG_ONLYENTRY, false)) {
             allEntries.add(group);

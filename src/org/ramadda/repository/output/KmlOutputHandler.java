@@ -182,6 +182,10 @@ public class KmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+        if(group.isDummy()) {
+            request.setReturnFilename("Search_Results.kml");
+        }
+
         boolean justOneEntry = group.isDummy() && (entries.size() == 1)
                                && (subGroups.size() == 0);
 

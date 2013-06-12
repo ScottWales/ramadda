@@ -82,8 +82,9 @@ public class CsvOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_CSV = new OutputType("CSV",
                                                     "default.csv",
-                                                    OutputType.TYPE_FEEDS);
-
+                                                               OutputType.TYPE_FEEDS,
+                                                               "",
+                                                               ICON_CSV);
 
 
     /**
@@ -130,14 +131,13 @@ public class CsvOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    protected Result listGroups(Request request, List<Entry> groups)
+    protected Result listEntries(Request request, List<Entry> entries)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        for (Entry group : groups) {
+        for (Entry group : entries) {
             sb.append(SqlUtil.comma(group.getFullName(), group.getId()));
             sb.append("\n");
         }
-
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
 
@@ -202,7 +202,11 @@ public class CsvOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        return listGroups(request, subGroups);
+        if(group.isDummy()) {
+            request.setReturnFilename("Search_Results.csv");
+        }
+        subGroups.addAll(entries);
+        return listEntries(request, subGroups);
     }
 
 

@@ -231,6 +231,11 @@ public class ZipOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
+
+        if(group.isDummy()) {
+            request.setReturnFilename("Search_Results.zip");
+        }
+
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_ZIPTREE)) {
             List<Entry> all = new ArrayList<Entry>();

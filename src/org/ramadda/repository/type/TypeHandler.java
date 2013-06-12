@@ -4871,6 +4871,8 @@ public class TypeHandler extends RepositoryManager {
        @return The SpecialSearch
     **/
     public SpecialSearch getSpecialSearch () {
+        if(specialSearch == null) 
+            specialSearch = new SpecialSearch(this);
 	return specialSearch;
     }
 

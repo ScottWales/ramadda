@@ -25,7 +25,9 @@ package org.ramadda.repository.search;
 
 import org.ramadda.repository.*;
 
+
 import org.ramadda.repository.*;
+
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -43,6 +45,8 @@ import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.HashSet;
+
 import java.util.List;
 
 
@@ -72,8 +76,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
-
-    public static final String ARG_SEARCH_KML = "search.kml";
 
     /** _more_          */
     public static final String ARG_SEARCH_REFINE = "search.refine";
@@ -157,7 +159,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
         searchOpen  = typeHandler.getProperty("search.searchopen", "true").equals("true");
-        doSearchInitially  = typeHandler.getProperty("search.initsearch", "true").equals("true");
+        doSearchInitially  = typeHandler.getProperty("search.initsearch", "false").equals("true");
         showText    = typeHandler.getProperty("search.form.text.show", "true").equals("true");
         showArea    = typeHandler.getProperty("search.form.area.show", "true").equals("true");
         showDate    = typeHandler.getProperty("search.form.date.show", "true").equals("true");
@@ -260,8 +262,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     }
 
 
-    public Result processSearchRequest(Request request, StringBuffer sb) throws Exception {
 
+
+
+    public Result processSearchRequest(Request request, StringBuffer sb) throws Exception {
         int contentsWidth  = 750;
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
@@ -273,7 +277,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         boolean doSearch = (refinement?false:doSearchInitially);
-        if(request.defined(ARG_SEARCH_KML) || request.defined(ARG_SEARCH_SUBMIT)) {
+        if(request.defined(ARG_SEARCH_SUBMIT)) {
             doSearch =  true;
         }
 
@@ -287,14 +291,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             allEntries.addAll(entries);
         }
 
+        
 
-        if(request.defined(ARG_SEARCH_KML)) {
-            request.setReturnFilename("Search Results.kml");
-            KmlOutputHandler koh = (KmlOutputHandler) getRepository().getOutputHandler(KmlOutputHandler.class);
-            return koh.outputGroup(request, null,
-                                   getEntryManager().getDummyGroup(), groups, entries);
+
+
+
+        if(request.defined(ARG_OUTPUT)) {
+            OutputHandler outputHandler = getRepository().getOutputHandler(request);
+            return outputHandler.outputGroup(request, null,
+                                             getEntryManager().getDummyGroup(), groups, entries);
         }
-
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
@@ -409,11 +415,33 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
                        + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE));
 
-        if(georeferencedResults) {
-            buttons.append(" ");
-            buttons.append(HtmlUtils.submit(msg("Get KML"), ARG_SEARCH_KML));
-        }
+        //        if(georeferencedResults) {
+        //        }
 
+        if (doSearch) {
+            buttons.append(" ");
+            String baseUrl = request.getUrl();
+            buttons.append(HtmlUtils.br());
+            StringBuffer links = new StringBuffer();
+            
+
+            for(OutputType outputType: new OutputType[]{
+                    KmlOutputHandler.OUTPUT_KML,
+                    ZipOutputHandler.OUTPUT_ZIPTREE,
+                    AtomOutputHandler.OUTPUT_ATOM,
+                    JsonOutputHandler.OUTPUT_JSON,
+                    CsvOutputHandler.OUTPUT_CSV,
+                    }) {
+                if(outputType.getIcon() != null) {
+                    links.append(HtmlUtils.img(iconUrl(outputType.getIcon())));
+                    links.append(" ");
+                }
+
+                links.append(HtmlUtils.href(baseUrl+"&" + HtmlUtils.arg(ARG_OUTPUT, outputType.toString()),outputType.getLabel()));
+                links.append(HtmlUtils.br());
+            }
+            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."), links.toString(), false));
+        }
 
 
         formSB.append(

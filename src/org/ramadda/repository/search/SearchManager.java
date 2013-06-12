@@ -23,6 +23,8 @@ package org.ramadda.repository.search;
 
 import org.ramadda.util.CategoryBuffer;
 
+import org.ramadda.util.TTLObject;
+
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
@@ -58,6 +60,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.OpenSearchUtil;
@@ -103,6 +106,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -218,6 +222,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
     /** _more_ */
     private boolean isLuceneEnabled = true;
+
+
+
+
+    private TTLObject<HashSet<String>> cache =
+        new TTLObject<HashSet<String>>(60 * 60 * 1000);
+
 
     /**
      * _more_
@@ -935,15 +946,29 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
     public Result processSearchType(Request request) throws Exception {
         StringBuffer sb  = new StringBuffer();
+        HashSet<String> typesWeHave = cache.get();
+        if(typesWeHave == null) {
+            typesWeHave = new HashSet();
+            typesWeHave.addAll(getRepository().getDatabaseManager().selectDistinct(
+                                                                                 Tables.ENTRIES.NAME,
+                                                                                 Tables.ENTRIES.COL_TYPE, null));
+            cache.put(typesWeHave );
+        }
 
-        CategoryBuffer cb  = new CategoryBuffer();
+
+
         List<String> toks  = StringUtil.split(request.getRequestPath(), "/",true,true);
-        if(toks.get(toks.size()-1).equals("type")) {
+        String lastTok = toks.get(toks.size()-1);
+        if(lastTok.equals("type")) {
+            CategoryBuffer cb  = new CategoryBuffer();
             for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
                 if ( !typeHandler.getForUser()) {
                     continue;
                 }
                 if (typeHandler.isAnyHandler()) {
+                    continue;
+                }
+                if(!typesWeHave.contains(typeHandler.getType())) {
                     continue;
                 }
                 String icon = typeHandler.getProperty("icon", (String) null);
@@ -977,18 +1002,18 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 sb.append(cb.get(cat));
                 sb.append("</ul>");
                 sb.append("</td>");
+
             }
             sb.append("</table>");
         } else {
-            String type = toks.get(toks.size()-1);
+            String type = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
-            SpecialSearch ss = typeHandler.getSpecialSearch();
-            if(ss == null) {
-                ss = new SpecialSearch(typeHandler);
-                typeHandler.setSpecialSearch(ss);
-
+            Result result = 
+                typeHandler.getSpecialSearch().processSearchRequest(request, sb);
+            //Is it non-html?
+            if(result!=null) {
+                return result;
             }
-            typeHandler.getSpecialSearch().processSearchRequest(request, sb);
         }
         return makeResult(request, msg("Search by Type"), sb);
     }

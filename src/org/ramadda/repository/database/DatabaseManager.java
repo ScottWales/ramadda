@@ -2645,4 +2645,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+    public List<String> selectDistinct(String tableName, String column, Clause clause) throws Exception {
+        Statement stmt = select(SqlUtil.distinct(column),
+                                tableName, clause);
+        String[] values =
+            SqlUtil.readString(getIterator(stmt), 1);
+        return (List<String>)Misc.toList(values);
+    }
+
 }

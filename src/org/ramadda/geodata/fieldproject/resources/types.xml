@@ -164,8 +164,7 @@
      <property name="search.tabs" value="map,list"/>
      <property name="search.metadatatypes" value="project_person"/>
      <property name="search.initsearch" value="true"/>
-     <property name="search.form.date.show" value="false"/>
-
+     <property name="search.form.date.show" value="true"/>
 
    </type>
 
