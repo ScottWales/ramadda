@@ -191,7 +191,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
         RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_FORM, URL_SEARCH_BROWSE,
+            URL_SEARCH_FORM, URL_SEARCH_TYPE, URL_SEARCH_BROWSE,
             URL_SEARCH_ASSOCIATIONS_FORM });
 
 
