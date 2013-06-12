@@ -46,6 +46,12 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <property name="search.label" value="Field Projects"/>
+     <property name="search.tabs" value="earth,map,list,timeline"/>
+     <property name="search.metadatatypes" value="project_person"/>
+
+
+
      <column name="project_id"  type="string" label="Project ID"/>
      <column name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type"/>
@@ -101,6 +107,14 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.show.top" value="false"/>
+
+     <property name="search.label" value="Sites"/>
+     <property name="search.tabs" value="map,list"/>
+     <property name="search.metadatatypes" value="project_person"/>
+     <property name="search.form.date.show" value="false"/>
+
+
+
      <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/sitetypes.txt"/>
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
 
