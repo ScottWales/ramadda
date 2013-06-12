@@ -15,13 +15,6 @@
 {{description wikify="true"}}
 </div>
 
-{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
-
-</td>
-<td width="50%">
-{{image src="::*" message="" width="300"}}
-<p>
-{{map  entry="Sites" message="" width="300" prefix="==Sites=="}}
 <p>
 {{links entry="Projects" prefix="==Projects=="   message=""}}
 <p>
@@ -30,8 +23,15 @@
 <p>
 {{links entry="Documents" prefix="==Documents=="   message=""}}
 
+
+{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
 <p>
-{{tree prefix="==All Content=="   message=""}}
+{{map  entry="Sites" message="" width="300" prefix="==Sites=="}}
+
 </td></tr>
 </table>
 ]]>
