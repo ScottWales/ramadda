@@ -900,7 +900,7 @@ public interface Constants {
 
     /** _more_ */
     public static final DateArg dataDate = new DateArg(ARG_DATA_DATE,
-                                               "Data Date", true);
+                                               "Date", true);
 
     /** _more_ */
     public static final DateArg createDate = new DateArg(ARG_CREATE_DATE,

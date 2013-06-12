@@ -3333,7 +3333,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         for (Constants.DateArg arg : Constants.DATEARGS) {
-            addDateSearch(getRepository(), request, basicSB, arg);
+            addDateSearch(getRepository(), request, basicSB, arg, true);
         }
 
 
@@ -3439,7 +3439,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public static void addDateSearch(Repository repository, Request request,
                                      StringBuffer basicSB,
-                                     Constants.DateArg arg) {
+                                     Constants.DateArg arg, boolean showTime) {
         List dateTypes = new ArrayList();
         dateTypes.add(new TwoFacedObject(msg("Contained by range"),
                                          DATE_SEARCHMODE_CONTAINEDBY));
@@ -3487,7 +3487,7 @@ public class TypeHandler extends RepositoryManager {
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra;
         if (arg.hasRange) {
-            dateExtra = HtmlUtils.space(4)
+            dateExtra = HtmlUtils.br()
                         + HtmlUtils.makeToggleInline(msg("More..."),
                             HtmlUtils.p() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
@@ -3510,11 +3510,11 @@ public class TypeHandler extends RepositoryManager {
             RepositoryManager.formEntryTop(
                 request, msgLabel(arg.label),
                 repository.getPageHandler().makeDateInput(
-                    request, arg.from, "searchform", null) + HtmlUtils.space(
+                                                          request, arg.from, "searchform", null, null, showTime) + HtmlUtils.space(
                     1) + HtmlUtils.img(repository.iconUrl(ICON_RANGE))
                        + HtmlUtils.space(1)
                        + repository.getPageHandler().makeDateInput(
-                           request, arg.to, "searchform", null) + dateExtra));
+                                                                   request, arg.to, "searchform", null, null, showTime) + dateExtra));
 
 
 

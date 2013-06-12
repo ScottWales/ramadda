@@ -345,7 +345,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (showDate) {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      Constants.dataDate);
+                                      Constants.dataDate, false);
 
         }
 
