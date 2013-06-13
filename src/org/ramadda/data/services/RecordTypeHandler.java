@@ -131,6 +131,13 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
 
 
 
+    public void initializeEntryFromXml(Request request, Entry entry,
+                                       Element node)
+        throws Exception {
+        super.initializeEntryFromXml(request,  entry, node);
+        initializeNewEntry(entry);
+    }
+
     /**
      * _more_
      *

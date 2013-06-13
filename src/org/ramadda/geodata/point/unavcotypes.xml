@@ -15,6 +15,7 @@ this gets it from the type_point super class
      <column  name="station_name"  type="string" label="Station Name" cansearch="true"/>
      <column  name="reference_frame"  type="enumerationplus" label="Reference Frame" cansearch="true"/>
      <column  name="format_version"  type="enumerationplus" label="Format Version" cansearch="true"/>
+     <column  name="processing_center"  type="enumerationplus" label="Processing Center" cansearch="true"/>
   </type>
 
 </types>

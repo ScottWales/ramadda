@@ -176,6 +176,8 @@ public class TextRecord extends PointRecord {
         synthetic = new boolean[fields.size()];
         idxX    = idxY = idxZ = idxTime = -1;
         int numFields = 0;
+        boolean seenLon = false;
+        boolean seenLat = false;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
 
@@ -204,15 +206,26 @@ public class TextRecord extends PointRecord {
                 idxGreen = i;
             } else   if (name.equals("blue") || name.equals("b")) {
                 idxBlue = i;
-            } else if (name.equals("x") || name.equals("longitude")
-                    || name.equals("long") || name.equals("lon")) {
+            } else if (name.equals("x")) {
                 if (idxX == -1) {
                     idxX = i;
                 }
-            } else if (name.equals("y") || name.equals("latitude")
-                       || name.equals("lat")) {
+            } else if (name.equals("longitude")
+                    || name.equals("long") || name.equals("lon")) {
+                if (!seenLon) {
+                    idxX = i;
+                    seenLon = true;
+                }
+            } else if (name.equals("y")) {
                 if (idxY == -1) {
                     idxY = i;
+                }
+
+            } else if (name.equals("latitude")
+                       || name.equals("lat")) {
+                if (!seenLat) {
+                    idxY = i;
+                    seenLat = true;
                 }
             } else if (name.equals("z") || name.equals("altitude")
                        || name.equals("elevation") || name.equals("elev")

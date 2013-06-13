@@ -71,6 +71,15 @@ public abstract class TextFile extends PointFile {
     public static final String FIELD_SECOND = "Second";
     public static final String FIELD_STANDARD_DEVIATION = "Standard_Deviation";
 
+    public static final String FIELD_NORTH = "North";
+    public static final String FIELD_EAST = "East";
+    public static final String FIELD_VERTICAL = "Vertical";
+    public static final String FIELD_NORTH_STD_DEVIATION = "North_Std_Deviation";
+    public static final String FIELD_EAST_STD_DEVIATION = "East_Std_Deviation";
+    public static final String FIELD_VERTICAL_STD_DEVIATION = "East_Vertical_Deviation";
+
+    public static final String FIELD_QUALITY = "Quality";
+
 
     public static final String FIELD_TEMPERATURE = "Temperature";
     public static final String FIELD_PRESSURE = "Pressure";
