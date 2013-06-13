@@ -96,7 +96,10 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
         String processingCenter = StringUtil.split(getOriginalFilename(getFilename()),".",true,true).get(1);
 
 
-        String stationName =  StringUtil.split(headerLines.get(3), ",",true,true).get(1);
+        List<String> toks;
+        toks = StringUtil.split(headerLines.get(3), ":",true,true);
+        String stationName =  toks.size()>1?toks.get(1):fourCharId;
+
         //LOOK: this needs to be in the same order as the unavcotypes.xml defines in the point plugin
         setFileMetadata(new Object[]{
                 fourCharId,
