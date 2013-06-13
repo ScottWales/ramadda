@@ -308,9 +308,10 @@ public class  LocalRepositoryManager extends RepositoryManager {
             }
         }
 
-
-
-        return new Result("", new StringBuffer("Couldn't find repos"));
+        
+        StringBuffer sb  = new StringBuffer();
+        sb.append(getPageHandler().showDialogWarning("Could not find requested repository.<br>Perhaps it hasn't started up yet"));
+        return new Result("", sb);
     }
 
     public Result adminLocal(Request request) throws Exception {
