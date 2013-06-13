@@ -2086,7 +2086,7 @@ public class Column implements DataTypes, Constants {
                 //                                           rows, columns);
             } else {
                 widget = HtmlUtils.input(id, request.getString(id, ""),
-                                         HtmlUtils.SIZE_50);
+                                         HtmlUtils.SIZE_20);
             }
         }
         formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
