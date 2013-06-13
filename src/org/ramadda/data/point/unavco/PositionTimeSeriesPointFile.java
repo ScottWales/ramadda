@@ -152,7 +152,9 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
         String formatVersion = StringUtil.split(headerLines.get(1), ":",true,true).get(1);
         String fourCharId = StringUtil.split(headerLines.get(2), ":",true,true).get(1);
         String processingCenter = StringUtil.split(getOriginalFilename(getFilename()),".",true,true).get(1);
-        String stationName =  StringUtil.split(headerLines.get(3), ":",true,true).get(1);
+        List<String> toks;
+        toks = StringUtil.split(headerLines.get(3), ":",true,true);
+        String stationName =  toks.size()>1?toks.get(1):fourCharId;
         setFileMetadata(new Object[]{
                 fourCharId,
                 stationName,
