@@ -119,6 +119,8 @@ public class CsvOutputHandler extends OutputHandler {
     }
 
 
+    public static final String ARG_FIELDS = "fields";
+    public static final String ARG_DELIMITER = "delimiter";
 
 
     /**
@@ -133,15 +135,96 @@ public class CsvOutputHandler extends OutputHandler {
      */
     protected Result listEntries(Request request, List<Entry> entries)
             throws Exception {
+
+        String delimiter = request.getString(ARG_DELIMITER,",");
+        String fieldsArg = request.getString(ARG_FIELDS,"name,id,type,north,south,east,west,url,fields");
         StringBuffer sb = new StringBuffer();
-        for (Entry group : entries) {
-            sb.append(SqlUtil.comma(group.getFullName(), group.getId()));
+        List<String> fields = StringUtil.split(fieldsArg,",",true,true);
+        for (Entry entry : entries) {
+            if(sb.length()==0) {
+                if(fields.contains("fields")) {
+                    List<Column> columns = entry.getTypeHandler().getColumns();
+                    if(columns!=null) {
+                        String tmp = null;
+                        for(Column column: columns) {
+                            if(tmp==null) {
+                                tmp = ",";
+                            } else {
+                                tmp+=",";
+                            }
+                            tmp+=column.getName();
+                        }
+                        fieldsArg = fieldsArg.replace(",fields",tmp);
+                    }
+                }
+                sb.append("#fields=");
+                sb.append(fieldsArg);
+                sb.append("\n");
+            }
+
+            int colCnt = 0;
+            for(String field: fields) {
+                if(colCnt!=0) {
+                    sb.append(delimiter);
+                } 
+                colCnt++;
+                if(field.equals("name"))
+                    sb.append(entry.getName());
+                else if(field.equals("fullname"))
+                    sb.append(entry.getFullName());
+                else if(field.equals("type"))
+                    sb.append(entry.getTypeHandler().getType());
+                else if(field.equals("id"))
+                    sb.append(entry.getId());
+                else if(field.equals("url")) {
+                    if (entry.getResource().isUrl()) {
+                        sb.append(entry.getTypeHandler().getResourcePath(request, entry));
+                    } else if (entry.getResource().isFile()) {
+                        sb.append(entry.getTypeHandler().getEntryResourceUrl(request,
+                                                                             entry));
+                    } else {
+                    }
+                } else if(field.equals("latitude"))
+                    sb.append(entry.getLatitude());
+                else if(field.equals("longitude"))
+                    sb.append(entry.getLongitude());
+                else if(field.equals("north"))
+                    sb.append(entry.getNorth());
+                else if(field.equals("south"))
+                    sb.append(entry.getSouth());
+                else if(field.equals("east"))
+                    sb.append(entry.getEast());
+                else if(field.equals("west"))
+                    sb.append(entry.getWest());
+                else if(field.equals("description")) {
+                    sb.append(sanitize(entry.getDescription()));
+                } else if(field.equals("fields")) {
+                    List<Column> columns = entry.getTypeHandler().getColumns();
+                    if(columns!=null) {
+                        Object[] values = entry.getTypeHandler().getValues(entry);
+                        int cnt =0;
+                        for(Column column: columns) {
+                            if(cnt>0)
+                                sb.append(delimiter);
+                            cnt++;
+                            sb.append(sanitize(column.getString(values)));
+                        }
+                    }
+                } else  {
+                    sb.append("unknown:" + field);
+                }
+            }
             sb.append("\n");
         }
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
 
-
+    public String sanitize(String s) {
+        if(s==null) return "";
+        s = s.replaceAll("\n"," ");
+        s = s.replaceAll(",","_COMMA_");
+        return s;
+    }
 
 
     /**

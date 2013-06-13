@@ -250,6 +250,61 @@
     </type>
 
 
+
+  <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/dataset.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="true"/>
+   </type>
+
+
+
+  <type name="project_campaign"  description="Campaign" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/paste_plain.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+   </type>
+
+
+
+
+
+  <type name="project_contribution"  description="Research Contribution" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/lightbulb.png"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+{{links  prefix="==Links=="   message=""}}
+
+{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+</td></tr>
+</table>
+]]>
+</wiki>
+
+   </type>
+
+
+
+
     <type name="project_surveylocation" description="Survey Location" category="Science Project" >
       <property name="icon" value="/fieldproject/compass.png"/> 
       <property name="form.file.label" value="Location Image"/>
@@ -297,16 +352,9 @@ features
 
     </type>
 
-  <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
-     <property name="icon" value="/fieldproject/dataset.png"/>
-     <property name="form.resource.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.altitude.show" value="true"/>
-     <property name="form.altitude.show.top" value="true"/>
-   </type>
 
 
-
+<!--
   <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Project" >
      <property name="icon" value="/fieldproject/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
@@ -363,6 +411,8 @@ features
 
    </type>
 
+
+-->
 
 
   <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
