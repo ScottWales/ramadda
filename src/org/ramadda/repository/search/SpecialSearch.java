@@ -575,8 +575,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public void makeEntryList(Request request, StringBuffer sb,
                               List<Entry> entries)
             throws Exception {
-        getRepository().getHtmlOutputHandler().makeTable(request, entries,
-                sb);
+        //        getRepository().getHtmlOutputHandler().makeTable(request, entries,
+        //                sb);
+        getRepository().getHtmlOutputHandler().getEntriesList(request,  sb,
+                                                              entries, entries,
+                                                              true,true,true,true,true);
     }
 
 

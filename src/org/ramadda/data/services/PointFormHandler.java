@@ -1507,8 +1507,12 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             }
         }
 
+        if(fields.size()==0 && tmpFields.size()>0) {
+            fields.add(tmpFields.get(0));
+            request.put(ARG_CHART_SHOW + tmpFields.get(0).getName(), "true");
+        }
+
         for (RecordField attr : fields) {
-            System.err.println("series:" + attr.getLabel());
             series.add(new XYSeries(attr.getLabel()));
         }
 
@@ -1525,7 +1529,6 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                     } else {
                         value = record.getValue(field.getParamId());
                     }
-                    System.err.println (".add: " + fieldCnt + " " + value);
                     series.get(fieldCnt).add(cnt[0], value);
                 }
                 //                System.err.println(pointRecord.index);
