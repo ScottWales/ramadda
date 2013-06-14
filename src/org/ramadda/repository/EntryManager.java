@@ -7766,15 +7766,16 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getTemplateEntry(File file) throws Exception {
         File parent = file.getParentFile();
-        File[] files = new File[] {
-                           new File(IOUtil.joinDir(parent,
-                               "." + file.getName() + ".ramadda.xml")),
-                           new File(IOUtil.joinDir(parent,
-                               "." + file.getName() + ".xml")),
-                           new File(IOUtil.joinDir(parent,
-                               ".ramadda.xml")), };
+        String type = (file.isDirectory()? "dir":"file");
+        String filename = file.getName();
+        String[] names = {"." + filename + ".ramadda.xml",
+                          "." +  type +".ramadda.xml",
+                          ".ramadda.xml",
+        };
 
-        for (File f : files) {
+
+        for (String name: names) {
+            File f = new File(IOUtil.joinDir(parent, name));
             if (f.exists()) {
                 return  parseEntryXml(f, true);
             }
