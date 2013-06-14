@@ -1642,8 +1642,8 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-        //For now only allow admins to export
-        if (request.getUser().getAdmin()) {
+        //Allow users with the rights to export and import
+        if (canDoNew) {
             links.add(
                 new Link(
                     HtmlUtils.url(
@@ -1657,10 +1657,6 @@ public class TypeHandler extends RepositoryManager {
                                             OutputType.TYPE_FILE));
 
 
-        }
-
-        //Allow users with the rights to import
-        if (canDoNew) {
             links.add(
                       new Link(
                                request.url(

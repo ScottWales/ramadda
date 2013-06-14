@@ -976,7 +976,7 @@ public abstract class RecordFile {
 
 
     public boolean isMissingValue(Record record, RecordField field, String s) {
-        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NaN");
+        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NA") || s.equals("NaN");
     }
 
 
