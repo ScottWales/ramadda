@@ -125,14 +125,18 @@ public class PointMetadataHarvester extends RecordVisitor {
         }
 
         //Skip this if it doesn't have a valid position
-        if ( !pointRecord.isValidPosition()) {
-            badCnt++;
-            if(badCnt<10) {    
-                System.err.println("PointMetadataHarvester: bad position: " + lat +" " + lon);
-            }
-            if(badCnt>1000 && (cnt==0 || badCnt> 10*cnt)) {    
-                System.err.println("PointMetadataHarvester:Too many bad locations. Something must be wrong.");
-                return false;
+        if (!pointRecord.isValidPosition()) {
+            if(Double.isNaN(lat) &&  Double.isNaN(lon)) {
+                //TODO:what do do with undefined
+            } else {
+                badCnt++;
+                if(badCnt<10) {    
+                    System.err.println("PointMetadataHarvester: bad position: " + lat +" " + lon);
+                }
+                if(badCnt>1000 && (cnt==0 || badCnt> 10*cnt)) {    
+                    System.err.println("PointMetadataHarvester:Too many bad locations. Something must be wrong.");
+                    return false;
+                }
             }
             return true;
         }
