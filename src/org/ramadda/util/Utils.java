@@ -211,14 +211,14 @@ public class Utils {
                 return DateUtil.parse(str);
             }
 
-            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d\\d\\d)");
+            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d\\d\\d)");
             if(str!=null) {
                 try {
                     return new SimpleDateFormat("yyyyMMdd-HHmmss").parse(str);
                 } catch(Exception ignore) {}
             }
 
-            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d)");
+            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d)");
             if(str!=null) {
                 try {
                     return new SimpleDateFormat("yyyyMMdd-HHmm").parse(str);
