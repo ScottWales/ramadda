@@ -21,6 +21,8 @@ var map_wms_openlayers = "wms:OpenLayers WMS,http://vmap0.tiles.osgeo.org/wms/vm
 // doesn't support EPSG:900913
 var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG";
 
+var map_ol_openstreetmap = "ol.openstreetmap";
+
 var defaultLocation = new OpenLayers.LonLat(-104, 40);
 var defaultZoomLevel = 3;
 
@@ -76,6 +78,12 @@ function RepositoryMap(mapId, params) {
     if (!this.mapDivId) {
         this.mapDivId = "map";
     }
+    // set some defaults
+    this.showScaleLine = true;
+    this.showLayerSwitcher = true;
+    this.showZoomPanControl = true;
+    this.showZoomOnlyControl = false;
+
     for ( var key in params) {
         this[key] = params[key];
     }
@@ -145,9 +153,9 @@ function RepositoryMap(mapId, params) {
     this.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [ 
-                              map_google_satellite,
                               map_google_terrain, 
                               map_google_streets, 
+                              map_google_satellite,
                               map_google_hybrid,
                               map_wms_openlayers,
             ];
@@ -211,6 +219,15 @@ function RepositoryMap(mapId, params) {
                             sphericalMercator : true,
                             wrapDateLine : false
                         }));
+            /* needs OpenLayers 2.12
+            } else if (mapLayer == map_ol_openstreetmap) {
+                this.map.addLayer(new OpenLayers.Layer.OSM("OpenStreetMap", null, {
+                      transitionEffect: "resize",
+                      attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+                      sphericalMercator : true,
+                      wrapDateLine : false
+                  }));
+            */
             } else {
                 var match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
                 if (!match) {
@@ -250,8 +267,10 @@ function RepositoryMap(mapId, params) {
             projection : this.sourceProjection,
             displayProjection : this.displayProjection,
             units : "m",
+            controls: [],
             maxResolution : 156543.0339,
             maxExtent : maxExtent
+            
         };
 
         this.map = new OpenLayers.Map(this.mapDivId,options);
@@ -267,10 +286,22 @@ function RepositoryMap(mapId, params) {
                         enableKinetic: true
                             }
         }));
-        this.map.addControl(new OpenLayers.Control.ScaleLine());
+
+        if (this.showZoomPanControl && !this.ZoomOnlyControl) {
+            this.map.addControl(new OpenLayers.Control.PanZoom());
+        }
+        if (this.showZoomOnlyControl && !this.showZoomPanControl) {
+            this.map.addControl(new OpenLayers.Control.Zoom());
+        }
+
+        if (this.showScaleLine) {
+            this.map.addControl(new OpenLayers.Control.ScaleLine());
+        }
         //        this.map.addControl(new OpenLayers.Control.OverviewMap());
         this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
-        this.map.addControl(new OpenLayers.Control.LayerSwitcher());
+        if (this.showLayerSwitcher) {
+            this.map.addControl(new OpenLayers.Control.LayerSwitcher());
+        }
 
         var latLonReadout = ramaddaUtil.getDomObject(this.latlonReadout);
         if(latLonReadout) {
@@ -541,11 +572,9 @@ function RepositoryMap(mapId, params) {
             draw : function() {
                 // this Handler.Box will intercept the shift-mousedown
                 // before Control.MouseDefault gets to see it
-                this.box = new OpenLayers.Handler.Box(theMap.selectorControl, {
-                    "done" : this.notice
-                }, {
-                        keyMask : OpenLayers.Handler.MOD_SHIFT
-                });
+                this.box = new OpenLayers.Handler.Box(theMap.selectorControl, 
+                    { "done" : this.notice }, 
+                    { keyMask : OpenLayers.Handler.MOD_SHIFT });
                 this.box.activate();
             },
 
