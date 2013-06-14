@@ -287,7 +287,10 @@ public class Utils {
 
 
     public static void main(String args[]) {
-        testJulian(args);
+        for(String file: args) {
+            System.err.println("file:" + file +" date:" +  extractDate(new java.io.File(file).getName()));
+        }
+        //        testJulian(args);
     }
 
 
