@@ -206,10 +206,26 @@ public class Utils {
 
     public static Date extractDate(String s) {
         try {
-            String yyyymmdd = StringUtil.findPattern(s, "(\\d\\d\\d\\d-\\d\\d-\\d\\d)");
-            if(yyyymmdd !=null) {
-                return DateUtil.parse(yyyymmdd);
+            String str = StringUtil.findPattern(s, "(\\d\\d\\d\\d-\\d\\d-\\d\\d)");
+            if(str !=null) {
+                return DateUtil.parse(str);
             }
+
+            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d\\d\\d)");
+            if(str!=null) {
+                try {
+                    return new SimpleDateFormat("yyyyMMdd-HHmmss").parse(str);
+                } catch(Exception ignore) {}
+            }
+
+            str = StringUtil.findPattern(s, "(\\d\\d\\d\\d\\d\\d-\\d\\d\\d\\d)");
+            if(str!=null) {
+                try {
+                    return new SimpleDateFormat("yyyyMMdd-HHmm").parse(str);
+                } catch(Exception ignore) {}
+            }
+
+
             return null;
         } catch(Exception exc) {
             System.err.println ("Utils.extractDate:" + exc);
