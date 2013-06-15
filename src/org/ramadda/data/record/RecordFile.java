@@ -1011,7 +1011,12 @@ public abstract class RecordFile {
     };
 
     public SimpleDateFormat getDateFormat(Record record, int [] indices) {
-        return sdfs[indices.length-1];
+        int goodCnt = 0;
+        for(int i=0;i<indices.length;i++) {
+            if(indices[i]<0) break;
+            goodCnt++;
+        }
+        return sdfs[goodCnt-1];
     }
 
 
@@ -1023,6 +1028,7 @@ public abstract class RecordFile {
         StringBuffer dttm=new StringBuffer();
         SimpleDateFormat sdf = getDateFormat(record, indices);
         for(int i=0;i<indices.length;i++) {
+            if(indices[i]<0) break;
             if(i>0) {
                 dttm.append("-");
             }

@@ -62,6 +62,7 @@ public class TextRecord extends PointRecord {
 
     private String     line   = "";
 
+    
     /** _more_          */
     private int idxX;
 
@@ -174,13 +175,21 @@ public class TextRecord extends PointRecord {
         hasDefault = new boolean[fields.size()];
         skip = new boolean[fields.size()];
         synthetic = new boolean[fields.size()];
+        int [] timeIndices = {-1,-1,-1,-1,-1,-1};
+        boolean gotDateFields = false;
+        String[][] timeFields = {{"year","yyyy"},
+                                 {"month"},
+                                 {"day"},
+                                 {"hour"},
+                                 {"minute"},
+                                 {"second"},};
+
         idxX    = idxY = idxZ = idxTime = -1;
         int numFields = 0;
         boolean seenLon = false;
         boolean seenLat = false;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
-
             hasDefault[i] = field.hasDefaultValue();
             skip[i] = field.getSkip();
             synthetic[i] = field.getSynthetic();
@@ -192,6 +201,19 @@ public class TextRecord extends PointRecord {
                 continue;
             }
             String      name  = field.getName().toLowerCase();
+            for(int timeIdx=0;timeIdx<timeFields.length;timeIdx++) {
+                boolean gotOne = false;
+                for(String timeFieldName: timeFields[timeIdx]) {
+                    if(name.equals(timeFieldName)) {
+                        gotDateFields = true;
+                        System.err.println("got time:" + name + " idx:" + i);
+                        timeIndices[timeIdx] =  i+1;
+                        gotOne = true;
+                        break;
+                    }
+                    if(gotOne) break;
+                }
+            }
             if(latField!=null && latField.equalsIgnoreCase(name)) {
                 idxY = i;
                 continue;
@@ -236,6 +258,7 @@ public class TextRecord extends PointRecord {
             }
         }
 
+        if(gotDateFields) getRecordFile().setDateIndices(timeIndices);
 
         tokens      = new String[numFields];
 
