@@ -2,9 +2,6 @@
 package org.ramadda.data.point.noaa;
 
 
-import java.text.SimpleDateFormat;
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -50,16 +47,10 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
     }
 
 
-    private static String header;
 
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        if(header == null) {
-            header = IOUtil.readContents("/org/ramadda/data/point/noaa/flaskeventheader.txt", getClass()).trim();
-            header = header.replaceAll("\n",",");
-        }
-
-        String fields = header;
+        String fields = getFieldsFileContents();
         String filename = getOriginalFilename(getFilename());
         //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
         List<String> toks = StringUtil.split(filename,"_",true,true);
@@ -76,10 +67,7 @@ public  class NoaaFlaskEventPointFile extends NoaaPointFile  {
                 measurementGroup,
             });
         fields = fields.replace("${parameter}", parameter);
-
-
         putProperty(PROP_FIELDS, fields);
-
         dateIndices = new int[]{IDX_YEAR,
                                 IDX_MONTH,
                                 IDX_DAY,

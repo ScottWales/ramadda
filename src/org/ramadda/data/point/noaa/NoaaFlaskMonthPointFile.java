@@ -27,7 +27,6 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
     public static final int IDX_YEAR = IDX++;
     public static final int IDX_MONTH = IDX++;
 
-    private static String header;
 
     /**
      * ctor
@@ -43,12 +42,8 @@ public  class NoaaFlaskMonthPointFile extends NoaaPointFile  {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
         dateIndices= new int[]{IDX_YEAR,IDX_MONTH};
-        if(header == null) {
-            header = IOUtil.readContents("/org/ramadda/data/point/noaa/flaskmonthheader.txt", getClass()).trim();
-            header = header.replaceAll("\n",",");
-        }
 
-        String fields = header;
+        String fields =  getFieldsFileContents();
         String filename = getOriginalFilename(getFilename());
         //[parameter]_[site]_[project]_[lab ID number]_[measurement group]_[optional qualifiers].txt
         List<String> toks = StringUtil.split(filename,"_",true,true);
