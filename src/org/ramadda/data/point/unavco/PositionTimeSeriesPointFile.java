@@ -5,7 +5,6 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.IOUtil;
 
 import java.io.*;
 import java.util.Date;
@@ -28,21 +27,6 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
     public PositionTimeSeriesPointFile(String filename) throws IOException {
         super(filename);
         isPos= filename.endsWith(".pos");
-    }
-
-    public String getDelimiter() {
-        return isPos?" ":",";
-    }
-
-    /**
-     * How many lines in the header
-     *
-     * @param visitInfo the visit info
-     *
-     * @return number of lines to skip
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return isPos?37:9;
     }
 
     /*
@@ -69,13 +53,14 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
      * @throws IOException on badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        putProperty(PROP_DELIMITER, isPos?" ":",");
+        putProperty(PROP_SKIPLINES,isPos?"37":"9");
+
         super.prepareToVisit(visitInfo);
         List<String>headerLines = getHeaderLines();
         if(headerLines.size()!=getSkipLines(visitInfo)) {
             throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
         }
-
-
 
 
         if(isPos) {
@@ -94,10 +79,7 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
 
         //Station name,RandolphLLUT2005
         String processingCenter = StringUtil.split(getOriginalFilename(getFilename()),".",true,true).get(1);
-
-
-        List<String> toks;
-        toks = StringUtil.split(headerLines.get(3), ":",true,true);
+        List<String> toks = StringUtil.split(headerLines.get(3), ":",true,true);
         String stationName =  toks.size()>1?toks.get(1):fourCharId;
 
         //LOOK: this needs to be in the same order as the unavcotypes.xml defines in the point plugin
@@ -122,7 +104,6 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
         setLocation(lat,lon,elevation);
 
 
-
         putFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(fourCharId.trim())),
                 makeField(FIELD_LATITUDE, attrValue(lat)),
@@ -140,7 +121,6 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
         return visitInfo;
     }
 
-    private static String pos_header;
 
     private VisitInfo preparePosFile(VisitInfo visitInfo,List<String> headerLines) throws IOException {
 
@@ -155,8 +135,7 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
         String formatVersion = StringUtil.split(headerLines.get(1), ":",true,true).get(1);
         String fourCharId = StringUtil.split(headerLines.get(2), ":",true,true).get(1);
         String processingCenter = StringUtil.split(getOriginalFilename(getFilename()),".",true,true).get(1);
-        List<String> toks;
-        toks = StringUtil.split(headerLines.get(3), ":",true,true);
+        List<String> toks = StringUtil.split(headerLines.get(3), ":",true,true);
         String stationName =  toks.size()>1?toks.get(1):fourCharId;
         setFileMetadata(new Object[]{
                 fourCharId,
@@ -166,16 +145,13 @@ public class PositionTimeSeriesPointFile extends CsvFile  {
                 processingCenter
             });
 
-        if(pos_header == null) {
-            pos_header= IOUtil.readContents("/org/ramadda/data/point/unavco/posheader.txt", getClass()).replaceAll("\n", " ");
-        }
-        putProperty(PROP_FIELDS, pos_header);
+        putProperty(PROP_FIELDS, getFieldsFileContents());
         return visitInfo;
     }
 
 
     @Override
-        public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
+    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
         if(!isPos)return true;
         String dttm = record.getStringValue(1) + "-" +record.getStringValue(2);
