@@ -19,8 +19,6 @@ import java.util.Date;
 
 public  class GCNetPointFile extends CsvFile  {
 
-    private static String header;
-
 
     /**
      * ctor
@@ -36,27 +34,17 @@ public  class GCNetPointFile extends CsvFile  {
     }
 
 
-    @Override
-    public boolean isHeaderBlankLineDelmited() {
-        return true;
-    }
-
     public String getStationsPath() {
         return "/org/ramadda/data/point/gcnet/stations.txt";
     }
 
 
-    private String getHeader() throws IOException {
-        if(header==null) {
-            header = IOUtil.readContents("/org/ramadda/data/point/gcnet/header.txt", getClass()).trim();
-            header = header.replaceAll("\n"," ");
-        }
-        return header;
-    }
 
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        //Put the delimiter first so we can read the header in the parent method
+        putProperty(PROP_HEADER_DELIMITER, "");
         super.prepareToVisit(visitInfo);
-        putProperty(PROP_FIELDS, getHeader());
+        putProperty(PROP_FIELDS, getFieldsFileContents());
         return visitInfo;
     }
 

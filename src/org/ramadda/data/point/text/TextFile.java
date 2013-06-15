@@ -28,6 +28,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.util.Station;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.HtmlUtils;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
@@ -112,6 +113,7 @@ public abstract class TextFile extends PointFile {
 
     /** _more_          */
     public static final String PROP_SKIPLINES = "skiplines";
+    public static final String PROP_HEADER_DELIMITER = "header.delimiter";
 
     /** _more_          */
     private List<String> headerLines = new ArrayList<String>();
@@ -173,6 +175,26 @@ public abstract class TextFile extends PointFile {
     }
 
 
+    private static Hashtable<String,String> fieldsMap = new Hashtable<String,String>();
+
+    public String getFieldsFileContents(String path) throws IOException {
+        String fields = fieldsMap.get(path);
+        if(fields==null) {
+            fields = IOUtil.readContents(path, getClass()).trim();
+            fields = fields.replaceAll("\n"," ");
+            fieldsMap.put(path, fields);
+        }
+        return fields;
+    }
+    
+    public String getFieldsFileContents() throws IOException {
+        String path = getClass().getCanonicalName();
+        path = path.replaceAll("\\.","/");
+        path = "/" + path +".fields.txt";
+        //        System.err.println ("path:" + path);
+        return getFieldsFileContents(path);
+    }
+
 
     /**
      * _more_
@@ -186,8 +208,8 @@ public abstract class TextFile extends PointFile {
         return skipLines;
     }
 
-    public boolean isHeaderBlankLineDelmited() {
-        return false;
+    public String getHeaderDelimiter() {
+        return getProperty(PROP_HEADER_DELIMITER,(String) null);
     }
 
     public boolean isHeaderStandard() {
@@ -247,10 +269,12 @@ public abstract class TextFile extends PointFile {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
 
         boolean haveReadHeader = headerLines.size()>0;
-        if(isHeaderBlankLineDelmited()) {
+        String headerDelimiter = getHeaderDelimiter();
+        if(headerDelimiter!=null) {
             while(true) {
                 String line = visitInfo.getRecordIO().readLine().trim();
-                if(line == null || line.length()==0) break;
+                if(line == null) break;
+                if(line.equals(headerDelimiter)) break;
                 if(!haveReadHeader) {
                     headerLines.add(line);
                 }

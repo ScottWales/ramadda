@@ -177,6 +177,7 @@ public class CsvFile extends TextFile {
     public  List<RecordField>doMakeFields(String fieldString) {
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
         //        System.err.println ("fields:" + fieldString);
+        String defaultMissing = getProperty("missing",(String)null);
         String[] toks = fieldString.split(",");
         List<RecordField>fields = new ArrayList<RecordField>();
         int paramId = 1;
@@ -202,7 +203,7 @@ public class CsvFile extends TextFile {
             }
 
 
-            String missing = getProperty(properties, "missing",(String)null);
+            String missing = getProperty(properties, "missing",defaultMissing);
             if(missing!=null) {
                 field.setMissingValue(Double.parseDouble(missing));
             }

@@ -167,6 +167,9 @@ public class TextRecord extends PointRecord {
      * @param fields _more_
      */
     private void initFields(List<RecordField> fields) {
+        String timeField = (String) getRecordFile().getProperty("field.time");
+        String timeFormat = (String) getRecordFile().getProperty("field.time.format");
+
         String latField = (String) getRecordFile().getProperty("field.latitude");
         String lonField = (String) getRecordFile().getProperty("field.longitude");
         this.fields = fields;
@@ -179,8 +182,8 @@ public class TextRecord extends PointRecord {
         boolean gotDateFields = false;
         String[][] timeFields = {{"year","yyyy"},
                                  {"month"},
-                                 {"day"},
-                                 {"hour"},
+                                 {"day","dom"},
+                                 {"hour","hr"},
                                  {"minute"},
                                  {"second"},};
 
@@ -206,7 +209,7 @@ public class TextRecord extends PointRecord {
                 for(String timeFieldName: timeFields[timeIdx]) {
                     if(name.equals(timeFieldName)) {
                         gotDateFields = true;
-                        System.err.println("got time:" + name + " idx:" + i);
+                        //                        System.err.println("got time:" + name + " idx:" + i);
                         timeIndices[timeIdx] =  i+1;
                         gotOne = true;
                         break;
@@ -258,7 +261,11 @@ public class TextRecord extends PointRecord {
             }
         }
 
-        if(gotDateFields) getRecordFile().setDateIndices(timeIndices);
+        //timeField
+
+        if(gotDateFields) {
+            getRecordFile().setDateIndices(timeIndices);
+        }
 
         tokens      = new String[numFields];
 

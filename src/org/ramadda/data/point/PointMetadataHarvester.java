@@ -150,15 +150,17 @@ public class PointMetadataHarvester extends RecordVisitor {
                 }
                 double value = valueGetter.getValue(pointRecord, field, visitInfo);
                 
-                if(Double.isNaN(ranges[fieldCnt][0])) 
-                    ranges[fieldCnt][0] = value;
-                else 
-                    ranges[fieldCnt][0] = Math.min(value,ranges[fieldCnt][0]);
+                if(!Double.isNaN(value)) {
+                    if(Double.isNaN(ranges[fieldCnt][0])) 
+                        ranges[fieldCnt][0] = value;
+                    else 
+                        ranges[fieldCnt][0] = Math.min(value,ranges[fieldCnt][0]);
 
-                if(Double.isNaN(ranges[fieldCnt][1])) 
-                    ranges[fieldCnt][1] = value;
-                else
-                    ranges[fieldCnt][1] = Math.max(value,ranges[fieldCnt][1]);
+                    if(Double.isNaN(ranges[fieldCnt][1])) 
+                        ranges[fieldCnt][1] = value;
+                    else
+                        ranges[fieldCnt][1] = Math.max(value,ranges[fieldCnt][1]);
+                }
             }
             fieldCnt++;
         }
