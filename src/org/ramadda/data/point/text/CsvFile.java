@@ -232,19 +232,19 @@ public class CsvFile extends TextFile {
                     field.setDefaultDoubleValue(Double.parseDouble(value));
                 }
             }
-            if(getProperty(properties,"chartable","false").equals("true")) {
+            if(getProperty(field, properties,"chartable","false").equals("true")) {
                 field.setChartable(true);
             }
-            if(getProperty(properties,"skip","false").equals("true")) {
+            if(getProperty(field, properties,"skip","false").equals("true")) {
                 field.setSkip(true);
             }
-            if(getProperty(properties,"synthetic","false").equals("true")) {
+            if(getProperty(field, properties,"synthetic","false").equals("true")) {
                 field.setSynthetic(true);
             }
-            if(getProperty(properties,"searchable","false").equals("true")) {
+            if(getProperty(field, properties,"searchable","false").equals("true")) {
                 field.setSearchable(true);
             }
-            if(getProperty(properties,"value","false").equals("true")) {
+            if(getProperty(field, properties,"value","false").equals("true")) {
                 field.setSearchable(true);
             }                
             String label =  (String)properties.get("label");

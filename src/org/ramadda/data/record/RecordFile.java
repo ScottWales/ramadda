@@ -258,6 +258,13 @@ public abstract class RecordFile {
         return getProperty(properties, prop, dflt);
     }
 
+
+    public String getProperty(RecordField field, Hashtable properties, String prop,
+                              String dflt) {
+        return getProperty(properties, prop, dflt);
+    }
+
+
     /**
      * _more_
      *

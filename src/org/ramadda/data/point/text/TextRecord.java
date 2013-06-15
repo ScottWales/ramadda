@@ -410,7 +410,11 @@ public class TextRecord extends PointRecord {
                 }
                 if(field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
-                    objectValues[fieldCnt] = field.getDateFormat().parse(tok);
+                    try {
+                        objectValues[fieldCnt] = field.getDateFormat().parse(tok);
+                    } catch(java.text.ParseException ignore) {
+                        objectValues[fieldCnt] = field.getDateFormat().parse(tok+" UTC");
+                    }
                     continue;
                 }
                 if(tok == null)  {

@@ -115,6 +115,20 @@ public class IdvPointFile extends CsvFile  {
         return visitInfo;
     }
 
+    public String getProperty(RecordField field, Hashtable properties, String prop,
+                              String dflt) {
+        if(prop.equals("chartable") || prop.equals("searchable")) {
+            String fieldName = field.getName().toLowerCase();
+            if(!fieldName.equals("latitude")  &&
+               !fieldName.equals("longitude")  &&
+               !fieldName.equals("time")) {
+                return super.getProperty(field, properties, prop, "true");
+            }
+        }
+        return super.getProperty(field, properties, prop, dflt);
+    }
+
+
     public List<RecordField>doMakeFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
