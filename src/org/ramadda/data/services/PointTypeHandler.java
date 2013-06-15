@@ -52,6 +52,8 @@ import java.util.Properties;
  */
 public   class PointTypeHandler extends RecordTypeHandler {
 
+    public static final String ARG_PROPERTIES_FILE = "properties.file";
+
     /**
      * _more_
      *
@@ -122,6 +124,29 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
     }
 
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+        throws Exception {
+        //Check for an uploaded properties file
+        if (newEntry) {
+            String propertyFileName = request.getUploadedFile(ARG_PROPERTIES_FILE);
+            if(propertyFileName!=null) {
+                String contents = getStorageManager().readSystemResource(propertyFileName);
+                //Append the properties file contents
+                Object[] values = entry.getTypeHandler().getValues(entry);
+                if(values[1]!=null) {
+                    values[1] = "\n" + contents;
+                } else {
+                    values[1] =  contents;
+                }
+                System.err.println("value:" + values[1]);
+            }
+        }
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
+
+    }
+
+
     @Override
     public void doFinalEntryInitialization(Request request, Entry entry)  {
         try {
@@ -144,6 +169,25 @@ public   class PointTypeHandler extends RecordTypeHandler {
                                                           RecordEntry pointEntry) {
         return new PointMetadataHarvester();
     }
+
+
+    public void addColumnToEntryForm(Request request, Column column,
+                                     StringBuffer formBuffer, Entry entry,
+                                     Object[] values, Hashtable state)
+            throws Exception {
+        super.addColumnToEntryForm(request, column,
+                                   formBuffer, entry,
+                                   values,  state);
+
+
+
+        if(entry == null && column.getName().equals("properties")) {
+            formBuffer.append(HtmlUtils.formEntry(msgLabel("Or upload properties"), 
+                                                  HtmlUtils.fileInput(ARG_PROPERTIES_FILE,HtmlUtils.SIZE_70)));
+        }
+
+    }
+
 
 
 
@@ -263,6 +307,8 @@ public   class PointTypeHandler extends RecordTypeHandler {
                 values[1] =  contents;
             }
         }
+
+
         //        xxxxx
         entry.setValues(values);
         entry.setNorth(metadata.getMaxLatitude());
