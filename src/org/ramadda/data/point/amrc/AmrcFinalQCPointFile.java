@@ -1,8 +1,6 @@
-
 package org.ramadda.data.point.amrc;
 
 import java.text.SimpleDateFormat;
-
 
 
 import org.ramadda.data.record.*;
@@ -14,9 +12,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -60,26 +56,6 @@ public class AmrcFinalQCPointFile extends CsvFile  {
     }
 
 
-    /*
-     * Get the delimiter (space)
-     *      @return the column delimiter
-     */
-    public String getDelimiter() {
-        return " ";
-    }
-
-
-    /**
-     * There are  2 header lines
-     *
-     * @param visitInfo file visit info
-     *
-     * @return how many lines to skip
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 2;
-    }
-
     /**
      * This  gets called before the file is visited. It reads the header and pulls out metadata
      *
@@ -90,6 +66,8 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      * @throws IOException On badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        putProperty(PROP_DELIMITER, " ");
+        putProperty(PROP_SKIPLINES, "2");
         super.prepareToVisit(visitInfo);
         List<String>headerLines = getHeaderLines();
         if(headerLines.size()!=getSkipLines(visitInfo)) {
@@ -160,12 +138,6 @@ public class AmrcFinalQCPointFile extends CsvFile  {
         Date date = sdf.parse(dttm);
         record.setRecordTime(date.getTime());
         return true;
-    }
-
-
-    @Override
-    public SimpleDateFormat getDateFormat(Record record, int [] indices) {
-        return sdf;
     }
 
     public static void main(String[]args) {

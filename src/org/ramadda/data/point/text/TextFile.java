@@ -114,6 +114,7 @@ public abstract class TextFile extends PointFile {
     /** _more_          */
     public static final String PROP_SKIPLINES = "skiplines";
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
+    public static final String PROP_DELIMITER = "delimiter";
 
     /** _more_          */
     private List<String> headerLines = new ArrayList<String>();

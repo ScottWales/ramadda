@@ -2,16 +2,11 @@
 package org.ramadda.data.point.amrc;
 
 
-import java.text.SimpleDateFormat;
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.util.Station;
 
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -21,9 +16,6 @@ import java.util.List;
 /**
  */
 public class FreewavePointFile extends CsvFile  {
-
-    private static String header;
-
 
     /**
      * ctor
@@ -36,24 +28,6 @@ public class FreewavePointFile extends CsvFile  {
      */
     public FreewavePointFile(String filename) throws IOException {
         super(filename);
-    }
-
-
-
-    public String getDelimiter() {
-        return ",";
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 4;
     }
 
     public String getStationsPath() {
@@ -71,6 +45,9 @@ public class FreewavePointFile extends CsvFile  {
      * @throws IOException _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        putProperty(PROP_DELIMITER, ",");
+        putProperty(PROP_SKIPLINES, "4");
+
         super.prepareToVisit(visitInfo);
         List<String>headerLines = getHeaderLines();
         if(headerLines.size()!=getSkipLines(visitInfo)) {
@@ -112,16 +89,14 @@ OutCard = tablename in the program on the data logger where the data was collect
                 dataLoggerSerial,
             });
 
-        if(header==null) {
-            header= IOUtil.readContents("/org/ramadda/data/point/amrc/freewaveheader.txt", getClass()).replaceAll("\n", " ");
-        }
+
         String fields = makeFields(new String[]{
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
                 makeField(FIELD_LATITUDE, attrValue(station.getLatitude())),
                 makeField(FIELD_LONGITUDE, attrValue(station.getLongitude())),
                 makeField(FIELD_ELEVATION, attrValue(station.getElevation()))});
 
-        fields+=header;
+        fields+=getFieldsFileContents();
         putProperty(PROP_FIELDS, fields);
         return visitInfo;
     }

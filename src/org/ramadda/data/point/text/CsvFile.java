@@ -125,7 +125,7 @@ public class CsvFile extends TextFile {
 
     public String getDelimiter() {
         if(delimiter == null) {
-            delimiter = getProperty("delimiter", ",");
+            delimiter = getProperty(PROP_DELIMITER, ",");
             if (delimiter.length() == 0) {
                 delimiter = " ";
             } else if (delimiter.equals("\\t")) {
