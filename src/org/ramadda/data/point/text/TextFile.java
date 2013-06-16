@@ -273,8 +273,9 @@ public abstract class TextFile extends PointFile {
         String headerDelimiter = getHeaderDelimiter();
         if(headerDelimiter!=null) {
             while(true) {
-                String line = visitInfo.getRecordIO().readLine().trim();
+                String line = visitInfo.getRecordIO().readLine();
                 if(line == null) break;
+                line  = line.trim();
                 if(line.equals(headerDelimiter)) break;
                 if(!haveReadHeader) {
                     headerLines.add(line);

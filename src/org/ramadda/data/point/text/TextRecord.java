@@ -540,7 +540,7 @@ public class TextRecord extends PointRecord {
             if(badCnt>10 && goodCnt<=0) {
                 System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
 
-                throw new IllegalArgumentException("Could not tokenize line:" + line);
+                throw new IllegalArgumentException("Could not tokenize line:\n" + line+"\n");
                 //                return false;
             }
             return false;

@@ -513,6 +513,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
                 }
 
 
+                System.err.println ("checking:" + arg);
                 pointFile.visit(metadata);
                 long t2 = System.currentTimeMillis();
                 System.err.println("time:" + (t2 - t1) / 1000.0

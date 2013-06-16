@@ -24,8 +24,12 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
 
 import java.text.DateFormat;
+import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
@@ -293,6 +297,38 @@ public class Utils {
         //        testJulian(args);
     }
 
+
+
+    public static String[] findPatterns(String s, String regexp) throws Exception {
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(s);
+        if(!matcher.find()) {
+            return null;
+        } 
+        String[] results = new String[matcher.groupCount()];
+        for(int i=0;i<results.length;i++) {
+            results[i]   = matcher.group(i+1);
+        }
+        return results;
+    }
+
+    public static Date findDate(String source, String[] datePatterns, String[] dateFormats) throws Exception {
+        for(int dateFormatIdx=0;dateFormatIdx< datePatterns.length;dateFormatIdx++) {
+            String dttm = StringUtil.findPattern(source, datePatterns[dateFormatIdx]);
+            if(dttm != null)  {
+                dttm = dttm.replaceAll(" _ "," ");
+                dttm = dttm.replaceAll(" / ","/");
+                return makeDateFormat(dateFormats[dateFormatIdx]).parse(dttm);
+            }
+        }
+        return null;
+    }
+
+    public static SimpleDateFormat makeDateFormat(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf;
+    }
 
 
 
