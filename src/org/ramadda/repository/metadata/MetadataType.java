@@ -898,6 +898,7 @@ public class MetadataType extends MetadataTypeBase {
                     value = "null";
                 }
                 value = value.replaceAll("\n"," ");
+                value = value.replaceAll("\r"," ");
                 value = value.replaceAll("&","&amp;");
                 value = value.replaceAll("<","&lt;");
                 value = value.replaceAll(">","&gt;");
