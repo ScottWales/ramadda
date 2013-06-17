@@ -1,5 +1,6 @@
 <types>
 
+<!--
   <type name="above_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="ABoVE" >
      <property name="icon" value="/above/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
@@ -67,7 +68,7 @@
      <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"/>
      <column name="notes" type="string"  label="Notes" rows="5" size="5000" />
    </type>
-
+-->
 
 
 
