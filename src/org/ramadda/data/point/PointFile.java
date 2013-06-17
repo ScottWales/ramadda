@@ -541,7 +541,10 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     }
 
     public String getStationsPath() {
-        return null;
+        String path = getClass().getCanonicalName();
+        path = path.replaceAll("\\.","/");
+        path = "/" + path +".stations.txt";
+        return path;
     }
 
 

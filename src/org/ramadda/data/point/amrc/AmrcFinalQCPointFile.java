@@ -45,10 +45,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
     /**
      * ctor
      *
-     *
-     * @param filename _more_
-     * @throws Exception On badness
-     *
+     * @param filename file
      * @throws IOException On badness
      */
     public AmrcFinalQCPointFile(String filename) throws IOException {
@@ -60,9 +57,7 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      * This  gets called before the file is visited. It reads the header and pulls out metadata
      *
      * @param visitInfo visit info
-     *
      * @return possible new visitinfo
-     *
      * @throws IOException On badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
