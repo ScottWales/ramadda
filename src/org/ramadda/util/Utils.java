@@ -25,7 +25,9 @@ import ucar.unidata.util.DateUtil;
 
 import java.text.DateFormat;
 import java.util.TimeZone;
+import java.util.GregorianCalendar;
 import java.text.SimpleDateFormat;
+
 
 
 import java.util.regex.Matcher;
@@ -331,6 +333,18 @@ public class Utils {
     }
 
 
+    public static int getYear(Date date) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        return  cal.get(cal.YEAR);
+    }
+
+
+    public static int getMonth(Date date) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        return  cal.get(cal.MONTH);
+    }
 
 
 }

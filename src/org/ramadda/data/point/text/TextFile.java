@@ -83,16 +83,25 @@ public abstract class TextFile extends PointFile {
 
 
     public static final String FIELD_TEMPERATURE = "Temperature";
+    public static final String FIELD_POTENTIAL_TEMPERATURE = "Potential_Temperature";
     public static final String FIELD_PRESSURE = "Pressure";
     public static final String FIELD_WIND_SPEED = "Wind_Speed";
     public static final String FIELD_WIND_DIRECTION = "Wind_Direction";
     public static final String FIELD_RELATIVE_HUMIDITY = "Relative_Humidity";
     public static final String FIELD_DELTA_T = "Delta_T";
 
+    public static final String FIELD_CONDUCTIVITY = "Conductivity";
+
+    public static final String FIELD_SALINITY = "Salinity";
+    public static final String FIELD_SIGMA = "Sigma";
+
+
+
     public static final String UNIT_CELSIUS = "Celsius";
     public static final String UNIT_HPA = "hPa";
     public static final String UNIT_PERCENT = "%";
     public static final String UNIT_DEGREES = "degrees";
+    public static final String UNIT_METERS = "m";
     public static final String UNIT_M_S = "m/s";
     public static final String UNIT_ = "";
 
