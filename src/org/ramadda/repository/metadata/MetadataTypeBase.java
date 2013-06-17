@@ -316,6 +316,15 @@ public class MetadataTypeBase extends RepositoryManager {
             value = "";
         }
         //        value = XmlUtil.encodeString(value);
+        value = value.replaceAll("[\\r\\n]+"," ");
+        value = value.replaceAll("&","&amp;");
+        value = value.replaceAll("<","&lt;");
+        value = value.replaceAll(">","&gt;");
+        value = value.replaceAll("\"","&quot;");
+
+        //        System.out.println ("VALUE:" +value);
+
+
         String   label = element.getLabel(value);
         String   name  = element.getName();
         String[] keys  = {
