@@ -282,7 +282,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         OUTPUT_CHART =
             new OutputType("Chart ", base +".chart",
-                           OutputType.TYPE_OTHER, "", ICON_MAP, category);
+                           OutputType.TYPE_OTHER, "", "/icons/chart.png", category);
 
         OUTPUT_FORM =
             new OutputType("Subset and Products", base +".form",
