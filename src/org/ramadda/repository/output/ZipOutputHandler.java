@@ -409,17 +409,18 @@ public class ZipOutputHandler extends OutputHandler {
                             2000);
         }
         for (Entry entry : entries) {
-            if (getEntryManager().isSynthEntry(entry.getId())) {
-                continue;
-            }
+            //Not sure why I wasn't dealing with synthetic entries here
+            //if (getEntryManager().isSynthEntry(entry.getId())) {
+            //                continue;
+            //            }
             counter[0]++;
             //We are getting some weirdness in the database connections so lets
             //sleep a bit every 100 entries we see
             /*
               For now comment this out
             if (counter[0] % 100 == 0) {
-                System.err.println("zip count:" + counter[0] + " "
-                                   + new Date());
+//                System.err.println("zip count:" + counter[0] + " "
+//                                   + new Date());
                 Misc.sleep(10);
             }
             */
@@ -459,7 +460,6 @@ public class ZipOutputHandler extends OutputHandler {
             if ( !getAccessManager().canDownload(request, entry)) {
                 continue;
             }
-
 
 
             String path = entry.getResource().getPath();
