@@ -233,9 +233,20 @@ public class FitsOutputHandler extends OutputHandler {
      */
     public Result outputEntryImage(Request request, Entry entry)
             throws Exception {
-
-        Fits     fits     = new Fits(entry.getFile());
         int      hduIndex = request.get(ARG_FITS_HDU, -1);
+        File imageFile = outputImage(request, entry.getFile(),hduIndex);
+        if(imageFile == null) {
+            return new Result("Error: no image found");
+        }
+        return new Result("",
+                          getStorageManager().getFileInputStream(imageFile),
+                          getRepository().getMimeTypeFromSuffix("png"));
+    }
+
+
+    public File outputImage(Request request, File fitsFile, int hduIndex) throws Exception {
+        System.err.println("file:" + fitsFile +" " + fitsFile.exists());
+        Fits     fits     = new Fits(fitsFile);
         ImageHDU imageHdu = null;
         if (hduIndex >= 0) {
             BasicHDU hdu = fits.getHDU(hduIndex);
@@ -248,42 +259,38 @@ public class FitsOutputHandler extends OutputHandler {
                 BasicHDU hdu = fits.getHDU(hduIdx);
                 if (hdu instanceof ImageHDU) {
                     imageHdu = (ImageHDU) hdu;
-
                     break;
                 }
             }
         }
 
         if (imageHdu == null) {
-            return new Result("Error: no image found");
+            System.err.println ("no image hdu");
+            return null;
         }
 
-        Image image = makeImage(request, entry, imageHdu);
+        Image image = makeImage(request,  imageHdu);
         if (image == null) {
-            return new Result("No image");
+            System.err.println ("no image");
+            return null;
         }
         File imageFile = getStorageManager().getTmpFile(request,
                              "fitsimage.png");
         ImageUtils.writeImageToFile(image, imageFile);
-
-        return new Result("",
-                          getStorageManager().getFileInputStream(imageFile),
-                          getRepository().getMimeTypeFromSuffix("png"));
+        return imageFile;
     }
-
 
     /**
      * _more_
      *
      * @param request _more_
-     * @param entry _more_
      * @param hdu _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private Image makeImage(Request request, Entry entry, ImageHDU hdu)
+    private Image makeImage(Request request,  ImageHDU hdu)
             throws Exception {
         int[] axes = hdu.getAxes();
         //TODO: How to handle 1D data

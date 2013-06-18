@@ -129,6 +129,11 @@ public class FitsTypeHandler extends GenericTypeHandler {
         super(repository, node);
     }
 
+    public FitsOutputHandler getFitsOutputHandler() {
+        return (FitsOutputHandler) getRepository().getOutputHandler(FitsOutputHandler.class);
+    }
+
+
     /**
      * _more_
      *

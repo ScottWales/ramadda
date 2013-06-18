@@ -110,6 +110,7 @@ public class EclipseTypeHandler extends FitsTypeHandler {
     public void processHeader(Entry entry, Header header, Object[] values) {
         super.processHeader(entry, header, values);
 
+
         values[IDX_MAGNITUDE] =
             new Double(header.getDoubleValue(PROP_MAGNITUDE, 0));
         values[IDX_LOCATION] = header.getStringValue("LOCATION");
@@ -122,5 +123,26 @@ public class EclipseTypeHandler extends FitsTypeHandler {
             }
         }
     }
+
+
+
+    public void initializeNewEntry(Entry entry) throws Exception {
+        super.initializeNewEntry(entry);
+        File imageFile = getFitsOutputHandler().outputImage(getRepository().getTmpRequest(), entry.getFile(),-1);
+        if(imageFile!=null) {
+            String fileName = getStorageManager().copyToEntryDir(entry,
+                                                                 imageFile).getName();
+            Metadata thumbnailMetadata =
+                new Metadata(getRepository().getGUID(), entry.getId(),
+                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
+                             fileName, null, null, null, null);
+
+            System.err.println ("Adding metadata: " + entry);
+            entry.addMetadata(thumbnailMetadata);
+        } else {
+            System.err.println ("Failed to make image:" + entry.getFile());
+        }
+    }
+
 
 }
