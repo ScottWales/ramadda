@@ -552,8 +552,8 @@ public class HtmlUtils {
      */
     public static String open(String comp, String attrs) {
         if(attrs.length()==0)
-            return "<" + comp + ">\n";
-        return "<" + comp + " " + attrs + ">\n";
+            return "<" + comp + ">";
+        return "<" + comp + " " + attrs + ">";
     }
 
     /**
@@ -564,7 +564,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String close(String comp) {
-        return "</" + comp + ">\n";
+        return "</" + comp + ">";
     }
 
     /**
@@ -575,7 +575,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String tag(String comp) {
-        return "<" + comp + "/>\n";
+        return "<" + comp + "/>";
     }
 
 
@@ -588,7 +588,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String tag(String comp, String attrs) {
-        return "<" + comp + attrs + "/>\n";
+        return "<" + comp + attrs + "/>";
     }
 
 
