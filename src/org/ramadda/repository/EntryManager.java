@@ -4415,6 +4415,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
         String url       = XmlUtil.getAttribute(node, ATTR_URL, (String) null);
+        if(url == null) {
+            url = XmlUtil.getGrandChildText(node, ATTR_URL, (String) null);
+        }
         String localFile = XmlUtil.getAttribute(node, ATTR_LOCALFILE,
                                (String) null);
         String localFileToMove = XmlUtil.getAttribute(node,

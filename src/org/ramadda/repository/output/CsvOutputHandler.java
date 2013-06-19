@@ -169,9 +169,9 @@ public class CsvOutputHandler extends OutputHandler {
                 } 
                 colCnt++;
                 if(field.equals("name"))
-                    sb.append(entry.getName());
+                    sb.append(sanitize(entry.getName()));
                 else if(field.equals("fullname"))
-                    sb.append(entry.getFullName());
+                    sb.append(sanitize(entry.getFullName()));
                 else if(field.equals("type"))
                     sb.append(entry.getTypeHandler().getType());
                 else if(field.equals("id"))
@@ -222,7 +222,7 @@ public class CsvOutputHandler extends OutputHandler {
     public String sanitize(String s) {
         if(s==null) return "";
         s = s.replaceAll("\n"," ");
-        s = s.replaceAll(",","_COMMA_");
+        s = s.replaceAll(",","%2C");
         return s;
     }
 

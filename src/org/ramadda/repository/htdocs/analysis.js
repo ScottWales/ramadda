@@ -3,32 +3,54 @@
 function CollectionForm(formId) {
     this.formId = formId;
     this.analysisUrl = "${urlroot}/model/climate_collection/analysis?";
-    this.collectionChanged = function  (whichCollection, selectId) {
-        var selectedCollection = $('#' + selectId).val();
-        if(selectedCollection == "") {
-            for(var selectIdx=0;selectIdx<10;selectIdx++) {
-                var columnSelectId = this.formId +"_"  + whichCollection + "_select" + (selectIdx+1);
-                var columnSelect = $('#' + columnSelectId);
-                if(columnSelect.size()==0) {
-                    break;
-                }
-                columnSelect.html("<select><option value=''>--</option></select>");
-            }
+
+    this.collectionChanged = function  (collection, selectId) {
+        var collectionId = this.getCollectionSelect(collection).val();
+        var fieldIdx = 1;
+        if(!collectionId || collectionId == "") {
+            this.clearFields(collection, fieldIdx);
             return false;
         }
-        var url = this.analysisUrl +"json=test&collection=" + selectedCollection;
+
+        this.updateFields(collection,  collectionId, fieldIdx);
+        return false;
+
+    }
+
+    this.updateFields = function(collection, collectionId, fieldIdx) {
+        var url = this.analysisUrl +"json=test&collection=" + collectionId+"&field=" + fieldIdx;
         var collectionForm = this;
         $.getJSON(url, function(data) {
-                collectionForm.setValues(whichCollection, data);
+                collectionForm.setFieldValues(collection, data, fieldIdx);
             });
-        return false;
+
+    }
+    this.clearFields = function(collection, start) {
+        for(var idx=start;idx<10;idx++) {
+            this.getFieldSelect(collection, idx).html("<select><option value=''>--</option></select>");
+        }
     }
 
-    this.getSelectId = function(whichCollection, fieldIdx) {
-        var selectId = this.formId +"_"  + whichCollection + "_select" + fieldIdx;
+    this.getFieldSelect = function(collection, fieldIdx) {
+        return  $('#' + this.getFieldSelectId(collection, fieldIdx));
     }
 
-    this.setValues = function(whichCollection, data) {
+    this.getCollectionSelect = function(collection) {
+        return  $('#' + this.getCollectionSelectId(collection));
+    }
+
+
+    this.getFieldSelectId = function(collection, fieldIdx) {
+        return  this.getCollectionSelectId(collection) + "_select" + fieldIdx;
+    }
+
+    this.getCollectionSelectId = function(collection) {
+        return  this.formId +"_"  + collection;
+    }
+
+
+
+    this.setFieldValues = function(collection, data, fieldIdx) {
         var html = "<select>";
         for(var i=0;i<data.length;i++)  {
             var value = data[i];
@@ -39,15 +61,28 @@ function CollectionForm(formId) {
             html += "<option value=\'"  + data[i]+"\'>" + label +"</option>";
         }
         html+="</select>";
-        var columnSelectId = this.formId +"_"  + whichCollection + "_select1";
-        $('#' + columnSelectId).html(html);
+        this.getFieldSelect(collection, fieldIdx).html(html);
+        this.clearFields(collection, fieldIdx+1);
     }
 
-    this.fieldChanged = function (whichCollection, fieldId) {
-        var selectedField = $('#' + fieldId).val();
+    this.fieldChanged = function (collection, fieldIdx, num) {
+        //        var selectedField = $('#' + fieldId).val();
         alert("field:" + selectedField);
     }
 
+    var collectionForm = this;
+    for(var i=1;i<=2;i++) {
+        var collection  = 'collection' + i;
+        this.getCollectionSelect(collection).change(function(event) {
+            return collectionForm.collectionChanged('collection' + i);
+        });
+        for(var fieldIdx=1;fieldIdx<10;fieldIdx++) {
+            this.getFieldSelect(collection, fieldIdx).change(function(event) {
+                    return collectionForm.collectionChanged('collection' + i);
+                });
+
+        }
+    }
 
 
 }

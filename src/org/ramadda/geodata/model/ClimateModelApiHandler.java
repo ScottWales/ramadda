@@ -144,18 +144,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                   HtmlUtils.call("CollectionForm", HtmlUtils.squote(formId)));
 
         sb.append("<table><tr valign=top>\n");
-        for(String prefix: new String[]{ARG_COLLECTION1,
+        for(String collection: new String[]{ARG_COLLECTION1,
                                         ARG_COLLECTION2}) {
 
             sb.append(HtmlUtils.open("td", "width=50%"));
             sb.append(HtmlUtils.formTable());
-            String collectionSelectId = prefix;
+            String collectionSelectId = formId +"_" + collection;
             sb.append(HtmlUtils.formEntry(msgLabel("Collection"), 
                                           HtmlUtils.select(collectionSelectId, tfos, "", HtmlUtils.id(collectionSelectId))));
 
             sb.append("\n");
             js.append(JQ.change(JQ.id(collectionSelectId), "return " + HtmlUtils.call(formId +".collectionChanged" ,
-                                                                                      HtmlUtils.squote(prefix),
+                                                                                      HtmlUtils.squote(collection),
                                                                                       HtmlUtils.squote(collectionSelectId))));
             Entry entry  = collections.get(0);
             List<Column> columns = typeHandler.getGranuleColumns();
@@ -163,20 +163,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 Column column = columns.get(selectIdx);
                 String key = "values::" + entry.getId()+"::" +column.getName();
                 List values = new ArrayList();
-                String selectId = formId +"_"  + prefix + "_" + selectArg + (selectIdx+1);
+                values.add(new TwoFacedObject("--",""));
+                String selectId = collectionSelectId + "_" + selectArg + (selectIdx+1);
                 String selectedValue = request.getString(selectArg+selectIdx,"");
                 String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
                                                     " style=\"min-width:250px;\" " +
                                                     HtmlUtils.attr("id",selectId));
                 sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
                 sb.append("\n");
-                js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".fieldChanged" ,
-                                                                                      HtmlUtils.squote(prefix),
-                                                                                      HtmlUtils.squote(selectId))));
-
-                //                js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call("collectionChanged" ,
-                //                                                                                HtmlUtils.squote(formId),
-                //                                                                                HtmlUtils.squote(ormId),
             }
             sb.append(HtmlUtils.formTableClose());
             sb.append("</td>\n");
@@ -196,7 +190,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
     private Result processJsonRequest(Request request, String what) throws Exception {
         Entry entry = getEntryManager().getEntry(request,request.getString("collection",""));
-        int columnIdx = 1;
+        int columnIdx = request.get("field", 1);
         List<String> values = new ArrayList<String>(((CollectionTypeHandler)entry.getTypeHandler()).getUniqueColumnValues(entry, columnIdx));
         values.add(0,"");
         StringBuffer sb = new StringBuffer();
