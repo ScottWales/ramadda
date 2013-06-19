@@ -354,7 +354,7 @@ features
 
 
 
-<!--
+
   <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Project" >
      <property name="icon" value="/fieldproject/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
@@ -412,7 +412,6 @@ features
    </type>
 
 
--->
 
 
   <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
