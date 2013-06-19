@@ -275,6 +275,21 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public List<String> getUniqueColumnValues(Entry entry, int columnIdx) throws Exception {
+        String key = "values::" + entry.getId()+"::col" +columnIdx;
+        List<String> values = (List<String>)cache.get(key);
+        if(values == null) {
+            Column column = getGranuleTypeHandler().getColumns().get(columnIdx);
+            Statement stmt = getRepository().getDatabaseManager().select(
+                                                                         SqlUtil.distinct(column.getTableName()+"."+column.getName()),
+                                                                         column.getTableName(), Clause.eq(getCollectionIdColumn(), entry.getId()));
+            values = (List<String>) Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
+            cache.put(key,values);
+        }
+        return values;
+    }
+
+
     public void addJsonSelectorsToForm(Request request, Entry entry,
                                        StringBuffer sb, String formId,StringBuffer js)
         throws Exception {

@@ -464,18 +464,6 @@ public class HtmlUtils {
     /**
      * _more_
      *
-     * @param comp _more_
-     *
-     * @return _more_
-     */
-    public static String open(String comp) {
-        return "<" + comp + ">";
-    }
-
-
-    /**
-     * _more_
-     *
      * @param s1 _more_
      * @param s2 _more_
      *
@@ -540,6 +528,20 @@ public class HtmlUtils {
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param comp _more_
+     *
+     * @return _more_
+     */
+    public static String open(String comp) {
+        return "<" + comp + ">";
+    }
+
+
+
     /**
      * _more_
      *
@@ -549,7 +551,9 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String open(String comp, String attrs) {
-        return "<" + comp + attrs + ">";
+        if(attrs.length()==0)
+            return "<" + comp + ">\n";
+        return "<" + comp + " " + attrs + ">\n";
     }
 
     /**
@@ -560,7 +564,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String close(String comp) {
-        return "</" + comp + ">";
+        return "</" + comp + ">\n";
     }
 
     /**
@@ -571,7 +575,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String tag(String comp) {
-        return "<" + comp + "/>";
+        return "<" + comp + "/>\n";
     }
 
 
@@ -584,7 +588,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String tag(String comp, String attrs) {
-        return "<" + comp + attrs + "/>";
+        return "<" + comp + attrs + "/>\n";
     }
 
 
@@ -2995,18 +2999,16 @@ public class HtmlUtils {
 
 
 
-
-    /**
-     * _more_
-     *
-     * @param function _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
-    public static String call(String function, String args) {
-        return function + "(" + args + ");";
+    public static String call(String function, String ... args) {
+        StringBuffer sb = new StringBuffer();
+        for(int i=0;i<args.length;i++) {
+            if(i>0) sb.append(",");
+            sb.append(args[i]);
+        }
+        return function + "(" + sb + ");";
     }
+
+
 
     /**
      * _more_
@@ -3798,6 +3800,11 @@ public class HtmlUtils {
     }
 
 
+
+    public static String comment(String s) {
+        s = s.replaceAll("\n", " ");
+        return "\n<!-- " + s +" -->\n";
+    }
 
     /**
      * This takes the  given String and tries to convert it to a color.
