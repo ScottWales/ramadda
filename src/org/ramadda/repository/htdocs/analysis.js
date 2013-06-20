@@ -19,7 +19,7 @@ function CollectionForm(formId) {
         this.getCollectionSelect(collection).change(function(event) {
                 return collectionForm.collectionChanged(collection);
             });
-        for(var fieldIdx=1;fieldIdx<10;fieldIdx++) {
+        for(var fieldIdx=0;fieldIdx<10;fieldIdx++) {
             this.initField(collection, fieldIdx);
         }
     }
@@ -32,9 +32,10 @@ function CollectionForm(formId) {
     }
 
 
+    //Gets called when the collection select widget is changed
     this.collectionChanged = function  (collection, selectId) {
         var collectionId = this.getCollectionSelect(collection).val();
-        var fieldIdx = 1;
+        var fieldIdx = 0;
         if(!collectionId || collectionId == "") {
             this.clearFields(collection, fieldIdx);
             return false;
@@ -45,43 +46,53 @@ function CollectionForm(formId) {
 
     }
 
+
+    //Get the list of metadata values for the given field and collection
     this.updateFields = function(collection, collectionId, fieldIdx) {
         var url = this.analysisUrl +"json=test&collection=" + collectionId+"&field=" + fieldIdx;
+        //Assemble the other field values up to the currently selected field
+        for(var i=0;i<fieldIdx;i++) {
+            var val = this.getFieldSelect(collection, i).val();
+            if(val!="") {
+                url = url +"&field" + i + "=" + val;
+            }
+        }
         var collectionForm = this;
         $.getJSON(url, function(data) {
                 collectionForm.setFieldValues(collection, data, fieldIdx);
             });
 
     }
-    this.clearFields = function(collection, start) {
-        for(var idx=start;idx<10;idx++) {
+
+    //Clear the field selects starting at start idx
+    this.clearFields = function(collection, startIdx) {
+        for(var idx=startIdx;idx<10;idx++) {
             this.getFieldSelect(collection, idx).html("<select><option value=''>--</option></select>");
         }
     }
 
+    //Get the select object for the given field
     this.getFieldSelect = function(collection, fieldIdx) {
         return  $('#' + this.getFieldSelectId(collection, fieldIdx));
     }
 
-    this.getCollectionId = function(collection) {
+    //Get the selected entry id
+    this.getSelectedCollectionId = function(collection) {
         return this.getCollectionSelect(collection).val();
     }
 
-    this.getField = function(collection, fieldIdx) {
-        return this.getFieldSelect(collection, fieldIdx).val();
-    }
-
-
-
+    //Get the collection selector 
     this.getCollectionSelect = function(collection) {
         return  $('#' + this.getCollectionSelectId(collection));
     }
 
-
+    //This matches up with ClimateModelApiHandler.getFieldSelectId
     this.getFieldSelectId = function(collection, fieldIdx) {
-        return  this.getCollectionSelectId(collection) + "_select" + fieldIdx;
+        return  this.getCollectionSelectId(collection) + "_field" + fieldIdx;
     }
 
+    //dom id of the collection select widget
+    //This matches up with ClimateModelApiHandler.getCollectionSelectId
     this.getCollectionSelectId = function(collection) {
         return  this.formId +"_"  + collection;
     }
@@ -99,6 +110,9 @@ function CollectionForm(formId) {
             html += "<option value=\'"  + data[i]+"\'>" + label +"</option>";
         }
         html+="</select>";
+        //        alert("getfield:" +this.getFieldSelect(collection, fieldIdx).size());
+        //        alert(this.getFieldSelectId(collection, fieldIdx));
+
         this.getFieldSelect(collection, fieldIdx).html(html);
         this.clearFields(collection, fieldIdx+1);
     }
@@ -109,7 +123,7 @@ function CollectionForm(formId) {
             this.clearFields(collection, fieldIdx+1);
             return;
         }
-        this.updateFields(collection, this.getCollectionId(collection),  fieldIdx+1);
+        this.updateFields(collection, this.getSelectedCollectionId(collection),  fieldIdx+1);
     }
 
     this.init();

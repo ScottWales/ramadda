@@ -275,14 +275,17 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    public List<String> getUniqueColumnValues(Entry entry, int columnIdx) throws Exception {
-        String key = "values::" + entry.getId()+"::col" +columnIdx;
+    public List<String> getUniqueColumnValues(Entry entry, int fieldIdx, List<Clause> clauses) throws Exception {
+        String key = "values::" + entry.getId()+"::col" +fieldIdx;
         List<String> values = (List<String>)cache.get(key);
         if(values == null) {
-            Column column = getGranuleTypeHandler().getColumns().get(columnIdx);
+            //Add 1 because we have the collection id in the first column
+            Column column = getGranuleTypeHandler().getColumns().get(fieldIdx+1);
+            clauses   = new ArrayList<Clause>(clauses);
+            clauses.add(Clause.eq(getCollectionIdColumn(), entry.getId()));
             Statement stmt = getRepository().getDatabaseManager().select(
                                                                          SqlUtil.distinct(column.getTableName()+"."+column.getName()),
-                                                                         column.getTableName(), Clause.eq(getCollectionIdColumn(), entry.getId()));
+                                                                         column.getTableName(), Clause.and(clauses));
             values = (List<String>) Misc.toList(SqlUtil.readString(getRepository().getDatabaseManager().getIterator(stmt), 1));
             cache.put(key,values);
         }

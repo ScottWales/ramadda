@@ -150,25 +150,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             sb.append(HtmlUtils.open("td", "width=50%"));
             sb.append(HtmlUtils.formTable());
             String collectionSelectId = formId +"_" + collection;
-            sb.append(HtmlUtils.formEntry(msgLabel("Collection"), 
-                                          HtmlUtils.select(collectionSelectId, tfos, "", HtmlUtils.id(collectionSelectId))));
+            String collectionWidget = HtmlUtils.select(getCollectionSelectArg(collection), tfos, "", 
+                                                       HtmlUtils.id(getCollectionSelectId(formId, collection)));
 
-            sb.append("\n");
-            js.append(JQ.change(JQ.id(collectionSelectId), "return " + HtmlUtils.call(formId +".collectionChanged" ,
-                                                                                      HtmlUtils.squote(collection),
-                                                                                      HtmlUtils.squote(collectionSelectId))));
+            sb.append(HtmlUtils.formEntry(msgLabel("Collection"), collectionWidget));
+                                          
             Entry entry  = collections.get(0);
             List<Column> columns = typeHandler.getGranuleColumns();
-            for(int selectIdx=0;selectIdx<columns.size();selectIdx++) {
-                Column column = columns.get(selectIdx);
+            for(int fieldIdx=0;fieldIdx<columns.size();fieldIdx++) {
+                Column column = columns.get(fieldIdx);
                 String key = "values::" + entry.getId()+"::" +column.getName();
                 List values = new ArrayList();
                 values.add(new TwoFacedObject("--",""));
-                String selectId = collectionSelectId + "_" + selectArg + (selectIdx+1);
-                String selectedValue = request.getString(selectArg+selectIdx,"");
-                String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
+                String arg = getFieldSelectArg(collection, fieldIdx);
+                String selectedValue = request.getString(arg,"");
+                String selectBox = HtmlUtils.select(arg,
+                                                    values,selectedValue,
                                                     " style=\"min-width:250px;\" " +
-                                                    HtmlUtils.attr("id",selectId));
+                                                    HtmlUtils.attr("id",getFieldSelectId(formId, collection, fieldIdx)));
                 sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
                 sb.append("\n");
             }
@@ -188,10 +187,45 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         return new Result("Climate Model Analysis", sb);
     }
 
+    private String getFieldSelectArg(String collection, int fieldIdx)  {
+        return collection +"_field" + fieldIdx;
+        
+    }
+
+    private String getCollectionSelectArg(String collection) {
+        return collection;
+    }
+
+
+    private String getFieldSelectId(String formId, String collection, int fieldIdx)  {
+        return getCollectionSelectId(formId, collection) +"_field" + fieldIdx;
+    }
+
+    private String getCollectionSelectId(String formId, String collection)  {
+        return formId +"_"  + collection;
+    }
+
+
+
     private Result processJsonRequest(Request request, String what) throws Exception {
         Entry entry = getEntryManager().getEntry(request,request.getString("collection",""));
         int columnIdx = request.get("field", 1);
-        List<String> values = new ArrayList<String>(((CollectionTypeHandler)entry.getTypeHandler()).getUniqueColumnValues(entry, columnIdx));
+        CollectionTypeHandler typeHandler = getTypeHandler();
+        List<Clause> clauses = new ArrayList<Clause>();
+        List<Column> columns = typeHandler.getGranuleColumns();
+        for(int fieldIdx=0;fieldIdx<columns.size();fieldIdx++) {
+            String arg = "field" + fieldIdx;
+            String v = request.getString(arg,"");
+            if(v.length()>0)  {
+                System.err.println("v:" +  v);
+                String column=  columns.get(fieldIdx).getName();
+                clauses.add(Clause.eq(column, v));
+            }
+        }
+
+        System.err.println("Clauses:" + clauses);
+        List<String> values = new ArrayList<String>(((CollectionTypeHandler)entry.getTypeHandler()).getUniqueColumnValues(entry, columnIdx,clauses));
+        System.err.println("Values:" + values);
         values.add(0,"");
         StringBuffer sb = new StringBuffer();
         sb.append(Json.list(values, true));
@@ -205,7 +239,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     private String getUrlPath() {
         //Use the collection type in the path. This is defined in the api.xml file
-        return getRepository().getUrlBase()+"/model/" + collectionType +"/analysis";
+        return getRepository().getUrlBase()+"/model/analysis";
     }
 
 
