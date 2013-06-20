@@ -203,7 +203,7 @@ public class CdmManager extends RepositoryManager {
         File outputFile = new File(IOUtil.joinDir(nj22Dir.getDir(),
                               "threddsConfig.xml"));
         InputStream  is = new ByteArrayInputStream(tdsConfig.getBytes());
-        OutputStream os = getStorageManager().getFileOutputStream(outputFile);
+        OutputStream os = getStorageManager().getUncheckedFileOutputStream(outputFile);
         IOUtil.writeTo(is, os);
         ThreddsConfig.init(outputFile.toString());
 

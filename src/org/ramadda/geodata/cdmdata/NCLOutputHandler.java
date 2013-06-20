@@ -168,7 +168,7 @@ public class NCLOutputHandler extends OutputHandler {
                                       SCRIPTS[i]));
                 InputStream is = new ByteArrayInputStream(nclScript.getBytes());
                 OutputStream os =
-                    getStorageManager().getFileOutputStream(outputFile);
+                    getStorageManager().getUncheckedFileOutputStream(outputFile);
                 IOUtil.writeTo(is, os);
             }
         }
