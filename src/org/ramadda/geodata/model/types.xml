@@ -2,7 +2,8 @@
 <types>
 
 
-  <type name="climate_collection"  description="Climate Data Collection" handler="org.ramadda.geodata.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
+
+  <type name="climate_collection"   description="Climate Data Collection" handler="org.ramadda.geodata.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
      <property name="icon" value="/model/application_cascade.png"/>
      <property name="form.area.show" value="true"/>
      <property name="form.resource.show" value="false"/>
