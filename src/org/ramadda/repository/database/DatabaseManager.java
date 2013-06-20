@@ -2322,6 +2322,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         Connection connection = getConnection(msg);
         try {
             numberOfSelects.incr();
+            //            System.err.println ("clause:" + clause +" tables:" + tables);
             Statement statement = SqlUtil.select(connection, what, tables,
                                       clause, extra, max, TIMEOUT);
 
@@ -2578,7 +2579,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                       + " extends Tables {\n");
 
             pw.append(sp2 + "public static final String NAME = \""
-                      + tableName + "\";\n");
+                      + tableName.toLowerCase() + "\";\n");
             pw.append("\n");
             pw.append(sp2 + "public String getName() {return NAME;}\n");
             pw.append(sp2 + "public String getColumns() {return COLUMNS;}\n");
@@ -2588,7 +2589,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             List    colVars  = new ArrayList();
             HashSet seen     = new HashSet();
             while (columns.next()) {
-                String colName = columns.getString("COLUMN_NAME");
+                String colName = columns.getString("COLUMN_NAME").toLowerCase();
                 String colSize = columns.getString("COLUMN_SIZE");
                 String COLNAME = colName.toUpperCase();
                 if (seen.contains(COLNAME)) {
@@ -2652,5 +2653,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             SqlUtil.readString(getIterator(stmt), 1);
         return (List<String>)Misc.toList(values);
     }
+
+
+
+
 
 }
