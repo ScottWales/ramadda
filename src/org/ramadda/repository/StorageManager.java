@@ -1238,7 +1238,7 @@ public class StorageManager extends RepositoryManager {
      * @throws Exception  problem with copy
      */
     private void copyFile(File oldFile, File newFile) throws Exception {
-        checkLocalFile(oldFile);
+        checkReadFile(oldFile);
         checkWriteFile(newFile);
         IOUtil.copyFile(oldFile, newFile);
     }
