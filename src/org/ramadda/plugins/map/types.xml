@@ -10,6 +10,7 @@
      <property name="icon" value="/icons/map.png"/>
      <wiki><![CDATA[
 {{map width="600" height="450" details="true"}}
+{{information}}
 ]]>
 </wiki>
   </type>
@@ -17,11 +18,21 @@
 
   <type name="geo_gpx"  description="GPX GPS File"  category="GIS Data" handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
      <property name="icon" value="/map/tracklog.gif"/>
+<wiki>
+<![CDATA[
+{{map width="800" height="450"}}
+{{information}}
+]]>
+</wiki>
    </type>
 
 
   <type name="geo_shapefile"  description="Shapefile"  category="GIS Data" handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)">
      <property name="icon" value="/icons/map.png"/>
+<wiki>
+{{map width="800" height="450"}}
+{{information}}
+</wiki>
    </type>
 
 
