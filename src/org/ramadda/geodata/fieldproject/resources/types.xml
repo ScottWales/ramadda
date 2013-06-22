@@ -46,8 +46,8 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
-     <property name="search.label" value="Field Projects"/>
-     <property name="search.tabs" value="earth,map,list,timeline"/>
+     <property name="search.label" value="Search for Projects"/>
+     <property name="search.tabs" value="list,timeline"/>
      <property name="search.metadatatypes" value="project_person"/>
 
 
