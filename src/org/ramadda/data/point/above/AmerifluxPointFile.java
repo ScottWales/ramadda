@@ -24,11 +24,7 @@ public class AmerifluxPointFile extends SingleSiteTextFile  {
 
     private SimpleDateFormat sdf = makeDateFormat("yyyy-D HHmm");
 
-    /**
-     * _more_
-     */
-    public AmerifluxPointFile() {
-    }
+
 
     /**
      * ctor
@@ -43,37 +39,9 @@ public class AmerifluxPointFile extends SingleSiteTextFile  {
         super(filename);
     }
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
-    public AmerifluxPointFile(String filename,
-                             Hashtable properties)
-            throws IOException {
-        super(filename, properties);
-    }
 
 
-    public String getDelimiter() {
-        return ",";
-    }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
-@Override
-    public int getSkipLines(VisitInfo visitInfo) {
-        return 20;
-    }
 
     /*
 Sitename: UCI 1930 Canada
@@ -108,6 +76,8 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
      * @throws IOException on badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+        putProperty(PROP_DELIMITER, ",");
+        putProperty(PROP_SKIPLINES, "20");
         super.prepareToVisit(visitInfo);
         List<String>header = getHeaderLines();
 
@@ -181,11 +151,9 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         int offset = 5;
         TextRecord textRecord = (TextRecord) record;
-
         int  year = (int)textRecord.getValue(offset+1);
         int doy = (int) textRecord.getValue(offset+4);
         String hhmm = ""+(int) textRecord.getValue(offset+5);
-        //        sdf = makeDateFormat("yyyy-D");
         hhmm = StringUtil.padLeft(hhmm, 4,"0");
         String dttm = year + "-" +  doy + " " + hhmm;
         Date date = sdf.parse(dttm);
