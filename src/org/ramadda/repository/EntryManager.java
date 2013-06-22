@@ -7915,6 +7915,11 @@ public class EntryManager extends RepositoryManager {
 
             String name =  toks.get(i);
             Entry childEntry=  findEntryWithName(request, currentEntry, name);
+            //Try to decode any slashes
+            if(childEntry == null) {
+                name = name.replaceAll("%2F","/");
+                childEntry=  findEntryWithName(request, currentEntry, name);
+            }
             if(childEntry==null) {
                 return null;
             }
