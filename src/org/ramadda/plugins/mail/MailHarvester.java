@@ -433,7 +433,7 @@ public class MailHarvester extends Harvester {
                 }
                 for(Entry newEntry: newEntries) {
                     String fullEntryUrl = 
-                        HtmlUtils.url(getEntryManager().getFullEntryShowUrl(null),
+                        HtmlUtils.url(getEntryManager().getFullEntryShowUrl(getRequest()),
                                       ARG_ENTRYID, newEntry.getId());
 
                     String entryUrl = 
