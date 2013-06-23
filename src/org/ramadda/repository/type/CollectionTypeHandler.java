@@ -280,7 +280,11 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> values = (List<String>)cache.get(key);
         if(values == null) {
             //Add 1 because we have the collection id in the first column
-            Column column = getGranuleTypeHandler().getColumns().get(fieldIdx+1);
+            List<Column> columns = getGranuleTypeHandler().getColumns();
+            if(fieldIdx+1>=columns.size()) {
+                return values;
+            }
+            Column column = columns.get(fieldIdx+1);
             clauses   = new ArrayList<Clause>(clauses);
             clauses.add(Clause.eq(getCollectionIdColumn(), entry.getId()));
             Statement stmt = getRepository().getDatabaseManager().select(
