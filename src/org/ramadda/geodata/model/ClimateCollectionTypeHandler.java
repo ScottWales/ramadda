@@ -148,7 +148,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         String searchButton = JQ.button("Search", formId + "_search", js,
                                         HtmlUtils.call(formId + ".search",
                                             "event"));
-        selectorSB.append(HtmlUtils.formEntry("", searchButton));
+        String downloadButton = JQ.button("Download Data", formId+"_do_download",js, 
+                                        HtmlUtils.call(formId +".download","event"));
+        selectorSB.append(HtmlUtils.formEntry("", searchButton + HtmlUtils.space(4) + downloadButton));
         selectorSB.append(HtmlUtils.formTableClose());
 
 
@@ -163,7 +165,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                 HtmlUtils.cssClass("entryoutput")
                                 + HtmlUtils.id(formId + "_output_list")));
         sb.append("</td></tr>");
-        sb.append("<tr valign=top><td>");
+        sb.append("</table>");
     }
 
     /**
@@ -181,12 +183,17 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                      StringBuffer sb, StringBuffer js,
                                      String formId)
             throws Exception {
+        // for now, don't add in the process widgets - just do a search/download.
+        if (true) return;
         String processButtons =
         //JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event"));
+                /*
         JQ.button(
             "Download Data", formId + "_do_download", js,
             HtmlUtils.call(formId + ".download", "event")) + " "
-                + JQ.button(
+                + 
+                */
+            JQ.button(
                     "Plot Map", formId + "_do_image", js,
                     HtmlUtils.call(formId + ".makeImage", "event")) + " "
                         + JQ.button(
@@ -226,6 +233,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
             processTitles.add(process.getDataProcessLabel());
         }
 
+        sb.append(
+            "<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
+        sb.append("<td width=30%>");
         sb.append(header(msg("Process Selected Data")));
         HtmlUtils.makeAccordian(sb, processTitles, processTabs);
         sb.append(processButtons);
