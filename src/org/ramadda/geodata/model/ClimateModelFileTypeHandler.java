@@ -108,18 +108,16 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
 
         /*
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
-     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" />
-     <column name="experiment" type="enumerationplus"  label="Experiment" />
-     <column name="ensemble" type="string"  label="Ensemble Member"/>
-     <column name="frequency" type="string"  label="Frequency"  showinhtml="true" />
-     <column name="variable" type="enumerationplus"  label="Variable"  />
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
+     <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble"/>
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
         */
 
         int idx = 1;
         values[idx++] = model;
         values[idx++] = experiment;
         values[idx++] = member;
-        values[idx++] = frequency;
         values[idx++] = var;
 
     }
