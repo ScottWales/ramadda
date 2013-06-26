@@ -1,7 +1,7 @@
 
 
 function CollectionForm(formId) {
-    //Look at the bottom of this ctor to
+    //Look at the bottom of this ctor for the init call
     this.formId = formId;
     this.analysisUrl = "${urlroot}/model/compare?";
 
@@ -22,6 +22,11 @@ function CollectionForm(formId) {
         for(var fieldIdx=0;fieldIdx<10;fieldIdx++) {
             this.initField(collection, fieldIdx);
         }
+        var collectionId  =  this.getCollectionSelect(collection).val();
+        //If they had one selected 
+        if(collectionId!="") {
+            this.updateFields(collection,  collectionId, 0, true);
+        }
     }
 
     this.initField = function(collection, fieldIdx) {
@@ -40,15 +45,14 @@ function CollectionForm(formId) {
             this.clearFields(collection, fieldIdx);
             return false;
         }
-
-        this.updateFields(collection,  collectionId, fieldIdx);
+        this.updateFields(collection,  collectionId, fieldIdx, false);
         return false;
 
     }
 
 
     //Get the list of metadata values for the given field and collection
-    this.updateFields = function(collection, collectionId, fieldIdx) {
+    this.updateFields = function(collection, collectionId, fieldIdx, fromInit) {
         var url = this.analysisUrl +"json=test&collection=" + collectionId+"&field=" + fieldIdx;
         //Assemble the other field values up to the currently selected field
         for(var i=0;i<fieldIdx;i++) {
@@ -59,7 +63,15 @@ function CollectionForm(formId) {
         }
         var collectionForm = this;
         $.getJSON(url, function(data) {
-                collectionForm.setFieldValues(collection, data, fieldIdx);
+                var hadValue = collectionForm.setFieldValues(collection, data, fieldIdx);
+                if(!fromInit) {
+                    collectionForm.clearFields(collection, fieldIdx+1);
+                } else if(collectionForm.hasField(collection, fieldIdx+1)) {
+                    //If we're initializing then repopulate the selects
+                    if(hadValue) {
+                        collectionForm.updateFields(collection, collectionId, fieldIdx+1, true);
+                    }
+                }
             });
 
     }
@@ -75,6 +87,12 @@ function CollectionForm(formId) {
     this.getFieldSelect = function(collection, fieldIdx) {
         return  $('#' + this.getFieldSelectId(collection, fieldIdx));
     }
+
+
+    this.hasField = function(collection, fieldIdx) {
+        return  this.getFieldSelect(collection, fieldIdx).size()>0;
+    }
+
 
     //Get the selected entry id
     this.getSelectedCollectionId = function(collection) {
@@ -100,6 +118,7 @@ function CollectionForm(formId) {
 
 
     this.setFieldValues = function(collection, data, fieldIdx) {
+        var currentValue =    this.getFieldSelect(collection, fieldIdx).val();
         var html = "<select>";
         for(var i=0;i<data.length;i++)  {
             var value = data[i];
@@ -107,14 +126,15 @@ function CollectionForm(formId) {
             if(label == "") {
                 label =  "--";
             }
-            html += "<option value=\'"  + data[i]+"\'>" + label +"</option>";
+            var extra = "";
+            if(currentValue == value) {
+                extra = " selected ";
+            }
+            html += "<option value=\'"  + data[i]+"\'   " + extra +" >" + label +"</option>";
         }
         html+="</select>";
-        //        alert("getfield:" +this.getFieldSelect(collection, fieldIdx).size());
-        //        alert(this.getFieldSelectId(collection, fieldIdx));
-
         this.getFieldSelect(collection, fieldIdx).html(html);
-        this.clearFields(collection, fieldIdx+1);
+        return currentValue !="";
     }
 
     this.fieldChanged = function (collection, fieldIdx) {

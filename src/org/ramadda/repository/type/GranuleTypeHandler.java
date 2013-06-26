@@ -91,8 +91,11 @@ public class GranuleTypeHandler extends GenericTypeHandler {
                                       Column column, StringBuffer tmpSb,
                                       Object[] values)
             throws Exception {
+        Entry collection = null;
         if (column.isEnumeration() && values != null && values[0] != null) { // get enum values from Collection
-            Entry collection = getRepository().getEntryManager().getEntry(request, (String) values[0]);
+            collection = getRepository().getEntryManager().getEntry(request, (String) values[0]);
+        } 
+        if(collection !=null) {
             CollectionTypeHandler th = (CollectionTypeHandler) collection.getTypeHandler();
             Hashtable enumMap = th.getColumnEnumTable(column);
             String s = column.toString(values, column.getOffset());

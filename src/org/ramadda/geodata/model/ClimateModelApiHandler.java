@@ -31,6 +31,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.CollectionSelection;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.geodata.cdmdata.NCOOutputHandler;
@@ -106,6 +107,51 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
 
+
+    public Result doCompare(Request request, List<CollectionSelection> operands) throws Exception {
+        boolean didProcess = false;
+        String selectedProcess = request.getString(ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
+                                                   (String) null);
+        List<File>  files   = new ArrayList<File>();
+        if (selectedProcess != null) {
+            ClimateCollectionTypeHandler typeHandler = getTypeHandler();
+            List<DataProcess> processes = typeHandler.getDataProcesses();
+            for (DataProcess process : processes) {
+                if (process.getDataProcessId().equals(selectedProcess)) {
+                    System.err.println("MODEL: applying process: "
+                                       + process.getDataProcessLabel());
+                    didProcess = true;
+                    /*
+                    for (Entry granule : entries) {
+                        File outFile = process.processRequest(request,
+                                           granule);
+                        files.add(outFile);
+                    }
+                    */
+                }
+            }
+        }
+
+        /*
+        if ( !didProcess) {
+            for (Entry granule : entries) {
+                if (granule.isFile()) {
+                    files.add(granule.getFile());
+                }
+            }
+        }
+        */
+
+
+
+
+
+        return new Result("Model Compare Results", new StringBuffer("TODO"));
+
+    }
+
+
+
     /**
      * handle the request
      *
@@ -122,35 +168,49 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,StringBuffer>();
-        Entry collectionEntry = null;
+        List<CollectionSelection> operands = new ArrayList<CollectionSelection>();
 
-        if(request.exists(ARG_ACTION_SEARCH)) {
+
+
+        if(request.exists(ARG_ACTION_SEARCH) || request.exists(ARG_ACTION_COMPARE)) {
             for(String collection: new String[]{ARG_COLLECTION1,
                                                 ARG_COLLECTION2}) {
 
                 StringBuffer tmp = new StringBuffer();
                 extra.put(collection, tmp);
-                Entry entry = getEntryManager().getEntry(request,request.getString(getCollectionSelectArg(collection),""));
-                if(entry == null) {
+                Entry collectionEntry = getEntryManager().getEntry(request,request.getString(getCollectionSelectArg(collection),""));
+                if(collectionEntry == null) {
                     tmp.append("No collection");
                     continue;
                 }
-                List<Entry> entries = findEntries(request, collection, entry);
-                //                tmp.append("Collection: " + entry.getName());
-                tmp.append(getEntryManager().getEntryLink(request, entry));
+                List<Entry> entries = findEntries(request, collection, collectionEntry);
+                operands.add(new CollectionSelection(collectionEntry, entries));
+                tmp.append(getEntryManager().getEntryLink(request, collectionEntry));
                 tmp.append("<ul>");
                 for(Entry granule: entries) {
                     tmp.append("<li>");                
                     tmp.append(getEntryManager().getEntryLink(request, granule));
                 }
                 tmp.append("</ul>");
-                if(collectionEntry==null) {
-                    collectionEntry = entry;
-                }
-
-
             }
         }
+
+
+        boolean hasOperands = false;
+        if(operands.size()==2 ) {
+            hasOperands =  operands.get(0).getGranules().size()>0 &&
+                operands.get(1).getGranules().size()>0;
+        }
+
+
+        StringBuffer sb = new StringBuffer();
+        if(request.exists(ARG_ACTION_COMPARE)) {
+            if(hasOperands) {
+                return doCompare(request, operands);
+            } else {
+                sb.append(getPageHandler().showDialogWarning("No fields selected"));
+            }
+        }                
 
 
         ClimateCollectionTypeHandler typeHandler = getTypeHandler();
@@ -158,7 +218,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if(collections.size()==0) {
             return new Result("Climate Model Analysis", new StringBuffer(getPageHandler().showDialogWarning(msg("No climate collections found"))));
         }
-        StringBuffer sb = new StringBuffer();
 
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(HtmlUtils.comment("collection form"));
@@ -223,7 +282,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
 
-        if(collectionEntry==null) {
+
+
+
+        if(!hasOperands) {
             sb.append(HtmlUtils.submit("Search", ARG_ACTION_SEARCH, HtmlUtils.id(formId+".submit")));
         } else {
             List<String> processTabs   = new ArrayList<String>();
@@ -251,7 +313,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     tmpSB.append(msg("Select"));
                     tmpSB.append(HtmlUtils.br());
                 }
-                process.addToForm(request, collectionEntry, tmpSB);
+                //Pass in one of the  granules
+                process.addToForm(request, operands.get(0).getGranules().get(0), tmpSB);
                 processTabs.add(
                                 HtmlUtils.div(
                                               tmpSB.toString(), HtmlUtils.style("min-height:200px;")));

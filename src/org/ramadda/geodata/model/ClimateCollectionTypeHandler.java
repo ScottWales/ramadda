@@ -298,11 +298,9 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
 
         //Get the entries
         List<Entry> entries = processSearch(request, entry, true);
+
         List<File>  files   = new ArrayList<File>();
-
         //Process each one in turn
-
-
         boolean didProcess = false;
         String selectedProcess = request.getString(ARG_DATA_PROCESS_ID,
                                      (String) null);
