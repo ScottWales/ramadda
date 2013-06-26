@@ -196,10 +196,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
-        //Check to see if we have 2 operands 
+        //Check to see if we at least 1 operand 
         boolean hasOperands = false;
-        if(operands.size()==2 ) {
-            hasOperands =  operands.get(0).getGranules().size()>0 &&
+        if(operands.size()>=1 ) {
+            hasOperands =  operands.get(0).getGranules().size()>0 ||
                 operands.get(1).getGranules().size()>0;
         }
 
@@ -239,13 +239,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         StringBuffer js  = new StringBuffer("\n//collection form initialization\n");
         js.append("var " + formId  + " = new " +
                   HtmlUtils.call("CollectionForm", HtmlUtils.squote(formId)));
+        sb.append(HtmlUtils.h2("Climate Model Comparison"));
+        sb.append("Plot monthly maps from different climate model datasets as well as differences between datasets. Means, anomalies and climatologies are available.");
 
         sb.append("<table><tr valign=top>\n");
+        int collectionNumber = 0;
         for(String collection: new String[]{ARG_COLLECTION1,
                                         ARG_COLLECTION2}) {
 
+            
             sb.append(HtmlUtils.open("td", "width=50%"));
             sb.append(HtmlUtils.formTable());
+            if (collectionNumber == 0) {
+                sb.append("<tr><td colspan=\"2\">Dataset 1</td></tr>\n");
+            } else {
+                sb.append("<tr><td colspan=\"2\">Dataset 2 (Optional)</td></tr>\n");
+            }
+            collectionNumber++;
             String arg =  getCollectionSelectArg(collection);
             String collectionWidget = HtmlUtils.select(arg, tfos, request.getString(arg,""), 
                                                        HtmlUtils.id(getCollectionSelectId(formId, collection)));
@@ -264,6 +274,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if(Utils.stringDefined(selectedValue)) {
                     values.add(selectedValue);
                 }
+                sb.append("\n");
                 String selectBox = HtmlUtils.select(arg,
                                                     values,selectedValue,
                                                     " style=\"min-width:250px;\" " +
@@ -412,7 +423,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         System.err.println("Clauses:" + clauses);
         int columnIdx = request.get("field", 1);
-        List<String> values = new ArrayList<String>(((CollectionTypeHandler)entry.getTypeHandler()).getUniqueColumnValues(entry, columnIdx,clauses));
+        List<String> values = new ArrayList<String>(((CollectionTypeHandler)entry.getTypeHandler()).getUniqueColumnValues(entry, columnIdx,clauses,false));
         System.err.println("Values:" + values);
         values.add(0,"");
         StringBuffer sb = new StringBuffer();

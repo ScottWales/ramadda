@@ -276,8 +276,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     public List<String> getUniqueColumnValues(Entry entry, int fieldIdx, List<Clause> clauses) throws Exception {
+        return getUniqueColumnValues(entry, fieldIdx, clauses, true);
+    }
+    
+    public List<String> getUniqueColumnValues(Entry entry, int fieldIdx, List<Clause> clauses, boolean useCache) throws Exception {
         String key = "values::" + entry.getId()+"::col" +fieldIdx;
-        List<String> values = (List<String>)cache.get(key);
+        List<String> values = null;
+        if (useCache) values = (List<String>)cache.get(key);
         if(values == null) {
             //Add 1 because we have the collection id in the first column
             List<Column> columns = getGranuleTypeHandler().getColumns();
