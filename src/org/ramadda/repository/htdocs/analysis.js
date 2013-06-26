@@ -3,7 +3,7 @@
 function CollectionForm(formId) {
     //Look at the bottom of this ctor to
     this.formId = formId;
-    this.analysisUrl = "${urlroot}/model/analysis?";
+    this.analysisUrl = "${urlroot}/model/compare?";
 
     //We'll call this at the bottom
     this.init = function() {

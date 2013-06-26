@@ -1,5 +1,5 @@
 
 <api handler="org.ramadda.geodata.model.ClimateModelApiHandler" id="model.analysis">
       <property name="collectiontype" value="climate_collection"/>
-      <api request="/model/analysis/*"    method="processClimateModelRequest"  name="Model Process" admin="false"/>
+      <api request="/model/compare/*"    method="processCompareRequest"  name="Model Process" admin="false"/>
 </api>

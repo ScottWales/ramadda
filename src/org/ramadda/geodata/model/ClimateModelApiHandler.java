@@ -22,11 +22,18 @@
 package org.ramadda.geodata.model;
 
 
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.geodata.cdmdata.CDOOutputHandler;
+import org.ramadda.geodata.cdmdata.NCLOutputHandler;
+import org.ramadda.geodata.cdmdata.NCOOutputHandler;
 
 import org.ramadda.repository.output.JsonOutputHandler;
 
@@ -67,7 +74,12 @@ import org.ramadda.util.TTLCache;
  */
 public class ClimateModelApiHandler extends RepositoryManager implements RequestHandler {
 
-    public static final String ARG_DOIT = "doit";
+    public static final String ARG_ACTION_SEARCH = "action.search";
+    public static final String ARG_ACTION_COMPARE = "action.compare";
+
+    public static final String ARG_COLLECTION1 = "collection1";
+    public static final String ARG_COLLECTION2 = "collection2";
+
 
     private static final JQuery JQ = null;
     private String collectionType;
@@ -103,27 +115,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception on badness
      */
-    public Result processClimateModelRequest(Request request) throws Exception {
-        if(getTypeHandler() == null) {
-            throw new IllegalStateException("Unknown collection type:" +collectionType);
-        }
-        return processFormRequest(request);
-    }
-
-    public static final String ARG_COLLECTION1 = "collection1";
-    public static final String ARG_COLLECTION2 = "collection2";
-    private String selectArg = "select";
-
-
-
-    private Result processFormRequest(Request request) throws Exception {
+    public Result processCompareRequest(Request request) throws Exception {
         String json = request.getString("json",(String) null);
         if(json!=null) {
             return  processJsonRequest(request, json) ;
         }
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,StringBuffer>();
-        if(request.exists(ARG_DOIT)) {
+        Entry collectionEntry = null;
+
+        if(request.exists(ARG_ACTION_SEARCH)) {
             for(String collection: new String[]{ARG_COLLECTION1,
                                                 ARG_COLLECTION2}) {
 
@@ -143,11 +144,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     tmp.append(getEntryManager().getEntryLink(request, granule));
                 }
                 tmp.append("</ul>");
+                if(collectionEntry==null) {
+                    collectionEntry = entry;
+                }
+
+
             }
         }
 
 
-        CollectionTypeHandler typeHandler = getTypeHandler();
+        ClimateCollectionTypeHandler typeHandler = getTypeHandler();
         List<Entry> collections =  getCollections(request);
         if(collections.size()==0) {
             return new Result("Climate Model Analysis", new StringBuffer(getPageHandler().showDialogWarning(msg("No climate collections found"))));
@@ -160,7 +166,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.importJS(fileUrl("/analysis.js")));
         //        sb.append(HtmlUtils.importJS(fileUrl("/model/analysis.js")));
 
-        sb.append(HtmlUtils.form(getUrlPath()));
+        sb.append(HtmlUtils.form(getCompareUrlPath()));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("Select Climate Collection",""));
@@ -214,13 +220,62 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         sb.append("</tr></table>");
-        sb.append(HtmlUtils.submit("Submit", ARG_DOIT, HtmlUtils.id(formId+".submit")));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.p());
+
+        if(collectionEntry==null) {
+            sb.append(HtmlUtils.submit("Search", ARG_ACTION_SEARCH, HtmlUtils.id(formId+".submit")));
+        } else {
+            List<String> processTabs   = new ArrayList<String>();
+            List<String> processTitles = new ArrayList<String>();
+
+            /*
+            StringBuffer settingsSB    = new StringBuffer();
+            settingsSB.append(HtmlUtils.radio(ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID, "none", true));
+            settingsSB.append(HtmlUtils.space(1));
+            settingsSB.append(msg("No Processing"));
+            settingsSB.append(HtmlUtils.br());
+
+            processTitles.add(msg("Settings"));
+            processTabs.add(HtmlUtils.div(settingsSB.toString(),
+            HtmlUtils.style("min-height:200px;")));*/
+            
+            boolean first = true;
+            List<DataProcess> processes = typeHandler.getDataProcesses();
+            for (DataProcess process : processes) {
+                StringBuffer tmpSB = new StringBuffer();
+                if(processes.size()>1) {
+                    tmpSB.append(HtmlUtils.radio(ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
+                                                 process.getDataProcessId(), first));
+                    tmpSB.append(HtmlUtils.space(1));
+                    tmpSB.append(msg("Select"));
+                    tmpSB.append(HtmlUtils.br());
+                }
+                process.addToForm(request, collectionEntry, tmpSB);
+                processTabs.add(
+                                HtmlUtils.div(
+                                              tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
+                processTitles.add(process.getDataProcessLabel());
+                first = false;
+            }
+
+
+            if(processTitles.size()==1) {
+                sb.append(header(msg(processTitles.get(0))));
+                sb.append(processTabs.get(0));
+            } else {
+                sb.append(header(msg("Process Selected Data")));
+                HtmlUtils.makeAccordian(sb, processTitles, processTabs);
+            }
+            sb.append(HtmlUtils.submit("Search Again", ARG_ACTION_SEARCH, HtmlUtils.id(formId+".submit")));
+            sb.append(HtmlUtils.submit("Compare", ARG_ACTION_COMPARE, HtmlUtils.id(formId+".submit")));
+        }
+
+
         sb.append("\n");
         sb.append(HtmlUtils.script(js.toString()));
         sb.append("\n");
 
-
-        sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 
 
@@ -304,9 +359,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /**
        return the main entry point URL
      */
-    private String getUrlPath() {
+    private String getCompareUrlPath() {
         //Use the collection type in the path. This is defined in the api.xml file
-        return getRepository().getUrlBase()+"/model/analysis";
+        return getRepository().getUrlBase()+"/model/compare";
     }
 
 

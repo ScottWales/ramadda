@@ -77,11 +77,14 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
             throws Exception {
         super(repository, entryNode);
         processes.addAll(new CDOOutputHandler(repository).getDataProcesses());
-        processes.addAll(new NCOOutputHandler(repository).getDataProcesses());
+        //        processes.addAll(new NCOOutputHandler(repository).getDataProcesses());
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
+    public List<DataProcess>getDataProcesses() {
+        return processes;
+    }
     /**
      * Get the HTML display for this type
      *
@@ -179,7 +182,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
      *
      * @throws Exception Problem creating widgets
      */
-    protected void addProcessWidgets(Request request, Entry entry,
+   protected void addProcessWidgets(Request request, Entry entry,
                                      StringBuffer sb, StringBuffer js,
                                      String formId)
             throws Exception {
