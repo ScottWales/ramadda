@@ -32,11 +32,11 @@ import java.util.List;
 /**
  */
 
-public  class CollectionSelection {
+public  class CollectionOperand {
     private Entry collection;
     private List<Entry> granules;
 
-    public CollectionSelection(Entry collection,   List<Entry> granules) {
+    public CollectionOperand(Entry collection,   List<Entry> granules) {
         this.collection = collection;
         this.granules = granules;
     }

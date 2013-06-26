@@ -31,7 +31,7 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.data.process.DataProcess;
-import org.ramadda.data.process.CollectionSelection;
+import org.ramadda.data.process.CollectionOperand;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.geodata.cdmdata.NCOOutputHandler;
@@ -108,7 +108,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
 
-    public Result doCompare(Request request, List<CollectionSelection> operands) throws Exception {
+    public Result doCompare(Request request, List<CollectionOperand> operands) throws Exception {
         boolean didProcess = false;
         String selectedProcess = request.getString(ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
                                                    (String) null);
@@ -168,10 +168,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,StringBuffer>();
-        List<CollectionSelection> operands = new ArrayList<CollectionSelection>();
+        List<CollectionOperand> operands = new ArrayList<CollectionOperand>();
 
 
-
+        //If we are searching or comparing then find the selected entries
         if(request.exists(ARG_ACTION_SEARCH) || request.exists(ARG_ACTION_COMPARE)) {
             for(String collection: new String[]{ARG_COLLECTION1,
                                                 ARG_COLLECTION2}) {
@@ -184,7 +184,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     continue;
                 }
                 List<Entry> entries = findEntries(request, collection, collectionEntry);
-                operands.add(new CollectionSelection(collectionEntry, entries));
+                operands.add(new CollectionOperand(collectionEntry, entries));
                 tmp.append(getEntryManager().getEntryLink(request, collectionEntry));
                 tmp.append("<ul>");
                 for(Entry granule: entries) {
@@ -196,6 +196,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
+        //Check to see if we have 2 operands 
         boolean hasOperands = false;
         if(operands.size()==2 ) {
             hasOperands =  operands.get(0).getGranules().size()>0 &&
@@ -204,6 +205,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
         StringBuffer sb = new StringBuffer();
+
         if(request.exists(ARG_ACTION_COMPARE)) {
             if(hasOperands) {
                 return doCompare(request, operands);
@@ -211,6 +213,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 sb.append(getPageHandler().showDialogWarning("No fields selected"));
             }
         }                
+
 
 
         ClimateCollectionTypeHandler typeHandler = getTypeHandler();
