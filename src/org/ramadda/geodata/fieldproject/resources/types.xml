@@ -110,9 +110,11 @@
 
      <property name="search.label" value="Sites"/>
      <property name="search.tabs" value="map,list"/>
+<!--
      <property name="search.metadatatypes" value="project_person"/>
-     <property name="search.form.date.show" value="false"/>
+-->
 
+     <property name="search.form.date.show" value="false"/>
 
 
      <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/sitetypes.txt"/>
@@ -279,24 +281,17 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <column name="status" type="string"  label="Status"   />
+     <column name="expected_users" type="string"  label="Expected Users"   />
      <wiki><![CDATA[
 {{noheading}}
-<table width="100%">
-<tr valign=top>
-<td width="50%">
-<div style="max-height: 400px; overflow-y: auto;">
+
 {{description wikify="true"}}
-</div>
+
+{{information}}
+
 {{links  prefix="==Links=="   message=""}}
 
-{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
-
-</td>
-<td width="50%">
-{{image src="::*" message="" width="300"}}
-<p>
-</td></tr>
-</table>
 ]]>
 </wiki>
 
@@ -426,18 +421,6 @@ features
    </type>
 
 
-  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
-     <property name="icon" value="/fieldproject/transmit_blue.png"/>
-     <wiki><![CDATA[
-{{description wikify="true"}}
-
-{{map  width="600"  height="500"  listentries="true"  details="false" level="2" message=""}}
-
-==Links ==
-{{tree}}
-]]>
-</wiki>
-</type>
 
 
 
