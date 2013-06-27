@@ -282,7 +282,7 @@
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
      <column name="status" type="string"  label="Status"   />
-     <column name="expected_users" type="string"  label="Expected Users"   />
+     <column name="expected_users" type="string"  label="Expected Users"   changetype="true" size="2000"/>
      <wiki><![CDATA[
 {{noheading}}
 
