@@ -113,8 +113,8 @@ public class CsvOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        if (state.entry != null) {
-            links.add(makeLink(request, state.entry, OUTPUT_CSV));
+        if (state.getEntry() != null) {
+            links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
         }
     }
 
@@ -287,6 +287,8 @@ public class CsvOutputHandler extends OutputHandler {
             throws Exception {
         if(group.isDummy()) {
             request.setReturnFilename("Search_Results.csv");
+        } else {
+            request.setReturnFilename(group.getName() +".csv");
         }
         subGroups.addAll(entries);
         return listEntries(request, subGroups);
