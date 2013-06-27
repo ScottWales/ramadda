@@ -112,7 +112,6 @@ public class ProcessXls {
     
 
     private double getLatLon(String s) {
-        //52°9'50.915"N 
         s = s.replaceAll("'",":");
         s = s.replaceAll("\"","");
         s = s.replaceAll("[^0-9:\\.NSEWnsew]",":");
