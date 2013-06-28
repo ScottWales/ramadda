@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,103 +22,97 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.*;
-
-
+import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.util.HtmlUtils;
+
 
 import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-
 import java.util.Hashtable;
 import java.util.List;
 
 
 /**
+ * A class to hold a Result
  */
-
 public class Result {
 
-    /** _more_ */
+    /** OK response code */
     public static final int RESPONSE_OK = 200;
 
-    /** _more_ */
+    /** Not found response code */
     public static final int RESPONSE_NOTFOUND = 404;
 
-    /** _more_ */
+    /** Unauthorized error response code */
     public static final int RESPONSE_UNAUTHORIZED = 401;
 
-    /** _more_ */
+    /** Internal error response code */
     public static final int RESPONSE_INTERNALERROR = 500;
 
-
-    /** _more_ */
+    /** HTML mime type */
     public static String TYPE_HTML = "text/html";
 
-    /** _more_ */
+    /** the redirect URL */
     private String redirectUrl;
 
-    /** _more_ */
+    /** XML mime type */
     public static String TYPE_XML = "text/xml";
 
-    /** _more_ */
+    /** CSV mime type */
     public static String TYPE_CSV = "text/csv";
 
-
-    /** _more_ */
+    /** content bytes */
     private byte[] content;
 
-    /** _more_ */
+    /** the title */
     private String title = "";
 
-    /** _more_ */
+    /** default mime type */
     private String mimeType = "text/html";
 
-    /** _more_ */
+    /** flag for decorate */
     private boolean shouldDecorate = true;
 
-    /** _more_ */
+    /** properties */
     private Hashtable properties = new Hashtable();
 
-    /** _more_ */
+    /** the input stream */
     private InputStream inputStream;
 
-    /** _more_ */
+    /** cache flag */
     private boolean cacheOk = false;
 
-    /** _more_ */
+    /** last modified date */
     private Date lastModified;
 
 
-    /** _more_ */
+    /** default response code */
     private int responseCode = RESPONSE_OK;
 
-    /** _more_ */
+    /** header arguments */
     private List<String> httpHeaderArgs;
 
-    /** _more_ */
+    /** need to write flag */
     private boolean needToWrite = true;
 
-
-    /** _more_ */
+    /** the footer */
     public String bottomHtml = "";
 
-    /** _more_ */
+    /** authorization method */
     private AuthorizationMethod authorizationMethod;
 
     /**
-     * _more_
+     * Default ctor
      */
     public Result() {}
 
 
     /**
-     * _more_
+     * Create a Result with the specified Authorization Method
      *
-     * @param authorizationMethod _more_
+     * @param authorizationMethod  the auth method
      */
     public Result(AuthorizationMethod authorizationMethod) {
         this.authorizationMethod = authorizationMethod;
@@ -126,9 +120,9 @@ public class Result {
 
 
     /**
-     * _more_
+     * Create a result with a redirection
      *
-     * @param redirectUrl _more_
+     * @param redirectUrl  the URL for redirection
      */
     public Result(RequestUrl redirectUrl) {
         this(redirectUrl.toString());
@@ -136,9 +130,9 @@ public class Result {
 
 
     /**
-     * _more_
+     * Create a Result with a redirection url
      *
-     * @param redirectUrl _more_
+     * @param redirectUrl  the redirection url
      */
     public Result(String redirectUrl) {
         this.redirectUrl    = redirectUrl;
@@ -147,30 +141,30 @@ public class Result {
 
 
     /**
-     * _more_
+     * Create a Result
      *
-     * @param title _more_
-     * @param content _more_
-     * @param foo _more_
+     * @param title  the title
+     * @param content  the content
+     * @param foo  test flag
      */
     public Result(String title, byte[] content, boolean foo) {
         this(title, content, TYPE_HTML);
     }
 
     /**
-     * _more_
+     * Create a result with the content
      *
-     * @param content _more_
+     * @param content  the content
      */
     public Result(StringBuffer content) {
         this("", content);
     }
 
     /**
-     * _more_
+     * Create a Result with the title and content
      *
-     * @param title _more_
-     * @param content _more_
+     * @param title   the title
+     * @param content the content
      */
     public Result(String title, StringBuffer content) {
         this(title, content.toString().getBytes(), TYPE_HTML);
@@ -178,54 +172,53 @@ public class Result {
 
 
     /**
-     * _more_
+     * Create a Result with the content and mimetype
      *
-     * @param content _more_
-     * @param mime _more_
+     * @param content  the content
+     * @param mime     the mime type
      */
     public Result(String content, String mime) {
         this("", content.getBytes(), mime);
     }
 
     /**
-     * _more_
+     * Create a Result with the title, content and mimetype
      *
-     * @param title _more_
-     * @param content _more_
-     * @param mimeType _more_
+     * @param title    the title
+     * @param content  the content
+     * @param mimeType     the mime type
      */
     public Result(String title, StringBuffer content, String mimeType) {
         this(title, content.toString().getBytes(), mimeType);
     }
 
     /**
-     * _more_
+     * Create a Result with the title, content and mimetype
      *
-     * @param title _more_
-     * @param content _more_
-     * @param mimeType _more_
+     * @param title    the title
+     * @param content  the content
+     * @param mimeType the mime type
      */
     public Result(String title, byte[] content, String mimeType) {
         this(title, content, mimeType, true);
     }
 
     /**
-     * _more_
+     * Create a result from the input stream
      *
-     * @param title _more_
-     * @param inputStream _more_
-     * @param mimeType _more_
+     * @param inputStream  the input stream
+     * @param mimeType     the mimetype
      */
     public Result(InputStream inputStream, String mimeType) {
         this("", inputStream, mimeType);
     }
 
     /**
-     * _more_
+     * Create a result from the input stream
      *
-     * @param title _more_
-     * @param inputStream _more_
-     * @param mimeType _more_
+     * @param title        the title
+     * @param inputStream  the input stream
+     * @param mimeType     the mimetype
      */
     public Result(String title, InputStream inputStream, String mimeType) {
         this.title          = title;
@@ -236,13 +229,12 @@ public class Result {
 
 
     /**
+     * Create a result from the content
      *
-     * _more_
-     *
-     * @param title _more_
-     * @param content _more_
-     * @param mimeType _more_
-     * @param shouldDecorate _more_
+     * @param title        the title
+     * @param content      the content
+     * @param mimeType     the mimetype
+     * @param shouldDecorate  true if the page should be decorated
      */
     public Result(String title, byte[] content, String mimeType,
                   boolean shouldDecorate) {
@@ -254,9 +246,9 @@ public class Result {
 
 
     /**
-     * _more_
+     * Make a NO-OP result
      *
-     * @return _more_
+     * @return the result
      */
     public static Result makeNoOpResult() {
         Result result = new Result();
@@ -286,39 +278,39 @@ public class Result {
 
 
     /**
-     * _more_
+     * Put a property for this result
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name   property name
+     * @param value   property value
      */
     public void putProperty(String name, Object value) {
         properties.put(name, value);
     }
 
     /**
-     * _more_
+     * Get a property
      *
-     * @param name _more_
+     * @param name  the property name
      *
-     * @return _more_
+     * @return  the property value or null
      */
     public Object getProperty(String name) {
         return properties.get(name);
     }
 
     /**
-     * _more_
+     * Is this an HTML result?
      *
-     * @return _more_
+     * @return  true if no mimetype or mimetype is HTML
      */
     public boolean isHtml() {
         return (mimeType != null) && mimeType.equals(TYPE_HTML);
     }
 
     /**
-     * _more_
+     * Is this an XML result?
      *
-     * @return _more_
+     * @return  if mimetype is XML
      */
     public boolean isXml() {
         return mimeType.equals(TYPE_XML);
@@ -326,9 +318,9 @@ public class Result {
 
 
     /**
-     * _more_
+     * Is this an CSV result?
      *
-     * @return _more_
+     * @return  true if mimetype is CSV
      */
     public boolean isCsv() {
         return mimeType.equals(TYPE_CSV);
@@ -490,9 +482,9 @@ public class Result {
 
 
     /**
-     * _more_
+     * Set the return filename for this Result
      *
-     * @param filename _more_
+     * @param filename  the filename
      */
     public void setReturnFilename(String filename) {
         filename = filename.replaceAll(" ", "_");
@@ -503,10 +495,10 @@ public class Result {
 
 
     /**
-     * _more_
+     * Add an HTTP header the the list of header args
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name   the header name
+     * @param value  the header value
      */
     public void addHttpHeader(String name, String value) {
         if (httpHeaderArgs == null) {
@@ -537,10 +529,10 @@ public class Result {
 
 
     /**
-     * _more_
+     * Add a cookie
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name cookie name
+     * @param value cookie value
      */
     public void addCookie(String name, String value) {
         addHttpHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
