@@ -2240,6 +2240,7 @@ public class HtmlUtils {
             attrs = attrs(ATTR_NAME, name);
         }
         sb.append(open(TAG_SELECT, attrs + extra));
+        sb.append("\n");
 
         HashSet seenSelected = new HashSet();
         for (int i = 0; i < values.size(); i++) {
@@ -2283,8 +2284,10 @@ public class HtmlUtils {
                           selectedAttr + extraAttr
                           + attrs(ATTR_TITLE, value, ATTR_VALUE,
                                   value), label));
+            sb.append("\n");
         }
         sb.append(close(TAG_SELECT));
+        sb.append("\n");
 
         return sb.toString();
     }
@@ -2677,7 +2680,7 @@ public class HtmlUtils {
                    tag(TAG_TD,
                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                              CLASS_FORMLABEL), left) + tag(TAG_TD, "",
-                                 right));
+                                 right))+"\n";
 
     }
 
