@@ -18,6 +18,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.geodata.model;
 
 
@@ -50,7 +51,7 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
     public static final String FILE_REGEX =
         "([^_]+)_([^_]+)_(.*)_(ens..|mean|sprd|clim)(_([^_]+))?.nc";
 
-    /** _more_          */
+    /** _more_ */
     public static final Pattern pattern = Pattern.compile(FILE_REGEX);
 
     /** ClimateModelFile type */

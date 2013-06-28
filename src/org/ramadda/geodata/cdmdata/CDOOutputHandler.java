@@ -23,8 +23,11 @@ package org.ramadda.geodata.cdmdata;
 
 
 import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.data.process.DataProcessProvider;
 
+import org.ramadda.geodata.model.ClimateModelFileTypeHandler;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -89,7 +92,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
 
     /** operation identifier */
-    private static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX
+    public static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX
                                                     + "operation";
 
     /** start month identifier */
@@ -150,64 +153,64 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                        CdmDataOutputHandler.GROUP_DATA);
 
     /** info operator */
-    private static final String OP_INFO = "info";
+    public static final String OP_INFO = "info";
 
     /** short info operator */
-    private static final String OP_SINFO = "sinfo";
+    public static final String OP_SINFO = "sinfo";
 
     /** number of years operator */
-    private static final String OP_NYEAR = "nyear";
+    public static final String OP_NYEAR = "nyear";
 
     /** select years operator */
-    private static final String OP_SELYEAR = "-selyear";
+    public static final String OP_SELYEAR = "-selyear";
 
     /** select months operator */
-    private static final String OP_SELMON = "-selmon";
+    public static final String OP_SELMON = "-selmon";
 
     /** select seasons operator */
-    private static final String OP_SELSEAS = "-selseas";
+    public static final String OP_SELSEAS = "-selseas";
 
     /** select date operator */
-    private static final String OP_SELDATE = "-seldate";
+    public static final String OP_SELDATE = "-seldate";
 
     /** select llbox operator */
-    private static final String OP_SELLLBOX = "-sellonlatbox";
+    public static final String OP_SELLLBOX = "-sellonlatbox";
 
     /** select level operator */
-    private static final String OP_SELLEVEL = "-sellevel";
+    public static final String OP_SELLEVEL = "-sellevel";
 
     /** statistic mean */
-    private static final String STAT_MEAN = "mean";
+    public static final String STAT_MEAN = "mean";
 
     /** statistic standard deviation */
-    private static final String STAT_STD = "std";
+    public static final String STAT_STD = "std";
 
     /** statistic max */
-    private static final String STAT_MAX = "max";
+    public static final String STAT_MAX = "max";
 
     /** statistic anomaly */
-    private static final String STAT_ANOM = "anomaly";
+    public static final String STAT_ANOM = "anomaly";
 
     /** statistic min */
-    private static final String STAT_MIN = "min";
+    public static final String STAT_MIN = "min";
 
     /** year period */
-    private static final String PERIOD_TIM = "tim";
+    public static final String PERIOD_TIM = "tim";
 
     /** year period */
-    private static final String PERIOD_YEAR = "year";
+    public static final String PERIOD_YEAR = "year";
 
     /** month of year period */
-    private static final String PERIOD_YMON = "ymon";
+    public static final String PERIOD_YMON = "ymon";
 
     /** month period */
-    private static final String PERIOD_MON = "mon";
+    public static final String PERIOD_MON = "mon";
 
     /** day of year period */
-    private static final String PERIOD_YDAY = "yday";
+    public static final String PERIOD_YDAY = "yday";
 
     /** day period */
-    private static final String PERIOD_DAY = "day";
+    public static final String PERIOD_DAY = "day";
 
     /** start year */
     private int startYear = 1979;
@@ -294,6 +297,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         cdoPath = getProperty(PROP_CDO_PATH, null);
     }
 
+    public String getCDOPath() {
+        return cdoPath;
+    }
 
     /**
      *  The DataProcessProvider method. Just adds this
@@ -357,8 +363,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         if ( !isEnabled()) {
             return;
         }
-        if ((state.entry != null) && state.entry.isFile()
-                && state.entry.getResource().getPath().endsWith(".nc")) {
+        Entry stateEntry = state.getEntry();
+        if (stateEntry != null && stateEntry.isFile()
+                && stateEntry.getTypeHandler() instanceof ClimateModelFileTypeHandler) {
             links.add(makeLink(request, state.entry, OUTPUT_CDO));
         }
     }
@@ -370,7 +377,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      * @throws Exception  problem getting directory
      */
-    private File getProductDir() throws Exception {
+    public File getProductDir() throws Exception {
         if (productDir == null) {
             TempDir tempDir = getStorageManager().makeTempDir("cdoproducts");
             //keep things around for 1 hour
@@ -530,7 +537,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param request  the Request
      * @param sb       the HTML
      */
-    private void addStatsWidget(Request request, StringBuffer sb) {
+    public void addStatsWidget(Request request, StringBuffer sb) {
         sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
                                       new String[] { msgLabel("Period"),
                 HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES),
@@ -546,7 +553,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param sb       the HTML
      * @param dataset  the dataset
      */
-    private void addVarLevelWidget(Request request, StringBuffer sb,
+    public void addVarLevelWidget(Request request, StringBuffer sb,
                                    GridDataset dataset) {
         List<GridDatatype> grids = dataset.getGrids();
         StringBuffer       varsb = new StringBuffer();
@@ -605,7 +612,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param dataset  the GridDataset
      * @param useYYMM  true to provide month/year widgets, otherwise straight dates
      */
-    private void addTimeWidget(Request request, StringBuffer sb,
+    public void addTimeWidget(Request request, StringBuffer sb,
                                GridDataset dataset, boolean useYYMM) {
         List<CalendarDate> dates = CdmDataOutputHandler.getGridDates(dataset);
         if ( !dates.isEmpty()) {
@@ -742,7 +749,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param sb        the HTML
      * @param llr       the lat/lon rectangle
      */
-    private void addMapWidget(Request request, StringBuffer sb,
+    public void addMapWidget(Request request, StringBuffer sb,
                               LatLonRect llr) {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
@@ -1161,21 +1168,22 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * Add to form
          *
          * @param request  the Request
-         * @param entry    the Entry
+         * @param inputs    the DataProcessInput
          * @param sb       the form
          *
          * @throws Exception  problem adding to the form
          */
-        public void addToForm(Request request, Entry entry, StringBuffer sb)
+        public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
                 throws Exception {
             sb.append(HtmlUtils.formTable());
-            if (entry.getType().equals("noaa_climate_modelfile")) {
+            Entry first = inputs.get(0).getEntries().get(0);
+            if (first.getType().equals("noaa_climate_modelfile")) {
                 //values[1] = var;
                 //values[2] = model;
                 //values[3] = experiment;
                 //values[4] = member;
                 //values[5] = frequency;
-                Object[]     values = entry.getValues();
+                Object[]     values = first.getValues();
                 StringBuffer header = new StringBuffer();
                 header.append("Model: ");
                 header.append(values[2]);
@@ -1191,8 +1199,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             //addInfoWidget(request, sb);
             CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
             GridDataset dataset =
-                dataOutputHandler.getCdmManager().getGridDataset(entry,
-                    entry.getResource().getPath());
+                dataOutputHandler.getCdmManager().getGridDataset(first,
+                    first.getResource().getPath());
 
             if (dataset != null) {
                 addVarLevelWidget(request, sb, dataset);
@@ -1219,16 +1227,32 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * Process the request
          *
          * @param request  The request
-         * @param granule  the granule
+         * @param inputs  the  data process inputs
          *
          * @return  the processed data
          *
          * @throws Exception  problem processing
          */
-        public File processRequest(Request request, Entry granule)
+        public DataProcessOutput processRequest(Request request, DataProcessInput input)
+                throws Exception {
+            return processRequest(request, (List<DataProcessInput>) Misc.newList(input));
+        }
+
+        /**
+         * Process the request
+         *
+         * @param request  The request
+         * @param inputs  the  data process inputs
+         *
+         * @return  the processed data
+         *
+         * @throws Exception  problem processing
+         */
+        public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
                 throws Exception {
 
-            String tail    = getStorageManager().getFileTail(granule);
+            Entry oneOfThem = inputs.get(0).getEntries().get(0);
+            String tail    = getStorageManager().getFileTail(oneOfThem);
             String id      = getRepository().getGUID();
             String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
@@ -1248,24 +1272,24 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             //   - month range
             //   - year or time range
 
-            List<String> statCommands = createStatCommands(request, granule);
+            List<String> statCommands = createStatCommands(request, oneOfThem);
             for (String cmd : statCommands) {
                 if ((cmd != null) && !cmd.isEmpty()) {
                     commands.add(cmd);
                 }
             }
 
-            String levSelect = createLevelSelectCommand(request, granule);
+            String levSelect = createLevelSelectCommand(request, oneOfThem);
             if ((levSelect != null) && !levSelect.isEmpty()) {
                 commands.add(levSelect);
             }
-            String areaSelect = createAreaSelectCommand(request, granule);
+            String areaSelect = createAreaSelectCommand(request, oneOfThem);
             if ((areaSelect != null) && !areaSelect.isEmpty()) {
                 commands.add(areaSelect);
             }
 
             List<String> dateCmds = createDateSelectCommands(request,
-                                        granule);
+                                        oneOfThem);
             for (String cmd : dateCmds) {
                 if ((cmd != null) && !cmd.isEmpty()) {
                     commands.add(cmd);
@@ -1274,7 +1298,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
             System.err.println("cmds:" + commands);
 
-            commands.add(granule.getResource().getPath());
+            commands.add(oneOfThem.getResource().getPath());
             commands.add(outFile.toString());
             String[] results = getRepository().executeCommand(commands, null,
                                    getProductDir());
@@ -1293,33 +1317,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                 }
             }
 
-            //The jeff is here for when I have a fake cdo.sh
-            boolean jeff = false;
-
             if (doingPublish(request)) {
-                return outFile;
+                return new DataProcessOutput(outFile);
             }
 
-            //Assuming this is some text - DOESN'T HAPPEN anymore
-            if (operation.equals(OP_INFO) && false) {
-                String info;
-
-                if ( !jeff) {
-                    info = IOUtil.readInputStream(
-                        getStorageManager().getFileInputStream(outFile));
-                } else {
-                    info = outMsg;
-                }
-
-                StringBuffer sb = new StringBuffer();
-                addForm(request, granule, sb);
-                sb.append(header(msg("CDO Information")));
-                sb.append(HtmlUtils.pre(info));
-
-                //            return new Result("CDO", sb);
-            }
-
-            return outFile;
+            return new DataProcessOutput(outFile);
         }
 
         /**
@@ -1328,7 +1330,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * @return the label
          */
         public String getDataProcessLabel() {
-            return "CDO Area Statistics";
+            return "Area Statistics";
         }
 
     }

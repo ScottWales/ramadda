@@ -29,6 +29,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 
 import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.data.process.DataProcessProvider;
 
 
@@ -254,22 +256,26 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
      * Add this output handlers UI to the form
      *
      * @param request   the Request
-     * @param entry     the Entry
+     * @param inputs     the Entry
      * @param sb        the form HTML
      *
      * @throws Exception  on badness
      */
-    public void addToForm(Request request, Entry entry, StringBuffer sb)
+    public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    public File processRequest(Request request, Entry entry)
+    public DataProcessOutput processRequest(Request request, DataProcessInput input)
             throws Exception {
-        return entry.getFile();
+        return processRequest(request, (List<DataProcessInput>)Misc.newList(input));
+    }
+
+    public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
+            throws Exception {
+        return new DataProcessOutput(inputs.get(0).getEntries().get(0).getFile());
     }
 
 

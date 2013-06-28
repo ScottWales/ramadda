@@ -22,12 +22,10 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.ramadda.data.process.DataProcess;
-import org.ramadda.geodata.cdmdata.CDOOutputHandler;
+import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOutput;
+//import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.geodata.cdmdata.NCOOutputHandler;
 import org.ramadda.repository.Entry;
@@ -36,9 +34,17 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.util.HtmlUtils;
+
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+
+
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -76,15 +82,22 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                         Element entryNode)
             throws Exception {
         super(repository, entryNode);
-        processes.addAll(new CDOOutputHandler(repository).getDataProcesses());
+        //processes.addAll(new CDOOutputHandler(repository).getDataProcesses());
+        processes.add(new CDOAreaStatisticsProcess(repository));
         //        processes.addAll(new NCOOutputHandler(repository).getDataProcesses());
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
-    public List<DataProcess>getDataProcesses() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<DataProcess> getDataProcesses() {
         return processes;
     }
+
     /**
      * Get the HTML display for this type
      *
@@ -151,9 +164,12 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         String searchButton = JQ.button("Search", formId + "_search", js,
                                         HtmlUtils.call(formId + ".search",
                                             "event"));
-        String downloadButton = JQ.button("Download Data", formId+"_do_download",js, 
-                                        HtmlUtils.call(formId +".download","event"));
-        selectorSB.append(HtmlUtils.formEntry("", searchButton + HtmlUtils.space(4) + downloadButton));
+        String downloadButton = JQ.button("Download Data",
+                                          formId + "_do_download", js,
+                                          HtmlUtils.call(formId
+                                              + ".download", "event"));
+        selectorSB.append(HtmlUtils.formEntry("",
+                searchButton + HtmlUtils.space(4) + downloadButton));
         selectorSB.append(HtmlUtils.formTableClose());
 
 
@@ -182,33 +198,32 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
      *
      * @throws Exception Problem creating widgets
      */
-   protected void addProcessWidgets(Request request, Entry entry,
+    protected void addProcessWidgets(Request request, Entry entry,
                                      StringBuffer sb, StringBuffer js,
                                      String formId)
             throws Exception {
         // for now, don't add in the process widgets - just do a search/download.
-        if (true) return;
+        if (true) {
+            return;
+        }
         String processButtons =
         //JQ.button("Download Data", formId+"_do_download",js, HtmlUtils.call(formId +".download","event"));
-                /*
+        /*
+JQ.button(
+    "Download Data", formId + "_do_download", js,
+    HtmlUtils.call(formId + ".download", "event")) + " "
+        +
+        */
         JQ.button(
-            "Download Data", formId + "_do_download", js,
-            HtmlUtils.call(formId + ".download", "event")) + " "
-                + 
-                */
-            JQ.button(
-                    "Plot Map", formId + "_do_image", js,
-                    HtmlUtils.call(formId + ".makeImage", "event")) + " "
+            "Plot Map", formId + "_do_image", js,
+            HtmlUtils.call(formId + ".makeImage", "event")) + " "
+                + JQ.button(
+                    "Google Earth", formId + "_do_kmz", js,
+                    HtmlUtils.call(formId + ".makeKMZ", "event")) + " "
                         + JQ.button(
-                            "Google Earth", formId + "_do_kmz", js,
+                            "Time Series", formId + "_do_timeseries", js,
                             HtmlUtils.call(
-                                formId + ".makeKMZ", "event")) + " "
-                                    + JQ.button(
-                                        "Time Series",
-                                        formId + "_do_timeseries", js,
-                                        HtmlUtils.call(
-                                            formId + ".makeTimeSeries",
-                                            "event"));
+                                formId + ".makeTimeSeries", "event"));
         List<String> processTabs   = new ArrayList<String>();
         List<String> processTitles = new ArrayList<String>();
 
@@ -229,7 +244,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
-            process.addToForm(request, entry, tmpSB);
+            DataProcessInput dpi = new DataProcessInput(Misc.newList(entry));
+            process.addToForm(request, Misc.newList(dpi), tmpSB);
             processTabs.add(
                 HtmlUtils.div(
                     tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
@@ -311,9 +327,14 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                        + process.getDataProcessLabel());
                     didProcess = true;
                     for (Entry granule : entries) {
-                        File outFile = process.processRequest(request,
-                                           granule);
-                        files.add(outFile);
+                        DataProcessOutput output =
+                            process.processRequest(request,
+                                new DataProcessInput(granule));
+                        if (output.hasOutput()) {
+                            for (File outFile : output.getFiles()) {
+                                files.add(outFile);
+                            }
+                        }
                     }
                 }
             }
@@ -336,7 +357,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         File imageFile = nclOutputHandler.processRequest(request,
                              files.get(0));
 
-        //And return the results
+        //And return the result
         String extension = IOUtil.getFileExtension(imageFile.toString());
 
         return new Result("",
