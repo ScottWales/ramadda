@@ -19,22 +19,16 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-// $Id: StringUtil.java,v 1.53 2007/06/01 17:02:44 jeffmc Exp $
-
-
 package org.ramadda.util;
-import ucar.unidata.util.Misc;
-
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-
 
 import java.text.StringCharacterIterator;
+import java.util.List;
+
+import ucar.unidata.util.Misc;
 
 /**
+ * JSON Utility class
  */
-
 public class Json {
 
     public static final String MIMETYPE = "application/json";
