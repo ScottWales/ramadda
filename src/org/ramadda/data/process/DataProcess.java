@@ -22,12 +22,10 @@
 package org.ramadda.data.process;
 
 
-import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 
-import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +33,7 @@ import java.util.List;
 
 
 /**
+ * A class for holding process information
  */
 public interface DataProcess {
 
@@ -49,25 +48,42 @@ public interface DataProcess {
      * Add to form
      *
      * @param request  the Request
-     * @param entry    the Entry
+     * @param inputs    the Entry
      * @param sb       the form
      *
      * @throws Exception  problem adding to the form
      */
-    public void addToForm(Request request, Entry entry, StringBuffer sb)
+    public void addToForm(Request request,
+                          List<? extends DataProcessInput> inputs,
+                          StringBuffer sb)
      throws Exception;
 
     /**
      * Process the request
      *
      * @param request  The request
-     * @param granule  the granule
+     * @param input    the DataProcessInput
+     *
+     * @return  the processed data output
+     *
+     * @throws Exception  problem processing
+     */
+    public DataProcessOutput processRequest(Request request,
+                                            DataProcessInput input)
+     throws Exception;
+
+    /**
+     * Process the request
+     *
+     * @param request  The request
+     * @param inputs  the granule
      *
      * @return  the processed data
      *
      * @throws Exception  problem processing
      */
-    public File processRequest(Request request, Entry granule)
+    public DataProcessOutput processRequest(
+            Request request, List<? extends DataProcessInput> inputs)
      throws Exception;
 
     /**

@@ -18,52 +18,51 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
-
 package org.ramadda.data.process;
 
 
 import org.ramadda.repository.Entry;
-import org.ramadda.repository.Repository;
 
-import java.util.ArrayList;
+import ucar.unidata.util.Misc;
+
 import java.util.List;
 
 
-
 /**
+ * Class description
+ *
+ *
  */
+public class DataProcessInput {
 
-public class CollectionOperand extends DataProcessInput {
-
-    /** the collection */
-    private Entry collection;
+    /** The entries for this input */
+    List<Entry> entries;
 
     /**
-     * Create a CollectionOperand
+     * Create a DataProcessInput for the entry
      *
-     * @param collection  the collection
-     * @param granules    the entries
+     * @param entry  the entry
      */
-    public CollectionOperand(Entry collection, List<Entry> granules) {
-        super(granules);
-        this.collection = collection;
+    public DataProcessInput(Entry entry) {
+        this((List<Entry>) Misc.newList(entry));
     }
 
     /**
-     * Get the Collection Entry
+     * Create a DataProcessInput from a list of entries
      *
-     * @return  the collection
+     * @param entries the entries
      */
-    public Entry getCollectionEntry() {
-        return collection;
+    public DataProcessInput(List<Entry> entries) {
+        this.entries = entries;
     }
 
     /**
-     * Get the collection granules (entries)
+     * Get the entries
      *
-     * @return  the entries
+     * @return the list of entries
      */
-    public List<Entry> getGranules() {
-        return getEntries();
+    public List<Entry> getEntries() {
+        return entries;
     }
+
 }
