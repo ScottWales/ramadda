@@ -119,20 +119,26 @@ function CollectionForm(formId) {
 
     this.setFieldValues = function(collection, data, fieldIdx) {
         var currentValue =    this.getFieldSelect(collection, fieldIdx).val();
-        var html = "<select>";
+        var html = "<select>\n";
         for(var i=0;i<data.length;i++)  {
             var value = data[i];
             var label  = value;
-            if(label == "") {
+            if (value.indexOf(":") >=0) {
+               for (val in value) {
+                  value  = val;
+                  label  = value.val;
+               }
+            }
+            if(value == "") {
                 label =  "--";
             }
             var extra = "";
             if(currentValue == value) {
                 extra = " selected ";
             }
-            html += "<option value=\'"  + data[i]+"\'   " + extra +" >" + label +"</option>";
+            html += "<option value=\'"  + data[i]+"\'   " + extra +" >" + label +"</option>\n";
         }
-        html+="</select>";
+        html+="</select>\n";
         this.getFieldSelect(collection, fieldIdx).html(html);
         return currentValue !="";
     }
