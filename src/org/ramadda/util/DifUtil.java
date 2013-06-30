@@ -89,6 +89,24 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Online_Resource = "Online_Resource";
 
+
+    public static final String[] TAGS_Data_Set_Citation = {
+        TAG_Dataset_Creator,
+        TAG_Dataset_Title,
+        TAG_Dataset_Series_Name,
+        TAG_Dataset_Release_Date,
+        TAG_Dataset_Release_Place,
+        TAG_Dataset_Publisher,
+        TAG_Version,
+        TAG_Issue_Identification,
+        TAG_Data_Presentation_Form,
+        TAG_Other_Citation_Details,
+        TAG_Online_Resource,
+    };
+
+
+
+
     /** _more_ */
     public static final String TAG_Personnel = "Personnel";
 
@@ -112,6 +130,18 @@ public class DifUtil {
 
     /** _more_ */
     public static final String TAG_Fax = "Fax";
+
+
+
+    //    public static final String[] TAGS_Personnel = {
+
+
+    /** _more_ */
+
+
+
+
+
 
     /** _more_ */
     public static final String TAG_Contact_Address = "Contact_Address";
@@ -170,6 +200,15 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Detailed_Variable = "Detailed_Variable";
 
+    public static final String []TAGS_Parameters = {
+        TAG_Parameters,
+        TAG_Category,
+        TAG_Topic,
+        TAG_Term,
+        TAG_Variable_Level_1,
+        TAG_Variable_Level_2,
+        TAG_Variable_Level_3
+    };
 
 
     /** _more_ */
@@ -183,6 +222,9 @@ public class DifUtil {
 
     /** _more_ */
     public static final String TAG_Long_Name = "Long_Name";
+
+    public static final String []TAGS_Project = {TAG_Short_Name, TAG_Long_Name};
+
 
     /** _more_ */
     public static final String TAG_Source_Name = "Source_Name";
@@ -359,6 +401,7 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Distribution = "Distribution";
 
+
     /** _more_ */
     public static final String TAG_Distribution_Media = "Distribution_Media";
 
@@ -370,7 +413,10 @@ public class DifUtil {
         "Distribution_Format";
 
     /** _more_ */
-    public static final String TAG_Fees = "Fees";
+    public static final String TAG_Distribution_Fees = "Fees";
+
+    public static final String[] TAGS_Distribution = {TAG_Distribution_Media, TAG_Distribution_Size, TAG_Distribution_Format, TAG_Distribution_Fees};
+
 
     /** _more_ */
     public static final String TAG_Multimedia_Sample = "Multimedia_Sample";

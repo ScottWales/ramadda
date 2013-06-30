@@ -68,8 +68,8 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
 
     @Override
-    public void addImportTypes(List<TwoFacedObject>importTypes) {
-        super.addImportTypes(importTypes);
+     public void addImportTypes(List<TwoFacedObject>importTypes, StringBuffer formBuffer) {
+        super.addImportTypes(importTypes, formBuffer);
         importTypes.add(new TwoFacedObject("Bibliography Import",TYPE_BIBLIO));
     }
 
