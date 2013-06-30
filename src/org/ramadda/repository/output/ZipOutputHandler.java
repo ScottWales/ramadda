@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2008-2012 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
@@ -28,6 +28,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
 
 
+import org.ramadda.repository.util.FileWriter;
 
 import org.w3c.dom.*;
 
@@ -325,12 +326,12 @@ public class ZipOutputHandler extends OutputHandler {
             return result;
         }
 
-        ZipOutputStream zos = new ZipOutputStream(os);
+        FileWriter fileWriter = new FileWriter(new ZipOutputStream(os));
         if (request.get(ARG_COMPRESS, true) == false) {
             //You would think that setting the method to stored would work
             //but it throws an error wanting the crc to be set on the ZipEntry
             //            zos.setMethod(ZipOutputStream.STORED);
-            zos.setLevel(0);
+            fileWriter.setCompressionOn();
         }
         Hashtable seen = new Hashtable();
         try {
@@ -340,21 +341,17 @@ public class ZipOutputHandler extends OutputHandler {
                                       new String[] {});
 
             }
-            processZip(request, entries, recurse, 0, zos, prefix, 0,
+            processZip(request, entries, recurse, 0, fileWriter, prefix, 0,
                        new int[] { 0 }, forExport, root);
 
             if (root != null) {
                 String xml = XmlUtil.toString(root);
-                System.err.println(xml);
-                zos.putNextEntry(new ZipEntry("entries.xml"));
-                byte[] bytes = xml.getBytes();
-                zos.write(bytes, 0, bytes.length);
-                zos.closeEntry();
+                fileWriter.writeFile("entries.xml", xml.getBytes());
             }
             //        } catch (IllegalArgumentException iae) {
             //            ok = false;
         } finally {
-            IOUtil.close(zos);
+            fileWriter.close();
         }
         if (doingFile) {
             os.close();
@@ -377,7 +374,6 @@ public class ZipOutputHandler extends OutputHandler {
      * @param entries _more_
      * @param recurse _more_
      * @param level _more_
-     * @param zos _more_
      * @param prefix _more_
      * @param sizeSoFar _more_
      * @param counter _more_
@@ -390,7 +386,7 @@ public class ZipOutputHandler extends OutputHandler {
      */
     protected long processZip(Request request, List<Entry> entries,
                               boolean recurse, int level,
-                              ZipOutputStream zos, String prefix,
+                              FileWriter fileWriter, String prefix,
                               long sizeSoFar, int[] counter,
                               boolean forExport, Element entriesRoot)
             throws Exception {
@@ -437,7 +433,7 @@ public class ZipOutputHandler extends OutputHandler {
             if (forExport && (entriesRoot != null)) {
                 entryNode =
                     getRepository().getXmlOutputHandler().getEntryTag(null,
-                        entry, zos, entriesRoot.getOwnerDocument(),
+                        entry, fileWriter, entriesRoot.getOwnerDocument(),
                         entriesRoot, true, level != 0);
             }
 
@@ -450,13 +446,13 @@ public class ZipOutputHandler extends OutputHandler {
                     path = prefix + "/" + path;
                 }
                 sizeProcessed += processZip(request, children, recurse,
-                                            level + 1, zos, path,
+                                            level + 1, fileWriter, path,
                                             sizeProcessed + sizeSoFar,
                                             counter, forExport, entriesRoot);
             }
 
 
-            getLogManager().logInfo("Zip generated size =" + sizeProcessed);
+            //            getLogManager().logInfo("Zip generated size =" + sizeProcessed);
             if ( !getAccessManager().canDownload(request, entry)) {
                 continue;
             }
@@ -484,25 +480,16 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
 
-            if (zos != null) {
-                if ((entryNode != null) && forExport) {
-                    zos.putNextEntry(new ZipEntry(entry.getId()));
+            if (fileWriter != null) {
+                InputStream fis =
+                    getStorageManager().getFileInputStream(path);
+                if (entryNode != null && forExport) {
+                    fileWriter.writeFile(entry.getId(), fis);
                     XmlUtil.setAttributes(entryNode, new String[] { ATTR_FILE,
                             entry.getId(), ATTR_FILENAME, name });
 
                 } else {
-                    ZipEntry zipEntry = new ZipEntry(name);
-                    //                    System.err.println("putting:" + zipEntry);
-                    zos.putNextEntry(zipEntry);
-                }
-                InputStream fis =
-                    getStorageManager().getFileInputStream(path);
-                try {
-                    IOUtil.writeTo(fis, zos);
-                    zos.closeEntry();
-                } finally {
-                    IOUtil.close(fis);
-                    zos.closeEntry();
+                    fileWriter.writeFile(name, fis);
                 }
             }
         }

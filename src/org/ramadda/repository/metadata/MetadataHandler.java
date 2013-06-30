@@ -24,6 +24,7 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.repository.util.FileWriter;
 
 
 import org.w3c.dom.*;
@@ -507,7 +508,7 @@ public class MetadataHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addMetadata(Request request, Entry entry,
-                            ZipOutputStream zos, Metadata metadata,
+                            FileWriter fileWriter, Metadata metadata,
                             Element node)
             throws Exception {
         MetadataType type = getType(metadata.getType());
@@ -535,7 +536,7 @@ public class MetadataHandler extends RepositoryManager {
                     "" + index });
             //true means to base 64 encode the text
             attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
-            if ((zos != null)
+            if ((fileWriter != null)
                     && element.getDataType().equals(element.DATATYPE_FILE)) {
                 File f = type.getFile(entry, metadata, element);
                 if ((f == null) || !f.exists()) {
@@ -544,19 +545,10 @@ public class MetadataHandler extends RepositoryManager {
                 String fileName = repository.getGUID();
                 //metadata.getId() +"_" + index;
                 attrNode.setAttribute("fileid", fileName);
-                zos.putNextEntry(new ZipEntry(fileName));
                 InputStream fis =
                     getStorageManager().getFileInputStream(f.toString());
-                try {
-                    IOUtil.writeTo(fis, zos);
-                } finally {
-                    IOUtil.close(fis);
-                    zos.closeEntry();
-                }
+                fileWriter.writeFile(fileName, fis);
             }
-
-
-
         }
     }
 

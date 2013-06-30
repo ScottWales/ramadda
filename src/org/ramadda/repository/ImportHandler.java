@@ -41,7 +41,7 @@ public abstract class ImportHandler extends RepositoryManager {
         super(repository);
     }
 
-    public void addImportTypes(List<TwoFacedObject>importTypes) {
+    public void addImportTypes(List<TwoFacedObject>importTypes, StringBuffer formBuffer) {
     }
 
     /**

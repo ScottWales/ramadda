@@ -3982,10 +3982,11 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryImport(Request request) throws Exception {
         Entry        group = findGroup(request);
         StringBuffer sb    = new StringBuffer();
+        StringBuffer extraForm    = new StringBuffer();
         List<TwoFacedObject> importTypes = new ArrayList<TwoFacedObject>();
         for (ImportHandler importHandler :
                 getRepository().getImportHandlers()) {
-            importHandler.addImportTypes(importTypes);
+            importHandler.addImportTypes(importTypes, extraForm);
         }
         sb.append(msgHeader("Import " + LABEL_ENTRIES));
         request.uploadFormWithAuthToken(sb,
@@ -4005,6 +4006,7 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Submit")));
 
 
+        sb.append(extraForm);
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());

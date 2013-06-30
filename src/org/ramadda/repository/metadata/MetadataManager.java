@@ -26,6 +26,8 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.repository.util.FileWriter;
+
 
 
 import org.w3c.dom.*;
@@ -596,7 +598,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addMetadata(Request request, Entry entry,
-                            ZipOutputStream zos, Document doc, Element parent)
+                            FileWriter fileWriter, Document doc, Element parent)
             throws Exception {
         List<Metadata> metadataList = getMetadata(entry);
         for (Metadata metadata : metadataList) {
@@ -604,7 +606,7 @@ public class MetadataManager extends RepositoryManager {
             if (metadataHandler == null) {
                 continue;
             }
-            metadataHandler.addMetadata(request, entry, zos, metadata,
+            metadataHandler.addMetadata(request, entry, fileWriter, metadata,
                                         parent);
 
         }

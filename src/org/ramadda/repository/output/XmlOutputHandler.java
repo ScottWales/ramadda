@@ -32,6 +32,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.util.FileWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -171,7 +172,7 @@ public class XmlOutputHandler extends OutputHandler {
      * @throws Exception problem creating the tag
      */
     public Element getEntryTag(Request request, Entry entry,
-                               ZipOutputStream zos, Document doc,
+                               FileWriter fileWriter, Document doc,
                                Element parent, boolean forExport,
                                boolean includeParentId)
             throws Exception {
@@ -267,7 +268,7 @@ public class XmlOutputHandler extends OutputHandler {
             descNode.appendChild(XmlUtil.makeCDataNode(doc,
                     entry.getDescription(), true));
         }
-        getMetadataManager().addMetadata(request, entry, zos, doc, node);
+        getMetadataManager().addMetadata(request, entry, fileWriter, doc, node);
         entry.getTypeHandler().addToEntryNode(entry, node);
 
         return node;
