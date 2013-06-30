@@ -60,7 +60,7 @@
 ]]></template>
     </type>
 
-    <type       name="ISO Topic Category"       searchable="false"       id="dif.iso_topic_category" dif.tag="ISO_Topic_Category">
+    <type       name="ISO Topic Category"       searchable="true"       id="dif.iso_topic_category" dif.tag="ISO_Topic_Category">
       <element         datatype="enumeration"         name="Category"         
                        values="file:/org/ramadda/geodata/dif/resources/isotopiccategories.txt"/>
       <template type="dif"><![CDATA[<ISO_Topic_Category>${Category}</ISO_Topic_Category>]]></template>
@@ -414,7 +414,7 @@ ${Chronostratigraphic_Unit}
 
     <type
        name="Keyword"
-       searchable="false"
+       searchable="true"
        id="dif.keyword">
       <element name="Keyword"/>
       <template type="dif"><![CDATA[<Keyword>${Keyword}</Keyword>]]></template>

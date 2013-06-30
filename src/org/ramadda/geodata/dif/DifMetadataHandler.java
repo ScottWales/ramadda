@@ -89,6 +89,8 @@ public class DifMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_LOCATION = "dif.location";
 
+    public static final String TYPE_PROJECT = "dif.project";
+
     /** _more_ */
     public static final String TYPE_QUALITY = "dif.quality";
 
