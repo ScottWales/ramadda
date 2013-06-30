@@ -262,6 +262,63 @@
    </type>
 
 
+  <type name="project_instrument"  description="Instrument Data Collection" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/system-monitor.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="instrument_id" type="string"  label="Instrument ID"   />
+     <column name="type" type="enumeration"  label="Instrument Type"   />
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div class="wiki-h1">
+Instrument: {{name}}
+</div>
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>ID:</b></td><td>{{field name="instrument_id"}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="type"}}</td></tr>
+</table>
+
+{{tree prefix="==Data==" message="" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+{{mapentry width="350" message=""}}
+<p>
+</td></tr>
+
+
+</table>
+
+==Properties==
+<block open="false" title="Click to view Properties">
+{{properties}}
+</block>
+
+
+]]>
+</wiki>
+
+
+ </type>
+
+  <type name="project_deployment"  description="Deployment" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/paper-plane.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+ </type>
+
 
   <type name="project_campaign"  description="Campaign" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/paste_plain.png"/>
