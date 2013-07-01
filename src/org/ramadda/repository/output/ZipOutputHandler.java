@@ -76,6 +76,8 @@ import java.util.zip.*;
  */
 public class ZipOutputHandler extends OutputHandler {
 
+    private static final String ARG_WRITETODISK = "writetodisk";
+
     /** _more_          */
     private final LogManager.LogId LOGID =
         new LogManager.LogId(
@@ -287,23 +289,10 @@ public class ZipOutputHandler extends OutputHandler {
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport)
             throws Exception {
-        OutputStream os;
+        OutputStream os = null;
         boolean      doingFile = false;
         File         tmpFile   = null;
-        if (request.getHttpServletResponse() != null) {
-            os = request.getHttpServletResponse().getOutputStream();
-            request.getHttpServletResponse().setContentType(
-                getMimeType(OUTPUT_ZIP));
-        } else {
-            tmpFile = getRepository().getStorageManager().getTmpFile(request,
-                    ".zip");
-            os = getStorageManager().getUncheckedFileOutputStream(tmpFile);
-            doingFile = true;
-        }
 
-
-        Result result = new Result();
-        result.setNeedToWrite(false);
 
 
         Element root = null;
@@ -315,24 +304,45 @@ public class ZipOutputHandler extends OutputHandler {
         } catch (IllegalArgumentException iae) {
             ok = false;
         }
-
         if ( !ok) {
-            javax.servlet.http.HttpServletResponse response =
-                request.getHttpServletResponse();
-            response.setStatus(Result.RESPONSE_UNAUTHORIZED);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR,
-                               "Size of request has exceeded maximum size");
-
-            return result;
+            return new Result("Error", new StringBuffer("Size of request has exceeded maximum size"));
         }
 
-        FileWriter fileWriter = new FileWriter(new ZipOutputStream(os));
-        if (request.get(ARG_COMPRESS, true) == false) {
-            //You would think that setting the method to stored would work
-            //but it throws an error wanting the crc to be set on the ZipEntry
-            //            zos.setMethod(ZipOutputStream.STORED);
-            fileWriter.setCompressionOn();
+
+        Result result = new Result();
+        FileWriter fileWriter = null;
+
+
+
+        boolean writeToDisk = request.get(ARG_WRITETODISK, false);
+        File writeToDiskDir = null;
+        if(writeToDisk) {
+            //IMPORTANT: Make sure that the user is an admin when handling the write to disk 
+            request.ensureAdmin();
+            forExport = true;
+            writeToDiskDir = getStorageManager().makeTempDir(getRepository().getGUID(),false).getDir();
+            fileWriter = new FileWriter(writeToDiskDir);
+        } else {
+            if (request.getHttpServletResponse() != null) {
+                os = request.getHttpServletResponse().getOutputStream();
+                request.getHttpServletResponse().setContentType(
+                                                                getMimeType(OUTPUT_ZIP));
+            } else {
+                tmpFile = getRepository().getStorageManager().getTmpFile(request,
+                                                                         ".zip");
+                os = getStorageManager().getUncheckedFileOutputStream(tmpFile);
+                doingFile = true;
+            }
+            fileWriter = new FileWriter(new ZipOutputStream(os));            
+            result.setNeedToWrite(false);
+            if (request.get(ARG_COMPRESS, true) == false) {
+                //You would think that setting the method to stored would work
+                //but it throws an error wanting the crc to be set on the ZipEntry
+                //            zos.setMethod(ZipOutputStream.STORED);
+                fileWriter.setCompressionOn();
+            }
         }
+
         Hashtable seen = new Hashtable();
         try {
             if (forExport) {
@@ -348,20 +358,21 @@ public class ZipOutputHandler extends OutputHandler {
                 String xml = XmlUtil.toString(root);
                 fileWriter.writeFile("entries.xml", xml.getBytes());
             }
-            //        } catch (IllegalArgumentException iae) {
-            //            ok = false;
         } finally {
             fileWriter.close();
         }
         if (doingFile) {
-            os.close();
-
+            IOUtil.close(os);
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),
                 getMimeType(OUTPUT_ZIP));
 
         }
         getLogManager().logInfo("Zip File ended");
+
+        if(writeToDisk) {
+            return new Result("Export",new StringBuffer("<p>Exported to:<br>" + writeToDiskDir));
+        }
 
         return result;
     }
