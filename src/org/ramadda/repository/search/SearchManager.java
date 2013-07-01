@@ -227,9 +227,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     private boolean isLuceneEnabled = true;
 
 
-    //Cache for 1 hour
-    private TTLObject<Hashtable<String,Integer>> cache =
-        new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
+
 
 
     /**
@@ -948,22 +946,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
     public Result processSearchType(Request request) throws Exception {
         StringBuffer sb  = new StringBuffer();
-        Hashtable<String,Integer> typesWeHave = cache.get();
-        if(typesWeHave == null) {
-            typesWeHave = new Hashtable<String,Integer>();
 
-            
-
-            for(String type:getRepository().getDatabaseManager().selectDistinct(
-                                                                                 Tables.ENTRIES.NAME,
-                                                                                 Tables.ENTRIES.COL_TYPE, null)) {
-                int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
-                                                        Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-                
-                typesWeHave.put(type, new Integer(cnt));
-            }
-            cache.put(typesWeHave);
-        }
 
 
 
@@ -978,8 +961,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 if (typeHandler.isAnyHandler()) {
                     continue;
                 }
-                Integer cnt = typesWeHave.get(typeHandler.getType());
-                if(cnt==null) {
+                int cnt = getEntryManager().getEntryCount(typeHandler);
+                if(cnt==0) {
                     continue;
                 }
                 String icon = typeHandler.getProperty("icon", (String) null);

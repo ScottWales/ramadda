@@ -141,6 +141,12 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> entryCache;
 
 
+    //Cache for 1 hour
+    private TTLObject<Hashtable<String,Integer>> typeCache =
+        new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
+
+
+
 
 
     /**
@@ -285,6 +291,8 @@ public class EntryManager extends RepositoryManager {
      */
     protected void clearCache() {
         entryCache = null;
+        typeCache =
+            new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
     }
 
 
@@ -9112,6 +9120,24 @@ public class EntryManager extends RepositoryManager {
         return results;
     }
 
+    public int getEntryCount(TypeHandler typeHandler) throws Exception {
+        Hashtable<String,Integer> typesWeHave = typeCache.get();
+        if(typesWeHave == null) {
+            typesWeHave = new Hashtable<String,Integer>();
+            for(String type:getRepository().getDatabaseManager().selectDistinct(
+                                                                                 Tables.ENTRIES.NAME,
+                                                                                 Tables.ENTRIES.COL_TYPE, null)) {
+                int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
+                                                        Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+                
+                typesWeHave.put(type, new Integer(cnt));
+            }
+            typeCache.put(typesWeHave);
+        }
+        Integer cnt = typesWeHave.get(typeHandler.getType());
+        if(cnt == null) return 0;
+        return cnt.intValue();
+    }
 
 
 }
