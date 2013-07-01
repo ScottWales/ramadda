@@ -123,13 +123,7 @@ function CollectionForm(formId) {
         for(var i=0;i<data.length;i++)  {
             var value = data[i];
             var label  = value;
-            if (value.indexOf(":") >=0) {
-               for (val in value) {
-                  value  = val;
-                  label  = value.val;
-               }
-            }
-            if(value == "") {
+            if(label == "") {
                 label =  "--";
             }
             var extra = "";

@@ -22,57 +22,36 @@
 package org.ramadda.geodata.model;
 
 
-import org.ramadda.data.process.CollectionOperand;
-
-import org.ramadda.data.process.DataProcess;
-import org.ramadda.data.process.DataProcessInput;
-import org.ramadda.data.process.DataProcessOutput;
-import org.ramadda.geodata.cdmdata.CDOOutputHandler;
-import org.ramadda.geodata.cdmdata.NCLOutputHandler;
-import org.ramadda.geodata.cdmdata.NCOOutputHandler;
-
-
-
-
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.database.Tables;
-
-import org.ramadda.repository.output.JsonOutputHandler;
-import org.ramadda.repository.search.*;
-import org.ramadda.repository.type.*;
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
-
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
-
-import org.ramadda.util.TTLCache;
-
-import org.ramadda.util.Utils;
-
-import org.w3c.dom.*;
-
-import ucar.unidata.util.IOUtil;
-
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-
-
-
-import java.io.*;
-
-import java.sql.*;
-
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-import java.util.regex.*;
+import org.ramadda.data.process.CollectionOperand;
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessOutput;
+import org.ramadda.geodata.cdmdata.NCLOutputHandler;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryManager;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.RequestHandler;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.type.CollectionTypeHandler;
+import org.ramadda.repository.type.Column;
+import org.ramadda.sql.Clause;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
+import org.ramadda.util.TTLCache;
+import org.ramadda.util.Utils;
+import org.w3c.dom.Element;
+
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
 
 
 /**
@@ -104,6 +83,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     private TTLCache<Object, Object> cache = new TTLCache<Object,
                                                  Object>(60 * 60 * 1000);
 
+    /** NCL output handler */
+    private NCLOutputHandler nclOutputHandler;
+    
     /**
      * ctor
      *
@@ -120,6 +102,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         super(repository);
         collectionType = Misc.getProperty(props, "collectiontype",
                                           "climate_collection");
+        nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
@@ -152,6 +135,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (process.getDataProcessId().equals(selectedProcess)) {
                     System.err.println("MODEL: applying process: "
                                        + process.getDataProcessLabel());
+                    DataProcessOutput output = process.processRequest(request, operands);
+                    /*
                     for (CollectionOperand op : operands) {
                         Entry granule = op.getGranules().get(0);
                         DataProcessOutput output =
@@ -160,8 +145,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             files.add(outFile);
                         }
                     }
+                    */
+                    if (output.hasOutput()) {
+                        for (File outFile : output.getFiles()) {
+                            files.add(outFile);
+                        }
+                    }
                 }
             }
+            didProcess = true;
         }
 
         /*
@@ -174,11 +166,31 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
         */
 
+        /*
+        if (doDownload) {
+            return zipFiles(request,
+                            IOUtil.stripExtension(entry.getName()) + ".zip",
+                            files);
+        }
+        */
+
+        //Make the image
+        File imageFile = nclOutputHandler.processRequest(request,
+                             files.get(0));
+
+        //And return the result
+        String extension = IOUtil.getFileExtension(imageFile.toString());
+
+        return new Result("",
+                          getStorageManager().getFileInputStream(imageFile),
+                          getRepository().getMimeTypeFromSuffix(extension));
 
 
 
 
+        /*
         return new Result("Model Compare Results", new StringBuffer("TODO"));
+        */
 
     }
 

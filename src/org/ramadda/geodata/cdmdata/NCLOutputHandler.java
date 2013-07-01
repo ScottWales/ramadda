@@ -65,6 +65,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -123,6 +125,12 @@ public class NCLOutputHandler extends OutputHandler {
     /** spatial arguments */
     private static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
+    
+    /** NCL version regex */
+    private static final String NCL_VERSION_REGEX = "NCAR Command Language Version (\\d+.\\d+.\\d+)";
+    
+    /** NCL version pattern */
+    private static final Pattern pattern = Pattern.compile(NCL_VERSION_REGEX);
 
     /**
      * Construct a new NCLOutputHandler
@@ -505,6 +513,18 @@ sb.append(HtmlUtils.form(formUrl,
                                getProductDir());
         String errorMsg = results[1];
         String outMsg   = results[0];
+        // Check the version
+        if (suffix.equals("png")) {
+            Matcher m = pattern.matcher(outMsg);
+            if (m.find()) {
+                String version = m.group(1);
+                if (version.compareTo("6.0.0") < 0) {
+            	    String oldPath = outFile.toString();
+            	    outFile = new File(oldPath.replace(".png", ".000001.png"));
+                }
+            }
+        }
+
         if ( !outFile.exists()) {
             if (outMsg.length() > 0) {
                 throw new IllegalArgumentException(outMsg);
@@ -517,15 +537,6 @@ sb.append(HtmlUtils.form(formUrl,
                     "Humm, the NCL image generation failed for some reason");
             }
         }
-        /*
-        // Crop the image - needs work to handle different aspect ratios
-        int[] ul = new int[] {0,160};
-        int[] lr = new int[] {800,670};
-        Image i = ImageUtils.readImage(outFile.getAbsolutePath());
-        BufferedImage bim = ImageUtils.clip(ImageUtils.toBufferedImage(i), ul, lr);
-        ImageUtils.writeImageToFile(bim, outFile);
-        */
-        
         return outFile;
     }
 

@@ -117,7 +117,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     private static final String ARG_CDO_LEVEL = ARG_CDO_PREFIX + "level";
 
     /** statistic identifier */
-    private static final String ARG_CDO_STAT = ARG_CDO_PREFIX + "stat";
+    public static final String ARG_CDO_STAT = ARG_CDO_PREFIX + "stat";
 
     /** from date arg */
     private static final String ARG_CDO_FROMDATE = ARG_CDO_PREFIX

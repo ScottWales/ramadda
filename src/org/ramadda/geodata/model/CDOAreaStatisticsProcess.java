@@ -22,6 +22,7 @@
 package org.ramadda.geodata.model;
 
 
+import org.ramadda.data.process.CollectionOperand;
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOutput;
@@ -30,6 +31,7 @@ import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
@@ -193,6 +195,17 @@ public class CDOAreaStatisticsProcess implements DataProcess {
         //   - region
         //   - month range
         //   - year or time range
+        String stat   = request.getString(CDOOutputHandler.ARG_CDO_STAT);
+        boolean wantClimo = false;
+        if (stat.equals(CDOOutputHandler.STAT_ANOM)) {
+            System.err.println("Looked for climo");
+            Entry climo = findClimatology(inputs.get(0), oneOfThem);
+            if (climo == null) { 
+            	System.err.println("found squat");
+            } else {
+            	wantClimo = true;
+            }
+        }
 
         List<String> statCommands = typeHandler.createStatCommands(request,
                                         oneOfThem);
@@ -225,6 +238,20 @@ public class CDOAreaStatisticsProcess implements DataProcess {
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());
+        runProcess(commands, outFile);
+        
+        if (wantClimo) {
+        	//TODO:  do stuff
+        }
+
+        if (typeHandler.doingPublish(request)) {
+            return new DataProcessOutput(outFile);
+        }
+
+        return new DataProcessOutput(outFile);
+    }
+
+    private void runProcess(List<String> commands, File outFile) throws Exception {
         String[] results = getRepository().executeCommand(commands, null,
                                typeHandler.getProductDir());
         String errorMsg = results[1];
@@ -241,15 +268,15 @@ public class CDOAreaStatisticsProcess implements DataProcess {
                     "Humm, the CDO processing failed for some reason");
             }
         }
-
-        if (typeHandler.doingPublish(request)) {
-            return new DataProcessOutput(outFile);
-        }
-
-        return new DataProcessOutput(outFile);
     }
+    
+    private Entry findClimatology(DataProcessInput input, Entry oneOfThem) {
+    	if (!(input instanceof CollectionOperand)) return null;
+    	List<Clause> clauses = new ArrayList<Clause>();
+		return null;
+	}
 
-    /**
+	/**
      * Get the repository
      *
      * @return the repository

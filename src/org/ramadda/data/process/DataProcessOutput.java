@@ -73,7 +73,7 @@ public class DataProcessOutput {
      * @param files  the files
      */
     public DataProcessOutput(List<File> files) {
-        files = new ArrayList<File>(files);
+        this.files = new ArrayList<File>(files);
     }
 
     /**
