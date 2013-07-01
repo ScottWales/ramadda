@@ -408,7 +408,7 @@ features
 
 
 
-  <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Project" >
+  <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project" >
      <property name="icon" value="/fieldproject/chart_organisation.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
