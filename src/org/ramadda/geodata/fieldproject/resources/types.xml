@@ -42,7 +42,8 @@
 
   <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/page_world.png"/>
-     <property name="form.resource.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
@@ -67,9 +68,10 @@
 </div>
 
 ==Information==
-<table>
-<tr><td align="right"><b>Type:</b></td><td>{{field name="project_type"}}</td></tr>
-<tr><td align="right"><b>Location:</b></td><td> {{field name="location"}}</td></tr>
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="project_type" row.label="Type:"}}
+{{field name="location" row.label="Location:"}}
 </table>
 
 
@@ -91,10 +93,9 @@
 
 </table>
 
-==Properties==
-<block open="false" title="Click to view Properties">
-{{properties}}
-</block>
+
+{{properties block.show="true" block.open="false" block.title="Click to view Properties" prefix="==Properties=="}}
+
 
 <p>
 ]]>

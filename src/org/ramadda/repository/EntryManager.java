@@ -4062,8 +4062,8 @@ public class EntryManager extends RepositoryManager {
         }
 
         String                    entriesXml        = null;
-        Hashtable<String, String> origFileToStorage = new Hashtable<String,
-                                                          String>();
+        Hashtable<String, File> origFileToStorage = new Hashtable<String,
+            File>();
 
         InputStream fis = getStorageManager().getFileInputStream(file);
         try {
@@ -4100,8 +4100,8 @@ public class EntryManager extends RepositoryManager {
                         IOUtil.writeTo(zin, fos);
                         fos.close();
                         //Add both the zip path and the filename in case we have dir/filename.txt in the zip
-                        origFileToStorage.put(ze.getName(), f.toString());
-                        origFileToStorage.put(name, f.toString());
+                        origFileToStorage.put(ze.getName(), f);
+                        origFileToStorage.put(name, f);
                     }
                 }
                 if (entriesXml == null) {
@@ -4129,33 +4129,18 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
-        if (parent != null) {
-            entries.put("", parent);
-        }
-        Document resultDoc  = XmlUtil.makeDocument();
-        Element  resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE, null,
-                                            new String[] { ATTR_CODE,
-                CODE_OK });
-
-
-
-
         Element root = XmlUtil.getRoot(entriesXml);
-
         for (ImportHandler importHandler :
                 getRepository().getImportHandlers()) {
             Element newRoot = importHandler.getDOM(root);
             if ((newRoot != null) && (newRoot != root)) {
                 root = newRoot;
-
                 break;
             }
         }
 
-
-        List<Entry> newEntries = processEntryXml(request, root, entries,
-                                     origFileToStorage, resultRoot);
+        List<Entry> newEntries = processEntryXml(request, root, parent,
+                                                 origFileToStorage);
 
 
         for (Entry entry : newEntries) {
@@ -4163,6 +4148,17 @@ public class EntryManager extends RepositoryManager {
         }
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
             //TODO: Return a list of the newly created entries
+            Element  resultRoot = XmlUtil.create(XmlUtil.makeDocument(), TAG_RESPONSE, null,
+                                                 new String[] { ATTR_CODE,
+                                                                CODE_OK });
+
+            for(Entry entry: newEntries) {
+                XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
+                               resultRoot, new String[] { ATTR_ID,
+                                                          entry.getId() });
+                
+
+            }
             String xml = XmlUtil.toString(resultRoot);
 
             return new Result(xml, MIME_XML);
@@ -4195,16 +4191,21 @@ public class EntryManager extends RepositoryManager {
      * @param root _more_
      * @param entries _more_
      * @param origFileToStorage _more_
-     * @param resultRoot _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public List<Entry> processEntryXml(
-            Request request, Element root, Hashtable<String, Entry> entries,
-            Hashtable<String, String> origFileToStorage, Element resultRoot)
+            Request request, Element root, 
+            Entry parent,
+            Hashtable<String, File> origFileToStorage)
             throws Exception {
+        Hashtable<String, Entry> entries = new Hashtable<String, Entry>();
+        if (parent != null) {
+            entries.put("", parent);
+        }
+
         List<Entry>   newEntries       = new ArrayList<Entry>();
         List<Element> entryNodes       = new ArrayList<Element>();
         List<Element> associationNodes = new ArrayList<Element>();
@@ -4236,12 +4237,6 @@ public class EntryManager extends RepositoryManager {
             Entry entry = createEntryFromXml(request, node, entries,
                                              origFileToStorage, true, false);
 
-//            System.err.println("entry:" + entry.getFullName() + " " + entry.getId());
-            if (resultRoot != null) {
-                XmlUtil.create(resultRoot.getOwnerDocument(), TAG_ENTRY,
-                               resultRoot, new String[] { ATTR_ID,
-                        entry.getId() });
-            }
             newEntries.add(entry);
             if (XmlUtil.hasAttribute(node, ATTR_ID)) {
                 idList.add(new String[] {
@@ -4265,14 +4260,7 @@ public class EntryManager extends RepositoryManager {
             String id =
                 getAssociationManager().processAssociationXml(request, node,
                     entries, origFileToStorage);
-            if (resultRoot != null) {
-                XmlUtil.create(resultRoot.getOwnerDocument(),
-                               TAG_ASSOCIATION, resultRoot,
-                               new String[] { ATTR_ID,
-                        id });
-            }
         }
-
 
         //Replace any entry re
         for (Entry newEntry : newEntries) {
@@ -4301,7 +4289,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry createEntryFromXml(Request request, Element node,
                                     Hashtable<String, Entry> entries,
-                                    Hashtable<String, String> files,
+                                    Hashtable<String, File> files,
                                     boolean checkAccess, boolean internal)
             throws Exception {
         String parentId    = XmlUtil.getAttribute(node, ATTR_PARENT, "");
@@ -4345,7 +4333,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry createEntryFromXml(Request request, Element node,
                                     Entry parentEntry,
-                                    Hashtable<String, String> files,
+                                    Hashtable<String, File> files,
                                     boolean checkAccess, boolean internal)
             throws Exception {
 
@@ -4396,13 +4384,13 @@ public class EntryManager extends RepositoryManager {
         String fileName = XmlUtil.getAttribute(node, ATTR_FILENAME,
                               (String) null);
         if (file != null) {
-            String tmp = ((files == null)
-                          ? null
-                          : (String) files.get(file));
+            File tmp = ((files == null)
+                        ? null
+                        :  files.get(file));
             if (doAnonymousUpload) {
                 File newFile =
                     getStorageManager().moveToAnonymousStorage(request,
-                        new File(tmp), "");
+                                                               tmp, "");
 
                 file = newFile.toString();
             } else {
@@ -4412,7 +4400,7 @@ public class EntryManager extends RepositoryManager {
                         getStorageManager().getStorageFileName(targetName);
                 }
                 File newFile = getStorageManager().moveToStorage(request,
-                                   new File(tmp), targetName);
+                                   tmp, targetName);
                 file = newFile.toString();
             }
         }

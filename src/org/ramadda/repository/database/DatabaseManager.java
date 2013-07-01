@@ -502,7 +502,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 continue;
             }
             int cnt = getCount(Tables.ENTRIES.NAME,
-                               Clause.eq("type", typeHandler.getType()));
+                               Clause.eq(Tables.ENTRIES.COL_TYPE, typeHandler.getType()));
 
             String url =
                 HtmlUtils.href(

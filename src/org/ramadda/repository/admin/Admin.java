@@ -639,12 +639,12 @@ public class Admin extends RepositoryManager {
         }
         Element     root       = XmlUtil.getRoot(initEntriesXml);
         Request tmpRequest = getRepository().getRequest(user);
-        System.err.println("processing initEntries");
+        System.err.println("processing initial entries");
         List<Entry> newEntries =
             getEntryManager().processEntryXml(
                                               tmpRequest, root,
-                                              new Hashtable<String, Entry>(),
-                                              new Hashtable<String, String>(), null);
+                                              null,
+                                              new Hashtable<String, File>());
     }
 
 

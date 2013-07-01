@@ -108,6 +108,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -226,10 +227,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     private boolean isLuceneEnabled = true;
 
 
-
-
-    private TTLObject<HashSet<String>> cache =
-        new TTLObject<HashSet<String>>(60 * 60 * 1000);
+    //Cache for 1 hour
+    private TTLObject<Hashtable<String,Integer>> cache =
+        new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
 
 
     /**
@@ -948,13 +948,21 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
     public Result processSearchType(Request request) throws Exception {
         StringBuffer sb  = new StringBuffer();
-        HashSet<String> typesWeHave = cache.get();
+        Hashtable<String,Integer> typesWeHave = cache.get();
         if(typesWeHave == null) {
-            typesWeHave = new HashSet();
-            typesWeHave.addAll(getRepository().getDatabaseManager().selectDistinct(
+            typesWeHave = new Hashtable<String,Integer>();
+
+            
+
+            for(String type:getRepository().getDatabaseManager().selectDistinct(
                                                                                  Tables.ENTRIES.NAME,
-                                                                                 Tables.ENTRIES.COL_TYPE, null));
-            cache.put(typesWeHave );
+                                                                                 Tables.ENTRIES.COL_TYPE, null)) {
+                int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
+                                                        Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+                
+                typesWeHave.put(type, new Integer(cnt));
+            }
+            cache.put(typesWeHave);
         }
 
 
@@ -970,7 +978,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 if (typeHandler.isAnyHandler()) {
                     continue;
                 }
-                if(!typesWeHave.contains(typeHandler.getType())) {
+                Integer cnt = typesWeHave.get(typeHandler.getType());
+                if(cnt==null) {
                     continue;
                 }
                 String icon = typeHandler.getProperty("icon", (String) null);
@@ -988,7 +997,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 buff.append("<li> ");
                 buff.append(img);
                 buff.append(" ");
-                buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), typeHandler.getDescription()));
+                String label = typeHandler.getDescription() +" (" + cnt+")";
+                buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), label));
                 cb.append(typeHandler.getCategory(), buff);
             }
             sb.append("<table width=100%><tr valign=top>");

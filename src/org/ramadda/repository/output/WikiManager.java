@@ -76,6 +76,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     public static final String ATTR_BLOCK_TITLE = "block.title";
     public static final String ATTR_BLOCK_POPUP = "block.popup";
 
+    public static final String ATTR_ROW_LABEL = "row.label";
 
 
     /** border attribute */
@@ -946,6 +947,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         if(result.length()==0) return "";
 
         StringBuffer sb = new StringBuffer();
+
+        String       rowLabel   = Misc.getProperty(props, attrPrefix + ATTR_ROW_LABEL,(String) null);
+        if(rowLabel!=null) {
+            return HtmlUtils.formEntry(rowLabel, result);
+        }
+
+
+
         if(prefix!=null)  {
             sb.append(makeWikiUtil(request, false).wikify(prefix, null));
         }
@@ -953,6 +962,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         if(suffix!=null)  {
             sb.append(makeWikiUtil(request, false).wikify(suffix, null));
         }
+
+
+
 
         String       blockTitle   = Misc.getProperty(props, attrPrefix + ATTR_BLOCK_TITLE, "");
         if (blockPopup) {
@@ -1011,13 +1023,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             return HtmlUtils.href(url, title);
 
         } else if (include.equals(WIKI_PROP_RESOURCE)) {
-            String url = entry.getTypeHandler().getEntryResourceUrl(
-                                                                    request, entry);
-            if(Utils.stringDefined(url)) {
-                return HtmlUtils.href(url,url);
-            } else {
-                return msg("None");
+            if(!entry.getResource().isDefined()) {
+                String message = Misc.getProperty(props, ATTR_MESSAGE, (String) null);
+                if(message!=null) return message;
+                return "";
             }
+
+            String url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+            String label = Misc.getProperty(props, ATTR_TITLE, url);
+            return HtmlUtils.href(url,label);
         } else if (include.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
@@ -1028,7 +1042,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             return desc;
         } else if (include.equals(WIKI_PROP_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
-                    Misc.getProperty(props, ATTR_TITLE, "Layout"));
+                                                         Misc.getProperty(props, ATTR_TITLE, "Layout"));
         } else if (include.equals(WIKI_PROP_NAME)) {
             return entry.getName();
         } else if (include.equals(WIKI_PROP_FIELD)) {
