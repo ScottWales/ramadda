@@ -303,7 +303,8 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
+@Override
+    public void addToEntryForm(Request request, StringBuffer sb, Entry parentEntry, Entry entry)
             throws Exception {
 
         String size = HtmlUtils.SIZE_70;

@@ -1217,7 +1217,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HtmlUtils.hidden(ARG_TYPE, type));
                 sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
             }
-            typeHandler.addToEntryForm(request, sb, entry);
+            typeHandler.addToEntryForm(request, sb,group, entry);
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
 
         }
@@ -3034,7 +3034,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Upload")));
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
-            typeHandler.addToEntryForm(request, sb, null);
+            typeHandler.addToEntryForm(request, sb, group, null);
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.submit(msg("Upload")));
             sb.append(HtmlUtils.formClose());

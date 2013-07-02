@@ -103,21 +103,6 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
-            throws Exception {
-        super.addToEntryForm(request, sb, entry);
-    }
-
-
 
     /**
      * _more_

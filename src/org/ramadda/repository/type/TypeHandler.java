@@ -2471,10 +2471,10 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
+    public void addToEntryForm(Request request, StringBuffer sb, Entry parentEntry, Entry entry)
             throws Exception {
-        addBasicToEntryForm(request, sb, entry);
-        addSpecialToEntryForm(request, sb, entry);
+        addBasicToEntryForm(request, sb, parentEntry, entry);
+        addSpecialToEntryForm(request, sb, parentEntry, entry);
 
         if (request.getUser().getAdmin() &&         okToShowInForm(entry, "owner", true)) {
             sb.append(formEntry(request, msgLabel("Owner"),
@@ -2497,11 +2497,11 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addSpecialToEntryForm(Request request, StringBuffer sb,
+                                      Entry parentEntry,
                                       Entry entry)
             throws Exception {
         if (parent != null) {
-            parent.addSpecialToEntryForm(request, sb, entry);
-
+            parent.addSpecialToEntryForm(request, sb, parentEntry, entry);
             return;
         }
     }
@@ -2517,6 +2517,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addSpatialToEntryForm(Request request, StringBuffer sb,
+                                      Entry parentEntry,
                                       Entry entry)
             throws Exception {
 
@@ -2572,6 +2573,18 @@ public class TypeHandler extends RepositoryManager {
                               ? "" + entry.getEast()
                               : "", };
 
+            } else if(parentEntry!=null) {
+                if(parentEntry.hasAreaDefined()) {
+                    nwse = new String[]{""+parentEntry.getNorth(),
+                                        ""+parentEntry.getWest(),
+                                        ""+parentEntry.getSouth(),
+                                        ""+ parentEntry.getEast()};
+                } else if(parentEntry.hasLocationDefined()) {
+                    nwse = new String[]{""+parentEntry.getNorth(),
+                                        ""+parentEntry.getWest(),
+                                        ""+parentEntry.getSouth(),
+                                        ""+ parentEntry.getEast()};
+                }
             }
             String extraMapStuff = "";
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -2715,6 +2728,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addBasicToEntryForm(Request request, StringBuffer sb,
+                                    Entry parentEntry,
                                     Entry entry)
         throws Exception {
 
@@ -3028,7 +3042,7 @@ public class TypeHandler extends RepositoryManager {
                 continue;
             }
             if(what.equals(ARG_LOCATION)) {
-                addSpatialToEntryForm(request, sb, entry);
+                addSpatialToEntryForm(request, sb, parentEntry, entry);
                 continue;
             }
         }
@@ -3387,15 +3401,13 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (advancedForm) {
-
             String  radio = getSpatialSearchTypeWidget(request);
-
-
             SelectionRectangle bbox        = getSelectionBounds(request);
             MapInfo map   = getRepository().getMapManager().createMap(request,
                               true);
+
             String             mapSelector = map.makeSelector(ARG_AREA, true,
-                                     bbox.getStringArray(), "", radio);
+                                                              bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));
             basicSB.append("\n");
 

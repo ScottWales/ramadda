@@ -266,9 +266,10 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
+@Override
+    public void addToEntryForm(Request request, StringBuffer sb, Entry parentEntry, Entry entry)
             throws Exception {
-        super.addToEntryForm(request, sb, entry);
+        super.addToEntryForm(request, sb, parentEntry, entry);
         Element root = getRoot(entry);
         int     cnt  = 1;
 

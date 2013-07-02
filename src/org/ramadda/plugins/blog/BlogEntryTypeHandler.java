@@ -137,30 +137,6 @@ public class BlogEntryTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * add the tinymce javascript to add html editing to text areas
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addToEntryForm(Request request, StringBuffer sb, Entry entry)
-            throws Exception {
-        /*
-        String js =
-            "<script type=\"text/javascript\" src=\"/repository/tiny_mce/tiny_mce.js\"></script><script type=\"text/javascript\">  tinyMCE.init({          mode : \"textareas\",           theme : \"simple\"      });</script>";
-
-            sb.append(js);
-        */
-        super.addToEntryForm(request, sb, entry);
-    }
-
-
-
-
-
 
 
 

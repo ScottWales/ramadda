@@ -1337,8 +1337,9 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
+@Override
     public void addToEntryForm(Request request, StringBuffer formBuffer,
-                               Entry entry)
+                               Entry parentEntry, Entry entry)
             throws Exception {
         if ((urlColumn != null) && (entry != null)) {
             String baseUrl =
@@ -1374,7 +1375,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + href, 2)));
         }
 
-        super.addToEntryForm(request, formBuffer, entry);
+        super.addToEntryForm(request, formBuffer, parentEntry, entry);
         Hashtable props = getProperties(entry);
         if (entry != null) {
             addToEditForm(request, entry, formBuffer);

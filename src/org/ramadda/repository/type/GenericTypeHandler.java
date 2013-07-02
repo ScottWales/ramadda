@@ -1100,10 +1100,11 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void addSpecialToEntryForm(Request request,
-                                      StringBuffer formBuffer, Entry entry)
+                                      StringBuffer formBuffer, Entry parentEntry, Entry entry)
             throws Exception {
-        super.addSpecialToEntryForm(request, formBuffer, entry);
+        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry);
         addColumnsToEntryForm(request, formBuffer, entry);
     }
 
