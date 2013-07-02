@@ -118,28 +118,40 @@ public class DifImporter extends ImportHandler {
         Object[] values = entry.getTypeHandler().getValues(entry);
 
         Element root = XmlUtil.getRoot(xml);
-        String title = XmlUtil.getGrandChildText(root, DifUtil.TAG_Entry_Title,"no name");
-        String id = XmlUtil.getGrandChildText(root, DifUtil.TAG_Entry_ID,"");
+        Element difRoot = null;
+        if(root.getTagName().equals(DifUtil.TAG_DIF)) {
+            difRoot = root;
+        } else {
+            List difs =  XmlUtil.findDescendants(root, DifUtil.TAG_DIF);
+            if(difs.size()==0) {
+                throw new IllegalArgumentException("Could not find DIF tag");
+            }
+            //TODO: handle multiples?
+            difRoot = (Element) difs.get(0);
+        }
+
+        String title = XmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Entry_Title,"no name");
+        String id = XmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Entry_ID,"");
         values[0] =  id;
         
 
-        addMetadata(entry, root, DifUtil.TAG_Keyword, DifMetadataHandler.TYPE_KEYWORD);
-        addMetadata(entry, root, DifUtil.TAG_ISO_Topic_Category, DifMetadataHandler.TYPE_ISO_TOPIC_CATEGORY);
-        addMetadata(entry, root, DifUtil.TAG_Originating_Center, DifMetadataHandler.TYPE_ORIGINATING_CENTER);
-        addMetadata(entry, root, DifUtil.TAG_Reference, DifMetadataHandler.TYPE_REFERENCE);
-        addMetadata(entry, root, DifUtil.TAG_Distribution, DifMetadataHandler.TYPE_DISTRIBUTION, DifUtil.TAGS_Distribution);
-        addMetadata(entry, root, DifUtil.TAG_Project, DifMetadataHandler.TYPE_PROJECT, DifUtil.TAGS_Project);
-        addMetadata(entry, root, DifUtil.TAG_Parameters, DifMetadataHandler.TYPE_PARAMETERS, DifUtil.TAGS_Parameters);
-        addMetadata(entry, root, DifUtil.TAG_Data_Set_Citation, DifMetadataHandler.TYPE_DATA_SET_CITATION, DifUtil.TAGS_Data_Set_Citation);
-        entry.setDescription(XmlUtil.getGrandChildText(root, DifUtil.TAG_Summary,""));
+        addMetadata(entry, difRoot, DifUtil.TAG_Keyword, DifMetadataHandler.TYPE_KEYWORD);
+        addMetadata(entry, difRoot, DifUtil.TAG_ISO_Topic_Category, DifMetadataHandler.TYPE_ISO_TOPIC_CATEGORY);
+        addMetadata(entry, difRoot, DifUtil.TAG_Originating_Center, DifMetadataHandler.TYPE_ORIGINATING_CENTER);
+        addMetadata(entry, difRoot, DifUtil.TAG_Reference, DifMetadataHandler.TYPE_REFERENCE);
+        addMetadata(entry, difRoot, DifUtil.TAG_Distribution, DifMetadataHandler.TYPE_DISTRIBUTION, DifUtil.TAGS_Distribution);
+        addMetadata(entry, difRoot, DifUtil.TAG_Project, DifMetadataHandler.TYPE_PROJECT, DifUtil.TAGS_Project);
+        addMetadata(entry, difRoot, DifUtil.TAG_Parameters, DifMetadataHandler.TYPE_PARAMETERS, DifUtil.TAGS_Parameters);
+        addMetadata(entry, difRoot, DifUtil.TAG_Data_Set_Citation, DifMetadataHandler.TYPE_DATA_SET_CITATION, DifUtil.TAGS_Data_Set_Citation);
+        entry.setDescription(XmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Summary,""));
         entry.setName(title);
         entry.setParentEntryId(parentEntry.getId());
         entries.add(entry);
     }
 
 
-    private void addMetadata(Entry entry, Element root, String tag, String metadataId) throws Exception {
-        for(Element node:(List<Element>) XmlUtil.findChildren(root, tag)) {
+    private void addMetadata(Entry entry, Element difRoot, String tag, String metadataId) throws Exception {
+        for(Element node:(List<Element>) XmlUtil.findChildren(difRoot, tag)) {
             String value = XmlUtil.getChildText(node);
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                             entry.getId(), metadataId,
@@ -153,8 +165,8 @@ public class DifImporter extends ImportHandler {
     }
 
 
-    private void addMetadata(Entry entry, Element root, String tag, String metadataId, String[]subTags) throws Exception {
-        for(Element node:(List<Element>) XmlUtil.findChildren(root, tag)) {
+    private void addMetadata(Entry entry, Element difRoot, String tag, String metadataId, String[]subTags) throws Exception {
+        for(Element node:(List<Element>) XmlUtil.findChildren(difRoot, tag)) {
             String[] values = new String[subTags.length];
             for(int i=0;i<values.length;i++) {
                 values[i]= XmlUtil.getGrandChildText(node, subTags[i],"");
