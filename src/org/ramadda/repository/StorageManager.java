@@ -122,8 +122,14 @@ public class StorageManager extends RepositoryManager {
     /** the deranged property */
     public static final String PROP_DIRRANGE = "ramadda.storage.dirrange";
 
+
+
     /** the temporary directory property */
     public static final String PROP_TMPDIR = "ramadda.storage.tmpdir";
+
+
+    /** the temporary directory property */
+    public static final String PROP_PROCESSDIR = "ramadda.storage.processdir";
 
     /** the log directory property */
     public static final String PROP_LOGDIR = "ramadda.storage.logdir";
@@ -151,6 +157,9 @@ public class StorageManager extends RepositoryManager {
 
     /** the temporary directory */
     private File tmpDir;
+
+
+    private File processDir;
 
     /** the htdocs directory */
     private String htdocsDir;
@@ -919,6 +928,44 @@ public class StorageManager extends RepositoryManager {
         }
 
         return storageDir.toString();
+    }
+
+
+    public String getProcessDirEntryId(String processGroup, String processId) {
+        return EntryManager.ID_PREFIX_SYNTH +"process:" + processId;
+    }
+
+
+    public File getProcessDir(String processGroup, String processId) {
+        File subDir = new File(IOUtil.joinDir(getProcessDir(), processGroup));
+        if(!subDir.exists()) {
+            return null;
+        }
+        subDir = new File(IOUtil.joinDir(subDir, processId));
+        if(!subDir.exists()) {
+            return null;
+        }
+        return subDir;
+    }
+
+
+    public File createProcessDir(String processGroup) {
+        File subDir = new File(IOUtil.joinDir(getProcessDir(), processGroup));
+        makeDir(subDir);
+        String processId =  getRepository().getGUID();
+        subDir = new File(IOUtil.joinDir(subDir, processId));
+        return subDir;
+    }
+
+
+
+    private String getProcessDir() {
+        if (processDir == null) {
+            processDir = getFileFromProperty(PROP_PROCESSDIR);
+            addOkToWriteToDirectory(processDir);
+        }
+
+        return processDir.toString();
     }
 
     /**
