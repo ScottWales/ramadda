@@ -327,6 +327,30 @@
 
 
 
+    <target name="compileall" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+>
+        <include name="**/*.java"/>
+        <exclude name="nom/**/*.java"/>
+        <exclude name="com/**/*.java"/>
+        </javac>
+    </target>
+
+
+
+
 
 
 </project>
