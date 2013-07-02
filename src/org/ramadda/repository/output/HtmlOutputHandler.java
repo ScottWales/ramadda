@@ -1592,7 +1592,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (isSearchResults) {
             if ( !hasChildren) {
                 sb.append(
-                    getPageHandler().showDialogNote(msg("No pages found")));
+                    getPageHandler().showDialogNote(msg("No entries found")));
             }
         }
 
@@ -1689,15 +1689,6 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
-
-    /** _more_ */
-    private static boolean checkedTemplates = false;
-
-    /** _more_ */
-    private static String entryTemplate;
-
-    /** _more_ */
-    private static String groupTemplate;
 
     /**
      * _more_
