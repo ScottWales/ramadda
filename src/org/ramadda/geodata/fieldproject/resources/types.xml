@@ -16,12 +16,7 @@
 </div>
 
 <p>
-{{links entry="Projects" prefix="==Projects=="   message=""}}
-<p>
-{{links entry="Links" prefix="==Links=="   message=""}}
-
-<p>
-{{links entry="Documents" prefix="==Documents=="   message=""}}
+{{links  prefix="==Links=="   message=""}}
 
 
 {{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
