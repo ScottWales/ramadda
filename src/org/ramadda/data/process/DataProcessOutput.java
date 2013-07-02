@@ -25,30 +25,20 @@ import org.ramadda.repository.Entry;
 
 import ucar.unidata.util.Misc;
 
-import java.io.File;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Class description
- *
- *
+ * A class to hold DataProcess output
  */
 public class DataProcessOutput {
 
     /** empty output id */
     public int DATAPROCESS_OUTPUT_EMPTY = 0;
 
-    /** file output id */
-    public int DATAPROCESS_OUTPUT_FILE = 1;
-
     /** entry output id */
-    public int DATAPROCESS_OUTPUT_ENTRY = 2;
-
-    /** List of files*/
-    private List<File> files;
+    public int DATAPROCESS_OUTPUT_ENTRY = 1;
 
     /** List of entries */
     private List<Entry> entries;
@@ -63,8 +53,8 @@ public class DataProcessOutput {
      *
      * @param file  the associated file
      */
-    public DataProcessOutput(File file) {
-        this((List<File>) Misc.newList(file));
+    public DataProcessOutput(Entry entry) {
+        this((List<Entry>) Misc.newList(entry));
     }
 
     /**
@@ -72,21 +62,21 @@ public class DataProcessOutput {
      *
      * @param files  the files
      */
-    public DataProcessOutput(List<File> files) {
-        this.files = new ArrayList<File>(files);
+    public DataProcessOutput(List<Entry> entries) {
+        this.entries = new ArrayList<Entry>(entries);
     }
 
     /**
-     * Get the files
+     * Get the entries
      *
-     * @return the files or an empty list
+     * @return the entries or an empty list
      */
-    public List<File> getFiles() {
-        if (files == null) {
-            return new ArrayList<File>();
+    public List<Entry> getEntries() {
+        if (entries == null) {
+            return new ArrayList<Entry>();
         }
 
-        return files;
+        return entries;
     }
 
     /**
@@ -95,11 +85,11 @@ public class DataProcessOutput {
      * @return 
      */
     public int getDataProcessOutputType() {
-        if ((files == null) || files.isEmpty()) {
+        if ((entries == null) || entries.isEmpty()) {
             return DATAPROCESS_OUTPUT_EMPTY;
         }
 
-        return DATAPROCESS_OUTPUT_FILE;
+        return DATAPROCESS_OUTPUT_ENTRY;
     }
 
     /**

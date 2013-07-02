@@ -37,6 +37,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
+import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.type.CollectionTypeHandler;
@@ -147,8 +148,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     }
                     */
                     if (output.hasOutput()) {
-                        for (File outFile : output.getFiles()) {
-                            files.add(outFile);
+                        for (Entry outEntry : output.getEntries()) {
+                        	Resource r = outEntry.getResource();
+                        	if (r.isFile()) {
+                        		File f = new File(r.getPath());
+                        		if (f.exists()) {
+                                    files.add(new File(r.getPath()));
+                        		}
+                        	}
                         }
                     }
                 }

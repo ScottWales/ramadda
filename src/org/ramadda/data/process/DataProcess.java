@@ -35,14 +35,28 @@ import java.util.List;
 /**
  * A class for holding process information
  */
-public interface DataProcess {
-
-    /**
-     * Get the DataProcess id
-     *
-     * @return  the ID
-     */
-    public String getDataProcessId();
+public abstract class DataProcess {
+	
+	private String dataProcessId;
+	private String dataProcessLabel;
+	
+	/**
+	 * Default ctor
+	 */
+	public DataProcess() {
+		this("foo","bar");
+	}
+	
+	/**
+	 * Create a DataProcess
+	 * 
+	 * @param id       the unique id for this DataProcess
+	 * @param label    the label for this DataProcess
+	 */
+	public DataProcess(String id, String label) {
+		this.dataProcessId = id;
+		this.dataProcessLabel = label;
+	}
 
     /**
      * Add to form
@@ -53,7 +67,7 @@ public interface DataProcess {
      *
      * @throws Exception  problem adding to the form
      */
-    public void addToForm(Request request,
+    public abstract void addToForm(Request request,
                           List<? extends DataProcessInput> inputs,
                           StringBuffer sb)
      throws Exception;
@@ -68,7 +82,7 @@ public interface DataProcess {
      *
      * @throws Exception  problem processing
      */
-    public DataProcessOutput processRequest(Request request,
+    public abstract DataProcessOutput processRequest(Request request,
                                             DataProcessInput input)
      throws Exception;
 
@@ -82,14 +96,25 @@ public interface DataProcess {
      *
      * @throws Exception  problem processing
      */
-    public DataProcessOutput processRequest(
+    public abstract DataProcessOutput processRequest(
             Request request, List<? extends DataProcessInput> inputs)
      throws Exception;
+
+    /**
+     * Get the DataProcess id
+     *
+     * @return  the ID
+     */
+    public String getDataProcessId() {
+    	return dataProcessId;
+    }
 
     /**
      * Get the label for this process
      *
      * @return the label
      */
-    public String getDataProcessLabel();
+    public String getDataProcessLabel() {
+    	return dataProcessLabel;
+    }
 }

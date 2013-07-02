@@ -31,6 +31,10 @@ import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
+import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.type.CollectionTypeHandler;
+import org.ramadda.repository.type.Column;
 import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
@@ -44,13 +48,14 @@ import ucar.unidata.util.Misc;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
 /**
  * DataProcess for area statistics using CDO
  */
-public class CDOAreaStatisticsProcess implements DataProcess {
+public class CDOAreaStatisticsProcess extends DataProcess {
 
     /** the type handler associated with this */
     CDOOutputHandler typeHandler;
@@ -66,17 +71,9 @@ public class CDOAreaStatisticsProcess implements DataProcess {
      * @throws Exception  problems
      */
     public CDOAreaStatisticsProcess(Repository repository) throws Exception {
+    	super("CDO_AREA_STATS", "Area Statistics");
         this.repository = repository;
         typeHandler     = new CDOOutputHandler(repository);
-    }
-
-    /**
-     * Get the DataProcess id
-     *
-     * @return  the ID
-     */
-    public String getDataProcessId() {
-        return "CDO_AREA_STATS";
     }
 
     /**
@@ -196,14 +193,18 @@ public class CDOAreaStatisticsProcess implements DataProcess {
         //   - month range
         //   - year or time range
         String stat   = request.getString(CDOOutputHandler.ARG_CDO_STAT);
-        boolean wantClimo = false;
+        Entry climEntry = null;
         if (stat.equals(CDOOutputHandler.STAT_ANOM)) {
-            System.err.println("Looked for climo");
-            Entry climo = findClimatology(inputs.get(0), oneOfThem);
-            if (climo == null) { 
+            System.err.println("Looking for climo");
+            List<Entry> climo = findClimatology(request, inputs.get(0), oneOfThem);
+            if (climo == null) {
             	System.err.println("found squat");
+            } else if (climo.size() > 1) { 
+            	System.err.println("found too many");
+            	
             } else {
-            	wantClimo = true;
+            	climEntry = climo.get(0);
+            	System.err.println("found climo: " + climEntry);
             }
         }
 
@@ -240,15 +241,19 @@ public class CDOAreaStatisticsProcess implements DataProcess {
         commands.add(outFile.toString());
         runProcess(commands, outFile);
         
-        if (wantClimo) {
+        if (climEntry != null) {
         	//TODO:  do stuff
         }
+        
+        Resource r = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
+        Entry outputEntry = new Entry();
+        outputEntry.setResource(r);
 
         if (typeHandler.doingPublish(request)) {
-            return new DataProcessOutput(outFile);
+            return new DataProcessOutput(outputEntry);
         }
 
-        return new DataProcessOutput(outFile);
+        return new DataProcessOutput(outputEntry);
     }
 
     private void runProcess(List<String> commands, File outFile) throws Exception {
@@ -270,10 +275,41 @@ public class CDOAreaStatisticsProcess implements DataProcess {
         }
     }
     
-    private Entry findClimatology(DataProcessInput input, Entry oneOfThem) {
+    private List<Entry> findClimatology(Request request, DataProcessInput input, Entry granule) throws Exception {
     	if (!(input instanceof CollectionOperand)) return null;
-    	List<Clause> clauses = new ArrayList<Clause>();
-		return null;
+    	Entry collection = ((CollectionOperand) input).getCollectionEntry();
+        CollectionTypeHandler ctypeHandler =
+            (CollectionTypeHandler) collection.getTypeHandler();
+        List<Clause>    clauses   = new ArrayList<Clause>();
+        List<Column>    columns   = ctypeHandler.getGranuleColumns();
+        HashSet<String> seenTable = new HashSet<String>();
+        Object[] values = granule.getValues();
+        for (int colIdx = 0; colIdx < columns.size(); colIdx++) {
+            Column column = columns.get(colIdx);
+            // first column is the collection ID
+            int valIdx = colIdx+1;
+            String dbTableName = column.getTableName();
+            if ( !seenTable.contains(dbTableName)) {
+                clauses.add(Clause.eq(ctypeHandler.getCollectionIdColumn(),
+                                      collection.getId()));
+                clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
+                                        dbTableName + ".id"));
+                seenTable.add(dbTableName);
+            }
+            String v = values[valIdx].toString();
+            if (column.getName().equals("ensemble")) {
+            	clauses.add(Clause.eq(column.getName(), "clim"));
+            } else {
+                if (v.length() > 0) {
+                    clauses.add(Clause.eq(column.getName(), v));
+                }
+            }
+
+        }
+        List[] pair = typeHandler.getEntryManager().getEntries(request, clauses,
+                          ctypeHandler.getGranuleTypeHandler());
+
+        return pair[1];
 	}
 
 	/**
@@ -284,14 +320,4 @@ public class CDOAreaStatisticsProcess implements DataProcess {
     private Repository getRepository() {
         return repository;
     }
-
-    /**
-     * Get the label for this process
-     *
-     * @return the label
-     */
-    public String getDataProcessLabel() {
-        return "Area Statistics";
-    }
-
 }

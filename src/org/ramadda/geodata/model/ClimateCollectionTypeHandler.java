@@ -331,8 +331,10 @@ JQ.button(
                             process.processRequest(request,
                                 new DataProcessInput(granule));
                         if (output.hasOutput()) {
-                            for (File outFile : output.getFiles()) {
-                                files.add(outFile);
+                            for (Entry outFile : output.getEntries()) {
+                            	if (entry.getResource().isFile()) {
+                                   files.add(entry.getResource().getTheFile());
+                            	}
                             }
                         }
                     }

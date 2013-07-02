@@ -34,6 +34,7 @@ import org.ramadda.repository.Link;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapProperties;
@@ -1148,20 +1149,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      *
      */
-    protected class CDOAreaStatistics implements DataProcess {
+    protected class CDOAreaStatistics extends DataProcess {
 
         /**
          * Area statistics DataProcess
          */
-        CDOAreaStatistics() {}
-
-        /**
-         * Get the DataProcess id
-         *
-         * @return  the ID
-         */
-        public String getDataProcessId() {
-            return "CDO_AREA_STATS";
+        public CDOAreaStatistics() {
+        	super("CDO_AREA_STATS", "Area Statistics");
         }
 
         /**
@@ -1316,21 +1310,16 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         "Humm, the CDO processing failed for some reason");
                 }
             }
+            
+            Resource r = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
+            Entry out = new Entry();
+            out.setResource(r);
 
             if (doingPublish(request)) {
-                return new DataProcessOutput(outFile);
+                return new DataProcessOutput(out);
             }
 
-            return new DataProcessOutput(outFile);
-        }
-
-        /**
-         * Get the label for this process
-         *
-         * @return the label
-         */
-        public String getDataProcessLabel() {
-            return "Area Statistics";
+            return new DataProcessOutput(out);
         }
 
     }

@@ -58,7 +58,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter/ramadda.org
  */
-public class NCOOutputHandler extends OutputHandler implements DataProcessProvider, DataProcess { 
+public class NCOOutputHandler extends OutputHandler implements DataProcessProvider { 
 
 
     /** _more_ */
@@ -231,52 +231,11 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
         //TODO: put this back
         //        if(isEnabled()) {
         if(true) {
-            processes.add(this);
+            processes.add(new NCODataProcess());
         }
         return processes;
     }
 
-
-    /**
-     * Get the DataProcess id
-     *
-     * @return the ID
-     */
-    public String getDataProcessId() {
-        return "NCO";
-    }
-
-
-    public String getDataProcessLabel() {
-        return "NCO Weighted Average";
-    }
-
-
-    /**
-     * Add this output handlers UI to the form
-     *
-     * @param request   the Request
-     * @param inputs     the Entry
-     * @param sb        the form HTML
-     *
-     * @throws Exception  on badness
-     */
-    public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
-            throws Exception {
-        sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
-        sb.append(HtmlUtils.formTableClose());
-    }
-
-    public DataProcessOutput processRequest(Request request, DataProcessInput input)
-            throws Exception {
-        return processRequest(request, (List<DataProcessInput>)Misc.newList(input));
-    }
-
-    public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
-            throws Exception {
-        return new DataProcessOutput(inputs.get(0).getEntries().get(0).getFile());
-    }
 
 
 
@@ -627,4 +586,39 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
             outFile, getStorageManager().getFileTail(outFile.toString()));
     }
 
+    protected class NCODataProcess extends DataProcess {
+    	
+    	public NCODataProcess() {
+    		super("NCO", "NCO Weighted Average");
+    	}
+        /**
+         * Add this output handlers UI to the form
+         *
+         * @param request   the Request
+         * @param inputs     the Entry
+         * @param sb        the form HTML
+         *
+         * @throws Exception  on badness
+         */
+        public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
+                throws Exception {
+            sb.append(HtmlUtils.formTable());
+            sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
+            sb.append(HtmlUtils.formTableClose());
+        }
+    
+        public DataProcessOutput processRequest(Request request, DataProcessInput input)
+                throws Exception {
+            return processRequest(request, (List<DataProcessInput>)Misc.newList(input));
+        }
+    
+        public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
+                throws Exception {
+            Resource r = new Resource(inputs.get(0).getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
+            Entry out = new Entry();
+            out.setResource(r);
+            return new DataProcessOutput(out);
+        }
+    
+    }
 }
