@@ -607,14 +607,11 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
             sb.append(HtmlUtils.formTableClose());
         }
     
-        public DataProcessOutput processRequest(Request request, DataProcessInput input)
-                throws Exception {
-            return processRequest(request, (List<DataProcessInput>)Misc.newList(input));
-        }
     
         public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
                 throws Exception {
-            Resource r = new Resource(inputs.get(0).getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
+            DataProcessInput dpi = inputs.get(0);
+            Resource r = new Resource(dpi.getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
             Entry out = new Entry();
             out.setResource(r);
             return new DataProcessOutput(out);

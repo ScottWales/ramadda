@@ -52,6 +52,9 @@ import java.util.List;
  */
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
 
+    public static  final String PROCESS_MODEL = "model";
+
+
     /** data process id */
     public static final String ARG_DATA_PROCESS_ID = "data_process_id";
 
@@ -245,7 +248,7 @@ JQ.button(
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
             DataProcessInput dpi = new DataProcessInput(Misc.newList(entry));
-            process.addToForm(request, Misc.newList(dpi), tmpSB);
+            process.addToForm(request,(List<DataProcessInput>)Misc.newList(dpi), tmpSB);
             processTabs.add(
                 HtmlUtils.div(
                     tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
@@ -318,25 +321,31 @@ JQ.button(
         List<File>  files   = new ArrayList<File>();
         //Process each one in turn
         boolean didProcess = false;
+        List<DataProcess> processesToRun = new ArrayList<DataProcess>();
         String selectedProcess = request.getString(ARG_DATA_PROCESS_ID,
-                                     (String) null);
+                                                   (String) null);
         if (selectedProcess != null) {
             for (DataProcess process : processes) {
                 if (process.getDataProcessId().equals(selectedProcess)) {
-                    System.err.println("MODEL: applying process: "
-                                       + process.getDataProcessLabel());
-                    didProcess = true;
-                    for (Entry granule : entries) {
-                        DataProcessOutput output =
-                            process.processRequest(request,
-                                new DataProcessInput(granule));
-                        if (output.hasOutput()) {
-                            for (Entry outFile : output.getEntries()) {
-                            	if (entry.getResource().isFile()) {
-                                   files.add(entry.getResource().getTheFile());
-                            	}
-                            }
-                        }
+                    processesToRun.add(process);
+                }
+            }
+        }
+
+        File processDir = getStorageManager().createProcessDir(PROCESS_MODEL);
+        Entry processEntry  =  new Entry(processDir.getName());
+
+        for(DataProcess process: processesToRun) {
+            System.err.println("MODEL: applying process: "
+                               + process.getDataProcessLabel());
+            DataProcessInput dpi = new DataProcessInput(processEntry, processDir, entries);
+            didProcess = true;
+            DataProcessOutput output =
+                process.processRequest(request, (List<DataProcessInput>)Misc.newList(dpi));
+            if (output.hasOutput()) {
+                for (Entry outFile : output.getEntries()) {
+                    if (entry.getResource().isFile()) {
+                        files.add(entry.getResource().getTheFile());
                     }
                 }
             }

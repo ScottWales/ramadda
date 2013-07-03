@@ -1217,20 +1217,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             sb.append(HtmlUtils.formTableClose());
         }
 
-        /**
-         * Process the request
-         *
-         * @param request  The request
-         * @param inputs  the  data process inputs
-         *
-         * @return  the processed data
-         *
-         * @throws Exception  problem processing
-         */
-        public DataProcessOutput processRequest(Request request, DataProcessInput input)
-                throws Exception {
-            return processRequest(request, (List<DataProcessInput>) Misc.newList(input));
-        }
+
 
         /**
          * Process the request
@@ -1245,12 +1232,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
                 throws Exception {
 
-            Entry oneOfThem = inputs.get(0).getEntries().get(0);
+            DataProcessInput dpi = inputs.get(0);
+            Entry oneOfThem = dpi.getEntries().get(0);
             String tail    = getStorageManager().getFileTail(oneOfThem);
             String id      = getRepository().getGUID();
             String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
-            File outFile = new File(IOUtil.joinDir(getProductDir(), newName));
+            File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
             List<String> commands = new ArrayList<String>();
             commands.add(cdoPath);
             commands.add("-L");

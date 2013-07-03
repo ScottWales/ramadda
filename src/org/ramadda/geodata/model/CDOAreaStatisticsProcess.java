@@ -142,23 +142,6 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * Process the request
      *
      * @param request  The request
-     * @param input   the input
-     *
-     * @return  the processed data
-     *
-     * @throws Exception  problem processing
-     */
-    public DataProcessOutput processRequest(Request request,
-                                            DataProcessInput input)
-            throws Exception {
-        return processRequest(request,
-                              (List<DataProcessInput>) Misc.newList(input));
-    }
-
-    /**
-     * Process the request
-     *
-     * @param request  The request
      * @param inputs  the  data process inputs
      *
      * @return  the processed data
@@ -169,12 +152,13 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             Request request, List<? extends DataProcessInput> inputs)
             throws Exception {
 
-        Entry  oneOfThem = inputs.get(0).getEntries().get(0);
+        DataProcessInput dpi = inputs.get(0);
+        Entry  oneOfThem = dpi.getEntries().get(0);
         String tail = typeHandler.getStorageManager().getFileTail(oneOfThem);
         String id        = getRepository().getGUID();
         String newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
         tail = typeHandler.getStorageManager().getStorageFileName(tail);
-        File outFile = new File(IOUtil.joinDir(typeHandler.getProductDir(),
+        File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                            newName));
         List<String> commands = new ArrayList<String>();
         commands.add(typeHandler.getCDOPath());
@@ -239,7 +223,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());
-        runProcess(commands, outFile);
+        runProcess(commands, dpi.getProcessDir(), outFile);
         
         if (climEntry != null) {
         	//TODO:  do stuff
@@ -256,9 +240,9 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         return new DataProcessOutput(outputEntry);
     }
 
-    private void runProcess(List<String> commands, File outFile) throws Exception {
+    private void runProcess(List<String> commands, File processDir, File outFile) throws Exception {
         String[] results = getRepository().executeCommand(commands, null,
-                               typeHandler.getProductDir());
+                                                          processDir);
         String errorMsg = results[1];
         String outMsg   = results[0];
         if ( !outFile.exists()) {

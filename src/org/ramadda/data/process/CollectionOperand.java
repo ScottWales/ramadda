@@ -23,8 +23,9 @@ package org.ramadda.data.process;
 
 
 import org.ramadda.repository.Entry;
+import org.ramadda.repository.Request;
 import org.ramadda.repository.Repository;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +45,9 @@ public class CollectionOperand extends DataProcessInput {
      * @param collection  the collection
      * @param granules    the entries
      */
-    public CollectionOperand(Entry collection, List<Entry> granules) {
-        super(granules);
+    public CollectionOperand(Entry processEntry, File dir, 
+                             List<Entry> entries, Entry collection) {
+        super(processEntry, dir, entries);
         this.collection = collection;
     }
 

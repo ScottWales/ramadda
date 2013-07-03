@@ -25,6 +25,8 @@ import org.ramadda.repository.Entry;
 
 import ucar.unidata.util.Misc;
 
+
+import java.io.File;
 import java.util.List;
 
 
@@ -35,16 +37,16 @@ import java.util.List;
  */
 public class DataProcessInput {
 
-    /** The entries for this input */
-    List<Entry> entries;
 
-    /**
-     * Create a DataProcessInput for the entry
-     *
-     * @param entry  the entry
-     */
-    public DataProcessInput(Entry entry) {
-        this((List<Entry>) Misc.newList(entry));
+    private Entry processEntry;
+
+    private File processDir;
+
+    /** The entries for this input */
+    private List<Entry> entries;
+
+    public DataProcessInput(List<Entry> entries) {
+        this.entries = entries;
     }
 
     /**
@@ -52,9 +54,15 @@ public class DataProcessInput {
      *
      * @param entries the entries
      */
-    public DataProcessInput(List<Entry> entries) {
+    public DataProcessInput(Entry processEntry, File dir, 
+                            List<Entry> entries) {
+
+        this.processEntry = processEntry;
+        this.processDir = dir;
         this.entries = entries;
+
     }
+
 
     /**
      * Get the entries
@@ -64,5 +72,14 @@ public class DataProcessInput {
     public List<Entry> getEntries() {
         return entries;
     }
+
+    public Entry getProcessEntry() {
+        return processEntry;
+    }
+
+    public File getProcessDir() {
+        return processDir;
+    }
+
 
 }

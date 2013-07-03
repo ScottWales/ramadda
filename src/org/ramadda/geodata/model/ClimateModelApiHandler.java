@@ -243,7 +243,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 List<Entry> entries = findEntries(request, collection,
                                           collectionEntry);
-                operands.add(new CollectionOperand(collectionEntry, entries));
+                //TODO: fix this later 
+                //operands.add(new CollectionOperand(collectionEntry, entries));
+
                 tmp.append(getEntryManager().getEntryLink(request,
                         collectionEntry));
                 tmp.append("<ul>");

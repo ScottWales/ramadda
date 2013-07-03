@@ -72,19 +72,6 @@ public abstract class DataProcess {
                           StringBuffer sb)
      throws Exception;
 
-    /**
-     * Process the request
-     *
-     * @param request  The request
-     * @param input    the DataProcessInput
-     *
-     * @return  the processed data output
-     *
-     * @throws Exception  problem processing
-     */
-    public abstract DataProcessOutput processRequest(Request request,
-                                            DataProcessInput input)
-     throws Exception;
 
     /**
      * Process the request
