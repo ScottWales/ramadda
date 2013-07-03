@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -24,11 +24,11 @@ package org.ramadda.repository.map;
 
 
 /**
- * A class to hold some map properties
+ * A class to hold some map box properties
  *
  * @author   RAMADDA development team
  */
-public class MapProperties {
+public class MapBoxProperties {
 
     /** color property */
     private String color = MapInfo.DFLT_BOX_COLOR;
@@ -40,23 +40,23 @@ public class MapProperties {
     private boolean zoomToExtent = false;
 
     /**
-     * Create a MapProperties
+     * Create a MapBoxProperties
      *
      * @param color  the color
      * @param selectable  true if selectable
      */
-    public MapProperties(String color, boolean selectable) {
+    public MapBoxProperties(String color, boolean selectable) {
         this(color, selectable, false);
     }
 
     /**
-     * Create a MapProperties
+     * Create a MapBoxProperties
      *
      * @param color the color
      * @param selectable  true if selectable
      * @param zoom  true if should zoom to bounds
      */
-    public MapProperties(String color, boolean selectable, boolean zoom) {
+    public MapBoxProperties(String color, boolean selectable, boolean zoom) {
         this.color        = color;
         this.selectable   = selectable;
         this.zoomToExtent = zoom;

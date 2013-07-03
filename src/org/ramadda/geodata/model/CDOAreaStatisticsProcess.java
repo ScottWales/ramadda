@@ -90,25 +90,21 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
-        Entry first = inputs.get(0).getEntries().get(0);
-        if (first.getType().equals("noaa_climate_modelfile")) {
-            //values[1] = var;
-            //values[2] = model;
-            //values[3] = experiment;
-            //values[4] = member;
-            //values[5] = frequency;
-            Object[]     values = first.getValues();
-            StringBuffer header = new StringBuffer();
-            header.append("Model: ");
-            header.append(values[2]);
-            header.append(" Experiment: ");
-            header.append(values[3]);
-            header.append(" Ensemble: ");
-            header.append(values[4]);
-            header.append(" Frequency: ");
-            header.append(values[5]);
-            //sb.append(HtmlUtils.h3(header.toString()));
+        List<StringBuffer> forms = new ArrayList<StringBuffer>(inputs.size());
+        for (DataProcessInput input : inputs) {
+        	StringBuffer inputSB = new StringBuffer();
+        	makeInputForm(request,input,inputSB);
+        	forms.add(inputSB);
         }
+        //if (forms.size() == 1) {
+        	sb.append(forms.get(0));
+        //} else {
+        //}
+        sb.append(HtmlUtils.formTableClose());
+    }
+
+    private void makeInputForm(Request request, DataProcessInput input, StringBuffer sb) throws Exception {
+        Entry first = input.getEntries().get(0);
 
         //addInfoWidget(request, sb);
         CdmDataOutputHandler dataOutputHandler =
@@ -124,7 +120,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         typeHandler.addStatsWidget(request, sb);
 
         //if(dataset != null)  {
-        typeHandler.addTimeWidget(request, sb, dataset, true);
+            typeHandler.addTimeWidget(request, sb, dataset, true);
         //}
 
         LatLonRect llr = null;
@@ -134,10 +130,9 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
                                  new LatLonPointImpl(-90.0, 180.0));
         }
-        typeHandler.addMapWidget(request, sb, llr);
-        sb.append(HtmlUtils.formTableClose());
+        typeHandler.addMapWidget(request, sb, llr, false);
     }
-
+    
     /**
      * Process the request
      *

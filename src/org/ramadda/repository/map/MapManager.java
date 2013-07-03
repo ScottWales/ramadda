@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,34 +22,24 @@
 package org.ramadda.repository.map;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryManager;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.metadata.JpegMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
-import org.ramadda.repository.output.MapOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-
-import ucar.unidata.geoloc.LatLonRect;
-
-
-import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.PatternFileFilter;
-import ucar.unidata.util.PluginClassLoader;
-
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.xml.XmlUtil;
 
 import java.awt.geom.Rectangle2D;
 
@@ -65,10 +55,10 @@ import java.util.List;
  * This class provides a variety of mapping services, e.g., map display and map form selector
  *
  * @author Jeff McWhirter
- * @version $Revision: 1.3 $
  */
 public class MapManager extends RepositoryManager {
 
+    /** dummy layer */
     private static final WmsMapLayer dummyLayerToForceCompile = null;
 
     /** default height for GE plugin */
@@ -126,7 +116,6 @@ public class MapManager extends RepositoryManager {
                          forSelection);
     }
 
-
     /**
      * Create a map
      *
@@ -140,9 +129,8 @@ public class MapManager extends RepositoryManager {
     public MapInfo createMap(Request request, int width, int height,
                              boolean forSelection) {
 
-
-        MapInfo mapInfo = new MapInfo(request, getRepository(), width, height,
-                                      forSelection);
+        MapInfo mapInfo = new MapInfo(request, getRepository(), width,
+                                      height, forSelection);
 
         if ( !showMaps()) {
             return mapInfo;
@@ -157,22 +145,27 @@ public class MapManager extends RepositoryManager {
     }
 
 
+    /** the base for the openlayers URL */
     private static final String OPENLAYERS_BASE = "/openlayers";
     //    private static final String OPENLAYERS_BASE = "/openlayers2_12";
 
+    /**
+     * Get the HtmlImports
+     *
+     * @return  the imports
+     */
     public String getHtmlImports() {
         StringBuffer sb = new StringBuffer();
-        sb.append(
-                  HtmlUtils.cssLink(
-                                    fileUrl(OPENLAYERS_BASE + "/theme/default/style.css")));
+        sb.append(HtmlUtils.cssLink(fileUrl(OPENLAYERS_BASE
+                                            + "/theme/default/style.css")));
         sb.append("\n");
         sb.append("\n");
-        sb.append(
-                  HtmlUtils.importJS(fileUrl(OPENLAYERS_BASE + "/OpenLayers.js")));
+        sb.append(HtmlUtils.importJS(fileUrl(OPENLAYERS_BASE
+                                             + "/OpenLayers.js")));
         sb.append("\n");
         sb.append(
-                  HtmlUtils.importJS(
-                                     "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
+            HtmlUtils.importJS(
+                "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
         sb.append("\n");
         sb.append(HtmlUtils.importJS(fileUrl("/ramaddamap.js")));
         sb.append("\n");
@@ -383,12 +376,12 @@ public class MapManager extends RepositoryManager {
 
         StringBuffer mapSB = new StringBuffer();
 
-        String       id = getMapManager().getGoogleEarthPlugin(request, mapSB,
+        String id = getMapManager().getGoogleEarthPlugin(request, mapSB,
                         width, height, null);
 
-        StringBuffer                    js         = new StringBuffer();
-        List<String>                    categories = new ArrayList<String>();
-        Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
+        StringBuffer js         = new StringBuffer();
+        List<String> categories = new ArrayList<String>();
+        Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
         String categoryType = request.getString("category", "type");
 
@@ -406,7 +399,8 @@ public class MapManager extends RepositoryManager {
             if (Misc.equals(categoryType, "parent")) {
                 category = entry.getParentEntry().getName();
             } else {
-                category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
+                category = entry.getTypeHandler().getCategory(
+                    entry).getLabel().toString();
             }
             StringBuffer catSB = catMap.get(category);
             if (catSB == null) {
@@ -455,10 +449,10 @@ public class MapManager extends RepositoryManager {
             catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             numEntries++;
 
-            double         lat          = entry.getSouth();
-            double         lon          = entry.getEast();
-            String         pointsString = "null";
-            boolean        hasPolygon   = false;
+            double  lat          = entry.getSouth();
+            double  lon          = entry.getEast();
+            String  pointsString = "null";
+            boolean hasPolygon   = false;
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
             for (Metadata metadata : metadataList) {
@@ -523,10 +517,10 @@ public class MapManager extends RepositoryManager {
             }
 
             String detailsUrl =
-                HtmlUtils.url(getRepository().getUrlPath(request, getRepository().URL_ENTRY_SHOW),
-                              new String[] { ARG_ENTRYID,
-                                             entry.getId(), ARG_OUTPUT,
-                                             "mapinfo" });
+                HtmlUtils.url(getRepository().getUrlPath(request,
+                    getRepository().URL_ENTRY_SHOW), new String[] {
+                        ARG_ENTRYID,
+                        entry.getId(), ARG_OUTPUT, "mapinfo" });
 
             String fromTime = "null";
             String toTime   = "null";
@@ -804,8 +798,8 @@ public class MapManager extends RepositoryManager {
         map.centerOn(bounds);
 
 
-        List<String>                    categories = new ArrayList<String>();
-        Hashtable<String, StringBuffer> catMap     = new Hashtable<String,
+        List<String> categories = new ArrayList<String>();
+        Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
         String categoryType = request.getString("category", "type");
         int    numEntries   = 0;
@@ -818,7 +812,8 @@ public class MapManager extends RepositoryManager {
             if (Misc.equals(categoryType, "parent")) {
                 category = entry.getParentEntry().getName();
             } else {
-                category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
+                category = entry.getTypeHandler().getCategory(
+                    entry).getLabel().toString();
             }
             StringBuffer catSB = catMap.get(category);
             if (catSB == null) {
@@ -832,7 +827,7 @@ public class MapManager extends RepositoryManager {
             catSB.append(
                 "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
             String iconUrl = getEntryManager().getIconUrl(request, entry);
-            String navUrl  = "javascript:" + map.getVariableName()
+            String navUrl = "javascript:" + map.getVariableName()
                             + ".hiliteMarker(" + sqt(entry.getId()) + ");";
             catSB.append(
                 HtmlUtils.href(
@@ -884,17 +879,17 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        boolean       makeRectangles = cnt <= 100;
-        MapProperties mapProperties  = new MapProperties("blue", true);
-        
+        boolean          makeRectangles = cnt <= 100;
+        MapBoxProperties mapProperties  = new MapBoxProperties("blue", true);
+
         makeRectangles = true;
 
-        if(request.get(ARG_MAP_ICONSONLY,false)) {
+        if (request.get(ARG_MAP_ICONSONLY, false)) {
             makeRectangles = false;
         }
-        
+
         for (Entry entry : entriesToUse) {
-            String         idBase       = entry.getId();
+            String idBase = entry.getId();
             List<Metadata> metadataList =
                 getMetadataManager().getMetadata(entry);
 

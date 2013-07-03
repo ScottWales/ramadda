@@ -34,7 +34,7 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.output.OutputHandler;
@@ -940,7 +940,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer bounds = new StringBuffer();
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
-        map.addBox(entry, new MapProperties("blue", false));
+        map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_VIEW_BOUNDS, true, null,
                                       htmlCheckbox(request,

@@ -54,7 +54,7 @@ import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
@@ -1026,7 +1026,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         }
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
-        map.addBox("", llr, new MapProperties("blue", false, true));
+        map.addBox("", llr, new MapBoxProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
                 lon });
         sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));
@@ -1413,7 +1413,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            map.addBox("", llr, new MapProperties("blue", false, true));
+            map.addBox("", llr, new MapBoxProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),
@@ -1966,7 +1966,7 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
-        map.addBox(entry, new MapProperties("blue", false, true));
+        map.addBox(entry, new MapBoxProperties("blue", false, true));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));

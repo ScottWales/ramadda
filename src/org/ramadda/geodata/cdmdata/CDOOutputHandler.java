@@ -37,7 +37,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.GeoUtils;
@@ -75,6 +75,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -752,10 +753,32 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public void addMapWidget(Request request, StringBuffer sb,
                               LatLonRect llr) {
+    	addMapWidget(request, sb, llr, true);
+    }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          true);
-        map.addBox("", llr, new MapProperties("blue", false, true));
+    /**
+     * Add the map widget
+     *
+     * @param request   The request
+     * @param sb        the HTML
+     * @param llr       the lat/lon rectangle
+     * @param usePopup  use a popup    
+     */
+    public void addMapWidget(Request request, StringBuffer sb,
+                              LatLonRect llr, boolean usePopup) {
+
+    	MapInfo map;
+    	if (!usePopup) {
+            map = getRepository().getMapManager().createMap(request, 200, 100, true);
+    		map.addProperty("mapLayers", Misc.newList("google.terrain"));
+    		// remove some of the widgets
+    		map.addProperty("showScaleLine", "false");
+    		map.addProperty("showLayerSwitcher", "false");
+    		map.addProperty("showZoomPanelControl", "false");
+    	} else {
+            map = getRepository().getMapManager().createMap(request, true);
+    	}
+        map.addBox("", llr, new MapBoxProperties("blue", false, true));
         String[] points = new String[] { "" + llr.getLatMax(),
                                          "" + llr.getLonMin(),
                                          "" + llr.getLatMin(),
@@ -766,7 +789,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                                        points[i]));
         }
         //ARG_PREFIX +
-        String llb = map.makeSelector(ARG_CDO_AREA, true, points);
+        String llb = map.makeSelector(ARG_CDO_AREA, usePopup, points);
         sb.append(HtmlUtils.formEntry(msgLabel("Region"), llb, 4));
     }
 

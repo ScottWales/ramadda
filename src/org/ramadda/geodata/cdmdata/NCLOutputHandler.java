@@ -29,7 +29,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.StorageManager;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.map.MapProperties;
+import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.CollectionTypeHandler;
@@ -358,7 +358,7 @@ sb.append(HtmlUtils.form(formUrl,
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);
-            map.addBox("", llr, new MapProperties("blue", false, true));
+            map.addBox("", llr, new MapBoxProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),

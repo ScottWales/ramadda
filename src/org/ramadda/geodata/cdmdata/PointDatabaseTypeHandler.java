@@ -2865,7 +2865,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true);
-        map.addBox(entry, new MapProperties("blue", false));
+        map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);
 
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);

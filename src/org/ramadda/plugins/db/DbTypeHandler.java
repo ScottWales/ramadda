@@ -2884,7 +2884,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                map.addBox("", new MapProperties("red", false), north, west,
+                map.addBox("", new MapBoxProperties("red", false), north, west,
                            south, east);
             }
             StringBuffer theSB = entryList;

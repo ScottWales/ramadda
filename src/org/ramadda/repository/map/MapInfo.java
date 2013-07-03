@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -22,7 +22,10 @@
 package org.ramadda.repository.map;
 
 
-import org.ramadda.repository.*;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.PageDecorator;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.util.HtmlUtils;
@@ -36,6 +39,8 @@ import ucar.unidata.util.StringUtil;
 import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -75,20 +80,26 @@ public class MapInfo {
     /** the javascript buffer? */
     private StringBuffer jsBuffer = null;
 
+    /** right side of widget */
     private StringBuffer rightSide = new StringBuffer();
 
     /** the html */
     private StringBuffer html = new StringBuffer();
 
+    /** map properties */
+    private Hashtable mapProps;
 
-    /** _more_ */
+    /** selection label */
     private String selectionLabel;
 
+    /** the request */
     private Request request;
 
     /**
      * Create a MapInfo for the associated repository
      *
+     *
+     * @param request    the Request
      * @param repository the associated repository
      */
     public MapInfo(Request request, Repository repository) {
@@ -98,25 +109,30 @@ public class MapInfo {
     /**
      * Create a MapInfo for the associated repository
      *
+     *
+     * @param request    the Request
      * @param repository the associated repository
      * @param width  the width of the map
      * @param height  the height of the map
      */
-    public MapInfo(Request request, Repository repository, int width, int height) {
+    public MapInfo(Request request, Repository repository, int width,
+                   int height) {
         this(request, repository, width, height, false);
     }
 
     /**
      * Create a MapInfo for the associated repository
      *
+     *
+     * @param request    the Request
      * @param repository the associated repository
      * @param width  the width of the map
      * @param height  the height of the map
      * @param forSelection  true if for selecting something
      */
-    public MapInfo(Request request, Repository repository, int width, int height,
-                   boolean forSelection) {
-        this.request       = request;
+    public MapInfo(Request request, Repository repository, int width,
+                   int height, boolean forSelection) {
+        this.request      = request;
         this.repository   = repository;
 
         this.mapVarName   = "ramaddaMap" + (cnt++);
@@ -177,6 +193,11 @@ public class MapInfo {
         getJS().append(s);
     }
 
+    /**
+     * Add the right side of the widget
+     *
+     * @param s  the HTML
+     */
     public void addRightSide(String s) {
         rightSide.append(s);
     }
@@ -225,8 +246,8 @@ public class MapInfo {
      * @return  the div tag
      */
     private String getMapDiv(String contents) {
-        StringBuffer result  = new StringBuffer();
-        String       readout =
+        StringBuffer result = new StringBuffer();
+        String readout =
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.id("ramadda-map-latlonreadout")
                           + HtmlUtils.style("font-style:italic; width:"
@@ -258,14 +279,14 @@ public class MapInfo {
         }
 
         for (PageDecorator pageDecorator :
-                 repository.getPluginManager().getPageDecorators()) {
+                repository.getPluginManager().getPageDecorators()) {
             pageDecorator.addToMap(request, this);
         }
 
 
         StringBuffer result = new StringBuffer();
         result.append(html);
-        if(rightSide.length()>0) {
+        if (rightSide.length() > 0) {
             result.append("<table xxwidth=\"100%\"><tr valign=top><td>");
         }
 
@@ -273,7 +294,7 @@ public class MapInfo {
 
 
         result.append(getMapDiv(""));
-        if(rightSide.length()>0) {
+        if (rightSide.length() > 0) {
             result.append("</td><td>");
             result.append(rightSide);
             result.append("</td></tr></table>");
@@ -295,15 +316,70 @@ public class MapInfo {
         if (jsBuffer == null) {
             jsBuffer = new StringBuffer();
             jsBuffer.append("//mapjs\n");
+            jsBuffer.append("var params = " + formatProps() + ";\n");
             jsBuffer.append("var " + mapVarName + " = new RepositoryMap("
-                            + HtmlUtils.squote(mapVarName) + ");\n");
+                            + HtmlUtils.squote(mapVarName) + ", params);\n");
             jsBuffer.append("var theMap = " + mapVarName + ";\n");
+            // TODO: why is this here?
             if ( !forSelection) {
                 jsBuffer.append("theMap.initMap(" + forSelection + ");\n");
             }
         }
 
         return jsBuffer;
+    }
+
+    /**
+     * Add a property for the map
+     *
+     * @param name   the property name
+     * @param value  the value
+     */
+    public void addProperty(String name, Object value) {
+        if (mapProps == null) {
+            mapProps = new Hashtable();
+        }
+        mapProps.put(name, value);
+    }
+
+    /**
+     * Format the properties
+     *
+     * @return  the properties as a Javascript string
+     */
+    private String formatProps() {
+        StringBuffer props = new StringBuffer("{");
+        if ((mapProps != null) && !mapProps.isEmpty()) {
+            for (Enumeration<String> e =
+                    mapProps.keys(); e.hasMoreElements(); ) {
+                String key   = e.nextElement();
+                Object value = mapProps.get(key);
+                props.append("\n");
+                props.append(key);
+                props.append(":");
+                if (value instanceof List) {
+                    props.append("[ \n");
+                    List vals = (List) value;
+                    for (int i = 0; i < vals.size(); i++) {
+                        props.append(
+                            HtmlUtils.squote(vals.get(i).toString()));
+                        if (i < vals.size() - 1) {
+                            props.append(",");
+                        }
+                    }
+                    props.append("\n]");
+                } else {
+                    props.append(value.toString());
+                }
+                if (e.hasMoreElements()) {
+                    props.append(",");
+                }
+            }
+            props.append("\n");
+        }
+        props.append("}");
+
+        return props.toString();
     }
 
     /**
@@ -345,42 +421,50 @@ public class MapInfo {
             return widget;
         }
 
-        String       msg = HtmlUtils.italics(doRegion
-                                             ? msg("Shift-drag to select region")
-                                             : msg("Click to select point"));
+        String       msg       = HtmlUtils.italics(doRegion
+                ? msg("Shift-drag to select region")
+                : msg("Click to select point"));
 
-        StringBuffer sb  = new StringBuffer();
-        String clearLink  = getSelectorClearLink(msg("Clear"));
+        StringBuffer sb        = new StringBuffer();
+        String       clearLink = getSelectorClearLink(msg("Clear"));
         sb.append(HtmlUtils.leftRight(msg, clearLink));
-                  //        sb.append(HtmlUtils.br());
-                  //        sb.append(clearLink);
+        //        sb.append(HtmlUtils.br());
+        //        sb.append(clearLink);
         sb.append(getMapDiv(""));
         if ((extraLeft != null) && (extraLeft.length() > 0)) {
             widget = widget + HtmlUtils.br() + extraLeft;
         }
 
-        String rightSide  = null;
+        String rightSide = null;
         String initParams = HtmlUtils.squote(arg) + "," + doRegion + ","
                             + (popup
                                ? "1"
                                : "0");
 
         if (popup) {
-            String popupLabel =  (selectionLabel != null)
-                ? selectionLabel:
-                HtmlUtils.img(repository.iconUrl("/icons/map.png"),  msg("Show Map"));
-            rightSide = HtmlUtils.space(2)
-                + repository.getPageHandler().makeStickyPopup(popupLabel, sb.toString(),
-                                       getVariableName()
-                                       + ".selectionPopupInit();") + 
-                //                                              HtmlUtils.space(2) + clearLink
-                HtmlUtils.space(2) + extraTop;
+            String popupLabel = (selectionLabel != null)
+                                ? selectionLabel
+                                : HtmlUtils.img(
+                                    repository.iconUrl("/icons/map.png"),
+                                    msg("Show Map"));
+            rightSide =
+                HtmlUtils.space(2)
+                + repository.getPageHandler().makeStickyPopup(popupLabel,
+                    sb.toString(),
+                    getVariableName() + ".selectionPopupInit();") +
+            //                                              HtmlUtils.space(2) + clearLink
+            HtmlUtils.space(2) + extraTop;
         } else {
-            rightSide = clearLink + HtmlUtils.space(2) + HtmlUtils.br()
-                        + sb.toString();
+            //rightSide = clearLink + HtmlUtils.space(2) + HtmlUtils.br()
+            //            + sb.toString();
+            rightSide = sb.toString();
         }
 
         addJS(getVariableName() + ".setSelection(" + initParams + ");\n");
+        // this wasn't done in the initial making of the JS
+        if (forSelection && !popup) {
+            addJS(getVariableName() + ".initMap(" + forSelection + ");\n");
+        }
 
         return HtmlUtils.table(new Object[] { widget, rightSide }) + html
                + HtmlUtils.script(getJS().toString());
@@ -445,7 +529,7 @@ public class MapInfo {
      * @param entry  the map entry
      * @param properties  the properties for the box
      */
-    public void addBox(Entry entry, MapProperties properties) {
+    public void addBox(Entry entry, MapBoxProperties properties) {
         addBox(entry.getId(), properties, entry.getNorth(), entry.getWest(),
                entry.getSouth(), entry.getEast());
     }
@@ -457,7 +541,8 @@ public class MapInfo {
      * @param llr  the bounds
      * @param properties the box properties
      */
-    public void addBox(String id, LatLonRect llr, MapProperties properties) {
+    public void addBox(String id, LatLonRect llr,
+                       MapBoxProperties properties) {
         addBox(id, properties, llr.getLatMax(), llr.getLonMin(),
                llr.getLatMin(), llr.getLonMax());
     }
@@ -473,7 +558,7 @@ public class MapInfo {
      * @param south  south value
      * @param east   east value
      */
-    public void addBox(String id, MapProperties properties, double north,
+    public void addBox(String id, MapBoxProperties properties, double north,
                        double west, double south, double east) {
         getJS().append("var mapBoxAttributes = {\"color\":\""
                        + properties.getColor() + "\",\"selectable\": "
@@ -587,9 +672,9 @@ public class MapInfo {
 
 
     /**
-     * _more_
+     * Add a KML Url
      *
-     * @param url _more_
+     * @param url  the URL
      */
     public void addKmlUrl(String url) {
         //TODO:
@@ -760,14 +845,19 @@ public class MapInfo {
     }
 
     /**
-     * _more_
+     * Set the selection label
      *
-     * @param l _more_
+     * @param l  the label
      */
     public void setSelectionLabel(String l) {
         selectionLabel = l;
     }
 
+    /**
+     * Is this for selection?
+     *
+     * @return  true if for selection
+     */
     public boolean forSelection() {
         return forSelection;
     }
