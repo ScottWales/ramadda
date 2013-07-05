@@ -932,7 +932,7 @@ public class StorageManager extends RepositoryManager {
 
 
     public String getProcessDirEntryId(String processId) {
-        return EntryManager.ID_PREFIX_SYNTH +"process:" + processId;
+        return EntryManager.ID_PREFIX_SYNTH +EntryManager.ENTRYID_PROCESS + ":/" + processId;
     }
 
 

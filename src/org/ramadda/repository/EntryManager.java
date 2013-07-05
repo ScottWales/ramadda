@@ -107,6 +107,8 @@ import javax.swing.ImageIcon;
  */
 public class EntryManager extends RepositoryManager {
 
+    public static final String ENTRYID_PROCESS = "process";
+
     public static boolean debug = false;
 
     public  void debug(String msg) {
@@ -6253,9 +6255,9 @@ public class EntryManager extends RepositoryManager {
                 String   parentEntryId = pair[0];
                 Entry    parentEntry = null;
 
-                if(parentEntryId.equals("process")) {
+                if(parentEntryId.equals(ENTRYID_PROCESS)) {
                     parentEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
-                    parentEntry.setId("process");
+                    parentEntry.setId(ENTRYID_PROCESS);
                 }
 
                 if(parentEntry == null) {
@@ -7292,9 +7294,9 @@ public class EntryManager extends RepositoryManager {
                 String[] pair    = getSynthId(mainEntry.getId());
                 String   entryId = pair[0];
                 synthId   = pair[1];
-                if(entryId.equals("process")) {
+                if(entryId.equals(ENTRYID_PROCESS)) {
                     mainEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
-                    mainEntry.setId("process");
+                    mainEntry.setId(ENTRYID_PROCESS);
                 } else {
                     mainEntry = (Entry) getEntry(request, entryId, false, false);
                 }
