@@ -224,9 +224,12 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         	//TODO:  do stuff
         }
         
-        Resource r = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
+        Resource resource = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
+        
+
+
         Entry outputEntry = new Entry();
-        outputEntry.setResource(r);
+        outputEntry.setResource(resource);
 
         if (typeHandler.doingPublish(request)) {
             return new DataProcessOutput(outputEntry);

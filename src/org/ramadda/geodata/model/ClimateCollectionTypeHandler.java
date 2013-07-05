@@ -331,12 +331,11 @@ JQ.button(
         }
 
         File processDir = getStorageManager().createProcessDir();
-        Entry processEntry  =  new Entry(processDir.getName());
 
         for(DataProcess process: processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
-            DataProcessInput dpi = new DataProcessInput(processEntry, processDir, entries);
+            DataProcessInput dpi = new DataProcessInput(processDir, entries);
             didProcess = true;
             DataProcessOutput output =
                 process.processRequest(request, (List<DataProcessInput>)Misc.newList(dpi));
@@ -348,6 +347,18 @@ JQ.button(
                 }
             }
         }
+
+        String processId = processDir.getName();
+        String processEntryId = getStorageManager().getProcessDirEntryId(processId);
+
+        if(true) {
+            String       entryUrl = 
+                HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                              ARG_ENTRYID, processEntryId);
+            return new Result(entryUrl);
+        }
+
+
         if ( !didProcess) {
             for (Entry granule : entries) {
                 if (granule.isFile()) {

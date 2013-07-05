@@ -37,9 +37,6 @@ import java.util.List;
  */
 public class DataProcessInput {
 
-
-    private Entry processEntry;
-
     private File processDir;
 
     /** The entries for this input */
@@ -54,10 +51,9 @@ public class DataProcessInput {
      *
      * @param entries the entries
      */
-    public DataProcessInput(Entry processEntry, File dir, 
+    public DataProcessInput(File dir, 
                             List<Entry> entries) {
 
-        this.processEntry = processEntry;
         this.processDir = dir;
         this.entries = entries;
 
@@ -71,10 +67,6 @@ public class DataProcessInput {
      */
     public List<Entry> getEntries() {
         return entries;
-    }
-
-    public Entry getProcessEntry() {
-        return processEntry;
     }
 
     public File getProcessDir() {

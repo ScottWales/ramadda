@@ -45,9 +45,9 @@ public class CollectionOperand extends DataProcessInput {
      * @param collection  the collection
      * @param granules    the entries
      */
-    public CollectionOperand(Entry processEntry, File dir, 
+    public CollectionOperand(File dir, 
                              List<Entry> entries, Entry collection) {
-        super(processEntry, dir, entries);
+        super(dir, entries);
         this.collection = collection;
     }
 
