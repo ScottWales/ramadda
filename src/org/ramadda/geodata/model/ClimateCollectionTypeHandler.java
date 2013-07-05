@@ -52,8 +52,6 @@ import java.util.List;
  */
 public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
 
-    public static  final String PROCESS_MODEL = "model";
-
 
     /** data process id */
     public static final String ARG_DATA_PROCESS_ID = "data_process_id";
@@ -332,7 +330,7 @@ JQ.button(
             }
         }
 
-        File processDir = getStorageManager().createProcessDir(PROCESS_MODEL);
+        File processDir = getStorageManager().createProcessDir();
         Entry processEntry  =  new Entry(processDir.getName());
 
         for(DataProcess process: processesToRun) {

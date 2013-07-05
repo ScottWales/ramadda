@@ -120,7 +120,9 @@ public class GenericTypeHandler extends TypeHandler {
     public GenericTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
-        init(entryNode);
+        if(entryNode!=null) {
+            init(entryNode);
+        }
     }
 
 

@@ -931,35 +931,31 @@ public class StorageManager extends RepositoryManager {
     }
 
 
-    public String getProcessDirEntryId(String processGroup, String processId) {
+    public String getProcessDirEntryId(String processId) {
         return EntryManager.ID_PREFIX_SYNTH +"process:" + processId;
     }
 
 
-    public File getProcessDir(String processGroup, String processId) {
-        File subDir = new File(IOUtil.joinDir(getProcessDir(), processGroup));
+    public File getProcessDir(String processId) {
+        File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
         if(!subDir.exists()) {
-            return null;
-        }
-        subDir = new File(IOUtil.joinDir(subDir, processId));
-        if(!subDir.exists()) {
+            System.err.println ("no process id dir:" +subDir);
             return null;
         }
         return subDir;
     }
 
 
-    public File createProcessDir(String processGroup) {
-        File subDir = new File(IOUtil.joinDir(getProcessDir(), processGroup));
-        makeDir(subDir);
+    public File createProcessDir() {
         String processId =  getRepository().getGUID();
-        subDir = new File(IOUtil.joinDir(subDir, processId));
+        File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
+        makeDir(subDir);
         return subDir;
     }
 
 
 
-    private String getProcessDir() {
+    public String getProcessDir() {
         if (processDir == null) {
             processDir = getFileFromProperty(PROP_PROCESSDIR);
             addOkToWriteToDirectory(processDir);

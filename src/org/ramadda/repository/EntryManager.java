@@ -6247,19 +6247,22 @@ public class EntryManager extends RepositoryManager {
         try {
             if (entryId.startsWith(ID_PREFIX_REMOTE)) {
                 String[] tuple = getRemoteEntryInfo(entryId);
-
                 return getRemoteEntry(request, tuple[0], tuple[1]);
-            } else if (entryId.startsWith("catalog:")) {
-                //                org.ramadda.repository.data.CatalogTypeHandler typeHandler =
-                //                    (org.ramadda.repository.data
-                //                        .CatalogTypeHandler) getRepository()
-                //                            .getTypeHandler(TypeHandler.TYPE_CATALOG);
-                //                entry = typeHandler.makeSynthEntry(request, null, entryId);
             } else if (isSynthEntry(entryId)) {
                 String[] pair          = getSynthId(entryId);
                 String   parentEntryId = pair[0];
-                Entry    parentEntry   = getEntry(request, parentEntryId,
+                Entry    parentEntry = null;
+
+                if(parentEntryId.equals("process")) {
+                    parentEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
+                    parentEntry.setId("process");
+                }
+
+                if(parentEntry == null) {
+                    parentEntry   = getEntry(request, parentEntryId,
                                              andFilter, abbreviated);
+
+                }
                 if (parentEntry == null) {
                     return null;
                 }
@@ -7289,7 +7292,13 @@ public class EntryManager extends RepositoryManager {
                 String[] pair    = getSynthId(mainEntry.getId());
                 String   entryId = pair[0];
                 synthId   = pair[1];
-                mainEntry = (Entry) getEntry(request, entryId, false, false);
+                if(entryId.equals("process")) {
+                    mainEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
+                    mainEntry.setId("process");
+                } else {
+                    mainEntry = (Entry) getEntry(request, entryId, false, false);
+                }
+
                 if (mainEntry == null) {
                     return ids;
                 }

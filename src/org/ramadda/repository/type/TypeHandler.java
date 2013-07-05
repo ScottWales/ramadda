@@ -241,29 +241,31 @@ public class TypeHandler extends RepositoryManager {
      */
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
-        displayTemplatePath = XmlUtil.getAttribute(entryNode,
-                "displaytemplate", (String) null);
+        if(entryNode!=null) {
+            displayTemplatePath = XmlUtil.getAttribute(entryNode,
+                                                       "displaytemplate", (String) null);
 
-        this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
-                                             category);
-        this.harvestPattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
-                (String) null);
-
-
-        wikiTemplate = XmlUtil.getAttribute(entryNode, ATTR_WIKI,
-                                            (String) null);
-        if (wikiTemplate == null) {
-            wikiTemplate = XmlUtil.getGrandChildText(entryNode, ATTR_WIKI,
-                    null);
-        }
+            this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
+                                                 category);
+            this.harvestPattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
+                                                       (String) null);
 
 
-        List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
-        for (int i = 0; i < metadataNodes.size(); i++) {
-            Element metadataNode = (Element) metadataNodes.get(i);
-            requiredMetadata.add(new String[] {
-                XmlUtil.getAttribute(metadataNode, ATTR_ID),
-                XmlUtil.getAttribute(metadataNode, "label", (String) null) });
+            wikiTemplate = XmlUtil.getAttribute(entryNode, ATTR_WIKI,
+                                                (String) null);
+            if (wikiTemplate == null) {
+                wikiTemplate = XmlUtil.getGrandChildText(entryNode, ATTR_WIKI,
+                                                         null);
+            }
+
+
+            List metadataNodes = XmlUtil.findChildren(entryNode, TAG_METADATA);
+            for (int i = 0; i < metadataNodes.size(); i++) {
+                Element metadataNode = (Element) metadataNodes.get(i);
+                requiredMetadata.add(new String[] {
+                        XmlUtil.getAttribute(metadataNode, ATTR_ID),
+                        XmlUtil.getAttribute(metadataNode, "label", (String) null) });
+            }
         }
     }
 
