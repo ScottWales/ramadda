@@ -338,11 +338,21 @@ Instrument: {{name}}
      <column name="expected_users" type="string"  label="Expected Users"   changetype="true" size="2000"/>
      <wiki><![CDATA[
 {{noheading}}
+=={{name}}==
 
-{{description wikify="true"}}
+<table widt="100%"><tr valign="top">
+<td width="50%">{{description wikify="true"}}</td>
+<td>
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="status" row.label="Status:"}}
+{{field name="expected_users" row.label="Expected Users:"}}
+</table>
+{{properties}}
+</td>
 
-{{information}}
-
+</tr>
+</table>
 {{links  prefix="==Links=="   message=""}}
 
 ]]>
