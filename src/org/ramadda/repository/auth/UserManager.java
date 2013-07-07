@@ -1866,7 +1866,7 @@ public class UserManager extends RepositoryManager {
         if (splitScreen) {
             cnt = 2;
         }
-        entries = getEntryManager().doGroupAndNameSort(entries, false);
+        entries = getEntryUtil().doGroupAndNameSort(entries, false);
         List<StringBuffer> columns = new ArrayList<StringBuffer>();
         StringBuffer       jsSB    = null;
         for (int column = 0; column < cnt; column++) {

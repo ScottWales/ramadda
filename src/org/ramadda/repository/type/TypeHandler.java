@@ -2658,7 +2658,7 @@ public class TypeHandler extends RepositoryManager {
 
         String  timezone = ((entry == null)
                             ? null
-                            : getEntryManager().getTimezone(entry));
+                            : getEntryUtil().getTimezone(entry));
 
         Date[] dateRange = getDefaultDateRange(request, entry);
         Date    fromDate = dateRange[0];
@@ -4863,7 +4863,7 @@ public class TypeHandler extends RepositoryManager {
     public String formatDate(Request request, Entry entry, Date date, String extra) {
         return getPageHandler().formatDateShort(request,
                                                date,
-                                               getEntryManager().getTimezone(entry), extra);
+                                               getEntryUtil().getTimezone(entry), extra);
 
     }
     /**

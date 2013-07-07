@@ -277,7 +277,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-        int cnt = getEntryManager().getEntryCount(typeHandler);
+        int cnt = getEntryUtil().getEntryCount(typeHandler);
         boolean doSearch = (refinement?false:(cnt<100 || doSearchInitially));
         if(request.defined(ARG_SEARCH_SUBMIT)) {
             doSearch =  true;

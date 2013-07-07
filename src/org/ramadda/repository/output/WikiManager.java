@@ -1986,7 +1986,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                 }
             }
             grandChildren =
-                getEntryManager().sortEntriesOnDate(grandChildren, true);
+                getEntryUtil().sortEntriesOnDate(grandChildren, true);
             children = grandChildren;
         }
 
@@ -2044,14 +2044,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             boolean ascending = Misc.getProperty(props, attrPrefix+ATTR_SORT_ORDER,
                                     "up").equals("up");
             if (sort.equals(SORT_DATE)) {
-                children = getEntryManager().sortEntriesOnDate(children,
+                children = getEntryUtil().sortEntriesOnDate(children,
                         !ascending);
             } else if (sort.equals(SORT_CHANGEDATE)) {
                 children =
-                    getEntryManager().sortEntriesOnChangeDate(children,
+                    getEntryUtil().sortEntriesOnChangeDate(children,
                         !ascending);
             } else if (sort.equals(SORT_NAME)) {
-                children = getEntryManager().sortEntriesOnName(children,
+                children = getEntryUtil().sortEntriesOnName(children,
                         !ascending);
             } else {
                 throw new IllegalArgumentException("Unknown sort:" + sort);

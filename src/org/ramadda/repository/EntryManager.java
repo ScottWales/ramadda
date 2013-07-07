@@ -37,8 +37,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 
-import org.ramadda.util.TempDir;
-
 import org.w3c.dom.*;
 
 
@@ -109,7 +107,11 @@ public class EntryManager extends RepositoryManager {
 
     public static final String ENTRYID_PROCESS = "process";
 
+    private EntryUtil entryUtil;
+
+
     public static boolean debug = false;
+
 
     public  void debug(String msg) {
         if(debug) logInfo(msg);
@@ -143,10 +145,6 @@ public class EntryManager extends RepositoryManager {
     private TTLCache<String, Entry> entryCache;
 
 
-    //Cache for 1 hour
-    private TTLObject<Hashtable<String,Integer>> typeCache =
-        new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
-
 
 
 
@@ -158,6 +156,13 @@ public class EntryManager extends RepositoryManager {
      */
     public EntryManager(Repository repository) {
         super(repository);
+    }
+
+    public EntryUtil getEntryUtil() {
+        if(entryUtil == null) {
+            entryUtil = new EntryUtil(getRepository());
+        }
+        return entryUtil;
     }
 
     /**
@@ -180,6 +185,68 @@ public class EntryManager extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
+
+    /**
+     * _more_
+     *
+     *
+     * @return _more_
+     * @throws Exception _more_
+     */
+    protected Entry initTopEntry() throws Exception {
+        Statement statement = getDatabaseManager().select(
+                                  Tables.ENTRIES.COLUMNS,
+                                  Tables.ENTRIES.NAME,
+                                  Clause.isNull(
+                                                Tables.ENTRIES.COL_PARENT_GROUP_ID));
+
+        List<Entry> entries = readEntries(statement);
+
+        Entry topEntry = null;
+        if (entries.size() > 1) {
+            System.err.println(
+                "RAMADDA: there are more than one top-level entries");
+            entries = getEntryUtil().sortEntriesOnCreateDate(entries, false);
+            for(Entry entry: entries) {
+                if(topEntry == null) {
+                    if(entry.getType().equals(TypeHandler.TYPE_GROUP)) {
+                        topEntry = entry;
+                    }
+                } 
+                System.err.println ("entry:" + entry.getType() + " - " + entry.getName() + " " + entry.getId() +" - " + new Date(entry.getCreateDate()));
+            }
+        }
+
+        if(topEntry!=null) {
+            //            System.err.println ("TOP ENTRY:" + topEntry.getType() + " - " + topEntry.getName() + " " + topEntry.getId() +" - " + new Date(topEntry.getCreateDate()));
+        }
+
+        if (topEntry==null && entries.size() > 0) {
+            topEntry = (Entry) entries.get(0);
+        }
+
+        //Make the top group if needed
+        if (topEntry == null) {
+            topEntry = makeNewGroup(null, GROUP_TOP,
+                                    getUserManager().getDefaultUser());
+            getAccessManager().initTopEntry(topEntry);
+        }
+
+
+        if (rootCache == null) {
+            int cacheTimeMinutes =
+
+                getRepository().getProperty(PROP_CACHE_TTL, 60);
+            //Convert to milliseconds
+
+            rootCache = new TTLObject<Entry>(cacheTimeMinutes * 60 * 1000);
+        }
+        rootCache.put(topEntry);
+
+        return topEntry;
+
+    }
+
 
     /**
      * _more_
@@ -293,8 +360,7 @@ public class EntryManager extends RepositoryManager {
      */
     protected void clearCache() {
         entryCache = null;
-        typeCache =
-            new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
+        getEntryUtil().clearCache();
     }
 
 
@@ -711,7 +777,7 @@ public class EntryManager extends RepositoryManager {
 
         if (doLatest) {
             if (entries.size() > 0) {
-                entries = sortEntriesOnDate(entries, true);
+                entries = getEntryUtil().sortEntriesOnDate(entries, true);
                 return outputHandler.outputEntry(request, outputType,
                         entries.get(0));
             }
@@ -934,7 +1000,6 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.p());
         sb.append(msgHeader("Generate File Listing"));
         sb.append(HtmlUtils.submit(msg("Generate File Listing"),ARG_EXTEDIT_REPORT));
-
 
 
         //For now only support changing types for folders
@@ -1266,7 +1331,6 @@ public class EntryManager extends RepositoryManager {
      */
     private String getEntryTimestamp(Entry entry) {
         long changeDate = entry.getChangeDate();
-
         //        System.err.println("timestamp:" +changeDate +" " + new Date(changeDate));
         return "" + changeDate;
     }
@@ -2645,13 +2709,6 @@ public class EntryManager extends RepositoryManager {
                                       final List<Entry> entries) {
         final Request theRequest = request;
         Entry         entry      = entries.get(0);
-        /*
-//        if (request.getCollectionEntry() != null) {
-//            if (Misc.equals(entry.getId(),
-//                            request.getCollectionEntry().getId())) {
-//                request.setCollectionEntry(null);
-//            }
-            }*/
         Entry                group   = entries.get(0).getParentEntry();
         final String         groupId = entries.get(0).getParentEntryId();
 
@@ -2688,7 +2745,6 @@ public class EntryManager extends RepositoryManager {
                                       String title, StringBuffer sb)
             throws Exception {
         Result result = new Result(title, sb);
-
         return addEntryHeader(request, entry, result);
     }
 
@@ -7348,193 +7404,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public List<Entry> sortEntriesOnDate(List<Entry> entries,
-                                         final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getStartDate() < e2.getStartDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getStartDate() > e2.getStartDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
-
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
-    }
-
-
-    public List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
-                                         final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getCreateDate() < e2.getCreateDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getStartDate() > e2.getStartDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
-
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
-            final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                if (e1.getChangeDate() < e2.getChangeDate()) {
-                    return (descending
-                            ? 1
-                            : -1);
-                }
-                if (e1.getChangeDate() > e2.getChangeDate()) {
-                    return (descending
-                            ? -1
-                            : 1);
-                }
-
-                return 0;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public List<Entry> sortEntriesOnName(List<Entry> entries,
-                                         final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1     = (Entry) o1;
-                Entry e2     = (Entry) o2;
-                int   result = e1.getName().compareToIgnoreCase(e2.getName());
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
-
-                    return 0;
-                }
-
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public List<Entry> doGroupAndNameSort(List<Entry> entries,
-                                          final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1     = (Entry) o1;
-                Entry e2     = (Entry) o2;
-                int   result = 0;
-                if (e1.isGroup()) {
-                    if (e2.isGroup()) {
-                        result = e1.getFullName().compareTo(e2.getFullName());
-                    } else {
-                        result = -1;
-                    }
-                } else if (e2.isGroup()) {
-                    result = 1;
-                } else {
-                    result = e1.getFullName().compareTo(e2.getFullName());
-                }
-                if (descending) {
-                    return -result;
-                }
-
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
-    }
-
 
 
     /**
@@ -7574,29 +7443,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getTimezone(Entry entry) {
-        try {
-            List<Metadata> metadataList =
-                getMetadataManager().findMetadata(null, entry,
-                    ContentMetadataHandler.TYPE_TIMEZONE, true);
-            if ((metadataList != null) && (metadataList.size() > 0)) {
-                Metadata metadata = metadataList.get(0);
-
-                return metadata.getAttr1();
-            }
-        } catch (Exception exc) {
-            logError("getting timezone", exc);
-        }
-
-        return null;
-    }
 
 
     /**
@@ -7740,11 +7586,6 @@ public class EntryManager extends RepositoryManager {
 
         return changedEntries;
     }
-
-
-
-
-
 
 
     /**
@@ -8797,11 +8638,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getIconUrl(Request request, Entry entry) throws Exception {
-
-
         String iconPath = getIconUrlInner(request, entry);
-
-
 
         if (iconPath == null) {
             return null;
@@ -8896,85 +8733,8 @@ public class EntryManager extends RepositoryManager {
         return entry.getTypeHandler().getIconUrl(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getPathFromEntry(Entry entry) {
-        String name = entry.getName();
-        name = name.toLowerCase();
-        name = name.replace(" ", "_");
-        name = name.replace(">", "_");
-
-        return name;
-    }
 
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    protected Entry initTopEntry() throws Exception {
-        Statement statement = getDatabaseManager().select(
-                                  Tables.ENTRIES.COLUMNS,
-                                  Tables.ENTRIES.NAME,
-                                  Clause.isNull(
-                                                Tables.ENTRIES.COL_PARENT_GROUP_ID));
-
-        List<Entry> entries = readEntries(statement);
-
-        Entry topEntry = null;
-        if (entries.size() > 1) {
-            System.err.println(
-                "RAMADDA: there are more than one top-level entries");
-            entries = sortEntriesOnCreateDate(entries, false);
-            for(Entry entry: entries) {
-                if(topEntry == null) {
-                    if(entry.getType().equals(TypeHandler.TYPE_GROUP)) {
-                        topEntry = entry;
-                    }
-                } 
-                System.err.println ("entry:" + entry.getType() + " - " + entry.getName() + " " + entry.getId() +" - " + new Date(entry.getCreateDate()));
-            }
-        }
-
-        if(topEntry!=null) {
-            //            System.err.println ("TOP ENTRY:" + topEntry.getType() + " - " + topEntry.getName() + " " + topEntry.getId() +" - " + new Date(topEntry.getCreateDate()));
-        }
-
-        if (topEntry==null && entries.size() > 0) {
-            topEntry = (Entry) entries.get(0);
-        }
-
-        //Make the top group if needed
-        if (topEntry == null) {
-            topEntry = makeNewGroup(null, GROUP_TOP,
-                                    getUserManager().getDefaultUser());
-            getAccessManager().initTopEntry(topEntry);
-        }
-
-
-        if (rootCache == null) {
-            int cacheTimeMinutes =
-
-                getRepository().getProperty(PROP_CACHE_TTL, 60);
-            //Convert to milliseconds
-
-            rootCache = new TTLObject<Entry>(cacheTimeMinutes * 60 * 1000);
-        }
-        rootCache.put(topEntry);
-
-        return topEntry;
-
-    }
 
 
 
@@ -9071,83 +8831,6 @@ public class EntryManager extends RepositoryManager {
         }
 
         return children;
-    }
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param text _more_
-     *
-     * @return _more_
-     */
-    public String processText(Request request, Entry entry, String text) {
-        int idx = text.indexOf("<more>");
-        if (idx >= 0) {
-            String first    = text.substring(0, idx);
-            String base     = "" + (HtmlUtils.blockCnt++);
-            String divId    = "morediv_" + base;
-            String linkId   = "morelink_" + base;
-            String second   = text.substring(idx + "<more>".length());
-            String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
-                              + ")";
-            String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
-                              + ")";
-            text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
-                   + HtmlUtils.quote(moreLink)
-                   + ">More...</a><div style=\"\" class=\"moreblock\" "
-                   + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
-                   + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
-        }
-        text = text.replaceAll("\r\n\r\n", "<p>");
-        text = text.replace("\n\n", "<p>");
-
-        return text;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param type _more_
-     *
-     * @return _more_
-     */
-    public List<Entry> getEntriesWithType(List<Entry> entries, String type) {
-        List<Entry> results = new ArrayList<Entry>();
-        for (Entry entry : entries) {
-            if (entry.getTypeHandler().isType(type)) {
-                results.add(entry);
-            }
-        }
-
-        return results;
-    }
-
-    public int getEntryCount(TypeHandler typeHandler) throws Exception {
-        Hashtable<String,Integer> typesWeHave = typeCache.get();
-        if(typesWeHave == null) {
-            typesWeHave = new Hashtable<String,Integer>();
-            for(String type:getRepository().getDatabaseManager().selectDistinct(
-                                                                                 Tables.ENTRIES.NAME,
-                                                                                 Tables.ENTRIES.COL_TYPE, null)) {
-                int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
-                                                        Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-                
-                typesWeHave.put(type, new Integer(cnt));
-            }
-            typeCache.put(typesWeHave);
-        }
-        Integer cnt = typesWeHave.get(typeHandler.getType());
-        if(cnt == null) return 0;
-        return cnt.intValue();
     }
 
 

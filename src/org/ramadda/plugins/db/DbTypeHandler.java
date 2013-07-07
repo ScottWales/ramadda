@@ -3067,7 +3067,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
     public SimpleDateFormat getDateFormat(Entry entry, String format) {
         SimpleDateFormat sdf  = new SimpleDateFormat(format);
-        String            timezone = getEntryManager().getTimezone(entry);
+        String            timezone = getEntryUtil().getTimezone(entry);
         if(timezone!=null) {
             sdf.setTimeZone(TimeZone.getTimeZone(timezone));
         }

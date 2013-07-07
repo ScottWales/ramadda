@@ -295,6 +295,21 @@ JQ.button(
     }
 
 
+    public List<DataProcess> getDataProcessesToRun(Request request) throws Exception {
+        List<DataProcess> processesToRun = new ArrayList<DataProcess>();
+        String selectedProcess = request.getString(ARG_DATA_PROCESS_ID,
+                                                   (String) null);
+        if (selectedProcess != null) {
+            for (DataProcess process : processes) {
+                if (process.getDataProcessId().equals(selectedProcess)) {
+                    processesToRun.add(process);
+                }
+            }
+        }
+        return processesToRun;
+    }
+
+
     /**
      * Process the data request
      *
@@ -319,19 +334,8 @@ JQ.button(
         List<File>  files   = new ArrayList<File>();
         //Process each one in turn
         boolean didProcess = false;
-        List<DataProcess> processesToRun = new ArrayList<DataProcess>();
-        String selectedProcess = request.getString(ARG_DATA_PROCESS_ID,
-                                                   (String) null);
-        if (selectedProcess != null) {
-            for (DataProcess process : processes) {
-                if (process.getDataProcessId().equals(selectedProcess)) {
-                    processesToRun.add(process);
-                }
-            }
-        }
-
+        List<DataProcess> processesToRun = getDataProcessesToRun(request);
         File processDir = getStorageManager().createProcessDir();
-
         for(DataProcess process: processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());

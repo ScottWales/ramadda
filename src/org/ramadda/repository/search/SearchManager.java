@@ -961,7 +961,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 if (typeHandler.isAnyHandler()) {
                     continue;
                 }
-                int cnt = getEntryManager().getEntryCount(typeHandler);
+                int cnt = getEntryUtil().getEntryCount(typeHandler);
                 if(cnt==0) {
                     continue;
                 }

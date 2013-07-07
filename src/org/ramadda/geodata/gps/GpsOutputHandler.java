@@ -655,7 +655,7 @@ public class GpsOutputHandler extends OutputHandler {
                         continue;
                     }
                     boolean hasRinex =
-                        getEntryManager()
+                        getEntryUtil()
                             .getEntriesWithType(getAssociationManager()
                                 .getTailEntriesWithAssociationType(request,
                                     entry,
@@ -1780,7 +1780,7 @@ public class GpsOutputHandler extends OutputHandler {
                 selected = false;
                 comment.append(HtmlUtils.italics("&lt; 2 hours. "));
             }
-            if (getEntryManager()
+            if (getEntryUtil()
                     .getEntriesWithType(getAssociationManager()
                         .getTailEntriesWithAssociationType(request, entry,
                             GpsOutputHandler
@@ -2047,7 +2047,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
 
             for (Entry rawEntry :
-                    getEntryManager()
+                    getEntryUtil()
                         .getEntriesWithType(getAssociationManager()
                             .getTailEntriesWithAssociationType(request,
                                 rinexEntry,

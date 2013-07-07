@@ -124,43 +124,33 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     public Result doCompare(Request request, List<CollectionOperand> operands)
             throws Exception {
         boolean didProcess = false;
-        String selectedProcess =
-            request.getString(
-                ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
-                (String) null);
+        List<DataProcess> processesToRun = getTypeHandler().getDataProcessesToRun(request);
         List<File> files = new ArrayList<File>();
-        if (selectedProcess != null) {
-            ClimateCollectionTypeHandler typeHandler = getTypeHandler();
-            List<DataProcess> processes = typeHandler.getDataProcesses();
-            for (DataProcess process : processes) {
-                if (process.getDataProcessId().equals(selectedProcess)) {
-                    System.err.println("MODEL: applying process: "
-                                       + process.getDataProcessLabel());
-                    DataProcessOutput output = process.processRequest(request, operands);
-                    /*
-                    for (CollectionOperand op : operands) {
-                        Entry granule = op.getGranules().get(0);
-                        DataProcessOutput output =
-                            process.processRequest(request, op);
-                        for (File outFile : output.getFiles()) {
-                            files.add(outFile);
-                        }
-                    }
-                    */
-                    if (output.hasOutput()) {
-                        for (Entry outEntry : output.getEntries()) {
-                        	Resource r = outEntry.getResource();
-                        	if (r.isFile()) {
-                        		File f = new File(r.getPath());
-                        		if (f.exists()) {
-                                    files.add(new File(r.getPath()));
-                        		}
-                        	}
+        for (DataProcess process : processesToRun) {
+            System.err.println("MODEL: applying process: "
+                               + process.getDataProcessLabel());
+            DataProcessOutput output = process.processRequest(request, operands);
+            /*
+              for (CollectionOperand op : operands) {
+              Entry granule = op.getGranules().get(0);
+              DataProcessOutput output =
+              process.processRequest(request, op);
+              for (File outFile : output.getFiles()) {
+              files.add(outFile);
+              }
+              }
+            */
+            if (output.hasOutput()) {
+                for (Entry outEntry : output.getEntries()) {
+                    Resource r = outEntry.getResource();
+                    if (r.isFile()) {
+                        File f = new File(r.getPath());
+                        if (f.exists()) {
+                            files.add(new File(r.getPath()));
                         }
                     }
                 }
             }
-            didProcess = true;
         }
 
         /*

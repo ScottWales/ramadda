@@ -179,7 +179,7 @@ public class TripOutputHandler extends OutputHandler {
 
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/trip/trip.css"));
-        subGroups = getEntryManager().sortEntriesOnDate(subGroups, false);
+        subGroups = getEntryUtil().sortEntriesOnDate(subGroups, false);
         String currentDate = "";
         for (Entry entry : subGroups) {
             String entryDate = sdf.format(new Date(entry.getStartDate()));

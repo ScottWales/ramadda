@@ -953,7 +953,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String desc = entry.getDescription().trim();
         if ((desc.length() > 0) && !TypeHandler.isWikiText(desc)
                 && !desc.equals("<nolinks>")) {
-            desc = getEntryManager().processText(request, entry, desc);
+            desc = processText(request, entry, desc);
             StringBuffer descSB =
                 new StringBuffer("\n<div class=\"description\">\n");
             descSB.append(desc);
@@ -990,7 +990,7 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer basicSB = new StringBuffer();
         String desc        = entry.getDescription();
         if (includeDescription && (desc.length() > 0)) {
-            desc = getEntryManager().processText(request, entry, desc);
+            desc = processText(request, entry, desc);
             basicSB.append(desc);
             basicSB.append("<br>");
         }
@@ -1772,6 +1772,40 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param text _more_
+     *
+     * @return _more_
+     */
+    public String processText(Request request, Entry entry, String text) {
+        int idx = text.indexOf("<more>");
+        if (idx >= 0) {
+            String first    = text.substring(0, idx);
+            String base     = "" + (HtmlUtils.blockCnt++);
+            String divId    = "morediv_" + base;
+            String linkId   = "morelink_" + base;
+            String second   = text.substring(idx + "<more>".length());
+            String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
+                              + ")";
+            String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
+                              + ")";
+            text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
+                   + HtmlUtils.quote(moreLink)
+                   + ">More...</a><div style=\"\" class=\"moreblock\" "
+                   + HtmlUtils.id(divId) + ">" + second + "<br>" + "<a href="
+                   + HtmlUtils.quote(lessLink) + ">...Less</a>" + "</div>";
+        }
+        text = text.replaceAll("\r\n\r\n", "<p>");
+        text = text.replace("\n\n", "<p>");
+
+        return text;
+    }
 
 
 

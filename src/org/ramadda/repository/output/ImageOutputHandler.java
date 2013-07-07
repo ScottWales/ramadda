@@ -666,7 +666,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (output.equals(OUTPUT_PLAYER)) {
             if ( !request.exists(ARG_ASCENDING)) {
-                entries = getEntryManager().sortEntriesOnDate(entries, true);
+                entries = getEntryUtil().sortEntriesOnDate(entries, true);
             }
         }
 
@@ -686,7 +686,7 @@ public class ImageOutputHandler extends OutputHandler {
                 String entryUrl = getEntryLink(request, entry);
                 String title    =
                     "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
-                String dttm = formatDate(request, entry);
+                String dttm = getEntryUtil().formatDate(request, entry);
                 title += "<tr><td><b>Image:</b> " + entryUrl
                          + "</td><td align=right>" + dttm;
                 title += "</table>";
@@ -780,19 +780,6 @@ public class ImageOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    private String formatDate(Request request, Entry entry) {
-        return getPageHandler().formatDate(
-            request, entry.getStartDate(),
-            getEntryManager().getTimezone(entry));
-    }
 
     /**
      * _more_
@@ -819,7 +806,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         if ( !request.exists(ARG_ASCENDING)) {
-            entries = getEntryManager().sortEntriesOnDate(entries, true);
+            entries = getEntryUtil().sortEntriesOnDate(entries, true);
         }
 
         int    col        = 0;
@@ -838,7 +825,7 @@ public class ImageOutputHandler extends OutputHandler {
             String entryUrl = getEntryLink(request, entry);
             String title    =
                 "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
-            String dttm = formatDate(request, entry);
+            String dttm = getEntryUtil().formatDate(request, entry);
             title += "<tr><td><b>Image:</b> " + entryUrl
                      + "</td><td align=right>" + dttm;
             title += "</table>";
@@ -898,7 +885,7 @@ public class ImageOutputHandler extends OutputHandler {
      *   }
      *
      *   if ( !request.exists(ARG_ASCENDING)) {
-     *       entries = getEntryManager().sortEntriesOnDate(entries, true);
+     *       entries = getEntryUtil().sortEntriesOnDate(entries, true);
      *   }
      *   finalSB.append(
      *       HtmlUtils.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
