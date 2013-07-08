@@ -39,6 +39,7 @@ import org.ramadda.repository.Resource;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
+import org.ramadda.repository.type.GranuleTypeHandler;
 import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
@@ -255,8 +256,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
     private List<Entry> findClimatology(Request request, DataProcessInput input, Entry granule) throws Exception {
     	Entry firstEntry = input.getEntries().get(0);
     	if (!(firstEntry.getTypeHandler() instanceof ClimateModelFileTypeHandler)) return null;
-    	String collectionId = (String) firstEntry.getValues()[0];
-    	Entry collection = typeHandler.getEntryManager().getEntry(request, collectionId);
+    	Entry collection = GranuleTypeHandler.getCollectionEntry(request, firstEntry);
         CollectionTypeHandler ctypeHandler =
             (CollectionTypeHandler) collection.getTypeHandler();
         List<Clause>    clauses   = new ArrayList<Clause>();

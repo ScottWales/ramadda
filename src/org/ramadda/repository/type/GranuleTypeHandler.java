@@ -108,5 +108,24 @@ public class GranuleTypeHandler extends GenericTypeHandler {
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
         }
     }
+    
+    public static Entry getCollectionEntry(Request request, Entry granule) {
+    	if (granule == null) return null;
+    	if (granule.getTypeHandler() instanceof GranuleTypeHandler) {
+    		Object[] values = granule.getValues();
+    		if (values != null) {
+    			String collectionEntryId = (String) values[0];
+    			if (collectionEntryId != null) {
+    				try {
+    				Entry collection = granule.getTypeHandler().getEntryManager().getEntry(request, collectionEntryId);
+    				return collection;
+    				} catch (Exception e) {
+    					return null;
+    				}
+    			}
+    		}
+    	}
+    	return null;
+    }
 
 }
