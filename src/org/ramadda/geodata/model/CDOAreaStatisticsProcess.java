@@ -22,7 +22,11 @@
 package org.ramadda.geodata.model;
 
 
-import org.ramadda.data.process.CollectionOperand;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOutput;
@@ -39,17 +43,9 @@ import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
-
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 
 /**
@@ -224,10 +220,9 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         	//TODO:  do stuff
         }
         
+        //TODO:  Jeff - what do I need to do for the DataOutput?  This doesn't work.
+        // throws NPE in ClimateModelApiHandler (line 165): files.add(granule.getFile());
         Resource resource = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
-        
-
-
         Entry outputEntry = new Entry();
         outputEntry.setResource(resource);
 
@@ -258,8 +253,10 @@ public class CDOAreaStatisticsProcess extends DataProcess {
     }
     
     private List<Entry> findClimatology(Request request, DataProcessInput input, Entry granule) throws Exception {
-    	if (!(input instanceof CollectionOperand)) return null;
-    	Entry collection = ((CollectionOperand) input).getCollectionEntry();
+    	Entry firstEntry = input.getEntries().get(0);
+    	if (!(firstEntry.getTypeHandler() instanceof ClimateModelFileTypeHandler)) return null;
+    	String collectionId = (String) firstEntry.getValues()[0];
+    	Entry collection = typeHandler.getEntryManager().getEntry(request, collectionId);
         CollectionTypeHandler ctypeHandler =
             (CollectionTypeHandler) collection.getTypeHandler();
         List<Clause>    clauses   = new ArrayList<Clause>();

@@ -460,9 +460,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         sb.append(HtmlUtils.h2("Dataset Analysis"));
         sb.append(HtmlUtils.hr());
         addToForm(request, entry, sb);
-        addPublishWidget(
-            request, entry, sb,
-            msg("Select a folder to publish the generated NetCDF file to"));
         sb.append(HtmlUtils.formTableClose());
         sb.append(buttons);
 
@@ -486,7 +483,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public void addToForm(Request request, Entry entry, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtils.formTable());
+        //sb.append(HtmlUtils.formTable());
         if (entry.getType().equals("noaa_climate_modelfile")) {
             //values[1] = var;
             //values[2] = model;
@@ -530,7 +527,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                                  new LatLonPointImpl(-90.0, 180.0));
         }
         addMapWidget(request, sb, llr);
-        sb.append(HtmlUtils.formTableClose());
+        addPublishWidget(
+            request, entry, sb,
+            msg("Select a folder to publish the generated NetCDF file to"));
+        //sb.append(HtmlUtils.formTableClose());
     }
 
     /**
@@ -541,10 +541,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public void addStatsWidget(Request request, StringBuffer sb) {
         sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
-                                      new String[] { msgLabel("Period"),
-                HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES),
-                msgLabel("Type"),
-                HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES) }));
+                                      msgLabel("Period")+
+                HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES)+
+                HtmlUtils.space(3)+
+                msgLabel("Type")+
+                HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES) ));
     }
 
 
@@ -704,9 +705,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     private void makeMonthsWidget(Request request, StringBuffer sb,
                                   List<CalendarDate> dates) {
         sb.append(HtmlUtils.formEntry(msgLabel("Months"),
-                                      new String[] { msgLabel("Start"),
-                HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS), msgLabel("End"),
-                HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS) }));
+                msgLabel("Start") + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)+
+                HtmlUtils.space(3)+ 
+                msgLabel("End")+HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)));
     }
 
     /**
@@ -739,9 +740,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         }
 
         sb.append(HtmlUtils.formEntry(msgLabel("Years"),
-                                      new String[] { msgLabel("Start"),
-                HtmlUtils.select(ARG_CDO_STARTYEAR, years), msgLabel("End"),
-                HtmlUtils.select(ARG_CDO_ENDYEAR, years) }));
+                                      msgLabel("Start")+HtmlUtils.select(ARG_CDO_STARTYEAR, years)+
+                HtmlUtils.space(3)+ 
+                msgLabel("End")+
+                HtmlUtils.select(ARG_CDO_ENDYEAR, years) ));
     }
 
     /**
@@ -753,7 +755,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public void addMapWidget(Request request, StringBuffer sb,
                               LatLonRect llr) {
-    	addMapWidget(request, sb, llr, true);
+    	addMapWidget(request, sb, llr, false);
     }
 
     /**
@@ -769,7 +771,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
     	MapInfo map;
     	if (!usePopup) {
-            map = getRepository().getMapManager().createMap(request, 200, 100, true);
+            map = getRepository().getMapManager().createMap(request, 250, 150, true);
     		map.addProperty("mapLayers", Misc.newList("google.terrain"));
     		// remove some of the widgets
     		map.addProperty("showScaleLine", "false");

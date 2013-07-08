@@ -28,17 +28,15 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.ramadda.data.process.CollectionOperand;
 import org.ramadda.data.process.DataProcess;
-import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
-import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.type.CollectionTypeHandler;
@@ -129,7 +127,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         List<DataProcess> processesToRun = getTypeHandler().getDataProcessesToRun(request);
 
         //This is the dir under <home>/process
-       File processDir = getStorageManager().createProcessDir();
+       File processDir = null;
+       for (DataProcessInput input: operands) {
+         if (input.getProcessDir() != null) {
+        	 processDir = input.getProcessDir();
+        	 break;
+         }
+       }
+       if (processDir == null) {
+    	    processDir =  getStorageManager().createProcessDir();
+       }
 
         for (DataProcess process : processesToRun) {
             System.err.println("MODEL: applying process: "
@@ -224,6 +231,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                                     StringBuffer>();
         List<DataProcessInput> operands = new ArrayList<DataProcessInput>();
 
+        File processDir = getStorageManager().createProcessDir();
 
         //If we are searching or comparing then find the selected entries
         if (request.exists(ARG_ACTION_SEARCH)
@@ -245,7 +253,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 List<Entry> entries = findEntries(request, collection,
                                           collectionEntry);
                 //TODO: fix this later 
-                //operands.add(new CollectionOperand(collectionEntry, entries));
+                operands.add(new DataProcessInput(processDir, entries));
 
                 tmp.append(getEntryManager().getEntryLink(request,
                         collectionEntry));
@@ -436,7 +444,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
 
-        return new Result("Climate Model Comaprison", sb);
+        return new Result("Climate Model Comparison", sb);
 
     }
 

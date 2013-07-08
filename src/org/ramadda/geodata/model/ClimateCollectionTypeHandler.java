@@ -355,7 +355,7 @@ JQ.button(
         String processId = processDir.getName();
         String processEntryId = getStorageManager().getProcessDirEntryId(processId);
 
-        if(true) {
+        if(false) {
             String       entryUrl = 
                 HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                               ARG_ENTRYID, processEntryId);
