@@ -181,7 +181,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String processEntryId = getStorageManager().getProcessDirEntryId(processId);
 
         //Return the redirect to the process dir for now
-        if(true) {
+        if(false) {
             String       entryUrl = 
                 HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                               ARG_ENTRYID, processEntryId);

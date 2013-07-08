@@ -40,6 +40,7 @@ import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.GranuleTypeHandler;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
@@ -224,7 +225,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         //TODO:  Jeff - what do I need to do for the DataOutput?  This doesn't work.
         // throws NPE in ClimateModelApiHandler (line 165): files.add(granule.getFile());
         Resource resource = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
-        Entry outputEntry = new Entry();
+        Entry outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
 
         if (typeHandler.doingPublish(request)) {
