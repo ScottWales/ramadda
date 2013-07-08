@@ -60,12 +60,5 @@ public class CollectionOperand extends DataProcessInput {
         return collection;
     }
 
-    /**
-     * Get the collection granules (entries)
-     *
-     * @return  the entries
-     */
-    public List<Entry> getGranules() {
-        return getEntries();
-    }
+
 }

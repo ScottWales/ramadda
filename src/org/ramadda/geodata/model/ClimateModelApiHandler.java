@@ -31,6 +31,7 @@ import java.util.List;
 import org.ramadda.data.process.CollectionOperand;
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessOutput;
+import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -121,55 +122,65 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception _more_
      */
-    public Result doCompare(Request request, List<CollectionOperand> operands)
-            throws Exception {
-        boolean didProcess = false;
+    public Result doCompare(Request request, List<DataProcessInput> operands)
+        throws Exception {
+
+        //This finds the selected processes
         List<DataProcess> processesToRun = getTypeHandler().getDataProcessesToRun(request);
-        List<File> files = new ArrayList<File>();
+
+        //This is the dir under <home>/process
+       File processDir = getStorageManager().createProcessDir();
+
         for (DataProcess process : processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
             DataProcessOutput output = process.processRequest(request, operands);
-            /*
-              for (CollectionOperand op : operands) {
-              Entry granule = op.getGranules().get(0);
-              DataProcessOutput output =
-              process.processRequest(request, op);
-              for (File outFile : output.getFiles()) {
-              files.add(outFile);
-              }
-              }
-            */
+
+            //make a new input for the next process
+            DataProcessInput nextInput = new DataProcessInput(processDir, output.getEntries());
+            operands =  new ArrayList<DataProcessInput>();
+            operands.add(nextInput);
+
+            //Are we done? This should probably be a check to see if the output has a Result
             if (output.hasOutput()) {
-                for (Entry outEntry : output.getEntries()) {
-                    Resource r = outEntry.getResource();
-                    if (r.isFile()) {
-                        File f = new File(r.getPath());
-                        if (f.exists()) {
-                            files.add(new File(r.getPath()));
-                        }
-                    }
-                }
+                break;
+            }
+          
+        }
+
+
+
+
+        List<File> files = new ArrayList<File>();
+        DataProcessInput dpi = operands.get(0);
+        for (Entry granule : dpi.getEntries()) {
+            if (granule.isFile()) {
+                files.add(granule.getFile());
             }
         }
 
-        /*
-        if ( !didProcess) {
-            for (Entry granule : entries) {
-                if (granule.isFile()) {
-                    files.add(granule.getFile());
-                }
-            }
-        }
-        */
 
-        /*
-        if (doDownload) {
-            return zipFiles(request,
-                            IOUtil.stripExtension(entry.getName()) + ".zip",
+
+        //If no processing was done then return the raw files
+        if (processesToRun.size()==0) {
+            ClimateCollectionTypeHandler typeHandler = getTypeHandler();
+            return typeHandler.zipFiles(request,
+                            "results.zip",
                             files);
         }
-        */
+
+        //Now we get the process entry id
+        String processId = processDir.getName();
+        String processEntryId = getStorageManager().getProcessDirEntryId(processId);
+
+        //Return the redirect to the process dir for now
+        if(true) {
+            String       entryUrl = 
+                HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                              ARG_ENTRYID, processEntryId);
+            return new Result(entryUrl);
+        }
+
 
         //Make the image
         File imageFile = nclOutputHandler.processRequest(request,
@@ -211,7 +222,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,
                                                     StringBuffer>();
-        List<CollectionOperand> operands = new ArrayList<CollectionOperand>();
+        List<DataProcessInput> operands = new ArrayList<DataProcessInput>();
 
 
         //If we are searching or comparing then find the selected entries
@@ -252,8 +263,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         //Check to see if we at least 1 operand 
         boolean hasOperands = false;
         if (operands.size() >= 1) {
-            hasOperands = (operands.get(0).getGranules().size() > 0)
-                          || (operands.get(1).getGranules().size() > 0);
+            hasOperands = (operands.get(0).getEntries().size() > 0)
+                          || (operands.get(1).getEntries().size() > 0);
         }
 
 
