@@ -548,7 +548,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                 HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES) ));
     }
 
-
     /**
      * Add the variable/level selector widget
      *
@@ -558,6 +557,18 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     public void addVarLevelWidget(Request request, StringBuffer sb,
                                    GridDataset dataset) {
+    	addVarLevelWidget(request, sb, dataset, ARG_CDO_LEVEL);
+    }
+
+    /**
+     * Add the variable/level selector widget
+     *
+     * @param request  the Request
+     * @param sb       the HTML
+     * @param dataset  the dataset
+     */
+    public void addVarLevelWidget(Request request, StringBuffer sb,
+                                   GridDataset dataset, String levelArg) {
         List<GridDatatype> grids = dataset.getGrids();
         StringBuffer       varsb = new StringBuffer();
         //TODO: handle multiple variables
@@ -586,7 +597,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         : lev);
                 levels.add(new TwoFacedObject(label, String.valueOf(lev)));
             }
-            varsb.append(HtmlUtils.select(ARG_CDO_LEVEL, levels));
+            varsb.append(HtmlUtils.select(levelArg, levels));
             varsb.append(HtmlUtils.space(2));
             varsb.append("hPa");
         }
@@ -856,28 +867,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         //   - month range
         //   - year or time range
 
-        List<String> statCommands = createStatCommands(request, entry);
-        for (String cmd : statCommands) {
-            if ((cmd != null) && !cmd.isEmpty()) {
-                commands.add(cmd);
-            }
-        }
-
-        String levSelect = createLevelSelectCommand(request, entry);
-        if ((levSelect != null) && !levSelect.isEmpty()) {
-            commands.add(levSelect);
-        }
-        String areaSelect = createAreaSelectCommand(request, entry);
-        if ((areaSelect != null) && !areaSelect.isEmpty()) {
-            commands.add(areaSelect);
-        }
-
-        List<String> dateCmds = createDateSelectCommands(request, entry);
-        for (String cmd : dateCmds) {
-            if ((cmd != null) && !cmd.isEmpty()) {
-                commands.add(cmd);
-            }
-        }
+        addStatCommands(request, entry, commands);
+        addLevelSelectCommands(request, entry, commands);
+        addAreaSelectCommands(request, entry, commands);
+        addDateSelectCommands(request, entry, commands);
 
         System.err.println("cmds:" + commands);
 
@@ -955,8 +948,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      * @return the select command
      */
-    public static String createAreaSelectCommand(Request request,
-            Entry entry) {
+    public void addAreaSelectCommands(Request request,
+            Entry entry, List<String> commands) {
         boolean anySpatialDifferent = false;
         boolean haveAllSpatialArgs  = true;
         for (String spatialArg : SPATIALARGS) {
@@ -1006,8 +999,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             + request.getString(ARG_CDO_AREA_SOUTH, "-90") + ","
                     + request.getString(ARG_CDO_AREA_NORTH, "90");
         }
-
-        return llSelect;
+        if (!llSelect.isEmpty()) {
+        	commands.add(llSelect);
+        }
+    }
+    
+    /**
+     * Create the region subset command
+     * @param request  the Request
+     * @param entry    the Entry
+     * @return  the subset command.   Will be empty if no subset
+     */
+    public void addLevelSelectCommands(Request request, Entry entry, List<String> commands) {
+    	addLevelSelectCommands(request, entry, commands, ARG_CDO_LEVEL);
     }
 
     /**
@@ -1016,17 +1020,17 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param entry    the Entry
      * @return  the subset command.   Will be empty if no subset
      */
-    public static String createLevelSelectCommand(Request request,
-            Entry entry) {
+    public void addLevelSelectCommands(Request request, Entry entry, List<String> commands, String levelArg) {
         String levSelect = null;
-        if (request.defined(ARG_CDO_LEVEL)) {
-            String level = request.getString(ARG_CDO_LEVEL);
+        if (request.defined(levelArg)) {
+            String level = request.getString(levelArg);
             if (level != null) {
                 levSelect = OP_SELLEVEL + "," + level;
             }
         }
-
-        return levSelect;
+        if (levSelect != null) {
+        	commands.add(levSelect);
+        }
     }
 
     /**
@@ -1037,10 +1041,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      * @throws Exception  on badness
      */
-    public List<String> createDateSelectCommands(Request request, Entry entry)
+    public void addMonthSelectCommands(Request request, Entry entry, List<String> commands)
             throws Exception {
 
-        List<String> commands = new ArrayList<String>();
         String       selMonth = null;
         if (request.defined(ARG_CDO_STARTMONTH)
                 || request.defined(ARG_CDO_ENDMONTH)) {
@@ -1062,6 +1065,43 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         } else {  // ONLY FOR TESTING
             commands.add(OP_SELMON + ",1");
         }
+    }
+
+    /**
+     * Create the list of date/time select commands
+     * @param request the Request
+     * @param entry   the associated Entry
+     * @return  a list of date select commands (may be empty list)
+     *
+     * @throws Exception  on badness
+     */
+    public List<String> addDateSelectCommands(Request request, Entry entry, List<String> commands)
+            throws Exception {
+
+    	addMonthSelectCommands(request, entry, commands);
+    	/*
+        String       selMonth = null;
+        if (request.defined(ARG_CDO_STARTMONTH)
+                || request.defined(ARG_CDO_ENDMONTH)) {
+            int startMonth = request.defined(ARG_CDO_STARTMONTH)
+                             ? request.get(ARG_CDO_STARTMONTH, 1)
+                             : 1;
+            int endMonth   = request.defined(ARG_CDO_ENDMONTH)
+                             ? request.get(ARG_CDO_ENDMONTH, startMonth)
+                             : startMonth;
+            if (endMonth < startMonth) {
+                getPageHandler().showDialogWarning(
+                    "Start month is after end month");
+            }
+            selMonth = OP_SELMON + "," + startMonth;
+            if (endMonth != startMonth) {
+                selMonth += "/" + endMonth;
+            }
+            commands.add(selMonth);
+        } else {  // ONLY FOR TESTING
+            commands.add(OP_SELMON + ",1");
+        }
+        */
 
         String dateSelect = null;
         if (request.defined(ARG_CDO_FROMDATE)
@@ -1137,19 +1177,18 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     }
 
     /**
-     * Creat the statistics command
+     * Create the statistics command
      * @param request  the request
      * @param entry    the entry
      * @return         the list of commands
      */
-    public List<String> createStatCommands(Request request, Entry entry) {
-        List<String> commands = new ArrayList<String>();
+    public void addStatCommands(Request request, Entry entry, List<String> commands) {
         if (request.defined(ARG_CDO_PERIOD)
                 && request.defined(ARG_CDO_STAT)) {
             String period = request.getString(ARG_CDO_PERIOD);
             String stat   = request.getString(ARG_CDO_STAT);
             if ((period == null) || (stat == null)) {
-                return commands;
+                return;
             }
             // TODO:  Handle anomaly
             if (stat.equals(STAT_ANOM)) {
@@ -1166,7 +1205,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             commands.add("-" + PERIOD_TIM + STAT_MEAN);
         }
 
-        return commands;
     }
 
     /**
@@ -1279,29 +1317,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             //   - month range
             //   - year or time range
 
-            List<String> statCommands = createStatCommands(request, oneOfThem);
-            for (String cmd : statCommands) {
-                if ((cmd != null) && !cmd.isEmpty()) {
-                    commands.add(cmd);
-                }
-            }
-
-            String levSelect = createLevelSelectCommand(request, oneOfThem);
-            if ((levSelect != null) && !levSelect.isEmpty()) {
-                commands.add(levSelect);
-            }
-            String areaSelect = createAreaSelectCommand(request, oneOfThem);
-            if ((areaSelect != null) && !areaSelect.isEmpty()) {
-                commands.add(areaSelect);
-            }
-
-            List<String> dateCmds = createDateSelectCommands(request,
-                                        oneOfThem);
-            for (String cmd : dateCmds) {
-                if ((cmd != null) && !cmd.isEmpty()) {
-                    commands.add(cmd);
-                }
-            }
+            addStatCommands(request, oneOfThem, commands);
+            addLevelSelectCommands(request, oneOfThem, commands);
+            addAreaSelectCommands(request, oneOfThem, commands);
+            addDateSelectCommands(request, oneOfThem, commands);
 
             System.err.println("cmds:" + commands);
 

@@ -22,11 +22,6 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOutput;
@@ -45,9 +40,17 @@ import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
+
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
+
+
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -69,7 +72,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @throws Exception  problems
      */
     public CDOAreaStatisticsProcess(Repository repository) throws Exception {
-    	super("CDO_AREA_STATS", "Area Statistics");
+        super("CDO_AREA_STATS", "Area Statistics");
         this.repository = repository;
         typeHandler     = new CDOOutputHandler(repository);
     }
@@ -90,21 +93,31 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         sb.append(HtmlUtils.formTable());
         List<StringBuffer> forms = new ArrayList<StringBuffer>(inputs.size());
         for (DataProcessInput input : inputs) {
-        	StringBuffer inputSB = new StringBuffer();
-        	makeInputForm(request,input,inputSB);
-        	forms.add(inputSB);
+            StringBuffer inputSB = new StringBuffer();
+            makeInputForm(request, input, inputSB);
+            forms.add(inputSB);
         }
         //if (forms.size() == 1) {
-        	sb.append(forms.get(0));
+        sb.append(forms.get(0));
         //} else {
         //}
         sb.append(HtmlUtils.formTableClose());
     }
 
-    private void makeInputForm(Request request, DataProcessInput input, StringBuffer sb) throws Exception {
+    /**
+     * Make the input form
+     *
+     * @param request  the Request
+     * @param input    the DataProcessInput
+     * @param sb       the StringBuffer
+     *
+     * @throws Exception  problem making stuff
+     */
+    private void makeInputForm(Request request, DataProcessInput input,
+                               StringBuffer sb)
+            throws Exception {
         Entry first = input.getEntries().get(0);
 
-        //addInfoWidget(request, sb);
         CdmDataOutputHandler dataOutputHandler =
             typeHandler.getDataOutputHandler();
         GridDataset dataset =
@@ -112,14 +125,12 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                 first.getResource().getPath());
 
         if (dataset != null) {
-            typeHandler.addVarLevelWidget(request, sb, dataset);
+            typeHandler.addVarLevelWidget(request, sb, dataset, CdmDataOutputHandler.ARG_LEVEL);
         }
 
         typeHandler.addStatsWidget(request, sb);
 
-        //if(dataset != null)  {
-            typeHandler.addTimeWidget(request, sb, dataset, true);
-        //}
+        typeHandler.addTimeWidget(request, sb, dataset, true);
 
         LatLonRect llr = null;
         if (dataset != null) {
@@ -130,7 +141,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         }
         typeHandler.addMapWidget(request, sb, llr, false);
     }
-    
+
     /**
      * Process the request
      *
@@ -145,23 +156,29 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             Request request, List<? extends DataProcessInput> inputs)
             throws Exception {
 
-        DataProcessInput dpi = inputs.get(0);
-        Entry  oneOfThem = dpi.getEntries().get(0);
+        DataProcessInput dpi       = inputs.get(0);
+        Entry            oneOfThem = dpi.getEntries().get(0);
         String tail = typeHandler.getStorageManager().getFileTail(oneOfThem);
-        String id        = getRepository().getGUID();
-        String newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
-        tail = typeHandler.getStorageManager().getStorageFileName(tail);
-        File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                           newName));
-        List<String> commands = new ArrayList<String>();
-        commands.add(typeHandler.getCDOPath());
-        commands.add("-L");
-        commands.add("-s");
-        commands.add("-O");
-        String operation =
-            request.getString(CDOOutputHandler.ARG_CDO_OPERATION,
-                              typeHandler.OP_INFO);
-        //commands.add(operation);
+        String           id        = getRepository().getGUID();
+        String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
+        List<String> commands  = initCDOCommand();
+
+        String       stat = request.getString(CDOOutputHandler.ARG_CDO_STAT);
+        Entry        climEntry = null;
+        if (stat.equals(CDOOutputHandler.STAT_ANOM)) {
+            System.err.println("Looking for climo");
+            List<Entry> climo = findClimatology(request, oneOfThem);
+            if (climo == null) {
+                System.err.println("found squat");
+            } else if (climo.size() > 1) {
+                System.err.println("found too many");
+
+            } else {
+                climEntry = climo.get(0);
+                System.err.println("found climo: " + climEntry);
+            }
+        }
 
         // Select order (left to right) - operations go right to left:
         //   - stats
@@ -169,63 +186,59 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         //   - region
         //   - month range
         //   - year or time range
-        String stat   = request.getString(CDOOutputHandler.ARG_CDO_STAT);
-        Entry climEntry = null;
-        if (stat.equals(CDOOutputHandler.STAT_ANOM)) {
-            System.err.println("Looking for climo");
-            List<Entry> climo = findClimatology(request, inputs.get(0), oneOfThem);
-            if (climo == null) {
-            	System.err.println("found squat");
-            } else if (climo.size() > 1) { 
-            	System.err.println("found too many");
-            	
-            } else {
-            	climEntry = climo.get(0);
-            	System.err.println("found climo: " + climEntry);
-            }
-        }
-
-        List<String> statCommands = typeHandler.createStatCommands(request,
-                                        oneOfThem);
-        for (String cmd : statCommands) {
-            if ((cmd != null) && !cmd.isEmpty()) {
-                commands.add(cmd);
-            }
-        }
-
-        String levSelect = typeHandler.createLevelSelectCommand(request,
-                               oneOfThem);
-        if ((levSelect != null) && !levSelect.isEmpty()) {
-            commands.add(levSelect);
-        }
-        String areaSelect = typeHandler.createAreaSelectCommand(request,
-                                oneOfThem);
-        if ((areaSelect != null) && !areaSelect.isEmpty()) {
-            commands.add(areaSelect);
-        }
-
-        List<String> dateCmds = typeHandler.createDateSelectCommands(request,
-                                    oneOfThem);
-        for (String cmd : dateCmds) {
-            if ((cmd != null) && !cmd.isEmpty()) {
-                commands.add(cmd);
-            }
-        }
+        typeHandler.addStatCommands(request, oneOfThem, commands);
+        typeHandler.addLevelSelectCommands(request, oneOfThem, commands, CdmDataOutputHandler.ARG_LEVEL);
+        typeHandler.addAreaSelectCommands(request, oneOfThem, commands);
+        typeHandler.addDateSelectCommands(request, oneOfThem, commands);
 
         System.err.println("cmds:" + commands);
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());
         runProcess(commands, dpi.getProcessDir(), outFile);
-        
+
         if (climEntry != null) {
-        	//TODO:  do stuff
+            //TODO:  do stuff
+            String climName = IOUtil.stripExtension(tail) + "_" + id
+                              + "_clim.nc";
+            File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
+                                climName));
+            commands = initCDOCommand();
+
+            // Select order (left to right) - operations go right to left:
+            //   - level
+            //   - region
+            //   - month range
+            typeHandler.addStatCommands(request, climEntry, commands);
+            typeHandler.addLevelSelectCommands(request, climEntry, commands, CdmDataOutputHandler.ARG_LEVEL);
+            typeHandler.addAreaSelectCommands(request, climEntry, commands);
+            typeHandler.addMonthSelectCommands(request, climEntry, commands);
+
+            System.err.println("clim cmds:" + commands);
+
+            commands.add(climEntry.getResource().getPath());
+            commands.add(climFile.toString());
+            runProcess(commands, dpi.getProcessDir(), climFile);
+
+            // now subtract them
+            String anomName = IOUtil.stripExtension(tail) + "_" + id
+                              + "_anom.nc";
+            File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
+                                anomName));
+            commands = initCDOCommand();
+            commands.add("-ymonsub");
+            commands.add(outFile.toString());
+            commands.add(climFile.toString());
+            commands.add(anomFile.toString());
+            runProcess(commands, dpi.getProcessDir(), anomFile);
+            outFile = anomFile;
         }
-        
+
         //TODO:  Jeff - what do I need to do for the DataOutput?  This doesn't work.
         // throws NPE in ClimateModelApiHandler (line 165): files.add(granule.getFile());
-        Resource resource = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
-        Entry outputEntry = new Entry(new TypeHandler(repository), true);
+        Resource resource    = new Resource(outFile,
+                                            Resource.TYPE_LOCAL_FILE);
+        Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
 
         if (typeHandler.doingPublish(request)) {
@@ -235,9 +248,35 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         return new DataProcessOutput(outputEntry);
     }
 
-    private void runProcess(List<String> commands, File processDir, File outFile) throws Exception {
+    /**
+     * Initialize the CDO command list
+     *
+     * @return  the initial list of CDO commands
+     */
+    private List<String> initCDOCommand() {
+        List<String> newCommands = new ArrayList<String>();
+        newCommands.add(typeHandler.getCDOPath());
+        newCommands.add("-L");
+        newCommands.add("-s");
+        newCommands.add("-O");
+
+        return newCommands;
+    }
+
+    /**
+     * Run the process
+     *
+     * @param commands  the list of commands to run
+     * @param processDir  the processing directory
+     * @param outFile     the outfile
+     *
+     * @throws Exception problem running commands
+     */
+    private void runProcess(List<String> commands, File processDir,
+                            File outFile)
+            throws Exception {
         String[] results = getRepository().executeCommand(commands, null,
-                                                          processDir);
+                               processDir);
         String errorMsg = results[1];
         String outMsg   = results[0];
         if ( !outFile.exists()) {
@@ -253,21 +292,35 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             }
         }
     }
-    
-    private List<Entry> findClimatology(Request request, DataProcessInput input, Entry granule) throws Exception {
-    	Entry firstEntry = input.getEntries().get(0);
-    	if (!(firstEntry.getTypeHandler() instanceof ClimateModelFileTypeHandler)) return null;
-    	Entry collection = GranuleTypeHandler.getCollectionEntry(request, firstEntry);
+
+    /**
+     * Find the associated climatology for the input 
+     *
+     * @param request  the Request
+     * @param input    the input
+     * @param granule  the entry
+     *
+     * @return the climatology entry or null
+     *
+     * @throws Exception  problems
+     */
+    private List<Entry> findClimatology(Request request, Entry granule)
+            throws Exception {
+        if ( !(granule.getTypeHandler()
+                instanceof ClimateModelFileTypeHandler)) {
+            return null;
+        }
+        Entry collection = GranuleTypeHandler.getCollectionEntry(request, granule);
         CollectionTypeHandler ctypeHandler =
             (CollectionTypeHandler) collection.getTypeHandler();
         List<Clause>    clauses   = new ArrayList<Clause>();
         List<Column>    columns   = ctypeHandler.getGranuleColumns();
         HashSet<String> seenTable = new HashSet<String>();
-        Object[] values = granule.getValues();
+        Object[]        values    = granule.getValues();
         for (int colIdx = 0; colIdx < columns.size(); colIdx++) {
             Column column = columns.get(colIdx);
             // first column is the collection ID
-            int valIdx = colIdx+1;
+            int    valIdx      = colIdx + 1;
             String dbTableName = column.getTableName();
             if ( !seenTable.contains(dbTableName)) {
                 clauses.add(Clause.eq(ctypeHandler.getCollectionIdColumn(),
@@ -278,7 +331,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             }
             String v = values[valIdx].toString();
             if (column.getName().equals("ensemble")) {
-            	clauses.add(Clause.eq(column.getName(), "clim"));
+                clauses.add(Clause.eq(column.getName(), "clim"));
             } else {
                 if (v.length() > 0) {
                     clauses.add(Clause.eq(column.getName(), v));
@@ -286,13 +339,13 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             }
 
         }
-        List[] pair = typeHandler.getEntryManager().getEntries(request, clauses,
-                          ctypeHandler.getGranuleTypeHandler());
+        List[] pair = typeHandler.getEntryManager().getEntries(request,
+                          clauses, ctypeHandler.getGranuleTypeHandler());
 
         return pair[1];
-	}
+    }
 
-	/**
+    /**
      * Get the repository
      *
      * @return the repository
