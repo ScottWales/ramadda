@@ -98,6 +98,12 @@ public class DifMetadataHandler extends MetadataHandler {
     public static final String TYPE_DATA_SET_LANGUAGE =
         "dif.data_set_language";
 
+    public static final String TYPE_INSTRUMENT =
+        "dif.instrument";
+
+    public static final String TYPE_PLATFORM =
+        "dif.platform";
+
     /** _more_ */
     public static final String TYPE_ORIGINATING_CENTER =
         "dif.originating_center";

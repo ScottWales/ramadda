@@ -223,11 +223,15 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Long_Name = "Long_Name";
 
+    public static final String TAG_Source_Name = "Source_Name";
+
+
+    public static final String[] TAGS_Sensor_Name = {TAG_Short_Name, TAG_Long_Name};
+
     public static final String []TAGS_Project = {TAG_Short_Name, TAG_Long_Name};
 
+    public static final String []TAGS_Source_Name = {TAG_Short_Name, TAG_Long_Name};
 
-    /** _more_ */
-    public static final String TAG_Source_Name = "Source_Name";
 
 
     /** _more_ */
@@ -331,6 +335,17 @@ public class DifUtil {
 
     /** _more_ */
     public static final String TAG_Detailed_Location = "Detailed_Location";
+
+
+    /** _more_ */
+    public static final String[] TAGS_Location = {
+        TAG_Location_Type,
+        TAG_Location_Subregion1,
+        TAG_Location_Subregion2,
+        TAG_Location_Subregion3,
+        TAG_Detailed_Location
+    };
+
 
 
     /** _more_ */
@@ -456,6 +471,13 @@ public class DifUtil {
 
     /** _more_ */
     public static final String TAG_URL = "URL";
+
+
+    public static final String []TAGS_Related_URL = {
+        TAG_URL,
+        TAG_Description
+    };
+
 
 
     /** _more_ */

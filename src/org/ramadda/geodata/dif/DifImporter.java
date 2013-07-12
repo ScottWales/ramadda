@@ -113,7 +113,7 @@ public class DifImporter extends ImportHandler {
 
 
     private void processXml(Request request, Entry parentEntry, String xml, List<Entry> entries) throws Exception {
-        String type = request.getString(ARG_DIF_TYPE,"project_instrument");
+        String type = request.getString(ARG_DIF_TYPE,"project_project");
         Entry entry  =  getRepository().getTypeHandler(type).createEntry(getRepository().getGUID());
         Object[] values = entry.getTypeHandler().getValues(entry);
 
@@ -138,11 +138,54 @@ public class DifImporter extends ImportHandler {
         addMetadata(entry, difRoot, DifUtil.TAG_Keyword, DifMetadataHandler.TYPE_KEYWORD);
         addMetadata(entry, difRoot, DifUtil.TAG_ISO_Topic_Category, DifMetadataHandler.TYPE_ISO_TOPIC_CATEGORY);
         addMetadata(entry, difRoot, DifUtil.TAG_Originating_Center, DifMetadataHandler.TYPE_ORIGINATING_CENTER);
+        addMetadata(entry, difRoot, DifUtil.TAG_Data_Set_Language, DifMetadataHandler.TYPE_DATA_SET_LANGUAGE);
         addMetadata(entry, difRoot, DifUtil.TAG_Reference, DifMetadataHandler.TYPE_REFERENCE);
         addMetadata(entry, difRoot, DifUtil.TAG_Distribution, DifMetadataHandler.TYPE_DISTRIBUTION, DifUtil.TAGS_Distribution);
+        addMetadata(entry, difRoot, DifUtil.TAG_Related_URL, DifMetadataHandler.TYPE_RELATED_URL, DifUtil.TAGS_Related_URL);
         addMetadata(entry, difRoot, DifUtil.TAG_Project, DifMetadataHandler.TYPE_PROJECT, DifUtil.TAGS_Project);
         addMetadata(entry, difRoot, DifUtil.TAG_Parameters, DifMetadataHandler.TYPE_PARAMETERS, DifUtil.TAGS_Parameters);
         addMetadata(entry, difRoot, DifUtil.TAG_Data_Set_Citation, DifMetadataHandler.TYPE_DATA_SET_CITATION, DifUtil.TAGS_Data_Set_Citation);
+        addMetadata(entry, difRoot, DifUtil.TAG_Sensor_Name, DifMetadataHandler.TYPE_INSTRUMENT, DifUtil.TAGS_Sensor_Name);
+        addMetadata(entry, difRoot, DifUtil.TAG_Source_Name, DifMetadataHandler.TYPE_PLATFORM, DifUtil.TAGS_Source_Name);
+        addMetadata(entry, difRoot, DifUtil.TAG_Location, DifMetadataHandler.TYPE_LOCATION, DifUtil.TAGS_Location);
+        
+
+
+        Element spatialNode =  XmlUtil.findChild(difRoot, DifUtil.TAG_Spatial_Coverage);
+        if(spatialNode!=null) {
+            String tmp;
+
+            tmp = XmlUtil.getGrandChildText(spatialNode, DifUtil.TAG_Northernmost_Latitude,null);
+            if(tmp!=null)
+                entry.setNorth(Double.parseDouble(tmp));
+            tmp = XmlUtil.getGrandChildText(spatialNode, DifUtil.TAG_Westernmost_Longitude,null);
+            if(tmp!=null)
+                entry.setWest(Double.parseDouble(tmp));
+            tmp = XmlUtil.getGrandChildText(spatialNode, DifUtil.TAG_Southernmost_Latitude,null);
+            if(tmp!=null)
+                entry.setSouth(Double.parseDouble(tmp));
+            tmp = XmlUtil.getGrandChildText(spatialNode, DifUtil.TAG_Easternmost_Longitude,null);
+            if(tmp!=null)
+                entry.setEast(Double.parseDouble(tmp));
+        }
+
+
+        Element temporalNode =  XmlUtil.findChild(difRoot, DifUtil.TAG_Temporal_Coverage);
+        if(temporalNode!=null) {
+            String startDate = XmlUtil.getGrandChildText(temporalNode, DifUtil.TAG_Start_Date,null);
+            if(startDate!=null) {
+                Date dttm = DateUtil.parse(startDate);
+                entry.setStartDate(dttm.getTime());
+            }
+            String stopDate = XmlUtil.getGrandChildText(temporalNode, DifUtil.TAG_Stop_Date,null);
+            if(stopDate!=null) {
+                Date dttm = DateUtil.parse(stopDate);
+                entry.setEndDate(dttm.getTime());
+            }
+
+        }
+
+
         entry.setDescription(XmlUtil.getGrandChildText(difRoot, DifUtil.TAG_Summary,""));
         entry.setName(title);
         entry.setParentEntryId(parentEntry.getId());
