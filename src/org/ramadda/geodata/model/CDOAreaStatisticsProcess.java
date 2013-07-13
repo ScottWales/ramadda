@@ -125,7 +125,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                 first.getResource().getPath());
 
         if (dataset != null) {
-            typeHandler.addVarLevelWidget(request, sb, dataset, CdmDataOutputHandler.ARG_LEVEL);
+            typeHandler.addVarLevelWidget(request, sb, dataset,
+                                          CdmDataOutputHandler.ARG_LEVEL);
         }
 
         typeHandler.addStatsWidget(request, sb);
@@ -156,11 +157,54 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             Request request, List<? extends DataProcessInput> inputs)
             throws Exception {
 
-        DataProcessInput dpi       = inputs.get(0);
-        Entry            oneOfThem = dpi.getEntries().get(0);
+        if ( !canHandle(inputs)) {
+            throw new Exception("Illegal data type");
+        }
+
+        List<Entry> outputEntries = new ArrayList<Entry>();
+        for (DataProcessInput dpi : inputs) {
+            Entry oneOfThem = dpi.getEntries().get(0);
+            Entry collection = GranuleTypeHandler.getCollectionEntry(request,
+                                   oneOfThem);
+            String frequency = "Monthly";
+            if (collection != null) {
+                frequency = collection.getValues()[0].toString();
+            }
+            if (frequency.toLowerCase().indexOf("mon") >= 0) {
+                outputEntries.add(processMonthlyRequest(request, dpi));
+            }
+        }
+        return new DataProcessOutput(outputEntries);
+    }
+
+    /**
+     * Process the daily data request	
+     *
+     * @param request  the request
+     * @param dpi      the DataProcessInput
+     *
+     * @return  some output
+     */
+    private Entry processDailyRequest(Request request,
+            DataProcessInput dpi) throws Exception {
+    	throw new Exception("can't handle daily data yet");
+    }
+
+    /**
+     * Process the monthly request	
+     *
+     * @param request  the request
+     * @param dpi      the DataProcessInput
+     *
+     * @return  some output
+     */
+    private Entry processMonthlyRequest(Request request,
+            DataProcessInput dpi) throws Exception {
+
+        Entry        oneOfThem = dpi.getEntries().get(0);
         String tail = typeHandler.getStorageManager().getFileTail(oneOfThem);
-        String           id        = getRepository().getGUID();
-        String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        String       id        = getRepository().getGUID();
+        String       newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
         List<String> commands  = initCDOCommand();
 
@@ -187,7 +231,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         //   - month range
         //   - year or time range
         typeHandler.addStatCommands(request, oneOfThem, commands);
-        typeHandler.addLevelSelectCommands(request, oneOfThem, commands, CdmDataOutputHandler.ARG_LEVEL);
+        typeHandler.addLevelSelectCommands(request, oneOfThem, commands,
+                                           CdmDataOutputHandler.ARG_LEVEL);
         typeHandler.addAreaSelectCommands(request, oneOfThem, commands);
         typeHandler.addDateSelectCommands(request, oneOfThem, commands);
 
@@ -210,7 +255,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             //   - region
             //   - month range
             typeHandler.addStatCommands(request, climEntry, commands);
-            typeHandler.addLevelSelectCommands(request, climEntry, commands, CdmDataOutputHandler.ARG_LEVEL);
+            typeHandler.addLevelSelectCommands(request, climEntry, commands,
+                    CdmDataOutputHandler.ARG_LEVEL);
             typeHandler.addAreaSelectCommands(request, climEntry, commands);
             typeHandler.addMonthSelectCommands(request, climEntry, commands);
 
@@ -241,11 +287,47 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
 
-        if (typeHandler.doingPublish(request)) {
-            return new DataProcessOutput(outputEntry);
+        return outputEntry;
+    }
+
+    /**
+     * Can we handle the inputs?
+     *
+     * @param inputs  the list of inputs
+     *
+     * @return true if we can, otherwise false
+     */
+    public boolean canHandle(List<? extends DataProcessInput> inputs) {
+        // TODO Auto-generated method stub
+        for (DataProcessInput input : inputs) {
+            if ( !canHandle(input)) {
+                return false;
+            }
         }
 
-        return new DataProcessOutput(outputEntry);
+        return true;
+    }
+
+    /**
+     * Can we handle this input
+     *
+     * @param input  the input
+     *
+     * @return true if we can, otherwise false
+     */
+    private boolean canHandle(DataProcessInput input) {
+        List<Entry> entries = input.getEntries();
+        // TODO: change this when we can handle more than one entry (e.g. daily data)
+        if (entries.isEmpty() || (entries.size() > 1)) {
+            return false;
+        }
+        Entry firstEntry = entries.get(0);
+        if ( !(firstEntry.getTypeHandler()
+                instanceof ClimateModelFileTypeHandler)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -294,10 +376,9 @@ public class CDOAreaStatisticsProcess extends DataProcess {
     }
 
     /**
-     * Find the associated climatology for the input 
+     * Find the associated climatology for the input
      *
      * @param request  the Request
-     * @param input    the input
      * @param granule  the entry
      *
      * @return the climatology entry or null
@@ -310,7 +391,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                 instanceof ClimateModelFileTypeHandler)) {
             return null;
         }
-        Entry collection = GranuleTypeHandler.getCollectionEntry(request, granule);
+        Entry collection = GranuleTypeHandler.getCollectionEntry(request,
+                               granule);
         CollectionTypeHandler ctypeHandler =
             (CollectionTypeHandler) collection.getTypeHandler();
         List<Clause>    clauses   = new ArrayList<Clause>();
