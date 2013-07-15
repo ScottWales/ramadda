@@ -1013,6 +1013,8 @@ public class Metadata implements Constants {
         Hashtable<Integer, String> tmp = new Hashtable<Integer, String>();
         if ((extra != null) && (extra.length() > 0)) {
             try {
+                System.err.println("** extra:" + extra+":");
+                //                System.err.println("");
                 Element root = XmlUtil.getRoot(extra);
                 if (root != null) {
                     List elements = XmlUtil.findChildren(root, TAG_EXTRA);
@@ -1029,7 +1031,8 @@ public class Metadata implements Constants {
                     }
                 }
             } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                System.err.println("Could not parse extra metadata:" + extra);
+                //throw new RuntimeException(exc);
             }
         }
 

@@ -42,6 +42,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Date;
 
 import java.util.List;
@@ -172,16 +173,57 @@ public class DifImporter extends ImportHandler {
 
         Element temporalNode =  XmlUtil.findChild(difRoot, DifUtil.TAG_Temporal_Coverage);
         if(temporalNode!=null) {
+            Date dttm = null;
             String startDate = XmlUtil.getGrandChildText(temporalNode, DifUtil.TAG_Start_Date,null);
             if(startDate!=null) {
-                Date dttm = DateUtil.parse(startDate);
+                dttm = DateUtil.parse(startDate);
                 entry.setStartDate(dttm.getTime());
             }
             String stopDate = XmlUtil.getGrandChildText(temporalNode, DifUtil.TAG_Stop_Date,null);
             if(stopDate!=null) {
-                Date dttm = DateUtil.parse(stopDate);
+                dttm = DateUtil.parse(stopDate);
+                entry.setEndDate(dttm.getTime());
+            } else {
+                //Pick up the start date
                 entry.setEndDate(dttm.getTime());
             }
+        }
+
+        /*
+<object class="java.util.ArrayList">
+    <method name="add">
+        <object class="java.util.Hashtable">
+            <method name="put">
+                <java.lang.Integer>1</java.lang.Integer>
+                <string><![CDATA[investigator]]></string>
+            </method>
+        </object>
+    </method>
+</object>
+        */
+
+        for(Element node:(List<Element>) XmlUtil.findChildren(difRoot, DifUtil.TAG_Personnel)) {
+            List roles = new ArrayList();
+            int cnt = 1;
+            for(Element roleNode:(List<Element>) XmlUtil.findChildren(node, DifUtil.TAG_Role)) {
+                String role = XmlUtil.getChildText(roleNode);
+                Hashtable ht = new Hashtable();
+                ht.put(new Integer(cnt), role);
+                roles.add(ht);
+                cnt++;
+            }
+            String roleXml = Repository.encodeObject(roles);
+            //            System.err.println(roleXml);
+           
+            Metadata metadata = new Metadata(getRepository().getGUID(),
+                                             entry.getId(), DifMetadataHandler.TYPE_PERSONNEL,
+                                             DFLT_INHERITED, roleXml,
+                                             XmlUtil.getGrandChildText(node,DifUtil.TAG_First_Name,""),
+                                             XmlUtil.getGrandChildText(node,DifUtil.TAG_Middle_Name,""),
+                                             XmlUtil.getGrandChildText(node,DifUtil.TAG_Last_Name,""),
+                                             Metadata.DFLT_EXTRA);
+            metadata.setAttr(5, XmlUtil.getGrandChildText(node,DifUtil.TAG_Email,""));
+            entry.addMetadata(metadata);
 
         }
 
@@ -206,6 +248,7 @@ public class DifImporter extends ImportHandler {
             entry.addMetadata(metadata);
         }
     }
+
 
 
     private void addMetadata(Entry entry, Element difRoot, String tag, String metadataId, String[]subTags) throws Exception {

@@ -884,6 +884,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         for (Metadata metadata : getMetadataManager().getMetadata(srcEntry)) {
             MetadataType metadataType =
                 getMetadataManager().findType(metadata.getType());
+            if(metadataType == null) {
+                //                System.err.println("Whoaa: "+ metadata.getType());
+                continue;
+            }
             String url = metadataType.getImageUrl(request, srcEntry,
                              metadata, attachment);
             if (url != null) {
