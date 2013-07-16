@@ -203,7 +203,8 @@ ${Personnel}
 
     <type
        name="Platform"
-       searchable="false"
+       searchable="true"
+       browsable="true"
        id="dif.platform">
       <element name="Short Name"/>
       <element name="Long Name"/>
@@ -215,7 +216,8 @@ ${Personnel}
 
     <type
        name="Project"
-       searchable="false"
+       searchable="true"
+       browsable="true"
        id="dif.project">
       <element name="Short Name"/>
       <element name="Long Name"/>
@@ -269,7 +271,8 @@ ${Chronostratigraphic_Unit}
 
     <type
        name="Location"
-       searchable="false"
+       searchable="true"
+       browsable="true"
        id="dif.location">
       <element
          datatype="enumeration"

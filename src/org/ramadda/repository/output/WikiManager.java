@@ -948,7 +948,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             result =  getMessage(props,
                                  "Could not find entry ");
         }
-        if(result.length()==0) return "";
+        if(result.trim().length()==0) return "";
 
         StringBuffer sb = new StringBuffer();
 
