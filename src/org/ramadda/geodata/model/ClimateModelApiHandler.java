@@ -280,7 +280,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         if (request.exists(ARG_ACTION_COMPARE)) {
             if (hasOperands) {
-                return doCompare(request, operands);
+                try {
+                    return doCompare(request, operands);
+                } catch(Exception exc) {
+                    sb.append(
+                              getPageHandler().showDialogError("An error occurred:<br>" + exc));
+                }
             } else {
                 sb.append(
                     getPageHandler().showDialogWarning("No fields selected"));
