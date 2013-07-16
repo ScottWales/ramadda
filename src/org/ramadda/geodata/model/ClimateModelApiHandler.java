@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOperand;
 import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
 import org.ramadda.repository.Entry;
@@ -120,7 +121,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      *
      * @throws Exception _more_
      */
-    public Result doCompare(Request request, List<DataProcessInput> operands)
+    public Result doCompare(Request request, DataProcessInput dpi)
         throws Exception {
 
         //This finds the selected processes
@@ -128,25 +129,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         //This is the dir under <home>/process
        File processDir = null;
-       for (DataProcessInput input: operands) {
-         if (input.getProcessDir() != null) {
-        	 processDir = input.getProcessDir();
-        	 break;
-         }
-       }
+       processDir = dpi.getProcessDir();
        if (processDir == null) {
     	    processDir =  getStorageManager().createProcessDir();
        }
+       
+       
 
+       List<DataProcessOutput> outputs = new ArrayList<DataProcessOutput>();
         for (DataProcess process : processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
-            DataProcessOutput output = process.processRequest(request, operands);
+            DataProcessOutput output = process.processRequest(request, dpi);
+            outputs.add(output);
 
             //make a new input for the next process
-            DataProcessInput nextInput = new DataProcessInput(processDir, output.getEntries());
-            operands =  new ArrayList<DataProcessInput>();
-            operands.add(nextInput);
+            //DataProcessInput nextInput = new DataProcessInput(processDir, new DataProcessOperand(output.getEntries()));
+            //operands =  new ArrayList<DataProcessInput>();
+            //operands.add(nextInput);
 
             //Are we done? This should probably be a check to see if the output has a Result
             if (output.hasOutput()) {
@@ -159,8 +159,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
         List<File> files = new ArrayList<File>();
-        DataProcessInput dpi = operands.get(0);
-        for (Entry granule : dpi.getEntries()) {
+        DataProcessOutput dpo = outputs.get(0);
+        for (Entry granule : dpo.getEntries()) {
             if (granule.isFile()) {
                 files.add(granule.getFile());
             }
@@ -229,7 +229,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,
                                                     StringBuffer>();
-        List<DataProcessInput> operands = new ArrayList<DataProcessInput>();
+        List<DataProcessOperand> operands = new ArrayList<DataProcessOperand>();
 
         File processDir = getStorageManager().createProcessDir();
 
@@ -252,8 +252,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 List<Entry> entries = findEntries(request, collection,
                                           collectionEntry);
+                if (entries.isEmpty()) {
+                	continue;
+                }
                 //TODO: fix this later 
-                operands.add(new DataProcessInput(processDir, entries));
+                operands.add(new DataProcessOperand(collection, entries));
 
                 tmp.append(getEntryManager().getEntryLink(request,
                         collectionEntry));
@@ -274,14 +277,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             hasOperands = (operands.get(0).getEntries().size() > 0)
                           || (operands.get(1).getEntries().size() > 0);
         }
+        
 
 
         StringBuffer sb = new StringBuffer();
+        DataProcessInput dpi = new DataProcessInput(processDir, operands);
 
         if (request.exists(ARG_ACTION_COMPARE)) {
             if (hasOperands) {
                 try {
-                    return doCompare(request, operands);
+                    return doCompare(request, dpi);
                 } catch(Exception exc) {
                     sb.append(
                               getPageHandler().showDialogError("An error occurred:<br>" + exc));
@@ -417,7 +422,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
                             process.getDataProcessId()));
                 }
-                process.addToForm(request, operands, tmpSB);
+                process.addToForm(request, dpi, tmpSB);
                 processTabs.add(HtmlUtils.div(tmpSB.toString(),
                         HtmlUtils.style("min-height:200px;")));
                 processTitles.add(process.getDataProcessLabel());

@@ -27,9 +27,6 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 
 /**
@@ -62,13 +59,13 @@ public abstract class DataProcess {
      * Add to form
      *
      * @param request  the Request
-     * @param inputs    the Entry
+     * @param input    the DataProcessInput
      * @param sb       the form
      *
      * @throws Exception  problem adding to the form
      */
     public abstract void addToForm(Request request,
-                          List<? extends DataProcessInput> inputs,
+                          DataProcessInput input,
                           StringBuffer sb)
      throws Exception;
 
@@ -77,14 +74,14 @@ public abstract class DataProcess {
      * Process the request
      *
      * @param request  The request
-     * @param inputs  the granule
+     * @param input  the input
      *
      * @return  the processed data
      *
      * @throws Exception  problem processing
      */
     public abstract DataProcessOutput processRequest(
-            Request request, List<? extends DataProcessInput> inputs)
+            Request request, DataProcessInput input)
      throws Exception;
 
     /**

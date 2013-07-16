@@ -18,15 +18,16 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.process;
 
 
-import org.ramadda.repository.Entry;
 
 import ucar.unidata.util.Misc;
 
 
 import java.io.File;
+
 import java.util.List;
 
 
@@ -37,38 +38,69 @@ import java.util.List;
  */
 public class DataProcessInput {
 
+    /** the process directory for this input */
     private File processDir;
 
-    /** The entries for this input */
-    private List<Entry> entries;
+    /** The operands for this input */
+    private List<DataProcessOperand> operands;
 
-    public DataProcessInput(List<Entry> entries) {
-        this.entries = entries;
+    /**
+     * Create a data process input
+     *
+     * @param operands  the operands for this process
+     */
+    public DataProcessInput(DataProcessOperand operand) {
+        this(null, Misc.newList(operand));
     }
 
     /**
-     * Create a DataProcessInput from a list of entries
+     * Create a data process input
      *
-     * @param entries the entries
+     * @param operands  the operands for this process
      */
-    public DataProcessInput(File dir, 
-                            List<Entry> entries) {
+    public DataProcessInput(File processDir, DataProcessOperand operand) {
+        this(processDir, Misc.newList(operand));
+    }
+
+    /**
+     * Create a data process input
+     *
+     * @param operands  the operands for this process
+     */
+    public DataProcessInput(List<DataProcessOperand> operands) {
+    	// TODO: should we call this with a default directory?
+        this(null, operands);
+    }
+
+    /**
+     * Create a DataProcessInput from a list of operands
+     *
+     *
+     * @param dir process directory
+     * @param operands the operands
+     */
+    public DataProcessInput(File dir, List<DataProcessOperand> operands) {
 
         this.processDir = dir;
-        this.entries = entries;
+        this.operands   = operands;
 
     }
 
 
     /**
-     * Get the entries
+     * Get the operands
      *
-     * @return the list of entries
+     * @return the list of operands
      */
-    public List<Entry> getEntries() {
-        return entries;
+    public List<DataProcessOperand> getOperands() {
+        return operands;
     }
 
+    /**
+     * Get the process directory
+     *
+     * @return  the process directory
+     */
     public File getProcessDir() {
         return processDir;
     }

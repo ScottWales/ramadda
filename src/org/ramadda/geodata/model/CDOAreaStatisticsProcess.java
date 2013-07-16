@@ -24,6 +24,7 @@ package org.ramadda.geodata.model;
 
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOperand;
 import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
@@ -87,20 +88,11 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @throws Exception  problem adding to the form
      */
     public void addToForm(Request request,
-                          List<? extends DataProcessInput> inputs,
+                          DataProcessInput input,
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
-        List<StringBuffer> forms = new ArrayList<StringBuffer>(inputs.size());
-        for (DataProcessInput input : inputs) {
-            StringBuffer inputSB = new StringBuffer();
-            makeInputForm(request, input, inputSB);
-            forms.add(inputSB);
-        }
-        //if (forms.size() == 1) {
-        sb.append(forms.get(0));
-        //} else {
-        //}
+        makeInputForm(request, input, sb);
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -116,7 +108,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
     private void makeInputForm(Request request, DataProcessInput input,
                                StringBuffer sb)
             throws Exception {
-        Entry first = input.getEntries().get(0);
+        Entry first = input.getOperands().get(0).getEntries().get(0);
 
         CdmDataOutputHandler dataOutputHandler =
             typeHandler.getDataOutputHandler();
@@ -154,16 +146,16 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @throws Exception  problem processing
      */
     public DataProcessOutput processRequest(
-            Request request, List<? extends DataProcessInput> inputs)
+            Request request, DataProcessInput input)
             throws Exception {
 
-        if ( !canHandle(inputs)) {
+        if ( !canHandle(input)) {
             throw new Exception("Illegal data type");
         }
 
         List<Entry> outputEntries = new ArrayList<Entry>();
-        for (DataProcessInput dpi : inputs) {
-            Entry oneOfThem = dpi.getEntries().get(0);
+        for (DataProcessOperand op : input.getOperands()) {
+            Entry oneOfThem = op.getEntries().get(0);
             Entry collection = GranuleTypeHandler.getCollectionEntry(request,
                                    oneOfThem);
             String frequency = "Monthly";
@@ -171,7 +163,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                 frequency = collection.getValues()[0].toString();
             }
             if (frequency.toLowerCase().indexOf("mon") >= 0) {
-                outputEntries.add(processMonthlyRequest(request, dpi));
+                outputEntries.add(processMonthlyRequest(request, input, op));
             }
         }
         return new DataProcessOutput(outputEntries);
@@ -195,13 +187,14 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      *
      * @param request  the request
      * @param dpi      the DataProcessInput
+     * @param op 
      *
      * @return  some output
      */
     private Entry processMonthlyRequest(Request request,
-            DataProcessInput dpi) throws Exception {
+            DataProcessInput dpi, DataProcessOperand op) throws Exception {
 
-        Entry        oneOfThem = dpi.getEntries().get(0);
+        Entry        oneOfThem = op.getEntries().get(0);
         String tail = typeHandler.getStorageManager().getFileTail(oneOfThem);
         String       id        = getRepository().getGUID();
         String       newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
@@ -291,24 +284,6 @@ public class CDOAreaStatisticsProcess extends DataProcess {
     }
 
     /**
-     * Can we handle the inputs?
-     *
-     * @param inputs  the list of inputs
-     *
-     * @return true if we can, otherwise false
-     */
-    public boolean canHandle(List<? extends DataProcessInput> inputs) {
-        // TODO Auto-generated method stub
-        for (DataProcessInput input : inputs) {
-            if ( !canHandle(input)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Can we handle this input
      *
      * @param input  the input
@@ -316,7 +291,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @return true if we can, otherwise false
      */
     private boolean canHandle(DataProcessInput input) {
-        List<Entry> entries = input.getEntries();
+    	for (DataProcessOperand op : input.getOperands()) {
+        List<Entry> entries = op.getEntries();
         // TODO: change this when we can handle more than one entry (e.g. daily data)
         if (entries.isEmpty() || (entries.size() > 1)) {
             return false;
@@ -325,6 +301,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         if ( !(firstEntry.getTypeHandler()
                 instanceof ClimateModelFileTypeHandler)) {
             return false;
+        }
         }
 
         return true;

@@ -595,12 +595,12 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
          * Add this output handlers UI to the form
          *
          * @param request   the Request
-         * @param inputs     the Entry
+         * @param input     the Entry
          * @param sb        the form HTML
          *
          * @throws Exception  on badness
          */
-        public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
+        public void addToForm(Request request, DataProcessInput input, StringBuffer sb)
                 throws Exception {
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
@@ -608,10 +608,9 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
         }
     
     
-        public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
+        public DataProcessOutput processRequest(Request request, DataProcessInput dpi)
                 throws Exception {
-            DataProcessInput dpi = inputs.get(0);
-            Resource r = new Resource(dpi.getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
+            Resource r = new Resource(dpi.getOperands().get(0).getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
             Entry out = new Entry();
             out.setResource(r);
             return new DataProcessOutput(out);

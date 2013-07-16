@@ -24,6 +24,7 @@ package org.ramadda.geodata.model;
 
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOperand;
 import org.ramadda.data.process.DataProcessOutput;
 //import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.cdmdata.NCLOutputHandler;
@@ -245,8 +246,8 @@ JQ.button(
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
-            DataProcessInput dpi = new DataProcessInput(Misc.newList(entry));
-            process.addToForm(request,(List<DataProcessInput>)Misc.newList(dpi), tmpSB);
+            DataProcessOperand op = new DataProcessOperand(entry);
+            process.addToForm(request, new DataProcessInput(op), tmpSB);
             processTabs.add(
                 HtmlUtils.div(
                     tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
@@ -339,10 +340,10 @@ JQ.button(
         for(DataProcess process: processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
-            DataProcessInput dpi = new DataProcessInput(processDir, entries);
+            DataProcessOperand op = new DataProcessOperand(entries);
+            DataProcessInput dpi = new DataProcessInput(processDir, op);
             didProcess = true;
-            DataProcessOutput output =
-                process.processRequest(request, (List<DataProcessInput>)Misc.newList(dpi));
+            DataProcessOutput output = process.processRequest(request, dpi);
             if (output.hasOutput()) {
                 for (Entry outFile : output.getEntries()) {
                     if (entry.getResource().isFile()) {

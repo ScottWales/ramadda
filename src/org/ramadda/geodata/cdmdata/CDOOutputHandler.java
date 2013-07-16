@@ -1230,10 +1230,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          *
          * @throws Exception  problem adding to the form
          */
-        public void addToForm(Request request, List<? extends DataProcessInput> inputs, StringBuffer sb)
+        public void addToForm(Request request, DataProcessInput input, StringBuffer sb)
                 throws Exception {
             sb.append(HtmlUtils.formTable());
-            Entry first = inputs.get(0).getEntries().get(0);
+            Entry first = input.getOperands().get(0).getEntries().get(0);
             if (first.getType().equals("noaa_climate_modelfile")) {
                 //values[1] = var;
                 //values[2] = model;
@@ -1292,16 +1292,15 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          *
          * @throws Exception  problem processing
          */
-        public DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs)
+        public DataProcessOutput processRequest(Request request, DataProcessInput input)
                 throws Exception {
 
-            DataProcessInput dpi = inputs.get(0);
-            Entry oneOfThem = dpi.getEntries().get(0);
+            Entry oneOfThem = input.getOperands().get(0).getEntries().get(0);
             String tail    = getStorageManager().getFileTail(oneOfThem);
             String id      = getRepository().getGUID();
             String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
-            File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
+            File outFile = new File(IOUtil.joinDir(input.getProcessDir(), newName));
             List<String> commands = new ArrayList<String>();
             commands.add(cdoPath);
             commands.add("-L");

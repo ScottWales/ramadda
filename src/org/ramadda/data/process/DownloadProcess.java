@@ -22,13 +22,7 @@
 package org.ramadda.data.process;
 
 
-import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
-import org.ramadda.repository.Result;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -58,13 +52,13 @@ public  class DownloadProcess extends DataProcess {
      * Add to form
      *
      * @param request  the Request
-     * @param inputs    the Entry
+     * @param input    the Entry
      * @param sb       the form
      *
      * @throws Exception  problem adding to the form
      */
     public void addToForm(Request request,
-                          List<? extends DataProcessInput> inputs,
+                          DataProcessInput input,
                           StringBuffer sb)
         throws Exception {}
 
@@ -73,13 +67,13 @@ public  class DownloadProcess extends DataProcess {
      * Process the request
      *
      * @param request  The request
-     * @param inputs  the granule
+     * @param input  the granule
      *
      * @return  the processed data
      *
      * @throws Exception  problem processing
      */
-    public  DataProcessOutput processRequest(Request request, List<? extends DataProcessInput> inputs) {
+    public  DataProcessOutput processRequest(Request request, DataProcessInput input) {
         return null;
     }
 
