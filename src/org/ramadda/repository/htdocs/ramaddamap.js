@@ -291,7 +291,7 @@ function RepositoryMap(mapId, params) {
             this.map.addControl(new OpenLayers.Control.PanZoom());
         }
         if (this.showZoomOnlyControl && !this.showZoomPanControl) {
-            this.map.addControl(new OpenLayers.Control.Zoom());
+            this.map.addControl(new OpenLayers.Control.ZoomPanel());
         }
 
         if (this.showScaleLine) {
