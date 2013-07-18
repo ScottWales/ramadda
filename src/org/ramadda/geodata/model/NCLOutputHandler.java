@@ -19,46 +19,13 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.cdmdata;
+package org.ramadda.geodata.model;
 
 
-import org.ramadda.repository.Entry;
-import org.ramadda.repository.Link;
-import org.ramadda.repository.Repository;
-import org.ramadda.repository.Request;
-import org.ramadda.repository.Result;
-import org.ramadda.repository.StorageManager;
-import org.ramadda.repository.map.MapInfo;
-import org.ramadda.repository.map.MapBoxProperties;
-import org.ramadda.repository.output.OutputHandler;
-import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.type.CollectionTypeHandler;
-import org.ramadda.util.GeoUtils;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.TempDir;
-
-import org.w3c.dom.Element;
-
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
-
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.TwoFacedObject;
-
-
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -68,11 +35,35 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.StorageManager;
+import org.ramadda.repository.map.MapBoxProperties;
+import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.type.CollectionTypeHandler;
+import org.ramadda.util.GeoUtils;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TempDir;
+import org.w3c.dom.Element;
+
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
+
 
 /**
- * Class description
- *
- *
+ * An output handler to plot maps with NCL
  */
 public class NCLOutputHandler extends OutputHandler {
 
@@ -83,7 +74,7 @@ public class NCLOutputHandler extends OutputHandler {
     private static final String PROP_CONVERT_PATH = "ncl.convert.path";
 
     /** NCL map plot script */
-    private static final String SCRIPT_MAPPLOT = "plot.data.ncl";
+    public static final String SCRIPT_MAPPLOT = "plot.data.ncl";
 
     /** NCL map plot script */
     private static final String SCRIPT_KML = "kml.ncl";
@@ -94,24 +85,24 @@ public class NCLOutputHandler extends OutputHandler {
     private static final String ARG_NCL_PREFIX= "ncl.";
 
     /** NCL plot string */
-    private static final String ARG_NCL_PLOTTYPE= ARG_NCL_PREFIX+"_plottype";
+    public static final String ARG_NCL_PLOTTYPE= ARG_NCL_PREFIX+"_plottype";
 
-    private static final String ARG_NCL_AREA  = ARG_NCL_PREFIX +"area";
-    private static final String ARG_NCL_AREA_NORTH  = ARG_NCL_AREA+"_north";
-    private static final String ARG_NCL_AREA_SOUTH  = ARG_NCL_AREA+"_south";
-    private static final String ARG_NCL_AREA_EAST  = ARG_NCL_AREA+"_east";
-    private static final String ARG_NCL_AREA_WEST  = ARG_NCL_AREA+"_west";
-    private static final String ARG_NCL_VARIABLE  = ARG_NCL_PREFIX+ARG_VARIABLE;
+    public static final String ARG_NCL_AREA  = ARG_NCL_PREFIX +"area";
+    public static final String ARG_NCL_AREA_NORTH  = ARG_NCL_AREA+"_north";
+    public static final String ARG_NCL_AREA_SOUTH  = ARG_NCL_AREA+"_south";
+    public static final String ARG_NCL_AREA_EAST  = ARG_NCL_AREA+"_east";
+    public static final String ARG_NCL_AREA_WEST  = ARG_NCL_AREA+"_west";
+    public static final String ARG_NCL_VARIABLE  = ARG_NCL_PREFIX+ARG_VARIABLE;
     
     /** spatial arguments */
-    private static final String[] SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+    public static final String[] SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
     
     /** map plot output id */
     public static final OutputType OUTPUT_NCL_MAPPLOT =
         new OutputType("NCL Map Displays", "ncl.mapplot",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
-                       "/cdmdata/ncl.gif", CdmDataOutputHandler.GROUP_DATA);
+                       "/model/ncl.gif", CdmDataOutputHandler.GROUP_DATA);
 
     /** the product directory */
     private TempDir productDir;
@@ -123,14 +114,14 @@ public class NCLOutputHandler extends OutputHandler {
     private String convertPath;
     
     /** spatial arguments */
-    private static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+    public static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
     
     /** NCL version regex */
     private static final String NCL_VERSION_REGEX = "NCAR Command Language Version (\\d+.\\d+.\\d+)";
     
     /** NCL version pattern */
-    private static final Pattern pattern = Pattern.compile(NCL_VERSION_REGEX);
+    public static final Pattern versionPattern = Pattern.compile(NCL_VERSION_REGEX);
 
     /**
      * Construct a new NCLOutputHandler
@@ -164,7 +155,7 @@ public class NCLOutputHandler extends OutputHandler {
             for (int i = 0; i < SCRIPTS.length; i++) {
                 String nclScript =
                     getStorageManager().readSystemResource(
-                        "/org/ramadda/geodata/cdmdata/resources/ncl/"
+                        "/org/ramadda/geodata/model/resources/ncl/"
                         + SCRIPTS[i]);
                 //nclScript = nclScript.replaceAll("\\$NCARG_ROOT", ncargRoot);
                 String outdir =
@@ -192,7 +183,10 @@ public class NCLOutputHandler extends OutputHandler {
         return ncargRoot != null;
     }
 
-
+    public String getNcargRootDir() {
+    	return ncargRoot;
+    }
+    
     /**
      * This method gets called to determine if the given entry or entries can be displays as las xml
      *
@@ -515,7 +509,7 @@ sb.append(HtmlUtils.form(formUrl,
         String outMsg   = results[0];
         // Check the version
         if (suffix.equals("png")) {
-            Matcher m = pattern.matcher(outMsg);
+            Matcher m = versionPattern.matcher(outMsg);
             if (m.find()) {
                 String version = m.group(1);
                 if (version.compareTo("6.0.0") < 0) {

@@ -19,15 +19,15 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.geodata.cdmdata;
+package org.ramadda.geodata.model;
 
 
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.data.process.DataProcessProvider;
+import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 
-import org.ramadda.geodata.model.ClimateModelFileTypeHandler;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -36,8 +36,8 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapBoxProperties;
+import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.GeoUtils;
@@ -95,7 +95,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
     /** operation identifier */
     public static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX
-                                                    + "operation";
+                                                   + "operation";
 
     /** start month identifier */
     private static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
@@ -299,6 +299,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         cdoPath = getProperty(PROP_CDO_PATH, null);
     }
 
+    /**
+     * Get the CDO path
+     *
+     * @return  the CDO path
+     */
     public String getCDOPath() {
         return cdoPath;
     }
@@ -366,8 +371,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             return;
         }
         Entry stateEntry = state.getEntry();
-        if (stateEntry != null && stateEntry.isFile()
-                && stateEntry.getTypeHandler() instanceof ClimateModelFileTypeHandler) {
+        if ((stateEntry != null) && stateEntry.isFile()
+                && (stateEntry.getTypeHandler()
+                    instanceof ClimateModelFileTypeHandler)) {
             links.add(makeLink(request, state.entry, OUTPUT_CDO));
         }
     }
@@ -540,12 +546,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param sb       the HTML
      */
     public void addStatsWidget(Request request, StringBuffer sb) {
-        sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
-                                      msgLabel("Period")+
-                HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES)+
-                HtmlUtils.space(3)+
-                msgLabel("Type")+
-                HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES) ));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Statistic"),
+                msgLabel("Period")
+                + HtmlUtils.select(ARG_CDO_PERIOD, PERIOD_TYPES)
+                + HtmlUtils.space(3) + msgLabel("Type")
+                + HtmlUtils.select(ARG_CDO_STAT, STAT_TYPES)));
     }
 
     /**
@@ -556,8 +563,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param dataset  the dataset
      */
     public void addVarLevelWidget(Request request, StringBuffer sb,
-                                   GridDataset dataset) {
-    	addVarLevelWidget(request, sb, dataset, ARG_CDO_LEVEL);
+                                  GridDataset dataset) {
+        addVarLevelWidget(request, sb, dataset, ARG_CDO_LEVEL);
     }
 
     /**
@@ -566,9 +573,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param request  the Request
      * @param sb       the HTML
      * @param dataset  the dataset
+     * @param levelArg the level argument
      */
     public void addVarLevelWidget(Request request, StringBuffer sb,
-                                   GridDataset dataset, String levelArg) {
+                                  GridDataset dataset, String levelArg) {
         List<GridDatatype> grids = dataset.getGrids();
         StringBuffer       varsb = new StringBuffer();
         //TODO: handle multiple variables
@@ -627,7 +635,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param useYYMM  true to provide month/year widgets, otherwise straight dates
      */
     public void addTimeWidget(Request request, StringBuffer sb,
-                               GridDataset dataset, boolean useYYMM) {
+                              GridDataset dataset, boolean useYYMM) {
         List<CalendarDate> dates = CdmDataOutputHandler.getGridDates(dataset);
         if ( !dates.isEmpty()) {
             CalendarDate cd  = dates.get(0);
@@ -715,10 +723,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      */
     private void makeMonthsWidget(Request request, StringBuffer sb,
                                   List<CalendarDate> dates) {
-        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
-                msgLabel("Start") + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)+
-                HtmlUtils.space(3)+ 
-                msgLabel("End")+HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Months"),
+                msgLabel("Start")
+                + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)
+                + HtmlUtils.space(3) + msgLabel("End")
+                + HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)));
     }
 
     /**
@@ -750,11 +761,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
         }
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Years"),
-                                      msgLabel("Start")+HtmlUtils.select(ARG_CDO_STARTYEAR, years)+
-                HtmlUtils.space(3)+ 
-                msgLabel("End")+
-                HtmlUtils.select(ARG_CDO_ENDYEAR, years) ));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Years"),
+                msgLabel("Start")
+                + HtmlUtils.select(ARG_CDO_STARTYEAR, years)
+                + HtmlUtils.space(3) + msgLabel("End")
+                + HtmlUtils.select(ARG_CDO_ENDYEAR, years)));
     }
 
     /**
@@ -765,8 +778,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param llr       the lat/lon rectangle
      */
     public void addMapWidget(Request request, StringBuffer sb,
-                              LatLonRect llr) {
-    	addMapWidget(request, sb, llr, false);
+                             LatLonRect llr) {
+        addMapWidget(request, sb, llr, false);
     }
 
     /**
@@ -775,22 +788,23 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param request   The request
      * @param sb        the HTML
      * @param llr       the lat/lon rectangle
-     * @param usePopup  use a popup    
+     * @param usePopup  use a popup
      */
     public void addMapWidget(Request request, StringBuffer sb,
-                              LatLonRect llr, boolean usePopup) {
+                             LatLonRect llr, boolean usePopup) {
 
-    	MapInfo map;
-    	if (!usePopup) {
-            map = getRepository().getMapManager().createMap(request, 250, 150, true);
-    		map.addProperty("mapLayers", Misc.newList("google.terrain"));
-    		// remove some of the widgets
-    		map.addProperty("showScaleLine", "false");
-    		map.addProperty("showLayerSwitcher", "false");
-    		map.addProperty("showZoomPanelControl", "false");
-    	} else {
+        MapInfo map;
+        if ( !usePopup) {
+            map = getRepository().getMapManager().createMap(request, 250,
+                    150, true);
+            map.addProperty("mapLayers", Misc.newList("google.terrain"));
+            // remove some of the widgets
+            map.addProperty("showScaleLine", "false");
+            map.addProperty("showLayerSwitcher", "false");
+            map.addProperty("showZoomPanelControl", "false");
+        } else {
             map = getRepository().getMapManager().createMap(request, true);
-    	}
+        }
         map.addBox("", llr, new MapBoxProperties("blue", false, true));
         String[] points = new String[] { "" + llr.getLatMax(),
                                          "" + llr.getLonMin(),
@@ -945,11 +959,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      * @param request  the Request
      * @param entry    the Entry
-     *
-     * @return the select command
+     * @param commands commands to add to
      */
-    public void addAreaSelectCommands(Request request,
-            Entry entry, List<String> commands) {
+    public void addAreaSelectCommands(Request request, Entry entry,
+                                      List<String> commands) {
         boolean anySpatialDifferent = false;
         boolean haveAllSpatialArgs  = true;
         for (String spatialArg : SPATIALARGS) {
@@ -999,28 +1012,32 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             + request.getString(ARG_CDO_AREA_SOUTH, "-90") + ","
                     + request.getString(ARG_CDO_AREA_NORTH, "90");
         }
-        if (!llSelect.isEmpty()) {
-        	commands.add(llSelect);
+        if ( !llSelect.isEmpty()) {
+            commands.add(llSelect);
         }
-    }
-    
-    /**
-     * Create the region subset command
-     * @param request  the Request
-     * @param entry    the Entry
-     * @return  the subset command.   Will be empty if no subset
-     */
-    public void addLevelSelectCommands(Request request, Entry entry, List<String> commands) {
-    	addLevelSelectCommands(request, entry, commands, ARG_CDO_LEVEL);
     }
 
     /**
      * Create the region subset command
      * @param request  the Request
      * @param entry    the Entry
-     * @return  the subset command.   Will be empty if no subset
+     * @param commands list of commands
      */
-    public void addLevelSelectCommands(Request request, Entry entry, List<String> commands, String levelArg) {
+    public void addLevelSelectCommands(Request request, Entry entry,
+                                       List<String> commands) {
+        addLevelSelectCommands(request, entry, commands, ARG_CDO_LEVEL);
+    }
+
+    /**
+     * Create the region subset command
+     * @param request  the Request
+     * @param entry    the Entry
+     * @param commands the list of commands
+     * @param levelArg  the level argument
+     */
+    public void addLevelSelectCommands(Request request, Entry entry,
+                                       List<String> commands,
+                                       String levelArg) {
         String levSelect = null;
         if (request.defined(levelArg)) {
             String level = request.getString(levelArg);
@@ -1029,7 +1046,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             }
         }
         if (levSelect != null) {
-        	commands.add(levSelect);
+            commands.add(levSelect);
         }
     }
 
@@ -1037,14 +1054,14 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * Create the list of date/time select commands
      * @param request the Request
      * @param entry   the associated Entry
-     * @return  a list of date select commands (may be empty list)
-     *
+     * @param commands  list of commands
      * @throws Exception  on badness
      */
-    public void addMonthSelectCommands(Request request, Entry entry, List<String> commands)
+    public void addMonthSelectCommands(Request request, Entry entry,
+                                       List<String> commands)
             throws Exception {
 
-        String       selMonth = null;
+        String selMonth = null;
         if (request.defined(ARG_CDO_STARTMONTH)
                 || request.defined(ARG_CDO_ENDMONTH)) {
             int startMonth = request.defined(ARG_CDO_STARTMONTH)
@@ -1071,15 +1088,16 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * Create the list of date/time select commands
      * @param request the Request
      * @param entry   the associated Entry
-     * @return  a list of date select commands (may be empty list)
+     * @param commands list of commands
      *
      * @throws Exception  on badness
      */
-    public List<String> addDateSelectCommands(Request request, Entry entry, List<String> commands)
+    public void addDateSelectCommands(Request request, Entry entry,
+            List<String> commands)
             throws Exception {
 
-    	addMonthSelectCommands(request, entry, commands);
-    	/*
+        addMonthSelectCommands(request, entry, commands);
+        /*
         String       selMonth = null;
         if (request.defined(ARG_CDO_STARTMONTH)
                 || request.defined(ARG_CDO_ENDMONTH)) {
@@ -1173,16 +1191,16 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             commands.add(dateSelect);
         }
 
-        return commands;
-    }
+   }
 
     /**
      * Create the statistics command
      * @param request  the request
      * @param entry    the entry
-     * @return         the list of commands
+     * @param commands list of commands
      */
-    public void addStatCommands(Request request, Entry entry, List<String> commands) {
+    public void addStatCommands(Request request, Entry entry,
+                                List<String> commands) {
         if (request.defined(ARG_CDO_PERIOD)
                 && request.defined(ARG_CDO_STAT)) {
             String period = request.getString(ARG_CDO_PERIOD);
@@ -1218,19 +1236,20 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * Area statistics DataProcess
          */
         public CDOAreaStatistics() {
-        	super("CDO_AREA_STATS", "Area Statistics");
+            super("CDO_AREA_STATS", "Area Statistics");
         }
 
         /**
          * Add to form
          *
          * @param request  the Request
-         * @param inputs    the DataProcessInput
+         * @param input    the DataProcessInput
          * @param sb       the form
          *
          * @throws Exception  problem adding to the form
          */
-        public void addToForm(Request request, DataProcessInput input, StringBuffer sb)
+        public void addToForm(Request request, DataProcessInput input,
+                              StringBuffer sb)
                 throws Exception {
             sb.append(HtmlUtils.formTable());
             Entry first = input.getOperands().get(0).getEntries().get(0);
@@ -1286,21 +1305,23 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
          * Process the request
          *
          * @param request  The request
-         * @param inputs  the  data process inputs
+         * @param input  the  data process input
          *
          * @return  the processed data
          *
          * @throws Exception  problem processing
          */
-        public DataProcessOutput processRequest(Request request, DataProcessInput input)
+        public DataProcessOutput processRequest(Request request,
+                DataProcessInput input)
                 throws Exception {
 
-            Entry oneOfThem = input.getOperands().get(0).getEntries().get(0);
-            String tail    = getStorageManager().getFileTail(oneOfThem);
-            String id      = getRepository().getGUID();
-            String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+            Entry  oneOfThem = input.getOperands().get(0).getEntries().get(0);
+            String tail      = getStorageManager().getFileTail(oneOfThem);
+            String id        = getRepository().getGUID();
+            String newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
-            File outFile = new File(IOUtil.joinDir(input.getProcessDir(), newName));
+            File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
+                               newName));
             List<String> commands = new ArrayList<String>();
             commands.add(cdoPath);
             commands.add("-L");
@@ -1341,9 +1362,9 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         "Humm, the CDO processing failed for some reason");
                 }
             }
-            
-            Resource r = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
-            Entry out = new Entry();
+
+            Resource r   = new Resource(outFile, Resource.TYPE_LOCAL_FILE);
+            Entry    out = new Entry();
             out.setResource(r);
 
             if (doingPublish(request)) {
