@@ -4,4 +4,5 @@ amip_1880s_forcing:AMIP 1880s Forcing
 amip_fixed_o3:AMIP Climatological Ozone
 amip_fixed_sic:AMIP Climatological Sea Ice
 amip_eof1_sst:AMIP with 1st EOF of SST Forcing
+amip_eof1+eof2_sst:AMIP Full ENSO (EOF1+EOF2)
 amip_fully_forced:AMIP Fully Forced
