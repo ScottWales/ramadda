@@ -79,7 +79,7 @@ proc getJavaType {type} {
 
 
 proc generateRecordClass {class args} {
-    array set A {-super {Record} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} -makefile 0 -filesuper {PointFile} -skiplines {0} }
+    array set A {-super {Record} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} -makefile 0 -filesuper {PointFile} -skiplines {0} -capability {} }
     set SUPER [string toupper $A(-super)]
     array set A $args
     set list $A(-fields)
@@ -129,6 +129,16 @@ proc generateRecordClass {class args} {
         if {$A(-skiplines)} {
             puts $fp "\n@Override\npublic int getSkipLines(VisitInfo visitInfo) \{\nreturn  $A(-skiplines);\n\}\n\n"
         }
+
+        if {$A(-capability)!=""} {
+            puts "@Override\npublic boolean isCapable(String action) {"
+            foreach c $A(-capability) {
+                puts "if(action.equals($c)) return true;"
+            }
+            puts  "return super.isCapable(action);"
+            puts "}\n"
+        }
+
 
         puts $fp "\n//generated record class\n\n"
         puts $fp  "public static class $class extends $A(-super) \{"
