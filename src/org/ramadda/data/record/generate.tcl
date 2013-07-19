@@ -2,8 +2,8 @@
 
 set ::header {
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
+ * Copyright 2013 ramadda.org
+ * http://ramadda.org
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
