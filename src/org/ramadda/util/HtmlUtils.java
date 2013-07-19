@@ -2007,7 +2007,7 @@ public class HtmlUtils {
     public static String fileInput(String name, String extra) {
         return tag(TAG_INPUT,
                    attrs(ATTR_CLASS, CLASS_FILEINPUT, ATTR_TYPE, TYPE_FILE,
-                         ATTR_NAME, name) + " " + extra);
+                         ATTR_NAME, name) + " " + extra + " " + SIZE_70);
     }
 
     /**

@@ -232,6 +232,16 @@ public class Utils {
             }
 
 
+            str = StringUtil.findPattern(s, "[^\\d]*(\\d\\d\\d\\d\\d\\d\\d\\d)[^\\d]+");
+            System.err.println("date: " + s + " str:" + str);
+            if(str!=null) {
+                try {
+                    return new SimpleDateFormat("yyyyMMdd").parse(str);
+                } catch(Exception ignore) {}
+            }
+
+
+
             return null;
         } catch(Exception exc) {
             System.err.println ("Utils.extractDate:" + exc);

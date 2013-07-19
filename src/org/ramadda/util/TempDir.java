@@ -48,6 +48,11 @@ public class TempDir {
     /** _more_ */
     private File dir;
 
+    boolean recurse = true;
+
+    boolean filesOk = true;
+    boolean dirsOk = true;
+
     /** _more_ */
     private long currentDirTime = 0;
 
@@ -79,8 +84,14 @@ public class TempDir {
      * @param dir _more_
      */
     public TempDir(File dir) {
-        this.dir = dir;
+        this(dir, true);
     }
+
+    public TempDir(File dir, boolean recurse) {
+        this.dir = dir;
+        this.recurse = recurse;
+    }
+
 
     /**
      * _more_
@@ -139,7 +150,26 @@ public class TempDir {
         List<File> results  = new ArrayList<File>();
 
         long       t1       = System.currentTimeMillis();
-        List<File> allFiles = IOUtil.getFiles(dir, true);
+        List<File> allFiles;
+        if(recurse) {
+            allFiles  = IOUtil.getFiles(dir, true);
+        } else {
+            allFiles = new ArrayList<File>();
+            for(File f:dir.listFiles()) {
+                allFiles.add(f);
+            }
+        }
+
+        
+        List<File>  prunedFiles = new ArrayList<File>();
+        for(File f: allFiles) {
+            if(!filesOk && f.isFile()) continue;
+            if(!dirsOk && f.isDirectory()) continue;
+            prunedFiles.add(f);
+        }
+
+        allFiles = prunedFiles;
+
         long       t2       = System.currentTimeMillis();
 
         long       t3       = System.currentTimeMillis();
@@ -293,6 +323,43 @@ public class TempDir {
     public boolean getTouched() {
         return touched;
     }
+
+    /**
+       Set the FilesOk property.
+
+       @param value The new value for FilesOk
+    **/
+    public void setFilesOk (boolean value) {
+	filesOk = value;
+    }
+
+    /**
+       Get the FilesOk property.
+
+       @return The FilesOk
+    **/
+    public boolean getFilesOk () {
+	return filesOk;
+    }
+
+    /**
+       Set the DirsOk property.
+
+       @param value The new value for DirsOk
+    **/
+    public void setDirsOk (boolean value) {
+	dirsOk = value;
+    }
+
+    /**
+       Get the DirsOk property.
+
+       @return The DirsOk
+    **/
+    public boolean getDirsOk () {
+	return dirsOk;
+    }
+
 
 
 
