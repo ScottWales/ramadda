@@ -32,7 +32,7 @@ var earthCS = new OpenLayers.Projection("EPSG:4326");
 var sphericalMercatorCS = new OpenLayers.Projection("EPSG:900913");
 
 
-var maxLatValue = 89;
+var maxLatValue = 85;
 
 var initialExtent = new OpenLayers.Bounds(maxLatValue, -180, -maxLatValue, 180);
 
@@ -439,6 +439,24 @@ function RepositoryMap(mapId, params) {
                 this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
             }
         }
+    }
+
+    this.setSelectionBoxFromFields = function(zoom) {
+        if (this.fldNorth) {
+            // alert("north = " + this.fldNorth.obj.value);
+            this.setSelectionBox(this.fldNorth.obj.value,
+                    this.fldWest.obj.value, this.fldSouth.obj.value,
+                    this.fldEast.obj.value);
+            var boxBounds = this.selectorBox.bounds
+            this.map.setCenter(boxBounds.getCenterLonLat());
+            if (zoom) {
+                this.map.zoomToExtent(boxBounds);
+            }
+        }
+    }
+
+    this.resetExtent = function() {
+       this.map.zoomToMaxExtent();
     }
 
     // Assume that north, south, east, and west are in degrees or
