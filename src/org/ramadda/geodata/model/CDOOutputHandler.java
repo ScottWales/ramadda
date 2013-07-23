@@ -1061,7 +1061,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                                        List<String> commands)
             throws Exception {
 
-        String selMonth = null;
         if (request.defined(ARG_CDO_STARTMONTH)
                 || request.defined(ARG_CDO_ENDMONTH)) {
             int startMonth = request.defined(ARG_CDO_STARTMONTH)
@@ -1070,15 +1069,29 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             int endMonth   = request.defined(ARG_CDO_ENDMONTH)
                              ? request.get(ARG_CDO_ENDMONTH, startMonth)
                              : startMonth;
+            /*
             if (endMonth < startMonth) {
                 getPageHandler().showDialogWarning(
                     "Start month is after end month");
             }
-            selMonth = OP_SELMON + "," + startMonth;
-            if (endMonth != startMonth) {
-                selMonth += "/" + endMonth;
+            */
+            StringBuffer buf = new StringBuffer(OP_SELMON + "," + startMonth);
+            if (endMonth > startMonth) {
+                buf.append("/");
+                buf.append(endMonth);
+            } else if (startMonth > endMonth) {
+                int firstMonth = startMonth + 1;
+                while (firstMonth <= 12) {
+                    buf.append(",");
+                    buf.append(firstMonth);
+                    firstMonth++;
+                }
+                for (int i = 0; i < endMonth; i++) {
+                    buf.append(",");
+                    buf.append((i + 1));
+                }
             }
-            commands.add(selMonth);
+            commands.add(buf.toString());
         } else {  // ONLY FOR TESTING
             commands.add(OP_SELMON + ",1");
         }
@@ -1093,33 +1106,10 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @throws Exception  on badness
      */
     public void addDateSelectCommands(Request request, Entry entry,
-            List<String> commands)
+                                      List<String> commands)
             throws Exception {
 
         addMonthSelectCommands(request, entry, commands);
-        /*
-        String       selMonth = null;
-        if (request.defined(ARG_CDO_STARTMONTH)
-                || request.defined(ARG_CDO_ENDMONTH)) {
-            int startMonth = request.defined(ARG_CDO_STARTMONTH)
-                             ? request.get(ARG_CDO_STARTMONTH, 1)
-                             : 1;
-            int endMonth   = request.defined(ARG_CDO_ENDMONTH)
-                             ? request.get(ARG_CDO_ENDMONTH, startMonth)
-                             : startMonth;
-            if (endMonth < startMonth) {
-                getPageHandler().showDialogWarning(
-                    "Start month is after end month");
-            }
-            selMonth = OP_SELMON + "," + startMonth;
-            if (endMonth != startMonth) {
-                selMonth += "/" + endMonth;
-            }
-            commands.add(selMonth);
-        } else {  // ONLY FOR TESTING
-            commands.add(OP_SELMON + ",1");
-        }
-        */
 
         String dateSelect = null;
         if (request.defined(ARG_CDO_FROMDATE)
@@ -1191,7 +1181,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             commands.add(dateSelect);
         }
 
-   }
+    }
 
     /**
      * Create the statistics command
