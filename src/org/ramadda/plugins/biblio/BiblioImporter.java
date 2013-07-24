@@ -176,17 +176,24 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         Entry entry  = null; 
         Object[] values = new Object[10];
         String filenameFromBiblio = null;
-        List<String> lines = StringUtil.split(s, "\n",true,true);
+        List<String> lines = StringUtil.split(s, "\n",true,false);
         //Add a dummy line so we pick up the last biblio entry in the loop
         lines.add("%0 dummy");
+        boolean lastLineBlank = true;
         for(String line: lines) {
+            if(line.trim().length()==0) {
+                lastLineBlank=true;
+                continue;
+            }
+            
             List<String> toks = StringUtil.splitUpTo(line," ",2);
             if(toks.get(0).trim().startsWith("%") && toks.size() ==2) {
                 String tag = toks.get(0);
                 String value = toks.get(1);
                 value  =value.replaceAll("[^ -~]","-");
                 value = value.trim();
-                if(tag.equals(TAG_BIBLIO_TYPE)) {
+                System.err.println ("TAG:" + tag + " match: " + TAG_BIBLIO_TYPE);
+                if((lastLineBlank && tag.equals(TAG_BIBLIO_TYPE)) || entry == null) {
                     if(entry !=null) {
                         values[IDX_OTHER_AUTHORS]  = StringUtil.join("\n",authors);
                         for(int idx=0;idx<TAGS.length;idx++) {
@@ -214,6 +221,15 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     entry    = getRepository().getTypeHandler(TYPE_BIBLIO).createEntry(getRepository().getGUID());
                     entry.setParentEntryId(parentId);
                     values = entry.getTypeHandler().getValues(entry);
+                    if(tag.equals(TAG_BIBLIO_TYPE)) {
+                        values[IDX_TYPE]  =value;
+                        continue;
+                    }
+                }
+
+                lastLineBlank =false;
+
+                if(tag.equals(TAG_BIBLIO_TYPE)) {
                     values[IDX_TYPE]  =value;
                     continue;
                 }
@@ -273,6 +289,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                         gotone = true;
                     }
                 }
+
                 if(gotone) {
                     continue;
                 }
