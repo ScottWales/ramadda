@@ -127,7 +127,7 @@ proc checkFile {f patterns zipPatterns unzipPatterns skip} {
             } else {
                 puts "Zipping  directory: $f"
 #The -0 says to not compress. This is much faster
-                exec jar  -0cvfM $dir/$zipName  -C $dir $name
+                exec jar  -cvfM $dir/$zipName  -C $dir $name
                 puts "Deleting original directory"
                 file delete -force $f
             }
