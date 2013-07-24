@@ -22,8 +22,6 @@ public class M88PointFile extends CsvFile  {
     private SimpleDateFormat sdfShort = makeDateFormat("yyyyMMdd");
     private SimpleDateFormat sdfLong = makeDateFormat("yyyyMMdd HHmmss S");
 
-    public static final double MISSING = 444.0;
-
     public static final String FIELD_SURVEY_ID = "SURVEY_ID";
     public static final String FIELD_DATE = "DATE";
     public static final String FIELD_TIME  = "TIME";
@@ -57,10 +55,6 @@ public class M88PointFile extends CsvFile  {
 
     /**
      * The constructor
-
-
-    /**
-     * The constructor
      *
      * @param filename file
      * @throws IOException On badness
@@ -69,6 +63,9 @@ public class M88PointFile extends CsvFile  {
         super(filename);
     }
 
+    /**
+     * Tell the record not to be picky about the tuples
+     */
     public Record doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = (TextRecord) super.doMakeRecord(visitInfo);
         record.setBePickyAboutTokens(false);
@@ -77,14 +74,15 @@ public class M88PointFile extends CsvFile  {
 
 
     /**
-     * This  gets called before the file is visited. It reads the header and defines the fields
+     * This  gets called before the file is visited. 
+     * It reads the header and defines the fields
      *
      * @param visitInfo visit info
      * @return possible new visitinfo
      * @throws IOException On badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
-        //Se the delimiter and how many lines in the header to skip
+        //Set the delimiter and how many lines in the header to skip
         putProperty(PROP_DELIMITER, "tab");
         putProperty(PROP_SKIPLINES, "1");
         super.prepareToVisit(visitInfo);
@@ -97,18 +95,7 @@ public class M88PointFile extends CsvFile  {
         }
 
         List<String> fields = StringUtil.split(headerLines.get(0),"\t",true, false);
-        //        System.err.println("tokens:" + fields);
-        /*
-        setFileMetadata(new Object[]{
-                siteId,
-                siteName,
-                argosId
-            });
-        */
-
         StringBuffer sb  = new StringBuffer();
-
-
         int fieldCnt = 0;
         for(String field: fields) {
 
@@ -131,11 +118,9 @@ public class M88PointFile extends CsvFile  {
             }
             sb.append("]");
         }
-
         putProperty(PROP_FIELDS, sb.toString());
         return visitInfo;
     }
-
 
     public boolean isCapable(String action) {
         if(action.equals(ACTION_MAPINCHART)) return true;
