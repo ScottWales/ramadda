@@ -1,4 +1,4 @@
-package org.ramadda.data.point.amrc;
+package org.ramadda.data.point.geomag;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
@@ -15,57 +15,49 @@ import java.util.List;
 
 
 /**
- * This is a hand written file that reads the AMRC final QC'ed point data
- * It also acts as a good framework to document how to develop a point data 
- * reader.
- *
- * The AMRC data is of the form:
-<pre>
-Year: 2011  Month: 08  ID: KMS  ARGOS: 21364  Name: Kominko-Slade       
-Lat: 79.47S  Lon: 112.11W  Elev: 1801m
-2011 213  8  1 0000  -19.5  806.9  444.0  444.0   88.3   -0.2
-</pre>
-*
-* This class overwrites prepareToVisit to read the metadata from the header
-* and define the fields (i.e.,  the data dictionary). It overwrites processAfterReading
-* to set the Date/time of the observation
-*
-*
-* You can run this from the command line with:
-java org.ramadda.data.point.amrc.AmrcFinalQCFile file.txt
-
-* There is a example data file in the source:
-org/ramadda/geodata/point/amrc/exampleamrcqc.txt
-*
-* To make the data type available to RAMADDA define a type definition plugin file like:
-org/ramadda/geodata/point/amrc/amrctypes.xml 
-*
-* You should then be able to harvest or upload a point file of your choice.
 */
-public class AmrcFinalQCPointFile extends CsvFile  {
+public class M88PointFile extends CsvFile  {
 
-    //Corresponds to the fields in the data
-    //We use the date field indidces to get the obs date
-    private static int IDX=1;
-    public static final int IDX_SITE_ID = IDX++;
-    public static final int IDX_LATITUDE = IDX++;
-    public static final int IDX_LONGITUDE = IDX++;
-    public static final int IDX_ELEVATION = IDX++;
-    public static final int IDX_YEAR = IDX++;
-    public static final int IDX_JULIAN_DAY = IDX++;
-    public static final int IDX_MONTH = IDX++;
-    public static final int IDX_DAY = IDX++;
-    public static final int IDX_TIME = IDX++;
-    public static final int IDX_TEMPERATURE =IDX++;
-    public static final int IDX_PRESSURE = IDX++;
-    public static final int IDX_WIND_SPEED = IDX++;
-    public static final int IDX_WIND_DIRECTION = IDX++;
-    public static final int IDX_RELATIVE_HUMIDITY = IDX++;
-    public static final int IDX_DELTA_T = IDX++;
 
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
+    private SimpleDateFormat sdfShort = makeDateFormat("yyyyMMdd");
+    private SimpleDateFormat sdfLong = makeDateFormat("yyyyMMdd HHmmss S");
 
     public static final double MISSING = 444.0;
+
+    public static final String FIELD_SURVEY_ID = "SURVEY_ID";
+    public static final String FIELD_DATE = "DATE";
+    public static final String FIELD_TIME  = "TIME";
+    public static final String FIELD_LAT  = "LAT";
+    public static final String FIELD_LON  = "LON";
+    public static final String FIELD_ALT_BAROM  = "ALT_BAROM";
+    public static final String FIELD_ALT_GPS  = "ALT_GPS";
+    public static final String FIELD_ALT_RADAR  = "ALT_RADAR";
+    public static final String FIELD_POS_TYPE  = "POS_TYPE";
+    public static final String FIELD_LINEID  = "LINEID";
+    public static final String FIELD_FIDUCIAL  = "FIDUCIAL";
+    public static final String FIELD_TRK_DIR  = "TRK_DIR";
+    public static final String FIELD_NAV_QUALCO  = "NAV_QUALCO";
+    public static final String FIELD_MAG_TOTOBS  = "MAG_TOTOBS";
+    public static final String FIELD_MAG_TOTCOR  = "MAG_TOTCOR";
+    public static final String FIELD_MAG_RES  = "MAG_RES";
+    public static final String FIELD_MAG_DECLIN  = "MAG_DECLIN";
+    public static final String FIELD_MAG_HORIZ  = "MAG_HORIZ";
+    public static final String FIELD_MAG_X_NRTH  = "MAG_X_NRTH";
+    public static final String FIELD_MAG_Y_EAST  = "MAG_Y_EAST";
+    public static final String FIELD_MAG_Z_VERT  = "MAG_Z_VERT";
+    public static final String FIELD_MAG_INCLIN  = "MAG_INCLIN";
+    public static final String FIELD_MAG_DICORR  = "MAG_DICORR";
+    public static final String FIELD_IGRF_CORR  = "IGRF_CORR";
+    public static final String FIELD_MAG_QUALCO = "MAG_QUALCO";
+
+    public static final String[] STRING_FIELDS = {FIELD_SURVEY_ID, FIELD_LINEID,FIELD_FIDUCIAL};
+
+    private int dateIdx=-1;
+    private int timeIdx=-1;
+
+    /**
+     * The constructor
+
 
     /**
      * The constructor
@@ -73,8 +65,14 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      * @param filename file
      * @throws IOException On badness
      */
-    public AmrcFinalQCPointFile(String filename) throws IOException {
+    public M88PointFile(String filename) throws IOException {
         super(filename);
+    }
+
+    public Record doMakeRecord(VisitInfo visitInfo) {
+        TextRecord record = (TextRecord) super.doMakeRecord(visitInfo);
+        record.setBePickyAboutTokens(false);
+        return record;
     }
 
 
@@ -87,8 +85,8 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         //Se the delimiter and how many lines in the header to skip
-        putProperty(PROP_DELIMITER, " ");
-        putProperty(PROP_SKIPLINES, "2");
+        putProperty(PROP_DELIMITER, "tab");
+        putProperty(PROP_SKIPLINES, "1");
         super.prepareToVisit(visitInfo);
 
 
@@ -98,65 +96,39 @@ public class AmrcFinalQCPointFile extends CsvFile  {
             throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
         }
 
-        //The header looks like:
-        //        Year: 2012  Month: 01  ID: AG4  ARGOS:  8927  Name: AGO-4               
-        //            Lat: 82.01S  Lon:  96.76E  Elev: 3597m
-
-        //Extract the metadata
-        String siteId =  StringUtil.findPattern(headerLines.get(0),"ID:\\s(.*)ARGOS:");
-        String argosId =  StringUtil.findPattern(headerLines.get(0),"ARGOS:\\s*(.*)Name:");
-        String siteName =  StringUtil.findPattern(headerLines.get(0),"Name:\\s(.*)");
-        String latString =  StringUtil.findPattern(headerLines.get(1),"Lat:\\s(.*)Lon:");
-        String lonString =  StringUtil.findPattern(headerLines.get(1),"Lon:\\s(.*)Elev:");
-        String elevString =  StringUtil.findPattern(headerLines.get(1),"Elev:(.*)");
-
-        if(latString == null || lonString == null ||
-           siteName == null ||
-           siteId == null) {
-            throw new IllegalArgumentException("Could not read header:" + headerLines +" lat:"  + latString + " lon:" + lonString +" elev" +
-                                               elevString +" siteName:" +
-                                               siteName +" site:" + siteId);
-            
-        }
-        if(elevString.endsWith("m")) {
-            elevString = elevString.substring(0, elevString.length()-1);
-        }
-        double lat = Misc.decodeLatLon(latString);
-        double lon = Misc.decodeLatLon(lonString);
-        double elevation = Double.parseDouble(elevString);
-
-        setLocation(lat,lon,elevation);
-
-        //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
+        List<String> fields = StringUtil.split(headerLines.get(0),"\t",true, false);
+        System.err.println("tokens:" + fields);
+        /*
         setFileMetadata(new Object[]{
                 siteId,
                 siteName,
                 argosId
             });
+        */
 
-        //Define the fields
-        //Note: The first fields (site, lat, lon, elev) aren't in the data rows
-        //We define that there are fields but they have a fixed value.
+        StringBuffer sb  = new StringBuffer();
 
-        putFields(new String[]{
-                //Embed the values for site, lat, lon and elevation
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
-                makeField(FIELD_LATITUDE, attrValue(lat)),
-                makeField(FIELD_LONGITUDE, attrValue(lon)),
-                makeField(FIELD_ELEVATION, attrValue(elevString)),
-                makeField(FIELD_YEAR,""),
-                makeField(FIELD_JULIAN_DAY,""),
-                makeField(FIELD_MONTH,""),
-                makeField(FIELD_DAY,""),
-                makeField(FIELD_TIME,attrType(TYPE_STRING)),
-                makeField(FIELD_TEMPERATURE, attrUnit(UNIT_CELSIUS), attrChartable(), attrMissing(MISSING)),
-                makeField(FIELD_PRESSURE, attrUnit(UNIT_HPA), attrChartable(), attrMissing(MISSING)),
-                makeField(FIELD_WIND_SPEED, attrUnit(UNIT_M_S), attrChartable(), attrMissing(MISSING)),
-                makeField(FIELD_WIND_DIRECTION, attrUnit(UNIT_DEGREES), attrMissing(MISSING)),
-                makeField(FIELD_RELATIVE_HUMIDITY, attrUnit(UNIT_PERCENT), attrChartable(), attrMissing(MISSING)),
-                makeField(FIELD_DELTA_T, attrUnit(UNIT_CELSIUS), attrChartable(), attrMissing(MISSING)),
-            });
 
+        int fieldCnt = 0;
+        for(String field: fields) {
+
+            if(field.equals(FIELD_DATE)) dateIdx = fieldCnt+1;
+            else if(field.equals(FIELD_TIME)) timeIdx = fieldCnt+1;
+            fieldCnt++;
+            if(sb.length()>0) sb.append(",");
+            sb.append(field);
+            sb.append("[");
+            for(String stringField:STRING_FIELDS) {
+                if(field.equals(stringField)) {
+                    sb.append(" type=string ");
+                    break;
+                }
+            }
+            sb.append(field);
+            sb.append("]");
+        }
+
+        putProperty(PROP_FIELDS, sb.toString());
         return visitInfo;
     }
 
@@ -166,17 +138,39 @@ public class AmrcFinalQCPointFile extends CsvFile  {
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
         if(!super.processAfterReading(visitInfo, record)) return false;
+        if(dateIdx<0) return true;
         TextRecord textRecord = (TextRecord) record;
-        //Get the date from the values
-        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
-           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
-        Date date = sdf.parse(dttm);
+
+        double value = textRecord.getValue(dateIdx);
+
+        if(Double.isNaN(value)) return true;
+        StringBuffer dttm = new StringBuffer();
+        dttm.append((int)value);
+        SimpleDateFormat sdf = sdfShort;
+        if(timeIdx>=0)  {
+            value = textRecord.getValue(timeIdx);
+            if(!Double.isNaN(value)) {
+                System.err.println (value);
+                int hhmmss = (int) value;
+                double rem  = value-hhmmss;
+                dttm.append(" ");
+                dttm.append(Misc.padLeft(""+hhmmss,6,"0"));
+                dttm.append(" ");
+                dttm.append((int)(rem*1000));
+                sdf = sdfLong;
+            }
+        }
+
+        Date date = sdfLong.parse(dttm.toString());
+
+
+
         record.setRecordTime(date.getTime());
         return true;
     }
 
     public static void main(String[]args) {
-        PointFile.test(args, AmrcFinalQCPointFile.class);
+        PointFile.test(args, M88PointFile.class);
     }
 
 }

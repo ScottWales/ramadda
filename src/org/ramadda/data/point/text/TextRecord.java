@@ -62,6 +62,7 @@ public class TextRecord extends PointRecord {
 
     private String     line   = "";
 
+    private boolean bePickyAboutTokens = true;
     
     /** _more_          */
     private int idxX;
@@ -405,6 +406,9 @@ public class TextRecord extends PointRecord {
                 }
                 break;
             }
+            for(int i=0;i<tokens.length;i++) {
+                tokens[i] = "";
+            }
             if(!split(line)) {
                 //throw new IllegalArgumentException("Could not tokenize line:" + line);
                 return ReadStatus.SKIP;
@@ -507,7 +511,7 @@ public class TextRecord extends PointRecord {
     public boolean split(String sourceString) {
         int length   = 1;
         int fullTokenCnt = 0;
-        int tokenCnt= 0;
+        int numTokensRead= 0;
         int fromIndex=0;
         int sourceLength = sourceString.length();
         //        System.err.println ("line:" + sourceString);
@@ -528,22 +532,16 @@ public class TextRecord extends PointRecord {
                     fromIndex = idx+length;
                 }
             }
-            //            System.err.println ("\ttokens[" + tokenCnt +"] = " + theString);
-            tokens[tokenCnt++] = theString.trim();
-            if (idx < 0 || tokenCnt == tokens.length) {
+            //            System.err.println ("\ttokens[" + numTokensRead +"] = " + theString);
+            tokens[numTokensRead++] = theString.trim();
+            if (idx < 0 || numTokensRead == tokens.length) {
                 break;
             }
-        }
-        if(tokenCnt!=tokens.length) {
-            badCnt++;
-            //            System.exit(0);
-            if(badCnt>10 && goodCnt<=0) {
-                System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + tokenCnt +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
+        } 
+       if(bePickyAboutTokens && numTokensRead!=tokens.length) {
+           System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + numTokensRead +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
 
-                throw new IllegalArgumentException("Could not tokenize line:\n" + line+"\n");
-                //                return false;
-            }
-            return false;
+           throw new IllegalArgumentException("Could not tokenize line:\n" + line+"\n");
         }
         badCnt = 0;
         goodCnt++;
@@ -704,6 +702,8 @@ public class TextRecord extends PointRecord {
     }
 
 
-
+    public void setBePickyAboutTokens(boolean picky) {
+        bePickyAboutTokens  = picky;
+    }
 
 }
