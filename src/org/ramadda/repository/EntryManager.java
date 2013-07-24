@@ -1944,14 +1944,7 @@ public class EntryManager extends RepositoryManager {
             Date   createDate = new Date();
             Date[] dateRange  = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
                                    createDate);
-            if (dateRange[0] == null) {
-                dateRange[0] = ((dateRange[1] == null)
-                                ? createDate
-                                : dateRange[1]);
-            }
-            if (dateRange[1] == null) {
-                dateRange[1] = dateRange[0];
-            }
+
 
             File originalFile = null;
 
@@ -1985,10 +1978,11 @@ public class EntryManager extends RepositoryManager {
                 if (name.indexOf("${") >= 0) {}
 
                 if (name.trim().length() == 0) {
+
+
+
                     name = IOUtil.getFileTail(origName);
                 }
-
-
 
 
                 Date[] theDateRange = { dateRange[0], dateRange[1] };
@@ -2042,7 +2036,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-
                 if ( !canBeCreatedBy(request, typeHandlerToUse)) {
                     fatalError(request,
                                "Cannot create an entry of type "
@@ -2053,6 +2046,27 @@ public class EntryManager extends RepositoryManager {
                     name = typeHandlerToUse.getDefaultEntryName(resourceName);
                 }
                 entry = typeHandlerToUse.createEntry(id);
+
+
+
+
+                if (theDateRange[0] == null) {
+                    theDateRange [0] = theDateRange[1] = Utils.extractDate(theResource);
+                }
+
+                System.err.println("date:" + theDateRange[0] + " " + theResource);
+
+                if (theDateRange[0] == null) {
+                    theDateRange[0] = ((theDateRange[1] == null)
+                                    ? createDate
+                                    : theDateRange[1]);
+                }
+                if (theDateRange[1] == null) {
+                    theDateRange[1] = theDateRange[0];
+                }
+
+
+
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, createDate.getTime(),
@@ -4064,6 +4078,10 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.formEntry(msgLabel("File"),
                                       HtmlUtils.fileInput(ARG_FILE,
                                           HtmlUtils.SIZE_70)));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Or URL"),
+                                      HtmlUtils.input(ARG_URL, "",
+                                                      HtmlUtils.SIZE_70)));
         if(importTypes.size()>0) {
             importTypes.add(0, new TwoFacedObject("RAMADDA will figure it out",""));
             sb.append(HtmlUtils.formEntry(msgLabel("Type"), HtmlUtils.select(ARG_IMPORT_TYPE,importTypes)));
@@ -4111,8 +4129,18 @@ public class EntryManager extends RepositoryManager {
                         + parent);
             }
         }
+        String file    = null;
 
-        String file    = request.getUploadedFile(ARG_FILE);
+        //Fetch the URL
+        String url = request.getString(ARG_URL, null);
+        if(Utils.stringDefined(url)) {
+            file = getStorageManager().fetchUrl(url).toString();
+        }
+
+        if (file == null) {
+             file    = request.getUploadedFile(ARG_FILE);
+        }
+
         if (file == null) {
             throw new IllegalArgumentException("No file argument given");
         }
@@ -6309,24 +6337,45 @@ public class EntryManager extends RepositoryManager {
             } else if (isSynthEntry(entryId)) {
                 String[] pair          = getSynthId(entryId);
                 String   parentEntryId = pair[0];
+                String   syntheticPart = pair[1];
                 Entry    parentEntry = null;
 
+
+                TypeHandler typeHandler = null;
+
                 if(parentEntryId.equals(ENTRYID_PROCESS)) {
-                    parentEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
-                    parentEntry.setId(ENTRYID_PROCESS);
-                }
+                    typeHandler = new ProcessFileTypeHandler(getRepository(), null);
+                    //                    parentEntry = topGroup;
+                    parentEntry = new Entry(typeHandler, true);
+                    parentEntry.setName("Process Entries");
+                    parentEntry.setId(ID_PREFIX_SYNTH+ENTRYID_PROCESS);
+                    parentEntry.setParentEntry(topGroup);
+                    if(syntheticPart == null) {
+                        return parentEntry;
+                    }
+                } 
 
                 if(parentEntry == null) {
                     parentEntry   = getEntry(request, parentEntryId,
                                              andFilter, abbreviated);
 
                 }
+
+
                 if (parentEntry == null) {
                     return null;
                 }
-                TypeHandler typeHandler = parentEntry.getTypeHandler();
+                if(typeHandler == null) {
+                    typeHandler = parentEntry.getTypeHandler();
+                }
+
+
+
                 entry = typeHandler.makeSynthEntry(request, parentEntry,
-                        pair[1]);
+                                                   syntheticPart);
+                //                System.err.println("process parent:" + parentEntry);
+                //                System.err.println("process child:" + entry);
+
                 if (entry == null) {
                     return null;
                 }
@@ -7353,6 +7402,7 @@ public class EntryManager extends RepositoryManager {
                 if(entryId.equals(ENTRYID_PROCESS)) {
                     mainEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
                     mainEntry.setId(ENTRYID_PROCESS);
+                    mainEntry.setParentEntry(getTopGroup());
                 } else {
                     mainEntry = (Entry) getEntry(request, entryId, false, false);
                 }
