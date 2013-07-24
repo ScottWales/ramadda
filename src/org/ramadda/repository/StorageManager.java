@@ -47,6 +47,7 @@ import javax.crypto.spec.DESKeySpec;
 
 
 import java.net.URL;
+import java.net.URLConnection;
 
 import java.util.zip.*;
 import java.util.ArrayList;
@@ -360,6 +361,12 @@ public class StorageManager extends RepositoryManager {
 
         dirDepth = getRepository().getProperty(PROP_DIRDEPTH, dirDepth);
         dirRange = getRepository().getProperty(PROP_DIRRANGE, dirRange);
+
+        //Add in the process tmp dir
+        TempDir processTempDir = new TempDir(getProcessDir(), false);
+        //For now hard code the scour to be 3 days
+        processTempDir.setMaxAge(1000 * 60 * 60 * 24 * 3 );
+        tmpDirs.add(processTempDir);
     }
 
 
@@ -860,17 +867,21 @@ public class StorageManager extends RepositoryManager {
                                    + filesToScour.size() + " files from:"
                                    + tmpDir);
             }
+
+
             List<File> notDeleted = IOUtil.deleteFiles(filesToScour);
             if (notDeleted.size() > 0) {
                 logInfo("Unable to delete tmp files:" + notDeleted);
             }
-            //Now check for empty top level dirs and get rid of the
-            for (File remainingFile : tmpDir.listFiles()) {
-                if ( !remainingFile.isDirectory()) {
-                    continue;
-                }
-                if (remainingFile.listFiles().length == 0) {
-                    remainingFile.delete();
+            if(tmpDir.getFilesOk()) {
+                //Now check for empty top level dirs and get rid of the
+                for (File remainingFile : tmpDir.listFiles()) {
+                    if ( !remainingFile.isDirectory()) {
+                        continue;
+                    }
+                    if (remainingFile.listFiles().length == 0) {
+                        remainingFile.delete();
+                    }
                 }
             }
 
@@ -935,7 +946,6 @@ public class StorageManager extends RepositoryManager {
         return EntryManager.ID_PREFIX_SYNTH +EntryManager.ENTRYID_PROCESS + ":/" + processId;
     }
 
-
     public File getProcessDir(String processId) {
         File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
         if(!subDir.exists()) {
@@ -955,13 +965,13 @@ public class StorageManager extends RepositoryManager {
 
 
 
-    public String getProcessDir() {
+    public File getProcessDir() {
         if (processDir == null) {
             processDir = getFileFromProperty(PROP_PROCESSDIR);
             addOkToWriteToDirectory(processDir);
         }
 
-        return processDir.toString();
+        return processDir;
     }
 
     /**
@@ -1271,6 +1281,23 @@ public class StorageManager extends RepositoryManager {
 
         return newFile.getName();
     }
+
+    public File fetchUrl(String path) throws Exception {
+        //Make sure its a url
+        if(!path.toLowerCase().startsWith("http")) {
+            throw new IllegalArgumentException("Bad URL:" + path);
+        }
+        URL url  = new URL(path);
+        URLConnection connection = url.openConnection();
+        InputStream   fromStream         = connection.getInputStream();
+        File tmpFile = getTmpFile(null, IOUtil.getFileTail(path));
+        OutputStream toStream = getFileOutputStream(tmpFile);
+        IOUtil.writeTo(fromStream, toStream);
+        IOUtil.close(fromStream);
+        return tmpFile;
+    }
+
+
 
     /**
      * Copy a file
