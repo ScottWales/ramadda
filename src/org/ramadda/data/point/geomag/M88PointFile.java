@@ -97,7 +97,7 @@ public class M88PointFile extends CsvFile  {
         }
 
         List<String> fields = StringUtil.split(headerLines.get(0),"\t",true, false);
-        System.err.println("tokens:" + fields);
+        //        System.err.println("tokens:" + fields);
         /*
         setFileMetadata(new Object[]{
                 siteId,
@@ -118,13 +118,17 @@ public class M88PointFile extends CsvFile  {
             if(sb.length()>0) sb.append(",");
             sb.append(field);
             sb.append("[");
+            boolean isString = false;
             for(String stringField:STRING_FIELDS) {
                 if(field.equals(stringField)) {
                     sb.append(" type=string ");
+                    isString = true;
                     break;
                 }
             }
-            sb.append(field);
+            if(!isString) {
+                sb.append(" chartable=true searchable=true ");
+            }
             sb.append("]");
         }
 
@@ -132,6 +136,12 @@ public class M88PointFile extends CsvFile  {
         return visitInfo;
     }
 
+
+    public boolean isCapable(String action) {
+        if(action.equals(ACTION_MAPINCHART)) return true;
+        if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
+        return super.isCapable(action);
+    }
 
     /*
      * This gets called after a record has been read
