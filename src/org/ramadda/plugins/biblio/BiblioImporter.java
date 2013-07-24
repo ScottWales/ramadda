@@ -192,8 +192,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 String value = toks.get(1);
                 value  =value.replaceAll("[^ -~]","-");
                 value = value.trim();
-                System.err.println ("TAG:" + tag + " match: " + TAG_BIBLIO_TYPE);
-                if((lastLineBlank && tag.equals(TAG_BIBLIO_TYPE)) || entry == null) {
+                if(lastLineBlank || entry == null) {
                     if(entry !=null) {
                         values[IDX_OTHER_AUTHORS]  = StringUtil.join("\n",authors);
                         for(int idx=0;idx<TAGS.length;idx++) {
@@ -221,12 +220,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     entry    = getRepository().getTypeHandler(TYPE_BIBLIO).createEntry(getRepository().getGUID());
                     entry.setParentEntryId(parentId);
                     values = entry.getTypeHandler().getValues(entry);
-                    if(tag.equals(TAG_BIBLIO_TYPE)) {
-                        values[IDX_TYPE]  =value;
-                        continue;
-                    }
                 }
-
                 lastLineBlank =false;
 
                 if(tag.equals(TAG_BIBLIO_TYPE)) {
