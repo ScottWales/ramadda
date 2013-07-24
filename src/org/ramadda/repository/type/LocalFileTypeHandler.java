@@ -502,13 +502,17 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         }
         entry.setIsLocalFile(true);
         Entry parent;
+        //        System.err.println ("Entry:" + entry);
         if (targetFile.getParentFile().equals(localFileInfo.getRootDir())) {
             parent = (Entry) parentEntry;
+            //            System.err.println ("\tUsing parent entry:" + parentEntry +" grandparent:" + parent.getParentEntry());
         } else {
             String parentId = getSynthId(parentEntry, localFileInfo.getRootDir().toString(),
                                          targetFile.getParentFile());
+            //            System.err.println ("\tGetting parent:" + parentId);
             parent = (Entry) getEntryManager().getEntry(request, parentId,
                                                         false, false);
+            //            System.err.println ("\tUsing other parent entry:" + parent);
         }
 
         entry.initEntry(name, "", parent,
@@ -518,6 +522,18 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                                                   : Resource.TYPE_LOCAL_FILE)), "", targetFile.lastModified(),
                         targetFile.lastModified(), targetFile.lastModified(),
                         targetFile.lastModified(), null);
+
+        //        System.err.println ("Done:" + entry);
+
+
+        if ( !getRepository().getAccessManager().canDoAction(request, entry,
+                                                             org.ramadda.repository.auth.Permission.ACTION_VIEW)) {
+            System.err.println ("No access:" + entry);
+        } else {
+            System.err.println ("Cool:" + entry);
+        }
+
+
 
         if (templateEntry != null) {
             entry.initWith(templateEntry);

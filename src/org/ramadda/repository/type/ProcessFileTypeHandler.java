@@ -89,7 +89,7 @@ public class ProcessFileTypeHandler extends LocalFileTypeHandler  {
 
 
     public LocalFileInfo doMakeLocalFileInfo(Entry entry) throws Exception {
-        File dir = new File(getStorageManager().getProcessDir());
+        File dir = getStorageManager().getProcessDir();
         return new LocalFileInfo(getRepository(), 
                                  dir);
     }
