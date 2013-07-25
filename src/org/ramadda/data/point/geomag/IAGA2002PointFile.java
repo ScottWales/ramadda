@@ -92,6 +92,17 @@ Format                 IAGA-2002                                    |
         String interval = getHeaderValue(headerLines.get(idx++));
         String dataType = getHeaderValue(headerLines.get(idx++));
 
+        setFileMetadata(new Object[]{
+                iagaCode,
+                station,
+                source,
+                orientation,
+                sampling,
+                interval,
+                dataType
+            });
+
+
         StringBuffer sb = new StringBuffer();
         sb.append(FIELD_DATE);
         sb.append("[type=string]");
@@ -136,8 +147,7 @@ Format                 IAGA-2002                                    |
 
 
     public boolean isCapable(String action) {
-        if(action.equals(ACTION_MAPINCHART)) return true;
-        if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
+        //        if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
         return super.isCapable(action);
     }
 

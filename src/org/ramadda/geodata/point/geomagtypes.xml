@@ -12,6 +12,13 @@
 
   <type name="type_point_geomag_iaga2002"  super="type_point_geomag" description="IAGA 2002 Geomagnetism Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.file.class" value="org.ramadda.data.point.geomag.IAGA2002PointFile"/>
+     <column  name="iaga_code"  type="enumerationplus" label="IAGA Code" cansearch="true"/>
+     <column  name="station_name"  type="string" label="Station Name" cansearch="true"/>
+     <column  name="source_of_data"  type="string" label="Source of data" cansearch="true"/>
+     <column  name="sensor_orientation"  type="string" label="Sensor Orientation" />
+     <column  name="digital_sampling"  type="string" label="Digital Sampling" cansearch="true"/>
+     <column  name="data_interval"  type="string" label="Data Interval" cansearch="true"/>
+     <column  name="data_type"  type="enumeration" label="Data Type" values="P,D,Q,V" cansearch="true"/>
   </type>
 
 
