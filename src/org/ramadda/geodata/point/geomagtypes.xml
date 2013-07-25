@@ -10,4 +10,9 @@
   </type>
 
 
+  <type name="type_point_geomag_iaga2002"  super="type_point_geomag" description="IAGA 2002 Geomagnetism Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.geomag.IAGA2002PointFile"/>
+  </type>
+
+
 </types>
