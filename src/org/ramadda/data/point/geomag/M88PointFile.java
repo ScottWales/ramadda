@@ -50,6 +50,8 @@ public class M88PointFile extends CsvFile  {
 
     public static final String[] STRING_FIELDS = {FIELD_SURVEY_ID, FIELD_LINEID,FIELD_FIDUCIAL};
 
+    public static final String[] NOT_CHARTABLE_FIELDS = {FIELD_DATE, FIELD_TIME, FIELD_LAT, FIELD_LON, FIELD_ALT_BAROM,FIELD_ALT_GPS, FIELD_ALT_RADAR};
+
     private int dateIdx=-1;
     private int timeIdx=-1;
 
@@ -98,7 +100,6 @@ public class M88PointFile extends CsvFile  {
         StringBuffer sb  = new StringBuffer();
         int fieldCnt = 0;
         for(String field: fields) {
-
             if(field.equals(FIELD_DATE)) dateIdx = fieldCnt+1;
             else if(field.equals(FIELD_TIME)) timeIdx = fieldCnt+1;
             fieldCnt++;
@@ -113,7 +114,15 @@ public class M88PointFile extends CsvFile  {
                     break;
                 }
             }
-            if(!isString) {
+            boolean chartable = true;
+            for(String stringField: NOT_CHARTABLE_FIELDS) {
+                if(field.equals(stringField)) {
+                    chartable  = false;
+                    break;
+                }
+            }
+
+            if(!isString && chartable) {
                 sb.append(" chartable=true searchable=true ");
             }
             sb.append("]");
@@ -135,9 +144,7 @@ public class M88PointFile extends CsvFile  {
         if(!super.processAfterReading(visitInfo, record)) return false;
         if(dateIdx<0) return true;
         TextRecord textRecord = (TextRecord) record;
-
         double value = textRecord.getValue(dateIdx);
-
         if(Double.isNaN(value)) return true;
         StringBuffer dttm = new StringBuffer();
         dttm.append((int)value);
@@ -157,9 +164,6 @@ public class M88PointFile extends CsvFile  {
         }
 
         Date date = sdfLong.parse(dttm.toString());
-
-
-
         record.setRecordTime(date.getTime());
         return true;
     }

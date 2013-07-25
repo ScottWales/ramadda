@@ -76,6 +76,9 @@ public abstract class TextFile extends PointFile implements Fields {
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
     public static final String PROP_DELIMITER = "delimiter";
 
+    protected String firstDataLine = null;
+
+
     /** _more_          */
     private List<String> headerLines = new ArrayList<String>();
 
@@ -177,6 +180,10 @@ public abstract class TextFile extends PointFile implements Fields {
         return false;
     }
 
+    public boolean readHeader() {
+        return false;
+    }
+
 
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         return recordIO;
@@ -218,6 +225,10 @@ public abstract class TextFile extends PointFile implements Fields {
         headerLines = new ArrayList<String>();
     }
 
+    public boolean isHeaderLine(String line) {
+        return line.startsWith("#");
+    }
+
     /**
      * _more_
      *
@@ -243,11 +254,17 @@ public abstract class TextFile extends PointFile implements Fields {
             }
         } else if(isHeaderStandard()) {
             while(true) {
-                String line = visitInfo.getRecordIO().readLine().trim();
-                if(line == null || line.length()==0) break;
-                if(!line.startsWith("#")) {
-                    throw new IllegalArgumentException("Bad header line:" + line);
+                String line = visitInfo.getRecordIO().readLine();
+                if(line == null) break;
+                line = line.trim();
+                if(line.length()==0) break;
+
+                if(!isHeaderLine(line)) {
+                    firstDataLine = line;
+                    break;
                 }
+
+
                 if(!haveReadHeader) {
                     headerLines.add(line);
                     line  = line.substring(1);
@@ -258,7 +275,6 @@ public abstract class TextFile extends PointFile implements Fields {
                     }
                 }
             }
-
         } else {
             int skipCnt = getSkipLines(visitInfo);
             for (int i = 0; i < skipCnt; i++) {

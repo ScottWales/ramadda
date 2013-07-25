@@ -47,6 +47,8 @@ public class TextRecord extends PointRecord {
 
     private boolean delimiterIsSpace = false;
 
+    protected String firstDataLine = null;
+
     /** _more_          */
     private List<RecordField> fields;
 
@@ -396,7 +398,12 @@ public class TextRecord extends PointRecord {
     public ReadStatus read(RecordIO recordIO) throws IOException {
         try {
             while (true) {
-                line = recordIO.readLine();
+                if(firstDataLine!=null) {
+                    line = firstDataLine;
+                    firstDataLine = null;
+                } else {
+                    line = recordIO.readLine();
+                }
                 if (line == null) {
                     return ReadStatus.EOF;
                 }
@@ -705,5 +712,10 @@ public class TextRecord extends PointRecord {
     public void setBePickyAboutTokens(boolean picky) {
         bePickyAboutTokens  = picky;
     }
+
+    public void setFirstDataLine(String line) {
+        firstDataLine = line;
+    }
+
 
 }

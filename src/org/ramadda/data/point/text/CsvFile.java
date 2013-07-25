@@ -368,6 +368,7 @@ public class CsvFile extends TextFile {
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields());
+        record.setFirstDataLine(firstDataLine);
         record.setDelimiter(getDelimiter());
         return record;
     }
