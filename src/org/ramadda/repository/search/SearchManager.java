@@ -800,6 +800,12 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             sb.append("</table>");
             sb.append(HtmlUtils.p());
             */
+
+            sb.append("<p>&nbsp;<p>&nbsp;<p>");
+            sb.append(header(msg("Search by Type")));
+            addSearchByTypeList(request, sb);
+
+
         } else {
             Object       oldValue = request.remove(ARG_RELATIVEDATE);
             List<Clause> where    = typeHandler.assembleWhereClause(request);
@@ -953,53 +959,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         List<String> toks  = StringUtil.split(request.getRequestPath(), "/",true,true);
         String lastTok = toks.get(toks.size()-1);
         if(lastTok.equals("type")) {
-            CategoryBuffer cb  = new CategoryBuffer();
-            for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
-                if ( !typeHandler.getForUser()) {
-                    continue;
-                }
-                if (typeHandler.isAnyHandler()) {
-                    continue;
-                }
-                int cnt = getEntryUtil().getEntryCount(typeHandler);
-                if(cnt==0) {
-                    continue;
-                }
-                String icon = typeHandler.getProperty("icon", (String) null);
-                String img;
-                if (icon == null) {
-                    icon = ICON_BLANK;
-                    img  = HtmlUtils.img(typeHandler.iconUrl(icon), "",
-                                         HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                                        "16"));
-                } else {
-                    img = HtmlUtils.img(typeHandler.iconUrl(icon));
-                }
-                StringBuffer buff   = new StringBuffer();
 
-                buff.append("<li> ");
-                buff.append(img);
-                buff.append(" ");
-                String label = typeHandler.getDescription() +" (" + cnt+")";
-                buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), label));
-                cb.append(typeHandler.getCategory(), buff);
-            }
-            sb.append("<table width=100%><tr valign=top>");
-            int catCnt = 0;
-            for(String cat: cb.getCategories()) {
-                if(catCnt++>3) {
-                    sb.append("</tr><tr valign=top>");
-                    catCnt = 0;
-                }
-                sb.append("<td>");
-                sb.append(HtmlUtils.b(msg(cat)));
-                sb.append("<ul>");
-                sb.append(cb.get(cat));
-                sb.append("</ul>");
-                sb.append("</td>");
-
-            }
-            sb.append("</table>");
+            addSearchByTypeList(request, sb);
         } else {
             String type = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -1013,6 +974,62 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         return makeResult(request, msg("Search by Type"), sb);
     }
 
+
+    private void addSearchByTypeList(Request request, StringBuffer sb) throws Exception {
+        CategoryBuffer cb  = new CategoryBuffer();
+        for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
+            if ( !typeHandler.getForUser()) {
+                continue;
+            }
+            if (typeHandler.isAnyHandler()) {
+                continue;
+            }
+            int cnt = getEntryUtil().getEntryCount(typeHandler);
+            if(cnt==0) {
+                continue;
+            }
+            String icon = typeHandler.getProperty("icon", (String) null);
+            String img;
+            if (icon == null) {
+                icon = ICON_BLANK;
+                img  = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                                    "16"));
+            } else {
+                img = HtmlUtils.img(typeHandler.iconUrl(icon));
+            }
+            StringBuffer buff   = new StringBuffer();
+
+            buff.append("<li> ");
+            buff.append(img);
+            buff.append(" ");
+            String label = typeHandler.getDescription() +" (" + cnt+")";
+            buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), label));
+            cb.append(typeHandler.getCategory(), buff);
+        }
+        sb.append("<table width=100%><tr valign=top>");
+        int colCnt = 0;
+        for(String cat: cb.getCategories()) {
+            colCnt++;
+            if(colCnt>4) {
+                sb.append("</tr><tr valign=top>");
+                sb.append("<td colspan=4><hr></td>");
+                sb.append("</tr><tr valign=top>");
+                colCnt = 1;
+            }
+
+            sb.append("<td>");
+            sb.append(HtmlUtils.b(msg(cat)));
+            sb.append("<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
+            sb.append("<ul>");
+            sb.append(cb.get(cat));
+            sb.append("</ul>");
+            sb.append("</div>");
+            sb.append("</td>");
+
+        }
+        sb.append("</table>");
+    }
 
     /**
      * _more_

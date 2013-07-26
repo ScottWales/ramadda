@@ -768,6 +768,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String padLeft(String s) {
+
         return space(1) + s;
     }
 
