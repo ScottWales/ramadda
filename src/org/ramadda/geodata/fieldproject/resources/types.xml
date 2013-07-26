@@ -312,6 +312,21 @@ Instrument: {{name}}
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
+
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+<p>
+{{map listentries="true" width="600"}}
+<p>
+{{timeline width="600"}}
+<p>
+{{tree message=""}}
+]]>
+</wiki>
+
  </type>
 
 
