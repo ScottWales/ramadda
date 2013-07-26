@@ -151,7 +151,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     /** CDO Output Type */
     public static final OutputType OUTPUT_CDO =
         new OutputType("Data Analysis", "cdo", OutputType.TYPE_OTHER,
-                       OutputType.SUFFIX_NONE, "/cdmdata/cdo.png",
+                       OutputType.SUFFIX_NONE, "/model/cdo.png",
                        CdmDataOutputHandler.GROUP_DATA);
 
     /** info operator */

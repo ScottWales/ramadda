@@ -187,7 +187,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String processEntryId = getStorageManager().getProcessDirEntryId(processId);
 
         //Return the redirect to the process dir for now
-        if(true) {
+        if(false) {
             String       entryUrl = 
                 HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                               ARG_ENTRYID, processEntryId);
@@ -205,7 +205,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String       entryUrl = 
                 HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                              ARG_ENTRYID, lastEntry.getId());
+                              ARG_ENTRYID, processEntryId+"/"+IOUtil.getFileTail(lastFile.toString()));
         return new Result(entryUrl);
         //return new Result("",
         //                  getStorageManager().getFileInputStream(imageFile),
@@ -443,17 +443,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 first = false;
             }
 
+            sb.append(HtmlUtils.submit("Select New Data", ARG_ACTION_SEARCH,
+                                       HtmlUtils.id(formId + ".submit")));
 
             if (processTitles.size() == 1) {
                 sb.append(header(msg(processTitles.get(0))));
                 sb.append(processTabs.get(0));
             } else {
                 sb.append(header(msg("Process Selected Data")));
-                HtmlUtils.makeAccordian(sb, processTitles, processTabs);
+                StringBuffer processTable = new StringBuffer();
+                processTable.append("<table><tr><td width=\"50%\">");
+                HtmlUtils.makeAccordian(processTable, processTitles, processTabs);
+                processTable.append("</td>");
+                processTable.append("<td width=\"50%\">");
+                processTable.append("</td></tr></table>");
+                sb.append(processTable);
             }
-            sb.append(HtmlUtils.submit("Select New Data", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")));
-            sb.append(HtmlUtils.submit("Just Do It", ARG_ACTION_COMPARE,
+            sb.append(HtmlUtils.submit("Make Plot", ARG_ACTION_COMPARE,
                                        HtmlUtils.id(formId + ".submit")));
         }
 

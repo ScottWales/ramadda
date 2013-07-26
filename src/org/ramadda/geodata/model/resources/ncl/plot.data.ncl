@@ -16,18 +16,148 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/calendar_decode2.ncl"
 load "$NCL_RESOURCES/kml.ncl"
 ;************************************************
 
+;**********************************************************
+; Read data from a file
+;   ncfile - file to read
+;   opts   - options
+;*********************************************************
+undef("readdata")
+function readdata(ncfile:string, opts:logical)
+
+local minLat,maxLat,minLon,maxLon,varname,varlevel,vardata
+
+begin
+
+; Region parameters
+  minLat=opts@minLat
+  maxLat=opts@maxLat
+  minLon=opts@minLon
+  maxLon=opts@maxLon
+  noLatLon = ismissing(minLat) .or. \
+             ismissing(maxLon) .or. \
+             ismissing(minLat) .or. \
+             ismissing(maxLat)
+  
+  varname=opts@variable
+  varlevel=opts@level
+
+;--  Open the data file
+  datafile = addfile(ncfile ,"r")  ; open input data file
+  vartype = getfilevartypes(datafile,varname)
+  dNames= getfilevardims(datafile,varname)
+  numdims=dimsizes(dNames)
+
+;-- get the lat/lon info for normalizing
+  lonname=dNames(numdims-1)
+  lonvar = datafile->$lonname$
+  numlons=dimsizes(lonvar)
+  minDLon=lonvar(0)
+  maxDLon=lonvar(numlons(0)-1)
+  if (minDLon .gt. maxDLon) then
+      tmp = maxDLon
+      maxDLat = minDLon
+      minDLon = tmp
+      delete(tmp)
+  end if
+  latname=dNames(numdims-2)
+  latvar = datafile->$latname$
+  numlats=dimsizes(latvar)
+  minDLat=latvar(0)
+  maxDLat=latvar(numlats(0)-1)
+  if (minDLat .gt. maxDLat) then
+      tmp = maxDLat
+      maxDLat = minDLat
+      minDLat = tmp
+      delete(tmp)
+  end if
+  
+; if not passed in, then set from data
+  if (noLatLon) then
+    minLon = minDLon
+    maxLon = maxDLon
+    minLat = minDLat
+    maxLat = maxDLat
+  end if
+  
+; check for 0-360
+  if(minDLon.gt.180 .or. maxDLon.gt.180) then
+    if (minLon.lt.0 .or. maxLon.lt.0) then
+      minLon = minLon+360
+      maxLon = maxLon+360
+    end if
+  else 
+    if (minDLon.lt.0 .or. maxDLon.lt.0) then
+      if (minLon.gt.180 .or. maxLon.gt.180) then
+        minLon = minLon-180
+        maxLon = maxLon-180
+      end if
+    end if
+  end if
+
+  ;print(minLon)
+  ;print(maxLon)
+
+  latdiff=abs(maxLat-minLat)
+  londiff=abs(maxLon-minLon)
+
+  ratio=(2*latdiff)/londiff
+  ;print(ratio)
+  opts@ratio=ratio
+
+  if (ismissing(varlevel) .or. dimnums .le. 3) then
+    if (vartype .eq. "short") then
+      vardata = short2flt(datafile->$varname$(:,{minLat:maxLat},{minLon:maxLon}))
+    else
+      vardata = datafile->$varname$(:,{minLat:maxLat},{minLon:maxLon})
+    end if
+  else
+    if (vartype .eq. "short") then
+      if (ismissing(varlevel)) then
+        vardata = short2flt(datafile->$varname$(:,0,{minLat:maxLat},{minLon:maxLon}))
+      else
+        vardata = short2flt(datafile->$varname$(:,{varlevel},{minLat:maxLat},{minLon:maxLon}))
+      end if
+    else
+      if (ismissing(varlevel)) then
+        vardata = datafile->$varname$(:,0,{minLat:maxLat},{minLon:maxLon})
+      else
+        vardata = datafile->$varname$(:,{varlevel},{minLat:maxLat},{minLon:maxLon})
+      end if
+    end if
+  end if
+  
+  ;printVarSummary(vardata)
+
+  return(vardata)
+
+end
+
 ;************************************************
 ; Procedure: plotmap
 ; Purpose: plot map(s)
-; Params:  data  - the data to plot
+; Params:  files  - the data files to plot
 ;          wks_name - workstation name
 ;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotmap")
-procedure plotmap(data:float, wks_name:string, wks_type:string, rescf:logical, opts:logical)
+procedure plotmap(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
+local data
 
 begin
+
+    myfile = files(0)
+    data = readdata(myfile, opts)
+
+    rescf = True;
+    ;rescf@gsnAddCyclic          = (addCyclic .eq. "true")    ; turn off if subset
+    rescf@gsnAddCyclic          = False
+    rescf@mpMinLatF            = opts@minLat       ; range to zoom in on
+    rescf@mpMaxLatF            = opts@maxLat
+    rescf@mpMinLonF            = opts@minLon
+    rescf@mpMaxLonF            = opts@maxLon
+    rescf@mpCenterLonF         = (opts@maxLon + opts@minLon)/2
+    ;print(rescf@mpCenterLonF)
 
     doGoogle = (opts@plottype .eq. "kmz")
     if (doGoogle) then
@@ -172,12 +302,22 @@ begin
 
 end
 
+;*********************************************************
+; Plot a time series
+;    files - files to use for time series
+;    wks_name - name of the workstation
+;    wkx_type - type of image output
+;    opts     - holder for passed in options
+;*********************************************************
+
 undef("plotts")
-procedure plotts(data:float, wks_name:string, wks_type:string, rescf:logical, opts:logical)
+procedure plotts(files[*]:string, wks_name:string, wks_type:string, opts:logical)
 
 begin
   ;printVarSummary(data)
   ; weighted Area Mean (use the cosine of the latitudes for weight)
+  myfile = files(0)
+  data = readdata(myfile, opts)
   lat1   = data&lat
   rad    = 4.0*atan(1.0)/180.0
   clat1   = cos(lat1*rad)
@@ -189,7 +329,7 @@ begin
   ;printVarSummary(tdim)
   tnum = dimsizes(tdim);
   endindex = tnum(0)-1
-  cals = cd_calendar(tdim,-5)
+  cals = ut_calendar(tdim,-5)
   yrs = cals(:,0)
   ;print(yrs)
   startYear = yrs(0)
@@ -263,7 +403,10 @@ begin
   delete(plot1)
   delete(plot2)
 ;  addLogo(convertCmd,wks_name,logoFilePath)
+
 end
+
+
 ;**************************************************
 ; Main routine
 ;**************************************************
@@ -271,16 +414,32 @@ end
 begin
 
 ; --- Read in the environment variables
+
+; data variables
 variable=(getenv("variable"))
-ncfile=(getenv("ncfile"))
+if (ismissing(variable)) then 
+   print("no variable")
+   status_exit(-1)
+end if
 level=stringtointeger(getenv("level"))
+tmpfiles=getenv("ncfiles")
+if (ismissing(tmpfiles)) then 
+   print("no files")
+   status_exit(-2)
+end if
+ncfiles=str_split(tmpfiles,",")
+
+; output variables
 wks_name=(getenv("wks_name"))
+if (ismissing(wks_name)) then
+  wks_name="foo"
+end if
+
 productDir=(getenv("productdir"))
 if (ismissing(productDir)) then
    productDir=""
 end if
-;ltm=(getenv("ltm"))
-;varnameltm=(getenv("variableltm"))
+
 plotType=getenv("plot_type")
 if (ismissing(plotType)) then
     plotType = "png"
@@ -292,86 +451,26 @@ minLat=stringtofloat(getenv("minLat"))
 maxLat=stringtofloat(getenv("maxLat"))
 minLon=stringtofloat(getenv("minLon"))
 maxLon=stringtofloat(getenv("maxLon"))
-addCyclic=(getenv("addCyclic"))
-;print(minLon)
-;print(maxLon)
-
-;--  Open the data file
-datafile = addfile(ncfile ,"r")  ; open input data file
-;dimsNames = getfilevardims(ncFile, $variable$)
-vartype = getfilevartypes(datafile,variable)
-dNames= getfilevardims(datafile,variable)
-numdims=dimsizes(dNames)
-lonname=dNames(numdims-1)
-lonvar = datafile->$lonname$
-;normalizeLons(lonvar,minLon,maxLon)
-numlons=dimsizes(lonvar)
-minDLon=lonvar(0)
-maxDLon=lonvar(numlons(0)-1)
-
-; check for 0-360
-if(minDLon.gt.180 .or. maxDLon.gt.180) then
-   if (minLon.lt.0 .or. maxLon.lt.0) then
-       minLon = minLon+360
-       maxLon = maxLon+360
-   end if
-else if (minDLon.lt.0 .or. maxDLon.lt.0) then
-   if (minLon.gt.180 .or. maxLon.gt.180) then
-       minLon = minLon-180
-       maxLon = maxLon-180
-   end if
-end if
-end if
-
-;print(minLon)
-;print(maxLon)
-
-latdiff=abs(maxLat-minLat)
-londiff=abs(maxLon-minLon)
-
-ratio=(2*latdiff)/londiff
-;print(ratio)
-
-if (ismissing(level)) then
-;   vardata = datafile->$variable$(:,:,:)
-   if (vartype .eq. "short") then
-       vardata = short2flt(datafile->$variable$(:,{minLat:maxLat},{minLon:maxLon}))
-   else
-       vardata = datafile->$variable$(:,{minLat:maxLat},{minLon:maxLon})
-   end if
-else
-;   vardata = datafile->$variable$(:,{level},:,:)
-   if (vartype .eq. "short") then
-       vardata = short2flt(datafile->$variable$(:,{level},{minLat:maxLat},{minLon:maxLon}))
-   else
-       vardata = datafile->$variable$(:,{level},{minLat:maxLat},{minLon:maxLon})
-   end if
-end if
-
-;printVarSummary(vardata)
-
-rescf = True;
-;rescf@gsnAddCyclic          = (addCyclic .eq. "true")    ; turn off if subset
-rescf@gsnAddCyclic          = False
-rescf@mpMinLatF            = minLat       ; range to zoom in on
-rescf@mpMaxLatF            = maxLat
-rescf@mpMinLonF            = minLon
-rescf@mpMaxLonF            = maxLon
-rescf@mpCenterLonF         = (maxLon + minLon)/2
-;print(rescf@mpCenterLonF)
 
 options = True
 options@plottype=plotType
-options@ratio=ratio
 options@product_dir=productDir
+options@variable=variable
+options@level=level
+options@minLat = minLat
+options@maxLat = maxLat
+options@minLon = minLon
+options@maxLon = maxLon
+
 
 if (plotType.eq."timeseries") then
   print("plotting timeseries")
-  plotts(vardata, wks_name, "png", rescf, options)
+  plotts(ncfiles, wks_name, "png", options)
 else
   print("plotting map")
-  plotmap(vardata, wks_name, "png", rescf, options)
+  plotmap(ncfiles, wks_name, "png", options)
 end if
+
 status_exit(0)
 
 end

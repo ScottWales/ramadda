@@ -75,7 +75,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
      * @throws Exception  badness
      */
     public NCLMapPlotDataProcess(Repository repository) throws Exception {
-        this(repository, "NCLMap", "Map Plots");
+        this(repository, "NCLMap", "Plots");
     }
 
     /**
@@ -111,13 +111,15 @@ public class NCLMapPlotDataProcess extends DataProcess {
         sb.append(HtmlUtils.formTable());
         sb.append(
             HtmlUtils.formEntry(
-                "Plot Type",
+                Repository.msg("Plot Type"),
                 HtmlUtils.radio(
                     NCLOutputHandler.ARG_NCL_PLOTTYPE, "png",
                     true) + Repository.msg("Image")
                           + HtmlUtils.radio(
                               NCLOutputHandler.ARG_NCL_PLOTTYPE, "kmz",
-                              false) + Repository.msg("Google Earth")));
+                              false) + Repository.msg("Google Earth") +
+                              HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE, 
+                            		  "timeseries", false) + Repository.msg("Time Series")));
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -138,151 +140,163 @@ public class NCLMapPlotDataProcess extends DataProcess {
 
         List<Entry>              outputEntries = new ArrayList<Entry>();
         List<DataProcessOperand> ops           = input.getOperands();
+        StringBuffer fileList = new StringBuffer();
+        Entry inputEntry = null;
+        boolean haveOne = false;
         for (DataProcessOperand op : ops) {
 
             List<Entry> opEntries  = op.getEntries();
-            Entry       inputEntry = opEntries.get(0);
-            String      wksName    = repository.getGUID();
-            String plotType =
-                request.getString(NCLOutputHandler.ARG_NCL_PLOTTYPE, "png");
-            if (plotType.equals("image")) {
-                plotType = "png";
+            inputEntry = opEntries.get(0);
+            for (Entry entry : opEntries) {
+            	if (haveOne) fileList.append(",");
+            	//fileList.append("\"");
+            	fileList.append(entry.getResource().toString());
+            	//fileList.append("\"");
+            	haveOne = true;
             }
-            String suffix = plotType;
-            if (plotType.equals("timeseries")) {
-                suffix = "png";
-            }
-            File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                               wksName) + "." + suffix);
-            CdmDataOutputHandler dataOutputHandler =
-                nclOutputHandler.getDataOutputHandler();
-            GridDataset dataset =
-                dataOutputHandler.getCdmManager().createGrid(
-                    inputEntry.getResource().toString());
-            if (dataset == null) {
-                throw new Exception("Not a grid");
-            }
-
-            StringBuffer commandString = new StringBuffer();
-            List<String> commands      = new ArrayList<String>();
-            String       ncargRoot     = nclOutputHandler.getNcargRootDir();
-            commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-            commands
-                .add(IOUtil
-                    .joinDir(IOUtil
-                        .joinDir(nclOutputHandler.getStorageManager()
-                            .getResourceDir(), "ncl"), nclOutputHandler
-                                .SCRIPT_MAPPLOT));
-            Map<String, String> envMap = new HashMap<String, String>();
-            envMap.put("NCARG_ROOT", ncargRoot);
-            envMap.put("wks_name", wksName);
-            envMap.put("ncfile", inputEntry.getResource().toString());
-            envMap.put("productdir", input.getProcessDir().toString());
-            envMap.put("plot_type", plotType);
-
-            Hashtable    args     = request.getArgs();
-            List<String> varNames = new ArrayList<String>();
-            for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
-                String arg = (String) keys.nextElement();
-                if (arg.startsWith(CdmDataOutputHandler.VAR_PREFIX)
-                        && request.get(arg, false)) {
-                    varNames.add(
-                        arg.substring(
-                            CdmDataOutputHandler.VAR_PREFIX.length()));
-                }
-            }
-            String varname =
-                request.getString(nclOutputHandler.ARG_NCL_VARIABLE, null);
-            if (varname == null) {
-                List<GridDatatype> grids = dataset.getGrids();
-                GridDatatype       var   = grids.get(0);
-                varname = var.getName();
-            }
-            envMap.put("variable", varname);
-            String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
-                                             null);
-            if ((level != null) && !level.isEmpty()) {
-                envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
-            }
-            LatLonRect llb = dataset.getBoundingBox();
-            // Normalize longitude bounds to the data
-            double origLonMin = llb.getLonMin();
-            double lonMin = Double.parseDouble(
-                                request.getString(
-                                    NCLOutputHandler.ARG_NCL_AREA_WEST,
-                                    String.valueOf(llb.getLonMin())));
-            double lonMax = Double.parseDouble(
-                                request.getString(
-                                    NCLOutputHandler.ARG_NCL_AREA_EAST,
-                                    String.valueOf(llb.getLonMax())));
-            if (origLonMin < 0) {  // -180 to 180
-                lonMin = GeoUtils.normalizeLongitude(lonMin);
-                lonMax = GeoUtils.normalizeLongitude(lonMax);
-            } else {               // 0-360
-                lonMin = GeoUtils.normalizeLongitude360(lonMin);
-                lonMax = GeoUtils.normalizeLongitude360(lonMax);
-            }
-            envMap.put("maxLat",
-                       request.getString(NCLOutputHandler.ARG_NCL_AREA_NORTH,
-                                         String.valueOf(llb.getLatMax())));
-            envMap.put("minLat",
-                       request.getString(NCLOutputHandler.ARG_NCL_AREA_SOUTH,
-                                         String.valueOf(llb.getLatMin())));
-            envMap.put("minLon", String.valueOf(lonMin));
-            envMap.put("maxLon", String.valueOf(lonMax));
-
-            boolean haveOriginalBounds = true;
-            for (String spatialArg : NCLOutputHandler.NCL_SPATIALARGS) {
-                if ( !Misc.equals(request.getString(spatialArg, ""),
-                                  request.getString(spatialArg + ".original",
-                                      ""))) {
-                    haveOriginalBounds = false;
-
-                    break;
-                }
-            }
-            envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
-
-
-            System.err.println("cmds:" + commands);
-            System.err.println("env:" + envMap);
-
-            //Use new repository method to execute. This gets back [stdout,stderr]
-            String[] results = repository.executeCommand(commands, envMap,
-                                   input.getProcessDir());
-            String errorMsg = results[1];
-            String outMsg   = results[0];
-            // Check the version
-            if (suffix.equals("png")) {
-                Matcher m = NCLOutputHandler.versionPattern.matcher(outMsg);
-                if (m.find()) {
-                    String version = m.group(1);
-                    if (version.compareTo("6.0.0") < 0) {
-                        String oldPath = outFile.toString();
-                        outFile = new File(oldPath.replace(".png",
-                                ".000001.png"));
-                    }
-                }
-            }
-
-            if ( !outFile.exists()) {
-                if (outMsg.length() > 0) {
-                    throw new IllegalArgumentException(outMsg);
-                }
-                if (errorMsg.length() > 0) {
-                    throw new IllegalArgumentException(errorMsg);
-                }
-                if ( !outFile.exists()) {
-                    throw new IllegalArgumentException(
-                        "Humm, the NCL image generation failed for some reason");
-                }
-            }
-            Resource resource = new Resource(outFile,
-                                             Resource.TYPE_LOCAL_FILE);
-            Entry outputEntry = new Entry(new TypeHandler(repository), true);
-            outputEntry.setResource(resource);
-            outputEntries.add(outputEntry);
         }
+        
+        String      wksName    = repository.getGUID();
+        String plotType =
+            request.getString(NCLOutputHandler.ARG_NCL_PLOTTYPE, "png");
+        if (plotType.equals("image")) {
+            plotType = "png";
+        }
+        String suffix = plotType;
+        if (plotType.equals("timeseries")) {
+            suffix = "png";
+        }
+        File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
+                           wksName) + "." + suffix);
+        CdmDataOutputHandler dataOutputHandler =
+            nclOutputHandler.getDataOutputHandler();
+        GridDataset dataset =
+            dataOutputHandler.getCdmManager().createGrid(
+                inputEntry.getResource().toString());
+        if (dataset == null) {
+            throw new Exception("Not a grid");
+        }
+
+        StringBuffer commandString = new StringBuffer();
+        List<String> commands      = new ArrayList<String>();
+        String       ncargRoot     = nclOutputHandler.getNcargRootDir();
+        commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
+        commands
+            .add(IOUtil
+                .joinDir(IOUtil
+                    .joinDir(nclOutputHandler.getStorageManager()
+                        .getResourceDir(), "ncl"), nclOutputHandler
+                            .SCRIPT_MAPPLOT));
+        Map<String, String> envMap = new HashMap<String, String>();
+        envMap.put("NCARG_ROOT", ncargRoot);
+        envMap.put("wks_name", wksName);
+        envMap.put("ncfile", inputEntry.getResource().toString());
+        envMap.put("ncfiles", fileList.toString());
+        envMap.put("productdir", input.getProcessDir().toString());
+        envMap.put("plot_type", plotType);
+
+        Hashtable    args     = request.getArgs();
+        List<String> varNames = new ArrayList<String>();
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String arg = (String) keys.nextElement();
+            if (arg.startsWith(CdmDataOutputHandler.VAR_PREFIX)
+                    && request.get(arg, false)) {
+                varNames.add(
+                    arg.substring(
+                        CdmDataOutputHandler.VAR_PREFIX.length()));
+            }
+        }
+        String varname =
+            request.getString(nclOutputHandler.ARG_NCL_VARIABLE, null);
+        if (varname == null) {
+            List<GridDatatype> grids = dataset.getGrids();
+            GridDatatype       var   = grids.get(0);
+            varname = var.getName();
+        }
+        envMap.put("variable", varname);
+        String level = request.getString(CdmDataOutputHandler.ARG_LEVEL,
+                                         null);
+        if ((level != null) && !level.isEmpty()) {
+            envMap.put(CdmDataOutputHandler.ARG_LEVEL, level);
+        }
+        LatLonRect llb = dataset.getBoundingBox();
+        // Normalize longitude bounds to the data
+        double origLonMin = llb.getLonMin();
+        double lonMin = Double.parseDouble(
+                            request.getString(
+                                NCLOutputHandler.ARG_NCL_AREA_WEST,
+                                String.valueOf(llb.getLonMin())));
+        double lonMax = Double.parseDouble(
+                            request.getString(
+                                NCLOutputHandler.ARG_NCL_AREA_EAST,
+                                String.valueOf(llb.getLonMax())));
+        if (origLonMin < 0) {  // -180 to 180
+            lonMin = GeoUtils.normalizeLongitude(lonMin);
+            lonMax = GeoUtils.normalizeLongitude(lonMax);
+        } else {               // 0-360
+            lonMin = GeoUtils.normalizeLongitude360(lonMin);
+            lonMax = GeoUtils.normalizeLongitude360(lonMax);
+        }
+        envMap.put("maxLat",
+                   request.getString(NCLOutputHandler.ARG_NCL_AREA_NORTH,
+                                     String.valueOf(llb.getLatMax())));
+        envMap.put("minLat",
+                   request.getString(NCLOutputHandler.ARG_NCL_AREA_SOUTH,
+                                     String.valueOf(llb.getLatMin())));
+        envMap.put("minLon", String.valueOf(lonMin));
+        envMap.put("maxLon", String.valueOf(lonMax));
+
+        boolean haveOriginalBounds = true;
+        for (String spatialArg : NCLOutputHandler.NCL_SPATIALARGS) {
+            if ( !Misc.equals(request.getString(spatialArg, ""),
+                              request.getString(spatialArg + ".original",
+                                  ""))) {
+                haveOriginalBounds = false;
+
+                break;
+            }
+        }
+        envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
+
+
+        System.err.println("cmds:" + commands);
+        System.err.println("env:" + envMap);
+
+        //Use new repository method to execute. This gets back [stdout,stderr]
+        String[] results = repository.executeCommand(commands, envMap,
+                               input.getProcessDir());
+        String errorMsg = results[1];
+        String outMsg   = results[0];
+        // Check the version
+        if (suffix.equals("png")) {
+            Matcher m = NCLOutputHandler.versionPattern.matcher(outMsg);
+            if (m.find()) {
+                String version = m.group(1);
+                if (version.compareTo("6.0.0") < 0) {
+                    String oldPath = outFile.toString();
+                    outFile = new File(oldPath.replace(".png",
+                            ".000001.png"));
+                }
+            }
+        }
+
+        if ( !outFile.exists()) {
+            if (outMsg.length() > 0) {
+                throw new IllegalArgumentException(outMsg);
+            }
+            if (errorMsg.length() > 0) {
+                throw new IllegalArgumentException(errorMsg);
+            }
+            if ( !outFile.exists()) {
+                throw new IllegalArgumentException(
+                    "Humm, the NCL image generation failed for some reason");
+            }
+        }
+        Resource resource = new Resource(outFile,
+                                         Resource.TYPE_LOCAL_FILE);
+        Entry outputEntry = new Entry(new TypeHandler(repository), true);
+        outputEntry.setResource(resource);
+        outputEntries.add(outputEntry);
         DataProcessOutput dpo = new DataProcessOutput(outputEntries);
 
         return dpo;

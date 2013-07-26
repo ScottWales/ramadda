@@ -365,6 +365,19 @@ sb.append(HtmlUtils.form(formUrl,
             String llb = map.makeSelector(ARG_NCL_AREA, true, points);
             sb.append(HtmlUtils.formEntryTop(msgLabel("Area"), llb));
         }
+        /*  TODO: Figure out how to do time series
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msg("Plot Type"),
+                HtmlUtils.radio(
+                    ARG_NCL_PLOTTYPE, "png",
+                    true) + Repository.msg("Image")
+                          + HtmlUtils.radio(
+                              ARG_NCL_PLOTTYPE, "kmz",
+                              false) + Repository.msg("Google Earth") +
+                              HtmlUtils.radio(ARG_NCL_PLOTTYPE, 
+                            		  "timeseries", false) + Repository.msg("Time Series")));
+        */
     }
 
     /**
@@ -414,6 +427,7 @@ sb.append(HtmlUtils.form(formUrl,
 
         String wksName = getRepository().getGUID();
         String plotType = request.getString(CollectionTypeHandler.ARG_REQUEST,"png");
+        //String plotType = request.getString(ARG_NCL_PLOTTYPE,"png");
         if (plotType.equals("image")) {
             plotType = "png";
         }
@@ -443,7 +457,7 @@ sb.append(HtmlUtils.form(formUrl,
         Map<String, String> envMap = new HashMap<String, String>();
         envMap.put("NCARG_ROOT", ncargRoot);
         envMap.put("wks_name", wksName);
-        envMap.put("ncfile", input.toString());
+        envMap.put("ncfiles", input.toString());
         envMap.put("productdir", getProductDir().toString());
         envMap.put("plot_type", plotType);
 
