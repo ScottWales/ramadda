@@ -149,6 +149,8 @@ public class JobInfo implements Constants {
     /** file size of the products */
     private long productSize;
 
+    private StringBuffer extraInfo = new StringBuffer();
+
     /**
      * ctor
      */
@@ -598,6 +600,33 @@ public class JobInfo implements Constants {
     public String getType () {
 	return type;
     }
+
+
+    public void appendExtraInfo(String s) {
+        extraInfo.append(s);
+    }
+
+    /**
+       Set the ExtraInfo property.
+
+       @param value The new value for ExtraInfo
+    **/
+    public void setExtraInfo (String value) {
+        if(value!=null)
+            extraInfo = new StringBuffer(value);
+        else
+            extraInfo = new StringBuffer();
+    }
+
+    /**
+       Get the ExtraInfo property.
+
+       @return The ExtraInfo
+    **/
+    public String getExtraInfo () {
+	return extraInfo.toString();
+    }
+
 
 
 

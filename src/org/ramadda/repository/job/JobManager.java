@@ -229,7 +229,8 @@ public class JobManager extends RepositoryManager  {
 
     private JobInfo makeJobInfo(String blob) throws Exception {
         blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo","org.ramadda.repository.job.JobInfo");
-        return (JobInfo) getRepository().decodeObject(blob);
+        JobInfo jobInfo =  (JobInfo) getRepository().decodeObject(blob);
+        return jobInfo;
     }
 
 

@@ -366,6 +366,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         }
         if (status.length() > 0) {
             status.append(HtmlUtils.p());
+            status.append("\n");
+            System.err.println("appending status:" + status);
+            jobInfo.appendExtraInfo(status.toString());
         }
 
         final String email = request.getString(ARG_JOB_EMAIL, "");
@@ -641,7 +644,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         }
 
         xml.append(XmlUtil.closeTag(TAG_JOB));
+        sb.append(HtmlUtils.formEntry("", jobInfo.getExtraInfo().toString()));
         sb.append(HtmlUtils.formTableClose());
+
 
         if (request.responseInXml()) {
             return makeRequestOKResult(request, xml.toString());
