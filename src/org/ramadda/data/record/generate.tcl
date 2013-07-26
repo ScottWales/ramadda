@@ -131,12 +131,12 @@ proc generateRecordClass {class args} {
         }
 
         if {$A(-capability)!=""} {
-            puts "@Override\npublic boolean isCapable(String action) {"
+            puts $fp "@Override\npublic boolean isCapable(String action) {"
             foreach c $A(-capability) {
-                puts "if(action.equals($c)) return true;"
+                puts $fp "if(action.equals($c)) return true;"
             }
-            puts  "return super.isCapable(action);"
-            puts "}\n"
+            puts  $fp "return super.isCapable(action);"
+            puts $fp "}\n"
         }
 
 

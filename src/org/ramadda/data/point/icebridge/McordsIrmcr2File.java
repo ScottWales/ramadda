@@ -48,6 +48,12 @@ return  1;
 }
 
 
+@Override
+public boolean isCapable(String action) {
+if(action.equals(ACTION_MAPINCHART)) return true;
+return super.isCapable(action);
+}
+
 
 //generated record class
 
