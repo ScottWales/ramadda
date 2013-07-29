@@ -22,12 +22,6 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOperand;
@@ -47,11 +41,20 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
+
+
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -60,32 +63,32 @@ import ucar.unidata.util.TwoFacedObject;
  */
 public class ClimateModelApiHandler extends RepositoryManager implements RequestHandler {
 
-    /** _more_          */
+    /** search action */
     public static final String ARG_ACTION_SEARCH = "action.search";
 
-    /** _more_          */
+    /** compare action */
     public static final String ARG_ACTION_COMPARE = "action.compare";
 
-    /** _more_          */
+    /** collection 1 id */
     public static final String ARG_COLLECTION1 = "collection1";
 
-    /** _more_          */
+    /** collection 2 id */
     public static final String ARG_COLLECTION2 = "collection2";
 
 
-    /** _more_          */
+    /** shortcut to JQuery class */
     private static final JQuery JQ = null;
 
-    /** _more_          */
+    /** the collection type */
     private String collectionType;
 
-    /** _more_          */
+    /** ttl cache */
     private TTLCache<Object, Object> cache = new TTLCache<Object,
                                                  Object>(60 * 60 * 1000);
 
     /** NCL output handler */
     private NCLOutputHandler nclOutputHandler;
-    
+
     /**
      * ctor
      *
@@ -106,91 +109,106 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
 
+    /**
+     * Get the data processes for this request
+     *
+     * @param request  the Request
+     *
+     * @return  the list of data processes
+     *
+     * @throws Exception problem generating list
+     */
+    private List<DataProcess> getDataProcesses(Request request)
+            throws Exception {
+        //return getTypeHandler().getDataProcessesToRun(request);
+        List<DataProcess> processes = new ArrayList<DataProcess>();
+        processes.add(new CDOAreaStatisticsProcess(repository));
+        processes.add(new NCLMapPlotDataProcess(repository));
 
-
-    private List<DataProcess> getDataProcesses(Request request) throws Exception {
-    	//return getTypeHandler().getDataProcessesToRun(request);
-    	List<DataProcess> processes = new ArrayList<DataProcess>();
-    	processes.add(new CDOAreaStatisticsProcess(repository));
-    	processes.add(new NCLMapPlotDataProcess(repository));
-    	return processes;
+        return processes;
     }
 
 
     /**
-     * _more_
+     * Do the compare
      *
-     * @param request _more_
-     * @param operands _more_
+     * @param request  the Request
+     * @param dpi   the input
      *
-     * @return _more_
+     * @return  a Result
      *
-     * @throws Exception _more_
+     * @throws Exception  problems processing the input
      */
     public Result doCompare(Request request, DataProcessInput dpi)
-        throws Exception {
+            throws Exception {
 
         //This finds the selected processes
         List<DataProcess> processesToRun = getDataProcesses(request);
 
         //This is the dir under <home>/process
-       File processDir = null;
-       processDir = dpi.getProcessDir();
-       if (processDir == null) {
-    	    processDir =  getStorageManager().createProcessDir();
-       }
-       
-       
+        File processDir = null;
+        processDir = dpi.getProcessDir();
+        if (processDir == null) {
+            processDir = getStorageManager().createProcessDir();
+        }
 
-       List<DataProcessOutput> outputs = new ArrayList<DataProcessOutput>();
-       DataProcessInput nextInput = dpi;
+
+
+        List<DataProcessOutput> outputs   =
+            new ArrayList<DataProcessOutput>();
+        DataProcessInput        nextInput = dpi;
         for (DataProcess process : processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
-            DataProcessOutput output = process.processRequest(request, nextInput);
+            DataProcessOutput output = process.processRequest(request,
+                                           nextInput);
             outputs.add(output);
 
             //make a new input for the next process
-            nextInput = new DataProcessInput(processDir, new DataProcessOperand(output.getEntries()));
+            nextInput = new DataProcessInput(
+                processDir, new DataProcessOperand(output.getEntries()));
 
             //Are we done? This should probably be a check to see if the output has a Result
             if (output.hasOutput()) {
                 //break;
             }
-          
+
         }
 
-        List<File> files = new ArrayList<File>();
-        File lastFile = null;
-        Entry lastEntry = null;
-        for (DataProcessOutput dpo : outputs)
-        for (Entry granule : dpo.getEntries()) {
-            if (granule.isFile()) {
-            	lastFile = granule.getFile();
-                files.add(lastFile);
+        List<File> files     = new ArrayList<File>();
+        File       lastFile  = null;
+        Entry      lastEntry = null;
+        for (DataProcessOutput dpo : outputs) {
+            for (Entry granule : dpo.getEntries()) {
+                if (granule.isFile()) {
+                    lastFile = granule.getFile();
+                    files.add(lastFile);
+                }
+                lastEntry = granule;
             }
-            lastEntry = granule;
         }
 
 
 
         //If no processing was done then return the raw files
-        if (processesToRun.size()==0) {
+        if (processesToRun.size() == 0) {
             ClimateCollectionTypeHandler typeHandler = getTypeHandler();
-            return typeHandler.zipFiles(request,
-                            "results.zip",
-                            files);
+
+            return typeHandler.zipFiles(request, "results.zip", files);
         }
 
         //Now we get the process entry id
         String processId = processDir.getName();
-        String processEntryId = getStorageManager().getProcessDirEntryId(processId);
+        String processEntryId =
+            getStorageManager().getProcessDirEntryId(processId);
 
         //Return the redirect to the process dir for now
-        if(false) {
-            String       entryUrl = 
-                HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                              ARG_ENTRYID, processEntryId);
+        if (false) {
+            String entryUrl =
+                HtmlUtils.url(
+                    request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                    ARG_ENTRYID, processEntryId);
+
             return new Result(entryUrl);
         }
 
@@ -203,9 +221,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         //String extension = IOUtil.getFileExtension(imageFile.toString());
         //StringBuffer retSB = new StringBuffer();
 
-        String       entryUrl = 
-                HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                              ARG_ENTRYID, processEntryId+"/"+IOUtil.getFileTail(lastFile.toString()));
+        String entryUrl =
+            HtmlUtils.url(
+                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                ARG_ENTRYID,
+                processEntryId + "/"
+                + IOUtil.getFileTail(lastFile.toString()));
+
         return new Result(entryUrl);
         //return new Result("",
         //                  getStorageManager().getFileInputStream(imageFile),
@@ -240,7 +262,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         Hashtable<String, StringBuffer> extra = new Hashtable<String,
                                                     StringBuffer>();
-        List<DataProcessOperand> operands = new ArrayList<DataProcessOperand>();
+        List<DataProcessOperand> operands =
+            new ArrayList<DataProcessOperand>();
 
         File processDir = getStorageManager().createProcessDir();
 
@@ -264,7 +287,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 List<Entry> entries = findEntries(request, collection,
                                           collectionEntry);
                 if (entries.isEmpty()) {
-                	continue;
+                    continue;
                 }
                 //TODO: fix this later 
                 operands.add(new DataProcessOperand(collection, entries));
@@ -288,19 +311,20 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             hasOperands = (operands.get(0).getEntries().size() > 0)
                           || (operands.get(1).getEntries().size() > 0);
         }
-        
 
 
-        StringBuffer sb = new StringBuffer();
+
+        StringBuffer     sb  = new StringBuffer();
         DataProcessInput dpi = new DataProcessInput(processDir, operands);
 
         if (request.exists(ARG_ACTION_COMPARE)) {
             if (hasOperands) {
                 try {
                     return doCompare(request, dpi);
-                } catch(Exception exc) {
+                } catch (Exception exc) {
                     sb.append(
-                              getPageHandler().showDialogError("An error occurred:<br>" + exc));
+                        getPageHandler().showDialogError(
+                            "An error occurred:<br>" + exc));
                 }
             } else {
                 sb.append(
@@ -412,24 +436,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             sb.append(HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
                                        HtmlUtils.id(formId + ".submit")));
         } else {
-            List<String>      processTabs   = new ArrayList<String>();
-            List<String>      processTitles = new ArrayList<String>();
+            List<String> processTabs   = new ArrayList<String>();
+            List<String> processTitles = new ArrayList<String>();
 
-            boolean           first         = true;
+            boolean      first         = true;
             //List<DataProcess> processes     = typeHandler.getDataProcesses();
-            List<DataProcess> processes     = getDataProcesses(request);
+            List<DataProcess> processes = getDataProcesses(request);
             for (DataProcess process : processes) {
                 StringBuffer tmpSB = new StringBuffer();
                 if (processes.size() > 1) {
-                	/*
-                    tmpSB.append(
-                        HtmlUtils.radio(
-                            ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
-                            process.getDataProcessId(), first));
-                    tmpSB.append(HtmlUtils.space(1));
-                    tmpSB.append(msg("Select"));
-                    tmpSB.append(HtmlUtils.br());
-                    */
+                    /*
+                tmpSB.append(
+                    HtmlUtils.radio(
+                        ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
+                        process.getDataProcessId(), first));
+                tmpSB.append(HtmlUtils.space(1));
+                tmpSB.append(msg("Select"));
+                tmpSB.append(HtmlUtils.br());
+                */
                 } else {
                     tmpSB.append(
                         HtmlUtils.hidden(
@@ -453,9 +477,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 sb.append(header(msg("Process Selected Data")));
                 StringBuffer processTable = new StringBuffer();
                 processTable.append("<table><tr><td width=\"50%\">");
-                HtmlUtils.makeAccordian(processTable, processTitles, processTabs);
+                HtmlUtils.makeAccordian(processTable, processTitles,
+                                        processTabs);
                 processTable.append("</td>");
                 processTable.append("<td width=\"50%\">");
+                processTable.append(HtmlUtils.div("",
+                        HtmlUtils.cssClass("entryoutput")
+                        + HtmlUtils.id(formId + "_output_image")));
+
                 processTable.append("</td></tr></table>");
                 sb.append(processTable);
             }
@@ -479,15 +508,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
-     * _more_
+     * Find the entries
      *
-     * @param request _more_
-     * @param collection _more_
-     * @param entry _more_
+     * @param request   the Request
+     * @param collection  the collection
+     * @param entry  the entry
      *
-     * @return _more_
+     * @return the list of entries (may be empty)
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with search
      */
     private List<Entry> findEntries(Request request, String collection,
                                     Entry entry)
@@ -521,12 +550,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
-     * _more_
+     * Get the field select argument
      *
-     * @param collection _more_
-     * @param fieldIdx _more_
+     * @param collection  the collection
+     * @param fieldIdx  the field index
      *
-     * @return _more_
+     * @return  the argument
      */
     private String getFieldSelectArg(String collection, int fieldIdx) {
         return collection + "_field" + fieldIdx;
@@ -534,11 +563,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
-     * _more_
+     * Get the collection select argument
      *
-     * @param collection _more_
+     * @param collection  the collection
      *
-     * @return _more_
+     * @return  the collection
      */
     private String getCollectionSelectArg(String collection) {
         return collection;
@@ -546,13 +575,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
     /**
-     * _more_
+     * Get the field select id
      *
-     * @param formId _more_
-     * @param collection _more_
-     * @param fieldIdx _more_
+     * @param formId   the form id
+     * @param collection  the collection
+     * @param fieldIdx  the field index
      *
-     * @return _more_
+     * @return  the field id
      */
     private String getFieldSelectId(String formId, String collection,
                                     int fieldIdx) {
@@ -561,12 +590,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     }
 
     /**
-     * _more_
+     * Get the collection select id
      *
-     * @param formId _more_
-     * @param collection _more_
+     * @param formId   the form id
+     * @param collection  the collection
      *
-     * @return _more_
+     * @return  the collection select id
      */
     private String getCollectionSelectId(String formId, String collection) {
         return formId + "_" + collection;
@@ -575,14 +604,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
     /**
-     * _more_
+     * Process the JSON request
      *
-     * @param request _more_
-     * @param what _more_
+     * @param request  the request
+     * @param what     what to search for
      *
-     * @return _more_
+     * @return  the JSON string
      *
-     * @throws Exception _more_
+     * @throws Exception  problem with processing
      */
     private Result processJsonRequest(Request request, String what)
             throws Exception {
@@ -602,8 +631,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         System.err.println("Clauses:" + clauses);
-        int    columnIdx = request.get("field", 1);
-        Column myColumn  = columns.get(columnIdx);
+        int columnIdx = request.get("field", 1);
+        if (columnIdx >= columns.size()) {
+            return new Result("", new StringBuffer(), Json.MIMETYPE);
+        }
+        Column myColumn = columns.get(columnIdx);
         List<String> values =
             new ArrayList<String>(((CollectionTypeHandler) entry
                 .getTypeHandler())
@@ -631,7 +663,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /**
      *  return the main entry point URL
      *
-     * @return _more_
+     * @return  the main entry point
      */
     private String getCompareUrlPath() {
         //Use the collection type in the path. This is defined in the api.xml file
@@ -641,11 +673,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
     /**
-     * _more_
+     * Get the type handler
      *
-     * @return _more_
+     * @return  the climate collection type handler
      *
-     * @throws Exception _more_
+     * @throws Exception  problem finding one
      */
     private ClimateCollectionTypeHandler getTypeHandler() throws Exception {
         return (ClimateCollectionTypeHandler) getRepository().getTypeHandler(
@@ -655,13 +687,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
     /**
-     * _more_
+     * Get the list of collections
      *
-     * @param request _more_
+     * @param request  the request
      *
-     * @return _more_
+     * @return  the list of collections
      *
-     * @throws Exception _more_
+     * @throws Exception  problem generating list
      */
     private List<Entry> getCollections(Request request) throws Exception {
         Request tmpRequest = new Request(getRepository(), request.getUser());
