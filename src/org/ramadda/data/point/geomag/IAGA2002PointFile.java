@@ -26,7 +26,6 @@ public class IAGA2002PointFile extends CsvFile  {
     public static final String FIELD_DOY  = "DOY";
 
 
-
     /**
      * The constructor
      *
@@ -44,7 +43,6 @@ public class IAGA2002PointFile extends CsvFile  {
     public boolean isHeaderLine(String line) {
         return line.endsWith("|");
     }
-
 
 
     /**
@@ -104,35 +102,20 @@ Format                 IAGA-2002                                    |
 
 
         StringBuffer sb = new StringBuffer();
-        sb.append(FIELD_DATE);
-        sb.append("[type=string]");
-        sb.append(",");
-
-        sb.append(FIELD_TIME);
-        sb.append("[type=string]");
-        sb.append(",");
-
-        sb.append(FIELD_DOY);
-        sb.append("[]");
-        sb.append(",");
-
-        sb.append(FIELD_LATITUDE);
-        sb.append("[value=" + latitude+"]");
-        sb.append(",");
-        sb.append(FIELD_LONGITUDE);
-        sb.append("[value=" + longitude+"]");
-        sb.append(",");
-        sb.append(FIELD_ELEVATION);
-        sb.append("[value=" + elevation+"]");
+        sb.append(makeFields(new String[]{
+                    makeField(FIELD_DATE, attrType("string")),
+                    makeField(FIELD_TIME, attrType("string")),
+                    makeField(FIELD_DOY),
+                    makeField(FIELD_LATITUDE, attrValue(latitude)),
+                    makeField(FIELD_LONGITUDE, attrValue(longitude)),
+                    makeField(FIELD_ELEVATION,attrValue(elevation)),
+                }));
         
         for(int i=0;i<reported.length();i++) {
             char c  = reported.charAt(i);
             sb.append(",");
-            sb.append(c);
-            sb.append("[chartable=true searchable=true missing=99999]");
+            sb.append(makeField(""+c, attrChartable(), attrSearchable(),attrMissing(99999)));
         }
-
-
 
         putProperty(PROP_FIELDS, sb.toString());
         return visitInfo;
@@ -145,11 +128,6 @@ Format                 IAGA-2002                                    |
         return s;
     }
 
-
-    public boolean isCapable(String action) {
-        //        if(action.equals(ACTION_BOUNDINGPOLYGON)) return true;
-        return super.isCapable(action);
-    }
 
     /*
      * This gets called after a record has been read

@@ -2,7 +2,8 @@
 
   <type name="project_program"  description="Program" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/chart_organisation.png"/>
-     <property name="form.resource.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.show.top" value="false"/>
@@ -14,6 +15,10 @@
 <div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
 </div>
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+</table>
 
 <p>
 {{links  prefix="==Links=="   message=""}}
@@ -32,6 +37,7 @@
 </wiki>
 
    </type>
+
 
 
   <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
