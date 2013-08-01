@@ -105,5 +105,14 @@ public class CopyProcess extends DataProcess {
 
         return new DataProcessOutput(results);
     }
+    
+    /**
+     * Can we handle this type of DataProcessInput?
+     * 
+     * @return true if we can handle
+     */
+    public boolean canHandle(DataProcessInput dpi) {
+    	return dpi != null && !dpi.getOperands().isEmpty();
+    }
 
 }

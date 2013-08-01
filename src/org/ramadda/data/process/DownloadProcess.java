@@ -77,4 +77,13 @@ public  class DownloadProcess extends DataProcess {
         return null;
     }
 
+    /**
+     * Can we handle this type of DataProcessInput?
+     * 
+     * @return true if we can handle
+     */
+    public boolean canHandle(DataProcessInput dpi) {
+    	return dpi != null && !dpi.getOperands().isEmpty();
+    }
+
 }

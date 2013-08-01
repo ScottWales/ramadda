@@ -316,8 +316,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     public List<DataProcess> getDataProcesses() {
         List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
-        //        if(isEnabled()) {
-        if (true) {
+        if(isEnabled()) {
+        //if (true) {
             processes.add(new CDOAreaStatistics());
         }
 
@@ -1364,5 +1364,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             return new DataProcessOutput(out);
         }
 
-    }
+        /**
+         * Can we handle this type of DataProcessInput?
+         * 
+         * @return true if we can handle
+         */
+        public boolean canHandle(DataProcessInput dpi) {
+        	return isEnabled();
+        }
+        }
 }

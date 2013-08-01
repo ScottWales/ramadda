@@ -363,7 +363,7 @@ public class StorageManager extends RepositoryManager {
         dirRange = getRepository().getProperty(PROP_DIRRANGE, dirRange);
 
         //Add in the process tmp dir
-        TempDir processTempDir = new TempDir(getProcessDir(), false);
+        TempDir processTempDir = new TempDir(getProcessDir(), true);
         //For now hard code the scour to be 3 days
         processTempDir.setMaxAge(1000 * 60 * 60 * 24 * 3 );
         tmpDirs.add(processTempDir);

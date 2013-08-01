@@ -66,6 +66,9 @@ public class NCLMapPlotDataProcess extends DataProcess {
 
     /** the repository */
     Repository repository;
+    
+    /** output type */
+    public final static String ARG_NCL_OUTPUT = "ncl.output";
 
     /**
      * Create a new map process
@@ -109,12 +112,15 @@ public class NCLMapPlotDataProcess extends DataProcess {
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(Repository.msg("Plot As"), 
+        		HtmlUtils.radio(ARG_NCL_OUTPUT, "comp", false) + Repository.msg("Comparison") +
+        		HtmlUtils.radio(ARG_NCL_OUTPUT, "diff", true) + Repository.msg("Difference")));
         sb.append(
             HtmlUtils.formEntry(
-                Repository.msg("Plot Type"),
+                Repository.msg("Output Type"),
                 HtmlUtils.radio(
                     NCLOutputHandler.ARG_NCL_PLOTTYPE, "png",
-                    true) + Repository.msg("Image")
+                    true) + Repository.msg("Map")
                           + HtmlUtils.radio(
                               NCLOutputHandler.ARG_NCL_PLOTTYPE, "kmz",
                               false) + Repository.msg("Google Earth") +
@@ -166,6 +172,8 @@ public class NCLMapPlotDataProcess extends DataProcess {
         if (plotType.equals("timeseries")) {
             suffix = "png";
         }
+        String outputType = 
+            request.getString(ARG_NCL_OUTPUT, "comp");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                            wksName) + "." + suffix);
         CdmDataOutputHandler dataOutputHandler =
@@ -194,6 +202,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
         envMap.put("ncfiles", fileList.toString());
         envMap.put("productdir", input.getProcessDir().toString());
         envMap.put("plot_type", plotType);
+        envMap.put("output", outputType);
 
         Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();
@@ -301,6 +310,17 @@ public class NCLMapPlotDataProcess extends DataProcess {
 
         return dpo;
 
+    }
+    
+    /**
+     * Can we handle this type of DataProcessInput?
+     * 
+     * @return true if we can handle
+     */
+    public boolean canHandle(DataProcessInput dpi) {
+    	if (!nclOutputHandler.isEnabled()) return false;
+    	// TODO: Check the input
+    	return true;
     }
 
 }

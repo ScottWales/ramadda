@@ -615,6 +615,12 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
             out.setResource(r);
             return new DataProcessOutput(out);
         }
+        
+        public boolean canHandle(DataProcessInput dpi) {
+        	if (!isEnabled()) return false;
+        	//TODO: check the dpi
+        	return true;
+        }
     
     }
 }

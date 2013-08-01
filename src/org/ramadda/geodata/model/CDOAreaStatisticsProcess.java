@@ -22,6 +22,11 @@
 package org.ramadda.geodata.model;
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOperand;
@@ -40,17 +45,9 @@ import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
-
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
-
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 
 /**
@@ -289,7 +286,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      *
      * @return true if we can, otherwise false
      */
-    private boolean canHandle(DataProcessInput input) {
+    public boolean canHandle(DataProcessInput input) {
+    	if (!typeHandler.isEnabled()) return false;
     	for (DataProcessOperand op : input.getOperands()) {
         List<Entry> entries = op.getEntries();
         // TODO: change this when we can handle more than one entry (e.g. daily data)

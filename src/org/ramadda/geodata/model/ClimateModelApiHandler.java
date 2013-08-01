@@ -86,9 +86,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     private TTLCache<Object, Object> cache = new TTLCache<Object,
                                                  Object>(60 * 60 * 1000);
 
-    /** NCL output handler */
-    private NCLOutputHandler nclOutputHandler;
-
     /**
      * ctor
      *
@@ -105,7 +102,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         super(repository);
         collectionType = Misc.getProperty(props, "collectiontype",
                                           "climate_collection");
-        nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
@@ -177,7 +173,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         List<File> files     = new ArrayList<File>();
         File       lastFile  = null;
-        Entry      lastEntry = null;
+       Entry      lastEntry = null;
         for (DataProcessOutput dpo : outputs) {
             for (Entry granule : dpo.getEntries()) {
                 if (granule.isFile()) {
@@ -202,44 +198,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String processEntryId =
             getStorageManager().getProcessDirEntryId(processId);
 
-        //Return the redirect to the process dir for now
-        if (false) {
-            String entryUrl =
-                HtmlUtils.url(
-                    request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                    ARG_ENTRYID, processEntryId);
-
-            return new Result(entryUrl);
-        }
-
-
-        //Make the image
-        //File imageFile = nclOutputHandler.processRequest(request,
-        //                     files.get(0));
-
-        //And return the result
-        //String extension = IOUtil.getFileExtension(imageFile.toString());
-        //StringBuffer retSB = new StringBuffer();
-
         String entryUrl =
             HtmlUtils.url(
                 request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                 ARG_ENTRYID,
                 processEntryId + "/"
                 + IOUtil.getFileTail(lastFile.toString()));
+        // Use this if you want to return the process directory
+        //      processEntryId);
 
         return new Result(entryUrl);
-        //return new Result("",
-        //                  getStorageManager().getFileInputStream(imageFile),
-        //                  getRepository().getMimeTypeFromSuffix(extension));
-
-
-
-
-        /*
-        return new Result("Model Compare Results", new StringBuffer("TODO"));
-        */
-
     }
 
 

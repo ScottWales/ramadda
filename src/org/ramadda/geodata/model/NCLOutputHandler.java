@@ -133,6 +133,10 @@ public class NCLOutputHandler extends OutputHandler {
     public NCLOutputHandler(Repository repository) throws Exception {
         super(repository, "NCL");
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
+        if (ncargRoot == null) {
+            repository.getLogManager().logWarning(
+                    "To run NCL, set the ncl.ncarg_root property");
+        }
         convertPath = getProperty(PROP_CONVERT_PATH, "convert");
     }
 
@@ -157,7 +161,10 @@ public class NCLOutputHandler extends OutputHandler {
                     getStorageManager().readSystemResource(
                         "/org/ramadda/geodata/model/resources/ncl/"
                         + SCRIPTS[i]);
-                //nclScript = nclScript.replaceAll("\\$NCARG_ROOT", ncargRoot);
+                if (nclScript == null || nclScript.isEmpty()) {
+                    getRepository().getLogManager().logWarning(
+                    "Unable to find " + SCRIPTS[i]);
+                }
                 String outdir =
                     IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl");
                 nclScript = nclScript.replaceAll("\\$NCL_RESOURCES", outdir);
@@ -170,8 +177,7 @@ public class NCLOutputHandler extends OutputHandler {
                     getStorageManager().getUncheckedFileOutputStream(outputFile);
                 IOUtil.writeTo(is, os);
             }
-        }
-
+        } 
     }
 
     /**

@@ -101,4 +101,11 @@ public abstract class DataProcess {
     public String getDataProcessLabel() {
     	return dataProcessLabel;
     }
+    
+    /**
+     * Can we handle this type of DataProcessInput?
+     * 
+     * @return true if we can handle
+     */
+    public abstract boolean canHandle(DataProcessInput dpi);
 }
