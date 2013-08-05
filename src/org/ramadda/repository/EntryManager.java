@@ -3488,9 +3488,10 @@ public class EntryManager extends RepositoryManager {
 
         if ( !request.exists(ARG_TO) && !request.exists(ARG_TO + "_hidden")
                 && !request.exists(ARG_TONAME)) {
-            StringBuffer sb        = new StringBuffer();
-            List<Entry>  cart      = getUserManager().getCart(request);
             boolean      didOne    = false;
+            StringBuffer sb        = new StringBuffer();
+            /*
+            List<Entry>  cart      = getUserManager().getCart(request);
             List<Entry>  favorites = FavoriteEntry.getEntries(
                                         getUserManager().getFavorites(
                                             request, request.getUser()));
@@ -3541,6 +3542,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HtmlUtils.br());
                 didOne = true;
             }
+            */
 
             if (didOne) {
                 sb.append("</ul>");

@@ -1160,6 +1160,7 @@ xxxpath.link {
 
 
 .selectdiv {
+   padding-right:10px;
    position: absolute; 
    visibility: hidden; 
    z-index: 1000;

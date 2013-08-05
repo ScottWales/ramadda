@@ -854,9 +854,10 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer sb       = new StringBuffer();
 
 
-
+        boolean addExtra = false;
         //If we have a localeid that means this is the first call
         if (localeId != null) {
+            addExtra = true;
             Entry localeEntry = getEntryManager().getEntry(request, localeId);
             if (localeEntry != null) {
                 if ( !localeEntry.isGroup()) {
@@ -881,8 +882,16 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
 
+        }
+
+
+        if(request.get("firstclick",false)) addExtra = true;
+
+        if(addExtra) {
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
+
+
             if (favoritesList.size() > 0) {
                 sb.append(HtmlUtils.center(HtmlUtils.b(msg("Favorites"))));
                 List favoriteLinks = new ArrayList();
@@ -917,8 +926,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(
                     "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
             }
-        }
 
+        }
 
         for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {

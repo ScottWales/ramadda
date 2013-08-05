@@ -1185,7 +1185,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         //        popupObject = this.div;
         //        popupSrcId = "";
         showObject(this.div);
-        url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + this.id+"&noredirect=true";
+        url = "${urlroot}/entry/show?output=selectxml&selecttype=" + this.selecttype+"&allentries=" + this.allEntries+"&target=" + this.id+"&noredirect=true&firstclick=true";
         if(localeId) {
             url = url+"&localeid=" + localeId;
         }
