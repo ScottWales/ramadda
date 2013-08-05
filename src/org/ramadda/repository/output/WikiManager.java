@@ -653,8 +653,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
 
             String propertyKey = theEntry.getId() + "_" + property;
             if (request.getExtraProperty(propertyKey) != null) {
-                return "<b>Detected circular wiki import:" + property
-                       + "</b>";
+                return "<b>Detected circular wiki import:" + property +
+                    "<br>For entry:" +  theEntry.getId() 
+                    + "</b>";
             }
             request.putExtraProperty(propertyKey, property);
 
