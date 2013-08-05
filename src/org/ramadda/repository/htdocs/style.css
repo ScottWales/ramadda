@@ -1160,7 +1160,6 @@ xxxpath.link {
 
 
 .selectdiv {
-   padding-right:10px;
    position: absolute; 
    visibility: hidden; 
    z-index: 1000;
@@ -1178,6 +1177,9 @@ xxxpath.link {
 }
 
 
+.ramadda-select-inner {
+   padding-right:10px;
+}
 
 .formgroupheader {
    width:80%;

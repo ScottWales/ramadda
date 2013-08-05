@@ -852,6 +852,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String       target   = request.getString(ATTR_TARGET, "");
         StringBuffer sb       = new StringBuffer();
+        boolean didExtra = false;
+        String sectionDivider =  HtmlUtils.tag("hr", HtmlUtils.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
 
         boolean addExtra = false;
@@ -865,6 +867,7 @@ public class HtmlOutputHandler extends OutputHandler {
                             localeEntry);
                 }
                 if (localeEntry != null) {
+                    sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
                     Entry grandParent = getEntryManager().getParent(request,
                                             localeEntry);
                     String indent = "";
@@ -876,13 +879,14 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(indent);
                     sb.append(getSelectLink(request, localeEntry, target));
                     localeId = localeEntry.getId();
-                    sb.append(
-                        "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
+                    sb.append(HtmlUtils.close("div"));
+                    sb.append(sectionDivider);
                 }
             }
 
 
         }
+
 
 
         if(request.get("firstclick",false)) addExtra = true;
@@ -893,42 +897,47 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
             if (favoritesList.size() > 0) {
+                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.center(HtmlUtils.b(msg("Favorites"))));
                 List favoriteLinks = new ArrayList();
                 for (FavoriteEntry favorite : favoritesList) {
                     Entry favEntry = favorite.getEntry();
                     sb.append(getSelectLink(request, favEntry, target));
                 }
-                sb.append(
-                    "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
+                sb.append(HtmlUtils.close("div"));
+                sb.append(sectionDivider);
             }
 
 
             List<Entry> recents = getEntryManager().getSessionFolders(request); 
             if (recents.size() > 0) {
+                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.center(HtmlUtils.b(msg("Recent"))));
                 List favoriteLinks = new ArrayList();
                 for (Entry recent : recents) {
                     sb.append(getSelectLink(request, recent, target));
                 }
-                sb.append(
-                    "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
+                sb.append(HtmlUtils.close("div"));
+                sb.append(sectionDivider);
+
+
             }
 
 
             List<Entry> cartEntries = getUserManager().getCart(request);
             if (cartEntries.size() > 0) {
+                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.b(msg("Cart")));
                 sb.append(HtmlUtils.br());
                 for (Entry cartEntry : cartEntries) {
                     sb.append(getSelectLink(request, cartEntry, target));
                 }
-                sb.append(
-                    "<hr style=\"padding:0px;margin-bottom:2px;  margin:0px;\">");
+                sb.append(HtmlUtils.close("div"));
+                sb.append(sectionDivider);
             }
-
         }
 
+        
         for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
@@ -942,6 +951,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
+        sb.append(HtmlUtils.close("div"));
         return makeAjaxResult(request,
                               getRepository().translate(request,
                                   sb.toString()));
