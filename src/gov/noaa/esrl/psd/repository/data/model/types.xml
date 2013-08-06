@@ -7,6 +7,7 @@
      <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_models.txt"/>
      <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_experiments.txt"/>
      <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_vars.txt"/>
+     <property name="ensemble.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_ensembles.txt"/>
    </type>
 
 

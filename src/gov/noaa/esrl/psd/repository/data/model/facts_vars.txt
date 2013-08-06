@@ -1,3 +1,40 @@
+#
+# new mostly CMIP5 names
+#
+clt:Total Cloud Fraction       
+hfls:Surface Upward Latent Heat Flux
+hfss:Surface Upward Sensible Heat Flux
+prc:Convective Precipitation
+prl:Large Scale Precipitation
+prsn:Snowfall Flux   
+ps:Surface Air Pressure    
+evspsbl:Evaporation
+zg:Geopotential Height
+wap:Omega   
+pr:Precipitation
+hus:Specific Humidity
+prw:Vertically Integrated Water Vapor
+hur:Relative Humidity       
+mrro:Surface Runoff  
+psl:Sea Level Pressure
+snd:Snow Depth      
+ta:Air Temperature         
+tasmax:Daily Maximum Near-Surface Air Temperature
+tasmin:Daily Minimum Near-Surface Air Temperature
+tas:Near-Surface Air Temperature
+ts:Surface Temperature     
+ua:Eastward Wind   
+uas:Eastward Near-Surface Wind      
+va:Northward Wind  
+vas:Northward Near-Surface Wind     
+alb:Surface Albedo  
+dtas:Near-Surface Dew Point Temperature
+velpot:Velocity Potential
+stream:Streamfunction
+trop:WMO-defined Tropopause Pressure
+#
+# Old mostly ECHAM5 names
+#
 u:u-velocity
 v:v-velocity
 omega:vertical velocity
