@@ -267,7 +267,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             String selectId = formId +"_"  + selectArg + selectIdx;
             String selectedValue = request.getString(selectArg+selectIdx,"");
             String selectBox = HtmlUtils.select(selectArg + selectIdx ,values,selectedValue,
-                                                " style=\"min-width:250px;\" " +
+                                                " style=\"min-width:250px;max-width:250px;\" " +
                                                 HtmlUtils.attr("id",selectId));
             sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()), selectBox));
             js.append(JQ.change(JQ.id(selectId), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
