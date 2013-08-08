@@ -22,43 +22,18 @@
 package org.ramadda.repository.output;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.util.HtmlUtils;
+import java.util.List;
 
+import org.ramadda.repository.Entry;
+import org.ramadda.repository.Link;
+import org.ramadda.repository.Repository;
+import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;
+import org.ramadda.repository.auth.AuthorizationMethod;
+import org.w3c.dom.Element;
 
-import org.w3c.dom.*;
-
-import org.ramadda.sql.SqlUtil;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-
-
-import java.io.*;
-
-import java.io.File;
-
-
-import java.net.*;
-
-
-
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-
-
-
-import java.util.regex.*;
 
 
 
@@ -72,18 +47,18 @@ import java.util.regex.*;
 public class WgetOutputHandler extends OutputHandler {
 
 
-    /** _more_ */
+    /** The WGET output type */
     public static final OutputType OUTPUT_WGET =
         new OutputType("Wget Script", "wget.wget", OutputType.TYPE_FILE, "",
                        ICON_FETCH);
 
 
     /**
-     * _more_
+     * Create a wget output handler
      *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
+     * @param repository  the repository
+     * @param element     the XML definition
+     * @throws Exception  problem creating the handler
      */
     public WgetOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -95,24 +70,24 @@ public class WgetOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the authorization method
      *
-     * @param request _more_
+     * @param request  the request
      *
-     * @return _more_
+     * @return  the authorization method
      */
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         return AuthorizationMethod.AUTH_HTTP;
     }
 
     /**
-     * _more_
+     * Get the entry links
      *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
+     * @param request  the Request
+     * @param state    the State
+     * @param links    the list of links to add to
      *
-     * @throws Exception _more_
+     * @throws Exception  problem generating links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -123,7 +98,7 @@ public class WgetOutputHandler extends OutputHandler {
                     makeLink(
                         request, state.entry, OUTPUT_WGET,
                         "/" + IOUtil.stripExtension(state.entry.getName())
-                        + ".sh"));
+                        + "_wget.sh"));
             }
         } else {
             boolean ok = false;
@@ -142,7 +117,7 @@ public class WgetOutputHandler extends OutputHandler {
                             request, state.group, OUTPUT_WGET,
                             "/"
                             + IOUtil.stripExtension(state.group.getName())
-                            + ".sh"));
+                            + "_wget.sh"));
                 } else {
                     links.add(makeLink(request, state.group, OUTPUT_WGET));
                 }
@@ -154,15 +129,15 @@ public class WgetOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output the entry
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
+     * @param request   the request
+     * @param outputType  the output type
+     * @param entry     the entry
      *
-     * @return _more_
+     * @return the Result
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
@@ -173,22 +148,27 @@ public class WgetOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Output a group of entries
      *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param request    the Request
+     * @param outputType the output type
+     * @param group      the group (may be null)
+     * @param subGroups  the list of subgroups (may be null)
+     * @param entries    the list of entries
      *
-     * @return _more_
+     * @return  the result
      *
-     * @throws Exception _more_
+     * @throws Exception  problem creating the script
      */
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
+        
+        if(group == null || group.isDummy()) {
+            request.setReturnFilename("Search_Results_wget.sh");
+        }
+
         StringBuffer sb = new StringBuffer();
         for (Entry entry : entries) {
             if (entry.getResource().isUrl()) {
@@ -215,11 +195,11 @@ public class WgetOutputHandler extends OutputHandler {
 
 
     /**
-     * _more_
+     * Get the MIME type for this output handler
      *
-     * @param output _more_
+     * @param output  the output type
      *
-     * @return _more_
+     * @return  the MIME type
      */
     public String getMimeType(OutputType output) {
         return "application/x-sh";
