@@ -142,6 +142,7 @@ public class WgetOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+        request.setReturnFilename(IOUtil.stripExtension(entry.getName())+"_wget.sh");
         return outputGroup(request, outputType, null, null,
                            (List<Entry>) Misc.newList(entry));
     }
@@ -165,7 +166,7 @@ public class WgetOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
         
-        if(group == null || group.isDummy()) {
+        if(group != null && group.isDummy()) {
             request.setReturnFilename("Search_Results_wget.sh");
         }
 
