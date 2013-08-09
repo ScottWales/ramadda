@@ -104,7 +104,7 @@ begin
   ;print(ratio)
   opts@ratio=ratio
 
-  if (ismissing(varlevel) .or. dimnums .le. 3) then
+  if (ismissing(varlevel) .or. numdims .le. 3) then
     if (vartype .eq. "short") then
       vardata = short2flt(datafile->$varname$(:,{minLat:maxLat},{minLon:maxLon}))
     else
