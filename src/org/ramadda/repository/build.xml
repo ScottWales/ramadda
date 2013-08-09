@@ -321,8 +321,14 @@
         <unjar src="${lib_dir}/jfreechart.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/jcommon.jar" dest="${tmpjar_dir}"/>
 
+<!--
         <unjar src="${lib_dir}/ftplet-api-1.0.3.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ftpserver-core-1.0.3.jar" dest="${tmpjar_dir}"/>
+-->
+
+        <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
 
         <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>
