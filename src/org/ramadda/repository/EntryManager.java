@@ -3557,7 +3557,8 @@ public class EntryManager extends RepositoryManager {
                 getRepository().getHtmlOutputHandler().getSelect(request,
                     ARG_TO,
                     HtmlUtils.img(getRepository().iconUrl(ICON_FOLDER_OPEN))
-                    + HtmlUtils.space(1) + msg("Select"), false, "");
+                                                                 + HtmlUtils.space(1) + msg("Select"), false, "", null, false);
+
             sb.append(HtmlUtils.hidden(ARG_TO + "_hidden", "",
                                        HtmlUtils.id(ARG_TO + "_hidden")));
 
