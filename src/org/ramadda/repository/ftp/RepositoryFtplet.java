@@ -44,6 +44,8 @@ import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.type.TypeHandler;
 
+import org.ramadda.util.Utils;
+
 import ucar.unidata.util.IOUtil;
 
 
@@ -360,12 +362,13 @@ public class RepositoryFtplet extends DefaultFtplet {
      */
     private Entry getGroup(Request request, FtpSession session)
             throws Exception {
+        EntryManager entryManager = getEntryManager();
         String id = (String) session.getAttribute(PROP_ENTRYID);
         if (id == null) {
-            return getEntryManager().getTopGroup();
+            return entryManager.getTopGroup();
         }
 
-        return (Entry) getEntryManager().getEntry(request, id);
+        return (Entry) entryManager.getEntry(request, id);
     }
 
 
@@ -495,13 +498,15 @@ public class RepositoryFtplet extends DefaultFtplet {
         //dr-x------   3 user group            0 Oct 20 14:27 Desktop
         List<Entry> children = null;
         String      arg      = ftpRequest.getArgument();
-        if ((arg != null) && (arg.length() > 0)) {
-            children = findEntries(request, group, ftpRequest.getArgument());
+        if (Utils.stringDefined(arg)) {
+            children = findEntries(request, group, arg);
         }
 
 
+        EntryManager entryManager = getEntryManager();
+
         if (children == null) {
-            children = getEntryManager().getChildren(request, group);
+            children = entryManager.getChildren(request, group);
         }
 
         StringBuffer result = new StringBuffer();
@@ -581,7 +586,9 @@ public class RepositoryFtplet extends DefaultFtplet {
         }
 
 
-        getEntryManager().makeNewGroup(group, ftpRequest.getArgument(),
+        EntryManager entryManager = getEntryManager();
+
+        entryManager.makeNewGroup(group, ftpRequest.getArgument(),
                                        request.getUser());
         session.write(
             new DefaultFtpReply(
@@ -639,7 +646,8 @@ public class RepositoryFtplet extends DefaultFtplet {
                 newFile);
 
         System.err.println("making entry");
-        Entry entry = getEntryManager().addFileEntry(request, newFile, group,
+        EntryManager entryManager = getEntryManager();
+        Entry entry = entryManager.addFileEntry(request, newFile, group,
                           name, request.getUser());
 
 
@@ -937,27 +945,28 @@ public class RepositoryFtplet extends DefaultFtplet {
     private List<Entry> findEntries(Request request, Entry parent,
                                     String name)
             throws Exception {
+        EntryManager entryManager = getEntryManager();
         if (name.endsWith("/")) {
             name = name.substring(0, name.length() - 1);
         }
 
         List<Entry> result = new ArrayList<Entry>();
         if (name.length() == 0) {
-            result.add(getEntryManager().getTopGroup());
+            result.add(entryManager.getTopGroup());
 
             return result;
         }
         if (name.startsWith("/")) {
             name = name.substring(1);
             if (name.length() == 0) {
-                result.add(getEntryManager().getTopGroup());
+                result.add(entryManager.getTopGroup());
 
                 return result;
             }
             //            getRepository().getLogManager().logInfo("ftp: calling findEntryFrom name");
 
-            result = getEntryManager().findDescendants(request,
-                    getEntryManager().getTopGroup(), name);
+            result = entryManager.findDescendants(request,
+                    entryManager.getTopGroup(), name);
 
             return result;
         } else {
@@ -977,7 +986,7 @@ public class RepositoryFtplet extends DefaultFtplet {
                 return result;
             }
 
-            return getEntryManager().findDescendants(request, parent, name);
+            return entryManager.findDescendants(request, parent, name);
         }
     }
 
