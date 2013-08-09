@@ -74,6 +74,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
     }
 
 
+@Override
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
             throws Exception {

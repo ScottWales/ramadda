@@ -77,6 +77,7 @@ public class DifImporter extends ImportHandler {
     }
 
 
+@Override
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
             throws Exception {

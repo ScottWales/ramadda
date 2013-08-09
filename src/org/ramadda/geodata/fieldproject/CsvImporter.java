@@ -71,8 +71,15 @@ public class CsvImporter extends ImportHandler {
     }
 
 
-    public InputStream getStream(String fileName, InputStream stream)
+    /**
+     */
+    @Override
+    public InputStream getStream(Request request,String fileName, InputStream stream)
             throws Exception {
+        if(!request.getString(ARG_IMPORT_TYPE,"").equals(TYPE_CSV)) {
+            return null;
+        }
+
         StringBuffer sb = new StringBuffer("<entries>\n");
         String csv =  new String(IOUtil.readBytes(getStorageManager().getFileInputStream(fileName)));
 
@@ -113,9 +120,6 @@ public class CsvImporter extends ImportHandler {
                                 String uploadedFile, Entry parentEntry)
         throws Exception {
         if(true) return null;
-        if(!request.getString(ARG_IMPORT_TYPE,"").equals(TYPE_CSV)) {
-            return null;
-        }
         List<Entry> entries = new ArrayList<Entry>();
         String csv =  new String(IOUtil.readBytes(getStorageManager().getFileInputStream(uploadedFile)));
         processCsv(request, parentEntry, csv, entries);

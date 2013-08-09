@@ -75,7 +75,8 @@ public class OwlConverter extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    public InputStream getStream(String fileName, InputStream stream)
+@Override
+    public InputStream getStream(Request request,String fileName, InputStream stream)
             throws Exception {
         String  ext   = IOUtil.getFileExtension(fileName);
         boolean isOwl = ext.equals(".rdf") || ext.equals(".owl");
@@ -354,6 +355,7 @@ public class OwlConverter extends ImportHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        /*
         OwlConverter processor = new OwlConverter();
         if (args.length > 0) {
             for (String file : args) {
@@ -369,6 +371,7 @@ public class OwlConverter extends ImportHandler {
 
 
         processor.convertSweetAll();
+        */
     }
 
 

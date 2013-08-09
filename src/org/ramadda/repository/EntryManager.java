@@ -4176,7 +4176,7 @@ public class EntryManager extends RepositoryManager {
                         for (ImportHandler importHandler :
                                 getRepository().getImportHandlers()) {
                             InputStream newStream =
-                                importHandler.getStream(entryName,
+                                importHandler.getStream(request, entryName,
                                     entriesStream);
                             if (newStream != null) {
                                 entriesStream = newStream;
@@ -4211,7 +4211,7 @@ public class EntryManager extends RepositoryManager {
                 //Check the import handlers
                 for (ImportHandler importHandler :
                         getRepository().getImportHandlers()) {
-                    InputStream newStream = importHandler.getStream(file,
+                    InputStream newStream = importHandler.getStream(request, file,
                                                 entriesStream);
                     if ((newStream != null) && (newStream != entriesStream)) {
                         entriesStream = newStream;
@@ -4229,7 +4229,7 @@ public class EntryManager extends RepositoryManager {
         Element root = XmlUtil.getRoot(entriesXml);
         for (ImportHandler importHandler :
                 getRepository().getImportHandlers()) {
-            Element newRoot = importHandler.getDOM(root);
+            Element newRoot = importHandler.getDOM(request, root);
             if ((newRoot != null) && (newRoot != root)) {
                 root = newRoot;
                 break;

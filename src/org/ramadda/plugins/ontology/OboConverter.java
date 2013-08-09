@@ -73,7 +73,8 @@ public class OboConverter extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    public InputStream getStream(String fileName, InputStream stream)
+@Override
+    public InputStream getStream(Request request, String fileName, InputStream stream)
             throws Exception {
         String ext = IOUtil.getFileExtension(fileName);
         if ( !ext.equals(".obo")) {

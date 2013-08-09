@@ -163,7 +163,8 @@ public class OrcaConverter extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    public Element getDOM(Element root) throws Exception {
+@Override
+    public Element getDOM(Request request,Element root) throws Exception {
         if ( !root.getTagName().equals(TAG_REGISTRYOBJECTS)) {
             return null;
         }

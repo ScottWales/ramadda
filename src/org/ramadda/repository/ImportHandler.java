@@ -72,7 +72,7 @@ public abstract class ImportHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public InputStream getStream(String fileName, InputStream stream)
+    public InputStream getStream(Request request, String fileName, InputStream stream)
             throws Exception {
         return null;
     }
@@ -86,7 +86,7 @@ public abstract class ImportHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Element getDOM(Element root) throws Exception {
+    public Element getDOM(Request request, Element root) throws Exception {
         return null;
     }
 
