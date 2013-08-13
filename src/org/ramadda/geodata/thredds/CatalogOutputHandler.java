@@ -103,13 +103,13 @@ public class CatalogOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG =
-        new OutputType("THREDDS", "thredds.catalog",
+        new OutputType("THREDDS Catalog", "thredds.catalog",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_CATALOG);
 
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG_EMBED =
-        new OutputType("THREDDS", "thredds.catalog.embed",
+        new OutputType("THREDDS Catalog", "thredds.catalog.embed",
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_CATALOG);
 
