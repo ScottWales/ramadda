@@ -171,6 +171,7 @@ public class WgetOutputHandler extends OutputHandler {
         }
 
         StringBuffer sb = new StringBuffer();
+        System.err.println ("RAMADDA: wget server name: "+ request.getHttpServletRequest().getServerName()+" getServerPort:" + request.getHttpServletRequest().getServerPort() +" getLocalPort:" + request.getHttpServletRequest().getLocalPort());
         for (Entry entry : entries) {
             if (entry.getResource().isUrl()) {
                 sb.append("wget \"" + entry.getResource().getPath() + "\"");
