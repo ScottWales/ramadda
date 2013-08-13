@@ -18,6 +18,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.geodata.model;
 
 
@@ -41,6 +42,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
+
 import java.io.File;
 
 import java.util.ArrayList;
@@ -53,11 +55,7 @@ import java.util.regex.Matcher;
 
 
 /**
- * Class description
- *
- *
- * @version        $version$, Thu, Jul 18, '13
- * @author         Enter your name here...    
+ * Map plotting process using NCL
  */
 public class NCLMapPlotDataProcess extends DataProcess {
 
@@ -66,7 +64,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
 
     /** the repository */
     Repository repository;
-    
+
     /** output type */
     public final static String ARG_NCL_OUTPUT = "ncl.output";
 
@@ -86,7 +84,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
      *
      * @param repository  the repository
      * @param id  an id for this process
-     * @param label  a lable for this process
+     * @param label  a label for this process
      *
      * @throws Exception  problem creating process
      */
@@ -112,20 +110,34 @@ public class NCLMapPlotDataProcess extends DataProcess {
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(Repository.msg("Plot As"), 
-        		HtmlUtils.radio(ARG_NCL_OUTPUT, "comp", false) + Repository.msg("Comparison") +
-        		HtmlUtils.radio(ARG_NCL_OUTPUT, "diff", true) + Repository.msg("Difference")));
+        if (input.getOperands().size() > 1) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Plot As"),
+                    HtmlUtils.radio(ARG_NCL_OUTPUT, "diff", true)
+                    + Repository.msg("Difference")
+                    + HtmlUtils.radio(ARG_NCL_OUTPUT, "comp", false)
+                    + Repository.msg("Comparison")));
+        }
         sb.append(
             HtmlUtils.formEntry(
-                Repository.msg("Output Type"),
+                Repository.msgLabel("Output Type"),
                 HtmlUtils.radio(
                     NCLOutputHandler.ARG_NCL_PLOTTYPE, "png",
                     true) + Repository.msg("Map")
                           + HtmlUtils.radio(
                               NCLOutputHandler.ARG_NCL_PLOTTYPE, "kmz",
-                              false) + Repository.msg("Google Earth") +
-                              HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE, 
-                            		  "timeseries", false) + Repository.msg("Time Series")));
+                              false) + Repository.msg("Google Earth") + "<br>"
+                                     + HtmlUtils.radio(
+                                         NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                         "timeseries",
+                                         false) + Repository.msg(
+                                             "Time Series")
+                                     + HtmlUtils.radio(
+                                         NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                         "pdf",
+                                         false) + Repository.msg(
+                                             "PDF")));
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -146,23 +158,25 @@ public class NCLMapPlotDataProcess extends DataProcess {
 
         List<Entry>              outputEntries = new ArrayList<Entry>();
         List<DataProcessOperand> ops           = input.getOperands();
-        StringBuffer fileList = new StringBuffer();
-        Entry inputEntry = null;
-        boolean haveOne = false;
+        StringBuffer             fileList      = new StringBuffer();
+        Entry                    inputEntry    = null;
+        boolean                  haveOne       = false;
         for (DataProcessOperand op : ops) {
 
-            List<Entry> opEntries  = op.getEntries();
+            List<Entry> opEntries = op.getEntries();
             inputEntry = opEntries.get(0);
             for (Entry entry : opEntries) {
-            	if (haveOne) fileList.append(",");
-            	//fileList.append("\"");
-            	fileList.append(entry.getResource().toString());
-            	//fileList.append("\"");
-            	haveOne = true;
+                if (haveOne) {
+                    fileList.append(",");
+                }
+                //fileList.append("\"");
+                fileList.append(entry.getResource().toString());
+                //fileList.append("\"");
+                haveOne = true;
             }
         }
-        
-        String      wksName    = repository.getGUID();
+
+        String wksName = repository.getGUID();
         String plotType =
             request.getString(NCLOutputHandler.ARG_NCL_PLOTTYPE, "png");
         if (plotType.equals("image")) {
@@ -172,15 +186,13 @@ public class NCLMapPlotDataProcess extends DataProcess {
         if (plotType.equals("timeseries")) {
             suffix = "png";
         }
-        String outputType = 
-            request.getString(ARG_NCL_OUTPUT, "comp");
+        String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                            wksName) + "." + suffix);
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
-        GridDataset dataset =
-            dataOutputHandler.getCdmManager().createGrid(
-                inputEntry.getResource().toString());
+        GridDataset dataset = dataOutputHandler.getCdmManager().createGrid(
+                                  inputEntry.getResource().toString());
         if (dataset == null) {
             throw new Exception("Not a grid");
         }
@@ -189,12 +201,11 @@ public class NCLMapPlotDataProcess extends DataProcess {
         List<String> commands      = new ArrayList<String>();
         String       ncargRoot     = nclOutputHandler.getNcargRootDir();
         commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-        commands
-            .add(IOUtil
-                .joinDir(IOUtil
-                    .joinDir(nclOutputHandler.getStorageManager()
-                        .getResourceDir(), "ncl"), nclOutputHandler
-                            .SCRIPT_MAPPLOT));
+        commands.add(
+            IOUtil.joinDir(
+                IOUtil.joinDir(
+                    nclOutputHandler.getStorageManager().getResourceDir(),
+                    "ncl"), nclOutputHandler.SCRIPT_MAPPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
         envMap.put("NCARG_ROOT", ncargRoot);
         envMap.put("wks_name", wksName);
@@ -211,12 +222,11 @@ public class NCLMapPlotDataProcess extends DataProcess {
             if (arg.startsWith(CdmDataOutputHandler.VAR_PREFIX)
                     && request.get(arg, false)) {
                 varNames.add(
-                    arg.substring(
-                        CdmDataOutputHandler.VAR_PREFIX.length()));
+                    arg.substring(CdmDataOutputHandler.VAR_PREFIX.length()));
             }
         }
-        String varname =
-            request.getString(nclOutputHandler.ARG_NCL_VARIABLE, null);
+        String varname = request.getString(nclOutputHandler.ARG_NCL_VARIABLE,
+                                           null);
         if (varname == null) {
             List<GridDatatype> grids = dataset.getGrids();
             GridDatatype       var   = grids.get(0);
@@ -268,8 +278,8 @@ public class NCLMapPlotDataProcess extends DataProcess {
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
 
 
-        System.err.println("cmds:" + commands);
-        System.err.println("env:" + envMap);
+        //System.err.println("cmds:" + commands);
+        //System.err.println("env:" + envMap);
 
         //Use new repository method to execute. This gets back [stdout,stderr]
         String[] results = repository.executeCommand(commands, envMap,
@@ -301,9 +311,9 @@ public class NCLMapPlotDataProcess extends DataProcess {
                     "Humm, the NCL image generation failed for some reason");
             }
         }
-        Resource resource = new Resource(outFile,
-                                         Resource.TYPE_LOCAL_FILE);
-        Entry outputEntry = new Entry(new TypeHandler(repository), true);
+        Resource resource    = new Resource(outFile,
+                                            Resource.TYPE_LOCAL_FILE);
+        Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
         outputEntries.add(outputEntry);
         DataProcessOutput dpo = new DataProcessOutput(outputEntries);
@@ -311,16 +321,20 @@ public class NCLMapPlotDataProcess extends DataProcess {
         return dpo;
 
     }
-    
+
     /**
      * Can we handle this type of DataProcessInput?
-     * 
+     *
+     * @param dpi  the DataProcessInput
      * @return true if we can handle
      */
     public boolean canHandle(DataProcessInput dpi) {
-    	if (!nclOutputHandler.isEnabled()) return false;
-    	// TODO: Check the input
-    	return true;
+        if ( !nclOutputHandler.isEnabled()) {
+            return false;
+        }
+
+        // TODO: Check the input
+        return true;
     }
 
 }

@@ -78,13 +78,12 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * Add to form
      *
      * @param request  the Request
-     * @param inputs    the DataProcessInput
+     * @param input    the DataProcessInput
      * @param sb       the form
      *
      * @throws Exception  problem adding to the form
      */
-    public void addToForm(Request request,
-                          DataProcessInput input,
+    public void addToForm(Request request, DataProcessInput input,
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
@@ -135,14 +134,14 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * Process the request
      *
      * @param request  The request
-     * @param inputs  the  data process inputs
+     * @param input  the  data process input
      *
      * @return  the processed data
      *
      * @throws Exception  problem processing
      */
-    public DataProcessOutput processRequest(
-            Request request, DataProcessInput input)
+    public DataProcessOutput processRequest(Request request,
+                                            DataProcessInput input)
             throws Exception {
 
         if ( !canHandle(input)) {
@@ -162,33 +161,40 @@ public class CDOAreaStatisticsProcess extends DataProcess {
                 outputEntries.add(processMonthlyRequest(request, input, op));
             }
         }
+
         return new DataProcessOutput(outputEntries);
     }
 
     /**
-     * Process the daily data request	
+     * Process the daily data request
      *
      * @param request  the request
      * @param dpi      the DataProcessInput
      *
      * @return  some output
+     *
+     * @throws Exception problem processing the daily data
      */
-    private Entry processDailyRequest(Request request,
-            DataProcessInput dpi) throws Exception {
-    	throw new Exception("can't handle daily data yet");
+    private Entry processDailyRequest(Request request, DataProcessInput dpi)
+            throws Exception {
+        throw new Exception("can't handle daily data yet");
     }
 
     /**
-     * Process the monthly request	
+     * Process the monthly request
      *
      * @param request  the request
      * @param dpi      the DataProcessInput
-     * @param op 
+     * @param op       the operand
      *
      * @return  some output
+     *
+     * @throws Exception Problem processing the monthly request
      */
     private Entry processMonthlyRequest(Request request,
-            DataProcessInput dpi, DataProcessOperand op) throws Exception {
+                                        DataProcessInput dpi,
+                                        DataProcessOperand op)
+            throws Exception {
 
         Entry        oneOfThem = op.getEntries().get(0);
         String tail = typeHandler.getStorageManager().getFileTail(oneOfThem);
@@ -225,7 +231,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
         typeHandler.addAreaSelectCommands(request, oneOfThem, commands);
         typeHandler.addDateSelectCommands(request, oneOfThem, commands);
 
-        System.err.println("cmds:" + commands);
+        //System.err.println("cmds:" + commands);
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());
@@ -249,7 +255,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             typeHandler.addAreaSelectCommands(request, climEntry, commands);
             typeHandler.addMonthSelectCommands(request, climEntry, commands);
 
-            System.err.println("clim cmds:" + commands);
+            //System.err.println("clim cmds:" + commands);
 
             commands.add(climEntry.getResource().getPath());
             commands.add(climFile.toString());
@@ -287,18 +293,20 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @return true if we can, otherwise false
      */
     public boolean canHandle(DataProcessInput input) {
-    	if (!typeHandler.isEnabled()) return false;
-    	for (DataProcessOperand op : input.getOperands()) {
-        List<Entry> entries = op.getEntries();
-        // TODO: change this when we can handle more than one entry (e.g. daily data)
-        if (entries.isEmpty() || (entries.size() > 1)) {
+        if ( !typeHandler.isEnabled()) {
             return false;
         }
-        Entry firstEntry = entries.get(0);
-        if ( !(firstEntry.getTypeHandler()
-                instanceof ClimateModelFileTypeHandler)) {
-            return false;
-        }
+        for (DataProcessOperand op : input.getOperands()) {
+            List<Entry> entries = op.getEntries();
+            // TODO: change this when we can handle more than one entry (e.g. daily data)
+            if (entries.isEmpty() || (entries.size() > 1)) {
+                return false;
+            }
+            Entry firstEntry = entries.get(0);
+            if ( !(firstEntry.getTypeHandler()
+                    instanceof ClimateModelFileTypeHandler)) {
+                return false;
+            }
         }
 
         return true;

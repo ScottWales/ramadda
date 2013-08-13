@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Jeff McWhirter/ramadda.org
 *                     Don Murray/CU-CIRES
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -21,119 +21,289 @@
 
 package org.ramadda.util;
 
-import java.text.StringCharacterIterator;
-import java.util.List;
 
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.TwoFacedObject;
+
+
+import java.text.StringCharacterIterator;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * JSON Utility class
  */
 public class Json {
 
+    /** JSON MIME type */
     public static final String MIMETYPE = "application/json";
+
+    /** the null string identifier*/
     public static final String NULL = "null";
+
+    /** default quote value */
     public static final boolean DFLT_QUOTE = false;
 
+    /**
+     * Create a JSON map
+     *
+     * @param values  key/value pairs { key1,value1,key2,value2 }
+     *
+     * @return  the map object { key1:value1, key2:value2 }
+     */
     public static String map(String[] values) {
         return map(values, DFLT_QUOTE);
     }
 
+    /**
+     * Create a JSON map
+     *
+     * @param values  key/value pairs [ key1,value1,key2,value2 ]
+     *
+     * @return  the map object { key1:value1, key2:value2 }
+     */
     public static String map(List<String> values) {
         return map(values, DFLT_QUOTE);
     }
 
+    /**
+     * Create a JSON map
+     *
+     * @param values  key/value pairs { key1,value1,key2,value2 }
+     * @param quoteValue  true to quote the values
+     *
+     * @return  the map object { key1:value1, key2:value2 }
+     */
     public static String map(String[] values, boolean quoteValue) {
-        return map((List<String>)Misc.toList(values), quoteValue);
+        return map((List<String>) Misc.toList(values), quoteValue);
     }
 
+    /**
+     * Create a JSON map
+     *
+     * @param values  key/value pairs [ key1,value1,key2,value2 ]
+     * @param quoteValue  true to quote the values
+     *
+     * @return  the map object { key1:value1, key2:value2 }
+     */
     public static String map(List<String> values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         row.append("{");
-        for(int i=0;i<values.size();i+=2) {
-            if(i>0)  row.append(",\n");
-            String name =  values.get(i);
-            String value = values.get(i+1);
+        for (int i = 0; i < values.size(); i += 2) {
+            if (i > 0) {
+                row.append(",\n");
+            }
+            String name  = values.get(i);
+            String value = values.get(i + 1);
             row.append(attr(name, value, quoteValue));
         }
         row.append("}");
+
         return row.toString();
     }
 
+    /**
+     * Create a JSON list from the array of strings
+     *
+     * @param values  list of values { value1,value2,value3,value4 }
+     *
+     * @return  the values as a JSON array [ value1,value2,value3,value4 ]
+     */
     public static String list(String[] values) {
         return list(Misc.toList(values));
     }
 
+    /**
+     * Create a JSON list from the array of strings
+     *
+     * @param values  list of values [ value1,value2,value3,value4 ]
+     *
+     * @return  the values as a JSON array [ value1,value2,value3,value4 ]
+     */
     public static String list(List values) {
         return list(values, DFLT_QUOTE);
     }
 
+    /**
+     * Create a JSON list from the array of strings
+     *
+     * @param values  list of values [ value1,value2,value3,value4 ]
+     * @param quoteValue  true to quote the values
+     *
+     * @return  the values as a JSON array [ value1,value2,value3,value4 ]
+     */
     public static String list(List values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         row.append("[");
-        for(int i=0;i<values.size();i++) {
-            if(i>0)  row.append(",\n");
-            if(quoteValue) 
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0) {
+                row.append(",\n");
+            }
+            if (quoteValue) {
                 row.append(quote(values.get(i).toString()));
-            else
+            } else {
                 row.append(values.get(i).toString());
+            }
         }
         row.append("]");
+
         return row.toString();
     }
 
+    /**
+     * Quote a string
+     *
+     * @param s the string
+     *
+     * @return  the quoted string
+     */
     public static String quote(String s) {
-        if(s==null) return NULL;
+        if (s == null) {
+            return NULL;
+        }
+
         return "\"" + s + "\"";
     }
 
+    /**
+     * Create a list of JSON object from a list of TwoFacedObjects
+     *
+     * @param values  the values
+     *
+     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ] 
+     */
+    public static String tfoList(List<TwoFacedObject> values) {
+        return tfoList(values, "id", "label");
+    }
 
+    /**
+     * Create a list of JSON object from a list of TwoFacedObjects
+     *
+     * @param values  the values
+     * @param idKey   the key for the TwoFacedObject ID
+     * @param labelKey   the key for the TwoFacedObject label
+     *
+     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ] 
+     */
+    public static String tfoList(List<TwoFacedObject> values, String idKey,
+                                 String labelKey) {
+        List<String> arrayVals = new ArrayList<String>();
+        for (TwoFacedObject tfo : values) {
+            List<String> mapValues = new ArrayList<String>();
+            String       id        = TwoFacedObject.getIdString(tfo);
+            String       label     = tfo.toString();
+            mapValues.add(idKey);
+            mapValues.add((id == null)
+                          ? label
+                          : id);
+            mapValues.add(labelKey);
+            mapValues.add(label);
+            arrayVals.add(map(mapValues, true));
+        }
+
+        return list(arrayVals);
+    }
+
+    /**
+     * Get a string
+     *
+     * @param s  the string
+     * @param quote  true to quote
+     *
+     * @return the string
+     */
     public static String getString(String s, boolean quote) {
-        if(s==null) return NULL;
-        if(quote) return quote(s);
+        if (s == null) {
+            return NULL;
+        }
+        if (quote) {
+            return quote(s);
+        }
+
         return s;
     }
 
 
+    /**
+     * Create a JSON object attribute
+     *
+     * @param name  the attribute name
+     * @param value  the attribute value
+     *
+     * @return  the attribute as name:value
+     */
     public static String attr(String name, String value) {
         return attr(name, value, DFLT_QUOTE);
     }
 
-
+    /**
+     * Create a JSON object attribute
+     *
+     * @param name  the attribute name
+     * @param value  the attribute value
+     * @param quoteValue true to quote the name and value
+     *
+     * @return  the attribute as name:value
+     */
     public static String attr(String name, String value, boolean quoteValue) {
-        return quote(name)+":" + getString(value, quoteValue);
+        return quote(name) + ":" + getString(value, quoteValue);
     }
 
-    public static void quoteAttr(List<String>items,String name, String value) {
+    /**
+     * quote the attribute value and add it to the list
+     *
+     * @param items the list of items
+     * @param name  the attribute name
+     * @param value the attribute value
+     */
+    public static void quoteAttr(List<String> items, String name,
+                                 String value) {
         items.add(name);
         items.add(getString(value, true));
     }
 
-    public static void attr(List<String>items,String name, String value) {
+    /**
+     * Make an attribute and add it to the list
+     *
+     * @param items  the list of name/value pairs
+     * @param name   the attribute name
+     * @param value  the attribute value
+     */
+    public static void attr(List<String> items, String name, String value) {
         items.add(name);
         items.add(getString(value, false));
     }
 
 
+    /**
+     * Clean and quote some text
+     *
+     * @param aText the text
+     *
+     * @return  the cleaned and quoted text
+     */
     public static String cleanAndQuote(String aText) {
         return quote(cleanString(aText));
     }
 
 
     /**
-     * _more_
+     * Clean a string of illegal JSON characters
      *
-     * @param aText _more_
+     * @param aText  the string
      *
-     * @return _more_
+     * @return  the cleaned string
      */
     public static String cleanString(String aText) {
-        if (!Utils.stringDefined(aText)) {
+        if ( !Utils.stringDefined(aText)) {
             return "";
         }
         final StringBuilder     result    = new StringBuilder();
 
-        StringCharacterIterator iterator  = new StringCharacterIterator(aText);
+        StringCharacterIterator iterator  =
+            new StringCharacterIterator(aText);
         char                    character = iterator.current();
         while (character != StringCharacterIterator.DONE) {
             if (character == '\"') {

@@ -173,7 +173,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         List<File> files     = new ArrayList<File>();
         File       lastFile  = null;
-       Entry      lastEntry = null;
+        Entry      lastEntry = null;
         for (DataProcessOutput dpo : outputs) {
             for (Entry granule : dpo.getEntries()) {
                 if (granule.isFile()) {
@@ -598,7 +598,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
         }
 
-        System.err.println("Clauses:" + clauses);
+        //System.err.println("Clauses:" + clauses);
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
             return new Result("", new StringBuffer(), Json.MIMETYPE);
@@ -608,16 +608,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             new ArrayList<String>(((CollectionTypeHandler) entry
                 .getTypeHandler())
                     .getUniqueColumnValues(entry, columnIdx, clauses, false));
-        System.err.println("Values:" + values);
+        //System.err.println("Values:" + values);
         StringBuffer sb = new StringBuffer();
-        if (myColumn.isEnumeration() && false) {
-            List<String> enumValues = new ArrayList<String>(values.size());
-            enumValues.add(Json.attr("", "--", true));
-            for (String value : values) {
-                enumValues.add(Json.attr(value, myColumn.getEnumLabel(value),
-                                         true));
-            }
-            sb.append(Json.list(enumValues));
+        if (myColumn.isEnumeration()) {
+            List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
+                                            values, myColumn);
+            tfos.add(0, new TwoFacedObject(""));
+            String json = Json.tfoList(tfos);
+            //System.out.println(json);
+            sb.append(json);
         } else {
             values.add(0, "");
             sb.append(Json.list(values, true));

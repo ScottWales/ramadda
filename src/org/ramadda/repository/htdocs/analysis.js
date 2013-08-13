@@ -121,8 +121,17 @@ function CollectionForm(formId) {
         var currentValue =    this.getFieldSelect(collection, fieldIdx).val();
         var html = "<select>\n";
         for(var i=0;i<data.length;i++)  {
-            var value = data[i];
-            var label  = value;
+            var objIQ = data[i];
+            var value,label;
+            var type = typeof(objIQ);
+            if (type == 'object') {  
+                // made from TwoFacedObject [ {id:id1,value:value1}, {id:id2,value:value2} ]
+                value = objIQ.id;
+                label = objIQ.label;
+            } else {
+                value = objIQ;
+                label  = value;
+            }
             if(label == "") {
                 label =  "--";
             }
@@ -130,7 +139,7 @@ function CollectionForm(formId) {
             if(currentValue == value) {
                 extra = " selected ";
             }
-            html += "<option value=\'"  + data[i]+"\'   " + extra +" >" + label +"</option>\n";
+            html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>\n";
         }
         html+="</select>\n";
         this.getFieldSelect(collection, fieldIdx).html(html);
