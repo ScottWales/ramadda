@@ -273,6 +273,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
     /** the field property */
     public static final String WIKI_PROP_FIELD = "field";
 
+    public static final String WIKI_PROP_ROOT = "root";
+
     /** the calendar property */
     public static final String WIKI_PROP_CALENDAR = "calendar";
 
@@ -491,7 +493,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
         prop(WIKI_PROP_TAGCLOUD,
              attrs("type", "","threshold","0")),
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
-        WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH
+        WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU, WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH,
+        WIKI_PROP_ROOT
     };
 
 
@@ -1640,6 +1643,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             makeGallery(request, children, props, sb);
 
             return sb.toString();
+        } else if (include.equals(WIKI_PROP_ROOT)) {
+                   return getRepository().getUrlBase();
         } else if (include.equals(WIKI_PROP_CHILDREN_GROUPS) || 
                    include.equals(WIKI_PROP_CHILDREN_ENTRIES) ||
                    include.equals(WIKI_PROP_CHILDREN) ||
