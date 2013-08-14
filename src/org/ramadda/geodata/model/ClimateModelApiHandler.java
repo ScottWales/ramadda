@@ -260,6 +260,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 //TODO: fix this later 
                 operands.add(new DataProcessOperand(collection, entries));
 
+                tmp.append("<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 150px; overflow-y: auto\">");
                 tmp.append(getEntryManager().getEntryLink(request,
                         collectionEntry));
                 tmp.append("<ul>");
@@ -269,6 +270,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             granule));
                 }
                 tmp.append("</ul>");
+                tmp.append("</div>");
             }
         }
 
@@ -375,7 +377,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 sb.append("\n");
                 String selectBox = HtmlUtils.select(arg, values,
                                        selectedValue,
-                                       " style=\"min-width:250px;\" "
+                                       " style=\"max-width:250px;min-width:250px;\" "
                                        + HtmlUtils.attr("id",
                                            getFieldSelectId(formId,
                                                collection, fieldIdx)));
@@ -598,7 +600,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
         }
 
-        //System.err.println("Clauses:" + clauses);
+        System.err.println("Clauses:" + clauses);
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
             return new Result("", new StringBuffer(), Json.MIMETYPE);
@@ -608,7 +610,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             new ArrayList<String>(((CollectionTypeHandler) entry
                 .getTypeHandler())
                     .getUniqueColumnValues(entry, columnIdx, clauses, false));
-        //System.err.println("Values:" + values);
+        System.err.println("Values:" + values);
         StringBuffer sb = new StringBuffer();
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
