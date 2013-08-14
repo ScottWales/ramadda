@@ -190,8 +190,8 @@ public class IdvBundlesOutputHandler extends OutputHandler {
             }
             String name = entry.getName();
             String url  = request.getAbsoluteUrl(
-                             entry.getTypeHandler().getEntryResourceUrl(
-                                 request, entry));
+                             getEntryManager().getEntryResourceUrl(
+                                 request, entry, false, false));
             XmlUtil.create(TAG_BUNDLE, root, new String[] {
                 ATTR_CATEGORY, category, ATTR_NAME, name, ATTR_URL, url
             });
