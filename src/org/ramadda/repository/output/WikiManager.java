@@ -654,6 +654,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
             }
 
 
+            //TODO: figure out a way to look for infinte loops
+            /*
             String propertyKey = theEntry.getId() + "_" + property;
             if (request.getExtraProperty(propertyKey) != null) {
                 return "<b>Detected circular wiki import:" + property +
@@ -661,6 +663,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil.WikiPageH
                     + "</b>";
             }
             request.putExtraProperty(propertyKey, property);
+            */
+
 
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, theEntry,
