@@ -3380,6 +3380,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
+
     public Result processGetEntries(Request request) throws Exception {
         List<Entry> entries    = new ArrayList();
         boolean     doAll      = request.defined("getall");
@@ -6342,12 +6343,12 @@ public class EntryManager extends RepositoryManager {
                 String   parentEntryId = pair[0];
                 String   syntheticPart = pair[1];
                 Entry    parentEntry = null;
-
+                System.err.println("Parent:" + parentEntryId +" synth part:" + syntheticPart);
 
                 TypeHandler typeHandler = null;
 
                 if(parentEntryId.equals(ENTRYID_PROCESS)) {
-                    typeHandler = new ProcessFileTypeHandler(getRepository(), null);
+                    typeHandler = getProcessFileTypeHandler();
                     //                    parentEntry = topGroup;
                     parentEntry = new Entry(typeHandler, true);
                     parentEntry.setName("Process Entries");
@@ -6361,7 +6362,6 @@ public class EntryManager extends RepositoryManager {
                 if(parentEntry == null) {
                     parentEntry   = getEntry(request, parentEntryId,
                                              andFilter, abbreviated);
-
                 }
 
 
@@ -6476,10 +6476,18 @@ public class EntryManager extends RepositoryManager {
      */
     public List[] getEntries(Request request, StringBuffer searchCriteriaSB)
             throws Exception {
+        return getEntries(request, searchCriteriaSB, null);
+    }
+
+    public List[] getEntries(Request request, StringBuffer searchCriteriaSB, List<Clause> extraClauses)
+        throws Exception {
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where       = typeHandler.assembleWhereClause(request,
-                                 searchCriteriaSB);
+                                                                   searchCriteriaSB);
 
+        if(extraClauses!=null) {
+            where.addAll(extraClauses);
+        }
         return getEntries(request, where, typeHandler);
     }
 
@@ -8885,6 +8893,16 @@ public class EntryManager extends RepositoryManager {
 
         return children;
     }
+
+    private  ProcessFileTypeHandler processFileTypeHandler;
+
+    public ProcessFileTypeHandler getProcessFileTypeHandler() throws Exception {
+        if(processFileTypeHandler == null) {
+             processFileTypeHandler= new ProcessFileTypeHandler(getRepository(), null);
+        }
+        return processFileTypeHandler;
+    }
+
 
 
 }

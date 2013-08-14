@@ -14,6 +14,13 @@
      <property name="form.fromdate.label" value="Date"/>
      <property name="form.todate.show" value="false"/>
 
+     <property name="search.label" value="Search for Bibliographic entries"/>
+     <property name="search.tabs" value="list"/>
+     <property name="search.form.area.show" value="false"/>
+     <property name="search.synthetic.fields" value="authors"/>
+     <property name="search.synthetic.authors.label" value="All Authors"/>
+     <property name="search.synthetic.authors.fields" value="primary_author,other_authors"/>
+
 
      <column name="primary_author" type="string" size="500" changetype="true"  label="Primary Author"  cansearch="true"/>
      <column name="type" type="enumerationplus"  label="Publication Type" values="Journal Article,Generic,Report"  cansearch="true" iscategory="true"/>

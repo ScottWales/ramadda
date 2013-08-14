@@ -1286,12 +1286,7 @@ public class Column implements DataTypes, Constants {
         } else {
             String value = getSearchValue(request, null);
             if (Utils.stringDefined(value)) {
-                if(value.startsWith("!")) {
-                    value  = value.substring(1);
-                    where.add(Clause.notLike(getFullName(), "%" + value + "%"));
-                } else {
-                    where.add(dbm.makeLikeTextClause(getFullName(), "%" + value + "%", false));
-                }
+                addTextSearch(value, where);
             }
             //            typeHandler.addOrClause(getFullName(),
             //                                    value, where);
@@ -1300,6 +1295,17 @@ public class Column implements DataTypes, Constants {
 
     }
 
+
+    public void addTextSearch(String value, List<Clause> where) {
+        if(value.startsWith("!")) {
+            value  = value.substring(1);
+            where.add(Clause.notLike(getFullName(), "%" + value + "%"));
+        } else {
+            DatabaseManager dbm = getRepository().getDatabaseManager();
+            where.add(dbm.makeLikeTextClause(getFullName(), "%" + value + "%", false));
+        }
+
+    }
 
     private String getSearchValue(Request request, String dflt) {
         String id = getFullName();
@@ -2090,7 +2096,7 @@ public class Column implements DataTypes, Constants {
             }
         }
         formBuffer.append(typeHandler.formEntry(request, getLabel() + ":",
-                "<table>" + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
+                "<table cellspacing=0 cellpadding=0 border=0>" + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
                 + "</table>"));
         formBuffer.append("\n");
     }

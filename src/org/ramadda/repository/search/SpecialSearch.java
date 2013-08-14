@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.sql.Clause;
 
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
@@ -115,6 +116,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> tabs = new ArrayList<String>();
 
+    private List<SyntheticField> syntheticFields = new ArrayList<SyntheticField>();
     /**
      * _more_
      *
@@ -142,6 +144,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     public SpecialSearch(TypeHandler typeHandler) {
         super(typeHandler.getRepository());
         this.typeHandler = typeHandler;
+        /*
+          search.synthetic.fields="authors"
+          search.synthetic.authors.label="Authors"
+          search.synthetic.authors.fields="primary_author,other_authors"
+         */
+        String syntheticIds = (String) typeHandler.getProperty("search.synthetic.fields", null);
+        if(syntheticIds!=null) {
+            for(String id: StringUtil.split(syntheticIds,",",true,true)) {
+                String label = (String) typeHandler.getProperty("search.synthetic." + id +".label",id);
+                String fieldString = (String) typeHandler.getProperty("search.synthetic." + id +".fields",null);
+                syntheticFields.add(new SyntheticField(id, label, StringUtil.split(fieldString,",",true,true)));
+            }
+        }
+
         String types = (String) typeHandler.getProperty("search.metadatatypes", null);
         if (types != null) {
             for (String type : StringUtil.split(types, ",", true, true)) {
@@ -285,8 +301,30 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         if (doSearch) {
+            StringBuffer criteriaSB= new StringBuffer();
+            List<Clause> extra = null;
+            if(syntheticFields.size()>0) {
+                extra = new ArrayList<Clause>();
+                for(SyntheticField field: syntheticFields) {
+                    String id = field.id;
+                    if(request.defined(id)) {
+                        for(String columnName:field.fields) {
+                            Column column  = typeHandler.getColumn(columnName);
+                            if(column!=null) {
+                                column.addTextSearch(request.getString(id), extra);
+                            }
+                        }
+                    }
+                }
+                if(extra.size()>0) {
+                    Clause orClause  = Clause.or(extra);
+                    extra = new ArrayList<Clause>();
+                    extra.add(orClause);
+                }
+            }
+
             List[] groupAndEntries =
-                getRepository().getEntryManager().getEntries(request);
+                getRepository().getEntryManager().getEntries(request, criteriaSB, extra);
             groups =  (List<Entry>) groupAndEntries[0];
             entries = (List<Entry>) groupAndEntries[1];
             allEntries.addAll(groups);
@@ -357,6 +395,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             formSB.append(formEntry(request, msgLabel("Location"), mapSelector));
         }
 
+
+        for(SyntheticField field: syntheticFields) {
+            String id = field.id;
+            formSB.append(formEntry(request, msgLabel(field.label),
+                                    HtmlUtils.input(id, request.getString(id, ""),
+                                                    HtmlUtils.SIZE_20)));
+        }
 
         typeHandler.addToSpecialSearchForm(request, formSB);
 
@@ -584,6 +629,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //                                                              true,true,true,true,true);
     }
 
+    private static class SyntheticField {
+        String label;
+        String id;
+        List<String> fields = new ArrayList<String>();
+
+        public SyntheticField(String id, String label, List<String> fields ) {
+            this.id = id;
+            this.label  = label;
+            this.fields = fields;
+        }
+    }
 
 
 }

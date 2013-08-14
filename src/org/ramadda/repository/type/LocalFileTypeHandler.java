@@ -509,10 +509,10 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         } else {
             String parentId = getSynthId(parentEntry, localFileInfo.getRootDir().toString(),
                                          targetFile.getParentFile());
-            //            System.err.println ("\tGetting parent:" + parentId);
+            System.err.println ("\tGetting parent:" + parentId);
             parent = (Entry) getEntryManager().getEntry(request, parentId,
                                                         false, false);
-            //            System.err.println ("\tUsing other parent entry:" + parent);
+            System.err.println ("\tUsing other parent entry:" + parent);
         }
 
         entry.initEntry(name, "", parent,
