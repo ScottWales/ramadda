@@ -344,10 +344,12 @@ JQ.button(
             didProcess = true;
             DataProcessOutput output = process.processRequest(request, dpi);
             if (output.hasOutput()) {
-                for (Entry outFile : output.getEntries()) {
-                    if (entry.getResource().isFile()) {
-                        files.add(entry.getResource().getTheFile());
+                for (DataProcessOperand oper : output.getOperands()) {
+                  for (Entry outEntry : oper.getEntries()) {
+                    if (outEntry.getResource().isFile()) {
+                        files.add(outEntry.getResource().getTheFile());
                     }
+                  }
                 }
             }
         }

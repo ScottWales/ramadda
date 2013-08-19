@@ -79,7 +79,7 @@ public class NCLOutputHandler extends OutputHandler {
     /** NCL map plot script */
     private static final String SCRIPT_KML = "kml.ncl";
     
-    private static final String[] SCRIPTS = {SCRIPT_MAPPLOT, SCRIPT_KML};
+    private static final String[] SCRIPTS = {SCRIPT_MAPPLOT, SCRIPT_KML, "remove_middle_contours.ncl"};
 
     /** NCL prefix string */
     private static final String ARG_NCL_PREFIX= "ncl.";

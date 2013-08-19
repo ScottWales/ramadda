@@ -14,7 +14,36 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/ut_string.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/calendar_decode2.ncl"
 load "$NCL_RESOURCES/kml.ncl"
+load "$NCL_RESOURCES/remove_middle_contours.ncl"
 ;************************************************
+
+;*********************************************************
+; Compute the maxmin of a field
+; args:
+;         data:  data to look at
+;     equalize:  make max min reciprocal (-max = min)
+; return:
+;     array of (min,max)
+;********************************************************
+undef("maxmin")
+function maxmin(data, equalize:logical)
+
+local maxX,minX
+
+begin
+
+  minX = ceil(min(data))
+  maxX = floor(max(data))
+  if (equalize) then
+    if (abs(minX) .gt. maxX) then
+       maxX = abs(minX)
+    else
+       minX = -maxX
+    end if
+  end if
+  return (/minX,maxX/)
+
+end
 
 ;**********************************************************
 ; Read data from a file
@@ -116,13 +145,13 @@ begin
   ;print(ratio)
   opts@ratio=ratio
 
-  if (ismissing(varlevel) .or. numdims .le. 3) then
+  if (numdims .eq. 3) then  ; (time,lat,lon)
     if (vartype .eq. "short") then
       vardata = short2flt(datafile->$varname$(:,{minLat:maxLat},{minLon:maxLon}))
     else
       vardata = datafile->$varname$(:,{minLat:maxLat},{minLon:maxLon})
     end if
-  else
+  else ; (time,level,lat,lon)
     if (vartype .eq. "short") then
       if (ismissing(varlevel)) then
         vardata = short2flt(datafile->$varname$(:,0,{minLat:maxLat},{minLon:maxLon}))
@@ -147,6 +176,26 @@ begin
   end if
 
   return(vardata)
+
+end
+
+;****************************************************
+; Set the contour min and max based on the data so
+; it is equally spaced if a difference or anomaly
+; params:
+;    data   - the data
+;    center - True you want the contours to be
+;              equally centered about a central point
+;    opts   - the contour resource
+;****************************************************
+undef("setMinMax")
+procedure setMinMax(data, anom:logical, opts:logical)
+begin
+
+  mnmx = maxmin(data, anom)
+  opts@cnLevelSelectionMode = "ManualLevels"
+  opts@cnMinLevelValF = mnmx(0)
+  opts@cnMaxLevelValF = mnmx(1)
 
 end
 
@@ -176,6 +225,187 @@ begin
 
 end
 
+;*************************************************
+; Function: subData
+; Purpose:  subtract 2 datasets, normalizing grids
+;           and making sure units are the same
+; Params:   data1 - the first data (references grid and units)
+;           data2 - the other data
+; Return:   data1-data2
+;*************************************************
+undef("changeUnits")
+function changeUnits(dataIn:float, unitsIn:string, unitsOut:string)
+local dataOut
+
+begin
+
+  dataOut = dataIn
+  if (unitsIn .ne. unitsOut) then
+
+    ; Temperature
+    if (unitsIn .eq. "K" .or. unitsIn .eq. "degK") then
+      if (unitsOut .eq. "C" .or. \
+          unitsOut .eq. "Cel" .or. \
+          unitsOut .eq. "degC" .or. \
+          unitsOut .eq. "Celsius") then
+        dataOut = dataIn-273.15
+        dataOut@units = "degC"
+      end if
+      if (unitsOut .eq. "F" .or. \
+          unitsOut .eq. "degF" .or. \
+          unitsOut .eq. "Fahrenheit") then
+        dataOut = dataIn-273.15
+        dataOut = (9*dataOut/5)+32
+        dataOut@units = "F"
+      end if
+    end if
+
+    if (unitsIn .eq. "C" .or. \
+          unitsIn .eq. "Cel" .or. \
+          unitsIn .eq. "degC" .or. \
+          unitsIn .eq. "Celsius") then
+      if (unitsOut .eq. "K" .or. unitsOut .eq. "degK") then
+        dataOut = dataIn+273.15
+        dataOut@units = "K"
+      end if
+      if (unitsOut .eq. "F" .or. \
+          unitsOut .eq. "degF" .or. \
+          unitsOut .eq. "Fahrenheit") then
+        dataOut = dataIn-32
+        dataOut = (5*dataOut)/9
+        dataOut@units = "F"
+      end if
+    end if
+
+    if (unitsIn .eq. "F" .or. \
+          unitsIn .eq. "degF" .or. \
+          unitsIn .eq. "Fahrenheit") then
+      if (unitsOut .eq. "C" .or. \
+          unitsOut .eq. "Cel" .or. \
+          unitsOut .eq. "degC" .or. \
+          unitsOut .eq. "Celsius") then
+          dataOut = (dataIn-32)*5/9
+          dataOut@units = "degC"
+      end if
+      if (unitsOut .eq. "K" .or. unitsOut .eq. "degK") then
+        dataOut = (dataIn-32)*5/9 ; convert to degC
+        dataOut = dataOut+273.15
+        dataOut@units = "K"
+      end if
+    end if
+
+    ; precipitation
+    if (unitsIn .eq. "kg m-2 s-1" .or. \
+        unitsIn .eq. "mm/s") then
+      if (unitsOut .eq. "mm/s") then
+        ; just a name change
+        dataOut@units = unitsOut
+      end if
+      if (unitsOut .eq. "mm/day") then
+        dataOut = dataIn*86400
+        dataOut@units = unitsOut
+      end if
+    end if
+    if (unitsIn .eq. "m s-1" .or. \
+        unitsIn .eq. "m/s") then
+      if (unitsOut .eq. "mm/s") then
+        dataOut = dataIn*1000
+        dataOut@units = unitsOut
+      end if
+      if (unitsOut .eq. "mm/day") then
+        dataOut = dataIn*86400000 ; 86400*1000
+        dataOut@units = unitsOut
+      end if
+    end if
+
+    ; speed
+    if (unitsIn .eq. "m s-1" .or. \
+        unitsIn .eq. "m/s") then
+      if (unitsOut .eq. "mi/h" .or. \
+          unitsOut .eq. "mi h-1" .or. \
+          unitsOut .eq. "mph") then
+        dataOut = dataIn*2.23694
+        dataOut@units = unitsOut
+      end if
+      if (unitsOut .eq. "kt" .or. \
+          unitsOut .eq. "kts" .or. \
+          unitsOut .eq. "knots") then
+        dataOut = dataIn*1.94384
+        dataOut@units = unitsOut
+      end if
+    end if
+    if (unitsIn .eq. "mi/h" .or. \
+        unitsIn .eq. "mi h-1") then
+      if (unitsOut .eq. "m/s" .or. \
+          unitsOut .eq. "m s-1") then
+        dataOut = dataIn*0.44704
+        dataOut@units = "m s-1"
+      end if
+      if (unitsOut .eq. "kt" .or. \
+          unitsOut .eq. "kts" .or. \
+          unitsOut .eq. "knots") then
+        dataOut = dataIn*0.868976
+        dataOut@units = unitsOut
+      end if
+    end if
+
+  end if
+  return dataOut
+
+end
+
+;*************************************************
+; Function: subData
+; Purpose:  subtract 2 datasets, normalizing grids
+;           and making sure units are the same
+; Params:   data1 - the first data (references grid and units)
+;           data2 - the other data
+; Return:   data1-data2
+;*************************************************
+undef("subData")
+function subData(data1:float, data2:float)
+local unit1, unit2, newData
+
+begin
+
+  remappedData = remapData(data1,data2)
+  unit1 = data1@units
+  unit2 = data2@units
+  if (unit1 .ne. unit2) then
+     remappedData = changeUnits(remappedData, unit2, unit1)
+  end if
+  return data1-remappedData
+end
+
+;*************************************************
+; Procedure:  addLogo
+; Purpose:    add a logo to an image
+; Params:     imageFilePath - the path to the image
+;             logoFilePath - the logo path
+;             annotation   - the annotation
+;*************************************************
+undef ("addLogo")
+procedure addLogo (imageFilePath:string, logoFilePath:string)
+begin
+        tmpFilePath = imageFilePath + ".tmp"    
+        system(%convert% + " " + imageFilePath + " " + logoFilePath + " -geometry +20+555 -composite " + tmpFilePath)
+        system("mv -f " + tmpFilePath + " " + imageFilePath)
+end
+
+;*************************************************
+; Procedure:  addAnnotation
+; Purpose:    add some text
+; Params:     wksname - workstation name to add to
+;*************************************************
+undef ("addAnnotation")
+procedure addAnnotation(wksname, text)
+begin
+    txres               = True
+    txres@txFontHeightF = 0.02 
+    gsn_text_ndc(wksname,text,0.5,0.025,txres)
+end
+
+
 
 ;************************************************
 ; Procedure: plotmap
@@ -187,14 +417,15 @@ end
 ;***********************************************
 undef("plotmap")
 procedure plotmap(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
-local data
+local data, numfiles, plots, dodiff, dopanel, isanom
 
 begin
 
   numfiles = dimsizes(files)
   data = readdata(files(0), opts) 
   plots = new(numfiles,graphic)
-  dodiff = opts@outtype .eq. "diff"
+  dodiff = opts@outtype .eq. "diff" ; .and. numfiles .gt. 1
+  isanom = opts@isanom
   dopanel = (.not. dodiff) .and. numfiles .gt. 1
 
   rescf = True;
@@ -209,13 +440,9 @@ begin
   rescf@mpCenterLonF         = centerLonF
 
   doGoogle = (opts@plottype .eq. "kmz")
-  if (doGoogle) then
-      wks_type="ps"
-  end if
-  if (dopanel) then
-    rescf@gsnDraw           = False         ; Don't draw plots (for overlay)
-    rescf@gsnFrame          = False         ; don't advance frame yet
-  end if
+
+  rescf@gsnDraw           = False         ; Don't draw plots (for overlay)
+  rescf@gsnFrame          = False         ; don't advance frame yet
   
   wks_type@wkBackgroundColor="white"
   wks_type@wkForegroundColor="black"
@@ -227,11 +454,12 @@ begin
   ; contour stuff
   rescf@gsnSpreadColors = True
   rescf@cnFillOn= True          ; color fill
-  rescf@cnFillMode= "CellFill"  ; Raster mode
+  rescf@cnFillMode= "AreaFill"  
 
   ; labelbar
-  rescf@lbLabelBarOn = True         ; turn on label bar
-
+  if (.not. dopanel) then
+    rescf@lbLabelBarOn = True         ; turn on label bar
+  end if
 
   rescf@tiMainFontHeightF=0.012
   rescf@tiMainFontThicknessF=.8
@@ -241,19 +469,21 @@ begin
   
   if (doGoogle) then
 
+    wks_type="ps"
     kml_map_defaults(rescf) ; turn off many options
     rescf@cnLinesOn = False ; turn off contour lines
     rescf@lbLabelFontColor="White"
       
   else
 
+    rescf@gsnMaximize = True
     ratio = opts@ratio
     wks_type@wkWidth                     = 800
-    wks_type@wkHeight                    = 800
-    rescf@vpXF = .075
-    rescf@vpYF = .95
-    rescf@vpWidthF = .85
-    rescf@vpHeightF= .5*ratio
+    wks_type@wkHeight                    = 600
+;    rescf@vpXF = .075
+;    rescf@vpYF = .95
+;    rescf@vpWidthF = .85
+;    rescf@vpHeightF= .5*ratio
     rescf@cnLineLabelsOn=True
     rescf@cnLineLabelPlacementMode = "Computed"
     rescf@cnLineLabelAngleF=0
@@ -263,24 +493,45 @@ begin
     
   wks = gsn_open_wks(wks_type,wks_name) 
   ;drawNDCGrid(wks)
-  gsn_define_colormap(wks, "rainbow")
+  gsn_define_colormap(wks, opts@colormap)
 
+  ; TODO: Handle multiple times
   if (dodiff) then
     if (numfiles .gt. 1) then
       do i = 1,numfiles-1
         newdata = readdata(files(i),opts)
-        data2 = remapData(data,newdata)
-        data = data-data2
-        delete(data2)
+        data = subData(data,newdata)
         delete(newdata)
       end do
     end if
-    plots(0) = gsn_csm_contour_map_ce(wks,data(0,:,:),rescf)
+    mydata = data(0,:,:)
+    setMinMax(mydata,True,rescf)
+    plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
+    res2 = remove_middle_contours(plots(0), rescf, 1)
+    plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
+    addAnnotation(wks,opts@annotation)
   else
-    plots(0) = gsn_csm_contour_map_ce(wks,data(0,:,:),rescf)
+    mydata = data(0,:,:)
+    setMinMax(mydata,isanom,rescf)
+    plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
+    if (isanom) then
+      res2 = remove_middle_contours(plots(0), rescf, 1)
+      plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
+    end if
+    delete(mydata)
     do i = 1,numfiles-1
       nextdata = readdata(files(i),opts)
-      plots(i) = gsn_csm_contour_map_ce(wks,nextdata(0,:,:),rescf)
+      mydata = nextdata(0,:,:)
+      setMinMax(mydata,isanom,rescf)
+      plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
+      if (isanom) then
+        res2 = remove_middle_contours(plots(i), rescf, 1)
+        plots(i) = gsn_csm_contour_map_ce(wks,mydata,res2)
+      end if
+      if (.not. dopanel) then
+        addAnnotation(wks,opts@annotation)
+      end if
+      delete(mydata)
       delete(nextdata)
     end do
   end if
@@ -307,7 +558,7 @@ begin
       kres@kmlScreenXYyunits = "fraction"
      
       ; crops the labelbar from the plot and converts it to a png
-      lbicon = kml_crop_labelbar(kml, "label bar", wks, plot, kres)
+      lbicon = kml_crop_labelbar(kml, "label bar", wks, plots(0), kres)
       
       ; add labelbar to KML document as a ScreenOverlay element
       kml = kml_add_screenoverlay ( kml, "Label Bar", lbicon, kres )
@@ -316,11 +567,13 @@ begin
       kml_add_kmzfile(kml,lbicon)
        
       ; get the latlon coordinates describing the corners of the groundoverlay plot
-      LatLonBox = kml_get_vp_latlonbox(plot)
+      LatLonBox = kml_get_vp_latlonbox(plots(0))
     
       ; get the page coordinates of the actual map from the plot
-      cropbox = kml_get_vp_cropbox(wks,plot)
+      cropbox = kml_get_vp_cropbox(wks,plots(0))
       
+      draw(plots(0))
+      frame(wks)
       ; "delete(wks)" can not be called within a function, need to find a work around for this
       delete(wks)
       
@@ -334,7 +587,7 @@ begin
       ; add cropped map filename to list of files to be compressed in KMZ archive
       kml_add_kmzfile(kml,icon)
 
-      kml = kml_add_lookat( kml, centerLonF, centerLatF, 0.0, 4616152, kres)
+      ;kml = kml_add_lookat( kml, centerLonF, centerLatF, 0.0, 4616152, kres)
       
       ; close kml document
       kml = kml_close_document(kml)
@@ -370,10 +623,13 @@ begin
 
         ;---Panel the plot.
         gsn_panel(wks,plots,(/1,2/),resP)
-      else
-        delete(wks)
-        delete(plots)
+        addAnnotation(wks,opts@annotation)
+      else 
+        draw(plots(0))
+        frame(wks)
       end if
+      delete(wks)
+      delete(plots)
    end if
 
 end
@@ -416,7 +672,7 @@ begin
 
   numfiles = dimsizes(files)
   data = areaavg_data(readdata(files(0), opts))
-  printVarSummary(data)
+  ;printVarSummary(data)
 
   ;--- get the time dimension
   tdim = data&time
@@ -438,12 +694,12 @@ begin
       do i = 1,numfiles-1
         nextdata = readdata(files(i),opts)
         data2 = areaavg_data(nextdata)
-        printVarSummary(data2)
+        ;printVarSummary(data2)
         data = data-data2
         delete(data2)
         delete(nextdata)
       end do
-      printVarSummary(data)
+      ;printVarSummary(data)
     end if
     plot_data(0,:) = data
   else
@@ -512,15 +768,14 @@ begin
 ;  overlay(plot1,plot2)
   draw(plot1)
 
-  ;; add text
-;  addCopyrightText(wks,outputType)
+  ; add text
+;  addAnnotation(wks,opts@annotation)
 
   frame(wks)
     
   delete(wks) ;; closing the file
   delete(plot1)
-;  delete(plot2)
-;  addLogo(convertCmd,wks_name,logoFilePath)
+;  addLogo(wks_name,logoFilePath)
 
 end
 
@@ -548,7 +803,8 @@ begin
   std_FieldAvg = dim_standardize(data_FieldAvg_wgt, 0)
 
   pdfdata = pdfx(std_FieldAvg, 6, False)
-
+  printVarSummary(pdfdata)
+  mnmx = maxmin(pdfdata, True)
 
   ;; ***  Create plot ***
   wks_type = "png"
@@ -556,7 +812,6 @@ begin
   wks_type@wkHeight = 600
   wks = gsn_open_wks(wks_type,wks_name)
 
- ;; *** 3.1: Annual Values
 
   res                   = True
   res@gsnDraw           = False         ; Don't draw plots (for overlay)
@@ -575,14 +830,14 @@ begin
 
   draw(plot1)
 
-  ;; add text
+  ; add text
 ;  addCopyrightText(wks,outputType)
 
   frame(wks)
     
   delete(wks) ;; closing the file
   delete(plot1)
-;  addLogo(convertCmd,wks_name,logoFilePath)
+;  addLogo(wks_name,logoFilePath)
 
 end
 
@@ -630,6 +885,13 @@ if (ismissing(outType)) then
     outType = "diff"
 end if
 
+colormap=getenv("colormap")
+if (ismissing(colormap)) then
+    colormap = "rainbow"
+end if
+
+isanom=getenv("anom") .eq. "true"
+
 ;
 ; Region parameters
 minLat=stringtodouble(getenv("minLat"))
@@ -647,16 +909,19 @@ options@minLat = minLat
 options@maxLat = maxLat
 options@minLon = minLon
 options@maxLon = maxLon
+options@colormap = colormap
+options@isanom = isanom
+options@annotation = getenv("annotation")
 
 
 if (plotType.eq."timeseries") then
-  print("plotting timeseries")
+  ;print("plotting timeseries")
   plotts(ncfiles, wks_name, "png", options)
 else if (plotType.eq."pdf") then
-  print("plotting map")
+  ;print("plotting map")
   plotpdf(ncfiles, wks_name, "png", options)
 else
-  print("plotting map")
+  ;print("plotting map")
   plotmap(ncfiles, wks_name, "png", options)
 end if
 end if

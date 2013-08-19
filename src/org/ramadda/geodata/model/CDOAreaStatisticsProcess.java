@@ -148,7 +148,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             throw new Exception("Illegal data type");
         }
 
-        List<Entry> outputEntries = new ArrayList<Entry>();
+        List<DataProcessOperand> outputEntries = new ArrayList<DataProcessOperand>();
         for (DataProcessOperand op : input.getOperands()) {
             Entry oneOfThem = op.getEntries().get(0);
             Entry collection = GranuleTypeHandler.getCollectionEntry(request,
@@ -191,7 +191,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      *
      * @throws Exception Problem processing the monthly request
      */
-    private Entry processMonthlyRequest(Request request,
+    private DataProcessOperand processMonthlyRequest(Request request,
                                         DataProcessInput dpi,
                                         DataProcessOperand op)
             throws Exception {
@@ -274,17 +274,16 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             runProcess(commands, dpi.getProcessDir(), anomFile);
             outFile = anomFile;
         }
+        
 
-        //TODO:  Jeff - what do I need to do for the DataOutput?  This doesn't work.
-        // throws NPE in ClimateModelApiHandler (line 165): files.add(granule.getFile());
         Resource resource    = new Resource(outFile,
                                             Resource.TYPE_LOCAL_FILE);
         Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
 
-        return outputEntry;
+        return new DataProcessOperand(outputEntry.getName(), outputEntry);
     }
-
+    
     /**
      * Can we handle this input
      *

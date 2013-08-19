@@ -28,6 +28,7 @@ import ucar.unidata.util.Misc;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -105,5 +106,23 @@ public class DataProcessInput {
         return processDir;
     }
 
+    
+    /**
+     *  Does this input have any operands?
+     *  return true if it has operands
+     */
+    public boolean hasOperands() {
+    	return (operands != null) && !operands.isEmpty();
+    }
+    
+    /**
+     * Create a DataProcessInput from a DataProcessOutput
+     * @param output  the output
+     * @return a new DataProcessInput
+     */
+    public DataProcessInput makeInput(DataProcessOutput output) {
+    	return new DataProcessInput(this.getProcessDir(), 
+    			new ArrayList<DataProcessOperand>(output.getOperands()));
+    }
 
 }

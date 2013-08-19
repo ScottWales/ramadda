@@ -161,26 +161,26 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             outputs.add(output);
 
             //make a new input for the next process
-            nextInput = new DataProcessInput(
-                processDir, new DataProcessOperand(output.getEntries()));
+            nextInput = dpi.makeInput(output);
 
             //Are we done? This should probably be a check to see if the output has a Result
-            if (output.hasOutput()) {
-                //break;
-            }
-
+            //if (output.hasOutput()) {
+            //    break;
+            //}
         }
 
         List<File> files     = new ArrayList<File>();
         File       lastFile  = null;
         Entry      lastEntry = null;
         for (DataProcessOutput dpo : outputs) {
-            for (Entry granule : dpo.getEntries()) {
-                if (granule.isFile()) {
-                    lastFile = granule.getFile();
-                    files.add(lastFile);
-                }
-                lastEntry = granule;
+            for (DataProcessOperand op : dpo.getOperands()) {
+              for (Entry granule : op.getEntries()) {
+                  if (granule.isFile()) {
+                      lastFile = granule.getFile();
+                      files.add(lastFile);
+                  }
+                  lastEntry = granule;
+              }
             }
         }
 

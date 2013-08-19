@@ -103,7 +103,7 @@ public class CopyProcess extends DataProcess {
             }
         }
 
-        return new DataProcessOutput(results);
+        return new DataProcessOutput(new DataProcessOperand("Copied Entries", results));
     }
     
     /**

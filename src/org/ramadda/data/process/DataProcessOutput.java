@@ -37,11 +37,11 @@ public class DataProcessOutput {
     /** empty output id */
     public int DATAPROCESS_OUTPUT_EMPTY = 0;
 
-    /** entry output id */
-    public int DATAPROCESS_OUTPUT_ENTRY = 1;
+    /** operand output id */
+    public int DATAPROCESS_OUTPUT_OPERAND = 1;
 
-    /** List of entries */
-    private List<Entry> entries;
+    /** List of operands */
+    private List<DataProcessOperand> operands;
 
     /**
      * Default ctor
@@ -54,29 +54,38 @@ public class DataProcessOutput {
      * @param file  the associated file
      */
     public DataProcessOutput(Entry entry) {
-        this((List<Entry>) Misc.newList(entry));
+        this(new DataProcessOperand(entry));
     }
 
     /**
-     * Create the DataProcessOutput from a list of files
+     * Create the DataProcessOutput from data operand
      *
-     * @param files  the files
+     * @param operand the operand
      */
-    public DataProcessOutput(List<Entry> entries) {
-        this.entries = new ArrayList<Entry>(entries);
+    public DataProcessOutput(DataProcessOperand operand) {
+        this(Misc.newList(operand));
     }
 
     /**
-     * Get the entries
+     * Create the DataProcessOutput from data operand
      *
-     * @return the entries or an empty list
+     * @param iles  the files
      */
-    public List<Entry> getEntries() {
-        if (entries == null) {
-            return new ArrayList<Entry>();
+    public DataProcessOutput(List<DataProcessOperand> operands) {
+        this.operands = new ArrayList<DataProcessOperand>(operands);
+    }
+
+    /**
+     * Get the operands
+     *
+     * @return the operands or an empty list
+     */
+    public List<DataProcessOperand> getOperands() {
+        if (operands == null) {
+            return new ArrayList<DataProcessOperand>();
         }
 
-        return entries;
+        return operands;
     }
 
     /**
@@ -85,11 +94,11 @@ public class DataProcessOutput {
      * @return 
      */
     public int getDataProcessOutputType() {
-        if ((entries == null) || entries.isEmpty()) {
+        if ((operands == null) || operands.isEmpty()) {
             return DATAPROCESS_OUTPUT_EMPTY;
         }
 
-        return DATAPROCESS_OUTPUT_ENTRY;
+        return DATAPROCESS_OUTPUT_OPERAND;
     }
 
     /**

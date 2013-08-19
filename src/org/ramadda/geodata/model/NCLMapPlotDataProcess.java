@@ -27,6 +27,7 @@ import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOperand;
 import org.ramadda.data.process.DataProcessOutput;
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
+import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -276,6 +277,15 @@ public class NCLMapPlotDataProcess extends DataProcess {
             }
         }
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
+        
+        boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
+        String colormap = "rainbow";
+        if (plotType.equals("diff") || haveAnom) {
+        	colormap="testcmap";
+        }
+        envMap.put("colormap", colormap);
+        envMap.put("anom", Boolean.toString(haveAnom));
+        envMap.put("annotation", repository.getProperty(Constants.PROP_REPOSITORY_NAME, ""));
 
 
         //System.err.println("cmds:" + commands);
@@ -316,7 +326,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
         Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
         outputEntries.add(outputEntry);
-        DataProcessOutput dpo = new DataProcessOutput(outputEntries);
+        DataProcessOutput dpo = new DataProcessOutput(new DataProcessOperand(outputEntries));
 
         return dpo;
 
