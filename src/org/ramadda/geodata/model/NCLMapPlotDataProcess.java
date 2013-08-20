@@ -280,7 +280,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
         
         boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
         String colormap = "rainbow";
-        if (plotType.equals("diff") || haveAnom) {
+        if (outputType.equals("diff") || haveAnom) {
         	colormap="testcmap";
         }
         envMap.put("colormap", colormap);

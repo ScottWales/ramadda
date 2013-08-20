@@ -388,7 +388,7 @@ undef ("addLogo")
 procedure addLogo (imageFilePath:string, logoFilePath:string)
 begin
         tmpFilePath = imageFilePath + ".tmp"    
-        system(%convert% + " " + imageFilePath + " " + logoFilePath + " -geometry +20+555 -composite " + tmpFilePath)
+        system("%convert%" + " " + imageFilePath + " " + logoFilePath + " -geometry +20+555 -composite " + tmpFilePath)
         system("mv -f " + tmpFilePath + " " + imageFilePath)
 end
 
@@ -457,8 +457,8 @@ begin
   rescf@cnFillMode= "AreaFill"  
 
   ; labelbar
-  if (.not. dopanel) then
-    rescf@lbLabelBarOn = True         ; turn on label bar
+  if (dopanel) then
+    rescf@lbLabelBarOn = False         ; turn off label bar
   end if
 
   rescf@tiMainFontHeightF=0.012
@@ -505,24 +505,30 @@ begin
       end do
     end if
     mydata = data(0,:,:)
-    setMinMax(mydata,True,rescf)
+    symMinMaxPlt(mydata,20,False,rescf)
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
     res2 = remove_middle_contours(plots(0), rescf, 1)
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
     addAnnotation(wks,opts@annotation)
   else
     mydata = data(0,:,:)
-    setMinMax(mydata,isanom,rescf)
+    ;setMinMax(mydata,isanom,rescf)
+    if (isanom) then
+       symMinMaxPlt(mydata,20,False,rescf)
+    end if
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
     if (isanom) then
       res2 = remove_middle_contours(plots(0), rescf, 1)
       plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
     end if
+    if (.not. dopanel) then
+      addAnnotation(wks,opts@annotation)
+    end if
     delete(mydata)
     do i = 1,numfiles-1
       nextdata = readdata(files(i),opts)
       mydata = nextdata(0,:,:)
-      setMinMax(mydata,isanom,rescf)
+      ;setMinMax(mydata,isanom,rescf)
       plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
       if (isanom) then
         res2 = remove_middle_contours(plots(i), rescf, 1)
@@ -603,7 +609,7 @@ begin
         ;---Create resources for paneling
 
         resP                            = True
-        resP@gsnMaximize                = True    
+        ;resP@gsnMaximize                = True    
         resP@gsnPanelLabelBar           = True    
         resP@txFontHeightF              = .20
         resP@lbLabelFontHeightF         = 0.012
@@ -624,10 +630,11 @@ begin
         ;---Panel the plot.
         gsn_panel(wks,plots,(/1,2/),resP)
         addAnnotation(wks,opts@annotation)
+        maximize_output(wks, False)
       else 
         draw(plots(0))
-        frame(wks)
       end if
+      frame(wks)
       delete(wks)
       delete(plots)
    end if
