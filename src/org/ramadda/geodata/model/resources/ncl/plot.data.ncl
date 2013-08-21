@@ -179,26 +179,6 @@ begin
 
 end
 
-;****************************************************
-; Set the contour min and max based on the data so
-; it is equally spaced if a difference or anomaly
-; params:
-;    data   - the data
-;    center - True you want the contours to be
-;              equally centered about a central point
-;    opts   - the contour resource
-;****************************************************
-undef("setMinMax")
-procedure setMinMax(data, anom:logical, opts:logical)
-begin
-
-  mnmx = maxmin(data, anom)
-  opts@cnLevelSelectionMode = "ManualLevels"
-  opts@cnMinLevelValF = mnmx(0)
-  opts@cnMaxLevelValF = mnmx(1)
-
-end
-
 ;************************************************
 ; Procedure: remapData
 ; Purpose:   remap data from data2 into the grid of data1
@@ -387,9 +367,9 @@ end
 undef ("addLogo")
 procedure addLogo (imageFilePath:string, logoFilePath:string)
 begin
-        tmpFilePath = imageFilePath + ".tmp"    
-        system("%convert%" + " " + imageFilePath + " " + logoFilePath + " -geometry +20+555 -composite " + tmpFilePath)
-        system("mv -f " + tmpFilePath + " " + imageFilePath)
+  tmpFilePath = imageFilePath + ".tmp"    
+  system("%convert%" + " " + imageFilePath + " " + logoFilePath + " -geometry +20+555 -composite " + tmpFilePath)
+  system("mv -f " + tmpFilePath + " " + imageFilePath)
 end
 
 ;*************************************************
@@ -400,9 +380,15 @@ end
 undef ("addAnnotation")
 procedure addAnnotation(wksname, text)
 begin
-    txres               = True
-    txres@txFontHeightF = 0.02 
-    gsn_text_ndc(wksname,text,0.5,0.025,txres)
+  datestr = systemfunc("date -u +'%Y-%m-%d %H:%M UTC' ")
+  txres               = True
+  txres@txFontHeightF = 0.02 
+  if ((.not. ismissing(text)) .and. (text .ne. "")) then
+    plottext = "Plotted from " + text + " on "+datestr
+  else
+    plottext = "Plotted on "+datestr
+  end if
+  gsn_text_ndc(wksname,plottext,0.5,0.025,txres)
 end
 
 
@@ -424,7 +410,7 @@ begin
   numfiles = dimsizes(files)
   data = readdata(files(0), opts) 
   plots = new(numfiles,graphic)
-  dodiff = opts@outtype .eq. "diff" ; .and. numfiles .gt. 1
+  dodiff = opts@outtype .eq. "diff" .and. numfiles .gt. 1
   isanom = opts@isanom
   dopanel = (.not. dodiff) .and. numfiles .gt. 1
 
@@ -512,7 +498,6 @@ begin
     addAnnotation(wks,opts@annotation)
   else
     mydata = data(0,:,:)
-    ;setMinMax(mydata,isanom,rescf)
     if (isanom) then
        symMinMaxPlt(mydata,20,False,rescf)
     end if
@@ -528,7 +513,6 @@ begin
     do i = 1,numfiles-1
       nextdata = readdata(files(i),opts)
       mydata = nextdata(0,:,:)
-      ;setMinMax(mydata,isanom,rescf)
       plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
       if (isanom) then
         res2 = remove_middle_contours(plots(i), rescf, 1)
@@ -776,7 +760,7 @@ begin
   draw(plot1)
 
   ; add text
-;  addAnnotation(wks,opts@annotation)
+  addAnnotation(wks,opts@annotation)
 
   frame(wks)
     
@@ -838,7 +822,7 @@ begin
   draw(plot1)
 
   ; add text
-;  addCopyrightText(wks,outputType)
+  addAnnotation(wks,opts@annotation)
 
   frame(wks)
     
@@ -897,7 +881,12 @@ if (ismissing(colormap)) then
     colormap = "rainbow"
 end if
 
-isanom=getenv("anom") .eq. "true"
+anom=getenv("anom")
+if (.not. ismissing(anom)) then
+  isanom = anom .eq. "true"
+else
+  isanom = False
+end if
 
 ;
 ; Region parameters

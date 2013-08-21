@@ -466,6 +466,7 @@ sb.append(HtmlUtils.form(formUrl,
         envMap.put("ncfiles", input.toString());
         envMap.put("productdir", getProductDir().toString());
         envMap.put("plot_type", plotType);
+        envMap.put("output", "comp");
 
         Hashtable    args     = request.getArgs();
         List<String> varNames = new ArrayList<String>();
@@ -517,6 +518,11 @@ sb.append(HtmlUtils.form(formUrl,
             }
         }
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
+        
+        boolean haveAnom = input.toString().indexOf("anom") >= 0;
+        envMap.put("anom", Boolean.toString(haveAnom));
+        envMap.put("colormap", "rainbow");
+        envMap.put("annotation", repository.getProperty(PROP_REPOSITORY_NAME, ""));
 
 
         System.err.println("cmds:" + commands);

@@ -128,17 +128,16 @@ public class NCLMapPlotDataProcess extends DataProcess {
                     true) + Repository.msg("Map")
                           + HtmlUtils.radio(
                               NCLOutputHandler.ARG_NCL_PLOTTYPE, "kmz",
-                              false) + Repository.msg("Google Earth") + "<br>"
+                              false) + Repository.msg("Google Earth")
+                                     + "<br>"
                                      + HtmlUtils.radio(
                                          NCLOutputHandler.ARG_NCL_PLOTTYPE,
                                          "timeseries",
                                          false) + Repository.msg(
-                                             "Time Series")
-                                     + HtmlUtils.radio(
-                                         NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                         "pdf",
-                                         false) + Repository.msg(
-                                             "PDF")));
+                                             "Time Series") + HtmlUtils.radio(
+                                             NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                                             "pdf", false) + Repository.msg(
+                                                 "PDF")));
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -184,7 +183,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
             plotType = "png";
         }
         String suffix = plotType;
-        if (plotType.equals("timeseries")) {
+        if (plotType.equals("timeseries") || plotType.equals("pdf")) {
             suffix = "png";
         }
         String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
@@ -277,15 +276,17 @@ public class NCLMapPlotDataProcess extends DataProcess {
             }
         }
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
-        
+
         boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
-        String colormap = "rainbow";
+        String  colormap = "rainbow";
         if (outputType.equals("diff") || haveAnom) {
-        	colormap="testcmap";
+            colormap = "testcmap";
         }
         envMap.put("colormap", colormap);
         envMap.put("anom", Boolean.toString(haveAnom));
-        envMap.put("annotation", repository.getProperty(Constants.PROP_REPOSITORY_NAME, ""));
+        envMap.put("annotation",
+                   repository.getProperty(Constants.PROP_REPOSITORY_NAME,
+                                          ""));
 
 
         //System.err.println("cmds:" + commands);
@@ -326,7 +327,8 @@ public class NCLMapPlotDataProcess extends DataProcess {
         Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
         outputEntries.add(outputEntry);
-        DataProcessOutput dpo = new DataProcessOutput(new DataProcessOperand(outputEntries));
+        DataProcessOutput dpo =
+            new DataProcessOutput(new DataProcessOperand(outputEntries));
 
         return dpo;
 
