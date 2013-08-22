@@ -20,6 +20,7 @@
 
 package org.ramadda.data.record;
 
+import org.ramadda.util.Utils;
 
 import java.io.*;
 
@@ -54,7 +55,7 @@ public class RecordField {
 
 
     public static final String TYPE_NUMERIC = "numeric";
-    public static final String TYPE_STRING = "string";
+    public static final String  TYPE_STRING= "string";
     public static final String TYPE_DATE = "date";
     public static final String TYPE_INTEGER = "integer";
 
@@ -205,6 +206,13 @@ public class RecordField {
     }
 
 
+    private void attr(PrintWriter pw, String name, String value) {
+        pw.print(name);
+        pw.append("=\"");
+        pw.print(value);
+        pw.print("\" ");
+    }
+
 
     /**
      * _more_
@@ -217,15 +225,23 @@ public class RecordField {
         pw.print(getName());
         pw.print("[");
         if ((unit != null) && (unit.length() > 0)) {
-            pw.print("unit=\"");
-            pw.print(unit);
-            pw.print("\"");
+            attr(pw, "unit", unit);
         }
         if (arity > 1) {
-            pw.print("size=\"");
-            pw.print(arity);
-            pw.print("\"");
+            attr(pw, "size", ""+arity);
         }
+        if(isTypeString) {
+            attr(pw, "type", TYPE_STRING);
+        }  else if(isTypeDate) {
+            attr(pw, "type", TYPE_DATE);
+        }  else {
+            //Default is numeric
+        }
+
+        if(Utils.stringDefined(label)) {
+            attr(pw, "label", label);
+        }
+
         pw.print("]");
 
     }

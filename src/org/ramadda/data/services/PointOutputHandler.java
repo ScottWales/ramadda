@@ -1012,7 +1012,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public RecordVisitor makeCsvVisitor(final Request request,
-                                        Entry mainEntry,
+                                        final Entry mainEntry,
                                         List<? extends PointEntry> pointEntries,
                                         final Object jobId)
             throws Exception {
@@ -1030,6 +1030,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                         visitInfo.putProperty("georeference",
                                               new Boolean(true));
                     }
+                    String url =  request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                                                                     ARG_ENTRYID, mainEntry.getId()));
+                    visitInfo.putProperty(CsvVisitor.PROP_SOURCE, url);
                     csvVisitor = new CsvVisitor(getThePrintWriter(),
                                                 getFields(request, record.getFields()));
                 }

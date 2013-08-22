@@ -43,7 +43,7 @@ public abstract class RecordVisitor {
      * @return _more_
      */
     public abstract boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                        Record record);
+                                        Record record) throws Exception;
 
     /**
      * This gets called when the visitor is done visiting the given record file

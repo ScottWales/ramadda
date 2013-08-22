@@ -22,9 +22,11 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.data.record.filter.*;
+import org.ramadda.util.IsoUtil;
 
 import java.io.*;
 
+import java.util.Date;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -64,6 +66,32 @@ public class CsvVisitor extends RecordVisitor {
         this.fields = fields;
     }
 
+    public static final String PROP_FIELDS = "fields";
+    public static final String PROP_GENERATOR = "generator";
+    public static final String PROP_CREATE_DATE = "create_date";
+    public static final String PROP_CRS = "crs";
+    public static final String PROP_DELIMITER = "delimiter";
+    public static final String PROP_MISSING = "missing";
+    public static final String PROP_SOURCE = "source";
+
+    private static final String LINE_DELIMITER = "\n";
+    private static final String COLUMN_DELIMITER = ",";
+    private static final String MISSING = "NaN";
+
+    private void comment(String comment) {
+        pw.append("#");
+        pw.append(comment);
+        pw.append(LINE_DELIMITER);
+    }
+
+    private void property(String name, String value) {
+        pw.append("#");
+        pw.append(name);
+        pw.append("=");
+        pw.append(value);
+        pw.append(LINE_DELIMITER);
+    }
+
     /**
      * _more_
      *
@@ -74,7 +102,7 @@ public class CsvVisitor extends RecordVisitor {
      * @return _more_
      */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record) {
+                               Record record) throws Exception {
         if (fields == null) {
             fields = record.getFields();
         }
@@ -82,7 +110,8 @@ public class CsvVisitor extends RecordVisitor {
         if ( !printedHeader) {
             printedHeader = true;
             cnt           = 0;
-            pw.append("#");
+            comment("");
+            pw.append("#" + PROP_FIELDS+"=");
             for (RecordField field : fields) {
                 //Skip the fake ones
                 if (field.getSynthetic()) {
@@ -93,12 +122,21 @@ public class CsvVisitor extends RecordVisitor {
                     continue;
                 }
                 if (cnt > 0) {
-                    pw.append(",");
+                    pw.append(COLUMN_DELIMITER);
                 }
                 cnt++;
                 field.printCsvHeader(visitInfo, pw);
             }
             pw.append("\n");
+            String source = (String) visitInfo.getProperty(PROP_SOURCE);
+            if(source!=null) {
+                property(PROP_SOURCE, source);
+            }
+            property(PROP_GENERATOR, "Ramadda http://ramadda.org");
+            property(PROP_CREATE_DATE, IsoUtil.format(new Date()));
+            property(PROP_DELIMITER, COLUMN_DELIMITER);
+            property(PROP_MISSING, MISSING);
+            comment("Here comes the data");
         }
         cnt = 0;
         for (RecordField field : fields) {
@@ -113,7 +151,7 @@ public class CsvVisitor extends RecordVisitor {
                 continue;
             }
             if (cnt > 0) {
-                pw.append(",");
+                pw.append(COLUMN_DELIMITER);
             }
             cnt++;
             ValueGetter getter = field.getValueGetter();
