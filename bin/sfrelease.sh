@@ -19,7 +19,7 @@ fi
 
 #scp the top level build products to SF
 
-###scp dist/repository.war dist/ramadda${RAMADDA_VERSION}.zip  dist/allplugins.jar dist/ramaddaclient.zip  ${sfuser},ramadda@frs.sourceforge.net:/home/frs/project/r/ra/ramadda/ramadda${RAMADDA_VERSION}
+scp dist/repository.war dist/ramadda${RAMADDA_VERSION}.zip  dist/allplugins.jar dist/ramaddaclient.zip  ${sfuser},ramadda@frs.sourceforge.net:/home/frs/project/r/ra/ramadda/ramadda${RAMADDA_VERSION}
 
 #now make the rest of the plugins
 #ant otherplugins

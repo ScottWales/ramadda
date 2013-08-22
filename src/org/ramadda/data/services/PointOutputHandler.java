@@ -600,7 +600,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 RecordVisitorGroup groupVisitor =
                     new RecordVisitorGroup(visitors) {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
+                            VisitInfo visitInfo, Record record) throws Exception {
                         if ( !super.visitRecord(file, visitInfo, record)) {
                             return false;
                         }
