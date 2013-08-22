@@ -71,8 +71,9 @@ public class RecordVisitorGroup extends RecordVisitor {
      *
      * @return _more_
      */
+    @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record) {
+                               Record record)  throws Exception {
         count++;
         for (RecordVisitor visitor : visitors) {
             boolean visitorOK = visitor.visitRecord(file, visitInfo, record);
