@@ -600,7 +600,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
         }
 
-        System.err.println("Clauses:" + clauses);
+        //System.err.println("Clauses:" + clauses);
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
             return new Result("", new StringBuffer(), Json.MIMETYPE);
@@ -610,7 +610,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             new ArrayList<String>(((CollectionTypeHandler) entry
                 .getTypeHandler())
                     .getUniqueColumnValues(entry, columnIdx, clauses, false));
-        System.err.println("Values:" + values);
+        //System.err.println("Values:" + values);
         StringBuffer sb = new StringBuffer();
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
