@@ -58,7 +58,7 @@ import java.util.regex.Matcher;
 /**
  * Map plotting process using NCL
  */
-public class NCLMapPlotDataProcess extends DataProcess {
+public class NCLModelPlotDataProcess extends DataProcess {
 
     /** The nclOutputHandler */
     NCLOutputHandler nclOutputHandler;
@@ -76,8 +76,8 @@ public class NCLMapPlotDataProcess extends DataProcess {
      *
      * @throws Exception  badness
      */
-    public NCLMapPlotDataProcess(Repository repository) throws Exception {
-        this(repository, "NCLMap", "Plots");
+    public NCLModelPlotDataProcess(Repository repository) throws Exception {
+        this(repository, "NCLPlot", "Plots");
     }
 
     /**
@@ -89,8 +89,8 @@ public class NCLMapPlotDataProcess extends DataProcess {
      *
      * @throws Exception  problem creating process
      */
-    public NCLMapPlotDataProcess(Repository repository, String id,
-                                 String label)
+    public NCLModelPlotDataProcess(Repository repository, String id,
+                                   String label)
             throws Exception {
         super(id, label);
         this.repository  = repository;
@@ -159,6 +159,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
         List<Entry>              outputEntries = new ArrayList<Entry>();
         List<DataProcessOperand> ops           = input.getOperands();
         StringBuffer             fileList      = new StringBuffer();
+        StringBuffer             nameList      = new StringBuffer();
         Entry                    inputEntry    = null;
         boolean                  haveOne       = false;
         for (DataProcessOperand op : ops) {
@@ -168,9 +169,11 @@ public class NCLMapPlotDataProcess extends DataProcess {
             for (Entry entry : opEntries) {
                 if (haveOne) {
                     fileList.append(",");
+                    nameList.append(",");
                 }
                 //fileList.append("\"");
                 fileList.append(entry.getResource().toString());
+                nameList.append(op.getDescription());
                 //fileList.append("\"");
                 haveOne = true;
             }
@@ -207,10 +210,10 @@ public class NCLMapPlotDataProcess extends DataProcess {
                     nclOutputHandler.getStorageManager().getResourceDir(),
                     "ncl"), nclOutputHandler.SCRIPT_MAPPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
-        envMap.put("NCARG_ROOT", ncargRoot);
+        nclOutputHandler.addGlobalEnvVars(envMap);
         envMap.put("wks_name", wksName);
-        envMap.put("ncfile", inputEntry.getResource().toString());
         envMap.put("ncfiles", fileList.toString());
+        envMap.put("titles", nameList.toString());
         envMap.put("productdir", input.getProcessDir().toString());
         envMap.put("plot_type", plotType);
         envMap.put("output", outputType);
@@ -328,7 +331,7 @@ public class NCLMapPlotDataProcess extends DataProcess {
         outputEntry.setResource(resource);
         outputEntries.add(outputEntry);
         DataProcessOutput dpo =
-            new DataProcessOutput(new DataProcessOperand(outputEntries));
+            new DataProcessOutput(new DataProcessOperand("Plot of " + nameList, outputEntries));
 
         return dpo;
 

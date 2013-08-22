@@ -22,19 +22,6 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -50,16 +37,33 @@ import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
+
 import org.w3c.dom.Element;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
+
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -78,26 +82,45 @@ public class NCLOutputHandler extends OutputHandler {
 
     /** NCL map plot script */
     private static final String SCRIPT_KML = "kml.ncl";
-    
-    private static final String[] SCRIPTS = {SCRIPT_MAPPLOT, SCRIPT_KML, "remove_middle_contours.ncl"};
+
+    /** NCL map plot script */
+    private static final String SCRIPT_HLURESFILE = ".hluresfile";
+
+    /** sripts */
+    private static final String[] SCRIPTS = { SCRIPT_MAPPLOT, SCRIPT_KML,
+            "remove_middle_contours.ncl", SCRIPT_HLURESFILE };
 
     /** NCL prefix string */
-    private static final String ARG_NCL_PREFIX= "ncl.";
+    private static final String ARG_NCL_PREFIX = "ncl.";
 
     /** NCL plot string */
-    public static final String ARG_NCL_PLOTTYPE= ARG_NCL_PREFIX+"_plottype";
+    public static final String ARG_NCL_PLOTTYPE = ARG_NCL_PREFIX
+                                                  + "_plottype";
 
-    public static final String ARG_NCL_AREA  = ARG_NCL_PREFIX +"area";
-    public static final String ARG_NCL_AREA_NORTH  = ARG_NCL_AREA+"_north";
-    public static final String ARG_NCL_AREA_SOUTH  = ARG_NCL_AREA+"_south";
-    public static final String ARG_NCL_AREA_EAST  = ARG_NCL_AREA+"_east";
-    public static final String ARG_NCL_AREA_WEST  = ARG_NCL_AREA+"_west";
-    public static final String ARG_NCL_VARIABLE  = ARG_NCL_PREFIX+ARG_VARIABLE;
-    
+    /** area arg prefix */
+    public static final String ARG_NCL_AREA = ARG_NCL_PREFIX + "area";
+
+    /** area North argument */
+    public static final String ARG_NCL_AREA_NORTH = ARG_NCL_AREA + "_north";
+
+    /** area South argument */
+    public static final String ARG_NCL_AREA_SOUTH = ARG_NCL_AREA + "_south";
+
+    /** area East argument */
+    public static final String ARG_NCL_AREA_EAST = ARG_NCL_AREA + "_east";
+
+    /** area West argument */
+    public static final String ARG_NCL_AREA_WEST = ARG_NCL_AREA + "_west";
+
+    /** NCL variable argument */
+    public static final String ARG_NCL_VARIABLE = ARG_NCL_PREFIX
+                                                  + ARG_VARIABLE;
+
     /** spatial arguments */
-    public static final String[] SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+    public static final String[] SPATIALARGS = new String[] {
+                                                   ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
-    
+
     /** map plot output id */
     public static final OutputType OUTPUT_NCL_MAPPLOT =
         new OutputType("NCL Map Displays", "ncl.mapplot",
@@ -107,21 +130,27 @@ public class NCLOutputHandler extends OutputHandler {
     /** the product directory */
     private TempDir productDir;
 
+    /** the resources directory */
+    private String resourceDir;
+
     /** the path to NCL program */
     private String ncargRoot;
-    
+
     /** the path to convert program */
     private String convertPath;
-    
+
     /** spatial arguments */
-    public static final String[] NCL_SPATIALARGS = new String[] { ARG_NCL_AREA_NORTH,
+    public static final String[] NCL_SPATIALARGS = new String[] {
+                                                       ARG_NCL_AREA_NORTH,
             ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
-    
+
     /** NCL version regex */
-    private static final String NCL_VERSION_REGEX = "NCAR Command Language Version (\\d+.\\d+.\\d+)";
-    
+    private static final String NCL_VERSION_REGEX =
+        "NCAR Command Language Version (\\d+.\\d+.\\d+)";
+
     /** NCL version pattern */
-    public static final Pattern versionPattern = Pattern.compile(NCL_VERSION_REGEX);
+    public static final Pattern versionPattern =
+        Pattern.compile(NCL_VERSION_REGEX);
 
     /**
      * Construct a new NCLOutputHandler
@@ -134,10 +163,12 @@ public class NCLOutputHandler extends OutputHandler {
         super(repository, "NCL");
         ncargRoot = getProperty(PROP_NCARG_ROOT, null);
         if (ncargRoot == null) {
-            repository.getLogManager().logWarning(
-                    "To run NCL, set the ncl.ncarg_root property");
+            repository.getLogManager().logWarning("To run NCL, set the "
+                    + PROP_NCARG_ROOT + " property");
         }
         convertPath = getProperty(PROP_CONVERT_PATH, "convert");
+        resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
+                                     "ncl");
     }
 
     /**
@@ -152,8 +183,10 @@ public class NCLOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_NCL_MAPPLOT);
-        ncargRoot = getProperty(PROP_NCARG_ROOT, null);
+        ncargRoot   = getProperty(PROP_NCARG_ROOT, null);
         convertPath = getProperty(PROP_CONVERT_PATH, "convert");
+        resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
+                                     "ncl");
         if (ncargRoot != null) {
             // write out the templates
             for (int i = 0; i < SCRIPTS.length; i++) {
@@ -161,23 +194,24 @@ public class NCLOutputHandler extends OutputHandler {
                     getStorageManager().readSystemResource(
                         "/org/ramadda/geodata/model/resources/ncl/"
                         + SCRIPTS[i]);
-                if (nclScript == null || nclScript.isEmpty()) {
+                if ((nclScript == null) || nclScript.isEmpty()) {
                     getRepository().getLogManager().logWarning(
-                    "Unable to find " + SCRIPTS[i]);
+                        "Unable to find " + SCRIPTS[i]);
                 }
-                String outdir =
-                    IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl");
-                nclScript = nclScript.replaceAll("\\$NCL_RESOURCES", outdir);
+                nclScript = nclScript.replaceAll("\\$NCL_RESOURCES",
+                        resourceDir);
                 nclScript = nclScript.replaceAll("%convert%", convertPath);
-                StorageManager.makeDir(outdir);
-                File outputFile = new File(IOUtil.joinDir(outdir,
+                StorageManager.makeDir(resourceDir);
+                File outputFile = new File(IOUtil.joinDir(resourceDir,
                                       SCRIPTS[i]));
-                InputStream is = new ByteArrayInputStream(nclScript.getBytes());
+                InputStream is =
+                    new ByteArrayInputStream(nclScript.getBytes());
                 OutputStream os =
-                    getStorageManager().getUncheckedFileOutputStream(outputFile);
+                    getStorageManager().getUncheckedFileOutputStream(
+                        outputFile);
                 IOUtil.writeTo(is, os);
             }
-        } 
+        }
     }
 
     /**
@@ -189,10 +223,15 @@ public class NCLOutputHandler extends OutputHandler {
         return ncargRoot != null;
     }
 
+    /**
+     * Get the root directory
+     *
+     * @return  the NCARG_ROOT directory
+     */
     public String getNcargRootDir() {
-    	return ncargRoot;
+        return ncargRoot;
     }
-    
+
     /**
      * This method gets called to determine if the given entry or entries can be displays as las xml
      *
@@ -381,8 +420,8 @@ sb.append(HtmlUtils.form(formUrl,
                           + HtmlUtils.radio(
                               ARG_NCL_PLOTTYPE, "kmz",
                               false) + Repository.msg("Google Earth") +
-                              HtmlUtils.radio(ARG_NCL_PLOTTYPE, 
-                            		  "timeseries", false) + Repository.msg("Time Series")));
+                              HtmlUtils.radio(ARG_NCL_PLOTTYPE,
+                                          "timeseries", false) + Repository.msg("Time Series")));
         */
     }
 
@@ -432,7 +471,8 @@ sb.append(HtmlUtils.form(formUrl,
     public File processRequest(Request request, File input) throws Exception {
 
         String wksName = getRepository().getGUID();
-        String plotType = request.getString(CollectionTypeHandler.ARG_REQUEST,"png");
+        String plotType =
+            request.getString(CollectionTypeHandler.ARG_REQUEST, "png");
         //String plotType = request.getString(ARG_NCL_PLOTTYPE,"png");
         if (plotType.equals("image")) {
             plotType = "png";
@@ -461,7 +501,7 @@ sb.append(HtmlUtils.form(formUrl,
                 IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),
                 SCRIPT_MAPPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
-        envMap.put("NCARG_ROOT", ncargRoot);
+        addGlobalEnvVars(envMap);
         envMap.put("wks_name", wksName);
         envMap.put("ncfiles", input.toString());
         envMap.put("productdir", getProductDir().toString());
@@ -493,17 +533,25 @@ sb.append(HtmlUtils.form(formUrl,
         LatLonRect llb = dataset.getBoundingBox();
         // Normalize longitude bounds to the data
         double origLonMin = llb.getLonMin();
-        double lonMin = Double.parseDouble(request.getString(ARG_NCL_AREA_WEST, String.valueOf(llb.getLonMin())));
-        double lonMax = Double.parseDouble(request.getString(ARG_NCL_AREA_EAST, String.valueOf(llb.getLonMax())));
-        if (origLonMin < 0) { // -180 to 180
+        double lonMin =
+            Double.parseDouble(request.getString(ARG_NCL_AREA_WEST,
+                String.valueOf(llb.getLonMin())));
+        double lonMax =
+            Double.parseDouble(request.getString(ARG_NCL_AREA_EAST,
+                String.valueOf(llb.getLonMax())));
+        if (origLonMin < 0) {  // -180 to 180
             lonMin = GeoUtils.normalizeLongitude(lonMin);
             lonMax = GeoUtils.normalizeLongitude(lonMax);
-        } else {  // 0-360
+        } else {               // 0-360
             lonMin = GeoUtils.normalizeLongitude360(lonMin);
             lonMax = GeoUtils.normalizeLongitude360(lonMax);
         }
-        envMap.put("maxLat", request.getString(ARG_NCL_AREA_NORTH, String.valueOf(llb.getLatMax())));
-        envMap.put("minLat", request.getString(ARG_NCL_AREA_SOUTH, String.valueOf(llb.getLatMin())));
+        envMap.put("maxLat",
+                   request.getString(ARG_NCL_AREA_NORTH,
+                                     String.valueOf(llb.getLatMax())));
+        envMap.put("minLat",
+                   request.getString(ARG_NCL_AREA_SOUTH,
+                                     String.valueOf(llb.getLatMin())));
         envMap.put("minLon", String.valueOf(lonMin));
         envMap.put("maxLon", String.valueOf(lonMax));
 
@@ -518,15 +566,16 @@ sb.append(HtmlUtils.form(formUrl,
             }
         }
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
-        
+
         boolean haveAnom = input.toString().indexOf("anom") >= 0;
         envMap.put("anom", Boolean.toString(haveAnom));
         envMap.put("colormap", "rainbow");
-        envMap.put("annotation", repository.getProperty(PROP_REPOSITORY_NAME, ""));
+        envMap.put("annotation",
+                   repository.getProperty(PROP_REPOSITORY_NAME, ""));
 
 
-        System.err.println("cmds:" + commands);
-        System.err.println("env:" + envMap);
+        //System.err.println("cmds:" + commands);
+        //System.err.println("env:" + envMap);
 
         //Use new repository method to execute. This gets back [stdout,stderr]
         String[] results = getRepository().executeCommand(commands, envMap,
@@ -539,8 +588,9 @@ sb.append(HtmlUtils.form(formUrl,
             if (m.find()) {
                 String version = m.group(1);
                 if (version.compareTo("6.0.0") < 0) {
-            	    String oldPath = outFile.toString();
-            	    outFile = new File(oldPath.replace(".png", ".000001.png"));
+                    String oldPath = outFile.toString();
+                    outFile = new File(oldPath.replace(".png",
+                            ".000001.png"));
                 }
             }
         }
@@ -557,7 +607,17 @@ sb.append(HtmlUtils.form(formUrl,
                     "Humm, the NCL image generation failed for some reason");
             }
         }
+
         return outFile;
     }
 
+    /**
+     * Add the global environment vars (e.g. NCARG_ROOT) to the environment map
+     * @param envMap  the map
+     */
+    public void addGlobalEnvVars(Map<String, String> envMap) {
+        envMap.put("NCARG_ROOT", ncargRoot);
+        envMap.put("NCARG_USRRESFILE",
+                   IOUtil.joinDir(resourceDir, SCRIPT_HLURESFILE));
+    }
 }

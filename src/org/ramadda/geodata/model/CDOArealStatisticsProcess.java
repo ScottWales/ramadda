@@ -22,11 +22,6 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import org.ramadda.data.process.DataProcess;
 import org.ramadda.data.process.DataProcessInput;
 import org.ramadda.data.process.DataProcessOperand;
@@ -45,21 +40,35 @@ import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
+
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 
 
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+
 /**
  * DataProcess for area statistics using CDO
  */
-public class CDOAreaStatisticsProcess extends DataProcess {
+public class CDOArealStatisticsProcess extends DataProcess {
 
     /** the type handler associated with this */
     CDOOutputHandler typeHandler;
 
     /** the associated repository */
     Repository repository;
+
+    /** months */
+    private static final String[] MONTHS = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+    };
 
     /**
      * Area statistics DataProcess
@@ -68,7 +77,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      *
      * @throws Exception  problems
      */
-    public CDOAreaStatisticsProcess(Repository repository) throws Exception {
+    public CDOArealStatisticsProcess(Repository repository) throws Exception {
         super("CDO_AREA_STATS", "Area Statistics");
         this.repository = repository;
         typeHandler     = new CDOOutputHandler(repository);
@@ -148,7 +157,8 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             throw new Exception("Illegal data type");
         }
 
-        List<DataProcessOperand> outputEntries = new ArrayList<DataProcessOperand>();
+        List<DataProcessOperand> outputEntries =
+            new ArrayList<DataProcessOperand>();
         for (DataProcessOperand op : input.getOperands()) {
             Entry oneOfThem = op.getEntries().get(0);
             Entry collection = GranuleTypeHandler.getCollectionEntry(request,
@@ -192,8 +202,7 @@ public class CDOAreaStatisticsProcess extends DataProcess {
      * @throws Exception Problem processing the monthly request
      */
     private DataProcessOperand processMonthlyRequest(Request request,
-                                        DataProcessInput dpi,
-                                        DataProcessOperand op)
+            DataProcessInput dpi, DataProcessOperand op)
             throws Exception {
 
         Entry        oneOfThem = op.getEntries().get(0);
@@ -274,16 +283,69 @@ public class CDOAreaStatisticsProcess extends DataProcess {
             runProcess(commands, dpi.getProcessDir(), anomFile);
             outFile = anomFile;
         }
-        
+
+        StringBuffer outputName = new StringBuffer();
+        Object[]     values     = oneOfThem.getValues();
+        // values = collection,model,experiment,ens,var
+        // model
+        outputName.append(values[1].toString().toUpperCase());
+        outputName.append(" ");
+        // experiment
+        outputName.append(values[2]);
+        outputName.append(" ");
+        // ens
+        String ens = values[3].toString();
+        if (ens.equals("mean") || ens.equals("sprd") || ens.equals("clim")) {
+            outputName.append("ens");
+        }
+        outputName.append(ens);
+        outputName.append(" ");
+        // var
+        outputName.append(values[4]);
+        outputName.append(" ");
+        outputName.append(stat);
+        outputName.append(" ");
+
+        int startMonth = request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
+                         ? request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1)
+                         : 1;
+        int endMonth = request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
+                       ? request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
+                                     startMonth)
+                       : startMonth;
+        if (startMonth == endMonth) {
+            outputName.append(MONTHS[startMonth - 1]);
+        } else {
+            outputName.append(MONTHS[startMonth - 1]);
+            outputName.append("-");
+            outputName.append(MONTHS[endMonth - 1]);
+        }
+        outputName.append(" ");
+        int startYear = request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
+                        ? request.get(CDOOutputHandler.ARG_CDO_STARTYEAR, 1)
+                        : 1979;
+        int endYear   = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR)
+                        ? request.get(CDOOutputHandler.ARG_CDO_ENDYEAR,
+                                      startMonth)
+                        : startMonth;
+        if (startMonth == endMonth) {
+            outputName.append(startYear);
+        } else {
+            outputName.append(startYear);
+            outputName.append("-");
+            outputName.append(endYear);
+        }
+        //System.out.println("Name: " + outputName.toString());
 
         Resource resource    = new Resource(outFile,
                                             Resource.TYPE_LOCAL_FILE);
         Entry    outputEntry = new Entry(new TypeHandler(repository), true);
         outputEntry.setResource(resource);
 
-        return new DataProcessOperand(outputEntry.getName(), outputEntry);
+        //return new DataProcessOperand(outputEntry.getName(), outputEntry);
+        return new DataProcessOperand(outputName.toString(), outputEntry);
     }
-    
+
     /**
      * Can we handle this input
      *

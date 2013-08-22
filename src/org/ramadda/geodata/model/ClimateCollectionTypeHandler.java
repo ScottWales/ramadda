@@ -84,7 +84,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
             throws Exception {
         super(repository, entryNode);
         //processes.addAll(new CDOOutputHandler(repository).getDataProcesses());
-        processes.add(new CDOAreaStatisticsProcess(repository));
+        processes.add(new CDOArealStatisticsProcess(repository));
         //        processes.addAll(new NCOOutputHandler(repository).getDataProcesses());
         nclOutputHandler = new NCLOutputHandler(repository);
     }

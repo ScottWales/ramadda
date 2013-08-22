@@ -413,6 +413,9 @@ begin
   dodiff = opts@outtype .eq. "diff" .and. numfiles .gt. 1
   isanom = opts@isanom
   dopanel = (.not. dodiff) .and. numfiles .gt. 1
+  plottitles = opts@titles
+  print(plottitles)
+  numtitles = dimsizes(plottitles)
 
   rescf = True;
   ;rescf@gsnAddCyclic          = (addCyclic .eq. "true")    ; turn off if subset
@@ -483,13 +486,23 @@ begin
 
   ; TODO: Handle multiple times
   if (dodiff) then
+    plottitle = ""
+    if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
+      plottitle = plottitles(0)
+    end if
     if (numfiles .gt. 1) then
       do i = 1,numfiles-1
         newdata = readdata(files(i),opts)
         data = subData(data,newdata)
+        if (numtitles .ge. i .and. \
+            (.not. ismissing(plottitles(i))) .and. \
+            (plottitles(i) .ne. "")) then
+            plottitle = plottitle + " minus ~C~" + plottitles(i)
+        end if
         delete(newdata)
       end do
     end if
+    rescf@tiMainString        = plottitle
     mydata = data(0,:,:)
     symMinMaxPlt(mydata,20,False,rescf)
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
@@ -498,6 +511,9 @@ begin
     addAnnotation(wks,opts@annotation)
   else
     mydata = data(0,:,:)
+    if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
+       rescf@tiMainString        = plottitles(0)
+    end if
     if (isanom) then
        symMinMaxPlt(mydata,20,False,rescf)
     end if
@@ -513,6 +529,9 @@ begin
     do i = 1,numfiles-1
       nextdata = readdata(files(i),opts)
       mydata = nextdata(0,:,:)
+      if ((.not. ismissing(plottitles(i))) .and. (plottitles(i) .ne. "")) then
+         rescf@tiMainString        = plottitles(i)
+      end if
       plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
       if (isanom) then
         res2 = remove_middle_contours(plots(i), rescf, 1)
@@ -593,12 +612,14 @@ begin
         ;---Create resources for paneling
 
         resP                            = True
-        ;resP@gsnMaximize                = True    
+        resP@gsnMaximize                = True    
         resP@gsnPanelLabelBar           = True    
         resP@txFontHeightF              = .20
         resP@lbLabelFontHeightF         = 0.012
-        resP@pmLabelBarWidthF           = 0.80
+        resP@pmLabelBarWidthF           = 0.60
         resP@pmLabelBarHeightF          = 0.04
+        resP@gsnFrame = False ; Don't advance frame for annotation overlay
+        resP@gsnPanelDebug = False ; set to True for debugging
 
         ;---Scale plots based on one of the smaller plots, and not the first one.
         resP@gsnPanelScalePlotIndex     = 1
@@ -608,13 +629,13 @@ begin
         resP@gsnPanelYWhiteSpacePercent = 3
 
         ;---Leave some room for the leftmost and rightmost tickmark labels.
-        resP@gsnPanelLeft               = 0.1
-        resP@gsnPanelRight              = 0.9
+        resP@gsnPanelLeft               = 0.05
+        resP@gsnPanelRight              = 0.95
 
         ;---Panel the plot.
-        gsn_panel(wks,plots,(/1,2/),resP)
+        gsn_panel(wks,plots,(/2,1/),resP)
         addAnnotation(wks,opts@annotation)
-        maximize_output(wks, False)
+        ;maximize_output(wks, False)
       else 
         draw(plots(0))
       end if
@@ -743,20 +764,6 @@ begin
 
   plot1  = gsn_csm_xy(wks,yrs,plot_data,res) ; create plot
 
-; ; *** 3.2: Smoothed curves
-;  sres = True                                 ; set up a second resource list
-;  sres@gsnDraw = False                        ; do not draw the plot
-;  sres@gsnFrame = False                       ; do not advance the frame
-;
-;  sres@xyLineThicknesses = 3.0
-;  sres@xyDashPattern = 0               ; dashed/solid(=0)
-;
-;  sres@xyLineColors      = (/"black"/)
-;
-;  plot2 = gsn_csm_xy(wks,yrs,data_FieldAvg_wgt_21yr,sres)
-;
-; ;; *** 3.3: Overlay
-;  overlay(plot1,plot2)
   draw(plot1)
 
   ; add text
@@ -794,8 +801,7 @@ begin
   std_FieldAvg = dim_standardize(data_FieldAvg_wgt, 0)
 
   pdfdata = pdfx(std_FieldAvg, 6, False)
-  printVarSummary(pdfdata)
-  mnmx = maxmin(pdfdata, True)
+  ;printVarSummary(pdfdata)
 
   ;; ***  Create plot ***
   wks_type = "png"
@@ -855,6 +861,15 @@ if (ismissing(tmpfiles)) then
 end if
 ncfiles=str_split(tmpfiles,",")
 
+;titles
+tmptitles=getenv("titles")
+if (ismissing(tmptitles)) then 
+   numfiles = dimsizes(ncfiles)
+   titles = new((/numfiles/),string)
+else 
+   titles=str_split(tmptitles,",")
+end if
+
 ; output variables
 wks_name=(getenv("wks_name"))
 if (ismissing(wks_name)) then
@@ -908,6 +923,7 @@ options@maxLon = maxLon
 options@colormap = colormap
 options@isanom = isanom
 options@annotation = getenv("annotation")
+options@titles = titles
 
 
 if (plotType.eq."timeseries") then

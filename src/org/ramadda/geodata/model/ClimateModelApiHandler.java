@@ -118,8 +118,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             throws Exception {
         //return getTypeHandler().getDataProcessesToRun(request);
         List<DataProcess> processes = new ArrayList<DataProcess>();
-        processes.add(new CDOAreaStatisticsProcess(repository));
-        processes.add(new NCLMapPlotDataProcess(repository));
+        processes.add(new CDOArealStatisticsProcess(repository));
+        processes.add(new NCLModelPlotDataProcess(repository));
 
         return processes;
     }

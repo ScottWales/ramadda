@@ -98,19 +98,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                                                    + "operation";
 
     /** start month identifier */
-    private static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
+    public static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
                                                      + "startmonth";
 
     /** end month identifier */
-    private static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX
+    public static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX
                                                    + "endmonth";
 
     /** start month identifier */
-    private static final String ARG_CDO_STARTYEAR = ARG_CDO_PREFIX
+    public static final String ARG_CDO_STARTYEAR = ARG_CDO_PREFIX
                                                     + "startyear";
 
     /** end month identifier */
-    private static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX + "endyear";
+    public static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX + "endyear";
 
     /** variable identifier */
     private static final String ARG_CDO_PARAM = ARG_CDO_PREFIX + "param";
