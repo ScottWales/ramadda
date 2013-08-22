@@ -6333,7 +6333,6 @@ public class EntryManager extends RepositoryManager {
             return entry;
         }
 
-        //catalog:url:dataset:datasetid
         try {
             if (entryId.startsWith(ID_PREFIX_REMOTE)) {
                 String[] tuple = getRemoteEntryInfo(entryId);
@@ -6343,17 +6342,13 @@ public class EntryManager extends RepositoryManager {
                 String   parentEntryId = pair[0];
                 String   syntheticPart = pair[1];
                 Entry    parentEntry = null;
-                System.err.println("Parent:" + parentEntryId +" synth part:" + syntheticPart);
+                //                System.err.println("Parent:" + parentEntryId +" synth part:" + syntheticPart);
 
                 TypeHandler typeHandler = null;
 
                 if(parentEntryId.equals(ENTRYID_PROCESS)) {
-                    typeHandler = getProcessFileTypeHandler();
-                    //                    parentEntry = topGroup;
-                    parentEntry = new Entry(typeHandler, true);
-                    parentEntry.setName("Process Entries");
-                    parentEntry.setId(ID_PREFIX_SYNTH+ENTRYID_PROCESS);
-                    parentEntry.setParentEntry(topGroup);
+                    parentEntry = getProcessEntry();
+                    typeHandler = parentEntry.getTypeHandler();
                     if(syntheticPart == null) {
                         return parentEntry;
                     }
@@ -7401,27 +7396,35 @@ public class EntryManager extends RepositoryManager {
     public List<String> getChildIds(Request request, Entry group,
                                     List<Clause> where)
             throws Exception {
+
+        //        System.err.println("get Child ids:" + group);
         List<String> ids          = new ArrayList<String>();
         boolean      isSynthEntry = isSynthEntry(group.getId());
         if (group.getTypeHandler().isSynthType() || isSynthEntry) {
+            //            System.err.println(" is synth");
+
             Entry  mainEntry = group;
             String synthId   = null;
             if (isSynthEntry) {
+                //                System.err.println(" is synth entry mainENtry.getId=" + mainEntry.getId());
+
                 String[] pair    = getSynthId(mainEntry.getId());
                 String   entryId = pair[0];
                 synthId   = pair[1];
                 if(entryId.equals(ENTRYID_PROCESS)) {
-                    mainEntry = new Entry(new ProcessFileTypeHandler(getRepository(), null), true);
-                    mainEntry.setId(ENTRYID_PROCESS);
-                    mainEntry.setParentEntry(getTopGroup());
+                    mainEntry = getProcessEntry();
                 } else {
                     mainEntry = (Entry) getEntry(request, entryId, false, false);
+                    //                    System.err.println(" getEntry == null? :" + (mainEntry == null) +" " + entryId);
                 }
-
+                //                System.err.println(" main entry:" + mainEntry);
                 if (mainEntry == null) {
                     return ids;
                 }
             }
+
+            //            System.err.println("****  Get synthids:" + mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
+            //                                                                                        group, synthId));
 
             return mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
                     group, synthId);
@@ -8896,11 +8899,27 @@ public class EntryManager extends RepositoryManager {
 
     private  ProcessFileTypeHandler processFileTypeHandler;
 
+    private  Entry processEntry;
+
     public ProcessFileTypeHandler getProcessFileTypeHandler() throws Exception {
         if(processFileTypeHandler == null) {
              processFileTypeHandler= new ProcessFileTypeHandler(getRepository(), null);
         }
         return processFileTypeHandler;
+    }
+
+    public Entry getProcessEntry() throws Exception {
+        if(processEntry == null) {
+            TypeHandler typeHandler = getProcessFileTypeHandler();
+            //parentEntry = topGroup;
+            Entry parentEntry = parentEntry = new Entry(typeHandler, true);
+            Entry topGroup = getTopGroup();
+            parentEntry.setName("Process Entries");
+            parentEntry.setId(ID_PREFIX_SYNTH+ENTRYID_PROCESS);
+            parentEntry.setParentEntry(topGroup);
+            processEntry  = parentEntry;
+        }
+        return processEntry;
     }
 
 

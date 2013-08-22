@@ -180,10 +180,11 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
         throws Exception {
-        //        System.err.println ("getSynthIds: "+ synthId);
+        //        System.err.println ("**** getSynthIds: "+ synthId);
 
         List<String> ids    = new ArrayList<String>();
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
@@ -199,6 +200,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         String rootDirPath = localFileInfo.getRootDir().toString();
         File   childPath = getFileFromId(synthId, localFileInfo.getRootDir());
+        //        System.err.println ("synthId:" + synthId);
         //        System.err.println ("child path:" + childPath);
 
         File[] files     = childPath.listFiles();
@@ -307,6 +309,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         long t2 = System.currentTimeMillis();
 
         //        System.err.println ("Time:" + (t2-t1) + " ids:" + ids.size());
+        //        System.err.println ("IDS:" + ids);
+
         return ids;
 
 
@@ -403,10 +407,18 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
         String subId = getFileComponentOfSynthId(rootDirPath, childFile);
+        String parentId = parentEntry.getId();
+        String prefix = getPrefix(parentId);
 
-        return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + subId;
+        //        System.err.println("parentId:" + parentId +" prefix:" + prefix);
+        return prefix  + ":" + subId;
     }
 
+    private String getPrefix(String parentId) {
+        if(parentId.startsWith(Repository.ID_PREFIX_SYNTH)) return parentId;
+        return Repository.ID_PREFIX_SYNTH + parentId;
+
+    }
 
     private String getFileComponentOfSynthId(String rootDirPath, File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
@@ -429,7 +441,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
         throws Exception {
-        //        System.err.println ("makeSynthEntry:"+  id);
+        //        System.err.println ("makeSynththEntry: id="+  id);
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(parentEntry);
         if(!localFileInfo.isDefined()) {
             //            System.err.println ("\tnnot defined");
@@ -457,9 +469,17 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             throw new IllegalArgumentException("File cannot be accessed");
         }
 
-        String synthId = id.startsWith(Repository.ID_PREFIX_SYNTH)?id:Repository.ID_PREFIX_SYNTH + parentEntry.getId()
-            + ":" + id;
+        String synthId;
+        if(id.startsWith(Repository.ID_PREFIX_SYNTH)) {
+            synthId = id;
+        } else {
+            synthId =  parentEntry.getId()+  ":" + id;
+            if(!synthId.startsWith(Repository.ID_PREFIX_SYNTH)) {
+                synthId = Repository.ID_PREFIX_SYNTH  + synthId;
+            }
 
+        }
+        //        System.err.println("*** synth id:" + synthId);
 
         TypeHandler handler = (targetFile.isDirectory()
                                ? getRepository().getTypeHandler(
@@ -509,10 +529,10 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         } else {
             String parentId = getSynthId(parentEntry, localFileInfo.getRootDir().toString(),
                                          targetFile.getParentFile());
-            System.err.println ("\tGetting parent:" + parentId);
+            //            System.err.println ("\tGetting parent:" + parentId);
             parent = (Entry) getEntryManager().getEntry(request, parentId,
                                                         false, false);
-            System.err.println ("\tUsing other parent entry:" + parent);
+            //            System.err.println ("\tUsing other parent entry:" + parent);
         }
 
         entry.initEntry(name, "", parent,
@@ -526,13 +546,14 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         //        System.err.println ("Done:" + entry);
 
 
+        /*
         if ( !getRepository().getAccessManager().canDoAction(request, entry,
                                                              org.ramadda.repository.auth.Permission.ACTION_VIEW)) {
-            System.err.println ("No access:" + entry);
+            //            System.err.println ("No access:" + entry);
         } else {
-            System.err.println ("Cool:" + entry);
+            //            System.err.println ("Cool:" + entry);
         }
-
+        */
 
 
         if (templateEntry != null) {
@@ -555,7 +576,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         throws Exception {
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
         if(!localFileInfo.isDefined()) {
-            System.err.println ("not defined");
+            //            System.err.println ("not defined");
             return null;
         }
         File file = localFileInfo.getRootDir();
