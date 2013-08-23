@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,10 +21,6 @@
 package org.ramadda.repository.output;
 
 
-import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipOutputStream;
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -33,10 +28,16 @@ import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.util.FileWriter;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import ucar.unidata.xml.XmlUtil;
+
+
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 
 /**
@@ -108,8 +109,8 @@ public class XmlOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc  = XmlUtil.makeDocument();
-        Element  root = getEntryTag(request, entry, null, doc, null, false,
+        Document doc = XmlUtil.makeDocument();
+        Element root = getEntryTag(request, entry, null, doc, null, false,
                                    true);
         StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
 
@@ -162,6 +163,7 @@ public class XmlOutputHandler extends OutputHandler {
      * @param request   the Request
      * @param entry     the Entry
      * @param zos       the output
+     * @param fileWriter _more_
      * @param doc       the document to add to
      * @param parent    the parent Entry
      * @param forExport true for export
@@ -268,7 +270,8 @@ public class XmlOutputHandler extends OutputHandler {
             descNode.appendChild(XmlUtil.makeCDataNode(doc,
                     entry.getDescription(), true));
         }
-        getMetadataManager().addMetadata(request, entry, fileWriter, doc, node);
+        getMetadataManager().addMetadata(request, entry, fileWriter, doc,
+                                         node);
         entry.getTypeHandler().addToEntryNode(entry, node);
 
         return node;

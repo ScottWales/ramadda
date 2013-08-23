@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -32,11 +31,6 @@ import org.apache.log4j.Logger;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Log4jPrintWriter;
-
-
-import org.w3c.dom.*;
 
 
 
@@ -45,6 +39,11 @@ import org.w3c.dom.*;
 
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Log4jPrintWriter;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
@@ -88,8 +87,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -109,7 +108,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private long myTime = System.currentTimeMillis();
 
-    /** _more_          */
+    /** _more_ */
     private final LogManager.LogId LOGID =
         new LogManager.LogId(
             "org.ramadda.repository.database.DatabaseManager");
@@ -137,7 +136,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_MYSQL = "mysql";
 
-    /** _more_          */
+    /** _more_ */
     private static final String DB_H2 = "h2";
 
     /** _more_ */
@@ -149,7 +148,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_ORACLE = "oracle";
 
-    private   String connectionURL;
+    /** _more_          */
+    private String connectionURL;
 
     /** _more_ */
     private BasicDataSource dataSource;
@@ -293,13 +293,15 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             String password = (String) getRepository().getProperty(
                                   PROP_DB_PASSWORD.replace("${db}", db));
             connectionURL = getStorageManager().localizePath(
-                                                             (String) getRepository().getProperty(
-                                                                                                  PROP_DB_URL.replace("${db}", db)));
+                (String) getRepository().getProperty(
+                    PROP_DB_URL.replace("${db}", db)));
 
 
             //ramadda.db.derby.url=jdbc:derby:${storagedir}/derby/${db.name};create=true;
-            connectionURL = connectionURL.replace("%repositorydir%",getStorageManager().getRepositoryDir().toString());
-            connectionURL = connectionURL.replace("%db.name%",getRepository().getProperty("db.name", "repository"));
+            connectionURL = connectionURL.replace("%repositorydir%",
+                    getStorageManager().getRepositoryDir().toString());
+            connectionURL = connectionURL.replace("%db.name%",
+                    getRepository().getProperty("db.name", "repository"));
 
             String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                                  db);
@@ -312,10 +314,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             System.err.println("RAMADDA: DatabaseManager connection url:"
                                + connectionURL + " user name:" + userName);
 
-            String encryptPassword = getStorageManager().getEncryptionPassword();
-            if(encryptPassword!=null && isDatabaseDerby()) {
-                System.err.println ("encrypting");
-                connectionURL += "dataEncryption=true;bootPassword=" + encryptPassword +";";
+            String encryptPassword =
+                getStorageManager().getEncryptionPassword();
+            if ((encryptPassword != null) && isDatabaseDerby()) {
+                System.err.println("encrypting");
+                connectionURL += "dataEncryption=true;bootPassword="
+                                 + encryptPassword + ";";
             }
             ds.setDriverClassName(driverClassName);
             ds.setUsername(userName);
@@ -502,7 +506,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 continue;
             }
             int cnt = getCount(Tables.ENTRIES.NAME,
-                               Clause.eq(Tables.ENTRIES.COL_TYPE, typeHandler.getType()));
+                               Clause.eq(Tables.ENTRIES.COL_TYPE,
+                                         typeHandler.getType()));
 
             String url =
                 HtmlUtils.href(
@@ -703,7 +708,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             dataSource = null;
         }
         //only shut down if this is the top-level ramadda
-        if (isDatabaseDerby() && getRepository().getParentRepository() == null) {
+        if (isDatabaseDerby()
+                && (getRepository().getParentRepository() == null)) {
             try {
                 DriverManager.getConnection("jdbc:derby:;shutdown=true");
             } catch (Exception ignoreThis) {}
@@ -731,8 +737,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /**
      * _more_
      *
-     *
-     * @param makeNewOne _more_
      * @return _more_
      *
      * @throws Exception _more_
@@ -920,7 +924,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         try {
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet        tables   = dbmd.getTables(null, null, null,
+            ResultSet tables = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
             ResultSetMetaData rsmd = tables.getMetaData();
@@ -1150,8 +1154,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void loadRdbFile(String file) throws Exception {
 
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
-        XmlEncoder      encoder    = new XmlEncoder();
-        String          tableXml   = readString(dis);
+        XmlEncoder      encoder  = new XmlEncoder();
+        String          tableXml = readString(dis);
         List<TableInfo> tableInfos =
             (List<TableInfo>) encoder.toObject(tableXml);
         System.err.println("# table infos:" + tableInfos.size());
@@ -1316,7 +1320,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         try {
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet        tables   = dbmd.getTables(null, null, null,
+            ResultSet tables = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
 
@@ -1422,7 +1426,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 System.err.println("Exporting table: " + tableInfo.getName());
                 List<ColumnInfo> columns   = tableInfo.getColumns();
                 List             valueList = new ArrayList();
-                Statement        statement = execute("select * from "
+                Statement statement = execute("select * from "
                                           + tableInfo.getName(), 10000000, 0);
                 SqlUtil.Iterator iter = getIterator(statement);
                 ResultSet        results;
@@ -1673,6 +1677,17 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     * @param makeDflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Date getTimestamp(ResultSet results, String col, boolean makeDflt)
             throws Exception {
         Date date = results.getTimestamp(col, Repository.calendar);
@@ -2299,7 +2314,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         SelectInfo selectInfo = new SelectInfo(what, tables, clause, extra,
                                     max);
         final boolean[] done = { false };
-        String          msg  = "Select what:" + what + "\ntables:" + tables
+        String msg = "Select what:" + what + "\ntables:" + tables
                      + "\nclause:" + clause + "\nextra:" + extra + "\nmax:"
                      + max;
         /*
@@ -2431,12 +2446,25 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-    public boolean tableContains(Clause clause, String tableName, String column)
+    /**
+     * _more_
+     *
+     * @param clause _more_
+     * @param tableName _more_
+     * @param column _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean tableContains(Clause clause, String tableName,
+                                 String column)
             throws Exception {
-        Statement statement = select(column, tableName,clause);
-        ResultSet results = statement.getResultSet();
-        boolean   result  = results.next();
+        Statement statement = select(column, tableName, clause);
+        ResultSet results   = statement.getResultSet();
+        boolean   result    = results.next();
         closeAndReleaseConnection(statement);
+
         return result;
     }
 
@@ -2589,7 +2617,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             List    colVars  = new ArrayList();
             HashSet seen     = new HashSet();
             while (columns.next()) {
-                String colName = columns.getString("COLUMN_NAME").toLowerCase();
+                String colName =
+                    columns.getString("COLUMN_NAME").toLowerCase();
                 String colSize = columns.getString("COLUMN_SIZE");
                 String COLNAME = colName.toUpperCase();
                 if (seen.contains(COLNAME)) {
@@ -2601,8 +2630,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 pw.append(sp2 + "public static final String COL_" + COLNAME
                           + " =  NAME + \"." + colName + "\";\n");
 
-                pw.append(sp2 + "public static final String COL_NODOT_" + COLNAME
-                          + " =   \"" + colName + "\";\n");
+                pw.append(sp2 + "public static final String COL_NODOT_"
+                          + COLNAME + " =   \"" + colName + "\";\n");
                 /*
                 pw.append(sp2 + "public static final String ORA_" + COLNAME
                           + " =  \"" + colName + "\";\n");
@@ -2623,10 +2652,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 sp2
                 + "public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);\n");
 
-            pw.append(sp2 +
-                      "public static final String INSERT =" +
-                      "SqlUtil.makeInsert(NAME, NODOT_COLUMNS," +
-                      "SqlUtil.getQuestionMarks(ARRAY.length));\n");
+            pw.append(sp2 + "public static final String INSERT ="
+                      + "SqlUtil.makeInsert(NAME, NODOT_COLUMNS,"
+                      + "SqlUtil.getQuestionMarks(ARRAY.length));\n");
 
             pw.append(sp1 + "public static final " + TABLENAME
                       + " table  = new  " + TABLENAME + "();\n");
@@ -2639,19 +2667,43 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
     }
 
-    public Clause makeLikeTextClause(String column, String value, boolean not) {
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param value _more_
+     * @param not _more_
+     *
+     * @return _more_
+     */
+    public Clause makeLikeTextClause(String column, String value,
+                                     boolean not) {
         Clause clause = Clause.like(column, value.toUpperCase(), not);
-        clause.setColumnModifier("UPPER(",")");
+        clause.setColumnModifier("UPPER(", ")");
+
         return clause;
     }
 
 
-    public List<String> selectDistinct(String tableName, String column, Clause clause) throws Exception {
-        Statement stmt = select(SqlUtil.distinct(column),
-                                tableName, clause);
-        String[] values =
-            SqlUtil.readString(getIterator(stmt), 1);
-        return (List<String>)Misc.toList(values);
+    /**
+     * _more_
+     *
+     * @param tableName _more_
+     * @param column _more_
+     * @param clause _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<String> selectDistinct(String tableName, String column,
+                                       Clause clause)
+            throws Exception {
+        Statement stmt   = select(SqlUtil.distinct(column), tableName,
+                                  clause);
+        String[]  values = SqlUtil.readString(getIterator(stmt), 1);
+
+        return (List<String>) Misc.toList(values);
     }
 
 

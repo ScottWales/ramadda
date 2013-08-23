@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -70,7 +69,7 @@ import java.util.Properties;
  */
 public class KmlOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String MIME_KML =
         "application/vnd.google-earth.kml+xml";
 
@@ -182,7 +181,7 @@ public class KmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-        if(group.isDummy()) {
+        if (group.isDummy()) {
             request.setReturnFilename("Search_Results.kml");
         }
 
@@ -190,14 +189,15 @@ public class KmlOutputHandler extends OutputHandler {
                                && (subGroups.size() == 0);
 
 
-        String  title  = (justOneEntry
-                          ? entries.get(0).getName()
-                          : group.getFullName());
-        Element root   = KmlUtil.kml(title);
-        
-        Hashtable<String,Element> catToFolder = new Hashtable<String,Element>();
+        String  title = (justOneEntry
+                         ? entries.get(0).getName()
+                         : group.getFullName());
+        Element root  = KmlUtil.kml(title);
 
-        Element document = KmlUtil.document(root, title, true);
+        Hashtable<String, Element> catToFolder = new Hashtable<String,
+                                                     Element>();
+
+        Element document      = KmlUtil.document(root, title, true);
 
 
 
@@ -217,8 +217,8 @@ public class KmlOutputHandler extends OutputHandler {
             String url =
                 request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
                     ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
-            Element link = KmlUtil.networkLink(defaultFolder, childGroup.getName(),
-                               url);
+            Element link = KmlUtil.networkLink(defaultFolder,
+                               childGroup.getName(), url);
             if (childGroup.getDescription().length() > 0) {
                 KmlUtil.description(link, childGroup.getDescription());
             }
@@ -239,7 +239,8 @@ public class KmlOutputHandler extends OutputHandler {
                                          "" + max);
 
                 url = request.getAbsoluteUrl(url);
-                Element link = KmlUtil.networkLink(defaultFolder, "More...", url);
+                Element link = KmlUtil.networkLink(defaultFolder, "More...",
+                                   url);
 
                 if (skipArg != null) {
                     request.put(ARG_SKIP, skipArg);
@@ -249,14 +250,15 @@ public class KmlOutputHandler extends OutputHandler {
 
 
         for (Entry entry : (List<Entry>) entries) {
-            String category = entry.getTypeHandler().getCategory(entry).getLabel().toString();
+            String category = entry.getTypeHandler().getCategory(
+                                  entry).getLabel().toString();
             Element parentFolder = defaultFolder;
 
-            if(Utils.stringDefined(category)) {
-                parentFolder =  catToFolder.get(category);
-                if(parentFolder==null) {
+            if (Utils.stringDefined(category)) {
+                parentFolder = catToFolder.get(category);
+                if (parentFolder == null) {
                     parentFolder = KmlUtil.folder(document, category,
-                                                  request.get(ARG_VISIBLE, false));
+                            request.get(ARG_VISIBLE, false));
                     KmlUtil.open(parentFolder, false);
                     catToFolder.put(category, parentFolder);
                 }
@@ -265,7 +267,7 @@ public class KmlOutputHandler extends OutputHandler {
 
             if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
-                String url      =
+                String url =
                     HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
                                   + "/" + fileTail, ARG_ENTRYID,
                                       entry.getId());
@@ -293,8 +295,8 @@ public class KmlOutputHandler extends OutputHandler {
 
             String url = getKmlUrl(request, entry);
             if (url != null) {
-                Element link = KmlUtil.networkLink(parentFolder, entry.getName(),
-                                   url);
+                Element link = KmlUtil.networkLink(parentFolder,
+                                   entry.getName(), url);
 
                 if (entry.getDescription().length() > 0) {
                     KmlUtil.description(link, entry.getDescription());
@@ -327,7 +329,7 @@ public class KmlOutputHandler extends OutputHandler {
                     desc = desc + "<br>" + HtmlUtils.img(thumbUrl, "", "");
                 }
                 Element placemark = KmlUtil.placemark(parentFolder,
-                                                      getName(entry, cnt), desc, lonlat[0],
+                                        getName(entry, cnt), desc, lonlat[0],
                                         lonlat[1], entry.hasAltitudeTop()
                         ? entry.getAltitudeTop()
                         : (entry.hasAltitudeBottom()
@@ -349,8 +351,8 @@ public class KmlOutputHandler extends OutputHandler {
                             LatLonPointImpl pt = Bearing.findPoint(fromPt,
                                                      dir, 0.25, null);
                             Element bearingPlacemark =
-                                KmlUtil.placemark(parentFolder, "Bearing", null,
-                                    new float[][] {
+                                KmlUtil.placemark(parentFolder, "Bearing",
+                                    null, new float[][] {
                                 { (float) fromPt.getLatitude(),
                                   (float) pt.getLatitude() },
                                 { (float) fromPt.getLongitude(),
@@ -499,12 +501,23 @@ public class KmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param numEntries _more_
+     *
+     * @return _more_
+     */
     public String getName(Entry entry, int numEntries) {
-        if(numEntries<100) return entry.getName();
-        String s = entry.getName();
-        if(s.length()>15) {
-            s = s.substring(0,14) +"...";
+        if (numEntries < 100) {
+            return entry.getName();
         }
+        String s = entry.getName();
+        if (s.length() > 15) {
+            s = s.substring(0, 14) + "...";
+        }
+
         return s;
     }
 

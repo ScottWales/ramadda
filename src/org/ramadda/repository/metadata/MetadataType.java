@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -97,7 +96,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String ATTR_FORUSER = "foruser";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ENTRYTYPE = "entrytype";
 
 
@@ -118,7 +117,7 @@ public class MetadataType extends MetadataTypeBase {
     public static final String ATTR_ = "";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_METADATA_LABEL = "metadata.label";
 
     /** _more_ */
@@ -151,7 +150,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private boolean forUser = true;
 
-    /** _more_          */
+    /** _more_ */
     private String entryType = null;
 
     /**
@@ -267,7 +266,8 @@ public class MetadataType extends MetadataTypeBase {
                           ATTR_CLASS,
                           "org.ramadda.repository.metadata.MetadataHandler"));
 
-            String          id           = XmlUtil.getAttribute(node, ATTR_ID);
+            String          id           = XmlUtil.getAttribute(node,
+                                               ATTR_ID);
             MetadataHandler handler      = manager.getHandler(c);
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.init(node);
@@ -432,7 +432,7 @@ public class MetadataType extends MetadataTypeBase {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
-            String  fileArg  = null;
+            String fileArg = null;
             Element attrNode = XmlUtil.findElement(elements,
                                    Metadata.ATTR_INDEX,
                                    "" + element.getIndex());
@@ -738,14 +738,15 @@ public class MetadataType extends MetadataTypeBase {
             f = thumb;
         }
 
-        
+
         /*        Result result = new Result(
                             "thumbnail",
                             IOUtil.readBytes(
                                 getStorageManager().getFileInputStream(f),
                                 null, true), mimeType);*/
         InputStream inputStream = getStorageManager().getFileInputStream(f);
-        Result result = new Result(inputStream, mimeType);
+        Result      result      = new Result(inputStream, mimeType);
+
         return result;
     }
 
@@ -897,11 +898,11 @@ public class MetadataType extends MetadataTypeBase {
                 if (value == null) {
                     value = "null";
                 }
-                value = value.replaceAll("&","&amp;");
-                value = value.replaceAll("<","&lt;");
-                value = value.replaceAll(">","&gt;");
-                value = value.replaceAll("\"","&quot;");
-                html = applyMacros(html, element, value);
+                value = value.replaceAll("&", "&amp;");
+                value = value.replaceAll("<", "&lt;");
+                value = value.replaceAll(">", "&gt;");
+                value = value.replaceAll("\"", "&quot;");
+                html  = applyMacros(html, element, value);
             }
             content.append(html);
         } else {
@@ -1007,7 +1008,7 @@ public class MetadataType extends MetadataTypeBase {
                         2)));
             }
             String elementLbl = msgLabel(element.getLabel());
-            String widget     =
+            String widget =
                 element.getForm(request, entry, metadata, suffix,
                                 metadata.getAttr(element.getIndex()),
                                 forEdit);

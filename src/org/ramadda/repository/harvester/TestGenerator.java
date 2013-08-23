@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,12 +24,13 @@ package org.ramadda.repository.harvester;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -155,8 +155,8 @@ public class TestGenerator extends Harvester {
             for (int j = 0; j < 100; j++) {
                 Entry group = (Entry) groups.get(j);
                 for (int k = 0; k < 10; k++) {
-                    Date  createDate = new Date();
-                    Entry entry      =
+                    Date createDate = new Date();
+                    Entry entry =
                         getTypeHandler().createEntry(repository.getGUID());
                     entry.initEntry("test_" + i + "_" + j + "_" + k, "",
                                     group, user,
@@ -172,7 +172,8 @@ public class TestGenerator extends Harvester {
                         return;
                     }
                     if (entries.size() > 5000) {
-                        getEntryManager().addNewEntries(getRequest(), entries);
+                        getEntryManager().addNewEntries(getRequest(),
+                                entries);
                         entries = new ArrayList<Entry>();
                     }
                 }

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,13 +28,14 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.type.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -197,7 +197,8 @@ public class MapOutputHandler extends OutputHandler {
         entriesToUse.addAll(entries);
         StringBuffer sb = new StringBuffer();
         if (entriesToUse.size() == 0) {
-            sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND)) + HtmlUtils.p());
+            sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND))
+                      + HtmlUtils.p());
 
             return makeLinksResult(request, msg("Map"), sb,
                                    new State(group, subGroups, entries));
@@ -214,7 +215,7 @@ public class MapOutputHandler extends OutputHandler {
 
 
         boolean[] haveBearingLines = { false };
-        MapInfo   map = getMapManager().getMap(request, entriesToUse, sb, 700,
+        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700,
                                              500, false, haveBearingLines,
                                              true);
 

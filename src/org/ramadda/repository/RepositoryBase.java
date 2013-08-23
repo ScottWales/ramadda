@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -53,7 +52,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_PING = new RequestUrl(this, "/ping");
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_CLEARSTATE = new RequestUrl(this,
                                                  "/clearstate");
 
@@ -142,11 +141,12 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_SHOW = new RequestUrl(this,
-                                                 "/entry/show", "View " +  LABEL_ENTRY);
+                                                 "/entry/show",
+                                                 "View " + LABEL_ENTRY);
 
     /** _more_ */
-    public final RequestUrl URL_ENTRY = new RequestUrl(this,
-                                                 "/entry", "View " +  LABEL_ENTRY);
+    public final RequestUrl URL_ENTRY = new RequestUrl(this, "/entry",
+                                            "View " + LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_COPY = new RequestUrl(this,
@@ -177,11 +177,13 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_FORM = new RequestUrl(this,
-                                                 "/entry/form", "Edit " + LABEL_ENTRY);
+                                                 "/entry/form",
+                                                 "Edit " + LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_EXTEDIT = new RequestUrl(this,
-                                                            "/entry/walk", "Extra Edit");
+                                                    "/entry/walk",
+                                                    "Extra Edit");
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
@@ -191,7 +193,8 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_NEW = new RequestUrl(this,
-                                                "/entry/new", "New " +  LABEL_ENTRY);
+                                                "/entry/new",
+                                                "New " + LABEL_ENTRY);
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_UPLOAD = new RequestUrl(this,
@@ -272,7 +275,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
-    /** _more_          */
+    /** _more_ */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
 
@@ -283,7 +286,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
 
     /** _more_ */
-    private  String urlBase = "/repository";
+    private String urlBase = "/repository";
 
 
     /** _more_ */
@@ -449,12 +452,19 @@ public class RepositoryBase implements Constants, RepositorySource {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String getHttpsUrl(String url) {
         String hostname = getHostname();
-        int port = getHttpsPort();
+        int    port     = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol() + "://" + hostname + ":"
-                   + getPort() + url;
+            return getHttpProtocol() + "://" + hostname + ":" + getPort()
+                   + url;
         }
         if (port == 0) {
             return "https://" + hostname + url;
@@ -601,7 +611,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public  String fileUrl(String f) {
+    public String fileUrl(String f) {
         return urlBase + f;
     }
 
@@ -636,13 +646,18 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return The UrlBase
      */
-    public  String getUrlBase() {
+    public String getUrlBase() {
         return urlBase;
     }
 
 
-    public static void main(String[]args)  throws Exception {
-        
-    }
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {}
 
 }

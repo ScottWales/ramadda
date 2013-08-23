@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,12 +24,7 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.repository.util.FileWriter;
-
-
-
-import org.w3c.dom.*;
 
 
 
@@ -38,6 +32,11 @@ import org.w3c.dom.*;
 import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -189,9 +188,19 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param stringType _more_
+     *
+     * @return _more_
+     */
     public MetadataHandler findHandler(String stringType) {
         MetadataType type = findType(stringType);
-        if(type==null) return null;
+        if (type == null) {
+            return null;
+        }
+
         return type.getHandler();
     }
 
@@ -326,6 +335,8 @@ public class MetadataManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param type _more_
      * @param checkInherited _more_
@@ -334,8 +345,8 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Metadata> findMetadata(Request request, Entry entry, String type,
-                                       boolean checkInherited)
+    public List<Metadata> findMetadata(Request request, Entry entry,
+                                       String type, boolean checkInherited)
             throws Exception {
         return findMetadata(request, entry, type, checkInherited, true);
     }
@@ -344,6 +355,8 @@ public class MetadataManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param type _more_
      * @param checkInherited _more_
@@ -353,8 +366,8 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Metadata> findMetadata(Request request, Entry entry, String type,
-                                       boolean checkInherited,
+    public List<Metadata> findMetadata(Request request, Entry entry,
+                                       String type, boolean checkInherited,
                                        boolean firstOk)
             throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
@@ -366,46 +379,61 @@ public class MetadataManager extends RepositoryManager {
         return result;
     }
 
+    /** _more_          */
     public static boolean debug = false;
 
-    public  void debug(String msg) {
-        if(debug) logInfo(msg);
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debug(String msg) {
+        if (debug) {
+            logInfo(msg);
+        }
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Metadata> getInheritedMetadata(Request request, Entry entry) throws Exception {
+    public List<Metadata> getInheritedMetadata(Request request, Entry entry)
+            throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
         //        this.debug  = true;
         //        EntryManager.debug  =true;
         Entry parent = getEntryManager().getParent(request, entry);
         //        EntryManager.debug  =false;
-        if(parent==null) {
+        if (parent == null) {
             //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent is NULL");
         } else {
             //            debug("METADATA: getInheritedMetadata entry=" + entry.getName() + " parent:" + parent.getName());
-            findInheritedMetadata(request, parent,  result);
+            findInheritedMetadata(request, parent, result);
         }
-        this.debug  = false;
+        this.debug = false;
+
         return result;
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param result _more_
      *
      * @throws Exception _more_
      */
-    private void findInheritedMetadata(Request request, Entry entry, List<Metadata> result)
+    private void findInheritedMetadata(Request request, Entry entry,
+                                       List<Metadata> result)
             throws Exception {
         debug("METADATA: findInherited: entry=" + entry);
         if (entry == null) {
@@ -419,7 +447,8 @@ public class MetadataManager extends RepositoryManager {
             }
             result.add(metadata);
         }
-        findInheritedMetadata(request, getEntryManager().getParent(request, entry),
+        findInheritedMetadata(request,
+                              getEntryManager().getParent(request, entry),
                               result);
     }
 
@@ -429,6 +458,8 @@ public class MetadataManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param type _more_
      * @param result _more_
@@ -458,7 +489,8 @@ public class MetadataManager extends RepositoryManager {
             }
         }
         if (checkInherited) {
-            findMetadata(request, getEntryManager().getParent(request, entry), type,
+            findMetadata(request,
+                         getEntryManager().getParent(request, entry), type,
                          result, checkInherited, false);
         }
     }
@@ -467,6 +499,8 @@ public class MetadataManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      * @param id _more_
      *
@@ -474,7 +508,8 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Metadata findMetadata(Request request, Entry entry, String id) throws Exception {
+    public Metadata findMetadata(Request request, Entry entry, String id)
+            throws Exception {
         if (entry == null) {
             return null;
         }
@@ -505,7 +540,9 @@ public class MetadataManager extends RepositoryManager {
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
-            debug("METADATA:getMetadata entry:" + entry.getName() + " metadata:" + metadataList);
+            debug("METADATA:getMetadata entry:" + entry.getName()
+                  + " metadata:" + metadataList);
+
             return metadataList;
         }
 
@@ -592,13 +629,15 @@ public class MetadataManager extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      * @param zos _more_
+     * @param fileWriter _more_
      * @param doc _more_
      * @param parent _more_
      *
      * @throws Exception _more_
      */
     public void addMetadata(Request request, Entry entry,
-                            FileWriter fileWriter, Document doc, Element parent)
+                            FileWriter fileWriter, Document doc,
+                            Element parent)
             throws Exception {
         List<Metadata> metadataList = getMetadata(entry);
         for (Metadata metadata : metadataList) {
@@ -877,8 +916,8 @@ public class MetadataManager extends RepositoryManager {
      */
     public Result processMetadataChange(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
-            Entry   entry         = getEntryManager().getEntry(request);
-            Entry   parent = getEntryManager().getParent(request, entry);
+            Entry entry = getEntryManager().getEntry(request);
+            Entry parent = getEntryManager().getParent(request, entry);
             boolean canEditParent =
                 (parent != null)
                 && getAccessManager().canDoAction(request, parent,
@@ -1005,24 +1044,39 @@ public class MetadataManager extends RepositoryManager {
         sb.append(HtmlUtils.center(HtmlUtils.span(header,
                 HtmlUtils.cssClass(CSS_CLASS_HEADING_2))));
         sb.append(HtmlUtils.hr());
-        
-        String metadataType = request.getString(ARG_METADATA_TYPE, "");
+
+        String metadataType     = request.getString(ARG_METADATA_TYPE, "");
         MetadataHandler handler = findMetadataHandler(metadataType);
-        MetadataType type = handler.findType(metadataType);
-        doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0); 
+        MetadataType    type    = handler.findType(metadataType);
+        doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0);
+
         return getSearchManager().makeResult(request,
                                              msg(type.getLabel() + " Cloud"),
                                              sb);
     }
 
 
-    public void doMakeTagCloudOrList(Request request, String metadataType, StringBuffer sb, boolean doCloud, int threshold) throws Exception { 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param metadataType _more_
+     * @param sb _more_
+     * @param doCloud _more_
+     * @param threshold _more_
+     *
+     * @throws Exception _more_
+     */
+    public void doMakeTagCloudOrList(Request request, String metadataType,
+                                     StringBuffer sb, boolean doCloud,
+                                     int threshold)
+            throws Exception {
         MetadataHandler handler = findMetadataHandler(metadataType);
-        MetadataType type = handler.findType(metadataType);
-        String[] values = getDistinctValues(request, handler, type);
-        int[]    cnt    = new int[values.length];
-        int      max    = -1;
-        int      min    = 10000;
+        MetadataType    type    = handler.findType(metadataType);
+        String[]        values  = getDistinctValues(request, handler, type);
+        int[]           cnt     = new int[values.length];
+        int             max     = -1;
+        int             min     = 10000;
         for (int i = 0; i < values.length; i++) {
             String value = values[i];
             cnt[i] = 0;
@@ -1048,8 +1102,9 @@ public class MetadataManager extends RepositoryManager {
         if ( !doCloud) {
             List tuples = new ArrayList();
             for (int i = 0; i < values.length; i++) {
-                if(cnt[i] > threshold) {
-                    tuples.add(new Object[] { new Integer(cnt[i]), values[i] });
+                if (cnt[i] > threshold) {
+                    tuples.add(new Object[] { new Integer(cnt[i]),
+                            values[i] });
                 }
             }
             tuples = Misc.sortTuples(tuples, false);
@@ -1069,7 +1124,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.formTableClose());
         } else {
             for (int i = 0; i < values.length; i++) {
-                if(cnt[i] <= threshold) {
+                if (cnt[i] <= threshold) {
                     continue;
                 }
                 double percent = cnt[i] / distribution;
@@ -1107,14 +1162,15 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataView(Request request) throws Exception {
         Entry          entry        = getEntryManager().getEntry(request);
         List<Metadata> metadataList = getMetadata(entry);
-        Metadata       metadata     = findMetadata(request, entry,
+        Metadata metadata = findMetadata(request, entry,
                                          request.getString(ARG_METADATA_ID,
                                              ""));
         if (metadata == null) {
             return new Result("", "Could not find metadata");
         }
         MetadataHandler handler = findMetadataHandler(metadata.getType());
-        Result          result = handler.processView(request, entry, metadata);
+        Result          result = handler.processView(request, entry,
+                                     metadata);
 
         return getEntryManager().addEntryHeader(request,
                 getEntryManager().getTopGroup(), result);
@@ -1193,7 +1249,7 @@ public class MetadataManager extends RepositoryManager {
                 }
 
                 String cbxId = "cbx_" + metadata.getId();
-                String cbx   =
+                String cbx =
                     HtmlUtils.checkbox(
                         ARG_METADATA_ID + SUFFIX_SELECT + metadata.getId(),
                         metadata.getId(), false,
@@ -1254,7 +1310,8 @@ public class MetadataManager extends RepositoryManager {
         if (request.get(ARG_METADATA_CLIPBOARD_PASTE, false)) {
             List<Metadata> clipboard = getMetadataFromClipboard(request);
             if ((clipboard == null) || (clipboard.size() == 0)) {
-                sb.append(getPageHandler().showDialogError("Clipboard empty"));
+                sb.append(
+                    getPageHandler().showDialogError("Clipboard empty"));
             } else {
                 //TODO: file attachments
                 for (Metadata copiedMetadata : clipboard) {

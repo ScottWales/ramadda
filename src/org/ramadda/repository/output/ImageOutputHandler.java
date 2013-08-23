@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,12 +24,13 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -82,8 +82,13 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
+    /** _more_          */
     public static final String ARG_CAPTION = "caption";
+
+    /** _more_          */
     public static final String ARG_CAPTION_TOP = "caption.top";
+
+    /** _more_          */
     public static final String ARG_CAPTION_BOTTOM = "caption.bottom";
 
     /** _more_ */
@@ -102,6 +107,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_CROP = "image.edit.crop";
 
+    /** _more_          */
     public static final String ARG_IMAGE_EDIT_MATTE = "image.edit.matte";
 
     /** _more_ */
@@ -173,10 +179,10 @@ public class ImageOutputHandler extends OutputHandler {
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
 
-    public static final OutputType OUTPUT_CAPTION = new OutputType("Caption Image",
-                                                     "image.caption",
-                                                     OutputType.TYPE_VIEW,
-                                                     "", ICON_IMAGES);
+    /** _more_          */
+    public static final OutputType OUTPUT_CAPTION =
+        new OutputType("Caption Image", "image.caption",
+                       OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
 
 
@@ -218,7 +224,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (state.entry != null) {
             if (state.entry.isFile()) {
                 //                if (state.entry.getResource().isImage()) {
-                    //                    links.add(makeLink(request, state.getEntry(), OUTPUT_CAPTION));
+                //                    links.add(makeLink(request, state.getEntry(), OUTPUT_CAPTION));
                 //                }
                 String extension =
                     IOUtil.getFileExtension(
@@ -479,20 +485,34 @@ public class ImageOutputHandler extends OutputHandler {
     }
 
 
-    public Result outputEntryCaption(Request request,  Entry entry)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputEntryCaption(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        if(request.exists(ARG_CAPTION)) {
-        }
+        if (request.exists(ARG_CAPTION)) {}
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.formEntry(msgLabel("Top Caption"), HtmlUtils.input(ARG_CAPTION_TOP,entry.getName())));
-        sb.append(HtmlUtils.formEntry(msgLabel("Bottom Caption"), HtmlUtils.input(ARG_CAPTION_TOP,entry.getDescription())));
+        sb.append(HtmlUtils.formEntry(msgLabel("Top Caption"),
+                                      HtmlUtils.input(ARG_CAPTION_TOP,
+                                          entry.getName())));
+        sb.append(HtmlUtils.formEntry(msgLabel("Bottom Caption"),
+                                      HtmlUtils.input(ARG_CAPTION_TOP,
+                                          entry.getDescription())));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_CAPTION));
         sb.append(HtmlUtils.submit(ARG_CAPTION, "Make Caption"));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
+
         return new Result("Image Caption", sb);
     }
 
@@ -662,7 +682,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         }
         String playerPrefix = "imageplayer_" + HtmlUtils.blockCnt++;
-        String playerVar  = playerPrefix +"Var";
+        String playerVar    = playerPrefix + "Var";
 
         if (output.equals(OUTPUT_PLAYER)) {
             if ( !request.exists(ARG_ASCENDING)) {
@@ -684,15 +704,15 @@ public class ImageOutputHandler extends OutputHandler {
                     firstImage = url;
                 }
                 String entryUrl = getEntryLink(request, entry);
-                String title    =
+                String title =
                     "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
                 String dttm = getEntryUtil().formatDate(request, entry);
                 title += "<tr><td><b>Image:</b> " + entryUrl
                          + "</td><td align=right>" + dttm;
                 title += "</table>";
                 title = title.replace("\"", "\\\"");
-                sb.append(playerVar +".addImage(" + HtmlUtils.quote(url) + ","
-                          + HtmlUtils.quote(title) + ");\n");
+                sb.append(playerVar + ".addImage(" + HtmlUtils.quote(url)
+                          + "," + HtmlUtils.quote(title) + ");\n");
                 cnt++;
             }
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
@@ -729,15 +749,19 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_PLAYER)) {
             String playerTemplate =
                 repository.getResource(PROP_HTML_IMAGEPLAYER);
-            playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}", playerVar);
-            playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}", playerPrefix);
+            playerTemplate =
+                playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}",
+                                          playerVar);
+            playerTemplate =
+                playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}",
+                                          playerPrefix);
             String widthAttr = "";
             int    width     = request.get(ARG_WIDTH, 600);
             if (width > 0) {
                 widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
-            String imageHtml = "<img id=\"" + playerPrefix +"animation\" border=\"0\" "
-                               + widthAttr
+            String imageHtml = "<img id=\"" + playerPrefix
+                               + "animation\" border=\"0\" " + widthAttr
                                + HtmlUtils.attr("SRC", firstImage)
                                + " alt=\"image\">";
 
@@ -794,11 +818,11 @@ public class ImageOutputHandler extends OutputHandler {
     public void makePlayer(Request request, List<Entry> entries,
                            StringBuffer finalSB, boolean addHeader)
             throws Exception {
-        String playerPrefix = "imageplayer_" + HtmlUtils.blockCnt++;
-        String playerVar  = playerPrefix +"Var";
+        String       playerPrefix = "imageplayer_" + HtmlUtils.blockCnt++;
+        String       playerVar    = playerPrefix + "Var";
 
 
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb           = new StringBuffer();
         if (entries.size() == 0) {
             finalSB.append("<b>Nothing Found</b><p>");
 
@@ -823,7 +847,7 @@ public class ImageOutputHandler extends OutputHandler {
                 firstImage = url;
             }
             String entryUrl = getEntryLink(request, entry);
-            String title    =
+            String title =
                 "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">";
             String dttm = getEntryUtil().formatDate(request, entry);
             title += "<tr><td><b>Image:</b> " + entryUrl
@@ -836,15 +860,19 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         String playerTemplate = repository.getResource(PROP_HTML_IMAGEPLAYER);
-        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}", playerVar);
-        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}", playerPrefix);
-        String widthAttr      = "";
-        int    width          = request.get(ARG_WIDTH, 600);
-        if (width > 0) { 
-           widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
+        playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}",
+                playerVar);
+        playerTemplate =
+            playerTemplate.replaceAll("\\$\\{imagePlayerPrefix\\}",
+                                      playerPrefix);
+        String widthAttr = "";
+        int    width     = request.get(ARG_WIDTH, 600);
+        if (width > 0) {
+            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
         }
-        String imageHtml = "<IMG id=\"" + playerPrefix +"animation\" BORDER=\"0\" "
-                           + widthAttr + HtmlUtils.attr("SRC", firstImage)
+        String imageHtml = "<IMG id=\"" + playerPrefix
+                           + "animation\" BORDER=\"0\" " + widthAttr
+                           + HtmlUtils.attr("SRC", firstImage)
                            + " ALT=\"image\">";
 
         String tmp = playerTemplate.replace("${imagelist}", sb.toString());

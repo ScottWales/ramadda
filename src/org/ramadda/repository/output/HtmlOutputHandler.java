@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,10 +25,13 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.TTLCache;
-import org.ramadda.util.JQuery;
 
 
 import org.ramadda.util.Utils;
@@ -37,8 +39,6 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -83,6 +83,7 @@ import java.util.zip.*;
  */
 public class HtmlOutputHandler extends OutputHandler {
 
+    /** _more_          */
     public static final OutputType OUTPUT_TEST =
         new OutputType("test", "html.test",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -95,10 +96,10 @@ public class HtmlOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_DATA);
 
+    /** _more_          */
     public static final OutputType OUTPUT_TREEVIEW =
-        new OutputType("Tree View", "html.treeview",
-                       OutputType.TYPE_VIEW , "",
-                       "/icons/application_side_tree.png");
+        new OutputType("Tree View", "html.treeview", OutputType.TYPE_VIEW,
+                       "", "/icons/application_side_tree.png");
 
 
 
@@ -225,7 +226,8 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
         OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE,
-                                                /*OUTPUT_GRID,*/ OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
+        /*OUTPUT_GRID,*/
+        OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
                 CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer(
@@ -276,7 +278,8 @@ public class HtmlOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_HTML));
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
-                links.add(makeLink(request, state.getEntry(), OUTPUT_TREEVIEW));
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_TREEVIEW));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_TEST));
                 //                links.add(makeLink(request, state.getEntry(), OUTPUT_GRID));
             }
@@ -296,7 +299,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public Result getMapInfo(Request request, Entry entry) throws Exception {
-        String html       = null;
+        String html = null;
         Result typeResult = entry.getTypeHandler().getHtmlDisplay(request,
                                 entry);
         if (typeResult != null) {
@@ -332,39 +335,43 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param showLinks _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private Result getMetadataXml(Request request, Entry entry, boolean showLinks)
+    private Result getMetadataXml(Request request, Entry entry,
+                                  boolean showLinks)
             throws Exception {
-/*
-        StringBuffer sb = new StringBuffer();
-        request.put(ARG_OUTPUT, OUTPUT_HTML);
-        boolean didOne = false;
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
-        sb.append(entry.getTypeHandler().getInnerEntryContent(entry, request,
-                OutputHandler.OUTPUT_HTML, true, true, true));
-        for (TwoFacedObject tfo :
-                getMetadataHtml(request, entry, false, false)) {
-            sb.append(tfo.getId().toString());
-        }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-*/
+        /*
+                StringBuffer sb = new StringBuffer();
+                request.put(ARG_OUTPUT, OUTPUT_HTML);
+                boolean didOne = false;
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
+                sb.append(entry.getTypeHandler().getInnerEntryContent(entry, request,
+                        OutputHandler.OUTPUT_HTML, true, true, true));
+                for (TwoFacedObject tfo :
+                        getMetadataHtml(request, entry, false, false)) {
+                    sb.append(tfo.getId().toString());
+                }
+                sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        */
 
         String contents;
-        if(showLinks) {
-            int menuType = OutputType.TYPE_VIEW | OutputType.TYPE_FILE | OutputType.TYPE_EDIT | OutputType.TYPE_OTHER;
-            contents =  getEntryManager().getEntryActionsTable(request, entry,
-                                                               menuType);
-        } else  {
+        if (showLinks) {
+            int menuType = OutputType.TYPE_VIEW | OutputType.TYPE_FILE
+                           | OutputType.TYPE_EDIT | OutputType.TYPE_OTHER;
+            contents = getEntryManager().getEntryActionsTable(request, entry,
+                    menuType);
+        } else {
             contents = getInformationTabs(request, entry, true, true);
         }
         StringBuffer xml = new StringBuffer("<content>\n");
         XmlUtil.appendCdata(xml,
                             getRepository().translate(request, contents));
         xml.append("\n</content>");
+
         return new Result("", xml, "text/xml");
 
     }
@@ -385,7 +392,7 @@ public class HtmlOutputHandler extends OutputHandler {
         String links = getEntryManager().getEntryActionsTable(request, entry,
                            OutputType.TYPE_ALL);
         StringBuffer inner = new StringBuffer();
-        String       cLink =
+        String cLink =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
                              HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
         inner.append(cLink);
@@ -574,7 +581,8 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TREEVIEW) || output.equals(OUTPUT_TABLE)) {
+        if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_TREEVIEW)
+                || output.equals(OUTPUT_TABLE)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
@@ -605,8 +613,21 @@ public class HtmlOutputHandler extends OutputHandler {
         return getMetadataHtml(request, entry, decorate, addLink, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param decorate _more_
+     * @param addLink _more_
+     * @param onlyTheseTypes _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-                                                boolean decorate, boolean addLink, List<String> onlyTheseTypes)
+            boolean decorate, boolean addLink, List<String> onlyTheseTypes)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -617,8 +638,8 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        Hashtable             catMap           = new Hashtable();
-        List<String>          cats             = new ArrayList<String>();
+        Hashtable    catMap = new Hashtable();
+        List<String> cats   = new ArrayList<String>();
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
@@ -627,8 +648,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
         boolean didone = false;
         for (Metadata metadata : metadataList) {
-            if(onlyTheseTypes!=null && onlyTheseTypes.size()>0) {
-                if(!onlyTheseTypes.contains(metadata.getType())) continue;
+            if ((onlyTheseTypes != null) && (onlyTheseTypes.size() > 0)) {
+                if ( !onlyTheseTypes.contains(metadata.getType())) {
+                    continue;
+                }
             }
 
             MetadataType type = getRepository().getMetadataManager().findType(
@@ -650,7 +673,8 @@ public class HtmlOutputHandler extends OutputHandler {
             boolean  firstOne = false;
             if (blob == null) {
                 firstOne = true;
-                blob     = new Object[] { new StringBuffer(), new Integer(1) };
+                blob     = new Object[] { new StringBuffer(),
+                                          new Integer(1) };
                 catMap.put(cat, blob);
                 cats.add(cat);
             }
@@ -848,12 +872,16 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getSelectXml(Request request, List<Entry> subGroups,
                                List<Entry> entries)
             throws Exception {
+
         String       localeId = request.getString(ARG_LOCALEID, null);
 
         String       target   = request.getString(ATTR_TARGET, "");
         StringBuffer sb       = new StringBuffer();
-        boolean didExtra = false;
-        String sectionDivider =  HtmlUtils.tag("hr", HtmlUtils.style("padding:0px;margin:0px;margin-bottom:0px;"));
+        boolean      didExtra = false;
+        String sectionDivider =
+            HtmlUtils.tag(
+                "hr",
+                HtmlUtils.style("padding:0px;margin:0px;margin-bottom:0px;"));
 
 
         boolean addExtra = false;
@@ -867,7 +895,10 @@ public class HtmlOutputHandler extends OutputHandler {
                             localeEntry);
                 }
                 if (localeEntry != null) {
-                    sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
+                    sb.append(
+                        HtmlUtils.open(
+                            "div",
+                            HtmlUtils.cssClass("ramadda-select-inner")));
                     Entry grandParent = getEntryManager().getParent(request,
                                             localeEntry);
                     String indent = "";
@@ -889,15 +920,19 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-        if(request.get("firstclick",false)) addExtra = true;
+        if (request.get("firstclick", false)) {
+            addExtra = true;
+        }
 
-        if(addExtra) {
+        if (addExtra) {
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
 
 
             if (favoritesList.size() > 0) {
-                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
+                sb.append(
+                    HtmlUtils.open(
+                        "div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.center(HtmlUtils.b(msg("Favorites"))));
                 List favoriteLinks = new ArrayList();
                 for (FavoriteEntry favorite : favoritesList) {
@@ -909,9 +944,12 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
 
-            List<Entry> recents = getEntryManager().getSessionFolders(request); 
+            List<Entry> recents =
+                getEntryManager().getSessionFolders(request);
             if (recents.size() > 0) {
-                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
+                sb.append(
+                    HtmlUtils.open(
+                        "div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.center(HtmlUtils.b(msg("Recent"))));
                 List favoriteLinks = new ArrayList();
                 for (Entry recent : recents) {
@@ -926,7 +964,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
             List<Entry> cartEntries = getUserManager().getCart(request);
             if (cartEntries.size() > 0) {
-                sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-select-inner")));
+                sb.append(
+                    HtmlUtils.open(
+                        "div", HtmlUtils.cssClass("ramadda-select-inner")));
                 sb.append(HtmlUtils.b(msg("Cart")));
                 sb.append(HtmlUtils.br());
                 for (Entry cartEntry : cartEntries) {
@@ -937,7 +977,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-        
+
         for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
@@ -952,9 +992,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         sb.append(HtmlUtils.close("div"));
+
         return makeAjaxResult(request,
                               getRepository().translate(request,
                                   sb.toString()));
+
     }
 
 
@@ -1004,17 +1046,17 @@ public class HtmlOutputHandler extends OutputHandler {
                                      boolean includeDescription,
                                      boolean fixedHeight)
             throws Exception {
-        List   tabTitles   = new ArrayList<String>();
-        List   tabContents = new ArrayList<String>();
-        StringBuffer basicSB = new StringBuffer();
-        String desc        = entry.getDescription();
+        List         tabTitles   = new ArrayList<String>();
+        List         tabContents = new ArrayList<String>();
+        StringBuffer basicSB     = new StringBuffer();
+        String       desc        = entry.getDescription();
         if (includeDescription && (desc.length() > 0)) {
             desc = processText(request, entry, desc);
             basicSB.append(desc);
             basicSB.append("<br>");
         }
-        basicSB.append(entry.getTypeHandler().getEntryContent(entry,
-                                                              request, false, true));
+        basicSB.append(entry.getTypeHandler().getEntryContent(entry, request,
+                false, true));
 
         tabTitles.add("Basic");
         tabContents.add(basicSB.toString());
@@ -1098,6 +1140,18 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputTreeView(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
@@ -1106,75 +1160,116 @@ public class HtmlOutputHandler extends OutputHandler {
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeTreeView(request, allEntries, sb);
+
         return makeLinksResult(request, msg("Tree View"), sb,
                                new State(group, subGroups, entries));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputTest(Request request, Entry group,
-                              List<Entry> subGroups, List<Entry> entries)
+                             List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         return outputTest(request, group);
     }
 
-    private TTLCache<String, StringBuffer> testCache = new TTLCache<String, StringBuffer>(60*60*1000);
+    /** _more_          */
+    private TTLCache<String, StringBuffer> testCache = new TTLCache<String,
+                                                           StringBuffer>(60
+                                                               * 60 * 1000);
 
 
-    public Result outputTest(Request request, Entry entry)
-            throws Exception {
-        StringBuffer sb         = new StringBuffer();
-        String selectArg = "select";
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputTest(Request request, Entry entry) throws Exception {
+        StringBuffer sb        = new StringBuffer();
+        String       selectArg = "select";
 
-        if(request.exists(selectArg+"1")) {
+        if (request.exists(selectArg + "1")) {
             List<String> values = new ArrayList<String>();
-            for(int i=1;i<5;i++) {
-                if(!request.exists(selectArg+i)) break;
-                values.add(request.getString(selectArg+i,""));
+            for (int i = 1; i < 5; i++) {
+                if ( !request.exists(selectArg + i)) {
+                    break;
+                }
+                values.add(request.getString(selectArg + i, ""));
             }
-            String valueKey = entry.getId() + "::" + StringUtil.join("::", values);
+            String valueKey = entry.getId() + "::"
+                              + StringUtil.join("::", values);
             StringBuffer json = testCache.get(valueKey);
-            if(json == null) {
+            if (json == null) {
                 json = new StringBuffer();
-                String lastValue = values.get(values.size()-1);
-                json.append(Json.map(new String[]{
-                            "values", Json.list(new String[]{"--",lastValue +"-v1",lastValue +"-v2",lastValue +"-v3"})},false));
+                String lastValue = values.get(values.size() - 1);
+                json.append(Json.map(new String[] { "values",
+                        Json.list(new String[] { "--", lastValue + "-v1",
+                        lastValue + "-v2", lastValue + "-v3" }) }, false));
                 System.err.println(json);
                 testCache.put(valueKey, json);
             }
+
             return new Result(BLANK, json,
                               getRepository().getMimeTypeFromSuffix(".json"));
-        } 
+        }
 
-        String formId = "form" + HtmlUtils.blockCnt++;
-        StringBuffer js = new StringBuffer();
-        js.append("var " + formId + " = new Form(" + HtmlUtils.squote(formId)+"," + HtmlUtils.squote(entry.getId()) +");\n");
+        String       formId = "form" + HtmlUtils.blockCnt++;
+        StringBuffer js     = new StringBuffer();
+        js.append("var " + formId + " = new Form(" + HtmlUtils.squote(formId)
+                  + "," + HtmlUtils.squote(entry.getId()) + ");\n");
         sb.append(request.form(getRepository().URL_ENTRY_FORM,
                                HtmlUtils.attr("id", formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.input("value" ,"",
-                                  HtmlUtils.attr("id",formId +"_value")));
-        js.append(JQ.submit(JQ.id(formId), "return " +  HtmlUtils.call(formId +".submit", "")));
-        for(int selectIdx=1;selectIdx<10;selectIdx++) {
+        sb.append(HtmlUtils.input("value", "",
+                                  HtmlUtils.attr("id", formId + "_value")));
+        js.append(JQ.submit(JQ.id(formId),
+                            "return "
+                            + HtmlUtils.call(formId + ".submit", "")));
+        for (int selectIdx = 1; selectIdx < 10; selectIdx++) {
             sb.append(HtmlUtils.p());
             List values = new ArrayList();
-            values.add(new TwoFacedObject("--",""));
-            if(selectIdx==1) {
-                values.add(new TwoFacedObject("Apple","apple"));
-                values.add(new TwoFacedObject("Banana","banana"));
-                values.add(new TwoFacedObject("Orange","orange"));
-            } 
-            sb.append(HtmlUtils.select(selectArg+ + selectIdx ,values,(String)null,
-                                       HtmlUtils.attr("id",formId +"_"  + selectArg + selectIdx)));
-            js.append(JQ.change(JQ.id(formId+"_" + selectArg + selectIdx), "return " + HtmlUtils.call(formId +".select" ,HtmlUtils.squote("" + selectIdx))));
+            values.add(new TwoFacedObject("--", ""));
+            if (selectIdx == 1) {
+                values.add(new TwoFacedObject("Apple", "apple"));
+                values.add(new TwoFacedObject("Banana", "banana"));
+                values.add(new TwoFacedObject("Orange", "orange"));
+            }
+            sb.append(HtmlUtils.select(selectArg + +selectIdx, values,
+                                       (String) null,
+                                       HtmlUtils.attr("id",
+                                           formId + "_" + selectArg
+                                           + selectIdx)));
+            js.append(JQ.change(JQ.id(formId + "_" + selectArg + selectIdx),
+                                "return "
+                                + HtmlUtils.call(formId + ".select",
+                                    HtmlUtils.squote("" + selectIdx))));
         }
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit("submit","Submit"));
+        sb.append(HtmlUtils.submit("submit", "Submit"));
 
         sb.append(HtmlUtils.hr());
-        sb.append(HtmlUtils.img(iconUrl("/icons/arrow.gif"),"", HtmlUtils.attr("id", formId+"_image")));
+        sb.append(HtmlUtils.img(iconUrl("/icons/arrow.gif"), "",
+                                HtmlUtils.attr("id", formId + "_image")));
 
         sb.append(HtmlUtils.script(js.toString()));
         System.err.println(sb);
+
         return new Result("test", sb);
     }
 
@@ -1270,12 +1365,10 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
-                                                       getEntryName(entry), url));
+                    getEntryName(entry), url));
             sb.append(HtmlUtils.br());
-            sb.append(entry.getTypeHandler().formatDate(request,
-                                                             entry,
-                                                             new Date(entry.getStartDate()),
-                                                             ""));
+            sb.append(entry.getTypeHandler().formatDate(request, entry,
+                    new Date(entry.getStartDate()), ""));
 
 
             //            sb.append (getEntryManager().getAjaxLink( request,  entry,
@@ -1292,22 +1385,34 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param children _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void makeTreeView(Request request, List<Entry> children,
                              StringBuffer sb)
             throws Exception {
         request.put(ARG_TREEVIEW, "true");
         StringBuffer listSB = new StringBuffer();
         sb.append("<table width=\"100%\"><tr valign=\"top\">");
-        String link = getEntriesList(request, listSB,
-                                     children, true, true, true, false);
-        sb.append(HtmlUtils.col(link, HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"350")));
-        String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();","Go to","");
-        sb.append(HtmlUtils.col(HtmlUtils.leftRight(
-                                                    HtmlUtils.div("&nbsp;", HtmlUtils.id("treeview_header")),
-                                                    gotoHtml)));
+        String link = getEntriesList(request, listSB, children, true, true,
+                                     true, false);
+        sb.append(HtmlUtils.col(link,
+                                HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "350")));
+        String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();",
+                              "Go to", "");
+        sb.append(HtmlUtils.col(HtmlUtils.leftRight(HtmlUtils.div("&nbsp;",
+                HtmlUtils.id("treeview_header")), gotoHtml)));
         sb.append("</tr><tr valign=\"top\">");
         sb.append(HtmlUtils.col(listSB.toString()));
-        sb.append(HtmlUtils.col("<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>"));
+        sb.append(
+            HtmlUtils.col(
+                "<iframe id=\"treeview_view\" src=\"/repository/blank\" width=\"750\" height=\"500\"></iframe>"));
         sb.append("</tr></table>");
         request.remove(ARG_TREEVIEW);
     }
@@ -1336,7 +1441,8 @@ public class HtmlOutputHandler extends OutputHandler {
             boolean      hasFields   = false;
             if (columns != null) {
                 for (Column column : columns) {
-                    if (column.getCanList() && column.getCanShow() && column.getRows()<=1) {
+                    if (column.getCanList() && column.getCanShow()
+                            && (column.getRows() <= 1)) {
                         hasFields = true;
                     }
                 }
@@ -1369,7 +1475,8 @@ public class HtmlOutputHandler extends OutputHandler {
             List<Column> columns     = typeHandler.getColumns();
             StringBuffer tableSB     = new StringBuffer();
             tableSB.append("<div class=\"ramadda-entry-table\">");
-            tableSB.append("<table width=100% cellspacing=2 cellpadding=2 border=0>");
+            tableSB.append(
+                "<table width=100% cellspacing=2 cellpadding=2 border=0>");
             tableSB.append("<tr>");
             numCols++;
             //            tableSB.append(HtmlUtils.col("<b>" + msg("Name") +"</b>"));
@@ -1383,6 +1490,7 @@ public class HtmlOutputHandler extends OutputHandler {
             for (Entry entry : entries) {
                 if (entry.isFile()) {
                     haveFiles = true;
+
                     break;
                 }
             }
@@ -1396,7 +1504,8 @@ public class HtmlOutputHandler extends OutputHandler {
             //            tableSB.append(HtmlUtils.col("&nbsp;"));
             if (columns != null) {
                 for (Column column : columns) {
-                    if (column.getCanList() && column.getCanShow()  && column.getRows()<=1) {
+                    if (column.getCanList() && column.getCanShow()
+                            && (column.getRows() <= 1)) {
                         numCols++;
                         tableSB.append(
                             HtmlUtils.col(HtmlUtils.b(column.getLabel())));
@@ -1410,16 +1519,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 tableSB.append(
                     "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
 
-                EntryLink entryLink = getEntryManager().getAjaxLink(
-                            request, entry,
-                            entry.getLabel());
+                EntryLink entryLink = getEntryManager().getAjaxLink(request,
+                                          entry, entry.getLabel());
+                tableSB.append(HtmlUtils.col(entryLink.getLink(),
+                                             " xxxwidth=50%  "));
                 tableSB.append(
-                               HtmlUtils.col(entryLink.getLink(), " xxxwidth=50%  "));
-                tableSB.append(
-                    HtmlUtils.col(entry.getTypeHandler().formatDate(
-                                                                         request, entry,
-                                                                         new Date(entry.getStartDate()),
-                                                                         ""), " width=10% align=right "));
+                    HtmlUtils.col(
+                        entry.getTypeHandler().formatDate(
+                            request, entry, new Date(entry.getStartDate()),
+                            ""), " width=10% align=right "));
 
                 if (entry.isFile()) {
                     tableSB.append(
@@ -1429,7 +1537,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                     request, entry), HtmlUtils.img(
                                     iconUrl(ICON_DOWNLOAD), msg("Download"),
                                     "")), " width=2% "));
-                } else if(haveFiles) {
+                } else if (haveFiles) {
                     tableSB.append(HtmlUtils.col(""));
                 }
 
@@ -1448,7 +1556,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 if (columns != null) {
                     for (Column column : columns) {
-                        if (column.getCanList() && column.getCanShow()  && column.getRows()<=1) {
+                        if (column.getCanList() && column.getCanShow()
+                                && (column.getRows() <= 1)) {
                             String s = column.getString(values);
                             if (s == null) {
                                 s = "NA";
@@ -1508,14 +1617,17 @@ public class HtmlOutputHandler extends OutputHandler {
         //This is a terrible hack but check if the request is for the timeline xml. If it is let the 
         //CalendarOutputHandler handle it.
         if (request.get("timelinexml", false)) {
-            Result timelineResult = getCalendarOutputHandler().handleIfTimelineXml(request,  group, subGroups, entries);
+            Result timelineResult =
+                getCalendarOutputHandler().handleIfTimelineXml(request,
+                    group, subGroups, entries);
+
             return timelineResult;
         }
 
 
 
-        boolean     isSearchResults = group.isDummy();
-        TypeHandler typeHandler     =
+        boolean isSearchResults = group.isDummy();
+        TypeHandler typeHandler =
             getRepository().getTypeHandler(group.getType());
 
         if (outputType.equals(OUTPUT_INLINE)) {
@@ -1676,9 +1788,10 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.br());
                 sb.append(groupsSB.toString());
             } else {
-                if(!Utils.stringDefined(group.getDescription())) {
+                if ( !Utils.stringDefined(group.getDescription())) {
                     sb.append(
-                              getPageHandler().showDialogNote(msg(LABEL_EMPTY_FOLDER)));
+                        getPageHandler().showDialogNote(
+                            msg(LABEL_EMPTY_FOLDER)));
                 }
             }
 
@@ -1805,11 +1918,11 @@ public class HtmlOutputHandler extends OutputHandler {
     public String processText(Request request, Entry entry, String text) {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
-            String first    = text.substring(0, idx);
-            String base     = "" + (HtmlUtils.blockCnt++);
-            String divId    = "morediv_" + base;
-            String linkId   = "morelink_" + base;
-            String second   = text.substring(idx + "<more>".length());
+            String first  = text.substring(0, idx);
+            String base   = "" + (HtmlUtils.blockCnt++);
+            String divId  = "morediv_" + base;
+            String linkId = "morelink_" + base;
+            String second = text.substring(idx + "<more>".length());
             String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
                               + ")";
             String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)

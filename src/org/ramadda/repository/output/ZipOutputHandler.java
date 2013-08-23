@@ -1,6 +1,5 @@
-/**
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+/*
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,15 +24,16 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.repository.util.FileWriter;
 
-import org.w3c.dom.*;
-
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -76,9 +76,10 @@ import java.util.zip.*;
  */
 public class ZipOutputHandler extends OutputHandler {
 
+    /** _more_          */
     private static final String ARG_WRITETODISK = "writetodisk";
 
-    /** _more_          */
+    /** _more_ */
     private final LogManager.LogId LOGID =
         new LogManager.LogId(
             "org.ramadda.repository.output.ZipOutputHandler");
@@ -235,7 +236,7 @@ public class ZipOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
-        if(group.isDummy()) {
+        if (group.isDummy()) {
             request.setReturnFilename("Search_Results.zip");
         }
 
@@ -289,14 +290,14 @@ public class ZipOutputHandler extends OutputHandler {
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport)
             throws Exception {
-        OutputStream os = null;
+        OutputStream os        = null;
         boolean      doingFile = false;
         File         tmpFile   = null;
 
 
 
-        Element root = null;
-        boolean ok   = true;
+        Element      root      = null;
+        boolean      ok        = true;
         //First recurse down without a zos to check the size
         try {
             processZip(request, entries, recurse, 0, null, prefix, 0,
@@ -305,35 +306,42 @@ public class ZipOutputHandler extends OutputHandler {
             ok = false;
         }
         if ( !ok) {
-            return new Result("Error", new StringBuffer("Size of request has exceeded maximum size"));
+            return new Result(
+                "Error",
+                new StringBuffer(
+                    "Size of request has exceeded maximum size"));
         }
 
 
-        Result result = new Result();
-        FileWriter fileWriter = null;
+        Result     result         = new Result();
+        FileWriter fileWriter     = null;
 
 
 
-        boolean writeToDisk = request.get(ARG_WRITETODISK, false);
-        File writeToDiskDir = null;
-        if(writeToDisk) {
+        boolean    writeToDisk    = request.get(ARG_WRITETODISK, false);
+        File       writeToDiskDir = null;
+        if (writeToDisk) {
             //IMPORTANT: Make sure that the user is an admin when handling the write to disk 
             request.ensureAdmin();
             forExport = true;
-            writeToDiskDir = getStorageManager().makeTempDir(getRepository().getGUID(),false).getDir();
+            writeToDiskDir =
+                getStorageManager().makeTempDir(getRepository().getGUID(),
+                    false).getDir();
             fileWriter = new FileWriter(writeToDiskDir);
         } else {
             if (request.getHttpServletResponse() != null) {
                 os = request.getHttpServletResponse().getOutputStream();
                 request.getHttpServletResponse().setContentType(
-                                                                getMimeType(OUTPUT_ZIP));
+                    getMimeType(OUTPUT_ZIP));
             } else {
-                tmpFile = getRepository().getStorageManager().getTmpFile(request,
-                                                                         ".zip");
-                os = getStorageManager().getUncheckedFileOutputStream(tmpFile);
+                tmpFile =
+                    getRepository().getStorageManager().getTmpFile(request,
+                        ".zip");
+                os = getStorageManager().getUncheckedFileOutputStream(
+                    tmpFile);
                 doingFile = true;
             }
-            fileWriter = new FileWriter(new ZipOutputStream(os));            
+            fileWriter = new FileWriter(new ZipOutputStream(os));
             result.setNeedToWrite(false);
             if (request.get(ARG_COMPRESS, true) == false) {
                 //You would think that setting the method to stored would work
@@ -363,6 +371,7 @@ public class ZipOutputHandler extends OutputHandler {
         }
         if (doingFile) {
             IOUtil.close(os);
+
             return new Result(
                 "", getStorageManager().getFileInputStream(tmpFile),
                 getMimeType(OUTPUT_ZIP));
@@ -370,8 +379,10 @@ public class ZipOutputHandler extends OutputHandler {
         }
         getLogManager().logInfo("Zip File ended");
 
-        if(writeToDisk) {
-            return new Result("Export",new StringBuffer("<p>Exported to:<br>" + writeToDiskDir));
+        if (writeToDisk) {
+            return new Result("Export",
+                              new StringBuffer("<p>Exported to:<br>"
+                                  + writeToDiskDir));
         }
 
         return result;
@@ -385,6 +396,7 @@ public class ZipOutputHandler extends OutputHandler {
      * @param entries _more_
      * @param recurse _more_
      * @param level _more_
+     * @param fileWriter _more_
      * @param prefix _more_
      * @param sizeSoFar _more_
      * @param counter _more_
@@ -449,7 +461,7 @@ public class ZipOutputHandler extends OutputHandler {
             }
 
             if (entry.isGroup() && recurse) {
-                Entry       group    = (Entry) entry;
+                Entry group = (Entry) entry;
                 List<Entry> children = getEntryManager().getChildren(request,
                                            group);
                 String path = group.getName();
@@ -494,7 +506,7 @@ public class ZipOutputHandler extends OutputHandler {
             if (fileWriter != null) {
                 InputStream fis =
                     getStorageManager().getFileInputStream(path);
-                if (entryNode != null && forExport) {
+                if ((entryNode != null) && forExport) {
                     fileWriter.writeFile(entry.getId(), fis);
                     XmlUtil.setAttributes(entryNode, new String[] { ATTR_FILE,
                             entry.getId(), ATTR_FILENAME, name });

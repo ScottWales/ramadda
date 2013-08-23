@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -47,17 +46,18 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.net.URL;
+
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 
 
@@ -67,7 +67,7 @@ import java.util.Properties;
  */
 public class PageHandler extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final String DEFAULT_TEMPLATE = "aodnStyle";
 
 
@@ -87,7 +87,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
-    /** _more_          */
+    /** _more_ */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
 
@@ -166,7 +166,7 @@ public class PageHandler extends RepositoryManager {
     /** html template macro */
     public static final String MACRO_USERLINK = "userlinks";
 
-    /** _more_          */
+    /** _more_ */
     public static final String MACRO_ALLLINKS = "alllinks";
 
     /** html template macro */
@@ -245,6 +245,9 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     */
     public void initDateStuff() {
         sdf = RepositoryUtil.makeDateFormat(getProperty(PROP_DATEFORMAT,
                 DEFAULT_TIME_FORMAT));
@@ -271,12 +274,13 @@ public class PageHandler extends RepositoryManager {
      */
     public void decorateResult(Request request, Result result)
             throws Exception {
+
         if ( !request.get(ARG_DECORATE, true)) {
             return;
         }
-        Repository repository   = getRepository();
-        Entry      currentEntry = getSessionManager().getLastEntry(request);
-        String       template = null;
+        Repository   repository   = getRepository();
+        Entry        currentEntry = getSessionManager().getLastEntry(request);
+        String       template     = null;
         HtmlTemplate htmlTemplate;
         if (request.isMobile()) {
             htmlTemplate = getMobileTemplate();
@@ -340,7 +344,7 @@ public class PageHandler extends RepositoryManager {
                 if (favoriteCnt++ > 100) {
                     break;
                 }
-                Entry     entry     = favorite.getEntry();
+                Entry entry = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, entry.getLabel(), null,
                                           false, null, false);
@@ -404,9 +408,9 @@ public class PageHandler extends RepositoryManager {
 
         for (PageDecorator pageDecorator :
                 repository.getPluginManager().getPageDecorators()) {
-            String tmpTemplate = pageDecorator.decoratePage(repository, request,
-                    template, currentEntry);
-            if(tmpTemplate!=null) {
+            String tmpTemplate = pageDecorator.decoratePage(repository,
+                                     request, template, currentEntry);
+            if (tmpTemplate != null) {
                 template = tmpTemplate;
             }
         }
@@ -445,6 +449,7 @@ public class PageHandler extends RepositoryManager {
 
         html = translate(request, html);
         result.setContent(html.getBytes());
+
 
     }
 
@@ -643,7 +648,8 @@ public class PageHandler extends RepositoryManager {
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = StringUtil.split(content, "\n", true, true);
         Properties   phrases = new Properties();
-        String       type    = IOUtil.stripExtension(IOUtil.getFileTail(file));
+        String       type    =
+            IOUtil.stripExtension(IOUtil.getFileTail(file));
         String       name    = type;
         for (String line : lines) {
             if (line.startsWith("#")) {
@@ -957,15 +963,23 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
     public HtmlTemplate getTemplate(Request request) {
-        Entry      currentEntry = null;
-        if(request!=null) {
+        Entry currentEntry = null;
+        if (request != null) {
             try {
                 currentEntry = getSessionManager().getLastEntry(request);
-            }catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
+
         return getTemplate(request, currentEntry);
     }
 
@@ -974,6 +988,7 @@ public class PageHandler extends RepositoryManager {
      * Find the html template for the given request
      *
      * @param request The request
+     * @param entry _more_
      *
      * @return _more_
      */
@@ -989,25 +1004,27 @@ public class PageHandler extends RepositoryManager {
         }
 
         String templateId = request.getHtmlTemplateId();
-        if((templateId==null || templateId.length()==0)  && entry!=null) {
+        if (((templateId == null) || (templateId.length() == 0))
+                && (entry != null)) {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, entry,
-                                                      ContentMetadataHandler.TYPE_TEMPLATE, true);
-                if(metadataList!=null) {
-                    for(Metadata metadata: metadataList) {
+                        ContentMetadataHandler.TYPE_TEMPLATE, true);
+                if (metadataList != null) {
+                    for (Metadata metadata : metadataList) {
                         templateId = metadata.getAttr1();
                         request.put(ARG_TEMPLATE, templateId);
+
                         break;
                     }
                 }
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
 
 
-        User   user       = request.getUser();
+        User user = request.getUser();
 
         if ((templateId == null) && user.getAnonymous()) {
             templateId = user.getTemplate();
@@ -1025,6 +1042,7 @@ public class PageHandler extends RepositoryManager {
             if (defaultTemplate != null) {
                 return defaultTemplate;
             }
+
             return theTemplates.get(0);
         }
 
@@ -1823,7 +1841,8 @@ public class PageHandler extends RepositoryManager {
                               "ramadda.template.link.wrapper", "");
 
         ApiMethod homeApi = getRepository().getApiManager().getHomeApi();
-        for (ApiMethod apiMethod : getRepository().getApiManager().getTopLevelMethods()) {
+        for (ApiMethod apiMethod :
+                getRepository().getApiManager().getTopLevelMethods()) {
             if (apiMethod.getMustBeAdmin() && !isAdmin) {
                 continue;
             }
@@ -1844,6 +1863,7 @@ public class PageHandler extends RepositoryManager {
                                 getEntryManager().getTopGroup().getName());
             links.add(html);
         }
+
         return links;
     }
 
@@ -1859,9 +1879,9 @@ public class PageHandler extends RepositoryManager {
      */
     public String makeHeader(Request request, List<RequestUrl> urls,
                              String arg) {
-        List<String> links = new ArrayList();
-        String       type  = request.getRequestPath();
-        String onLabel = null;
+        List<String> links   = new ArrayList();
+        String       type    = request.getRequestPath();
+        String       onLabel = null;
         for (RequestUrl requestUrl : urls) {
             String label = requestUrl.getLabel();
             label = msg(label);
@@ -1875,9 +1895,7 @@ public class PageHandler extends RepositoryManager {
                 onLabel = label;
                 //            } else {
             }
-            links.add(
-                      HtmlUtils.span(
-                                     HtmlUtils.href(url, label),
+            links.add(HtmlUtils.span(HtmlUtils.href(url, label),
                                      HtmlUtils.cssClass("subheader-off")));
             //            }
         }
@@ -1888,8 +1906,9 @@ public class PageHandler extends RepositoryManager {
                              HtmlUtils.cssClass("subheader-container"),
                              HtmlUtils.tag(HtmlUtils.TAG_SPAN,
                                            HtmlUtils.cssClass("subheader"),
-                                           header)) +
-            (onLabel==null?"":HtmlUtils.p() +msgHeader(onLabel));
+                                           header)) + ((onLabel == null)
+                ? ""
+                : HtmlUtils.p() + msgHeader(onLabel));
     }
 
 

@@ -1,4 +1,24 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 package org.ramadda.repository.job;
+
 
 import org.ramadda.repository.*;
 
@@ -63,6 +83,7 @@ public class JobInfo implements Constants {
     /** db column for jobs table */
     public static final String DB_COL_USER_ID = "user_id";
 
+    /** _more_          */
     public static final String DB_COL_TYPE = "type";
 
     /** db column for jobs table */
@@ -70,8 +91,7 @@ public class JobInfo implements Constants {
 
     /** db column for jobs table */
     public static final String[] DB_COLUMNS = {
-        DB_COL_ID, DB_COL_ENTRY_ID, DB_COL_DATE, DB_COL_USER_ID,
-        DB_COL_TYPE,
+        DB_COL_ID, DB_COL_ENTRY_ID, DB_COL_DATE, DB_COL_USER_ID, DB_COL_TYPE,
         DB_COL_JOB_INFO_BLOB
     };
 
@@ -98,6 +118,7 @@ public class JobInfo implements Constants {
     /** job status */
     private String status = STATUS_RUNNING;
 
+    /** _more_          */
     private String type = "processing";
 
     /** The processing can add various status messages */
@@ -127,8 +148,10 @@ public class JobInfo implements Constants {
     /** job name the user gave */
     private String jobName;
 
+    /** _more_          */
     private String jobUrl;
 
+    /** _more_          */
     private String jobStatusUrl;
 
     /** job description the user gave */
@@ -149,13 +172,19 @@ public class JobInfo implements Constants {
     /** file size of the products */
     private long productSize;
 
+    /** _more_          */
     private StringBuffer extraInfo = new StringBuffer();
 
     /**
      * ctor
      */
-   public JobInfo() {}
+    public JobInfo() {}
 
+    /**
+     * _more_
+     *
+     * @param type _more_
+     */
     public JobInfo(String type) {
         this.type = type;
     }
@@ -167,17 +196,17 @@ public class JobInfo implements Constants {
      * @param entryId the entry
      * @param jobId unique id of the job
      */
-    public JobInfo(Request request, String  entryId, 
-                   Object jobId) {
-        this.entryId  = entryId;
-        this.jobId         = jobId;
+    public JobInfo(Request request, String entryId, Object jobId) {
+        this.entryId      = entryId;
+        this.jobId        = jobId;
         this.urlArguments = new Hashtable(request.getArgs());
-        this.ipAddress = request.getEncodedString(ARG_REQUEST_IP, request.getIp());
-        this.user     = request.getUser().getId();
-        this.email    = request.getEncodedString(ARG_JOB_EMAIL, "");
-        this.logEmail = request.getEncodedString(ARG_REQUEST_EMAIL, "");
-        this.jobName  = request.getEncodedString(ARG_JOB_NAME, "");
-        this.description = request.getEncodedString(ARG_JOB_DESCRIPTION,"");
+        this.ipAddress = request.getEncodedString(ARG_REQUEST_IP,
+                request.getIp());
+        this.user        = request.getUser().getId();
+        this.email       = request.getEncodedString(ARG_JOB_EMAIL, "");
+        this.logEmail    = request.getEncodedString(ARG_REQUEST_EMAIL, "");
+        this.jobName     = request.getEncodedString(ARG_JOB_NAME, "");
+        this.description = request.getEncodedString(ARG_JOB_DESCRIPTION, "");
 
     }
 
@@ -262,8 +291,7 @@ public class JobInfo implements Constants {
      *  @param value The new value for RequestArgs
      * noop -  save for old jobs
      */
-    public void setRequestArgs(Hashtable value) {
-    }
+    public void setRequestArgs(Hashtable value) {}
 
 
 
@@ -284,6 +312,7 @@ public class JobInfo implements Constants {
     public String getJobName() {
         return jobName;
     }
+
     /**
      * Set the JobUrl property.
      *
@@ -523,8 +552,10 @@ public class JobInfo implements Constants {
             if (logEmail != null) {
                 return logEmail;
             }
+
             return "";
         }
+
         return email;
     }
 
@@ -566,65 +597,71 @@ public class JobInfo implements Constants {
     }
 
     /**
-       Set the JobStatusUrl property.
-
-       @param value The new value for JobStatusUrl
-    **/
-    public void setJobStatusUrl (String value) {
-	jobStatusUrl = value;
+     *  Set the JobStatusUrl property.
+     *
+     *  @param value The new value for JobStatusUrl
+     */
+    public void setJobStatusUrl(String value) {
+        jobStatusUrl = value;
     }
 
     /**
-       Get the JobStatusUrl property.
-
-       @return The JobStatusUrl
-    **/
-    public String getJobStatusUrl () {
-	return jobStatusUrl;
+     *  Get the JobStatusUrl property.
+     *
+     *  @return The JobStatusUrl
+     */
+    public String getJobStatusUrl() {
+        return jobStatusUrl;
     }
 
     /**
-       Set the Type property.
-
-       @param value The new value for Type
-    **/
-    public void setType (String value) {
-	type = value;
+     *  Set the Type property.
+     *
+     *  @param value The new value for Type
+     */
+    public void setType(String value) {
+        type = value;
     }
 
     /**
-       Get the Type property.
-
-       @return The Type
-    **/
-    public String getType () {
-	return type;
+     *  Get the Type property.
+     *
+     *  @return The Type
+     */
+    public String getType() {
+        return type;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     */
     public void appendExtraInfo(String s) {
         extraInfo.append(s);
     }
 
     /**
-       Set the ExtraInfo property.
-
-       @param value The new value for ExtraInfo
-    **/
-    public void setExtraInfo (String value) {
-        if(value!=null)
+     *  Set the ExtraInfo property.
+     *
+     *  @param value The new value for ExtraInfo
+     */
+    public void setExtraInfo(String value) {
+        if (value != null) {
             extraInfo = new StringBuffer(value);
-        else
+        } else {
             extraInfo = new StringBuffer();
+        }
     }
 
     /**
-       Get the ExtraInfo property.
-
-       @return The ExtraInfo
-    **/
-    public String getExtraInfo () {
-	return extraInfo.toString();
+     *  Get the ExtraInfo property.
+     *
+     *  @return The ExtraInfo
+     */
+    public String getExtraInfo() {
+        return extraInfo.toString();
     }
 
 

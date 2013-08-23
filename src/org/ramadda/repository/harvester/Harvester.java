@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,13 +26,14 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -110,7 +110,9 @@ public abstract class Harvester extends RepositoryManager {
     public static final String UNIT_DAY = "day";
 
 
+    /** _more_          */
     public static final String ATTR_GENERATEMD5 = "generatemd5";
+
     /** _more_ */
     public static final String ATTR_CLASS = "class";
 
@@ -204,6 +206,8 @@ public abstract class Harvester extends RepositoryManager {
 
     /** _more_ */
     private boolean active = false;
+
+    /** _more_          */
     private boolean generateMd5 = false;
 
     /** _more_ */
@@ -240,7 +244,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     protected StringBuffer status = new StringBuffer();
 
-    /** _more_          */
+    /** _more_ */
     protected String currentStatus = "";
 
     /** _more_ */
@@ -433,7 +437,7 @@ public abstract class Harvester extends RepositoryManager {
      */
     protected void addBaseGroupSelect(String selectId, StringBuffer sb)
             throws Exception {
-        Entry  baseGroup  = getBaseGroup();
+        Entry baseGroup = getBaseGroup();
         String baseSelect = OutputHandler.getGroupSelect(getRequest(),
                                 selectId);
         String extra = "";
@@ -490,16 +494,16 @@ public abstract class Harvester extends RepositoryManager {
         nameTemplate = XmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
                                             nameTemplate);
         descTemplate = XmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");
-        tagTemplate  = XmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
+        tagTemplate = XmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
                                            tagTemplate);
 
 
 
-        this.name        = XmlUtil.getAttribute(element, ATTR_NAME, "");
+        this.name     = XmlUtil.getAttribute(element, ATTR_NAME, "");
         this.monitor = XmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
 
-        this.userName    = XmlUtil.getAttribute(element, ATTR_USER, userName);
-        this.user        = null;
+        this.userName = XmlUtil.getAttribute(element, ATTR_USER, userName);
+        this.user     = null;
 
         this.addMetadata = XmlUtil.getAttribute(element, ATTR_ADDMETADATA,
                 addMetadata);
@@ -508,8 +512,8 @@ public abstract class Harvester extends RepositoryManager {
         this.activeOnStart = XmlUtil.getAttribute(element,
                 ATTR_ACTIVEONSTART, activeOnStart);
 
-        this.generateMd5 = XmlUtil.getAttribute(element,
-                                                ATTR_GENERATEMD5, generateMd5);
+        this.generateMd5 = XmlUtil.getAttribute(element, ATTR_GENERATEMD5,
+                generateMd5);
         this.testCount = XmlUtil.getAttribute(element, ATTR_TESTCOUNT,
                 testCount);
         this.testMode = XmlUtil.getAttribute(element, ATTR_TESTMODE,
@@ -568,12 +572,12 @@ public abstract class Harvester extends RepositoryManager {
             rootDirs.add(new File(dir));
         }
 
-        name        = request.getString(ARG_NAME, name);
+        name = request.getString(ARG_NAME, name);
 
         typeHandler = repository.getTypeHandler(request.getString(ATTR_TYPE,
                 ""));
         activeOnStart = request.get(ATTR_ACTIVEONSTART, false);
-        generateMd5 = request.get(ATTR_GENERATEMD5, false);
+        generateMd5   = request.get(ATTR_GENERATEMD5, false);
         testCount     = request.get(ATTR_TESTCOUNT, testCount);
         testMode      = request.get(ATTR_TESTMODE, false);
         monitor       = request.get(ATTR_MONITOR, false);
@@ -591,11 +595,11 @@ public abstract class Harvester extends RepositoryManager {
         } else if (sleepUnit.equals(UNIT_DAY)) {
             sleepMinutes = sleepMinutes * 60 * 60;
         }
-        nameTemplate  = request.getString(ATTR_NAMETEMPLATE, nameTemplate);
+        nameTemplate = request.getString(ATTR_NAMETEMPLATE, nameTemplate);
         groupTemplate = request.getUnsafeString(ATTR_GROUPTEMPLATE,
                 groupTemplate);
 
-        baseGroupId  = request.getUnsafeString(ATTR_BASEGROUP + "_hidden", "");
+        baseGroupId = request.getUnsafeString(ATTR_BASEGROUP + "_hidden", "");
 
         descTemplate = request.getUnsafeString(ATTR_DESCTEMPLATE,
                 descTemplate);
@@ -643,7 +647,7 @@ public abstract class Harvester extends RepositoryManager {
             minutes = "" + (sleepMinutes / (60 * 60));
         }
         String sleepType = HtmlUtils.select(ATTR_SLEEPUNIT, tfos, sleepUnit);
-        String sleepLbl  =
+        String sleepLbl =
             "<br>" + HtmlUtils.space(3)
             + "e.g., 30 minutes = on the hour and the half hour<br>"
             + HtmlUtils.space(3);
@@ -680,8 +684,9 @@ public abstract class Harvester extends RepositoryManager {
             + HtmlUtils.input(ATTR_SLEEP, "" + minutes, HtmlUtils.SIZE_5)
             + HtmlUtils.space(1) + sleepType + sleepLbl);
         runWidgets.append(HtmlUtils.br());
-        runWidgets.append(HtmlUtils.checkbox(ATTR_GENERATEMD5, "true", generateMd5)
-                          + HtmlUtils.space(1) + msg("Generate MD5 Checksum"));
+        runWidgets.append(
+            HtmlUtils.checkbox(ATTR_GENERATEMD5, "true", generateMd5)
+            + HtmlUtils.space(1) + msg("Generate MD5 Checksum"));
 
         sb.append(
             HtmlUtils.formEntryTop(
@@ -829,9 +834,10 @@ public abstract class Harvester extends RepositoryManager {
             Element root)
             throws Exception {
         List<Harvester> harvesters = new ArrayList<Harvester>();
-        List            children   = XmlUtil.findChildren(root, TAG_HARVESTER);
+        List            children   = XmlUtil.findChildren(root,
+                                         TAG_HARVESTER);
         for (int i = 0; i < children.size(); i++) {
-            Element     node = (Element) children.get(i);
+            Element node = (Element) children.get(i);
             Class c = Misc.findClass(XmlUtil.getAttribute(node, ATTR_CLASS));
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
@@ -866,7 +872,8 @@ public abstract class Harvester extends RepositoryManager {
      * @return _more_
      */
     public boolean canContinueRunning(int timestamp) {
-        return getRepository().getActive() && getActive() && (timestamp == getCurrentTimestamp());
+        return getRepository().getActive() && getActive()
+               && (timestamp == getCurrentTimestamp());
     }
 
     /**
@@ -904,7 +911,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param exc _more_
      */
     public void logHarvesterError(String message, Throwable exc) {
-        System.err.println("ERROR:" + getName() +" " + message);
+        System.err.println("ERROR:" + getName() + " " + message);
         getRepository().getLogManager().logError(LOGID,
                 getName() + " " + message, exc);
         appendError(message);
@@ -960,7 +967,7 @@ public abstract class Harvester extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getExtraInfo() throws Exception {
-        return currentStatus +"<br>" + status;
+        return currentStatus + "<br>" + status;
     }
 
     /**
@@ -1188,23 +1195,23 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-/**
-Set the GenerateMd5 property.
+    /**
+     * Set the GenerateMd5 property.
+     *
+     * @param value The new value for GenerateMd5
+     */
+    public void setGenerateMd5(boolean value) {
+        generateMd5 = value;
+    }
 
-@param value The new value for GenerateMd5
-**/
-public void setGenerateMd5 (boolean value) {
-	generateMd5 = value;
-}
-
-/**
-Get the GenerateMd5 property.
-
-@return The GenerateMd5
-**/
-public boolean getGenerateMd5 () {
-	return generateMd5;
-}
+    /**
+     * Get the GenerateMd5 property.
+     *
+     * @return The GenerateMd5
+     */
+    public boolean getGenerateMd5() {
+        return generateMd5;
+    }
 
 
 
@@ -1262,11 +1269,26 @@ public boolean getGenerateMd5 () {
         return testCount;
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public boolean defined(String s) {
-        if(s!=null && s.length()>0) return true;
+        if ((s != null) && (s.length() > 0)) {
+            return true;
+        }
+
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String toString() {
         return "harvester:" + getName();
     }

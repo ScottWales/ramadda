@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,13 +21,19 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.type.*;
 import org.ramadda.repository.database.*;
 
-import ucar.unidata.util.Misc;
+
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.type.*;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
+
+
+import org.ramadda.util.TTLCache;
+import org.ramadda.util.TTLObject;
+
+import ucar.unidata.util.Misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,29 +48,34 @@ import java.util.Map;
 import java.util.Properties;
 
 
-import org.ramadda.util.TTLCache;
-import org.ramadda.util.TTLObject;
-
-
 /**
  * This class does most of the work of managing repository content
  */
 public class EntryUtil extends RepositoryManager {
 
     //Cache for 1 hour
-    private TTLObject<Hashtable<String,Integer>> typeCache =
-        new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
+
+    /** _more_          */
+    private TTLObject<Hashtable<String, Integer>> typeCache =
+        new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000);
 
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public EntryUtil(Repository repository) {
         super(repository);
     }
 
 
+    /**
+     * _more_
+     */
     public void clearCache() {
-        typeCache =
-            new TTLObject<Hashtable<String,Integer>>(60 * 60 * 1000);
+        typeCache = new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000);
 
     }
 
@@ -189,8 +199,16 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
     public List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
-                                         final boolean descending) {
+            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -296,8 +314,7 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public String formatDate(Request request, Entry entry) {
-        return getPageHandler().formatDate(
-                                           request, entry.getStartDate(),
+        return getPageHandler().formatDate(request, entry.getStartDate(),
                                            getTimezone(entry));
     }
 
@@ -323,22 +340,34 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param typeHandler _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public int getEntryCount(TypeHandler typeHandler) throws Exception {
-        Hashtable<String,Integer> typesWeHave = typeCache.get();
-        if(typesWeHave == null) {
-            typesWeHave = new Hashtable<String,Integer>();
-            for(String type:getRepository().getDatabaseManager().selectDistinct(
-                                                                                 Tables.ENTRIES.NAME,
-                                                                                 Tables.ENTRIES.COL_TYPE, null)) {
+        Hashtable<String, Integer> typesWeHave = typeCache.get();
+        if (typesWeHave == null) {
+            typesWeHave = new Hashtable<String, Integer>();
+            for (String type :
+                    getRepository().getDatabaseManager().selectDistinct(
+                        Tables.ENTRIES.NAME, Tables.ENTRIES.COL_TYPE, null)) {
                 int cnt = getDatabaseManager().getCount(Tables.ENTRIES.NAME,
-                                                        Clause.eq(Tables.ENTRIES.COL_TYPE, type));
-                
+                              Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+
                 typesWeHave.put(type, new Integer(cnt));
             }
             typeCache.put(typesWeHave);
         }
         Integer cnt = typesWeHave.get(typeHandler.getType());
-        if(cnt == null) return 0;
+        if (cnt == null) {
+            return 0;
+        }
+
         return cnt.intValue();
     }
 

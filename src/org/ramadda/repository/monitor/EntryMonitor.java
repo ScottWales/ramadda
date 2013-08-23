@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -137,7 +136,7 @@ public class EntryMonitor implements Constants {
         }
         this.id  = repository.getGUID();
         fromDate = new Date();
-        toDate   = new Date(fromDate.getTime()
+        toDate = new Date(fromDate.getTime()
                           + (long) DateUtil.daysToMillis(7));
     }
 
@@ -261,14 +260,20 @@ public class EntryMonitor implements Constants {
                     ARG_MONITOR_ENABLED, "true", getEnabled())));
 
         stateSB.append(
-            HtmlUtils.formEntry(
-                getRepository().msgLabel("Valid Date Range"),
-                getRepository().getPageHandler().makeDateInput(
-                    request, ARG_MONITOR_FROMDATE, "monitorform",
-                    getFromDate()) + " " + getRepository().msg("To") + " "
-                                   + getRepository().getPageHandler().makeDateInput(
-                                       request, ARG_MONITOR_TODATE,
-                                       "monitorform", getToDate())));
+            HtmlUtils
+                .formEntry(
+                    getRepository().msgLabel("Valid Date Range"),
+                    getRepository().getPageHandler()
+                        .makeDateInput(
+                            request, ARG_MONITOR_FROMDATE, "monitorform",
+                            getFromDate()) + " " + getRepository().msg("To")
+                                           + " "
+                                           + getRepository().getPageHandler()
+                                               .makeDateInput(
+                                                   request,
+                                                       ARG_MONITOR_TODATE,
+                                                           "monitorform",
+                                                               getToDate())));
 
 
 
@@ -394,7 +399,7 @@ public class EntryMonitor implements Constants {
             addFilter(new Filter(what, users, doNot));
         } else if (what.equals(ARG_ANCESTOR)) {
             String ancestorName = request.getString(ARG_ANCESTOR, "");
-            Entry  entry        =
+            Entry entry =
                 getRepository().getEntryManager().findGroupFromName(request,
                     ancestorName, getUser(), false);
             if (entry == null) {
@@ -452,7 +457,7 @@ public class EntryMonitor implements Constants {
         boolean doNot  = ((filter == null)
                           ? false
                           : filter.getDoNot());
-        String  notCbx = HtmlUtils.checkbox(what + "_not", "true", doNot)
+        String notCbx = HtmlUtils.checkbox(what + "_not", "true", doNot)
                         + HtmlUtils.space(1) + getRepository().msg("Not");
 
         if (what.equals(ARG_FILESUFFIX)) {
@@ -481,10 +486,10 @@ public class EntryMonitor implements Constants {
                                               StringUtil.join(",", users),
                                                   " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_ANCESTOR)) {
-            String id    = (String) ((filter == null)
-                                     ? ""
-                                     : filter.getValue());
-            Entry  group =
+            String id = (String) ((filter == null)
+                                  ? ""
+                                  : filter.getValue());
+            Entry group =
                 (Entry) getRepository().getEntryManager().getEntry(null, id);
 
             String select = OutputHandler.getGroupSelect(getRequest(), what);

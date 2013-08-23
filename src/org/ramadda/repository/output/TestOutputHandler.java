@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,12 +23,13 @@ package org.ramadda.repository.output;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;

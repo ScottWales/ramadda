@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -148,8 +147,8 @@ public class EmailAction extends PasswordAction {
                     monitor.getRepository().getLogManager().logInfo(
                         "Monitor:" + this + " sending mail to: " + to);
                     String message = getMessage(monitor, entry);
-                    monitor.getRepository().getMailManager().sendEmail(to, from,
-                            "New Entry", message, false);
+                    monitor.getRepository().getMailManager().sendEmail(to,
+                            from, "New Entry", message, false);
                 }
             } catch (Exception exc) {
                 monitor.handleError("Error sending email to "

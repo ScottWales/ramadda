@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,28 +20,45 @@
 
 package org.ramadda.repository;
 
-import ucar.unidata.util.TwoFacedObject;
+
 import org.w3c.dom.*;
+
+import ucar.unidata.util.TwoFacedObject;
 
 
 import java.io.InputStream;
 
 import java.util.List;
 
+
 /**
  */
 public abstract class ImportHandler extends RepositoryManager {
 
+    /**
+     * _more_
+     */
     public ImportHandler() {
         super(null);
     }
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public ImportHandler(Repository repository) {
         super(repository);
     }
 
-    public void addImportTypes(List<TwoFacedObject>importTypes, StringBuffer formBuffer) {
-    }
+    /**
+     * _more_
+     *
+     * @param importTypes _more_
+     * @param formBuffer _more_
+     */
+    public void addImportTypes(List<TwoFacedObject> importTypes,
+                               StringBuffer formBuffer) {}
 
     /**
      * _more_
@@ -65,6 +81,8 @@ public abstract class ImportHandler extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param fileName _more_
      * @param stream _more_
      *
@@ -72,7 +90,8 @@ public abstract class ImportHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public InputStream getStream(Request request, String fileName, InputStream stream)
+    public InputStream getStream(Request request, String fileName,
+                                 InputStream stream)
             throws Exception {
         return null;
     }
@@ -80,6 +99,8 @@ public abstract class ImportHandler extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param root _more_
      *
      * @return _more_

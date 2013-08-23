@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,16 +29,17 @@ import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.ui.ImageUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
-import ucar.unidata.ui.ImageUtils;
-import java.awt.Image;
-
 
 import ucar.unidata.xml.XmlUtil;
+
+import java.awt.Image;
 
 import java.io.File;
 
@@ -67,9 +67,12 @@ import java.util.List;
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
+    /** _more_          */
     public static final int THUMBNAIL_WIDTH = 400;
 
-    public static final String ARG_THUMBNAIL_SCALEDOWN = "metadata.thumbnail.scaledown";
+    /** _more_          */
+    public static final String ARG_THUMBNAIL_SCALEDOWN =
+        "metadata.thumbnail.scaledown";
 
     /** _more_ */
     public static final String ATTR_REQUIRED = "required";
@@ -228,9 +231,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if (dataType.equals(MetadataElement.DATATYPE_ENUMERATION)
                 || dataType.equals(
                     MetadataElement.DATATYPE_ENUMERATIONPLUS)) {
-            String       delimiter = ":";
-            String       values    = XmlUtil.getAttribute(node, ATTR_VALUES,"");
-            if(values.length() == 0) {
+            String delimiter = ":";
+            String values    = XmlUtil.getAttribute(node, ATTR_VALUES, "");
+            if (values.length() == 0) {
                 values = getHandler().getEnumerationValues(this);
             }
             List<String> tmpValues = null;
@@ -258,12 +261,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 if (idx < 0) {
                     valueMap.put(tok, tok);
                     enumValues.add(new TwoFacedObject(tok));
+
                     continue;
                 }
                 String[] toks = StringUtil.split(tok, delimiter, 2);
                 if (toks == null) {
                     valueMap.put(tok, tok);
                     enumValues.add(new TwoFacedObject(tok));
+
                     continue;
                 }
                 valueMap.put(toks[0], toks[1]);
@@ -309,7 +314,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      * @throws Exception _more_
      */
     private List<Metadata> getGroupData(String value) throws Exception {
-        List<Metadata>                   result  = new ArrayList<Metadata>();
+        List<Metadata> result = new ArrayList<Metadata>();
         List<Hashtable<Integer, String>> entries =
             (List<Hashtable<Integer,
                             String>>) (((value != null)
@@ -678,7 +683,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             URL           fromUrl    = new URL(url);
             URLConnection connection = fromUrl.openConnection();
             InputStream   fromStream = connection.getInputStream();
-            OutputStream  toStream   =
+            OutputStream toStream =
                 getStorageManager().getFileOutputStream(tmpFile);
             try {
                 int bytes = IOUtil.writeTo(fromStream, toStream);
@@ -702,9 +707,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             theFile = fileArg;
         }
 
-        if(getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false))  {
+        if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
             Image image = ImageUtils.readImage(theFile);
-            if(image.getWidth(null)>THUMBNAIL_WIDTH) {
+            if (image.getWidth(null) > THUMBNAIL_WIDTH) {
                 image = ImageUtils.resize(image, THUMBNAIL_WIDTH, -1);
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, theFile);
@@ -851,18 +856,18 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
 
             String extra = "";
-            if(getThumbnail()) {
-                extra = "<br>" +
-                    HtmlUtils.checkbox(ARG_THUMBNAIL_SCALEDOWN, "true", true) +
-                    HtmlUtils.space(1) +
-                    msg("Scale down image");
+            if (getThumbnail()) {
+                extra = "<br>"
+                        + HtmlUtils.checkbox(ARG_THUMBNAIL_SCALEDOWN, "true",
+                                             true) + HtmlUtils.space(1)
+                                                 + msg("Scale down image");
             }
-            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + 
-                image +
-                "<br>" + msgLabel("Or download URL") +
-                HtmlUtils.space(1) +
-                HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70) +
-                extra;
+
+            return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
+                   + "<br>" + msgLabel("Or download URL")
+                   + HtmlUtils.space(1)
+                   + HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70)
+                   + extra;
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
             String         lastGroup     = null;
@@ -874,7 +879,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             for (Metadata subMetadata : groupMetadata) {
                 StringBuffer groupSB = new StringBuffer();
                 groupSB.append(HtmlUtils.formTable());
-                String  subArg  = arg + ".group" + groupCnt + ".";
+                String subArg = arg + ".group" + groupCnt + ".";
                 boolean lastOne = ((groupMetadata.size() > 1)
                                    && (groupCnt == groupMetadata.size() - 1));
                 if (lastOne) {

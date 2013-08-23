@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,13 +26,13 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -191,7 +190,8 @@ public class AtomOutputHandler extends OutputHandler {
                                  List<Entry> entries)
             throws Exception {
 
-        String       feedId = request.getAbsoluteUrl(request.getRequestPath());
+        String       feedId =
+            request.getAbsoluteUrl(request.getRequestPath());
         StringBuffer sb     = new StringBuffer();
         sb.append(AtomUtil.openFeed(feedId));
         sb.append("\n");
@@ -203,11 +203,12 @@ public class AtomOutputHandler extends OutputHandler {
                 AtomUtil.REL_SELF, request.getAbsoluteUrl(request.getUrl())));
         sb.append("\n");
         for (Entry entry : entries) {
-            List<AtomUtil.Link> links   = new ArrayList<AtomUtil.Link>();
-            String              selfUrl =
+            List<AtomUtil.Link> links = new ArrayList<AtomUtil.Link>();
+            String selfUrl =
                 request.getAbsoluteUrl(
                     HtmlUtils.url(
-                                  getRepository().getUrlPath(request,
+                        getRepository().getUrlPath(
+                            request,
                             getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
                                 entry.getId()));
             links.add(new AtomUtil.Link(AtomUtil.REL_ALTERNATE, selfUrl,
@@ -246,7 +247,7 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
             StringBuffer extra = new StringBuffer();
-            Document     doc   =
+            Document doc =
                 XmlUtil.getDocument("<content type=\"text/xml\"></content>");
             Element root = doc.getDocumentElement();
             typeHandler.addMetadataToXml(entry, root, extra, "atom");
@@ -349,22 +350,24 @@ public class AtomOutputHandler extends OutputHandler {
                              Element root, Metadata metadata,
                              List<MetadataHandler> metadataHandlers)
             throws Exception {
-        MetadataHandler metadataHandler = getMetadataManager().findHandler(metadata.getType());
-        if(metadataHandler == null) {
+        MetadataHandler metadataHandler =
+            getMetadataManager().findHandler(metadata.getType());
+        if (metadataHandler == null) {
             logError("Could not find metadata handler for:" + metadata, null);
+
             return;
         }
 
 
-        if (!metadataHandler.addMetadataToXml(request, "atom",
-                                              entry, metadata, doc, root)) {
-            logInfo ("addMetadata:" + metadata +" no mapping to atom");
-            if(!metadataHandler.addMetadataToXml(request, "dif", entry,
-                                                 metadata, doc, root)) {
-                System.err.println ("could not add metadata to ATOM");
+        if ( !metadataHandler.addMetadataToXml(request, "atom", entry,
+                metadata, doc, root)) {
+            logInfo("addMetadata:" + metadata + " no mapping to atom");
+            if ( !metadataHandler.addMetadataToXml(request, "dif", entry,
+                    metadata, doc, root)) {
+                System.err.println("could not add metadata to ATOM");
             }
-            
-        } 
+
+        }
     }
 
 

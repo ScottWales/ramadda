@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -84,6 +83,8 @@ public class ApiMethod {
 
     /** _more_ */
     public static final String ATTR_ADMIN = "admin";
+
+    /** _more_          */
     public static final String ATTR_ISUSER = "isuser";
 
     /** _more_ */
@@ -162,6 +163,7 @@ public class ApiMethod {
      * @param name _more_
      * @param method _more_
      * @param mustBeAdmin _more_
+     * @param mustBeUser _more_
      * @param requiresAuthToken _more_
      * @param needsSsl _more_
      * @param authMethod _more_
@@ -170,9 +172,10 @@ public class ApiMethod {
      */
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
-                     boolean mustBeAdmin, boolean mustBeUser, boolean requiresAuthToken,
-                     boolean needsSsl, String authMethod,
-                     boolean checkAuthMethod, boolean isTopLevel) {
+                     boolean mustBeAdmin, boolean mustBeUser,
+                     boolean requiresAuthToken, boolean needsSsl,
+                     String authMethod, boolean checkAuthMethod,
+                     boolean isTopLevel) {
         this.repository        = repository;
         this.requestHandler    = requestHandler;
         this.request           = request;
@@ -212,7 +215,9 @@ public class ApiMethod {
             throws Exception {
         User user = request.getUser();
         if (mustBeUser) {
-            if(user.getAnonymous()) return false;
+            if (user.getAnonymous()) {
+                return false;
+            }
         }
 
 
@@ -283,6 +288,11 @@ public class ApiMethod {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public RequestHandler getRequestHandler() {
         return requestHandler;
     }

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -206,8 +205,8 @@ public class JythonTypeHandler extends GenericTypeHandler {
                 return new Result((formInfo.title != null)
                                   ? formInfo.title
                                   : entry.getName(), new StringBuffer(
-                                                                      repository.getPageHandler().showDialogError(
-                                          "Bad password")));
+                                      repository.getPageHandler()
+                                          .showDialogError("Bad password")));
             }
         }
 
@@ -303,13 +302,14 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         return new Result((formInfo.title != null)
                                           ? formInfo.title
                                           : entry.getName(), new StringBuffer(
-                                          repository.getPageHandler().showDialogError(
-                                              "No file uploaded")));
+                                          repository.getPageHandler()
+                                              .showDialogError(
+                                                  "No file uploaded")));
                     }
                 } else if (info.type == InputInfo.TYPE_ENTRY) {
                     String entryName = request.getString(info.id, "");
 
-                    String entryId   = request.getUnsafeString(info.id
+                    String entryId = request.getUnsafeString(info.id
                                          + "_hidden", "");
                     Entry theEntry = getEntryManager().getEntry(request,
                                          entryId);
@@ -317,8 +317,9 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         return new Result((formInfo.title != null)
                                           ? formInfo.title
                                           : entry.getName(), new StringBuffer(
-                                          repository.getPageHandler().showDialogError(
-                                              "No entry selected")));
+                                          repository.getPageHandler()
+                                              .showDialogError(
+                                                  "No entry selected")));
                     }
 
                     interp.set(info.id, theEntry);

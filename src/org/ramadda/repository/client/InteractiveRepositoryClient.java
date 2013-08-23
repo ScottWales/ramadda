@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,6 +21,17 @@
 package org.ramadda.repository.client;
 
 
+import org.ramadda.util.HtmlUtils;
+
+import org.w3c.dom.Element;
+
+import ucar.unidata.util.GuiUtils;
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
+import ucar.unidata.util.Misc;
+import ucar.unidata.xml.XmlUtil;
+
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,6 +40,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,15 +61,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
-import org.ramadda.util.HtmlUtils;
-import org.w3c.dom.Element;
-
-import ucar.unidata.util.GuiUtils;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.xml.XmlUtil;
 
 
 /**
@@ -179,8 +181,8 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         if (groupTree == null) {
             doMakeGroupTree();
         }
-        Dimension   defaultDimension = new Dimension(200, 150);
-        JScrollPane scroller         = GuiUtils.makeScrollPane(groupTree,
+        Dimension defaultDimension = new Dimension(200, 150);
+        JScrollPane scroller = GuiUtils.makeScrollPane(groupTree,
                                    (int) defaultDimension.getWidth(),
                                    (int) defaultDimension.getHeight());
         scroller.setPreferredSize(defaultDimension);
@@ -321,7 +323,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
      */
     public void newGroup(GroupNode groupTreeNode) {
         String parentId = groupTreeNode.id;
-        String name     = GuiUtils.getInput("Enter a folder name to create",
+        String name = GuiUtils.getInput("Enter a folder name to create",
                                         "Name: ", "");
         if (super.newGroup(parentId, name)) {
             groupTreeNode.removeAllChildren();

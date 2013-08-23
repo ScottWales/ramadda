@@ -1,23 +1,22 @@
 /*
- * Copyright 2008-2012 Jeff McWhirter/ramadda.org
- *                     Don Murray/CU-CIRES
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
- * software and associated documentation files (the "Software"), to deal in the Software 
- * without restriction, including without limitation the rights to use, copy, modify, 
- * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies 
- * or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
- * DEALINGS IN THE SOFTWARE.
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.server;
 
@@ -83,9 +82,12 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     private String[] args;
 
     /** Repository object that will be instantiated */
-    private  Repository repository;
+    private Repository repository;
 
 
+    /**
+     * _more_
+     */
     public RepositoryServlet() {
         System.err.println("RepositoryServlet:ctor");
     }
@@ -96,18 +98,28 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      * @param jettyServer _more_
      * @param args _more_
      * @param port _more_
+     * @param properties _more_
      *
      * @throws Exception _more_
      */
-    public RepositoryServlet(JettyServer jettyServer, String[] args, int port, Properties properties )
-        throws Exception {
+    public RepositoryServlet(JettyServer jettyServer, String[] args,
+                             int port, Properties properties)
+            throws Exception {
         this.args = args;
         createRepository(port, properties, false);
     }
 
-    public RepositoryServlet(String[] args, Repository repository) 
-        throws Exception {
-        this.args = args;
+    /**
+     * _more_
+     *
+     * @param args _more_
+     * @param repository _more_
+     *
+     * @throws Exception _more_
+     */
+    public RepositoryServlet(String[] args, Repository repository)
+            throws Exception {
+        this.args       = args;
         this.repository = repository;
         initRepository(this.repository, false);
     }
@@ -130,7 +142,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      * @throws Exception - if an Exception occurs during the creation of the repository
      */
     private void createRepository(HttpServletRequest request)
-        throws Exception {
+            throws Exception {
         Properties     webAppProperties = new Properties();
         ServletContext context          = getServletContext();
         if (context != null) {
@@ -153,8 +165,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      * @throws Exception _more_
      */
     private synchronized void createRepository(int port,
-                                               Properties webAppProperties, boolean checkSsl)
-        throws Exception {
+            Properties webAppProperties, boolean checkSsl)
+            throws Exception {
         if (repository != null) {
             return;
         }
@@ -173,17 +185,23 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param tmpRepository _more_
+     * @param checkSsl _more_
+     */
     private void initRepository(Repository tmpRepository, boolean checkSsl) {
         if (checkSsl) {
-            int    sslPort = -1;
-            String ssls    = tmpRepository.getPropertyValue(PROP_SSL_PORT,
-                                                            (String) null, false);
+            int sslPort = -1;
+            String ssls = tmpRepository.getPropertyValue(PROP_SSL_PORT,
+                              (String) null, false);
             if ((ssls != null) && (ssls.trim().length() > 0)) {
                 sslPort = new Integer(ssls.trim());
             }
             if (sslPort >= 0) {
                 tmpRepository.getLogManager().logInfo("SSL: using port:"
-                                                      + sslPort);
+                        + sslPort);
                 tmpRepository.setHttpsPort(sslPort);
             }
         }
@@ -206,8 +224,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         }
         List<String> tokens = new ArrayList<String>();
         for (Enumeration params =
-                 this.getServletContext().getInitParameterNames();
-             params.hasMoreElements(); ) {
+                this.getServletContext().getInitParameterNames();
+                params.hasMoreElements(); ) {
             String paramName = (String) params.nextElement();
             if ( !paramName.equals("args")) {
                 continue;
@@ -253,7 +271,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      */
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
 
         // there can be only one
         if (repository == null) {
@@ -278,9 +296,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             try {
                 // create a org.ramadda.repository.Request object from the relevant info from the HttpServletRequest object
                 Request repositoryRequest = new Request(repository,
-                                                        request.getRequestURI(),
-                                                        handler.formArgs, request,
-                                                        response, this);
+                                                request.getRequestURI(),
+                                                handler.formArgs, request,
+                                                response, this);
                 //                System.err.println ("request:" +   request.getRequestURI() + " secure:" + request.isSecure());
                 repositoryRequest.setIp(request.getRemoteAddr());
                 repositoryRequest.setOutputStream(response.getOutputStream());
@@ -341,16 +359,16 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 if (repositoryResult.getRedirectUrl() != null) {
                     try {
                         response.sendRedirect(
-                                              repositoryResult.getRedirectUrl());
+                            repositoryResult.getRedirectUrl());
                     } catch (Exception e) {
                         logException(e, request);
                     }
                 } else if (repositoryResult.getInputStream() != null) {
                     try {
                         response.setStatus(
-                                           repositoryResult.getResponseCode());
+                            repositoryResult.getResponseCode());
                         response.setContentType(
-                                                repositoryResult.getMimeType());
+                            repositoryResult.getMimeType());
                         OutputStream output = response.getOutputStream();
                         try {
                             IOUtil.writeTo(repositoryResult.getInputStream(),
@@ -368,9 +386,9 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 } else {
                     try {
                         response.setStatus(
-                                           repositoryResult.getResponseCode());
+                            repositoryResult.getResponseCode());
                         response.setContentType(
-                                                repositoryResult.getMimeType());
+                            repositoryResult.getMimeType());
                         OutputStream output = response.getOutputStream();
                         try {
                             output.write(repositoryResult.getContent());
@@ -386,7 +404,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
         } finally {
             if ((repositoryResult != null)
-                && (repositoryResult.getInputStream() != null)) {
+                    && (repositoryResult.getInputStream() != null)) {
                 IOUtil.close(repositoryResult.getInputStream());
             }
         }
@@ -406,7 +424,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      */
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
         doGet(request, response);
     }
 
@@ -452,7 +470,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
          * @throws IOException _more_
          */
         public void getFormArgs(HttpServletRequest request)
-            throws IOException {
+                throws IOException {
 
             if (ServletFileUpload.isMultipartContent(request)) {
                 ServletFileUpload upload =
@@ -526,7 +544,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
          */
         public void processUploadedFile(FileItem item,
                                         HttpServletRequest request)
-            throws IOException {
+                throws IOException {
             String fieldName = item.getFieldName();
             String fileName  = item.getName();
             if ((fileName == null) || (fileName.trim().length() == 0)) {
@@ -549,19 +567,19 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             //            fileName = HtmlUtils.encode(fileName);
 
 
-            String contentType  = item.getContentType();
-            File   uploadedFile =
+            String contentType = item.getContentType();
+            File uploadedFile =
                 new File(
-                         IOUtil.joinDir(
-                                        repository.getStorageManager().getUploadDir(),
-                                        repository.getGUID() + StorageManager.FILE_SEPARATOR
-                                        + fileName));
+                    IOUtil.joinDir(
+                        repository.getStorageManager().getUploadDir(),
+                        repository.getGUID() + StorageManager.FILE_SEPARATOR
+                        + fileName));
 
             try {
-                InputStream  inputStream  = item.getInputStream();
+                InputStream inputStream = item.getInputStream();
                 OutputStream outputStream =
                     repository.getStorageManager().getFileOutputStream(
-                                                                       uploadedFile);
+                        uploadedFile);
                 try {
                     IOUtil.writeTo(inputStream, outputStream);
                 } finally {
@@ -585,7 +603,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
          */
         public void getRequestHeaders(HttpServletRequest request) {
             for (Enumeration headerNames = request.getHeaderNames();
-                 headerNames.hasMoreElements(); ) {
+                    headerNames.hasMoreElements(); ) {
                 String name  = (String) headerNames.nextElement();
                 String value = request.getHeader(name);
                 httpArgs.put(name, value);
@@ -618,7 +636,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
             if (repository != null) {
                 repository.getLogManager().logError(
-                                                    "Error in RepositoryServlet address=" + address, exc);
+                    "Error in RepositoryServlet address=" + address, exc);
 
                 return;
             }

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -94,8 +93,10 @@ public class JpegMetadataHandler extends MetadataHandler {
         String path = entry.getResource().getPath();
         try {
             Image image = ImageUtils.readImage(path, false);
-            if(image == null) {
-                System.err.print("JpegMetadataHandler: image is null:" + entry.getResource());
+            if (image == null) {
+                System.err.print("JpegMetadataHandler: image is null:"
+                                 + entry.getResource());
+
                 return;
             }
             System.err.print("JpegMetadataHandler: wait...");
@@ -120,8 +121,9 @@ public class JpegMetadataHandler extends MetadataHandler {
             metadataList.add(thumbnailMetadata);
 
         } catch (Exception exc) {
-            System.err.println ("JpgeMetadataHandler:" + exc);
+            System.err.println("JpgeMetadataHandler:" + exc);
             exc.printStackTrace();
+
             return;
         }
 
@@ -131,7 +133,7 @@ public class JpegMetadataHandler extends MetadataHandler {
             return;
         }
         try {
-            File                       jpegFile = new File(path);
+            File jpegFile = new File(path);
             com.drew.metadata.Metadata metadata =
                 JpegMetadataReader.readMetadata(jpegFile);
             com.drew.metadata.Directory exifDir =
@@ -249,19 +251,22 @@ public class JpegMetadataHandler extends MetadataHandler {
      */
     private double getValue(Directory dir, int tag) throws Exception {
 
-        boolean debug =(tag == GpsDirectory.TAG_GPS_LATITUDE || tag == GpsDirectory.TAG_GPS_LONGITUDE);
+        boolean debug = ((tag == GpsDirectory.TAG_GPS_LATITUDE)
+                         || (tag == GpsDirectory.TAG_GPS_LONGITUDE));
         try {
             Rational[] comps = dir.getRationalArray(tag);
-            if (comps!=null && comps.length == 3) {
-                int   deg = comps[0].intValue();
-                float min = comps[1].floatValue();
-                float sec = comps[2].floatValue();
-                double result =  deg + min / 60 + sec / 3600;
+            if ((comps != null) && (comps.length == 3)) {
+                int    deg    = comps[0].intValue();
+                float  min    = comps[1].floatValue();
+                float  sec    = comps[2].floatValue();
+                double result = deg + min / 60 + sec / 3600;
+
                 return result;
             }
         } catch (Exception exc) {
             //Ignore this
         }
+
         return dir.getDouble(tag);
     }
 

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,14 +21,7 @@
 package org.ramadda.repository.server;
 
 
-
-
-import java.io.File;
-import java.util.Hashtable;
-import java.util.Properties;
-
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 // Jetty 8 
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 // Jetty 9
@@ -37,6 +29,8 @@ import org.eclipse.jetty.server.ssl.SslSocketConnector;
 //import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Repository;
 
@@ -46,18 +40,42 @@ import ucar.unidata.util.LogUtil;
 
 
 
+import java.io.File;
+
+import java.util.Hashtable;
+import java.util.Properties;
+
+
+
+
 /**
  */
 public class JettyServer implements Constants {
 
+    /** _more_          */
     private String[] args;
+
+    /** _more_          */
     private int port;
+
+    /** _more_          */
     private int sslPort = -1;
+
+    /** _more_          */
     private Server server;
+
+    /** _more_          */
     private RepositoryServlet baseServlet;
+
+    /** _more_          */
     private ServletContextHandler context;
-    private Repository  baseRepository;
-    private Hashtable<RepositoryServlet,ServletHolder> servletToHolder = new Hashtable<RepositoryServlet,ServletHolder>();
+
+    /** _more_          */
+    private Repository baseRepository;
+
+    /** _more_          */
+    private Hashtable<RepositoryServlet, ServletHolder> servletToHolder =
+        new Hashtable<RepositoryServlet, ServletHolder>();
 
     /**
      * _more_
@@ -67,7 +85,7 @@ public class JettyServer implements Constants {
      */
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
-        port = 8080;
+        port      = 8080;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 port = new Integer(args[i + 1]).intValue();
@@ -75,9 +93,8 @@ public class JettyServer implements Constants {
             }
         }
 
-        server     = new Server(port);
-        context =
-            new ServletContextHandler(ServletContextHandler.SESSIONS);
+        server  = new Server(port);
+        context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
         baseServlet = addServlet();
@@ -94,28 +111,60 @@ public class JettyServer implements Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public RepositoryServlet addServlet() throws Exception {
-        Properties properties = new Properties();
-        String[] cmdLineArgs = args;
-        return addServlet(new RepositoryServlet(this, cmdLineArgs, port, properties));
+        Properties properties  = new Properties();
+        String[]   cmdLineArgs = args;
+
+        return addServlet(new RepositoryServlet(this, cmdLineArgs, port,
+                properties));
     }
 
 
-    public RepositoryServlet addServlet(RepositoryServlet servlet) throws Exception {
-        Repository repository = servlet.getRepository();
-        String path = repository.getUrlBase();
-        ServletHolder holder = new ServletHolder(servlet);
-        context.addServlet(holder, path+"/*");
+    /**
+     * _more_
+     *
+     * @param servlet _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public RepositoryServlet addServlet(RepositoryServlet servlet)
+            throws Exception {
+        Repository    repository = servlet.getRepository();
+        String        path       = repository.getUrlBase();
+        ServletHolder holder     = new ServletHolder(servlet);
+        context.addServlet(holder, path + "/*");
         servletToHolder.put(servlet, holder);
         repository.setJettyServer(this);
+
         return servlet;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param servlet _more_
+     *
+     * @throws Exception _more_
+     */
     public void removeServlet(RepositoryServlet servlet) throws Exception {
         ServletHolder holder = servletToHolder.get(servlet);
         //TODO: Remove the servlet from the server
@@ -156,6 +205,7 @@ public class JettyServer implements Constants {
         if (password == null) {
             repository.getLogManager().logInfo(
                 "SSL: no password and keypassword property defined");
+
             /*
             repository.getLogManager().logInfoAndPrint(
                 "SSL: define the properties:\n\t" + PROP_SSL_PASSWORD
@@ -172,7 +222,7 @@ public class JettyServer implements Constants {
 
 
         sslPort = -1;
-        String ssls    = repository.getPropertyValue(PROP_SSL_PORT,
+        String ssls = repository.getPropertyValue(PROP_SSL_PORT,
                           (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {
             sslPort = new Integer(ssls.trim());
@@ -195,7 +245,7 @@ public class JettyServer implements Constants {
 
         repository.getLogManager().logInfo(
             "SSL: creating ssl connection on port:" + sslPort);
-        /* 
+        /*
         // Jetty <7
         SslSocketConnector sslSocketConnector = new SslSocketConnector();
         sslSocketConnector.setKeystore(keystore.toString());
@@ -216,7 +266,8 @@ public class JettyServer implements Constants {
         sslContext.setKeyManagerPassword(keyPassword);
         sslContext.setTrustStorePassword(password);
         // Jetty 7&8
-        SslSocketConnector sslSocketConnector = new SslSocketConnector(sslContext);
+        SslSocketConnector sslSocketConnector =
+            new SslSocketConnector(sslContext);
         sslSocketConnector.setPort(sslPort);
         server.addConnector(sslSocketConnector);
         /* Jetty 9 - not sure this is correct

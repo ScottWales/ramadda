@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,8 +22,8 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.repository.util.FileWriter;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -502,6 +501,7 @@ public class MetadataHandler extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      * @param zos _more_
+     * @param fileWriter _more_
      * @param metadata _more_
      * @param node _more_
      *
@@ -513,17 +513,17 @@ public class MetadataHandler extends RepositoryManager {
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
-            getRepository().getLogManager().logWarning("Unknown metadata type:"
-                                                      + metadata.getType());
+            getRepository().getLogManager().logWarning(
+                "Unknown metadata type:" + metadata.getType());
+
             return;
         }
 
-        Document doc          = node.getOwnerDocument();
-        Element  metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
+        Document doc = node.getOwnerDocument();
+        Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
                                    new String[] { ATTR_TYPE,
-                                                  metadata.getType(),
-                                                  ATTR_INHERITED, ""+ metadata.getInherited()
-                                               });
+                metadata.getType(), ATTR_INHERITED,
+                "" + metadata.getInherited() });
         for (MetadataElement element : type.getChildren()) {
             int    index = element.getIndex();
             String value = metadata.getAttr(index);
@@ -779,50 +779,51 @@ public class MetadataHandler extends RepositoryManager {
      */
     public void addToSearchForm(Request request, StringBuffer sb,
                                 MetadataType type)
-        throws Exception {
+            throws Exception {
         boolean doSelect = true;
         //        sb.append(HtmlUtils.hidden(ARG_METADATA_TYPE + "." + type,
         //                                  type.toString()));
         String inheritedCbx = HtmlUtils.checkbox(ARG_METADATA_INHERITED + "."
-                                                 + type, "true", false) + HtmlUtils.space(1)
-            + "inherited";
+                                  + type, "true", false) + HtmlUtils.space(1)
+                                      + "inherited";
         inheritedCbx = "";
         String argName = ARG_METADATA_ATTR1 + "." + type;
 
         if (doSelect) {
             String[] values = getMetadataManager().getDistinctValues(request,
-                                                                     this, type);
+                                  this, type);
             if ((values == null) || (values.length == 0)) {
                 return;
             }
 
-            List<TwoFacedObject> existingValues = trimValues((List<String>) Misc.toList(values));
+            List<TwoFacedObject> existingValues =
+                trimValues((List<String>) Misc.toList(values));
             List<TwoFacedObject> selectList = new ArrayList<TwoFacedObject>();
             selectList.add(new TwoFacedObject("-" + msg("all") + "-", ""));
-            MetadataElement element =  type.getChildren().get(0);
-            List enumValues = element.getValues();
-            if(enumValues ==null) {
+            MetadataElement element    = type.getChildren().get(0);
+            List            enumValues = element.getValues();
+            if (enumValues == null) {
                 enumValues = new ArrayList();
             }
-            if(enumValues !=null) {
-                for(TwoFacedObject o: existingValues) {
-                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(), enumValues);
-                    if(tfo!=null) {
+            if (enumValues != null) {
+                for (TwoFacedObject o : existingValues) {
+                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(),
+                                             enumValues);
+                    if (tfo != null) {
                         selectList.add(tfo);
                     } else {
                         selectList.add(o);
                     }
                 }
                 String value = request.getString(argName, "");
-                String size = "";
-                if(selectList.size()>=4) {
-                    size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE,"6");
+                String size  = "";
+                if (selectList.size() >= 4) {
+                    size = HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "6");
                 }
                 sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
-                                              HtmlUtils.select(argName, selectList, value,
-                                                               size+
-                                                               HtmlUtils.ATTR_MULTIPLE,
-                                                               100) + inheritedCbx));
+                        HtmlUtils.select(argName, selectList, value,
+                                         size + HtmlUtils.ATTR_MULTIPLE,
+                                         100) + inheritedCbx));
             }
         } else {
             sb.append(HtmlUtils.formEntry(msgLabel(type.getLabel()),
@@ -846,8 +847,8 @@ public class MetadataHandler extends RepositoryManager {
                                       MetadataType type)
             throws Exception {
 
-        boolean doSelect  = true;
-        String  cloudLink =
+        boolean doSelect = true;
+        String cloudLink =
             HtmlUtils.href(
                 request.url(
                     getRepository().getMetadataManager().URL_METADATA_LIST,
@@ -1014,6 +1015,13 @@ public class MetadataHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @return _more_
+     */
     public String getEnumerationValues(MetadataElement element) {
         return "";
     }

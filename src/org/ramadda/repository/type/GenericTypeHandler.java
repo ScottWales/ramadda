@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,15 +26,16 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.output.*;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
 
 import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -81,6 +81,7 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     List<Column> columns = new ArrayList<Column>();
 
+    /** _more_          */
     private Column categoryColumn;
 
     /** _more_ */
@@ -120,7 +121,7 @@ public class GenericTypeHandler extends TypeHandler {
     public GenericTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
-        if(entryNode!=null) {
+        if (entryNode != null) {
             init(entryNode);
         }
     }
@@ -210,9 +211,9 @@ public class GenericTypeHandler extends TypeHandler {
 
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
-            String  className  = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
+            String className = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
                                    Column.class.getName());
-            Class       c    = Misc.findClass(className);
+            Class c = Misc.findClass(className);
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { getClass(),
                     Element.class, Integer.TYPE });
@@ -220,7 +221,7 @@ public class GenericTypeHandler extends TypeHandler {
                     columnNode,
                     new Integer(valuesOffset + colNames.size() - 1) });
             columns.add(column);
-            if(categoryColumn == null && column.getIsCategory()) {
+            if ((categoryColumn == null) && column.getIsCategory()) {
                 categoryColumn = column;
             }
             colNames.addAll(column.getColumnNames());
@@ -279,17 +280,19 @@ public class GenericTypeHandler extends TypeHandler {
      */
     @Override
     public TwoFacedObject getCategory(Entry entry) {
-        if(categoryColumn!=null) {
+        if (categoryColumn != null) {
 
             Object[] values = entry.getValues();
             if (values != null) {
                 String s = categoryColumn.getString(values);
                 if (s != null) {
                     String label = categoryColumn.getEnumLabel(s);
+
                     return new TwoFacedObject(label, s);
                 }
             }
         }
+
         return super.getCategory(entry);
     }
 
@@ -441,7 +444,8 @@ public class GenericTypeHandler extends TypeHandler {
         Object[] values = getEntryValues(entry);
         super.initializeEntryFromXml(request, entry, node);
 
-        Hashtable<String, Element> nodes    = new Hashtable<String, Element>();
+        Hashtable<String, Element> nodes    = new Hashtable<String,
+                                                  Element>();
 
         NodeList                   elements = XmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
@@ -545,11 +549,11 @@ public class GenericTypeHandler extends TypeHandler {
             return super.processList(request, what);
         }
 
-        String       column    = theColumn.getFullName();
-        String       tag       = theColumn.getName();
-        String       title     = theColumn.getDescription();
-        List<Clause> where     = assembleWhereClause(request);
-        Statement    statement = select(request, SqlUtil.distinct(column),
+        String       column = theColumn.getFullName();
+        String       tag    = theColumn.getName();
+        String       title  = theColumn.getDescription();
+        List<Clause> where  = assembleWhereClause(request);
+        Statement statement = select(request, SqlUtil.distinct(column),
                                      where, "");
 
         String[] values =
@@ -819,6 +823,8 @@ public class GenericTypeHandler extends TypeHandler {
      * _more_
      *
      * @param clause _more_
+     *
+     * @param entry _more_
      * @param values _more_
      *
      * @return _more_
@@ -826,7 +832,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception _more_
      */
     private Object[] readValuesFromDatabase(Entry entry, Object[] values)
-        throws Exception {
+            throws Exception {
         Clause clause = Clause.eq(COL_ID, entry.getId());
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              getTableName(), clause);
@@ -843,11 +849,13 @@ public class GenericTypeHandler extends TypeHandler {
                 //If we didn't get anything and we have  a db table that means that the entry was created
                 //using an old types.xml that did not have any columns defined. 
                 if (haveDatabaseTable()) {
-                    String sql = SqlUtil.makeInsert(getTableName(),  COL_ID,
-                                                    SqlUtil.getQuestionMarks(1));
-                    getLogManager().logInfo("GenericTypeHandler: inserting id into database:" + getTableName());
+                    String sql = SqlUtil.makeInsert(getTableName(), COL_ID,
+                                     SqlUtil.getQuestionMarks(1));
+                    getLogManager().logInfo(
+                        "GenericTypeHandler: inserting id into database:"
+                        + getTableName());
                     getDatabaseManager().executeInsert(sql,
-                                                       new Object[] {entry.getId()});
+                            new Object[] { entry.getId() });
                 }
             }
         } finally {
@@ -858,13 +866,31 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    public Object[] getValues(Clause clause) 
-        throws Exception {
-        return getValues(clause,  makeEntryValueArray());
+    /**
+     * _more_
+     *
+     * @param clause _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Object[] getValues(Clause clause) throws Exception {
+        return getValues(clause, makeEntryValueArray());
     }
 
-    public Object[] getValues(Clause clause, Object[]values) 
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param clause _more_
+     * @param values _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Object[] getValues(Clause clause, Object[] values)
+            throws Exception {
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              getTableName(), clause);
 
@@ -1098,13 +1124,15 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @param request _more_
      * @param formBuffer _more_
+     * @param parentEntry _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
     @Override
     public void addSpecialToEntryForm(Request request,
-                                      StringBuffer formBuffer, Entry parentEntry, Entry entry)
+                                      StringBuffer formBuffer,
+                                      Entry parentEntry, Entry entry)
             throws Exception {
         super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry);
         addColumnsToEntryForm(request, formBuffer, entry);
@@ -1170,12 +1198,13 @@ public class GenericTypeHandler extends TypeHandler {
                                      StringBuffer formBuffer, Entry entry,
                                      Object[] values, Hashtable state)
             throws Exception {
-        boolean hasValue = column.getString(values)!=null;
+        boolean hasValue = column.getString(values) != null;
 
-        if(entry!=null && hasValue && !column.getEditable()) {
+        if ((entry != null) && hasValue && !column.getEditable()) {
             StringBuffer tmpSb = new StringBuffer();
             column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
-            formBuffer.append(HtmlUtils.formEntry(column.getLabel()+":", tmpSb.toString()));
+            formBuffer.append(HtmlUtils.formEntry(column.getLabel() + ":",
+                    tmpSb.toString()));
         } else {
             column.addToEntryForm(request, entry, formBuffer, values, state);
         }

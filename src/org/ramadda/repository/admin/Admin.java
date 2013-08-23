@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,15 +30,15 @@ import org.ramadda.repository.ftp.FtpManager;
 import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
+
+import org.ramadda.sql.Clause;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.sql.Clause;
-
-import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.IOUtil;
@@ -116,8 +115,9 @@ public class Admin extends RepositoryManager {
 
 
 
+    /** _more_          */
     public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
-                                                       "Local Repositories");
+                                            "Local Repositories");
 
 
     /** _more_ */
@@ -242,8 +242,9 @@ public class Admin extends RepositoryManager {
         }
 
         if (getRepository().isMaster()) {
-            int idx = adminUrls.indexOf(getHarvesterManager().URL_HARVESTERS_LIST);
-            adminUrls.add(idx+1, URL_ADMIN_LOCAL);
+            int idx =
+                adminUrls.indexOf(getHarvesterManager().URL_HARVESTERS_LIST);
+            adminUrls.add(idx + 1, URL_ADMIN_LOCAL);
         }
 
     }
@@ -331,8 +332,8 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     private StringBuffer getLicenseForm() throws Exception {
-        StringBuffer sb      = new StringBuffer();
-        String       license = getStorageManager().readSystemResource(
+        StringBuffer sb = new StringBuffer();
+        String license = getStorageManager().readSystemResource(
                              "/org/ramadda/repository/resources/license.txt");
         sb.append(HtmlUtils.textArea("", license, 20, 75));
         sb.append("<p>");
@@ -391,7 +392,7 @@ public class Admin extends RepositoryManager {
             if (request.exists(UserManager.ARG_USER_ID)) {
                 triedOnce = true;
                 id = request.getString(UserManager.ARG_USER_ID, "").trim();
-                name      = request.getString(UserManager.ARG_USER_NAME,
+                name = request.getString(UserManager.ARG_USER_NAME,
                                          "").trim();
                 String password1 =
                     request.getString(UserManager.ARG_USER_PASSWORD1,
@@ -458,8 +459,8 @@ public class Admin extends RepositoryManager {
                     Entry topEntry = getEntryManager().getTopGroup();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
-                    String description  = null;
-                    File   initDescFile =
+                    String description = null;
+                    File initDescFile =
                         new File(
                             IOUtil.joinDir(
                                 getStorageManager().getRepositoryDir(),
@@ -489,7 +490,8 @@ public class Admin extends RepositoryManager {
 
                     //Make sure we do this now before we do the final init entries
                     if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
-                        getRepository().getPluginManager().installPlugin(PluginManager.PLUGIN_ALL);
+                        getRepository().getPluginManager().installPlugin(
+                            PluginManager.PLUGIN_ALL);
                     }
 
                     addInitEntries(user);
@@ -501,8 +503,8 @@ public class Admin extends RepositoryManager {
                     }
 
                     return new Result("", sb);
-                    }
                 }
+            }
 
             if (errorBuffer.length() > 0) {
                 sb.append(getPageHandler().showDialogError(msg("Error")
@@ -620,12 +622,17 @@ public class Admin extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param user _more_
+     *
+     * @throws Exception _more_
+     */
     public void addInitEntries(User user) throws Exception {
         String initEntriesXml = null;
-        File   initFile       =
-            new File(
-                     IOUtil.joinDir(
-                                    getStorageManager().getRepositoryDir(),
+        File initFile =
+            new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                     "initentries.xml"));
         if (initFile.exists()) {
             FileInputStream fis = new FileInputStream(initFile);
@@ -635,16 +642,14 @@ public class Admin extends RepositoryManager {
 
         if (initEntriesXml == null) {
             initEntriesXml = getRepository().getResource(
-                                                         "/org/ramadda/repository/resources/examples/initentries.xml");
+                "/org/ramadda/repository/resources/examples/initentries.xml");
         }
-        Element     root       = XmlUtil.getRoot(initEntriesXml);
+        Element root       = XmlUtil.getRoot(initEntriesXml);
         Request tmpRequest = getRepository().getRequest(user);
         System.err.println("processing initial entries");
         List<Entry> newEntries =
-            getEntryManager().processEntryXml(
-                                              tmpRequest, root,
-                                              null,
-                                              new Hashtable<String, File>());
+            getEntryManager().processEntryXml(tmpRequest, root, null,
+                new Hashtable<String, File>());
     }
 
 
@@ -663,7 +668,7 @@ public class Admin extends RepositoryManager {
             StringBuffer     sb       = new StringBuffer();
             DatabaseMetaData dbmd     = connection.getMetaData();
             ResultSet        catalogs = dbmd.getCatalogs();
-            ResultSet        tables   = dbmd.getTables(null, null, null,
+            ResultSet tables = dbmd.getTables(null, null, null,
                                    new String[] { "TABLE" });
 
             while (tables.next()) {
@@ -859,8 +864,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminActions(Request request) throws Exception {
-        StringBuffer    sb         = new StringBuffer();
-        List<ApiMethod> apiMethods = getRepository().getApiManager().getApiMethods();
+        StringBuffer sb = new StringBuffer();
+        List<ApiMethod> apiMethods =
+            getRepository().getApiManager().getApiMethods();
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols("Name", "Admin", "Actions")));
         for (ApiMethod apiMethod : apiMethods) {
@@ -1336,7 +1342,7 @@ public class Admin extends RepositoryManager {
                                  false) + HtmlUtils.space(1) + msg("Use all");
         osb.append(HtmlUtils.formEntryTop("", doAllOutput + outputDiv));
         osb.append("\n");
-        StringBuffer        handlerSB      = new StringBuffer();
+        StringBuffer handlerSB = new StringBuffer();
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();
         for (OutputHandler outputHandler : outputHandlers) {
@@ -1407,7 +1413,8 @@ public class Admin extends RepositoryManager {
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
             throws Exception {
-        getRepository().getMailManager().sendEmail(to,subject,contents, asHtml);
+        getRepository().getMailManager().sendEmail(to, subject, contents,
+                asHtml);
     }
 
 
@@ -1425,7 +1432,8 @@ public class Admin extends RepositoryManager {
     public void sendEmail(String to, String from, String subject,
                           String contents, boolean asHtml)
             throws Exception {
-        getRepository().getMailManager().sendEmail(to,from,subject,contents, asHtml);
+        getRepository().getMailManager().sendEmail(to, from, subject,
+                contents, asHtml);
     }
 
 
@@ -1445,7 +1453,8 @@ public class Admin extends RepositoryManager {
                           String subject, String contents, boolean bcc,
                           boolean asHtml)
             throws Exception {
-        getRepository().getMailManager().sendEmail(to, from, subject, contents, bcc, asHtml);
+        getRepository().getMailManager().sendEmail(to, from, subject,
+                contents, bcc, asHtml);
     }
 
 
@@ -1501,7 +1510,7 @@ public class Admin extends RepositoryManager {
             getRepository().writeGlobal(PROP_FTP_PORT,
                                         request.getString(PROP_FTP_PORT,
                                             "").trim());
-            if(getRepository().getFtpManager()!=null) {
+            if (getRepository().getFtpManager() != null) {
                 getRepository().getFtpManager().checkServer();
             }
         }
@@ -1524,9 +1533,9 @@ public class Admin extends RepositoryManager {
 
 
 
-        getRepository().writeGlobal(
-                                    PROP_LOCALFILEPATHS,
-                                    request.getString(PROP_LOCALFILEPATHS, ""));
+        getRepository().writeGlobal(PROP_LOCALFILEPATHS,
+                                    request.getString(PROP_LOCALFILEPATHS,
+                                        ""));
 
 
         getRepository().setLocalFilePaths();
@@ -1675,7 +1684,8 @@ public class Admin extends RepositoryManager {
         StringBuffer statusSB    = new StringBuffer();
         double       totalMemory = (double) Runtime.getRuntime().maxMemory();
         double       freeMemory  = (double) Runtime.getRuntime().freeMemory();
-        double highWaterMark     = (double) Runtime.getRuntime().totalMemory();
+        double highWaterMark     =
+            (double) Runtime.getRuntime().totalMemory();
         double       usedMemory  = (highWaterMark - freeMemory);
         statusSB.append(HtmlUtils.formTable());
         totalMemory = totalMemory / 1000000.0;
@@ -1735,7 +1745,8 @@ public class Admin extends RepositoryManager {
         StringBuffer   apiSB  = new StringBuffer();
         List<Object[]> tuples = new ArrayList<Object[]>();
         apiSB.append(HtmlUtils.formTable());
-        for (ApiMethod apiMethod : getRepository().getApiManager().getApiMethods()) {
+        for (ApiMethod apiMethod :
+                getRepository().getApiManager().getApiMethods()) {
             if (apiMethod.getNumberOfCalls() < 1) {
                 continue;
             }
@@ -1766,7 +1777,7 @@ public class Admin extends RepositoryManager {
                 statusSB.toString(), false));
 
         sb.append(HtmlUtils.makeShowHideBlock(msg("System Disk"),
-                                              stateSB.toString(), false));
+                stateSB.toString(), false));
 
         StringBuffer pluginsSB = new StringBuffer();
         getRepository().getPluginManager().addStatusInfo(request, pluginsSB);
@@ -1947,9 +1958,9 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result adminScanForBadParents(Request request) throws Exception {
-        boolean      delete    = request.get("delete", false);
-        StringBuffer sb        = new StringBuffer();
-        Statement    statement = getDatabaseManager().execute("select "
+        boolean      delete = request.get("delete", false);
+        StringBuffer sb     = new StringBuffer();
+        Statement statement = getDatabaseManager().execute("select "
                                   + Tables.ENTRIES.COL_ID + ","
                                   + Tables.ENTRIES.COL_PARENT_GROUP_ID
                                   + " from " + Tables.ENTRIES.NAME, 10000000,
@@ -1997,7 +2008,8 @@ public class Admin extends RepositoryManager {
         sb.append(HtmlUtils.formTable());
         DecimalFormat fmt         = new DecimalFormat("#0");
         double        totalMemory = (double) Runtime.getRuntime().maxMemory();
-        double        freeMemory  = (double) Runtime.getRuntime().freeMemory();
+        double        freeMemory  =
+            (double) Runtime.getRuntime().freeMemory();
         double highWaterMark = (double) Runtime.getRuntime().totalMemory();
         double        usedMemory  = (highWaterMark - freeMemory);
         totalMemory = totalMemory / 1000000.0;
@@ -2092,6 +2104,7 @@ public class Admin extends RepositoryManager {
             return adminDbDump(request);
         } else if (request.defined(ACTION_NEWDB)) {
             getDatabaseManager().reInitialize();
+
             return new Result(request.url(URL_ADMIN_CLEANUP));
         } else if (request.defined(ACTION_CLEARCACHE)) {
             getRepository().clearAllCaches();
@@ -2203,8 +2216,8 @@ public class Admin extends RepositoryManager {
 
                     break;
                 }
-                int    col      = 1;
-                String id       = results.getString(col++);
+                int    col = 1;
+                String id  = results.getString(col++);
                 String resource = getStorageManager().resourceFromDB(
                                       results.getString(col++));
                 Entry entry = getRepository().getTypeHandler(
@@ -2220,8 +2233,8 @@ public class Admin extends RepositoryManager {
                 }
                 if (entries.size() > 1000) {
                     getEntryManager().deleteEntries(request, entries, null);
-                    entries       = new ArrayList<Entry>();
-                    deleteCnt     += 1000;
+                    entries   = new ArrayList<Entry>();
+                    deleteCnt += 1000;
                     cleanupStatus = new StringBuffer("Removed " + deleteCnt
                             + " entries from database");
                 }
@@ -2233,7 +2246,7 @@ public class Admin extends RepositoryManager {
             }
             if (runningCleanup) {
                 getEntryManager().deleteEntries(request, entries, null);
-                deleteCnt     += entries.size();
+                deleteCnt += entries.size();
                 cleanupStatus = new StringBuffer(msg("Done running cleanup")
                         + "<br>" + msg("Removed") + HtmlUtils.space(1)
                         + deleteCnt + " entries from database");

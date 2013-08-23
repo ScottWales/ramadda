@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -49,7 +48,7 @@ public class FileInfo {
     /** The file */
     private File file;
 
-    /** _more_          */
+    /** _more_ */
     private File rootDir;
 
     /** _more_ */
@@ -243,12 +242,14 @@ public class FileInfo {
      * _more_
      *
      * @param rootDir _more_
+     * @param harvester _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public static List<FileInfo> collectDirs(final File rootDir, final Harvester harvester)
+    public static List<FileInfo> collectDirs(final File rootDir,
+                                             final Harvester harvester)
             throws Exception {
         final List<FileInfo> dirs       = new ArrayList();
         IOUtil.FileViewer    fileViewer = new IOUtil.FileViewer() {
@@ -257,7 +258,7 @@ public class FileInfo {
                     if (f.getName().startsWith(".")) {
                         return DO_DONTRECURSE;
                     }
-                    if(!okToRecurse(f, harvester)) {
+                    if ( !okToRecurse(f, harvester)) {
                         return DO_DONTRECURSE;
                     }
                     dirs.add(new FileInfo(f, rootDir, true));
@@ -271,22 +272,36 @@ public class FileInfo {
         return dirs;
     }
 
-    public static boolean okToRecurse(File dir, Harvester harvester) throws Exception {
+    /**
+     * _more_
+     *
+     * @param dir _more_
+     * @param harvester _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static boolean okToRecurse(File dir, Harvester harvester)
+            throws Exception {
         //check for a ramadda.properties file. 
-        File propFile = new File(IOUtil.joinDir(dir,"ramadda.properties"));
-        if(propFile.exists()) {
-            harvester.logHarvesterInfo("Checking properties file:" + propFile);
-            Properties properties = new Properties();
-            FileInputStream fis = new FileInputStream(propFile);
+        File propFile = new File(IOUtil.joinDir(dir, "ramadda.properties"));
+        if (propFile.exists()) {
+            harvester.logHarvesterInfo("Checking properties file:"
+                                       + propFile);
+            Properties      properties = new Properties();
+            FileInputStream fis        = new FileInputStream(propFile);
             properties.load(fis);
             IOUtil.close(fis);
             String ok = (String) properties.get("harvester.ok");
-            if(ok!=null && ok.trim().equals("false")) {
+            if ((ok != null) && ok.trim().equals("false")) {
                 harvester.logHarvesterInfo("Skipping directory:" + dir);
+
                 return false;
             }
             harvester.logHarvesterInfo("Not Skipping directory:" + ok);
         }
+
         return true;
     }
 

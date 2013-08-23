@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,12 +25,13 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 
-import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
+
+import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -80,7 +80,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
 
 
-    /** _more_          */
+    /** _more_ */
     private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
     /**
@@ -346,8 +346,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
-        StringBuffer sb       = new StringBuffer();
-        String       listLink =
+        StringBuffer sb = new StringBuffer();
+        String listLink =
             HtmlUtils.href(getRepositoryBase().URL_USER_MONITORS.toString(),
                            msg("Monitor List"));
         sb.append(HtmlUtils.p());
@@ -405,7 +405,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processMonitorCreate(Request request) throws Exception {
-        StringBuffer sb      = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         EntryMonitor monitor = new EntryMonitor(getRepository(),
                                    request.getUser(), "New Monitor", true);
         String        type   = request.getString(ARG_MONITOR_TYPE, "email");
@@ -501,7 +501,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 || request.getUser().getIsGuest()) {
             throw new IllegalArgumentException("Cannot access monitors");
         }
-        StringBuffer       sb       = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         List<EntryMonitor> monitors = getEditableMonitors(request,
                                           getEntryMonitors());
         if (request.exists(ARG_MONITOR_ID)) {

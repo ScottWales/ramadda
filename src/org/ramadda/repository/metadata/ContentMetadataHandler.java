@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -23,14 +22,15 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 
 
@@ -72,6 +72,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_THUMBNAIL = "content.thumbnail";
 
+    /** _more_          */
     public static final String TYPE_ICON = "content.icon";
 
     /** _more_ */
@@ -80,16 +81,16 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_PAGESTYLE = "content.pagestyle";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_KEYWORD = "content.keyword";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_URL = "content.url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_EMAIL = "content.email";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_AUTHOR = "content.author";
 
     /** _more_ */
@@ -110,6 +111,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_ALIAS = "content.alias";
 
+    /** _more_          */
     public static final String TYPE_TEMPLATE = "content.pagetemplate";
 
     /**
@@ -124,17 +126,27 @@ public class ContentMetadataHandler extends MetadataHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param element _more_
+     *
+     * @return _more_
+     */
     public String getEnumerationValues(MetadataElement element) {
-        if(element.getName().equals("template")) {
+        if (element.getName().equals("template")) {
             StringBuffer sb = new StringBuffer();
-            for (HtmlTemplate htmlTemplate : getRepository().getPageHandler().getTemplates()) {
+            for (HtmlTemplate htmlTemplate :
+                    getRepository().getPageHandler().getTemplates()) {
                 sb.append(htmlTemplate.getId());
                 sb.append(":");
                 sb.append(htmlTemplate.getName());
                 sb.append(",");
             }
+
             return sb.toString();
         }
+
         return "";
     }
 

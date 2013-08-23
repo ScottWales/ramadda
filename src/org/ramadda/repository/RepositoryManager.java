@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -30,14 +29,14 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 
 import org.w3c.dom.*;
-
-
-import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -103,7 +102,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public RepositoryManager(Repository repository) {
         this.repository = repository;
-        if(this.repository!=null) {
+        if (this.repository != null) {
             this.repository.addRepositoryManager(this);
         }
     }
@@ -126,6 +125,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository;
     }
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -141,6 +145,14 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param requestUrl _more_
+     *
+     * @return _more_
+     */
     public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
         return "";
     }
@@ -454,8 +466,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, Date d, Entry entry) {
-        return getPageHandler().formatDate(
-            request, d, getEntryUtil().getTimezone(entry));
+        return getPageHandler().formatDate(request, d,
+                                           getEntryUtil().getTimezone(entry));
     }
 
 
@@ -482,8 +494,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String formatDate(Request request, long ms, Entry entry) {
-        return getPageHandler().formatDate(
-            request, ms, getEntryUtil().getTimezone(entry));
+        return getPageHandler().formatDate(request, ms,
+                                           getEntryUtil().getTimezone(entry));
     }
 
     /**
@@ -506,8 +518,16 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getPropertyFromTree(String name, String dflt) {
-        return  repository.getPropertyFromTree(name, dflt);
+        return repository.getPropertyFromTree(name, dflt);
     }
 
 
@@ -610,6 +630,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getEntryManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public EntryUtil getEntryUtil() {
         return getEntryManager().getEntryUtil();
     }
@@ -679,6 +704,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getStorageManager();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public PluginManager getPluginManager() {
         return repository.getPluginManager();
     }
@@ -744,7 +774,7 @@ public class RepositoryManager implements RepositorySource, Constants,
     public void adminSettingsChanged() {}
 
 
-    /** _more_          */
+    /** _more_ */
     private static int dialogCnt = 0;
 
     /**
@@ -756,7 +786,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String makeFormSubmitDialog(StringBuffer sb, String message) {
-        String id       = "dialog-message" + (dialogCnt++);
+        String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onsubmit=\"return submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =
@@ -778,7 +808,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String makeButtonSubmitDialog(StringBuffer sb, String message) {
-        String id       = "dialog-message" + (dialogCnt++);
+        String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onclick=\"return submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -63,16 +62,17 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
 
+    /** _more_          */
     public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
 
     /** _more_ */
     private boolean LOGGER_OK = true;
 
-    /** _more_          */
+    /** _more_ */
     private final LogManager.LogId LOGID =
         new LogManager.LogId("org.ramadda.repository.LogManager");
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Logger> loggers = new Hashtable<String,
                                                     Logger>();
 
@@ -93,7 +93,7 @@ public class LogManager extends RepositoryManager {
      */
     public LogManager(Repository repository) {
         super(repository);
-        LOGGER_OK  = repository.getProperty(PROP_USELOG4J, true);
+        LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
     }
 
 
@@ -137,12 +137,13 @@ public class LogManager extends RepositoryManager {
      * @return _more_
      */
     public Logger getLogger(LogId logId) {
-        if(getRepository().getParentRepository()!=null) {
-            return getRepository().getParentRepository().getLogManager().getLogger();
+        if (getRepository().getParentRepository() != null) {
+            return getRepository().getParentRepository().getLogManager()
+                .getLogger();
         }
         //Check if we've already had an error
-        if(!isLoggingEnabled()) {
-            return  null;
+        if ( !isLoggingEnabled()) {
+            return null;
         }
 
         Logger logger = loggers.get(logId.getId());
@@ -164,8 +165,13 @@ public class LogManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isLoggingEnabled() {
-        return LOGGER_OK && getRepository().getParentRepository()==null;
+        return LOGGER_OK && (getRepository().getParentRepository() == null);
     }
 
 
@@ -808,11 +814,11 @@ public class LogManager extends RepositoryManager {
      *
      *
      * @version        $version$, Mon, Aug 20, '12
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class LogId {
 
-        /** _more_          */
+        /** _more_ */
         private String id;
 
         /**

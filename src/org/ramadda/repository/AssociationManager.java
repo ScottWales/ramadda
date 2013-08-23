@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +27,10 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.sql.Clause;
+
+import org.ramadda.sql.SqlUtil;
+
 
 
 
@@ -37,9 +40,6 @@ import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.Clause;
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -610,7 +610,7 @@ public class AssociationManager extends RepositoryManager {
      */
     public List<Association> getAssociations(Request request, Clause clause)
             throws Exception {
-        int    max     = request.get(ARG_MAX, DB_MAX_ROWS);
+        int max = request.get(ARG_MAX, DB_MAX_ROWS);
         String orderBy = " ORDER BY " + Tables.ASSOCIATIONS.COL_TYPE
                          + " ASC ," + Tables.ASSOCIATIONS.COL_NAME + " ASC ";
         Statement stmt = getDatabaseManager().select(
@@ -685,11 +685,11 @@ public class AssociationManager extends RepositoryManager {
     public String processText(Request request, Entry entry, String text) {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
-            String first    = text.substring(0, idx);
-            String base     = "" + (HtmlUtils.blockCnt++);
-            String divId    = "morediv_" + base;
-            String linkId   = "morelink_" + base;
-            String second   = text.substring(idx + "<more>".length());
+            String first  = text.substring(0, idx);
+            String base   = "" + (HtmlUtils.blockCnt++);
+            String divId  = "morediv_" + base;
+            String linkId = "morelink_" + base;
+            String second = text.substring(idx + "<more>".length());
             String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
                               + ")";
             String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
@@ -749,8 +749,8 @@ public class AssociationManager extends RepositoryManager {
                                            Entry entry, boolean canEdit)
             throws Exception {
 
-        List                            cols1  = new ArrayList();
-        List                            cols2  = new ArrayList();
+        List cols1 = new ArrayList();
+        List cols2 = new ArrayList();
 
         Hashtable<String, StringBuffer> rowMap = new Hashtable<String,
                                                      StringBuffer>();
@@ -881,7 +881,8 @@ public class AssociationManager extends RepositoryManager {
 
         if (associations.size() == 0) {
             sb.append(
-                getPageHandler().showDialogNote(msg("No associations found")));
+                getPageHandler().showDialogNote(
+                    msg("No associations found")));
             getAssociationsSearchForm(request, sb);
         } else {
             getAssociationsSearchForm(request, sb);

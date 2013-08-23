@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,8 +27,11 @@ import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.CategoryBuffer;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.BufferMapList;
+import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 
@@ -38,8 +40,6 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.Element;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -85,6 +85,7 @@ import java.util.zip.*;
  */
 public class OutputHandler extends RepositoryManager {
 
+    /** _more_          */
     public static final JQuery JQ = null;
 
     /** max connections attribute */
@@ -126,6 +127,9 @@ public class OutputHandler extends RepositoryManager {
     /** total calls */
     private int totalCalls = 0;
 
+    /**
+     * _more_
+     */
     public OutputHandler() {
         super(null);
     }
@@ -348,7 +352,7 @@ public class OutputHandler extends RepositoryManager {
                 sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
                         HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
             }
-            request.put(ARG_MAX, ""+max);
+            request.put(ARG_MAX, "" + max);
         }
 
     }
@@ -601,6 +605,13 @@ public class OutputHandler extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getEntryName(Entry entry) {
         return entry.getTypeHandler().getEntryName(entry);
     }
@@ -867,7 +878,7 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
 
         String selectorId = elementId + "_" + type;
-        String event      = HtmlUtils.call("selectInitialClick",
+        String event = HtmlUtils.call("selectInitialClick",
                                       HtmlUtils.comma("event",
                                           HtmlUtils.squote(selectorId),
                                           HtmlUtils.squote(elementId),
@@ -907,8 +918,8 @@ public class OutputHandler extends RepositoryManager {
         String       entryId  = entry.getId();
         String       icon     = getEntryManager().getIconUrl(request, entry);
         String       event;
-        String       uid            = "link_" + HtmlUtils.blockCnt++;
-        String       folderClickUrl =
+        String       uid = "link_" + HtmlUtils.blockCnt++;
+        String folderClickUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
             + HtmlUtils.args(new String[] {
             ARG_NOREDIRECT, "true", ARG_OUTPUT,
@@ -926,18 +937,18 @@ public class OutputHandler extends RepositoryManager {
                                   getRepository().iconUrl(ICON_BLANK), "",
                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10"))
                               : HtmlUtils.img(
-                                  getRepository().iconUrl(ICON_TOGGLEARROWRIGHT),
-                                  msg(message),
-                                  HtmlUtils.id("img_" + uid)
-                                  + HtmlUtils.onMouseClick(
-                                      HtmlUtils.call(
-                                          "folderClick",
-                                          HtmlUtils.comma(
-                                              HtmlUtils.squote(uid),
-                                              HtmlUtils.squote(folderClickUrl),
-                                              HtmlUtils.squote(
-                                                  iconUrl(
-                                                      ICON_TOGGLEARROWDOWN)))))));
+                                  getRepository().iconUrl(
+                                      ICON_TOGGLEARROWRIGHT), msg(message),
+                                          HtmlUtils.id("img_" + uid)
+                                          + HtmlUtils.onMouseClick(
+                                              HtmlUtils.call(
+                                                  "folderClick",
+                                                  HtmlUtils.comma(
+                                                      HtmlUtils.squote(uid),
+                                                      HtmlUtils.squote(
+                                                          folderClickUrl), HtmlUtils.squote(
+                                                          iconUrl(
+                                                              ICON_TOGGLEARROWDOWN)))))));
 
 
         String img = prefix + HtmlUtils.space(1) + HtmlUtils.img(icon);
@@ -1054,7 +1065,8 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSortLinks(Request request) {
         StringBuffer sb           = new StringBuffer();
-        String       oldOrderBy   = request.getString(ARG_ORDERBY, "fromdate");
+        String       oldOrderBy   = request.getString(ARG_ORDERBY,
+                                        "fromdate");
         String       oldAscending = request.getString(ARG_ASCENDING, "false");
         String[]     order        = {
             "name", "true",
@@ -1216,17 +1228,18 @@ public class OutputHandler extends RepositoryManager {
 
         String arrowImg = HtmlUtils.img(hideIt
                                         ? getRepository().iconUrl(
-                                                                  "/icons/application_side_expand.png")
-                                        : getRepository()
-                                            .iconUrl("/icons/application_side_contract.png"), msg(
-                                                "Show/Hide Form"), HtmlUtils
-                                                    .id(base + "img"));
+                                            "/icons/application_side_expand.png")
+                                        : getRepository().iconUrl(
+                                            "/icons/application_side_contract.png"), msg(
+                                                "Show/Hide Form"), HtmlUtils.id(
+                                                base + "img"));
         //        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.space(2)
                       + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
-                                                                + ".groupToggleVisibility()"), linkLabel, linkExtra);
+                          + ".groupToggleVisibility()"), linkLabel,
+                              linkExtra);
         String selectId = base + "select";
         formSB.append(HtmlUtils.span(selectSB.toString(),
                                      HtmlUtils.cssClass("entrylistform")
@@ -1289,7 +1302,7 @@ public class OutputHandler extends RepositoryManager {
                                 "event", HtmlUtils.squote(cbxId)))));
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
-                                                       entry.getLabel()), rowId, cbx);
+                             entry.getLabel()), rowId, cbx);
     }
 
 
@@ -1394,12 +1407,12 @@ public class OutputHandler extends RepositoryManager {
         }
 
 
-        boolean doCategories = request.get(ARG_SHOWCATEGORIES, false);
-        CategoryBuffer cb = new CategoryBuffer();
+        boolean        doCategories = request.get(ARG_SHOWCATEGORIES, false);
+        CategoryBuffer cb           = new CategoryBuffer();
 
 
-        int          cnt  = 0;
-        StringBuffer jsSB = new StringBuffer();
+        int            cnt          = 0;
+        StringBuffer   jsSB         = new StringBuffer();
         for (Entry entry : (List<Entry>) entries) {
             StringBuffer cbxSB        = new StringBuffer();
             String       rowId        = base + (cnt++);
@@ -1456,22 +1469,30 @@ public class OutputHandler extends RepositoryManager {
                                       crumbs);
             entryLink.setLink(cbxSB + entryLink.getLink());
 
-            StringBuffer buffer = cb.get(doCategories?entry.getTypeHandler().getCategory(entry).getLabel().toString():"");
+            StringBuffer buffer = cb.get(doCategories
+                                         ? entry.getTypeHandler().getCategory(
+                                             entry).getLabel().toString()
+                                         : "");
             decorateEntryRow(request, entry, buffer, entryLink, rowId, "");
         }
 
 
 
 
-        for(String category: cb.getCategories()) {
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                     HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
+        for (String category : cb.getCategories()) {
+            sb.append(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
             sb.append("\n\n");
-            if(doCategories) {
-                if(category.length()>0) {
+            if (doCategories) {
+                if (category.length() > 0) {
                     sb.append(subHeader(category));
                 }
-                sb.append(HtmlUtils.div(cb.get(category).toString(),  HtmlUtils.cssClass("ramadda-entry-list")));
+                sb.append(
+                    HtmlUtils.div(
+                        cb.get(category).toString(),
+                        HtmlUtils.cssClass("ramadda-entry-list")));
                 sb.append(HtmlUtils.p());
             } else {
                 sb.append(cb.get(category));
@@ -1484,6 +1505,7 @@ public class OutputHandler extends RepositoryManager {
 
         sb.append(HtmlUtils.script(jsSB.toString()));
         sb.append("\n\n");
+
         return link;
     }
 
@@ -1554,18 +1576,18 @@ public class OutputHandler extends RepositoryManager {
         boolean showDate = !request.get(ARG_TREEVIEW, false);
         //TODO: 
         showDate = false;
-        if(showDate) {
+        if (showDate) {
             if (request.isMobile()) {
                 sb.append("<td align=right><div "
-                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
+                          + ">");
             } else {
                 sb.append("<td align=right width=100><div "
-                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
+                          + ">");
             }
-            sb.append(entry.getTypeHandler().formatDate(request,
-                                                             entry,
-                                                             new Date(entry.getStartDate()),
-                                                             extraAlt.toString()));
+            sb.append(entry.getTypeHandler().formatDate(request, entry,
+                    new Date(entry.getStartDate()), extraAlt.toString()));
             sb.append("</div></td>");
         }
 
@@ -2065,6 +2087,11 @@ public class OutputHandler extends RepositoryManager {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getRepository().getOutputHandler(
@@ -2074,11 +2101,18 @@ public class OutputHandler extends RepositoryManager {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param title _more_
+     * @param msg _more_
+     *
+     * @return _more_
+     */
     public Result getErrorResult(Request request, String title, String msg) {
-        return new Result(title,
-                          new StringBuffer(
-                                           getPageHandler().showDialogError(
-                                                                           msg)));
+        return new Result(
+            title, new StringBuffer(getPageHandler().showDialogError(msg)));
     }
 
 

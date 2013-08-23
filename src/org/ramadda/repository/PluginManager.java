@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,10 +24,10 @@ package org.ramadda.repository;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
-import org.ramadda.util.MyTrace;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MultiJarClassLoader;
+import org.ramadda.util.MyTrace;
 import org.ramadda.util.TempDir;
 
 
@@ -86,7 +85,9 @@ import java.util.zip.*;
  */
 public class PluginManager extends RepositoryManager {
 
-    public static final String PLUGIN_ALL = "/org/ramadda/repository/resources/plugins/allplugins.jar";
+    /** _more_          */
+    public static final String PLUGIN_ALL =
+        "/org/ramadda/repository/resources/plugins/allplugins.jar";
 
     /** _more_ */
     private StringBuffer pluginSB = new StringBuffer();
@@ -126,6 +127,7 @@ public class PluginManager extends RepositoryManager {
     private List<String> outputDefFiles = new ArrayList<String>();
 
 
+    /** _more_          */
     private List<String> classDefFiles = new ArrayList<String>();
 
 
@@ -243,14 +245,14 @@ public class PluginManager extends RepositoryManager {
                               false);
         File   tmpPluginsDir = tempDir.getDir();
         File   dir           = getStorageManager().getPluginsDir();
-        File[] files       = dir.listFiles();
+        File[] files         = dir.listFiles();
         Arrays.sort(files);
-        List<File> plugins = new ArrayList<File>();
+        List<File> plugins     = new ArrayList<File>();
         List<File> lastPlugins = new ArrayList<File>();
         for (int i = 0; i < files.length; i++) {
-            if(files[i].toString().indexOf(".last.")>=0) {
+            if (files[i].toString().indexOf(".last.") >= 0) {
                 lastPlugins.add(files[i]);
-            }  else {
+            } else {
                 plugins.add(files[i]);
             }
         }
@@ -270,18 +272,25 @@ public class PluginManager extends RepositoryManager {
             try {
                 processPluginFile(pluginFile, pluginSB, classLoader,
                                   tmpPluginsDir);
-            } catch(Exception exc) {
-                System.err.println("RAMADDA: Error loading plugin:" + pluginFile);
+            } catch (Exception exc) {
+                System.err.println("RAMADDA: Error loading plugin:"
+                                   + pluginFile);
+
                 throw exc;
             }
         }
         loadPropertyFiles();
 
         //Now check for any special classes that need loading
-        for(String classDefFile: classDefFiles) {
-            for(String classToLoad: StringUtil.split(getStorageManager().readSystemResource(classDefFile),"\n", true, true)) {
-                if (classToLoad.startsWith("#")) continue;
-                Class c  = Misc.findClass(classToLoad);
+        for (String classDefFile : classDefFiles) {
+            for (String classToLoad :
+                    StringUtil.split(
+                        getStorageManager().readSystemResource(classDefFile),
+                        "\n", true, true)) {
+                if (classToLoad.startsWith("#")) {
+                    continue;
+                }
+                Class c = Misc.findClass(classToLoad);
                 classLoader.checkSpecialClass(c);
             }
         }
@@ -377,6 +386,7 @@ public class PluginManager extends RepositoryManager {
         boolean contains = seenThings.contains(file);
         seenThings.remove(file);
         checkFile(file);
+
         return contains;
     }
 
@@ -569,6 +579,7 @@ public class PluginManager extends RepositoryManager {
      */
     private class MyClassLoader extends MultiJarClassLoader {
 
+        /** _more_          */
         private HashSet seenClasses = new HashSet();
 
         /**
@@ -629,7 +640,7 @@ public class PluginManager extends RepositoryManager {
          * @throws Exception On badness
          */
         public void checkSpecialClass(Class c) throws Exception {
-            if(seenClasses.contains(c)) {
+            if (seenClasses.contains(c)) {
                 //                System.out.println ("class: Seen it:" + c.getName());
                 return;
             }

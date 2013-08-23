@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -116,9 +115,14 @@ public class Resource {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     */
     public Resource(URL url) {
         type = TYPE_URL;
-        path  = url.toString();
+        path = url.toString();
     }
 
 
@@ -391,12 +395,19 @@ public class Resource {
         return md5;
     }
 
-    public static void main(String[]args) throws Exception {
-        for(String arg: args) {
-            long t1  = System.currentTimeMillis();
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        for (String arg : args) {
+            long   t1  = System.currentTimeMillis();
             String md5 = ucar.unidata.util.IOUtil.getMd5(arg);
-            long t2  = System.currentTimeMillis();
-            System.err.println("time:" + (t2-t1));
+            long   t2  = System.currentTimeMillis();
+            System.err.println("time:" + (t2 - t1));
         }
     }
 

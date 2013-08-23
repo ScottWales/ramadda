@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,18 +21,20 @@
 package org.ramadda.repository.output;
 
 
-import java.util.List;
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AuthorizationMethod;
+
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+
+
+import java.util.List;
 
 
 
@@ -142,7 +143,9 @@ public class WgetOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        request.setReturnFilename(IOUtil.stripExtension(entry.getName())+"_wget.sh");
+        request.setReturnFilename(IOUtil.stripExtension(entry.getName())
+                                  + "_wget.sh");
+
         return outputGroup(request, outputType, null, null,
                            (List<Entry>) Misc.newList(entry));
     }
@@ -165,13 +168,18 @@ public class WgetOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
-        
-        if(group != null && group.isDummy()) {
+
+        if ((group != null) && group.isDummy()) {
             request.setReturnFilename("Search_Results_wget.sh");
         }
 
         StringBuffer sb = new StringBuffer();
-        System.err.println ("RAMADDA: wget server name: "+ request.getHttpServletRequest().getServerName()+" getServerPort:" + request.getHttpServletRequest().getServerPort() +" getLocalPort:" + request.getHttpServletRequest().getLocalPort());
+        System.err.println("RAMADDA: wget server name: "
+                           + request.getHttpServletRequest().getServerName()
+                           + " getServerPort:"
+                           + request.getHttpServletRequest().getServerPort()
+                           + " getLocalPort:"
+                           + request.getHttpServletRequest().getLocalPort());
         for (Entry entry : entries) {
             if (entry.getResource().isUrl()) {
                 sb.append("wget \"" + entry.getResource().getPath() + "\"");

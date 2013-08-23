@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,7 +23,9 @@ package org.ramadda.repository.test;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+
 import java.util.List;
+
 
 /**
  * An example of a page decorator. Change the above package to your package structure.
@@ -43,6 +44,8 @@ public class TestPageDecorator extends PageDecorator {
 
     /**
      * ctor
+     *
+     * @param repository _more_
      */
     public TestPageDecorator(Repository repository) {
         super(repository);
@@ -74,15 +77,29 @@ public class TestPageDecorator extends PageDecorator {
     }
 
 
-    public String getDefaultOutputType(Repository repository, Request request,
-                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
-        if(entry.isGroup()) {
-            for(Entry child: subEntries) {
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param request _more_
+     * @param entry _more_
+     * @param subFolders _more_
+     * @param subEntries _more_
+     *
+     * @return _more_
+     */
+    public String getDefaultOutputType(Repository repository,
+                                       Request request, Entry entry,
+                                       List<Entry> subFolders,
+                                       List<Entry> subEntries) {
+        if (entry.isGroup()) {
+            for (Entry child : subEntries) {
                 if (child.getResource().isImage()) {
                     return ImageOutputHandler.OUTPUT_PLAYER.getId();
                 }
             }
         }
+
         return null;
     }
 

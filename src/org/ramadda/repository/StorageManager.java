@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -38,23 +37,24 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+import java.net.URL;
+import java.net.URLConnection;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Properties;
+
+import java.util.zip.*;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-
-
-import java.net.URL;
-import java.net.URLConnection;
-
-import java.util.zip.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -68,6 +68,7 @@ public class StorageManager extends RepositoryManager {
     /** file separator */
     public static final String FILE_SEPARATOR = "_file_";
 
+    /** _more_          */
     public static final String DFLT_CIPHER = "DES";
 
     /** the full log file */
@@ -160,6 +161,7 @@ public class StorageManager extends RepositoryManager {
     private File tmpDir;
 
 
+    /** _more_          */
     private File processDir;
 
     /** the htdocs directory */
@@ -213,6 +215,7 @@ public class StorageManager extends RepositoryManager {
     /** list of directories that are okay to write to */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
+    /** _more_          */
     private String encryptionPassword;
 
     /**
@@ -296,6 +299,11 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDiskUsage() {
         //Note: this will break on systems without du
         List<String> commands = new ArrayList<String>();
@@ -304,9 +312,11 @@ public class StorageManager extends RepositoryManager {
         commands.add("-h");
         commands.add(getRepositoryDir().toString());
         try {
-            String[] results = getRepository().executeCommand(commands, getRepositoryDir());
+            String[] results = getRepository().executeCommand(commands,
+                                   getRepositoryDir());
+
             return results[0];
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             return ("Error getting disk usage:" + exc);
         }
     }
@@ -315,7 +325,8 @@ public class StorageManager extends RepositoryManager {
      * Initialize the manager
      */
     protected void init() {
-        encryptionPassword = getRepository().getProperty(PROP_ENCRYPT_PASSWORD, (String) null);
+        encryptionPassword =
+            getRepository().getProperty(PROP_ENCRYPT_PASSWORD, (String) null);
         String repositoryDirProperty =
             getRepository().getProperty(PROP_REPOSITORY_HOME, (String) null);
 
@@ -365,19 +376,32 @@ public class StorageManager extends RepositoryManager {
         //Add in the process tmp dir
         TempDir processTempDir = new TempDir(getProcessDir(), true);
         //For now hard code the scour to be 3 days
-        processTempDir.setMaxAge(1000 * 60 * 60 * 24 * 3 );
+        processTempDir.setMaxAge(1000 * 60 * 60 * 24 * 3);
         tmpDirs.add(processTempDir);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public File getResourceDir() {
         return new File(IOUtil.joinDir(repositoryDir, DIR_RESOURCES));
     }
 
+    /**
+     * _more_
+     *
+     * @param dirName _more_
+     *
+     * @return _more_
+     */
     public File getPluginResourceDir(String dirName) {
-        File f = new File(IOUtil.joinDir(getResourceDir(),dirName));
+        File f = new File(IOUtil.joinDir(getResourceDir(), dirName));
         f.mkdirs();
-        return  f;
+
+        return f;
     }
 
     /**
@@ -390,8 +414,7 @@ public class StorageManager extends RepositoryManager {
                                       getRepositoryDir().toString()));
         sb.append(HtmlUtils.formEntry("Storage Directory:",
                                       getStorageDir().toString()));
-        sb.append(HtmlUtils.formEntry("Disk Usage:",
-                                      getDiskUsage()));
+        sb.append(HtmlUtils.formEntry("Disk Usage:", getDiskUsage()));
 
     }
 
@@ -519,23 +542,40 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
     public static void makeDirRecursive(File f) {
         f.mkdirs();
-        if(f.exists()) {
+        if (f.exists()) {
             return;
         }
+
         throw new RuntimeException("Could not create directory:" + f);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
     public static void makeDir(File f) {
         f.mkdir();
-        if(f.exists()) {
+        if (f.exists()) {
             return;
         }
+
         throw new RuntimeException("Could not create directory:" + f);
     }
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
     public static void makeDir(String f) {
         makeDir(new File(f));
     }
@@ -745,12 +785,14 @@ public class StorageManager extends RepositoryManager {
             if (getRepository().isReadOnly()) {
                 System.out.println("RAMADDA: skipping log4j");
                 logDir = tmpLogDir;
+
                 return logDir;
             }
 
-            if (!getLogManager().isLoggingEnabled()) {
+            if ( !getLogManager().isLoggingEnabled()) {
                 System.out.println("RAMADDA: skipping log4j");
                 logDir = tmpLogDir;
+
                 return logDir;
             }
 
@@ -766,7 +808,7 @@ public class StorageManager extends RepositoryManager {
                     String logDirPath = tmpLogDir.toString();
                     //Replace for windows
                     logDirPath = logDirPath.replace("\\", "/");
-                    c = c.replace("${ramadda.logdir}", logDirPath);
+                    c          = c.replace("${ramadda.logdir}", logDirPath);
                     c = c.replace("${file.separator}", File.separator);
                     IOUtil.writeFile(log4JFile, c);
                 } catch (Exception exc) {
@@ -873,7 +915,7 @@ public class StorageManager extends RepositoryManager {
             if (notDeleted.size() > 0) {
                 logInfo("Unable to delete tmp files:" + notDeleted);
             }
-            if(tmpDir.getFilesOk()) {
+            if (tmpDir.getFilesOk()) {
                 //Now check for empty top level dirs and get rid of the
                 for (File remainingFile : tmpDir.listFiles()) {
                     if ( !remainingFile.isDirectory()) {
@@ -942,29 +984,57 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param processId _more_
+     *
+     * @return _more_
+     */
     public String getProcessDirEntryId(String processId) {
-        return EntryManager.ID_PREFIX_SYNTH +EntryManager.ENTRYID_PROCESS + ":/" + processId;
+        return EntryManager.ID_PREFIX_SYNTH + EntryManager.ENTRYID_PROCESS
+               + ":/" + processId;
     }
 
+    /**
+     * _more_
+     *
+     * @param processId _more_
+     *
+     * @return _more_
+     */
     public File getProcessDir(String processId) {
         File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
-        if(!subDir.exists()) {
-            System.err.println ("no process id dir:" +subDir);
+        if ( !subDir.exists()) {
+            System.err.println("no process id dir:" + subDir);
+
             return null;
         }
+
         return subDir;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public File createProcessDir() {
-        String processId =  getRepository().getGUID();
-        File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
+        String processId = getRepository().getGUID();
+        File   subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
         makeDir(subDir);
+
         return subDir;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public File getProcessDir() {
         if (processDir == null) {
             processDir = getFileFromProperty(PROP_PROCESSDIR);
@@ -1047,11 +1117,19 @@ public class StorageManager extends RepositoryManager {
                              + name);
     }
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
     public String getOriginalFilename(String name) {
         int idx = name.indexOf(FILE_SEPARATOR);
-        if(idx>=0) {
-            name = name.substring(idx+FILE_SEPARATOR.length());
+        if (idx >= 0) {
+            name = name.substring(idx + FILE_SEPARATOR.length());
         }
+
         return name;
     }
 
@@ -1071,14 +1149,28 @@ public class StorageManager extends RepositoryManager {
         return moveToStorage(request, original, original.getName());
     }
 
-    public File moveToStorage(Request request, InputStream inputStream, String fileName) throws Exception {
-        File        f = getStorageManager().getTmpFile(request, fileName);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param inputStream _more_
+     * @param fileName _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File moveToStorage(Request request, InputStream inputStream,
+                              String fileName)
+            throws Exception {
+        File         f = getStorageManager().getTmpFile(request, fileName);
         OutputStream outputStream =
             getStorageManager().getFileOutputStream(f);
         IOUtil.writeTo(inputStream, outputStream);
         IOUtil.close(inputStream);
         IOUtil.close(outputStream);
-        f =     getStorageManager().moveToStorage(request, f);
+        f = getStorageManager().moveToStorage(request, f);
+
         return f;
     }
 
@@ -1147,13 +1239,13 @@ public class StorageManager extends RepositoryManager {
             makeDirRecursive(new File(usersDir));
         }
 
-        String dir1    = "user_" + ((id.length() >= 2)
-                                    ? id.substring(0, 2)
-                                    : "");
-        String dir2    = "user_" + ((id.length() >= 4)
-                                    ? id.substring(2, 4)
-                                    : "");
-        File   userDir = new File(IOUtil.joinDir(usersDir,
+        String dir1 = "user_" + ((id.length() >= 2)
+                                 ? id.substring(0, 2)
+                                 : "");
+        String dir2 = "user_" + ((id.length() >= 4)
+                                 ? id.substring(2, 4)
+                                 : "");
+        File userDir = new File(IOUtil.joinDir(usersDir,
                            IOUtil.joinDir(dir1, IOUtil.joinDir(dir2, id))));
         if (createIfNeeded) {
             makeDirRecursive(userDir);
@@ -1227,15 +1319,20 @@ public class StorageManager extends RepositoryManager {
     public File copyToEntryDir(Entry entry, File original, String newName)
             throws Exception {
         File entryDir = getEntryDir(entry.getId(), true);
-        File newFile = new File(IOUtil.joinDir(entryDir, newName));
+        File newFile  = new File(IOUtil.joinDir(entryDir, newName));
         try {
             copyFile(original, newFile);
-        } catch(Exception exc) {
-            System.err.println("ERROR: StorageManager.copyToEntryDir: "+ exc);
-            System.err.println("ERROR: Original file:" + original +" exists:" + original.exists());
-            System.err.println("ERROR: Entry dir:" + entryDir +" exists:" + entryDir.exists());
+        } catch (Exception exc) {
+            System.err.println("ERROR: StorageManager.copyToEntryDir: "
+                               + exc);
+            System.err.println("ERROR: Original file:" + original
+                               + " exists:" + original.exists());
+            System.err.println("ERROR: Entry dir:" + entryDir + " exists:"
+                               + entryDir.exists());
+
             throw exc;
         }
+
         return newFile;
     }
 
@@ -1282,18 +1379,28 @@ public class StorageManager extends RepositoryManager {
         return newFile.getName();
     }
 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public File fetchUrl(String path) throws Exception {
         //Make sure its a url
-        if(!path.toLowerCase().startsWith("http")) {
+        if ( !path.toLowerCase().startsWith("http")) {
             throw new IllegalArgumentException("Bad URL:" + path);
         }
-        URL url  = new URL(path);
+        URL           url        = new URL(path);
         URLConnection connection = url.openConnection();
-        InputStream   fromStream         = connection.getInputStream();
-        File tmpFile = getTmpFile(null, IOUtil.getFileTail(path));
-        OutputStream toStream = getFileOutputStream(tmpFile);
+        InputStream   fromStream = connection.getInputStream();
+        File          tmpFile    = getTmpFile(null, IOUtil.getFileTail(path));
+        OutputStream  toStream   = getFileOutputStream(tmpFile);
         IOUtil.writeTo(fromStream, toStream);
         IOUtil.close(fromStream);
+
         return tmpFile;
     }
 
@@ -1332,8 +1439,8 @@ public class StorageManager extends RepositoryManager {
         if (targetName == null) {
             targetName = original.getName();
         }
-        String            storageDir = getStorageDir();
-        GregorianCalendar cal        =
+        String storageDir = getStorageDir();
+        GregorianCalendar cal =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date());
         storageDir = IOUtil.joinDir(storageDir, "y" + cal.get(cal.YEAR));
@@ -1356,10 +1463,13 @@ public class StorageManager extends RepositoryManager {
 
         try {
             moveFile(original, newFile);
-        } catch(Exception exc) {
-            System.err.println ("ERROR: StorageManager.moveToStorage:" + exc);
-            System.err.println ("ERROR: original:" + original +" exists:" + original.exists());
-            System.err.println ("ERROR: new:" + newFile +" dir exists:" + newFile.getParentFile().exists());
+        } catch (Exception exc) {
+            System.err.println("ERROR: StorageManager.moveToStorage:" + exc);
+            System.err.println("ERROR: original:" + original + " exists:"
+                               + original.exists());
+            System.err.println("ERROR: new:" + newFile + " dir exists:"
+                               + newFile.getParentFile().exists());
+
             throw exc;
         }
 
@@ -1439,10 +1549,10 @@ public class StorageManager extends RepositoryManager {
     public File copyToStorage(Request request, InputStream original,
                               String newName)
             throws Exception {
-        String            targetName = newName;
-        String            storageDir = getStorageDir();
+        String targetName = newName;
+        String storageDir = getStorageDir();
 
-        GregorianCalendar cal        =
+        GregorianCalendar cal =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date());
 
@@ -1736,8 +1846,10 @@ public class StorageManager extends RepositoryManager {
             return file;
         }
 
-        if(getRepository().getParentRepository()!=null) {
-            getRepository().getParentRepository().getStorageManager().checkReadFile(file);
+        if (getRepository().getParentRepository() != null) {
+            getRepository().getParentRepository().getStorageManager()
+                .checkReadFile(file);
+
             return file;
         }
 
@@ -1922,6 +2034,7 @@ public class StorageManager extends RepositoryManager {
      */
     public InputStream getFileInputStream(File file) throws Exception {
         checkReadFile(file);
+
         return decrypt(file, getEncryptionPassword());
     }
 
@@ -1940,6 +2053,7 @@ public class StorageManager extends RepositoryManager {
      */
     public OutputStream getFileOutputStream(File file) throws Exception {
         checkWriteFile(file);
+
         return getUncheckedFileOutputStream(file);
     }
 
@@ -1960,57 +2074,118 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
     public boolean shouldCrypt(File file) {
         //We only crypt files stored under the RAMADDA home dir
         if (IOUtil.isADescendent(getRepositoryDir(), file)) {
             return true;
         }
+
         return false;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getEncryptionPassword() {
         return encryptionPassword;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param key _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public InputStream decrypt(File file, String key) throws Exception {
-        InputStream is = new  FileInputStream(file);
-        if(key == null || !shouldCrypt(file)) return is;
-        DESKeySpec dks = new DESKeySpec(key.getBytes());
-        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
-        SecretKey desKey = SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
-        Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
+        InputStream is = new FileInputStream(file);
+        if ((key == null) || !shouldCrypt(file)) {
+            return is;
+        }
+        DESKeySpec dks        = new DESKeySpec(key.getBytes());
+        String     cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
+        SecretKey desKey =
+            SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
+        Cipher cipher = Cipher.getInstance(cipherSpec);  // DES/ECB/PKCS5Padding for SunJCE
         cipher.init(Cipher.DECRYPT_MODE, desKey);
-        return  new CipherInputStream(is, cipher);
+
+        return new CipherInputStream(is, cipher);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param key _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public OutputStream encrypt(File file, String key) throws Exception {
         OutputStream os = new FileOutputStream(file);
-        if(key == null || !shouldCrypt(file)) return os;
-        String cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
-        DESKeySpec dks = new DESKeySpec(key.getBytes());
-        SecretKey desKey = SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
-        Cipher cipher = Cipher.getInstance(cipherSpec); // DES/ECB/PKCS5Padding for SunJCE
+        if ((key == null) || !shouldCrypt(file)) {
+            return os;
+        }
+        String     cipherSpec = getProperty(PROP_ENCRYPT_CIPHER, DFLT_CIPHER);
+        DESKeySpec dks        = new DESKeySpec(key.getBytes());
+        SecretKey desKey =
+            SecretKeyFactory.getInstance(cipherSpec).generateSecret(dks);
+        Cipher cipher = Cipher.getInstance(cipherSpec);  // DES/ECB/PKCS5Padding for SunJCE
         cipher.init(Cipher.ENCRYPT_MODE, desKey);
+
         return new CipherOutputStream(os, cipher);
     }
 
-    public static void doCopy(InputStream is, OutputStream os) throws Exception {
-        IOUtil.writeTo(is,os);
+    /**
+     * _more_
+     *
+     * @param is _more_
+     * @param os _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void doCopy(InputStream is, OutputStream os)
+            throws Exception {
+        IOUtil.writeTo(is, os);
         IOUtil.close(is);
         IOUtil.close(os);
     }
 
 
-    public List<File> unpackZipfile(Request request, String zipFile) throws Exception {
-        List<File> files = new ArrayList<File>();
-        InputStream fis = getFileInputStream(zipFile);
-        OutputStream fos = null;
-        ZipInputStream   zin = new ZipInputStream(fis);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param zipFile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<File> unpackZipfile(Request request, String zipFile)
+            throws Exception {
+        List<File>     files = new ArrayList<File>();
+        InputStream    fis   = getFileInputStream(zipFile);
+        OutputStream   fos   = null;
+        ZipInputStream zin   = new ZipInputStream(fis);
         try {
-            ZipEntry         ze  = null;
+            ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 if (ze.isDirectory()) {
                     continue;
@@ -2033,6 +2208,7 @@ public class StorageManager extends RepositoryManager {
             IOUtil.close(fis);
             IOUtil.close(zin);
         }
+
         return files;
     }
 
@@ -2041,4 +2217,3 @@ public class StorageManager extends RepositoryManager {
 
 
 }
-

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,12 +26,12 @@ import org.ramadda.repository.*;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.sql.Clause;
 
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.sql.Clause;
 
 import org.ramadda.util.HtmlUtils;
 
@@ -45,8 +44,8 @@ import ucar.unidata.util.StringUtil;
 import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 
 import java.util.List;
 
@@ -78,10 +77,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SEARCH_REFINE = "search.refine";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SEARCH_CLEAR = "search.clear";
 
     /** _more_ */
@@ -96,6 +95,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private boolean searchOpen = true;
 
+    /** _more_          */
     private boolean doSearchInitially = true;
 
     /** _more_ */
@@ -116,7 +116,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> tabs = new ArrayList<String>();
 
-    private List<SyntheticField> syntheticFields = new ArrayList<SyntheticField>();
+    /** _more_          */
+    private List<SyntheticField> syntheticFields =
+        new ArrayList<SyntheticField>();
+
     /**
      * _more_
      *
@@ -141,6 +144,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         init(node, props);
     }
 
+    /**
+     * _more_
+     *
+     * @param typeHandler _more_
+     */
     public SpecialSearch(TypeHandler typeHandler) {
         super(typeHandler.getRepository());
         this.typeHandler = typeHandler;
@@ -149,22 +157,31 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
           search.synthetic.authors.label="Authors"
           search.synthetic.authors.fields="primary_author,other_authors"
          */
-        String syntheticIds = (String) typeHandler.getProperty("search.synthetic.fields", null);
-        if(syntheticIds!=null) {
-            for(String id: StringUtil.split(syntheticIds,",",true,true)) {
-                String label = (String) typeHandler.getProperty("search.synthetic." + id +".label",id);
-                String fieldString = (String) typeHandler.getProperty("search.synthetic." + id +".fields",null);
-                syntheticFields.add(new SyntheticField(id, label, StringUtil.split(fieldString,",",true,true)));
+        String syntheticIds =
+            (String) typeHandler.getProperty("search.synthetic.fields", null);
+        if (syntheticIds != null) {
+            for (String id :
+                    StringUtil.split(syntheticIds, ",", true, true)) {
+                String label =
+                    (String) typeHandler.getProperty("search.synthetic." + id
+                        + ".label", id);
+                String fieldString =
+                    (String) typeHandler.getProperty("search.synthetic." + id
+                        + ".fields", null);
+                syntheticFields.add(new SyntheticField(id, label,
+                        StringUtil.split(fieldString, ",", true, true)));
             }
         }
 
-        String types = (String) typeHandler.getProperty("search.metadatatypes", null);
+        String types =
+            (String) typeHandler.getProperty("search.metadatatypes", null);
         if (types != null) {
             for (String type : StringUtil.split(types, ",", true, true)) {
                 metadataTypes.add(type);
             }
         }
-        String tabsToUse = (String) typeHandler.getProperty("search.tabs", null);
+        String tabsToUse = (String) typeHandler.getProperty("search.tabs",
+                               null);
         if (tabsToUse != null) {
             tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
         } else {
@@ -174,15 +191,22 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs.add(TAB_TIMELINE);
         }
 
-        searchOpen  = typeHandler.getProperty("search.searchopen", "true").equals("true");
-        doSearchInitially  = typeHandler.getProperty("search.initsearch", "false").equals("true");
-        showText    = typeHandler.getProperty("search.form.text.show", "true").equals("true");
-        showArea    = typeHandler.getProperty("search.form.area.show", "true").equals("true");
-        showDate    = typeHandler.getProperty("search.form.date.show", "true").equals("true");
-        searchUrl   = "/search/type/" + typeHandler.getType();
-        label       = typeHandler.getProperty("search.label",null);
-        if(label == null) label = "Search for " + typeHandler.getDescription();
-        theType     = typeHandler.getType();
+        searchOpen = typeHandler.getProperty("search.searchopen",
+                                             "true").equals("true");
+        doSearchInitially = typeHandler.getProperty("search.initsearch",
+                "false").equals("true");
+        showText = typeHandler.getProperty("search.form.text.show",
+                                           "true").equals("true");
+        showArea = typeHandler.getProperty("search.form.area.show",
+                                           "true").equals("true");
+        showDate = typeHandler.getProperty("search.form.date.show",
+                                           "true").equals("true");
+        searchUrl = "/search/type/" + typeHandler.getType();
+        label     = typeHandler.getProperty("search.label", null);
+        if (label == null) {
+            label = "Search for " + typeHandler.getDescription();
+        }
+        theType = typeHandler.getType();
     }
 
 
@@ -212,16 +236,18 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 
-        searchOpen  = Misc.getProperty(props, "searchopen", true);
-        doSearchInitially  = Misc.getProperty(props, "initsearch", true);
-        showText    = Misc.getProperty(props, "form.text.show", true);
-        showArea    = Misc.getProperty(props, "form.area.show", true);
-        showDate    = Misc.getProperty(props, "form.date.show", true);
-        searchUrl   = (String) props.get("searchurl");
-        label       = (String) props.get("label");
-        theType     = (String) props.get("type");
-        typeHandler = getRepository().getTypeHandler(theType);
-        if(label == null) label = "Search for " + typeHandler.getDescription();
+        searchOpen        = Misc.getProperty(props, "searchopen", true);
+        doSearchInitially = Misc.getProperty(props, "initsearch", true);
+        showText          = Misc.getProperty(props, "form.text.show", true);
+        showArea          = Misc.getProperty(props, "form.area.show", true);
+        showDate          = Misc.getProperty(props, "form.date.show", true);
+        searchUrl         = (String) props.get("searchurl");
+        label             = (String) props.get("label");
+        theType           = (String) props.get("type");
+        typeHandler       = getRepository().getTypeHandler(theType);
+        if (label == null) {
+            label = "Search for " + typeHandler.getDescription();
+        }
     }
 
 
@@ -244,6 +270,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //        request.put("atom.id", theType);
         Result result =
             getRepository().getSearchManager().processEntrySearch(request);
+
         return result;
     }
 
@@ -269,10 +296,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      * @throws Exception _more_
      */
     public Result processSearchRequest(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        Result result=  processSearchRequest(request, sb);
-        if(result!=null) return result;
+        StringBuffer sb     = new StringBuffer();
+        Result       result = processSearchRequest(request, sb);
+        if (result != null) {
+            return result;
+        }
         result = new Result("Search", sb);
+
         return getRepository().getEntryManager().addEntryHeader(request,
                 getRepository().getEntryManager().getTopGroup(), result);
     }
@@ -281,69 +311,89 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
 
-    public Result processSearchRequest(Request request, StringBuffer sb) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processSearchRequest(Request request, StringBuffer sb)
+            throws Exception {
+
         int contentsWidth  = 750;
         int contentsHeight = 450;
         int minWidth       = contentsWidth + 200;
         request.put(ARG_TYPE, theType);
-        List<Entry> allEntries    = new ArrayList<Entry>();
+        List<Entry> allEntries = new ArrayList<Entry>();
         List<Entry> entries    = new ArrayList<Entry>();
-        List<Entry> groups    = new ArrayList<Entry>();
+        List<Entry> groups     = new ArrayList<Entry>();
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
 
 
 
-        int cnt = getEntryUtil().getEntryCount(typeHandler);
-        boolean doSearch = (refinement?false:(cnt<100 || doSearchInitially));
-        if(request.defined(ARG_SEARCH_SUBMIT)) {
-            doSearch =  true;
+        int         cnt        = getEntryUtil().getEntryCount(typeHandler);
+        boolean     doSearch   = (refinement
+                                  ? false
+                                  : ((cnt < 100) || doSearchInitially));
+        if (request.defined(ARG_SEARCH_SUBMIT)) {
+            doSearch = true;
         }
 
 
         if (doSearch) {
-            StringBuffer criteriaSB= new StringBuffer();
-            List<Clause> extra = null;
-            if(syntheticFields.size()>0) {
+            StringBuffer criteriaSB = new StringBuffer();
+            List<Clause> extra      = null;
+            if (syntheticFields.size() > 0) {
                 extra = new ArrayList<Clause>();
-                for(SyntheticField field: syntheticFields) {
+                for (SyntheticField field : syntheticFields) {
                     String id = field.id;
-                    if(request.defined(id)) {
-                        for(String columnName:field.fields) {
-                            Column column  = typeHandler.getColumn(columnName);
-                            if(column!=null) {
-                                column.addTextSearch(request.getString(id), extra);
+                    if (request.defined(id)) {
+                        for (String columnName : field.fields) {
+                            Column column = typeHandler.getColumn(columnName);
+                            if (column != null) {
+                                column.addTextSearch(request.getString(id),
+                                        extra);
                             }
                         }
                     }
                 }
-                if(extra.size()>0) {
-                    Clause orClause  = Clause.or(extra);
+                if (extra.size() > 0) {
+                    Clause orClause = Clause.or(extra);
                     extra = new ArrayList<Clause>();
                     extra.add(orClause);
                 }
             }
 
             List[] groupAndEntries =
-                getRepository().getEntryManager().getEntries(request, criteriaSB, extra);
-            groups =  (List<Entry>) groupAndEntries[0];
+                getRepository().getEntryManager().getEntries(request,
+                    criteriaSB, extra);
+            groups  = (List<Entry>) groupAndEntries[0];
             entries = (List<Entry>) groupAndEntries[1];
             allEntries.addAll(groups);
             allEntries.addAll(entries);
         }
 
-        
 
 
 
 
-        if(request.defined(ARG_OUTPUT)) {
-            OutputHandler outputHandler = getRepository().getOutputHandler(request);
-            return outputHandler.outputGroup(request, null,
-                                             getEntryManager().getDummyGroup(), groups, entries);
+
+        if (request.defined(ARG_OUTPUT)) {
+            OutputHandler outputHandler =
+                getRepository().getOutputHandler(request);
+
+            return outputHandler.outputGroup(
+                request, null, getEntryManager().getDummyGroup(), groups,
+                entries);
         }
 
         if (request.exists("timelinexml")) {
             Entry group = getRepository().getEntryManager().getDummyGroup();
+
             return getRepository().getCalendarOutputHandler()
                 .outputTimelineXml(request, group, allEntries);
         }
@@ -376,11 +426,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HtmlUtils.br());
         formSB.append(HtmlUtils.formTable());
         if (showText) {
-            formSB.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Text"), HtmlUtils.input(
-                                ARG_TEXT, request.getString(ARG_TEXT, ""),
-                                HtmlUtils.SIZE_15 + " autofocus ")));
+            formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
+                    HtmlUtils.input(ARG_TEXT,
+                                    request.getString(ARG_TEXT, ""),
+                                    HtmlUtils.SIZE_15 + " autofocus ")));
         }
 
         if (showDate) {
@@ -390,17 +439,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
         if (showArea) {
-            MapInfo selectMap = getRepository().getMapManager().createMap(request, true);
+            MapInfo selectMap =
+                getRepository().getMapManager().createMap(request, true);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
-            formSB.append(formEntry(request, msgLabel("Location"), mapSelector));
+            formSB.append(formEntry(request, msgLabel("Location"),
+                                    mapSelector));
         }
 
 
-        for(SyntheticField field: syntheticFields) {
+        for (SyntheticField field : syntheticFields) {
             String id = field.id;
             formSB.append(formEntry(request, msgLabel(field.label),
-                                    HtmlUtils.input(id, request.getString(id, ""),
-                                                    HtmlUtils.SIZE_20)));
+                                    HtmlUtils.input(id,
+                                        request.getString(id, ""),
+                                        HtmlUtils.SIZE_20)));
         }
 
         typeHandler.addToSpecialSearchForm(request, formSB);
@@ -455,11 +507,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         map.centerOn(bounds);
 
 
-        boolean georeferencedResults = tabs.contains(TAB_MAP) || tabs.contains(TAB_EARTH);
+        boolean georeferencedResults = tabs.contains(TAB_MAP)
+                                       || tabs.contains(TAB_EARTH);
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT) + "  "
+        buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT)
+                       + "  "
                        + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE));
 
         //        if(georeferencedResults) {
@@ -470,30 +524,34 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             String baseUrl = request.getUrl();
             buttons.append(HtmlUtils.br());
             StringBuffer links = new StringBuffer();
-            
 
-            for(OutputType outputType: new OutputType[]{
-                    KmlOutputHandler.OUTPUT_KML,
-                    ZipOutputHandler.OUTPUT_ZIPTREE,
-                    AtomOutputHandler.OUTPUT_ATOM,
-                    JsonOutputHandler.OUTPUT_JSON,
-                    CsvOutputHandler.OUTPUT_CSV,
-                    }) {
-                if(outputType.getIcon() != null) {
-                    links.append(HtmlUtils.img(iconUrl(outputType.getIcon())));
+
+            for (OutputType outputType :
+                    new OutputType[] { KmlOutputHandler.OUTPUT_KML,
+                                       ZipOutputHandler.OUTPUT_ZIPTREE,
+                                       AtomOutputHandler.OUTPUT_ATOM,
+                                       JsonOutputHandler.OUTPUT_JSON,
+                                       CsvOutputHandler.OUTPUT_CSV, }) {
+                if (outputType.getIcon() != null) {
+                    links.append(
+                        HtmlUtils.img(iconUrl(outputType.getIcon())));
                     links.append(" ");
                 }
 
-                links.append(HtmlUtils.href(baseUrl+"&" + HtmlUtils.arg(ARG_OUTPUT, outputType.toString()),outputType.getLabel()));
+                links.append(
+                    HtmlUtils.href(
+                        baseUrl + "&"
+                        + HtmlUtils.arg(
+                            ARG_OUTPUT,
+                            outputType.toString()), outputType.getLabel()));
                 links.append(HtmlUtils.br());
             }
-            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."), links.toString(), false));
+            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."),
+                    links.toString(), false));
         }
 
 
-        formSB.append(
-            HtmlUtils.formEntry(
-                "", buttons.toString()));
+        formSB.append(HtmlUtils.formEntry("", buttons.toString()));
 
 
         formSB.append(HtmlUtils.formTableClose());
@@ -509,9 +567,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         makeEntryList(request, listSB, allEntries);
 
-        getRepository().getCalendarOutputHandler().makeTimeline(request,
-                                                                null, //Pass null for the main entry
-                                                                allEntries, timelineSB,
+        getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
+                allEntries, timelineSB,
                 "width:" + contentsWidth + "px; height: " + contentsHeight
                 + "px;");
 
@@ -532,7 +589,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                     getPageHandler().showDialogNote(
                         "Search criteria refined"), HtmlUtils.style(
                         "min-width:" + minWidth + "px")));
-        } else if(!doSearch) {
+        } else if ( !doSearch) {
             tabTitles.add(msg("Results"));
             tabContents.add("");
 
@@ -541,8 +598,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 tabTitles.add(msg("Results"));
                 tabContents.add(
                     HtmlUtils.div(
-                        getPageHandler().showDialogNote(LABEL_NO_ENTRIES_FOUND),
-                        HtmlUtils.style("min-width:" + minWidth + "px")));
+                        getPageHandler().showDialogNote(
+                            LABEL_NO_ENTRIES_FOUND), HtmlUtils.style(
+                            "min-width:" + minWidth + "px")));
             } else {
                 for (String tab : tabs) {
                     if (tab.equals(TAB_LIST)) {
@@ -605,6 +663,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         //        for (Entry entry : allEntries) {}
 
         return null;
+
     }
 
 
@@ -623,19 +682,39 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                               List<Entry> entries)
             throws Exception {
         getRepository().getHtmlOutputHandler().makeTable(request, entries,
-                                                         sb);
+                sb);
         //        getRepository().getHtmlOutputHandler().getEntriesList(request,  sb,
         //                                                              entries, entries,
         //                                                              true,true,true,true,true);
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Aug 23, '13
+     * @author         Enter your name here...    
+     */
     private static class SyntheticField {
+
+        /** _more_          */
         String label;
+
+        /** _more_          */
         String id;
+
+        /** _more_          */
         List<String> fields = new ArrayList<String>();
 
-        public SyntheticField(String id, String label, List<String> fields ) {
-            this.id = id;
+        /**
+         * _more_
+         *
+         * @param id _more_
+         * @param label _more_
+         * @param fields _more_
+         */
+        public SyntheticField(String id, String label, List<String> fields) {
+            this.id     = id;
             this.label  = label;
             this.fields = fields;
         }

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,9 +23,10 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -248,14 +248,22 @@ public class Request implements Constants, Cloneable {
         return cloneMe(null);
     }
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     *
+     * @return _more_
+     */
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
             that.parameters         = new Hashtable(this.parameters);
             that.originalParameters = new Hashtable(this.originalParameters);
-            if(repository!=null) {
-                that.repository =  repository;
+            if (repository != null) {
+                that.repository = repository;
             }
+
             return that;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -859,9 +867,16 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String getAbsoluteUrl(RequestUrl url) {
-        String path = repository.getUrlBase() + 
-            url.getPath();
+        String path = repository.getUrlBase() + url.getPath();
+
         return getAbsoluteUrl(path);
     }
 
@@ -1416,6 +1431,7 @@ public class Request implements Constants, Cloneable {
         if ( !isAnonymous()) {
             return getString(key, dflt);
         }
+
         return getEncodedString(key, dflt);
     }
 
@@ -1506,7 +1522,7 @@ public class Request implements Constants, Cloneable {
     public void ensureAuthToken() {
         //java.awt.Toolkit.getDefaultToolkit().beep();
 
-        String authToken = getString(ARG_AUTHTOKEN, (String) null);
+        String authToken   = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId = getSessionId();
         if (mySessionId == null) {
             mySessionId = getString(ARG_SESSIONID, (String) null);
@@ -1524,11 +1540,22 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param keys _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getString(String[] keys, String dflt) {
-        for(String key: keys) {
-            String value = getString(key, (String)null);
-            if(value!=null) return value;
+        for (String key : keys) {
+            String value = getString(key, (String) null);
+            if (value != null) {
+                return value;
+            }
         }
+
         return dflt;
     }
 
@@ -1935,6 +1962,11 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setRequestPath(String value) {
         type = value;
     }
@@ -2035,8 +2067,8 @@ public class Request implements Constants, Cloneable {
      * @param value The new value for SessionId
      */
     public void setSessionId(String value) {
-        sessionId       = value;
-        if(value!=null) {
+        sessionId = value;
+        if (value != null) {
             sessionIdWasSet = true;
         }
     }
@@ -2427,7 +2459,8 @@ public class Request implements Constants, Cloneable {
      */
     public PageStyle getPageStyle(Entry entry) {
         if (pageStyle == null) {
-            pageStyle = repository.getPageHandler().doMakePageStyle(this, entry);
+            pageStyle = repository.getPageHandler().doMakePageStyle(this,
+                    entry);
         }
 
         return pageStyle;
@@ -2447,8 +2480,8 @@ public class Request implements Constants, Cloneable {
         setReturnFilename(filename);
         Result result = new Result();
         result.setNeedToWrite(false);
-        OutputStream os  = getHttpServletResponse().getOutputStream();
-        InputStream  fis =
+        OutputStream os = getHttpServletResponse().getOutputStream();
+        InputStream fis =
             getRepository().getStorageManager().getFileInputStream(
                 file.toString());
         IOUtil.writeTo(fis, os);

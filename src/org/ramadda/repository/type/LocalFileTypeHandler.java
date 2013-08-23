@@ -1,23 +1,22 @@
 /*
- * Copyright 2008-2012 Jeff McWhirter/ramadda.org
- *                     Don Murray/CU-CIRES
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
- * software and associated documentation files (the "Software"), to deal in the Software 
- * without restriction, including without limitation the rights to use, copy, modify, 
- * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies 
- * or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
- * DEALINGS IN THE SOFTWARE.
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.type;
 
@@ -26,15 +25,16 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.metadata.*;
 
+import org.ramadda.sql.Clause;
+
+
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.Clause;
-
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -84,7 +84,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public LocalFileTypeHandler(Repository repository, Element entryNode)
-        throws Exception {
+            throws Exception {
         super(repository, entryNode);
     }
 
@@ -147,11 +147,11 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         }
         String subPath = new String(RepositoryUtil.decodeBase64(id));
         //        System.err.println("subpath:" + subPath);
-        File   file    = new File(IOUtil.joinDir(baseFile, subPath));
+        File file = new File(IOUtil.joinDir(baseFile, subPath));
 
 
-        if(!file.exists()) {
-            file    = new File(IOUtil.joinDir(baseFile, id));
+        if ( !file.exists()) {
+            file = new File(IOUtil.joinDir(baseFile, id));
             //            System.err.println("trying:" + file);
         }
 
@@ -183,27 +183,28 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     @Override
     public List<String> getSynthIds(Request request, Entry mainEntry,
                                     Entry parentEntry, String synthId)
-        throws Exception {
+            throws Exception {
+
         //        System.err.println ("**** getSynthIds: "+ synthId);
 
-        List<String> ids    = new ArrayList<String>();
+        List<String>  ids           = new ArrayList<String>();
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
-        if(!localFileInfo.isDefined()) {
+        if ( !localFileInfo.isDefined()) {
             //            System.err.println ("not defined");
             return ids;
         }
 
-        int  max     = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        int  skip    = request.get(ARG_SKIP, 0);
+        int    max         = request.get(ARG_MAX, VIEW_MAX_ROWS);
+        int    skip        = request.get(ARG_SKIP, 0);
 
-        long t1      = System.currentTimeMillis();
+        long   t1          = System.currentTimeMillis();
 
         String rootDirPath = localFileInfo.getRootDir().toString();
         File   childPath = getFileFromId(synthId, localFileInfo.getRootDir());
         //        System.err.println ("synthId:" + synthId);
         //        System.err.println ("child path:" + childPath);
 
-        File[] files     = childPath.listFiles();
+        File[] files = childPath.listFiles();
         //        files = IOUtil.sortFilesOnName(files);
 
         Metadata sortMetadata = null;
@@ -211,7 +212,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, mainEntry,
-                                                      ContentMetadataHandler.TYPE_SORT, true);
+                        ContentMetadataHandler.TYPE_SORT, true);
                 if ((metadataList != null) && (metadataList.size() > 0)) {
                     sortMetadata = metadataList.get(0);
                 }
@@ -245,7 +246,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             for (File f : files) {
                 String name = f.getName();
                 if (name.matches(
-                                 ".*(\\d\\d\\d\\d\\d\\d|\\d\\d\\d\\d_\\d\\d).*")) {
+                        ".*(\\d\\d\\d\\d\\d\\d|\\d\\d\\d\\d_\\d\\d).*")) {
                     filesByDate.add(f);
                 } else {
                     filesByName.add(f);
@@ -254,9 +255,9 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             //            System.err.println ("by date:" + filesByDate);
             //            System.err.println ("by name:" + filesByName);
             File[] byDate = IOUtil.sortFilesOnAge(toArray(filesByDate),
-                                                  descending);
+                                descending);
             File[] byName = IOUtil.sortFilesOnAge(toArray(filesByName),
-                                                  descending);
+                                descending);
             int cnt = 0;
             for (int i = 0; i < byName.length; i++) {
                 files[cnt++] = byName[i];
@@ -270,12 +271,11 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         List<String> includes = localFileInfo.getIncludes();
         List<String> excludes = localFileInfo.getExcludes();
-        long         age      = (long) (1000
-                                        * (localFileInfo.getAgeLimit() * 60));
-        long       now      = System.currentTimeMillis();
-        int        start    = skip;
-        List<File> fileList = new ArrayList<File>();
-        List<File> dirList  = new ArrayList<File>();
+        long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
+        long         now      = System.currentTimeMillis();
+        int          start    = skip;
+        List<File>   fileList = new ArrayList<File>();
+        List<File>   dirList  = new ArrayList<File>();
         for (int i = start; i < files.length; i++) {
             File childFile = files[i];
             if (childFile.isDirectory()) {
@@ -312,6 +312,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         //        System.err.println ("IDS:" + ids);
 
         return ids;
+
 
 
     }
@@ -372,7 +373,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             if (pattern.startsWith("dir:")) {
                 if (file.isDirectory()) {
                     hadPattern = true;
-                    pattern    =
+                    pattern =
                         getRegexp(pattern.substring("dir:".length()).trim());
                     if (StringUtil.stringMatch(value, pattern, true, false)) {
                         return true;
@@ -382,7 +383,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
                 if ( !file.isDirectory()) {
                     hadPattern = true;
                     if (StringUtil.stringMatch(value, getRegexp(pattern),
-                                               true, false)) {
+                            true, false)) {
                         return true;
                     }
                 }
@@ -406,24 +407,44 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      */
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
-        String subId = getFileComponentOfSynthId(rootDirPath, childFile);
+        String subId    = getFileComponentOfSynthId(rootDirPath, childFile);
         String parentId = parentEntry.getId();
-        String prefix = getPrefix(parentId);
+        String prefix   = getPrefix(parentId);
 
         //        System.err.println("parentId:" + parentId +" prefix:" + prefix);
-        return prefix  + ":" + subId;
+        return prefix + ":" + subId;
     }
 
+    /**
+     * _more_
+     *
+     * @param parentId _more_
+     *
+     * @return _more_
+     */
     private String getPrefix(String parentId) {
-        if(parentId.startsWith(Repository.ID_PREFIX_SYNTH)) return parentId;
+        if (parentId.startsWith(Repository.ID_PREFIX_SYNTH)) {
+            return parentId;
+        }
+
         return Repository.ID_PREFIX_SYNTH + parentId;
 
     }
 
-    private String getFileComponentOfSynthId(String rootDirPath, File childFile) {
+    /**
+     * _more_
+     *
+     * @param rootDirPath _more_
+     * @param childFile _more_
+     *
+     * @return _more_
+     */
+    private String getFileComponentOfSynthId(String rootDirPath,
+                                             File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
         subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n",
-                                                                      "");
+                                            "");
+
         return subId;
     }
 
@@ -440,10 +461,11 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
-        throws Exception {
+            throws Exception {
+
         //        System.err.println ("makeSynththEntry: id="+  id);
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(parentEntry);
-        if(!localFileInfo.isDefined()) {
+        if ( !localFileInfo.isDefined()) {
             //            System.err.println ("\tnnot defined");
             return null;
         }
@@ -454,7 +476,7 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         File targetFile = getFileFromId(id, localFileInfo.getRootDir());
         //        System.err.println ("\tntarget file:" + targetFile);
 
-        if (!targetFile.exists()) {
+        if ( !targetFile.exists()) {
             //            System.err.println ("\tnnot exist");
             return null;
         }
@@ -470,12 +492,12 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         }
 
         String synthId;
-        if(id.startsWith(Repository.ID_PREFIX_SYNTH)) {
+        if (id.startsWith(Repository.ID_PREFIX_SYNTH)) {
             synthId = id;
         } else {
-            synthId =  parentEntry.getId()+  ":" + id;
-            if(!synthId.startsWith(Repository.ID_PREFIX_SYNTH)) {
-                synthId = Repository.ID_PREFIX_SYNTH  + synthId;
+            synthId = parentEntry.getId() + ":" + id;
+            if ( !synthId.startsWith(Repository.ID_PREFIX_SYNTH)) {
+                synthId = Repository.ID_PREFIX_SYNTH + synthId;
             }
 
         }
@@ -483,9 +505,9 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         TypeHandler handler = (targetFile.isDirectory()
                                ? getRepository().getTypeHandler(
-                                                                TypeHandler.TYPE_GROUP)
+                                   TypeHandler.TYPE_GROUP)
                                : getRepository().getTypeHandler(
-                                                                TypeHandler.TYPE_FILE));
+                                   TypeHandler.TYPE_FILE));
         Entry entry = (targetFile.isDirectory()
                        ? (Entry) new Entry(synthId, handler, true)
                        : new Entry(synthId, handler));
@@ -493,8 +515,8 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if (targetFile.isDirectory()) {
             entry.setIcon(ICON_SYNTH_FILE);
         }
-        Entry templateEntry = getEntryManager().getTemplateEntry(targetFile);
-        String       name   = null;
+        Entry  templateEntry = getEntryManager().getTemplateEntry(targetFile);
+        String name          = null;
         for (String pair : localFileInfo.getNames()) {
             boolean doPath = false;
             if (pair.startsWith("path:")) {
@@ -527,21 +549,23 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
             parent = (Entry) parentEntry;
             //            System.err.println ("\tUsing parent entry:" + parentEntry +" grandparent:" + parent.getParentEntry());
         } else {
-            String parentId = getSynthId(parentEntry, localFileInfo.getRootDir().toString(),
-                                         targetFile.getParentFile());
+            String parentId =
+                getSynthId(parentEntry,
+                           localFileInfo.getRootDir().toString(),
+                           targetFile.getParentFile());
             //            System.err.println ("\tGetting parent:" + parentId);
             parent = (Entry) getEntryManager().getEntry(request, parentId,
-                                                        false, false);
+                    false, false);
             //            System.err.println ("\tUsing other parent entry:" + parent);
         }
 
         entry.initEntry(name, "", parent,
                         getUserManager().getLocalFileUser(),
                         new Resource(targetFile, (targetFile.isDirectory()
-                                                  ? Resource.TYPE_LOCAL_DIRECTORY
-                                                  : Resource.TYPE_LOCAL_FILE)), "", targetFile.lastModified(),
-                        targetFile.lastModified(), targetFile.lastModified(),
-                        targetFile.lastModified(), null);
+                ? Resource.TYPE_LOCAL_DIRECTORY
+                : Resource.TYPE_LOCAL_FILE)), "", targetFile.lastModified(),
+                targetFile.lastModified(), targetFile.lastModified(),
+                targetFile.lastModified(), null);
 
         //        System.err.println ("Done:" + entry);
 
@@ -566,33 +590,48 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
 
         //        System.err.println ("makeSynthEntry: " + entry + " " +(t2-t1));
         return entry;
+
     }
 
 
 
 
 
-    public Entry makeSynthEntry(Request request, Entry mainEntry, List<String> entryNames)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param entryNames _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry makeSynthEntry(Request request, Entry mainEntry,
+                                List<String> entryNames)
+            throws Exception {
         LocalFileInfo localFileInfo = doMakeLocalFileInfo(mainEntry);
-        if(!localFileInfo.isDefined()) {
+        if ( !localFileInfo.isDefined()) {
             //            System.err.println ("not defined");
             return null;
         }
-        File file = localFileInfo.getRootDir();
-        final String[] nameHolder = {""};
-        FilenameFilter fnf= new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return nameHolder[0].equals(name);
-                }
-            };
+        File           file       = localFileInfo.getRootDir();
+        final String[] nameHolder = { "" };
+        FilenameFilter fnf        = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return nameHolder[0].equals(name);
+            }
+        };
 
 
 
-        for(String filename: entryNames) {
+        for (String filename : entryNames) {
             nameHolder[0] = filename;
             File[] files = file.listFiles(fnf);
-            if(files.length==0) return null;
+            if (files.length == 0) {
+                return null;
+            }
             file = files[0];
         }
 
@@ -600,8 +639,11 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
         if ( !IOUtil.isADescendent(localFileInfo.getRootDir(), file)) {
             throw new IllegalArgumentException("Bad file path:" + entryNames);
         }
-        String subId = getFileComponentOfSynthId(localFileInfo.getRootDir().toString(), file);
-        Entry entry =   makeSynthEntry(request,  mainEntry,  subId);
+        String subId =
+            getFileComponentOfSynthId(localFileInfo.getRootDir().toString(),
+                                      file);
+        Entry entry = makeSynthEntry(request, mainEntry, subId);
+
         return entry;
     }
 
@@ -621,6 +663,15 @@ public class LocalFileTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public LocalFileInfo doMakeLocalFileInfo(Entry entry) throws Exception {
         return new LocalFileInfo(getRepository(), entry);
     }

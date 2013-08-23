@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -213,8 +212,12 @@ public class MetadataTypeBase extends RepositoryManager {
                 continue;
             }
             String tail = getStorageManager().getFileTail(f.toString());
-            String path =handler.getRepository().getAbsoluteUrl(null,
-                                                                handler.getRepository().getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
+            String path =
+                handler.getRepository()
+                    .getAbsoluteUrl(null,
+                                    handler.getRepository()
+                                        .getMetadataManager()
+                                        .URL_METADATA_VIEW) + "/" + tail;
 
             String url = HtmlUtils.url(path, ARG_ELEMENT,
                                        element.getIndex() + "", ARG_ENTRYID,
@@ -316,11 +319,11 @@ public class MetadataTypeBase extends RepositoryManager {
             value = "";
         }
         //        value = XmlUtil.encodeString(value);
-        value = value.replaceAll("[\\r\\n]+"," ");
-        value = value.replaceAll("&","&amp;");
-        value = value.replaceAll("<","&lt;");
-        value = value.replaceAll(">","&gt;");
-        value = value.replaceAll("\"","&quot;");
+        value = value.replaceAll("[\\r\\n]+", " ");
+        value = value.replaceAll("&", "&amp;");
+        value = value.replaceAll("<", "&lt;");
+        value = value.replaceAll(">", "&gt;");
+        value = value.replaceAll("\"", "&quot;");
 
         //        System.out.println ("VALUE:" +value);
 
@@ -578,7 +581,7 @@ public class MetadataTypeBase extends RepositoryManager {
                         ? " "
                         : "");
         String tail  = getStorageManager().getFileTail(f.toString());
-        String path  =
+        String path =
             handler.getRepository().getMetadataManager().URL_METADATA_VIEW
             + "/" + tail;
 

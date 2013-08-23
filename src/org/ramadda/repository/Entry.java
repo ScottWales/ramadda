@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -57,8 +56,10 @@ public class Entry implements Cloneable {
     public static final double NONGEO = -999999;
 
 
+    /** _more_          */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
+    /** _more_          */
     public static final int MAX_NAME_LENGTH = 200;
 
     /** List of comments */
@@ -124,7 +125,7 @@ public class Entry implements Cloneable {
     private long startDate = 0L;
 
     /** the end date */
-    private long endDate  = 0L;
+    private long endDate = 0L;
 
     /** the south value */
     private double south = NONGEO;
@@ -383,6 +384,11 @@ public class Entry implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param template _more_
+     */
     public void initWith(Entry template) {
         initWith(template, false);
     }
@@ -392,12 +398,13 @@ public class Entry implements Cloneable {
      *  Initialize the Entry with the template
      *
      *  @param template  the template
+     * @param clone _more_
      */
     public void initWith(Entry template, boolean clone) {
-        if(Utils.stringDefined(template.getName())) {
+        if (Utils.stringDefined(template.getName())) {
             setName(template.getName());
         }
-        if(Utils.stringDefined(template.getDescription())) {
+        if (Utils.stringDefined(template.getDescription())) {
             setDescription(template.getDescription());
         }
 
@@ -410,15 +417,16 @@ public class Entry implements Cloneable {
             setMetadata(thisMetadata);
         }
 
-        if(clone) {
+        if (clone) {
             setCreateDate(template.getCreateDate());
             setChangeDate(template.getChangeDate());
             setStartDate(template.getStartDate());
             setEndDate(template.getEndDate());
         }
 
-        if(template.hasDate()) {
-            System.err.println("Setting date from template:" + new Date(template.getStartDate()));
+        if (template.hasDate()) {
+            System.err.println("Setting date from template:"
+                               + new Date(template.getStartDate()));
             setStartDate(template.getStartDate());
             setEndDate(template.getEndDate());
         }
@@ -431,10 +439,24 @@ public class Entry implements Cloneable {
         this.altitudeBottom = template.altitudeBottom;
     }
 
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     *
+     * @return _more_
+     */
     private double cleanLat(double lat) {
         return Math.max(Math.min(lat, 90), -90);
     }
 
+    /**
+     * _more_
+     *
+     * @param lon _more_
+     *
+     * @return _more_
+     */
     private double cleanLon(double lon) {
         return Math.max(Math.min(lon, 180), -180);
     }
@@ -445,7 +467,8 @@ public class Entry implements Cloneable {
      * @return  the bounds
      */
     public Rectangle2D.Double getBounds() {
-        return new Rectangle2D.Double(cleanLon(west), cleanLat(south), cleanLon(east) - cleanLon(west),
+        return new Rectangle2D.Double(cleanLon(west), cleanLat(south),
+                                      cleanLon(east) - cleanLon(west),
                                       cleanLat(north) - cleanLat(south));
     }
 
@@ -772,8 +795,13 @@ public class Entry implements Cloneable {
         return name + " id:" + id + "  type:" + getTypeHandler();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasDate() {
-        return startDate!=0L && startDate!=createDate;
+        return (startDate != 0L) && (startDate != createDate);
     }
 
     /**
@@ -880,6 +908,7 @@ public class Entry implements Cloneable {
         if (label.length() > 0) {
             return label;
         }
+
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 
@@ -895,6 +924,7 @@ public class Entry implements Cloneable {
         if ((description != null) && (description.trim().length() > 0)) {
             return description;
         }
+
         return "";
 
     }
@@ -1442,8 +1472,13 @@ public class Entry implements Cloneable {
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean sameDate() {
-        return createDate == startDate && createDate == endDate;
+        return (createDate == startDate) && (createDate == endDate);
     }
 
 

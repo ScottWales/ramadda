@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -95,8 +94,9 @@ public class RequestUrl {
         }
 
         return getRepositoryBase().absoluteUrl(
-            getRepositoryBase().getUrlBase()
-            + path) + (suffix!=null?suffix:"");
+            getRepositoryBase().getUrlBase() + path) + ((suffix != null)
+                ? suffix
+                : "");
     }
 
     /**
@@ -109,6 +109,11 @@ public class RequestUrl {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     private RepositoryBase getRepositoryBase() {
         return repositorySource.getRepositoryBase();
     }
@@ -121,7 +126,8 @@ public class RequestUrl {
      * @return _more_
      */
     public String getHttpsUrl(String suffix) {
-        return getRepositoryBase().getHttpsUrl(getRepositoryBase().getUrlBase()+ path) + suffix;
+        return getRepositoryBase().getHttpsUrl(
+            getRepositoryBase().getUrlBase() + path) + suffix;
     }
 
     /**
@@ -167,6 +173,7 @@ public class RequestUrl {
      */
     public String toString() {
         checkInit();
+
         return getUrlPath();
     }
 
@@ -179,8 +186,7 @@ public class RequestUrl {
      * @return _more_
      */
     public String getUrl(String collectionPath) {
-        return getRepositoryBase().getUrlBase() + "/"
-               + collectionPath + path;
+        return getRepositoryBase().getUrlBase() + "/" + collectionPath + path;
     }
 
 

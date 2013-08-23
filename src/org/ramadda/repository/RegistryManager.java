@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,14 +25,14 @@ import org.ramadda.repository.database.*;
 
 
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
 
 import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -160,8 +159,8 @@ public class RegistryManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         if (request.exists(ARG_REGISTRY_ADD)) {
             if (request.defined(ARG_REGISTRY_URL)) {
-                String url     = request.getString(ARG_REGISTRY_URL, "");
-                URL    fullUrl =
+                String url = request.getString(ARG_REGISTRY_URL, "");
+                URL fullUrl =
                     new URL(
                         HtmlUtils.url(
                             url + getRepository().URL_INFO.getPath(),
@@ -270,7 +269,7 @@ public class RegistryManager extends RepositoryManager {
             sb.append(HtmlUtils.hidden(ARG_REGISTRY_SERVER,
                                        serverInfo.getId()));
             String cbxId = ARG_REGISTRY_SELECTED + "_" + (idCnt++);
-            String call  =
+            String call =
                 HtmlUtils.attr(
                     HtmlUtils.ATTR_ONCLICK,
                     HtmlUtils.call(
@@ -426,7 +425,8 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkApi() throws Exception {
-        ApiMethod apiMethod = getRepository().getApiManager().getApiMethod("/registry/list");
+        ApiMethod apiMethod =
+            getRepository().getApiManager().getApiMethod("/registry/list");
         if (apiMethod != null) {
             apiMethod.setIsTopLevel(
                 (isEnabledAsServer() && (getRegisteredServers().size() > 0))
@@ -469,9 +469,8 @@ public class RegistryManager extends RepositoryManager {
                 "",
                 HtmlUtils.textArea(
                     PROP_REGISTRY_SERVERS,
-                    getRepository().getProperty(
-                        PROP_REGISTRY_SERVERS,
-                        ""), 5, 60)));
+                    getRepository().getProperty(PROP_REGISTRY_SERVERS, ""),
+                    5, 60)));
 
     }
 
@@ -653,12 +652,12 @@ public class RegistryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private ServerInfo makeRemoteServer(ResultSet results) throws Exception {
-        URL        url        = new URL(results.getString(1));
-        String     title      = results.getString(2);
-        String     desc       = results.getString(3);
-        String     email      = results.getString(4);
-        boolean    isRegistry = results.getInt(5) != 0;
-        boolean    isSelected = results.getInt(6) != 0;
+        URL     url        = new URL(results.getString(1));
+        String  title      = results.getString(2);
+        String  desc       = results.getString(3);
+        String  email      = results.getString(4);
+        boolean isRegistry = results.getInt(5) != 0;
+        boolean isSelected = results.getInt(6) != 0;
 
         ServerInfo serverInfo = new ServerInfo(url.getHost(), url.getPort(),
                                     -1, url.getPath(), title, desc, email,
@@ -710,12 +709,10 @@ public class RegistryManager extends RepositoryManager {
      * @return _more_
      */
     public List<String> getServersToRegisterWith() {
-        List<String> urls =
-            StringUtil.split(
-                getRepository().getProperty(
-                    PROP_REGISTRY_SERVERS,
-                    ""), "\n", true,
-                        true);
+        List<String> urls = StringUtil.split(
+                                getRepository().getProperty(
+                                    PROP_REGISTRY_SERVERS, ""), "\n", true,
+                                        true);
 
         return urls;
     }
@@ -985,7 +982,7 @@ public class RegistryManager extends RepositoryManager {
                     RESPONSE_XML, ARG_REGISTRY_SERVER,
                     getRepository().getServerInfo().getUrl() });
 
-        if(serverUrl.indexOf("pws.scqx.gov.cn")>=0)  {
+        if (serverUrl.indexOf("pws.scqx.gov.cn") >= 0) {
             return false;
         }
         try {
@@ -1061,8 +1058,8 @@ public class RegistryManager extends RepositoryManager {
             List<ServerInfo> servers = registeredServers;
             //Add myself to the list
             servers.add(0, getRepository().getServerInfo());
-            Document resultDoc  = XmlUtil.makeDocument();
-            Element  resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
+            Document resultDoc = XmlUtil.makeDocument();
+            Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
                                      null, new String[] { ATTR_CODE,
                     CODE_OK });
 

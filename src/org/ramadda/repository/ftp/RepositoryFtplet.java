@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -195,7 +194,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      */
     public RepositoryFtplet(FtpManager ftpManager) {
         this.ftpManager = ftpManager;
-        sdf             = getRepository().getPageHandler().makeSDF("MMM dd HH:mm");
+        sdf = getRepository().getPageHandler().makeSDF("MMM dd HH:mm");
     }
 
     /**
@@ -363,7 +362,7 @@ public class RepositoryFtplet extends DefaultFtplet {
     private Entry getGroup(Request request, FtpSession session)
             throws Exception {
         EntryManager entryManager = getEntryManager();
-        String id = (String) session.getAttribute(PROP_ENTRYID);
+        String       id = (String) session.getAttribute(PROP_ENTRYID);
         if (id == null) {
             return entryManager.getTopGroup();
         }
@@ -589,7 +588,7 @@ public class RepositoryFtplet extends DefaultFtplet {
         EntryManager entryManager = getEntryManager();
 
         entryManager.makeNewGroup(group, ftpRequest.getArgument(),
-                                       request.getUser());
+                                  request.getUser());
         session.write(
             new DefaultFtpReply(
                 FtpReply.REPLY_257_PATHNAME_CREATED, "Directory created"));

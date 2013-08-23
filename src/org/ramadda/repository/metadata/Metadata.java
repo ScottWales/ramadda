@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,12 +23,13 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -138,7 +138,7 @@ public class Metadata implements Constants {
     /** _more_ */
     private boolean inherited = false;
 
-    /** _more_          */
+    /** _more_ */
     private Object[] values;
 
 
@@ -548,7 +548,9 @@ public class Metadata implements Constants {
      * @return _more_
      */
     public String toString() {
-        return  type + " " + (inherited?"inherited":"not inherited");
+        return type + " " + (inherited
+                             ? "inherited"
+                             : "not inherited");
         //        return "entry:" + entryId + " type:" + type + " attr1:" + attr1
         //               + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
@@ -1013,7 +1015,7 @@ public class Metadata implements Constants {
         Hashtable<Integer, String> tmp = new Hashtable<Integer, String>();
         if ((extra != null) && (extra.length() > 0)) {
             try {
-                System.err.println("** extra:" + extra+":");
+                System.err.println("** extra:" + extra + ":");
                 //                System.err.println("");
                 Element root = XmlUtil.getRoot(extra);
                 if (root != null) {
@@ -1021,7 +1023,7 @@ public class Metadata implements Constants {
 
                     for (int j = 0; j < elements.size(); j++) {
                         Element extraNode = (Element) elements.get(j);
-                        int     index     = XmlUtil.getAttribute(extraNode,
+                        int index = XmlUtil.getAttribute(extraNode,
                                         ATTR_INDEX, -1);
                         String text = XmlUtil.getChildText(extraNode);
                         if (text == null) {
@@ -1050,8 +1052,8 @@ public class Metadata implements Constants {
      */
     public static String mapToExtra(Hashtable<Integer, String> map) {
         try {
-            Document doc  = XmlUtil.makeDocument();
-            Element  root = XmlUtil.create(doc, TAG_ATTRIBUTES,
+            Document doc = XmlUtil.makeDocument();
+            Element root = XmlUtil.create(doc, TAG_ATTRIBUTES,
                                           (Element) null);
             for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
                 Integer index = (Integer) keys.nextElement();

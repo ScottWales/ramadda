@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,14 +27,15 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.sql.Clause;
+
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.Clause;
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -213,12 +213,12 @@ public class HarvesterManager extends RepositoryManager {
                                         new Clause()));;
         ResultSet results;
         while ((results = iter.getNext()) != null) {
-            String id        = results.getString(1);
+            String id            = results.getString(1);
             String origClassName = results.getString(2);
-            String className = origClassName;
-            String content   = results.getString(3);
+            String className     = origClassName;
+            String content       = results.getString(3);
 
-            Class  c         = null;
+            Class  c             = null;
 
             //Hack, hack... 
             //handle package changes 
@@ -335,7 +335,7 @@ public class HarvesterManager extends RepositoryManager {
             }
 
         } else if (request.exists(ARG_NAME)) {
-            String      id   = getRepository().getGUID();
+            String id = getRepository().getGUID();
             Class c = Misc.findClass(request.getString(ARG_HARVESTER_CLASS));
             Constructor ctor = Misc.findConstructor(c,
                                    new Class[] { Repository.class,
@@ -419,8 +419,8 @@ public class HarvesterManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processForm(Request request) throws Exception {
-        StringBuffer sb        = new StringBuffer();
-        Harvester    harvester =
+        StringBuffer sb = new StringBuffer();
+        Harvester harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
         if (harvester == null) {
             throw new IllegalArgumentException("Could not find harvester");
@@ -565,15 +565,17 @@ public class HarvesterManager extends RepositoryManager {
     public Result processList(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_ACTION)) {
-            boolean returnXml = request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
-            String    action    = request.getString(ARG_ACTION);
-            String msg = "";
+            boolean returnXml = request.getString(ARG_RESPONSE,
+                                    "").equals(RESPONSE_XML);
+            String action       = request.getString(ARG_ACTION);
+            String msg          = "";
             String returnStatus = CODE_OK;
             Harvester harvester =
                 findHarvester(request.getString(ARG_HARVESTER_ID));
-            if(harvester == null) {
+            if (harvester == null) {
                 returnStatus = CODE_ERROR;
-                msg = "Could not find harvester:" + request.getString(ARG_HARVESTER_ID);
+                msg = "Could not find harvester:"
+                      + request.getString(ARG_HARVESTER_ID);
             } else {
                 if (action.equals(ACTION_STOP)) {
                     harvester.setActive(false);
@@ -590,15 +592,15 @@ public class HarvesterManager extends RepositoryManager {
                         msg = "Harvester started:" + harvester;
                     } else {
                         returnStatus = CODE_ERROR;
-                        msg = "Harvester is already running";
+                        msg          = "Harvester is already running";
                     }
                 }
             }
 
-            if(returnXml) {
+            if (returnXml) {
                 return new Result(XmlUtil.tag(TAG_RESPONSE,
-                                              XmlUtil.attr(ATTR_CODE, returnStatus),
-                                              msg), MIME_XML);
+                        XmlUtil.attr(ATTR_CODE, returnStatus),
+                        msg), MIME_XML);
             }
 
 
@@ -713,7 +715,8 @@ public class HarvesterManager extends RepositoryManager {
     public Result processFile(Request request) throws Exception {
         List<Harvester> harvesters  = getHarvesters();
         TypeHandler     typeHandler = getRepository().getTypeHandler(request);
-        String          filepath    = request.getUnsafeString(ARG_FILE, BLANK);
+        String          filepath    = request.getUnsafeString(ARG_FILE,
+                                          BLANK);
         //Check to  make sure we can access this file
         if ( !getStorageManager().isInDownloadArea(new File(filepath))) {
             return new Result(BLANK,

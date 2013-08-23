@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,6 +20,7 @@
 
 package org.ramadda.repository;
 
+
 import org.ramadda.repository.map.MapInfo;
 
 
@@ -36,11 +36,19 @@ import java.util.List;
  */
 public class PageDecorator extends RepositoryManager {
 
+    /**
+     * _more_
+     */
     public PageDecorator() {
         super(null);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public PageDecorator(Repository repository) {
         super(repository);
 
@@ -62,12 +70,31 @@ public class PageDecorator extends RepositoryManager {
         return html;
     }
 
-    public String getDefaultOutputType(Repository repository, Request request,
-                                       Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param request _more_
+     * @param entry _more_
+     * @param subFolders _more_
+     * @param subEntries _more_
+     *
+     * @return _more_
+     */
+    public String getDefaultOutputType(Repository repository,
+                                       Request request, Entry entry,
+                                       List<Entry> subFolders,
+                                       List<Entry> subEntries) {
         return null;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mapInfo _more_
+     */
     public void addToMap(Request request, MapInfo mapInfo) {}
 
 

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -27,9 +26,6 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-
-import org.ramadda.repository.server.JettyServer;
-import org.ramadda.repository.server.RepositoryServlet;
 
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
@@ -59,19 +55,23 @@ import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
+
+import org.ramadda.repository.server.JettyServer;
+import org.ramadda.repository.server.RepositoryServlet;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.util.Utils;
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.MyTrace;
 import org.ramadda.util.PropertyProvider;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.ramadda.util.MyTrace;
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.CacheManager;
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.DateUtil;
@@ -215,6 +215,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        OutputType.TYPE_FILE, "", ICON_FILELISTING);
 
 
+    /** _more_ */
     private JettyServer jettyServer;
 
 
@@ -263,8 +264,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private RegistryManager registryManager;
 
+    /** _more_ */
     private MailManager mailManager;
 
+    /** _more_ */
     private LocalRepositoryManager localRepositoryManager;
 
     /** _more_ */
@@ -282,6 +285,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private FtpManager ftpManager;
 
+    /** _more_ */
     private static FtpManager globalFtpManager;
 
     /** _more_ */
@@ -291,7 +295,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private List<RepositoryManager> repositoryManagers =
         new ArrayList<RepositoryManager>();
 
+    /** _more_ */
     private Repository parentRepository;
+
+    /** _more_ */
     private List<Repository> childRepositories = new ArrayList<Repository>();
 
     /** _more_ */
@@ -306,11 +313,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Properties localProperties = new Properties();
 
+    /** _more_ */
     private Properties pluginProperties = new Properties();
 
     /** _more_ */
     private Properties cmdLineProperties = new Properties();
 
+    /** _more_ */
     private Properties coreProperties = new Properties();
 
     /** _more_ */
@@ -426,7 +435,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    public Repository(Repository parentRepository, String[] args, int port) throws Exception {
+    /**
+     * _more_
+     *
+     * @param parentRepository _more_
+     * @param args _more_
+     * @param port _more_
+     *
+     * @throws Exception _more_
+     */
+    public Repository(Repository parentRepository, String[] args, int port)
+            throws Exception {
         super(port);
         this.parentRepository = parentRepository;
         init(args, port);
@@ -442,7 +461,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Repository(String[] args, int port) throws Exception {
-        this(null, args,port);
+        this(null, args, port);
     }
 
 
@@ -472,15 +491,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         this.args     = args;
 
         entryEditUrls = RepositoryUtil.toList(new RequestUrl[] {
-                URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,getMetadataManager().URL_METADATA_FORM,
-                getMetadataManager().URL_METADATA_ADDFORM,
-                URL_ACCESS_FORM  //,
-                //        URL_ENTRY_DELETE
-                //        URL_ENTRY_SHOW
+            URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
+            getMetadataManager().URL_METADATA_FORM,
+            getMetadataManager().URL_METADATA_ADDFORM,
+            URL_ACCESS_FORM  //,
+            //        URL_ENTRY_DELETE
+            //        URL_ENTRY_SHOW
         });
 
         groupEditUrls = RepositoryUtil.toList(new RequestUrl[] {
-                URL_ENTRY_NEW, URL_ENTRY_FORM,URL_ENTRY_EXTEDIT,
+            URL_ENTRY_NEW, URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
             URL_ACCESS_FORM  //,
@@ -553,7 +573,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public boolean isSSLEnabled(Request request) {
         //Defer to the parent
-        if(parentRepository!=null) {
+        if (parentRepository != null) {
             return parentRepository.isSSLEnabled(request);
         }
         if (ignoreSSL) {
@@ -562,33 +582,44 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getProperty(PROP_SSL_IGNORE, false)) {
             return false;
         }
+
         return getHttpsPort() >= 0;
     }
 
 
     /**
-       Set the JettyServer property.
-
-       @param value The new value for JettyServer
-    **/
-    public void setJettyServer (JettyServer value) {
+     *  Set the JettyServer property.
+     *
+     *  @param value The new value for JettyServer
+     */
+    public void setJettyServer(JettyServer value) {
         jettyServer = value;
     }
 
     /**
-       Get the JettyServer property.
+     *  Get the JettyServer property.
+     *
+     *  @return The JettyServer
+     */
 
-       @return The JettyServer
-    **/
-
-    public JettyServer getJettyServer () {
+    public JettyServer getJettyServer() {
         return jettyServer;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isChild() {
-        return parentRepository!=null;
+        return parentRepository != null;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isMaster() {
         //For now always enable this
         return true;
@@ -597,32 +628,63 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     */
     private void setParentRepository(Repository parent) {
         this.parentRepository = parent;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Repository getParentRepository() {
         return parentRepository;
     }
 
-    public List<Repository>getChildRepositories() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<Repository> getChildRepositories() {
         return new ArrayList<Repository>(childRepositories);
     }
 
     //
 
-    public void removeChildRepository(Repository childRepository) throws Exception {
+    /**
+     * _more_
+     *
+     * @param childRepository _more_
+     *
+     * @throws Exception _more_
+     */
+    public void removeChildRepository(Repository childRepository)
+            throws Exception {
         childRepositories.remove(childRepository);
     }
 
 
-    public void addChildRepository(Repository childRepository) throws Exception {
+    /**
+     * _more_
+     *
+     * @param childRepository _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addChildRepository(Repository childRepository)
+            throws Exception {
         childRepositories.add(childRepository);
         childRepository.setParentRepository(this);
         //        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
         //        jettyServer.addServlet(servlet);
         int sslPort = getHttpsPort();
-        if(sslPort>0) {
+        if (sslPort > 0) {
             childRepository.setHttpsPort(sslPort);
         }
     }
@@ -683,7 +745,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getShutdownEnabled() {
-        return  jettyServer!=null;
+        return jettyServer != null;
     }
 
     /**
@@ -691,15 +753,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void shutdown() {
         try {
-            if(!isActive) return;
+            if ( !isActive) {
+                return;
+            }
             println("RAMADDA: shutting down");
             isActive = false;
             //Call this one first so it recurses if needed
-            if(localRepositoryManager!=null) {
+            if (localRepositoryManager != null) {
                 try {
                     localRepositoryManager.shutdown();
                 } catch (Throwable thr) {
-                    System.err.println("RAMADDA: Error shutting down local repository manager: " + thr);
+                    System.err.println(
+                        "RAMADDA: Error shutting down local repository manager: "
+                        + thr);
                 }
                 repositoryManagers.remove(localRepositoryManager);
             }
@@ -713,29 +779,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         + repositoryManager.getClass().getName() + " " + thr);
                 }
             }
-            repositoryManagers = null;
-            userManager        = null;
-            monitorManager     = null;
-            sessionManager     = null;
-            wikiManager        = null;
-            logManager         = null;
-            entryManager       = null;
-            associationManager = null;
-            searchManager      = null;
-            mapManager         = null;
-            harvesterManager   = null;
-            actionManager      = null;
-            accessManager      = null;
-            metadataManager    = null;
-            registryManager    = null;
-            mailManager    = null;
-            localRepositoryManager    = null;
-            storageManager     = null;
-            apiManager         = null;
-            pluginManager      = null;
-            databaseManager    = null;
-            ftpManager         = null;
-            admin              = null;
+            repositoryManagers     = null;
+            userManager            = null;
+            monitorManager         = null;
+            sessionManager         = null;
+            wikiManager            = null;
+            logManager             = null;
+            entryManager           = null;
+            associationManager     = null;
+            searchManager          = null;
+            mapManager             = null;
+            harvesterManager       = null;
+            actionManager          = null;
+            accessManager          = null;
+            metadataManager        = null;
+            registryManager        = null;
+            mailManager            = null;
+            localRepositoryManager = null;
+            storageManager         = null;
+            apiManager             = null;
+            pluginManager          = null;
+            databaseManager        = null;
+            ftpManager             = null;
+            admin                  = null;
         } catch (Exception exc) {
             exc.printStackTrace();
         }
@@ -793,6 +859,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * _more_
      *
      * @param properties _more_
+     *
+     * @param props _more_
      * @param path _more_
      *
      * @throws Exception _more_
@@ -833,15 +901,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
           cmd line
          */
 
-        coreProperties = new Properties();
+        coreProperties  = new Properties();
         localProperties = new Properties();
         loadProperties(
-                       coreProperties,
+            coreProperties,
             "/org/ramadda/repository/resources/repository.properties");
 
         try {
             loadProperties(
-                           coreProperties,
+                coreProperties,
                 "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
 
@@ -905,7 +973,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (catalinaConfFile.exists()) {
                 println("RAMADDA: loading:" + catalinaConfFile);
                 loadProperties(localProperties, catalinaConfFile.toString());
-            } 
+            }
         }
 
         //check for glassfish, e.g.:
@@ -972,13 +1040,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
             println("RAMADDA: running with no in-memory cache");
         }
 
-        setUrlBase(getLocalProperty(PROP_HTML_URLBASE,"/repository"));
+        setUrlBase(getLocalProperty(PROP_HTML_URLBASE, "/repository"));
         if (getUrlBase() == null) {
             setUrlBase(BLANK);
         }
 
 
-        String derbyHome = getLocalProperty(PROP_DB_DERBY_HOME, (String) null);
+        String derbyHome = getLocalProperty(PROP_DB_DERBY_HOME,
+                                            (String) null);
         if (derbyHome != null) {
             derbyHome = getStorageManager().localizePath(derbyHome);
             File dir = new File(derbyHome);
@@ -1200,24 +1269,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 TypeHandler.TAG_TYPE);
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
-                String classPath =
-                    XmlUtil.getAttribute(
-                        entryNode, TypeHandler.TAG_HANDLER,
-                        (String)null);
+                String classPath = XmlUtil.getAttribute(entryNode,
+                                       TypeHandler.TAG_HANDLER,
+                                       (String) null);
 
-                if(classPath == null) {
-                    String superType = XmlUtil.getAttribute(entryNode, TypeHandler.ATTR_SUPER,
-                                                            (String) null);
+                if (classPath == null) {
+                    String superType = XmlUtil.getAttribute(entryNode,
+                                           TypeHandler.ATTR_SUPER,
+                                           (String) null);
                     if (superType != null) {
-                        TypeHandler parent = getRepository().getTypeHandler(superType, false, false);
+                        TypeHandler parent =
+                            getRepository().getTypeHandler(superType, false,
+                                false);
                         if (parent == null) {
-                            throw new IllegalArgumentException("Cannot find parent type:"
-                                                               + superType);
+                            throw new IllegalArgumentException(
+                                "Cannot find parent type:" + superType);
                         }
                         classPath = parent.getClass().getName();
                         //                        System.err.println ("Using parent class:" +  classPath +" " + XmlUtil.toString(entryNode));
                     } else {
-                        classPath = "org.ramadda.repository.type.GenericTypeHandler";
+                        classPath =
+                            "org.ramadda.repository.type.GenericTypeHandler";
                     }
                 }
 
@@ -1235,7 +1307,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     addTypeHandler(typeHandler.getType(), typeHandler);
                 } catch (Exception exc) {
                     System.err.println("RAMADDA: Error loading type handler:"
-                                       + classPath +" file=" +file);
+                                       + classPath + " file=" + file);
                     exc.printStackTrace();
 
                     throw exc;
@@ -1809,11 +1881,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new RegistryManager(this);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     protected MailManager doMakeMailManager() {
         return new MailManager(this);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     protected LocalRepositoryManager doMakeLocalRepositoryManager() {
         return new LocalRepositoryManager(this);
     }
@@ -1834,17 +1916,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return registryManager;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public MailManager getMailManager() {
         if (mailManager == null) {
             mailManager = doMakeMailManager();
         }
+
         return mailManager;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public LocalRepositoryManager getLocalRepositoryManager() {
         if (localRepositoryManager == null) {
             localRepositoryManager = doMakeLocalRepositoryManager();
         }
+
         return localRepositoryManager;
     }
 
@@ -1900,12 +1994,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public FtpManager getFtpManager() {
         if (ftpManager == null) {
             //Only the top-level ramaddas gets the ftpmanager
-            if(globalFtpManager!=null) {
+            if (globalFtpManager != null) {
                 return null;
             }
-            ftpManager = doMakeFtpManager();
+            ftpManager       = doMakeFtpManager();
             globalFtpManager = ftpManager;
         }
+
         return ftpManager;
     }
 
@@ -2065,7 +2160,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String value = results.getString(2);
             if (name.equals(PROP_PROPERTIES)) {
                 tmp.load(new ByteArrayInputStream(value.getBytes()));
-            } 
+            }
             //Always store the value even if its PROP_PROPERTIES
             tmp.put(name, value);
         }
@@ -2121,7 +2216,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                 return;
             }
-           if (isSSLEnabled(null) && apiMethod.getNeedsSsl()) {
+            if (isSSLEnabled(null) && apiMethod.getNeedsSsl()) {
                 requestUrl.setNeedsSsl(true);
             }
         } catch (Exception exc) {
@@ -2155,12 +2250,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String getHttpsUrl(Request request, String url) {
-        String hostname = request!=null? request.getServerName():getHostname();
-        int port = getHttpsPort();
+        String hostname = (request != null)
+                          ? request.getServerName()
+                          : getHostname();
+        int    port     = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol() + "://" + hostname + ":"
-                   + getPort() + url;
+            return getHttpProtocol() + "://" + hostname + ":" + getPort()
+                   + url;
             //            return url;
             //            throw new IllegalStateException("Do not have ssl port defined");
         }
@@ -2175,6 +2280,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param requestUrl _more_
      *
      * @return _more_
@@ -2184,15 +2291,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (requestUrl.getNeedsSsl()) {
             return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
+
         return getUrlBase() + requestUrl.getPath();
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String httpsUrl(Request request, String url) {
-        String hostname = request!=null? request.getServerName():getHostname();
-        int port = getHttpsPort();
+        String hostname = (request != null)
+                          ? request.getServerName()
+                          : getHostname();
+        int    port     = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol() + "://" + hostname + ":"
-                   + getPort() + url;
+            return getHttpProtocol() + "://" + hostname + ":" + getPort()
+                   + url;
             //            return url;
             //            throw new IllegalStateException("Do not have ssl port defined");
         }
@@ -2204,21 +2322,36 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param requestUrl _more_
+     *
+     * @return _more_
+     */
     public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
             return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
+
         return getUrlBase() + requestUrl.getPath();
     }
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String getAbsoluteUrl(String url) {
         int port = getPort();
         if (port == 80) {
-            return getHttpProtocol() + "://" + getHostname()
-                   + url;
+            return getHttpProtocol() + "://" + getHostname() + url;
         } else {
-            return getHttpProtocol() + "://" + getHostname()
-                   + ":" + port + url;
+            return getHttpProtocol() + "://" + getHostname() + ":" + port
+                   + url;
         }
     }
 
@@ -2485,7 +2618,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     didOne = true;
                 }
                 if ( !didOne) {
-                    sb.append(getPageHandler().showDialogNote("No files available"));
+                    sb.append(
+                        getPageHandler().showDialogNote(
+                            "No files available"));
                 }
 
                 return makeLinksResult(request, msg("File Listing"), sb,
@@ -2546,11 +2681,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result handleRequest(Request request) throws Exception {
-        if(!getActive()) {
-            Result result = new Result(
-                                       msg("Error"),
-                                       new StringBuffer("Repository not active"));
+        if ( !getActive()) {
+            Result result =
+                new Result(msg("Error"),
+                           new StringBuffer("Repository not active"));
             result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return result;
         }
 
@@ -2605,9 +2741,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             boolean      badAccess = inner instanceof AccessException;
             StringBuffer sb        = new StringBuffer();
             if ( !badAccess) {
-                sb.append(getPageHandler().showDialogError(getPageHandler().translate(request,
-                        "An error has occurred") + ":" + HtmlUtils.p()
-                            + inner.getMessage()));
+                sb.append(
+                    getPageHandler().showDialogError(
+                        getPageHandler().translate(
+                            request, "An error has occurred") + ":"
+                                + HtmlUtils.p() + inner.getMessage()));
             } else {
                 AccessException     ae         = (AccessException) inner;
                 AuthorizationMethod authMethod =
@@ -2626,7 +2764,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 //              System.err.println ("auth:" + authMethod);
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
-                    sb.append(getPageHandler().showDialogError(inner.getMessage()));
+                    sb.append(
+                        getPageHandler().showDialogError(inner.getMessage()));
                     String redirect = RepositoryUtil.encodeBase64(
                                           request.getUrl().getBytes());
                     sb.append(getUserManager().makeLoginForm(request,
@@ -2687,7 +2826,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((result != null) && (result.getInputStream() == null)
                 && result.isHtml() && result.getShouldDecorate()
                 && result.getNeedToWrite()) {
-            result.putProperty(PROP_NAVLINKS, getPageHandler().getNavLinks(request));
+            result.putProperty(PROP_NAVLINKS,
+                               getPageHandler().getNavLinks(request));
             okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
             getPageHandler().decorateResult(request, result);
         }
@@ -2722,11 +2862,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 cookieExpirationDate = sdf.format(future);
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
-            result.addCookie( getSessionManager().getSessionCookieName(),
+            result.addCookie(getSessionManager().getSessionCookieName(),
                              sessionId + "; path=" + getUrlBase()
                              + "; expires=" + cookieExpirationDate
                              + " 23:59:59 GMT");
         }
+
         return result;
     }
 
@@ -2880,7 +3021,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         boolean sslEnabled = isSSLEnabled(request);
         boolean allSsl     = false;
 
-        if(apiMethod.getRequest().startsWith("/repos/")) {
+        if (apiMethod.getRequest().startsWith("/repos/")) {
             return null;
         }
 
@@ -2899,14 +3040,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             && request.getSecure()) {
                     String url = request.getUrl();
                     String redirectUrl;
-                    int port = getPort();
+                    int    port = getPort();
                     if (port == 80) {
-                        redirectUrl  = getHttpProtocol() + "://" + request.getServerName()
-                            + url;
+                        redirectUrl = getHttpProtocol() + "://"
+                                      + request.getServerName() + url;
                     } else {
-                        redirectUrl  = getHttpProtocol() + "://" + request.getServerName()
-                            + ":" + port + url;
+                        redirectUrl = getHttpProtocol() + "://"
+                                      + request.getServerName() + ":" + port
+                                      + url;
                     }
+
                     return new Result(redirectUrl);
                 }
             }
@@ -3104,17 +3247,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /**
      * Get properties from the local repository or cmd line properties - not from the plugins
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
      */
     public String getLocalProperty(String name, String dflt) {
         Object value = localProperties.get(name);
-        if(value == null) 
+        if (value == null) {
             value = cmdLineProperties.get(name);
+        }
 
-        if(value == null) 
+        if (value == null) {
             value = coreProperties.get(name);
+        }
 
-        if(value == null) 
+        if (value == null) {
             return dflt;
+        }
+
         return value.toString();
     }
 
@@ -3143,46 +3295,68 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (systemEnv == null) {
             systemEnv = System.getenv();
         }
-        String prop = null;
+        String prop     = null;
         String override = "override." + name;
 
         //Check if there is an override 
         prop = (String) cmdLineProperties.get(override);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = (String) localProperties.get(override);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = (String) pluginProperties.get(override);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = (String) coreProperties.get(override);
-        if (prop != null) return prop;        
+        if (prop != null) {
+            return prop;
+        }
 
 
         //Order:  command line, database, local (e.g., ramadda home .properties files), plugins, core
         prop = (String) cmdLineProperties.get(name);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         if (checkDb) {
             prop = (String) dbProperties.get(name);
-            if (prop != null) return prop;
+            if (prop != null) {
+                return prop;
+            }
         }
 
         prop = (String) localProperties.get(name);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = (String) pluginProperties.get(name);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = (String) coreProperties.get(name);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
         prop = System.getProperty(name);
-        if (prop != null) return prop;
-        
+        if (prop != null) {
+            return prop;
+        }
+
         prop = systemEnv.get(name);
-        if (prop != null) return prop;
+        if (prop != null) {
+            return prop;
+        }
 
 
         return prop;
@@ -3190,15 +3364,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /**
-       this gets the property from this repository if defined. Else it will get the 
-       property from the parent repository if defined. Else this returns the dflt
+     *  this gets the property from this repository if defined. Else it will get the
+     *  property from the parent repository if defined. Else this returns the dflt
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
      */
     public String getPropertyFromTree(String name, String dflt) {
         String value = getProperty(name, (String) null);
-        if(Utils.stringDefined(value)) return value;
-        if(getParentRepository()!=null) {
+        if (Utils.stringDefined(value)) {
+            return value;
+        }
+        if (getParentRepository() != null) {
             return getParentRepository().getPropertyFromTree(name, dflt);
         }
+
         return dflt;
     }
 
@@ -4102,7 +4284,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         List<String[]> docUrls = getPluginManager().getDocUrls();
         sb.append(msgHeader("Available documentation"));
         if (docUrls.size() == 0) {
-            sb.append(getPageHandler().showDialogNote(msg("No documentation available")));
+            sb.append(
+                getPageHandler().showDialogNote(
+                    msg("No documentation available")));
         }
         sb.append("<ul>");
         for (String[] url : docUrls) {
@@ -4297,7 +4481,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
-        request.setPageStyle(getPageHandler().doMakePageStyle(request, entry));
+        request.setPageStyle(getPageHandler().doMakePageStyle(request,
+                entry));
 
         return request;
     }
@@ -4678,8 +4863,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Metadata       sortMetadata = null;
         if ((forEntry != null) && !request.exists(ARG_ORDERBY)) {
             try {
-                metadataList = getMetadataManager().findMetadata(request, forEntry,
-                        ContentMetadataHandler.TYPE_SORT, true);
+                metadataList = getMetadataManager().findMetadata(request,
+                        forEntry, ContentMetadataHandler.TYPE_SORT, true);
                 if ((metadataList != null) && (metadataList.size() > 0)) {
                     sortMetadata = metadataList.get(0);
                 }
@@ -4952,6 +5137,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param commands     command parameters
      * @param workingDir   the working directory
+     * @param dir _more_
      *
      * @return the input and output streams
      *
@@ -4974,7 +5160,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception  problem with execution
      */
     public String[] executeCommand(List<String> commands,
-                                   Map<String, String> envVars, File workingDir)
+                                   Map<String, String> envVars,
+                                   File workingDir)
             throws Exception {
         ProcessBuilder pb = new ProcessBuilder(commands);
         if (envVars != null) {

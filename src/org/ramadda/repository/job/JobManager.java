@@ -1,49 +1,47 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.repository.job;
-
-
-import org.ramadda.repository.*;
-
-import org.ramadda.repository.job.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.TypeHandler;
 
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
-import org.w3c.dom.*;
+import org.ramadda.repository.*;
+import org.ramadda.repository.auth.*;
+
+import org.ramadda.repository.job.*;
+import org.ramadda.repository.map.*;
+import org.ramadda.repository.output.*;
+import org.ramadda.repository.type.TypeHandler;
 
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -54,6 +52,9 @@ import ucar.unidata.xml.XmlUtil;
 
 
 import java.io.*;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 
@@ -72,12 +73,12 @@ import java.util.zip.*;
 
 /**
  */
-public class JobManager extends RepositoryManager  {
+public class JobManager extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     private long myTime = System.currentTimeMillis();
 
-    /** _more_          */
+    /** _more_ */
     private boolean running = true;
 
     /** xml tag */
@@ -133,14 +134,21 @@ public class JobManager extends RepositoryManager  {
     /** _more_ */
     protected int currentJobs = 0;
 
-    private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object, JobInfo>(60*24 * 60 * 1000);
+    /** _more_          */
+    private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object,
+                                                     JobInfo>(60 * 24 * 60
+                                                         * 1000);
 
-    private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object, JobInfo>();
+    /** _more_          */
+    private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
+                                                         JobInfo>();
 
 
     /**
      * ctor
      *
+     *
+     * @param repository _more_
      */
     public JobManager(Repository repository) {
         super(repository);
@@ -199,6 +207,7 @@ public class JobManager extends RepositoryManager  {
                 executor = Executors.newFixedThreadPool(numThreads);
             }
         }
+
         return executor;
     }
 
@@ -223,33 +232,63 @@ public class JobManager extends RepositoryManager  {
         if ((values == null) || (values.length == 0)) {
             return null;
         }
+
         return makeJobInfo(values[0]);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param blob _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private JobInfo makeJobInfo(String blob) throws Exception {
-        blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo","org.ramadda.repository.job.JobInfo");
-        JobInfo jobInfo =  (JobInfo) getRepository().decodeObject(blob);
+        blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo",
+                               "org.ramadda.repository.job.JobInfo");
+        JobInfo jobInfo = (JobInfo) getRepository().decodeObject(blob);
+
         return jobInfo;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param type _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<JobInfo> readJobs(String type) throws Exception {
         return readJobs(Clause.eq(JobInfo.DB_COL_TYPE, type));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param clause _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<JobInfo> readJobs(Clause clause) throws Exception {
         List<JobInfo> jobInfos = new ArrayList<JobInfo>();
         Statement stmt =
             getDatabaseManager().select(JobInfo.DB_COL_JOB_INFO_BLOB,
-                                        JobInfo.DB_TABLE,
-                                        clause);
+                                        JobInfo.DB_TABLE, clause);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-        ResultSet                 results;
+        ResultSet        results;
         while ((results = iter.getNext()) != null) {
             jobInfos.add(makeJobInfo(results.getString(1)));
         }
+
         return jobInfos;
 
     }
@@ -280,15 +319,14 @@ public class JobManager extends RepositoryManager  {
                                     JobInfo.DB_COLUMNS);
                 getDatabaseManager().executeInsert(insert, new Object[] {
                     jobInfo.getJobId(), jobInfo.getEntryId(), new Date(),
-                    jobInfo.getUser(), jobInfo.getType(),
-                    blob
+                    jobInfo.getUser(), jobInfo.getType(), blob
                 });
             } else {
                 getDatabaseManager().update(
                     JobInfo.DB_TABLE, JobInfo.DB_COL_ID,
                     jobInfo.getJobId().toString(),
-                    new String[] {JobInfo.DB_COL_JOB_INFO_BLOB}, new Object[] {
-                                       blob });
+                    new String[] { JobInfo.DB_COL_JOB_INFO_BLOB },
+                    new Object[] { blob });
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -308,14 +346,17 @@ public class JobManager extends RepositoryManager  {
         try {
             JobInfo jobInfo = jobCache.get(jobId);
             if (jobInfo == null) {
-                jobInfo =  doMakeJobInfo(jobId);
+                jobInfo = doMakeJobInfo(jobId);
                 jobCache.put(jobInfo.getJobId(), jobInfo);
+
                 return jobInfo;
             }
+
             return jobInfo;
         } catch (Exception exc) {
             logError("RAMADDA: Could not read processing job: " + jobId, exc);
         }
+
         return null;
     }
 
@@ -347,16 +388,27 @@ public class JobManager extends RepositoryManager  {
         if (jobId == null) {
             return true;
         }
+
         return runningJobs.get(jobId) != null;
     }
 
-    public void  jobHasStarted(JobInfo jobInfo) {
+    /**
+     * _more_
+     *
+     * @param jobInfo _more_
+     */
+    public void jobHasStarted(JobInfo jobInfo) {
         runningJobs.put(jobInfo.getJobId(), jobInfo);
         writeJobInfo(jobInfo, true);
     }
 
 
-    public void  jobHasFinished(JobInfo jobInfo) {
+    /**
+     * _more_
+     *
+     * @param jobInfo _more_
+     */
+    public void jobHasFinished(JobInfo jobInfo) {
         removeJob(jobInfo);
         jobInfo.setStatus(jobInfo.STATUS_DONE);
         jobInfo.setEndDate(new Date());
@@ -364,14 +416,24 @@ public class JobManager extends RepositoryManager  {
     }
 
 
-    public void  jobWasCancelled(JobInfo jobInfo) {
+    /**
+     * _more_
+     *
+     * @param jobInfo _more_
+     */
+    public void jobWasCancelled(JobInfo jobInfo) {
         removeJob(jobInfo);
         jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
         writeJobInfo(jobInfo);
     }
 
-    public void  removeJob(JobInfo jobInfo) {
-        runningJobs.remove(jobInfo.getJobId());        
+    /**
+     * _more_
+     *
+     * @param jobInfo _more_
+     */
+    public void removeJob(JobInfo jobInfo) {
+        runningJobs.remove(jobInfo.getJobId());
     }
 
 
@@ -430,7 +492,7 @@ public class JobManager extends RepositoryManager  {
      * @throws Exception On badness
      */
     public void invokeAndWait(Request request,
-                               List<Callable<Boolean>> callables)
+                              List<Callable<Boolean>> callables)
             throws Exception {
         checkNewJobOK();
 
@@ -452,22 +514,33 @@ public class JobManager extends RepositoryManager  {
         } catch (Exception exc) {
             System.err.println("RAMADDA: error: " + exc);
             exc.printStackTrace();
+
             throw exc;
         } finally {
             synchronized (MUTEX) {
                 long t2 = System.currentTimeMillis();
                 currentJobs--;
                 totalJobs++;
-                System.err.println("RAMADDA: job end time:" + (t2 - t1) + ": "
-                                   + this);
+                System.err.println("RAMADDA: job end time:" + (t2 - t1)
+                                   + ": " + this);
             }
         }
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result handleJobStatusRequest(Request request, Entry entry)
-        throws Exception {
-        String jobId     = request.getString(JobInfo.ARG_JOB_ID, (String) null);
+            throws Exception {
+        String jobId = request.getString(JobInfo.ARG_JOB_ID, (String) null);
         StringBuffer sb  = new StringBuffer();
         StringBuffer xml = new StringBuffer();
         addHtmlHeader(request, sb);
@@ -481,10 +554,12 @@ public class JobManager extends RepositoryManager  {
             if (request.responseInXml()) {
                 xml.append(XmlUtil.tag(TAG_JOB,
                                        XmlUtil.attrs(new String[] {
-                                               JobManager.ATTR_STATUS,
-                                               STATUS_CANCELLED })));
+                                           JobManager.ATTR_STATUS,
+                                           STATUS_CANCELLED })));
+
                 return makeRequestOKResult(request, xml.toString());
             }
+
             return makeRequestErrorResult(request,
                                           "The job has been cancelled.");
         }
@@ -500,6 +575,7 @@ public class JobManager extends RepositoryManager  {
             runningJobs.remove(jobId);
             jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
             writeJobInfo(jobInfo);
+
             return makeRequestOKResult(request,
                                        "The job has been cancelled.");
         }
@@ -508,27 +584,37 @@ public class JobManager extends RepositoryManager  {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param message _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result makeRequestErrorResult(Request request, String message)
-        throws Exception {
+            throws Exception {
         if (request.responseInXml()) {
-            return makeRequestErrorResult(request,
-                                          message);
+            return makeRequestErrorResult(request, message);
         }
         StringBuffer sb = new StringBuffer();
         addHtmlHeader(request, sb);
         sb.append(getPageHandler().showDialogNote(message));
+
         return new Result("", sb);
     }
 
-    /**                                                                                                                            
-     * This creates the appropriate response for a Point data API request.                                                              
-     * If its the  API this creates the response  xml. If its the browser                                                      
-     * then this creates a web page                                                                                                
-     *                                                                                                                             
-     * @param request http request                                                                                                 
-     * @param message error message                                                                                                
-     *                                                                                                                             
-     * @return xml or html result                                                                                                  
+    /**
+     * This creates the appropriate response for a Point data API request.
+     * If its the  API this creates the response  xml. If its the browser
+     * then this creates a web page
+     *
+     * @param request http request
+     * @param message error message
+     *
+     * @return xml or html result
      */
     public Result makeRequestOKResult(Request request, String message) {
         if (request.responseInXml()) {
@@ -540,6 +626,7 @@ public class JobManager extends RepositoryManager  {
         if (request.responseInText()) {
             return new Result(message, "text");
         }
+
         return new Result("", new StringBuffer(message));
     }
 
@@ -549,9 +636,13 @@ public class JobManager extends RepositoryManager  {
 
 
 
-    public void addHtmlHeader(Request request, StringBuffer sb) {
-
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
+    public void addHtmlHeader(Request request, StringBuffer sb) {}
 
 
 

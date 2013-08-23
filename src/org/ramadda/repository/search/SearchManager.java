@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -20,10 +19,6 @@
 */
 
 package org.ramadda.repository.search;
-
-import org.ramadda.util.CategoryBuffer;
-
-import org.ramadda.util.TTLObject;
 
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -55,22 +50,26 @@ import org.ramadda.repository.admin.*;
 
 import org.ramadda.repository.auth.*;
 
+import org.ramadda.repository.database.Tables;
+
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
-import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.OpenSearchUtil;
-
-
-import org.w3c.dom.*;
 
 import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
+
+import org.ramadda.util.CategoryBuffer;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.OpenSearchUtil;
+
+import org.ramadda.util.TTLObject;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
@@ -149,6 +148,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                                   "/search/form",
                                                   "Advanced Search");
 
+    /** _more_          */
     public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
                                                   "/search/type",
                                                   "Search by Type");
@@ -186,17 +186,14 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     /** _more_ */
     public final List<RequestUrl> searchUrls =
         RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-                                                 URL_SEARCH_TYPE,
-                                                 URL_SEARCH_FORM, URL_SEARCH_BROWSE, 
+            URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
             URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
         RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-                                                 URL_SEARCH_TYPE,
-                                                 URL_SEARCH_FORM,  
-                                                 URL_SEARCH_BROWSE,
-                                                 URL_SEARCH_ASSOCIATIONS_FORM });
+            URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
+            URL_SEARCH_ASSOCIATIONS_FORM });
 
 
     /** _more_ */
@@ -270,8 +267,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @throws Exception _more_
      */
     private IndexWriter getLuceneWriter() throws Exception {
-        File        indexFile = new File(getStorageManager().getIndexDir());
-        IndexWriter writer    =
+        File indexFile = new File(getStorageManager().getIndexDir());
+        IndexWriter writer =
             new IndexWriter(FSDirectory.open(indexFile),
                             new StandardAnalyzer(Version.LUCENE_CURRENT),
                             IndexWriter.MaxFieldLength.LIMITED);
@@ -500,7 +497,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     public void processLuceneSearch(Request request, List<Entry> groups,
                                     List<Entry> entries)
             throws Exception {
-        StringBuffer     sb       = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         StandardAnalyzer analyzer =
             new StandardAnalyzer(Version.LUCENE_CURRENT);
         QueryParser qp = new MultiFieldQueryParser(Version.LUCENE_CURRENT,
@@ -877,7 +874,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             String       call;
 
             cbxId = ATTR_SERVER + (serverCnt++);
-            call  = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+            call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
                                   HtmlUtils.call("checkboxClicked",
                                       HtmlUtils.comma("event",
                                           HtmlUtils.squote(ATTR_SERVER),
@@ -893,7 +890,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             serverSB.append(HtmlUtils.br());
             for (ServerInfo server : servers) {
                 cbxId = ATTR_SERVER + (serverCnt++);
-                call  = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
+                call = HtmlUtils.attr(HtmlUtils.ATTR_ONCLICK,
                                       HtmlUtils.call("checkboxClicked",
                                           HtmlUtils.comma("event",
                                               HtmlUtils.squote(ATTR_SERVER),
@@ -950,34 +947,55 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processSearchType(Request request) throws Exception {
-        StringBuffer sb  = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
 
 
 
-        List<String> toks  = StringUtil.split(request.getRequestPath(), "/",true,true);
-        String lastTok = toks.get(toks.size()-1);
-        if(lastTok.equals("type")) {
+        List<String> toks = StringUtil.split(request.getRequestPath(), "/",
+                                             true, true);
+        String lastTok = toks.get(toks.size() - 1);
+        if (lastTok.equals("type")) {
 
             addSearchByTypeList(request, sb);
         } else {
-            String type = lastTok;
+            String      type        = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
-            Result result = 
-                typeHandler.getSpecialSearch().processSearchRequest(request, sb);
+            Result result =
+                typeHandler.getSpecialSearch().processSearchRequest(request,
+                    sb);
             //Is it non-html?
-            if(result!=null) {
+            if (result != null) {
                 return result;
             }
         }
+
         return makeResult(request, msg("Search by Type"), sb);
     }
 
 
-    private void addSearchByTypeList(Request request, StringBuffer sb) throws Exception {
-        CategoryBuffer cb  = new CategoryBuffer();
-        for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addSearchByTypeList(Request request, StringBuffer sb)
+            throws Exception {
+        CategoryBuffer cb = new CategoryBuffer();
+        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             if ( !typeHandler.getForUser()) {
                 continue;
             }
@@ -985,33 +1003,35 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 continue;
             }
             int cnt = getEntryUtil().getEntryCount(typeHandler);
-            if(cnt==0) {
+            if (cnt == 0) {
                 continue;
             }
             String icon = typeHandler.getProperty("icon", (String) null);
             String img;
             if (icon == null) {
                 icon = ICON_BLANK;
-                img  = HtmlUtils.img(typeHandler.iconUrl(icon), "",
-                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                                    "16"));
+                img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        "16"));
             } else {
                 img = HtmlUtils.img(typeHandler.iconUrl(icon));
             }
-            StringBuffer buff   = new StringBuffer();
+            StringBuffer buff = new StringBuffer();
 
             buff.append("<li> ");
             buff.append(img);
             buff.append(" ");
-            String label = typeHandler.getDescription() +" (" + cnt+")";
-            buff.append(HtmlUtils.href(getRepository().getUrlBase() +"/search/type/"+ typeHandler.getType(), label));
+            String label = typeHandler.getDescription() + " (" + cnt + ")";
+            buff.append(HtmlUtils.href(getRepository().getUrlBase()
+                                       + "/search/type/"
+                                       + typeHandler.getType(), label));
             cb.append(typeHandler.getCategory(), buff);
         }
         sb.append("<table width=100%><tr valign=top>");
         int colCnt = 0;
-        for(String cat: cb.getCategories()) {
+        for (String cat : cb.getCategories()) {
             colCnt++;
-            if(colCnt>4) {
+            if (colCnt > 4) {
                 sb.append("</tr><tr valign=top>");
                 sb.append("<td colspan=4><hr></td>");
                 sb.append("</tr><tr valign=top>");
@@ -1020,7 +1040,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
             sb.append("<td>");
             sb.append(HtmlUtils.b(msg(cat)));
-            sb.append("<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
+            sb.append(
+                "<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
             sb.append("<ul>");
             sb.append(cb.get(cat));
             sb.append("</ul>");
@@ -1086,7 +1107,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @throws Exception _more_
      */
     public Result processRemoteSearch(Request request) throws Exception {
-        StringBuffer sb      = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
                                    new ArrayList());
         sb.append(HtmlUtils.p());
@@ -1302,7 +1323,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //        if (s.length() > 0) {
         StringBuffer searchForm = new StringBuffer();
         request.remove(ARG_SEARCH_SUBMIT);
-        String url        = request.getUrl(URL_SEARCH_FORM);
+        String url = request.getUrl(URL_SEARCH_FORM);
         String searchLink =
             HtmlUtils.href(url,
                            HtmlUtils.img(iconUrl(ICON_SEARCH),
@@ -1513,7 +1534,8 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         List        links       = new ArrayList();
         String      extra1      = " class=subnavnolink ";
         String      extra2      = " class=subnavlink ";
-        String[]    whats       = { WHAT_ENTRIES, WHAT_TAG, WHAT_ASSOCIATION };
+        String[]    whats       = { WHAT_ENTRIES, WHAT_TAG,
+                                    WHAT_ASSOCIATION };
         String[]    names       = { LABEL_ENTRIES, "Tags", "Associations" };
 
         String      formType    = request.getString(ARG_FORM_TYPE, "basic");
@@ -1556,7 +1578,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      */
     public static void main(String[] args) throws Exception {
         for (String f : args) {
-            InputStream                       stream = new FileInputStream(f);
+            InputStream stream = new FileInputStream(f);
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
             org.apache.tika.parser.AutoDetectParser parser =

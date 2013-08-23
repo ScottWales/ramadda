@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -34,6 +33,9 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 import org.ramadda.repository.util.ServerInfo;
 
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.PropertyProvider;
@@ -42,9 +44,6 @@ import org.ramadda.util.TempDir;
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.CacheManager;
@@ -128,6 +127,8 @@ public class ApiManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param repository _more_
      * @throws Exception _more_
      */
     public ApiManager(Repository repository) {
@@ -149,10 +150,11 @@ public class ApiManager extends RepositoryManager {
                               Hashtable handlers, String defaultHandler)
             throws Exception {
 
-        String  request = XmlUtil.getAttribute(node, ApiMethod.ATTR_REQUEST);
+        String request    = XmlUtil.getAttribute(node,
+                                ApiMethod.ATTR_REQUEST);
 
-        String  methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
-        boolean needsSsl   = XmlUtil.getAttributeFromTree(node,
+        String methodName = XmlUtil.getAttribute(node, ApiMethod.ATTR_METHOD);
+        boolean needsSsl = XmlUtil.getAttributeFromTree(node,
                                ApiMethod.ATTR_NEEDS_SSL, false);
         boolean checkAuthMethod = XmlUtil.getAttributeFromTree(node,
                                       ApiMethod.ATTR_CHECKAUTHMETHOD, false);
@@ -166,9 +168,9 @@ public class ApiManager extends RepositoryManager {
                                              true));
 
         boolean mustBeUser = XmlUtil.getAttributeFromTree(node,
-                            ApiMethod.ATTR_ISUSER,
-                            Misc.getProperty(props, ApiMethod.ATTR_ISUSER,
-                                             false));
+                                 ApiMethod.ATTR_ISUSER,
+                                 Misc.getProperty(props,
+                                     ApiMethod.ATTR_ISUSER, false));
 
 
         boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
@@ -204,7 +206,10 @@ public class ApiManager extends RepositoryManager {
             } else if (handlerName.equals("actionmanager")) {
                 handler = getRepository().getActionManager();
             } else if (handlerName.equals("graphmanager")) {
-                handler = getRepository().getOutputHandler(org.ramadda.repository.output.GraphOutputHandler.OUTPUT_GRAPH);
+                handler =
+                    getRepository()
+                        .getOutputHandler(org.ramadda.repository.output
+                            .GraphOutputHandler.OUTPUT_GRAPH);
             } else if (handlerName.equals("accessmanager")) {
                 handler = getRepository().getAccessManager();
             } else if (handlerName.equals("searchmanager")) {
@@ -266,7 +271,7 @@ public class ApiManager extends RepositoryManager {
 
 
         Class[] paramTypes = new Class[] { Request.class };
-        Method  method     = Misc.findMethod(handler.getClass(), methodName,
+        Method method = Misc.findMethod(handler.getClass(), methodName,
                                         paramTypes);
         if (method == null) {
             throw new IllegalArgumentException("Unknown request method:"
@@ -278,9 +283,9 @@ public class ApiManager extends RepositoryManager {
         ApiMethod apiMethod =
             new ApiMethod(getRepository(), handler, request,
                           XmlUtil.getAttribute(node, ApiMethod.ATTR_NAME,
-                                               request), method, admin, mustBeUser, requiresAuthToken,
-                                        needsSsl, authMethod,
-                                        checkAuthMethod,
+                              request), method, admin, mustBeUser,
+                                        requiresAuthToken, needsSsl,
+                                        authMethod, checkAuthMethod,
                                         XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL, false));
         List actions = StringUtil.split(XmlUtil.getAttribute(node,
@@ -318,7 +323,7 @@ public class ApiManager extends RepositoryManager {
 
 
 
-    
+
     /**
      * _more_
      *
@@ -339,10 +344,20 @@ public class ApiManager extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public ArrayList<ApiMethod> getTopLevelMethods() {
         return topLevelMethods;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public ApiMethod getHomeApi() {
         return homeApi;
     }

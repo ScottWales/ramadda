@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,11 +24,6 @@ package org.ramadda.repository.auth;
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.TTLCache;
-
-
-import org.w3c.dom.*;
 
 
 
@@ -37,6 +31,11 @@ import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.TTLCache;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 
@@ -102,12 +101,12 @@ public class AccessManager extends RepositoryManager {
     private Object MUTEX_PERMISSIONS = new Object();
 
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
         new TTLCache<String, Object[]>(5 * 60 * 1000);
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STOPATFIRSTROLE =
         "ramadda.auth.stopatfirstrole";
 
@@ -571,10 +570,18 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    /** _more_          */
     public static boolean debug = false;
 
-    public  void debug(String msg) {
-        if(debug) logInfo(msg);
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debug(String msg) {
+        if (debug) {
+            logInfo(msg);
+        }
     }
 
 
@@ -599,7 +606,7 @@ public class AccessManager extends RepositoryManager {
             if ( !entry.getResource().getTheFile().exists()) {
                 getEntryManager().entryFileIsMissing(entry);
                 //Don't show the bad files for regular folk
-                if(request.isAnonymous()) {
+                if (request.isAnonymous()) {
                     return null;
                 }
             }
@@ -722,7 +729,7 @@ public class AccessManager extends RepositoryManager {
             return;
         }
         List<Permission> permissions = getPermissions(entry);
-        String           entryUrl = HtmlUtils.href(request.url(URL_ACCESS_FORM,
+        String entryUrl = HtmlUtils.href(request.url(URL_ACCESS_FORM,
                               ARG_ENTRYID, entry.getId()), entry.getName());
 
         Hashtable map = new Hashtable();
@@ -923,7 +930,7 @@ public class AccessManager extends RepositoryManager {
 
         sb.append("</tr>");
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            String  roles       = (String) map.get(Permission.ACTIONS[i]);
+            String roles = (String) map.get(Permission.ACTIONS[i]);
             boolean hasNoneRole = map.get(Permission.ACTIONS[i] + ".hasnone")
                                   != null;
             if (roles == null) {
