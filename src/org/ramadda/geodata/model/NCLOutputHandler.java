@@ -77,7 +77,7 @@ public class NCLOutputHandler extends OutputHandler {
     private static final String PROP_CONVERT_PATH = "ncl.convert.path";
 
     /** NCL map plot script */
-    public static final String SCRIPT_MAPPLOT = "plot.data.ncl";
+    public static final String SCRIPT_MAPPLOT = "plot.data.comp.ncl";
 
     /** NCL map plot script */
     private static final String SCRIPT_KML = "kml.ncl";
