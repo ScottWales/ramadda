@@ -1,41 +1,71 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 package org.ramadda.data.point.netcdf;
 
-import org.ramadda.data.record.*;
+
 import org.ramadda.data.point.*;
+
+import org.ramadda.data.record.*;
+
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import ucar.unidata.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 
+/**
+ * Class description
+ *
+ *
+ * @version        $version$, Fri, Aug 23, '13
+ * @author         Enter your name here...    
+ */
 public class NetcdfRecord extends PointRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_          */
+    /** _more_ */
     private double[] values;
 
+    /** _more_          */
     private Object[] objectValues;
 
-    /** _more_          */
+    /** _more_ */
     private int idxX;
 
-    /** _more_          */
+    /** _more_ */
     private int idxY;
 
-    /** _more_          */
+    /** _more_ */
     private int idxZ;
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean convertedXYZToLatLonAlt = false;
 
     /**
@@ -45,8 +75,8 @@ public class NetcdfRecord extends PointRecord {
      */
     public NetcdfRecord(NetcdfRecord that) {
         super(that);
-        this.fields = that.fields;
-        values      = null;
+        this.fields  = that.fields;
+        values       = null;
         objectValues = null;
     }
 
@@ -91,10 +121,10 @@ public class NetcdfRecord extends PointRecord {
      * @param fields _more_
      */
     private void initFields(List<RecordField> fields) {
-        this.fields = fields;
-        values      = new double[fields.size()];
-        objectValues      = new Object[fields.size()];
-        idxX        = idxY = idxZ = -1;
+        this.fields  = fields;
+        values       = new double[fields.size()];
+        objectValues = new Object[fields.size()];
+        idxX         = idxY = idxZ = -1;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
             String      name  = field.getName().toLowerCase();
@@ -142,26 +172,36 @@ public class NetcdfRecord extends PointRecord {
     public double getValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
             return values[idx];
         }
+
         return super.getValue(attrId);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
     public String getStringValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
             return objectValues[idx].toString();
         }
+
         return super.getStringValue(attrId);
     }
 
 
 
+    /** _more_          */
     private int skipCnt = 0;
 
     /**
@@ -179,6 +219,7 @@ public class NetcdfRecord extends PointRecord {
         //                ? values[idxZ]
         //                : 0));
         convertedXYZToLatLonAlt = true;
+
         return status;
     }
 
@@ -215,27 +256,32 @@ public class NetcdfRecord extends PointRecord {
         int cnt = 0;
         for (int fieldCnt = 0; fieldCnt < values.length; fieldCnt++) {
             RecordField recordField = fields.get(fieldCnt);
-            if(recordField.getSkip()) continue;
+            if (recordField.getSkip()) {
+                continue;
+            }
 
             if (cnt > 0) {
                 pw.print(',');
             }
             cnt++;
 
-            if(recordField.isTypeString()) {
+            if (recordField.isTypeString()) {
                 pw.print(getStringValue(recordField.getParamId()));
-                continue;
-            } 
 
-            double  value  = values[fieldCnt];
-            if(fieldCnt == idxX)
+                continue;
+            }
+
+            double value = values[fieldCnt];
+            if (fieldCnt == idxX) {
                 value = getLongitude();
-            else  if(fieldCnt == idxY)
+            } else if (fieldCnt == idxY) {
                 value = getLatitude();
-            else  if(fieldCnt == idxZ)
+            } else if (fieldCnt == idxZ) {
                 value = getAltitude();
+            }
             pw.print(value);
         }
+
         return fields.size() + superCnt;
     }
 
@@ -255,9 +301,11 @@ public class NetcdfRecord extends PointRecord {
             pw.print(',');
         }
         for (int i = 0; i < fields.size(); i++) {
-            int cnt = 0;
+            int         cnt         = 0;
             RecordField recordField = fields.get(i);
-            if(recordField.getSkip()) continue;
+            if (recordField.getSkip()) {
+                continue;
+            }
             if (cnt > 0) {
                 pw.print(',');
             }
@@ -265,19 +313,23 @@ public class NetcdfRecord extends PointRecord {
             if (convertedXYZToLatLonAlt) {
                 if (i == idxX) {
                     pw.append("longitude[unit=\"degrees\"]");
+
                     continue;
                 }
                 if (i == idxY) {
                     pw.append("latitude[unit=\"degrees\"]");
+
                     continue;
                 }
                 if (i == idxZ) {
                     pw.append("altitude[unit=\"m\"]");
+
                     continue;
                 }
             }
             fields.get(i).printCsvHeader(visitInfo, pw);
         }
+
         return fields.size() + superCnt;
     }
 
@@ -285,11 +337,17 @@ public class NetcdfRecord extends PointRecord {
 
     /**
      * _more_
+     *
+     * @param buff _more_
+     *
+     * @throws Exception _more_
      */
     public void print(Appendable buff) throws Exception {
         super.print(buff);
         for (int i = 0; i < fields.size(); i++) {
-            if(fields.get(i).getSkip()) continue;
+            if (fields.get(i).getSkip()) {
+                continue;
+            }
             System.out.println(fields.get(i).getName() + ":" + values[i]
                                + " ");
         }

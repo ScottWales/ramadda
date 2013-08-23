@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -40,7 +39,7 @@ public class Json {
     /** JSON MIME type */
     public static final String MIMETYPE = "application/json";
 
-    /** the null string identifier*/
+    /** the null string identifier */
     public static final String NULL = "null";
 
     /** default quote value */
@@ -172,7 +171,7 @@ public class Json {
      *
      * @param values  the values
      *
-     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ] 
+     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ]
      */
     public static String tfoList(List<TwoFacedObject> values) {
         return tfoList(values, "id", "label");
@@ -185,7 +184,7 @@ public class Json {
      * @param idKey   the key for the TwoFacedObject ID
      * @param labelKey   the key for the TwoFacedObject label
      *
-     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ] 
+     * @return  the list [ {id:id1,label:label1},{id:id2,label:label2} ]
      */
     public static String tfoList(List<TwoFacedObject> values, String idKey,
                                  String labelKey) {

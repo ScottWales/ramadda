@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,22 +20,30 @@
 
 package org.ramadda.projects.above;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
 import ucar.unidata.util.Misc;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * @author Jeff McWhirter
  */
 public class AbovePageDecorator extends PageDecorator {
 
+    /** _more_          */
     private List<WmsMapLayer> mapLayers = null;
 
+    /**
+     * _more_
+     */
     public AbovePageDecorator() {
         this(null);
     }
@@ -45,34 +52,53 @@ public class AbovePageDecorator extends PageDecorator {
     /*
      * ctor
      */
+
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public AbovePageDecorator(Repository repository) {
         super(repository);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     private List<WmsMapLayer> getMapLayers() {
-        if(mapLayers == null) {
+        if (mapLayers == null) {
             mapLayers = WmsMapLayer.makeLayers(getRepository(), "above.map");
         }
+
         return mapLayers;
     }
 
 
-@Override
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mapInfo _more_
+     */
+    @Override
     public void addToMap(Request request, MapInfo mapInfo) {
-    //        if(mapInfo.forSelection()) return;
-    //http://wms.alaskamapped.org/extras?
+        //        if(mapInfo.forSelection()) return;
+        //http://wms.alaskamapped.org/extras?
 
-        List<String>titles = new ArrayList<String>();
-        List<String>tabs = new ArrayList<String>();
-        for(WmsMapLayer mapLayer: getMapLayers()) {
-            if(Utils.stringDefined(mapLayer.getLegendLabel())) {
+        List<String> titles = new ArrayList<String>();
+        List<String> tabs   = new ArrayList<String>();
+        for (WmsMapLayer mapLayer : getMapLayers()) {
+            if (Utils.stringDefined(mapLayer.getLegendLabel())) {
                 titles.add(mapLayer.getLegendLabel());
                 StringBuffer sb = new StringBuffer(mapLayer.getLegendText());
-                if(Utils.stringDefined(mapLayer.getLegendImage())) {
+                if (Utils.stringDefined(mapLayer.getLegendImage())) {
                     sb.append(HtmlUtils.img(mapLayer.getLegendImage()));
                 }
-                tabs.add(HtmlUtils.div(sb.toString(), HtmlUtils.cssClass("map-legend-div")));
+                tabs.add(HtmlUtils.div(sb.toString(),
+                                       HtmlUtils.cssClass("map-legend-div")));
             }
             mapLayer.addToMap(request, mapInfo);
         }
@@ -81,8 +107,10 @@ public class AbovePageDecorator extends PageDecorator {
         rightSide.append("<b>Legends</b><br>");
         rightSide.append(OutputHandler.makeTabs(titles, tabs, true));
 
-        mapInfo.addRightSide(getPageHandler().makeStickyPopup(HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")), 
-                                                             rightSide.toString(),null));
+        mapInfo.addRightSide(
+            getPageHandler().makeStickyPopup(
+                HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")),
+                rightSide.toString(), null));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
 

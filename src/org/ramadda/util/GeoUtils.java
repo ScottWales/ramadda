@@ -1,42 +1,47 @@
 /*
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util;
 
 
-import java.io.*;
+import org.w3c.dom.*;
 
-import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
-import org.w3c.dom.*;
+import ucar.unidata.xml.XmlUtil;
+
+
+import java.io.*;
+
 import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.TimeZone;
 
 
 /**
  * A set of utility methods for dealing with geographic things
  * Note: this was originally in the  the NLAS SF SVN repository AND the
- * Unavco GSAC SVN repository. 
+ * Unavco GSAC SVN repository.
  *
  * @author  Jeff McWhirter
  */
@@ -71,7 +76,7 @@ public class GeoUtils {
     public static final double DEG2RAD = Math.PI / 180.0;
 
 
-    /** _more_          */
+    /** _more_ */
     private static long GPS_TIME_OFFSET = 0;
 
     /** _more_ */
@@ -128,6 +133,7 @@ public class GeoUtils {
             cal.set(1980, 1, 6, 0, 0, 0);
             GPS_TIME_OFFSET = cal.getTimeInMillis();
         }
+
         return GPS_TIME_OFFSET;
     }
 
@@ -217,6 +223,7 @@ public class GeoUtils {
         result[0] = Math.toDegrees(lat);
         result[1] = Math.toDegrees(lon);
         result[2] = alt;
+
         return result;
     }
 
@@ -242,6 +249,7 @@ public class GeoUtils {
         while ((lon < 0.) || (lon > 361.)) {
             lon = 180. + Math.IEEEremainder(lon - 180., 360.0);
         }
+
         return lon;
     }
 
@@ -256,17 +264,20 @@ public class GeoUtils {
      * _more_
      *
      * @param args _more_
+     *
+     * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        for(String arg: args) {
+        for (String arg : args) {
             double[] loc = getLocationFromAddress(arg);
-            if(loc==null) {
-
-            } else {
-                System.out.println(loc[0]+"," + loc[1]);
+            if (loc == null) {}
+            else {
+                System.out.println(loc[0] + "," + loc[1]);
             }
         }
-        if(true) return;
+        if (true) {
+            return;
+        }
 
         double[][] xyz = {
             { -2307792.824, -4160678.918, 4235698.873 }
@@ -280,7 +291,9 @@ public class GeoUtils {
 
     }
 
-    private static Hashtable<String,double[]> addressToLocation = new Hashtable<String,double[]>();
+    /** _more_          */
+    private static Hashtable<String, double[]> addressToLocation =
+        new Hashtable<String, double[]>();
 
 
     /**
@@ -299,7 +312,9 @@ public class GeoUtils {
             return null;
         }
         double[] location = addressToLocation.get(address);
-        if(location!=null) return location;
+        if (location != null) {
+            return location;
+        }
 
         String latString      = null;
         String lonString      = null;
@@ -321,8 +336,9 @@ public class GeoUtils {
         } catch (Exception exc) {}
         if ((latString != null) && (lonString != null)) {
             location = new double[] { Double.parseDouble(latString),
-                                  Double.parseDouble(lonString) };
+                                      Double.parseDouble(lonString) };
             addressToLocation.put(address, location);
+
             return location;
         }
 

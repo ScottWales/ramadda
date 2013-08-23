@@ -1,34 +1,38 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.point.text;
 
-import org.ramadda.data.record.*;
+
 import org.ramadda.data.point.*;
 
+import org.ramadda.data.record.*;
+
 import org.ramadda.util.Station;
-import java.io.*;
-import java.util.Date;
 
 import ucar.unidata.util.StringUtil;
+
+import java.io.*;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,50 +42,71 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class TextRecord extends PointRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     private String delimiter = ",";
 
+    /** _more_          */
     private boolean delimiterIsSpace = false;
 
+    /** _more_          */
     protected String firstDataLine = null;
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_          */
+    /** _more_ */
     private double[] values;
 
+    /** _more_          */
     private Object[] objectValues;
 
+    /** _more_          */
     private String[] tokens;
+
+    /** _more_          */
     private boolean[] hasDefault;
+
+    /** _more_          */
     private boolean[] skip;
+
+    /** _more_          */
     private boolean[] synthetic;
 
-    private String     line   = "";
-
-    private boolean bePickyAboutTokens = true;
-    
     /** _more_          */
+    private String line = "";
+
+    /** _more_          */
+    private boolean bePickyAboutTokens = true;
+
+    /** _more_ */
     private int idxX;
 
-    /** _more_          */
+    /** _more_ */
     private int idxY;
 
-    /** _more_          */
+    /** _more_ */
     private int idxZ;
 
+    /** _more_          */
     private int idxTime;
 
-    private int idxRed=-1;
-    private int idxGreen=-1;
-    private int idxBlue=-1;
+    /** _more_          */
+    private int idxRed = -1;
 
+    /** _more_          */
+    private int idxGreen = -1;
+
+    /** _more_          */
+    private int idxBlue = -1;
+
+    /** _more_          */
     private int badCnt = 0;
+
+    /** _more_          */
     private int goodCnt = 0;
 
     /**
@@ -91,10 +116,10 @@ public class TextRecord extends PointRecord {
      */
     public TextRecord(TextRecord that) {
         super(that);
-        this.fields = that.fields;
-        values      = null;
+        this.fields  = that.fields;
+        values       = null;
         objectValues = null;
-        tokens      = null;
+        tokens       = null;
     }
 
 
@@ -130,6 +155,11 @@ public class TextRecord extends PointRecord {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getLine() {
         return line;
     }
@@ -141,8 +171,11 @@ public class TextRecord extends PointRecord {
      */
     public void setDelimiter(String value) {
         delimiter = value;
-        if(!delimiter.equals("\t") && delimiter.trim().length()==0) delimiterIsSpace = true;
-        else delimiterIsSpace = false;
+        if ( !delimiter.equals("\t") && (delimiter.trim().length() == 0)) {
+            delimiterIsSpace = true;
+        } else {
+            delimiterIsSpace = false;
+        }
     }
 
     /**
@@ -170,78 +203,88 @@ public class TextRecord extends PointRecord {
      * @param fields _more_
      */
     private void initFields(List<RecordField> fields) {
+
         String timeField = (String) getRecordFile().getProperty("field.time");
-        String timeFormat = (String) getRecordFile().getProperty("field.time.format");
+        String timeFormat =
+            (String) getRecordFile().getProperty("field.time.format");
 
-        String latField = (String) getRecordFile().getProperty("field.latitude");
-        String lonField = (String) getRecordFile().getProperty("field.longitude");
-        this.fields = fields;
-        values      = new double[fields.size()];
-        objectValues      = new Object[fields.size()];
-        hasDefault = new boolean[fields.size()];
-        skip = new boolean[fields.size()];
-        synthetic = new boolean[fields.size()];
-        int [] timeIndices = {-1,-1,-1,-1,-1,-1};
-        boolean gotDateFields = false;
-        String[][] timeFields = {{"year","yyyy"},
-                                 {"month"},
-                                 {"day","dom"},
-                                 {"hour","hr"},
-                                 {"minute"},
-                                 {"second"},};
+        String latField =
+            (String) getRecordFile().getProperty("field.latitude");
+        String lonField =
+            (String) getRecordFile().getProperty("field.longitude");
+        this.fields  = fields;
+        values       = new double[fields.size()];
+        objectValues = new Object[fields.size()];
+        hasDefault   = new boolean[fields.size()];
+        skip         = new boolean[fields.size()];
+        synthetic    = new boolean[fields.size()];
+        int[]      timeIndices   = {
+            -1, -1, -1, -1, -1, -1
+        };
+        boolean    gotDateFields = false;
+        String[][] timeFields    = {
+            { "year", "yyyy" }, { "month" }, { "day", "dom" },
+            { "hour", "hr" }, { "minute" }, { "second" },
+        };
 
-        idxX    = idxY = idxZ = idxTime = -1;
-        int numFields = 0;
-        boolean seenLon = false;
-        boolean seenLat = false;
+        idxX = idxY = idxZ = idxTime = -1;
+        int     numFields = 0;
+        boolean seenLon   = false;
+        boolean seenLat   = false;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
             hasDefault[i] = field.hasDefaultValue();
-            skip[i] = field.getSkip();
-            synthetic[i] = field.getSynthetic();
-            if(!synthetic[i] && !skip[i] && !hasDefault[i]) {
+            skip[i]       = field.getSkip();
+            synthetic[i]  = field.getSynthetic();
+            if ( !synthetic[i] && !skip[i] && !hasDefault[i]) {
                 numFields++;
             }
-            if(field.isTypeDate() && idxTime==-1) {
+            if (field.isTypeDate() && (idxTime == -1)) {
                 idxTime = i;
+
                 continue;
             }
-            String      name  = field.getName().toLowerCase();
-            for(int timeIdx=0;timeIdx<timeFields.length;timeIdx++) {
+            String name = field.getName().toLowerCase();
+            for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
                 boolean gotOne = false;
-                for(String timeFieldName: timeFields[timeIdx]) {
-                    if(name.equals(timeFieldName)) {
+                for (String timeFieldName : timeFields[timeIdx]) {
+                    if (name.equals(timeFieldName)) {
                         gotDateFields = true;
                         //                        System.err.println("got time:" + name + " idx:" + i);
-                        timeIndices[timeIdx] =  i+1;
-                        gotOne = true;
+                        timeIndices[timeIdx] = i + 1;
+                        gotOne               = true;
+
                         break;
                     }
-                    if(gotOne) break;
+                    if (gotOne) {
+                        break;
+                    }
                 }
             }
-            if(latField!=null && latField.equalsIgnoreCase(name)) {
+            if ((latField != null) && latField.equalsIgnoreCase(name)) {
                 idxY = i;
+
                 continue;
             }
-            if(lonField!=null && lonField.equalsIgnoreCase(name)) {
+            if ((lonField != null) && lonField.equalsIgnoreCase(name)) {
                 idxX = i;
+
                 continue;
             }
             if (name.equals("red") || name.equals("r")) {
                 idxRed = i;
-            } else   if (name.equals("green") || name.equals("g")) {
+            } else if (name.equals("green") || name.equals("g")) {
                 idxGreen = i;
-            } else   if (name.equals("blue") || name.equals("b")) {
+            } else if (name.equals("blue") || name.equals("b")) {
                 idxBlue = i;
             } else if (name.equals("x")) {
                 if (idxX == -1) {
                     idxX = i;
                 }
-            } else if (name.equals("longitude")
-                    || name.equals("long") || name.equals("lon")) {
-                if (!seenLon) {
-                    idxX = i;
+            } else if (name.equals("longitude") || name.equals("long")
+                       || name.equals("lon")) {
+                if ( !seenLon) {
+                    idxX    = i;
                     seenLon = true;
                 }
             } else if (name.equals("y")) {
@@ -249,10 +292,9 @@ public class TextRecord extends PointRecord {
                     idxY = i;
                 }
 
-            } else if (name.equals("latitude")
-                       || name.equals("lat")) {
-                if (!seenLat) {
-                    idxY = i;
+            } else if (name.equals("latitude") || name.equals("lat")) {
+                if ( !seenLat) {
+                    idxY    = i;
                     seenLat = true;
                 }
             } else if (name.equals("z") || name.equals("altitude")
@@ -266,11 +308,11 @@ public class TextRecord extends PointRecord {
 
         //timeField
 
-        if(gotDateFields) {
+        if (gotDateFields) {
             getRecordFile().setDateIndices(timeIndices);
         }
 
-        tokens      = new String[numFields];
+        tokens = new String[numFields];
 
         if (idxX == -1) {
             throw new IllegalArgumentException(
@@ -280,30 +322,51 @@ public class TextRecord extends PointRecord {
             throw new IllegalArgumentException(
                 "Could not find y index, e.g., latitude, lat, y, etc.");
         }
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     @Override
     public boolean hasRecordTime() {
-        if(super.hasRecordTime()) return true;
-        return idxTime>=0;
+        if (super.hasRecordTime()) {
+            return true;
+        }
+
+        return idxTime >= 0;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     @Override
     public long getRecordTime() {
-        if(idxTime>=0) {
-            return ((Date)objectValues[idxTime]).getTime();
+        if (idxTime >= 0) {
+            return ((Date) objectValues[idxTime]).getTime();
         }
+
         return super.getRecordTime();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public short[] getRgb() {
-        if(idxRed>=0 && idxGreen>=0 && idxBlue>=0) {
-            return new short[]{(short)values[idxRed],
-                               (short)values[idxGreen],
-                               (short)values[idxBlue]};
+        if ((idxRed >= 0) && (idxGreen >= 0) && (idxBlue >= 0)) {
+            return new short[] { (short) values[idxRed],
+                                 (short) values[idxGreen],
+                                 (short) values[idxBlue] };
         }
+
         return null;
     }
 
@@ -338,47 +401,70 @@ public class TextRecord extends PointRecord {
     public double getValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
             return values[idx];
         }
+
         return super.getValue(attrId);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     * @param value _more_
+     */
     public void setValue(int attrId, double value) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx         = idx - 1;
         values[idx] = value;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
     @Override
     public String getStringValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
             //Maybe just a number
-            if(objectValues[idx] == null) {
-                return ""+values[idx];
+            if (objectValues[idx] == null) {
+                return "" + values[idx];
             }
 
             return objectValues[idx].toString();
         }
+
         return super.getStringValue(attrId);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
     @Override
     public Object getObjectValue(int attrId) {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
-        idx = idx-1;
+        idx = idx - 1;
         if ((idx >= 0) && (idx < values.length)) {
             return objectValues[idx];
         }
+
         return super.getObjectValue(attrId);
     }
 
@@ -396,10 +482,11 @@ public class TextRecord extends PointRecord {
      * @throws IOException _more_
      */
     public ReadStatus read(RecordIO recordIO) throws IOException {
+
         try {
             while (true) {
-                if(firstDataLine!=null) {
-                    line = firstDataLine;
+                if (firstDataLine != null) {
+                    line          = firstDataLine;
                     firstDataLine = null;
                 } else {
                     line = recordIO.readLine();
@@ -408,152 +495,190 @@ public class TextRecord extends PointRecord {
                     return ReadStatus.EOF;
                 }
                 line = line.trim();
-                if(!lineOk(line)) {
+                if ( !lineOk(line)) {
                     continue;
                 }
+
                 break;
             }
-            for(int i=0;i<tokens.length;i++) {
+            for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }
-            if(!split(line)) {
+            if ( !split(line)) {
                 //throw new IllegalArgumentException("Could not tokenize line:" + line);
                 return ReadStatus.SKIP;
             }
             int tokenCnt = 0;
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                 RecordField field = fields.get(fieldCnt);
-                if(skip[fieldCnt]) {
+                if (skip[fieldCnt]) {
                     continue;
                 }
-                if(hasDefault[fieldCnt]) {
-                    if(field.isTypeString()) {
-                        objectValues[fieldCnt] = field.getDefaultStringValue();
-                    } else if(field.isTypeDate()) {
+                if (hasDefault[fieldCnt]) {
+                    if (field.isTypeString()) {
+                        objectValues[fieldCnt] =
+                            field.getDefaultStringValue();
+                    } else if (field.isTypeDate()) {
                         String dttm = field.getDefaultStringValue();
-                        objectValues[fieldCnt] = field.getDateFormat().parse(dttm);
+                        objectValues[fieldCnt] =
+                            field.getDateFormat().parse(dttm);
                     } else {
                         values[fieldCnt] = field.getDefaultDoubleValue();
                     }
+
                     continue;
                 }
 
                 //                System.err.println ("field:" + field +" " + tok);
-                if(synthetic[fieldCnt]) {
+                if (synthetic[fieldCnt]) {
                     continue;
                 }
 
 
                 String tok = tokens[tokenCnt++];
-                if(field.isTypeString()) {
+                if (field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
+
                     continue;
                 }
-                if(field.isTypeDate()) {
+                if (field.isTypeDate()) {
                     tok = tok.replaceAll("\"", "");
                     try {
-                        objectValues[fieldCnt] = field.getDateFormat().parse(tok);
-                    } catch(java.text.ParseException ignore) {
-                        objectValues[fieldCnt] = field.getDateFormat().parse(tok+" UTC");
+                        objectValues[fieldCnt] =
+                            field.getDateFormat().parse(tok);
+                    } catch (java.text.ParseException ignore) {
+                        objectValues[fieldCnt] =
+                            field.getDateFormat().parse(tok + " UTC");
                     }
+
                     continue;
                 }
-                if(tok == null)  {
-                    System.err.println("tok null: " +tokenCnt +" " +line);
+                if (tok == null) {
+                    System.err.println("tok null: " + tokenCnt + " " + line);
                 }
                 //Check for the riscan NaN
-                if(isMissingValue(field, tok)) {
+                if (isMissingValue(field, tok)) {
                     values[fieldCnt] = Double.NaN;
                 } else {
                     values[fieldCnt] = (double) Double.parseDouble(tok);
-                    if(isMissingValue(field, values[fieldCnt])) {
+                    if (isMissingValue(field, values[fieldCnt])) {
                         values[fieldCnt] = Double.NaN;
-                    } 
-                    
+                    }
+
                 }
             }
 
             setLocation(values[idxX], values[idxY], ((idxZ >= 0)
-                                                     ? values[idxZ]
-                                                     : 0));
+                    ? values[idxZ]
+                    : 0));
             convertedXYZToLatLonAlt = true;
 
-            if(idxTime>=0) {
+            if (idxTime >= 0) {
                 setRecordTime(getRecordTime());
             }
 
             return ReadStatus.OK;
         } catch (Exception exc) {
             System.err.println("Line:" + line);
+
             throw new RuntimeException(exc);
         }
 
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param station _more_
+     */
     public void setLocation(Station station) {
-        this.setLocation(station.getLongitude(),
-                         station.getLatitude(),
+        this.setLocation(station.getLongitude(), station.getLatitude(),
                          station.getElevation());
-        if(idxX>=0) 
+        if (idxX >= 0) {
             this.setValue(idxX, station.getLongitude());
-        if(idxY>=0)
+        }
+        if (idxY >= 0) {
             this.setValue(idxY, station.getLatitude());
-        if(idxZ>=0) 
+        }
+        if (idxZ >= 0) {
             this.setValue(idxZ, station.getElevation());
+        }
 
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
     public boolean lineOk(String line) {
-        if (line.length() == 0 || line.startsWith("#")) {
+        if ((line.length() == 0) || line.startsWith("#")) {
             return false;
         }
+
         return true;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param sourceString _more_
+     *
+     * @return _more_
+     */
     public boolean split(String sourceString) {
-        int length   = 1;
-        int fullTokenCnt = 0;
-        int numTokensRead= 0;
-        int fromIndex=0;
-        int sourceLength = sourceString.length();
+        int length        = 1;
+        int fullTokenCnt  = 0;
+        int numTokensRead = 0;
+        int fromIndex     = 0;
+        int sourceLength  = sourceString.length();
         //        System.err.println ("line:" + sourceString);
         while (true) {
-            int    idx = sourceString.indexOf(delimiter, fromIndex);
+            int idx = sourceString.indexOf(delimiter, fromIndex);
             //            System.err.println ("\tidx:" + idx +" delimiter:" + delimiter +":  str:" + sourceString);
             String theString;
             if (idx < 0) {
-                theString    = sourceString.substring(fromIndex);
+                theString = sourceString.substring(fromIndex);
             } else {
-                theString    = sourceString.substring(fromIndex, idx);
-                if(delimiterIsSpace) {
-                    while(sourceString.charAt(idx)==' ' && idx<sourceLength) {
+                theString = sourceString.substring(fromIndex, idx);
+                if (delimiterIsSpace) {
+                    while ((sourceString.charAt(idx) == ' ')
+                            && (idx < sourceLength)) {
                         idx++;
                     }
                     fromIndex = idx;
                 } else {
-                    fromIndex = idx+length;
+                    fromIndex = idx + length;
                 }
             }
             //            System.err.println ("\ttokens[" + numTokensRead +"] = " + theString);
             tokens[numTokensRead++] = theString.trim();
-            if (idx < 0 || numTokensRead == tokens.length) {
+            if ((idx < 0) || (numTokensRead == tokens.length)) {
                 break;
             }
-        } 
-       if(bePickyAboutTokens && numTokensRead!=tokens.length) {
-           System.err.println ("bad token cnt: expected:" + tokens.length + " read:" + numTokensRead +" delimiter:" + delimiter +" is space:" + delimiterIsSpace +"\nLine:" + line);
+        }
+        if (bePickyAboutTokens && (numTokensRead != tokens.length)) {
+            System.err.println("bad token cnt: expected:" + tokens.length
+                               + " read:" + numTokensRead + " delimiter:"
+                               + delimiter + " is space:" + delimiterIsSpace
+                               + "\nLine:" + line);
 
-           throw new IllegalArgumentException("Could not tokenize line:\n" + line+"\n");
+            throw new IllegalArgumentException("Could not tokenize line:\n"
+                    + line + "\n");
         }
         badCnt = 0;
         goodCnt++;
+
         return true;
-        
+
         /*
         System.err.println("line:" + sourceString);
         for(String tok: tokens) {
@@ -563,7 +688,7 @@ public class TextRecord extends PointRecord {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean convertedXYZToLatLonAlt = false;
 
     /**
@@ -598,56 +723,68 @@ public class TextRecord extends PointRecord {
         int cnt = 0;
         for (int fieldCnt = 0; fieldCnt < values.length; fieldCnt++) {
             RecordField recordField = fields.get(fieldCnt);
-            if(recordField.getSkip()) continue;
+            if (recordField.getSkip()) {
+                continue;
+            }
 
             if (cnt > 0) {
                 pw.print(',');
             }
             cnt++;
 
-            if(recordField.isTypeString()) {
+            if (recordField.isTypeString()) {
                 pw.print(getStringValue(recordField.getParamId()));
+
                 continue;
-            } 
+            }
 
-            double  value  = values[fieldCnt];
+            double value = values[fieldCnt];
 
 
 
-            if(recordField.isTypeInteger()) {
+            if (recordField.isTypeInteger()) {
                 int v = (int) value;
                 pw.print(v);
+
                 continue;
-            } 
+            }
 
 
-            if(fieldCnt == idxX)
+            if (fieldCnt == idxX) {
                 value = getLongitude();
-            else  if(fieldCnt == idxY)
+            } else if (fieldCnt == idxY) {
                 value = getLatitude();
-            else  if(fieldCnt == idxZ)
+            } else if (fieldCnt == idxZ) {
                 value = getAltitude();
+            }
 
 
             double roundingFactor = recordField.getRoundingFactor();
-            if(roundingFactor>0) {
-                double nv = Math.round(value*roundingFactor)/roundingFactor;
+            if (roundingFactor > 0) {
+                double nv = Math.round(value * roundingFactor)
+                            / roundingFactor;
                 value = nv;
             }
 
 
             pw.print(value);
         }
+
         return fields.size() + superCnt;
     }
 
 
-    public static void main(String[]args) {
-        int precision = 4;
-        double value = 1.23456789;
+    /**
+     * _more_
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
+        int    precision = 4;
+        double value     = 1.23456789;
         //        double nv = Math.round(value * factor) / factor;
-        double factor =  Math.pow(10,precision);
-        double nv = Math.round(value*factor)/factor;
+        double factor = Math.pow(10, precision);
+        double nv     = Math.round(value * factor) / factor;
         System.err.println(factor);
         System.err.println(nv);
     }
@@ -668,9 +805,11 @@ public class TextRecord extends PointRecord {
             pw.print(',');
         }
         for (int i = 0; i < fields.size(); i++) {
-            int cnt = 0;
+            int         cnt         = 0;
             RecordField recordField = fields.get(i);
-            if(recordField.getSkip()) continue;
+            if (recordField.getSkip()) {
+                continue;
+            }
             if (cnt > 0) {
                 pw.print(',');
             }
@@ -678,19 +817,23 @@ public class TextRecord extends PointRecord {
             if (convertedXYZToLatLonAlt) {
                 if (i == idxX) {
                     pw.append("longitude[unit=\"degrees\"]");
+
                     continue;
                 }
                 if (i == idxY) {
                     pw.append("latitude[unit=\"degrees\"]");
+
                     continue;
                 }
                 if (i == idxZ) {
                     pw.append("altitude[unit=\"m\"]");
+
                     continue;
                 }
             }
             fields.get(i).printCsvHeader(visitInfo, pw);
         }
+
         return fields.size() + superCnt;
     }
 
@@ -698,21 +841,37 @@ public class TextRecord extends PointRecord {
 
     /**
      * _more_
+     *
+     * @param buff _more_
+     *
+     * @throws Exception _more_
      */
     public void print(Appendable buff) throws Exception {
         super.print(buff);
         for (int i = 0; i < fields.size(); i++) {
-            if(fields.get(i).getSkip()) continue;
+            if (fields.get(i).getSkip()) {
+                continue;
+            }
             System.out.println(fields.get(i).getName() + ":" + values[i]
                                + " ");
         }
     }
 
 
+    /**
+     * _more_
+     *
+     * @param picky _more_
+     */
     public void setBePickyAboutTokens(boolean picky) {
-        bePickyAboutTokens  = picky;
+        bePickyAboutTokens = picky;
     }
 
+    /**
+     * _more_
+     *
+     * @param line _more_
+     */
     public void setFirstDataLine(String line) {
         firstDataLine = line;
     }

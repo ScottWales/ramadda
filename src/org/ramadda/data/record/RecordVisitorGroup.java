@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -70,17 +70,21 @@ public class RecordVisitorGroup extends RecordVisitor {
      * @param record _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record)  throws Exception {
+                               Record record)
+            throws Exception {
         count++;
         for (RecordVisitor visitor : visitors) {
             boolean visitorOK = visitor.visitRecord(file, visitInfo, record);
-            if (!visitorOK) {
+            if ( !visitorOK) {
                 return false;
             }
         }
+
         return true;
     }
 

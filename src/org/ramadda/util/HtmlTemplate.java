@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -85,7 +84,7 @@ import java.util.zip.*;
  */
 public class HtmlTemplate {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PROPERTIES =
         "ramadda.template.properties";
 
@@ -109,7 +108,7 @@ public class HtmlTemplate {
     private Hashtable properties = new Hashtable();
 
 
-    /** _more_          */
+    /** _more_ */
     private List<String> propertyIds = new ArrayList<String>();
 
     /**

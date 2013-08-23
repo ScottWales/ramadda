@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -49,6 +48,8 @@ public class DataProcessInput {
      * Create a data process input
      *
      * @param operands  the operands for this process
+     *
+     * @param operand _more_
      */
     public DataProcessInput(DataProcessOperand operand) {
         this(null, Misc.newList(operand));
@@ -58,6 +59,9 @@ public class DataProcessInput {
      * Create a data process input
      *
      * @param operands  the operands for this process
+     *
+     * @param processDir _more_
+     * @param operand _more_
      */
     public DataProcessInput(File processDir, DataProcessOperand operand) {
         this(processDir, Misc.newList(operand));
@@ -69,7 +73,7 @@ public class DataProcessInput {
      * @param operands  the operands for this process
      */
     public DataProcessInput(List<DataProcessOperand> operands) {
-    	// TODO: should we call this with a default directory?
+        // TODO: should we call this with a default directory?
         this(null, operands);
     }
 
@@ -106,23 +110,26 @@ public class DataProcessInput {
         return processDir;
     }
 
-    
+
     /**
      *  Does this input have any operands?
      *  return true if it has operands
+     *
+     * @return _more_
      */
     public boolean hasOperands() {
-    	return (operands != null) && !operands.isEmpty();
+        return (operands != null) && !operands.isEmpty();
     }
-    
+
     /**
      * Create a DataProcessInput from a DataProcessOutput
      * @param output  the output
      * @return a new DataProcessInput
      */
     public DataProcessInput makeInput(DataProcessOutput output) {
-    	return new DataProcessInput(this.getProcessDir(), 
-    			new ArrayList<DataProcessOperand>(output.getOperands()));
+        return new DataProcessInput(
+            this.getProcessDir(),
+            new ArrayList<DataProcessOperand>(output.getOperands()));
     }
 
 }

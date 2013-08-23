@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -175,7 +174,7 @@ public class FitsOutputHandler extends OutputHandler {
         }
         OutputStream os = request.getHttpServletResponse().getOutputStream();
 
-        String       filename =
+        String filename =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
         filename = IOUtil.stripExtension(filename);
         request.setReturnFilename(filename + "_subset.fits");
@@ -209,8 +208,8 @@ public class FitsOutputHandler extends OutputHandler {
     public Result outputEntryViewer(Request request, Entry entry)
             throws Exception {
 
-        StringBuffer sb      = new StringBuffer();
-        String       fileUrl = getEntryManager().getEntryResourceUrl(request,
+        StringBuffer sb = new StringBuffer();
+        String fileUrl = getEntryManager().getEntryResourceUrl(request,
                              entry, false);
         //TODO: set the path right
         sb.append(
@@ -233,19 +232,32 @@ public class FitsOutputHandler extends OutputHandler {
      */
     public Result outputEntryImage(Request request, Entry entry)
             throws Exception {
-        int      hduIndex = request.get(ARG_FITS_HDU, -1);
-        File imageFile = outputImage(request, entry.getFile(),hduIndex);
-        if(imageFile == null) {
+        int  hduIndex  = request.get(ARG_FITS_HDU, -1);
+        File imageFile = outputImage(request, entry.getFile(), hduIndex);
+        if (imageFile == null) {
             return new Result("Error: no image found");
         }
+
         return new Result("",
                           getStorageManager().getFileInputStream(imageFile),
                           getRepository().getMimeTypeFromSuffix("png"));
     }
 
 
-    public File outputImage(Request request, File fitsFile, int hduIndex) throws Exception {
-        System.err.println("file:" + fitsFile +" " + fitsFile.exists());
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param fitsFile _more_
+     * @param hduIndex _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File outputImage(Request request, File fitsFile, int hduIndex)
+            throws Exception {
+        System.err.println("file:" + fitsFile + " " + fitsFile.exists());
         Fits     fits     = new Fits(fitsFile);
         ImageHDU imageHdu = null;
         if (hduIndex >= 0) {
@@ -259,24 +271,28 @@ public class FitsOutputHandler extends OutputHandler {
                 BasicHDU hdu = fits.getHDU(hduIdx);
                 if (hdu instanceof ImageHDU) {
                     imageHdu = (ImageHDU) hdu;
+
                     break;
                 }
             }
         }
 
         if (imageHdu == null) {
-            System.err.println ("no image hdu");
+            System.err.println("no image hdu");
+
             return null;
         }
 
-        Image image = makeImage(request,  imageHdu);
+        Image image = makeImage(request, imageHdu);
         if (image == null) {
-            System.err.println ("no image");
+            System.err.println("no image");
+
             return null;
         }
         File imageFile = getStorageManager().getTmpFile(request,
                              "fitsimage.png");
         ImageUtils.writeImageToFile(image, imageFile);
+
         return imageFile;
     }
 
@@ -290,8 +306,7 @@ public class FitsOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private Image makeImage(Request request,  ImageHDU hdu)
-            throws Exception {
+    private Image makeImage(Request request, ImageHDU hdu) throws Exception {
         int[] axes = hdu.getAxes();
         //TODO: How to handle 1D data
         if ((axes == null) || (axes.length <= 1)) {

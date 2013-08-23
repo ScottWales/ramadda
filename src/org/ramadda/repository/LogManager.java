@@ -62,7 +62,7 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
 
     /** _more_ */

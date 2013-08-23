@@ -83,7 +83,7 @@ import java.util.zip.*;
  */
 public class HtmlOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_TEST =
         new OutputType("test", "html.test",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -96,7 +96,7 @@ public class HtmlOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_DATA);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_TREEVIEW =
         new OutputType("Tree View", "html.treeview", OutputType.TYPE_VIEW,
                        "", "/icons/application_side_tree.png");
@@ -1184,7 +1184,7 @@ public class HtmlOutputHandler extends OutputHandler {
         return outputTest(request, group);
     }
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, StringBuffer> testCache = new TTLCache<String,
                                                            StringBuffer>(60
                                                                * 60 * 1000);

@@ -148,7 +148,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private static final String DB_ORACLE = "oracle";
 
-    /** _more_          */
+    /** _more_ */
     private String connectionURL;
 
     /** _more_ */

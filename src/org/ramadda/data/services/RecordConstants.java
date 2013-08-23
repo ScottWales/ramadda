@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -217,6 +216,7 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_POINTINDEX = "pointindex";
 
+    /** _more_          */
     public static final String JOB_TYPE_POINT = "point";
 
 
@@ -266,12 +266,13 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_POINT_PRODUCT = "point.product";
 
+    /** _more_          */
     public static final String ARG_RECORD_PRODUCT = "record.product";
 
     /** property key for an icon */
     public static final String ICON_POINTS = "nlas.icon.points";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_RECORD_SKIPZ = "record.skipz";
 
     /** url arg */

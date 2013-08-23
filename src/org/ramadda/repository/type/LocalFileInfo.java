@@ -39,7 +39,7 @@ import java.util.List;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class LocalFileInfo {
 
@@ -60,19 +60,19 @@ public class LocalFileInfo {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private File rootDir;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> includes;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> excludes;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> names;
 
-    /** _more_          */
+    /** _more_ */
     private double ageLimit = -1;
 
     /**

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -18,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.process;
 
 
@@ -52,6 +52,8 @@ public class DataProcessOutput {
      * Create a DataProcessOutput from the file
      *
      * @param file  the associated file
+     *
+     * @param entry _more_
      */
     public DataProcessOutput(Entry entry) {
         this(new DataProcessOperand(entry));
@@ -70,6 +72,8 @@ public class DataProcessOutput {
      * Create the DataProcessOutput from data operand
      *
      * @param iles  the files
+     *
+     * @param operands _more_
      */
     public DataProcessOutput(List<DataProcessOperand> operands) {
         this.operands = new ArrayList<DataProcessOperand>(operands);
@@ -91,7 +95,7 @@ public class DataProcessOutput {
     /**
      * Get the DataProcessOutput type
      *
-     * @return 
+     * @return
      */
     public int getDataProcessOutputType() {
         if ((operands == null) || operands.isEmpty()) {

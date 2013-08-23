@@ -379,7 +379,7 @@ public class MetadataManager extends RepositoryManager {
         return result;
     }
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug = false;
 
     /**

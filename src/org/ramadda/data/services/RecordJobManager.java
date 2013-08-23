@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -97,15 +96,18 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      * @param request The request
      * @param entry the entry
      * @param jobId The job ID
+     * @param output _more_
      *
      * @return url to job status page
      */
-    public String getJobUrl(Request request, Entry entry, Object jobId, OutputType output) {
+    public String getJobUrl(Request request, Entry entry, Object jobId,
+                            OutputType output) {
         String actionUrl = request.getAbsoluteUrl(
                                request.entryUrl(
                                    getRepository().URL_ENTRY_SHOW, entry,
                                    new String[] { ARG_OUTPUT,
-                                                  output.getId(), JobInfo.ARG_JOB_ID, jobId.toString() }));
+                output.getId(), JobInfo.ARG_JOB_ID, jobId.toString() }));
+
         return actionUrl;
     }
 
@@ -277,7 +279,8 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         final File productDir = getRecordOutputHandler().getProductDir(jobId);
         StringBuffer status   = new StringBuffer();
-        boolean doingPublish  = getRecordOutputHandler().doingPublish(request);
+        boolean doingPublish  =
+            getRecordOutputHandler().doingPublish(request);
         if (doingPublish) {
             Entry parent = getEntryManager().findGroup(request,
                                request.getString(ARG_PUBLISH_ENTRY
@@ -373,15 +376,17 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         final String email = request.getString(ARG_JOB_EMAIL, "");
         if ((email.length() > 0) && getAdmin().isEmailCapable()) {
-            final String actionUrl     = jobInfo.getJobStatusUrl();
+            final String actionUrl = jobInfo.getJobStatusUrl();
             final String emailContents =
-                "Your RAMADDA point data processing job has completed:\n" + actionUrl;
+                "Your RAMADDA point data processing job has completed:\n"
+                + actionUrl;
             //Put the mail sending in a thread
             Misc.run(new Runnable() {
                 public void run() {
                     try {
                         getRepository().getMailManager().sendEmail(email,
-                                "RAMADDA point data processing job", emailContents, false);
+                                "RAMADDA point data processing job",
+                                emailContents, false);
                     } catch (Exception exc) {}
                 }
             });
@@ -486,17 +491,15 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
         String jobAttrs;
         if (stillRunning) {
-            jobAttrs = XmlUtil.attrs(new String[] { JobManager.ATTR_STATUS,
-                                                    STATUS_RUNNING, 
-                                                    ATTR_NUMBEROFPOINTS,
-                                                    ""+jobInfo.getNumPoints(),
-                                                    ATTR_ELAPSEDTIME,
-                                                    "" + ((endTime - startTime) / 1000) });
+            jobAttrs = XmlUtil.attrs(new String[] {
+                JobManager.ATTR_STATUS, STATUS_RUNNING, ATTR_NUMBEROFPOINTS,
+                "" + jobInfo.getNumPoints(), ATTR_ELAPSEDTIME,
+                "" + ((endTime - startTime) / 1000)
+            });
         } else {
             jobAttrs = XmlUtil.attrs(new String[] {
-                    ATTR_NUMBEROFPOINTS,
-                    ""+jobInfo.getNumPoints(),
-                    ATTR_STATUS, STATUS_DONE,  ATTR_ELAPSEDTIME,
+                ATTR_NUMBEROFPOINTS, "" + jobInfo.getNumPoints(), ATTR_STATUS,
+                STATUS_DONE, ATTR_ELAPSEDTIME,
                 "" + ((endTime - startTime) / 1000),
             });
         }
@@ -657,6 +660,11 @@ public class RecordJobManager extends JobManager implements RecordConstants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public OutputType getOutputResults() {
         return getRecordOutputHandler().OUTPUT_RESULTS;
     }
@@ -675,6 +683,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param dummy _more_
+     *
+     * @return _more_
+     */
     public String makeJobUrl(Request dummy) {
         return dummy.getAbsoluteUrl();
     }
@@ -693,9 +708,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      *
      * @throws Exception On badness
      */
-    public Result handleAsynchRequest(Request request, Entry entry,
-                                      OutputType outputType,
-                                      List<? extends RecordEntry> pointEntries)
+    public Result handleAsynchRequest(
+            Request request, Entry entry, OutputType outputType,
+            List<? extends RecordEntry> pointEntries)
             throws Exception {
         checkNewJobOK();
         try {
@@ -724,14 +739,14 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      */
     private Result handleAsynchRequestInner(
             final Request request, final Entry entry,
-            final OutputType outputType, final List<? extends RecordEntry> recordEntries)
+            final OutputType outputType,
+            final List<? extends RecordEntry> recordEntries)
             throws Exception {
 
         final JobInfo jobInfo = new JobInfo(request, entry.getId(),
                                             getRepository().getGUID());
         jobInfo.setType(JOB_TYPE_POINT);
-        jobInfo.setJobStatusUrl(getJobUrl(request, entry,
-                                          jobInfo.getJobId(),
+        jobInfo.setJobStatusUrl(getJobUrl(request, entry, jobInfo.getJobId(),
                                           getOutputResults()));
         jobInfo.setJobUrl(makeJobUrl((Request) request.cloneMe()));
 
@@ -743,8 +758,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         Runnable runnable = new Runnable() {
             public void run() {
                 try {
-                    ((PointOutputHandler)getRecordOutputHandler()).processEntries(request, entry,
-                            true, recordEntries, jobInfo.getJobId());
+                    ((PointOutputHandler) getRecordOutputHandler())
+                        .processEntries(request, entry, true, recordEntries,
+                                        jobInfo.getJobId());
                     if ( !jobOK(jobInfo.getJobId())) {
                         return;
                     }
@@ -777,8 +793,8 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         Misc.run(runnable);
         //        getExecutor().submit(runnable);
         if (request.responseInXml()) {
-            StringBuffer xml       = new StringBuffer();
-            String       statusUrl =
+            StringBuffer xml = new StringBuffer();
+            String statusUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                  new String[] {
                 ARG_OUTPUT, getOutputResults().getId(), ARG_JOB_ID,

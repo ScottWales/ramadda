@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,16 +21,17 @@
 package org.ramadda.geodata.cdmdata;
 
 
+import org.ramadda.data.process.DataProcess;
+import org.ramadda.data.process.DataProcessInput;
+import org.ramadda.data.process.DataProcessOutput;
+import org.ramadda.data.process.DataProcessProvider;
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.TempDir;
-
-import org.ramadda.data.process.DataProcess;
-import org.ramadda.data.process.DataProcessInput;
-import org.ramadda.data.process.DataProcessOutput;
-import org.ramadda.data.process.DataProcessProvider;
 
 
 import org.w3c.dom.*;
@@ -58,7 +58,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter/ramadda.org
  */
-public class NCOOutputHandler extends OutputHandler implements DataProcessProvider { 
+public class NCOOutputHandler extends OutputHandler implements DataProcessProvider {
 
 
     /** _more_ */
@@ -207,8 +207,14 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
     }
 
 
-    public NCOOutputHandler(Repository repository)
-            throws Exception {
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     *
+     * @throws Exception _more_
+     */
+    public NCOOutputHandler(Repository repository) throws Exception {
         super(repository, "NCO");
         ncwaPath = getProperty(PROP_NCWA_PATH, null);
     }
@@ -224,15 +230,18 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
     }
 
     /**
-       The DataProcessProvider method. Just adds this
+     *  The DataProcessProvider method. Just adds this
+     *
+     * @return _more_
      */
     public List<DataProcess> getDataProcesses() {
         List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
         //        if(isEnabled()) {
-        if(true) {
+        if (true) {
             processes.add(new NCODataProcess());
         }
+
         return processes;
     }
 
@@ -320,7 +329,7 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
         }
 
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        NetcdfDataset        dataset           =
+        NetcdfDataset dataset =
             NetcdfDataset.openDataset(entry.getResource().getPath());
         List<Variable>       variables  = dataset.getVariables();
         List<TwoFacedObject> coordNames = new ArrayList<TwoFacedObject>();
@@ -489,7 +498,8 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
         String tail    = getStorageManager().getFileTail(entry);
         String newName = IOUtil.stripExtension(tail) + "_product.nc";
         tail = getStorageManager().getStorageFileName(tail);
-        File         outFile = new File(IOUtil.joinDir(getProductDir(), tail));
+        File         outFile = new File(IOUtil.joinDir(getProductDir(),
+                                   tail));
         List<String> commands = new ArrayList<String>();
         commands.add(ncwaPath);
         commands.add("-" + request.get(ARG_NCO_FORMAT, 3));
@@ -560,17 +570,22 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
 
         commands.add(entry.getResource().getPath());
         commands.add(outFile.toString());
-        String[] results = getRepository().executeCommand(commands, getProductDir());
-        String  errorMsg = results[1];
-        String outMsg = results[0];
+        String[] results = getRepository().executeCommand(commands,
+                               getProductDir());
+        String errorMsg = results[1];
+        String outMsg   = results[0];
         if (outMsg.length() > 0) {
-            return getErrorResult(request, "NCO-Error","An error occurred:<br>" + outMsg);
+            return getErrorResult(request, "NCO-Error",
+                                  "An error occurred:<br>" + outMsg);
         }
         if (errorMsg.length() > 0) {
-            return getErrorResult(request, "NCO-Error", "An error occurred:<br>" + errorMsg);
+            return getErrorResult(request, "NCO-Error",
+                                  "An error occurred:<br>" + errorMsg);
         }
         if ( !outFile.exists()) {
-            return getErrorResult(request, "NCL-Error",  "Humm, the NCO generation failed for some reason");
+            return getErrorResult(
+                request, "NCL-Error",
+                "Humm, the NCO generation failed for some reason");
         }
 
         if (doingPublish(request)) {
@@ -586,11 +601,22 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
             outFile, getStorageManager().getFileTail(outFile.toString()));
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Aug 23, '13
+     * @author         Enter your name here...    
+     */
     protected class NCODataProcess extends DataProcess {
-    	
-    	public NCODataProcess() {
-    		super("NCO", "NCO Weighted Average");
-    	}
+
+        /**
+         * _more_
+         */
+        public NCODataProcess() {
+            super("NCO", "NCO Weighted Average");
+        }
+
         /**
          * Add this output handlers UI to the form
          *
@@ -600,27 +626,52 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
          *
          * @throws Exception  on badness
          */
-        public void addToForm(Request request, DataProcessInput input, StringBuffer sb)
+        public void addToForm(Request request, DataProcessInput input,
+                              StringBuffer sb)
                 throws Exception {
             sb.append(HtmlUtils.formTable());
-            sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"),"widgets"));
+            sb.append(HtmlUtils.formEntry(msgLabel("CDO Stuff"), "widgets"));
             sb.append(HtmlUtils.formTableClose());
         }
-    
-    
-        public DataProcessOutput processRequest(Request request, DataProcessInput dpi)
+
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param dpi _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public DataProcessOutput processRequest(Request request,
+                DataProcessInput dpi)
                 throws Exception {
-            Resource r = new Resource(dpi.getOperands().get(0).getEntries().get(0).getFile(), Resource.TYPE_LOCAL_FILE);
+            Resource r = new Resource(
+                             dpi.getOperands().get(0).getEntries().get(
+                                 0).getFile(), Resource.TYPE_LOCAL_FILE);
             Entry out = new Entry();
             out.setResource(r);
+
             return new DataProcessOutput(out);
         }
-        
+
+        /**
+         * _more_
+         *
+         * @param dpi _more_
+         *
+         * @return _more_
+         */
         public boolean canHandle(DataProcessInput dpi) {
-        	if (!isEnabled()) return false;
-        	//TODO: check the dpi
-        	return true;
+            if ( !isEnabled()) {
+                return false;
+            }
+
+            //TODO: check the dpi
+            return true;
         }
-    
+
     }
 }

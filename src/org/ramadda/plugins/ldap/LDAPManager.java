@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -54,20 +53,20 @@ public class LDAPManager {
     /** The LDAPManager instance object */
     private static Map instances = new HashMap();
 
-    /** _more_          */
+    /** _more_ */
     private String ldapUrl;
 
-    /** _more_          */
+    /** _more_ */
     private String mainUserId;
 
-    /** _more_          */
+    /** _more_ */
     private String mainPassword;
 
 
-    /** _more_          */
+    /** _more_ */
     private String userPath;
 
-    /** _more_          */
+    /** _more_ */
     private String groupsPath;
 
 
@@ -92,11 +91,11 @@ public class LDAPManager {
     protected LDAPManager(String ldapUrl, String userPath, String groupsPath,
                           String username, String password)
             throws NamingException {
-        this.ldapUrl    = ldapUrl;
-        this.userPath   = userPath;
-        this.groupsPath = groupsPath;
+        this.ldapUrl      = ldapUrl;
+        this.userPath     = userPath;
+        this.groupsPath   = groupsPath;
         this.mainUserId   = username;
-        this.mainPassword   = password;
+        this.mainPassword = password;
         //Try it
         if (ldapUrl != null) {
             getContext();
@@ -131,7 +130,8 @@ public class LDAPManager {
         //Create the first time
         if (localContext == null) {
             log("Creating initial context:" + ldapUrl);
-            localContext = getInitialContext(ldapUrl, mainUserId, mainPassword);
+            localContext = getInitialContext(ldapUrl, mainUserId,
+                                             mainPassword);
         }
 
         //Try to connect with a dummy path
@@ -147,7 +147,8 @@ public class LDAPManager {
 
         if (localContext == null) {
             //            System.err.println ("Trying again");
-            localContext = getInitialContext(ldapUrl, mainUserId, mainPassword);
+            localContext = getInitialContext(ldapUrl, mainUserId,
+                                             mainPassword);
             //            System.err.println ("OK");
         }
         theContext = localContext;
@@ -211,15 +212,17 @@ public class LDAPManager {
     public boolean isValidUser(String username, String password) {
         String userDN = getUserDN(username);
         try {
-            DirContext tmpContext = getInitialContext(ldapUrl,
-                                        userDN, password);
+            DirContext tmpContext = getInitialContext(ldapUrl, userDN,
+                                        password);
 
             return true;
         } catch (javax.naming.NameNotFoundException e) {
             log("Name or password not found:" + userDN);
+
             return false;
         } catch (NamingException e) {
             log("Error validating user:" + userDN + " " + e);
+
             return false;
         }
     }
@@ -240,24 +243,25 @@ public class LDAPManager {
         String[] searchAttributes = new String[1];
         searchAttributes[0] = "uniqueMember";
         String groupDN = getGroupDN(groupName);
-        Attributes attributes =
-            getContext().getAttributes(groupDN,
-                                       searchAttributes);
+        Attributes attributes = getContext().getAttributes(groupDN,
+                                    searchAttributes);
         if (attributes == null) {
             log("Could not find group attributes:" + groupDN);
+
             return false;
         }
 
         Attribute memberAtts = attributes.get("uniqueMember");
         if (memberAtts == null) {
             log("Could not find group member attributes:" + groupDN);
+
             return false;
         }
 
         for (NamingEnumeration vals = memberAtts.getAll();
-             vals.hasMoreElements(); ) {
+                vals.hasMoreElements(); ) {
             if (username.equalsIgnoreCase(
-                                          getUserUID((String) vals.nextElement()))) {
+                    getUserUID((String) vals.nextElement()))) {
                 return true;
             }
         }
@@ -320,22 +324,26 @@ public class LDAPManager {
      * @return _more_
      *
      * @throws NamingException _more_
+     *
+     * @throws Exception _more_
      */
     public List<String> getGroupsForUser(String username,
-                                  String groupMemberAttribute)
-        throws Exception {
-        
+                                         String groupMemberAttribute)
+            throws Exception {
+
         try {
-            List<String>                     groups  = new LinkedList<String>();
+            List<String>                     groups =
+                new LinkedList<String>();
             DirContext                       context = getContext();
-            NamingEnumeration<NameClassPair> enums   = context.list(groupsPath);
+            NamingEnumeration<NameClassPair> enums = context.list(groupsPath);
             String[] searchAttributes = new String[] { groupMemberAttribute };
             while (enums.hasMoreElements()) {
-                NameClassPair key        = enums.nextElement();
-                String        id         = key.getName();
-                String        groupId    = getGroupCN(id);
-                Attributes    attributes =
-                    context.getAttributes(getGroupDN(groupId), searchAttributes);
+                NameClassPair key     = enums.nextElement();
+                String        id      = key.getName();
+                String        groupId = getGroupCN(id);
+                Attributes attributes =
+                    context.getAttributes(getGroupDN(groupId),
+                                          searchAttributes);
                 if (attributes == null) {
                     continue;
                 }
@@ -345,21 +353,25 @@ public class LDAPManager {
                     continue;
                 }
                 for (NamingEnumeration vals = memberAtts.getAll();
-                     vals.hasMoreElements(); ) {
+                        vals.hasMoreElements(); ) {
                     if (username.equalsIgnoreCase(
-                                                  getUserUID((String) vals.nextElement()))) {
+                            getUserUID((String) vals.nextElement()))) {
                         groups.add(groupId);
 
                         break;
                     }
                 }
             }
-            if(groups.size()==0) {
-                log("No groups found for user:" + username +" groups path:" + groupsPath +" member attr:" + groupMemberAttribute);
+            if (groups.size() == 0) {
+                log("No groups found for user:" + username + " groups path:"
+                    + groupsPath + " member attr:" + groupMemberAttribute);
             }
+
             return groups;
-        } catch(Exception exc) {
-            log("Error reading groups:" + groupsPath +" member attribute:" + groupMemberAttribute +" error:" + exc.toString());
+        } catch (Exception exc) {
+            log("Error reading groups:" + groupsPath + " member attribute:"
+                + groupMemberAttribute + " error:" + exc.toString());
+
             throw exc;
         }
 
@@ -369,7 +381,7 @@ public class LDAPManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private List<String> allGroups;
 
     /**
@@ -381,8 +393,8 @@ public class LDAPManager {
      */
     public List<String> getAllGroups() throws NamingException {
         if (allGroups == null) {
-            List<String>                     groups = new ArrayList();
-            NamingEnumeration<NameClassPair> enums  =
+            List<String> groups = new ArrayList();
+            NamingEnumeration<NameClassPair> enums =
                 getContext().list(groupsPath);
             while (enums.hasMoreElements()) {
                 NameClassPair key = enums.nextElement();
@@ -438,6 +450,7 @@ public class LDAPManager {
         sb.append(name);
         sb.append(",");
         sb.append(groupsPath);
+
         return sb.toString();
     }
 

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -48,6 +47,7 @@ import javax.mail.internet.*;
  * @author Jeff McWhirter
  */
 public class MailUtil {
+
     /**
      * _more_
      *
@@ -58,27 +58,40 @@ public class MailUtil {
      */
     public static void extractText(Object content, StringBuffer desc)
             throws Exception {
-        extractText(content, desc,"");
+        extractText(content, desc, "");
     }
 
-    public static boolean extractText(Object content, StringBuffer desc, String tab)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param content _more_
+     * @param desc _more_
+     * @param tab _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static boolean extractText(Object content, StringBuffer desc,
+                                      String tab)
+            throws Exception {
         //System.err.println (tab + "Extract text");
-        tab = tab+"\t";
+        tab = tab + "\t";
         if (content instanceof MimeMultipart) {
             //System.err.println (tab + "Is Multipart");
             MimeMultipart multipart = (MimeMultipart) content;
             for (int i = 0; i < multipart.getCount(); i++) {
                 MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(i);
                 String       disposition = part.getDisposition();
-                String       contentType = part.getContentType().toLowerCase();
+                String       contentType =
+                    part.getContentType().toLowerCase();
                 //System.err.println(tab+"part:" + part + " Type:" + contentType);
-                Object       partContent = part.getContent();
+                Object partContent = part.getContent();
                 if (disposition == null) {
                     //System.err.println(tab+"disposition is null");
                     if (partContent instanceof MimeMultipart) {
                         //System.err.println(tab+"part is mulitpart");
-                        if(extractText(partContent, desc, tab+"\t"))  {
+                        if (extractText(partContent, desc, tab + "\t")) {
                             //System.err.println(tab+"got text");
                             return true;
                         }
@@ -87,16 +100,19 @@ public class MailUtil {
                         if (contentType.indexOf("text/plain") >= 0) {
                             desc.append(partContent);
                             desc.append("\n");
+
                             return true;
                         }
                         //System.err.println(tab+"content type:" + contentType);
                     }
+
                     continue;
                 }
                 if (disposition.equalsIgnoreCase(Part.INLINE)
                         && (contentType.indexOf("text/plain") >= 0)) {
                     //System.err.println(tab+"inline text");
                     desc.append(partContent);
+
                     return true;
                 }
 
@@ -120,8 +136,10 @@ public class MailUtil {
             String contents = content.toString();
             desc.append(contents);
             desc.append("\n");
+
             return true;
         }
+
         return false;
     }
 

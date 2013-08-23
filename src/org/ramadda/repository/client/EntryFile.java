@@ -17,10 +17,6 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package org.ramadda.repository.client;
 
@@ -31,28 +27,28 @@ package org.ramadda.repository.client;
  */
 public class EntryFile {
 
-    /** _more_          */
+    /** _more_ */
     public String entryName;
 
-    /** _more_          */
+    /** _more_ */
     public String entryDescription;
 
-    /** _more_          */
+    /** _more_ */
     public String parent;
 
-    /** _more_          */
+    /** _more_ */
     public String filePath;
 
-    /** _more_          */
+    /** _more_ */
     public String north = "";
 
-    /** _more_          */
+    /** _more_ */
     public String south = "";
 
-    /** _more_          */
+    /** _more_ */
     public String west = "";
 
-    /** _more_          */
+    /** _more_ */
     public String east = "";
 
     /**

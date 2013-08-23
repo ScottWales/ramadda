@@ -1,3 +1,22 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
@@ -37,22 +56,22 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
     /** _more_ */
     public static final String METADATA_URL = "nlas_url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_FIELDS = "fields";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_FIELD = "field";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_ATTRIBUTE = "attribute";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DATATYPE = "datatype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VALUE = "value";
 
 
@@ -71,10 +90,15 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public abstract RecordOutputHandler getRecordOutputHandler();
 
 
-    /** _more_          */
+    /** _more_ */
     private HashSet entryChanged = new HashSet();
 
     /**
@@ -96,7 +120,7 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
             return;
         }
         entryChanged.add(entry.getId());
-        Entry       parent   = entry.getParentEntry();
+        Entry parent = entry.getParentEntry();
         List<Entry> children =
             getEntryManager().getChildren(getRepository().getTmpRequest(),
                                           parent);
@@ -121,12 +145,14 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
      */
     public RecordEntry getChildRecordEntry(Entry collectionEntry)
             throws Exception {
-        Request     tmpRequest = getRepository().getTmpRequest();
-        List<Entry> children   =
+        Request tmpRequest = getRepository().getTmpRequest();
+        List<Entry> children =
             getEntryManager().getChildrenEntries(tmpRequest, collectionEntry);
         for (Entry child : children) {
-            if (child.getTypeHandler() instanceof RecordCollectionTypeHandler) {
-                return  getRecordOutputHandler().doMakeEntry(tmpRequest, child);
+            if (child.getTypeHandler()
+                    instanceof RecordCollectionTypeHandler) {
+                return getRecordOutputHandler().doMakeEntry(tmpRequest,
+                        child);
             }
         }
 
@@ -164,8 +190,8 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
      */
     public void addMetadataToAtomXml(Entry collectionEntry, Element root)
             throws Exception {
-        Document doc              = root.getOwnerDocument();
-        Element  temporalCoverage =
+        Document doc = root.getOwnerDocument();
+        Element temporalCoverage =
             XmlUtil.create(AtomUtil.TAG_GML_TIMEPERIOD, root);
         XmlUtil.create(
             doc, AtomUtil.TAG_GML_BEGIN, temporalCoverage,

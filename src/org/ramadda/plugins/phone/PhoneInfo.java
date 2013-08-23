@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -57,33 +56,34 @@ import java.util.Properties;
  */
 public class PhoneInfo {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_SMS = "sms";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_VOICE = "voice";
 
-    /** _more_          */
+    /** _more_ */
     private String type = TYPE_SMS;
 
-    /** _more_          */
+    /** _more_ */
     private String fromPhone;
 
-    /** _more_          */
+    /** _more_ */
     private String toPhone;
 
-    /** _more_          */
+    /** _more_ */
     private String passCode;
 
-    /** _more_          */
+    /** _more_ */
     private String message;
 
-    /** _more_          */
+    /** _more_ */
     private String recordingUrl;
 
-    /** _more_          */
+    /** _more_ */
     private String fromZip;
 
+    /** _more_          */
     private String transcription = "";
 
 
@@ -247,20 +247,20 @@ public class PhoneInfo {
 
 
     /**
-Set the Transcription property.
-
-@param value The new value for Transcription
-    **/
-    public void setTranscription (String value) {
+     * Set the Transcription property.
+     *
+     * @param value The new value for Transcription
+     */
+    public void setTranscription(String value) {
         transcription = value;
     }
 
     /**
-Get the Transcription property.
-
-@return The Transcription
-    **/
-    public String getTranscription () {
+     * Get the Transcription property.
+     *
+     * @return The Transcription
+     */
+    public String getTranscription() {
         return transcription;
     }
 

@@ -1,22 +1,22 @@
-/**
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util.grid;
 
@@ -29,17 +29,18 @@ import ucar.unidata.util.StringUtil;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.*;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 
 import java.io.File;
 
 import java.util.ArrayList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -143,10 +144,10 @@ public class LatLonGrid extends Grid {
         if (countGrid == null) {
             return polygon;
         }
-	ArrayList<Point> points = new ArrayList<Point>();
-        int firstCol = -1;
-        int lastRow  = -1;
-        int lastCol  = 0;
+        ArrayList<Point> points   = new ArrayList<Point>();
+        int              firstCol = -1;
+        int              lastRow  = -1;
+        int              lastCol  = 0;
         for (int row = 0; row < getHeight(); row++) {
             for (int col = 0; col < getWidth(); col++) {
                 if (countGrid[row][col] != 0) {
@@ -156,6 +157,7 @@ public class LatLonGrid extends Grid {
                     lastCol = col;
                     polygon.add(new double[] { getLatitude(row),
                             getLongitude(col) });
+
                     //                    points.add(new Point(col,row));
                     break;
                 }
@@ -172,6 +174,7 @@ public class LatLonGrid extends Grid {
                     lastRow = row;
                     polygon.add(new double[] { getLatitude(row),
                             getLongitude(col) });
+
                     //                    points.add(new Point(col,row));
                     break;
                 }
@@ -184,6 +187,7 @@ public class LatLonGrid extends Grid {
                     lastCol = col;
                     polygon.add(new double[] { getLatitude(row),
                             getLongitude(col) });
+
                     //                    points.add(new Point(col, row));
                     break;
                 }
@@ -194,6 +198,7 @@ public class LatLonGrid extends Grid {
                 if (countGrid[row][col] != 0) {
                     polygon.add(new double[] { getLatitude(row),
                             getLongitude(col) });
+
                     //                    points.add(new Point(col,row));
                     break;
                 }
@@ -236,6 +241,7 @@ public class LatLonGrid extends Grid {
         if (valueGrid == null) {
             valueGrid = new double[getHeight()][getWidth()];
         }
+
         return valueGrid;
     }
 
@@ -249,6 +255,7 @@ public class LatLonGrid extends Grid {
             minGrid = new double[getHeight()][getWidth()];
             GridUtils.fill(minGrid, Double.NaN);
         }
+
         return minGrid;
     }
 
@@ -276,6 +283,7 @@ public class LatLonGrid extends Grid {
             countGrid = new int[getHeight()][getWidth()];
             GridUtils.fill(countGrid, 0);
         }
+
         return countGrid;
     }
 
@@ -288,6 +296,7 @@ public class LatLonGrid extends Grid {
      */
     public double[][] fillValue(double value) {
         GridUtils.fill(getValueGrid(), value);
+
         return getValueGrid();
     }
 
@@ -300,6 +309,7 @@ public class LatLonGrid extends Grid {
      */
     public double[][] fillMin(double value) {
         GridUtils.fill(getMinGrid(), value);
+
         return getMinGrid();
     }
 
@@ -313,6 +323,7 @@ public class LatLonGrid extends Grid {
      */
     public double[][] fillMax(double value) {
         GridUtils.fill(getMaxGrid(), value);
+
         return getMaxGrid();
     }
 
@@ -354,6 +365,7 @@ public class LatLonGrid extends Grid {
     public int getCount(double lat, double lon) {
         int yIndex = getLatitudeIndex(lat);
         int xIndex = getLongitudeIndex(lon);
+
         return getCountGrid()[yIndex][xIndex];
     }
 
@@ -368,6 +380,7 @@ public class LatLonGrid extends Grid {
     public double getValue(double lat, double lon) {
         int yIndex = getLatitudeIndex(lat);
         int xIndex = getLongitudeIndex(lon);
+
         return getValueGrid()[yIndex][xIndex];
     }
 
@@ -395,6 +408,7 @@ public class LatLonGrid extends Grid {
     public double getMin(double lat, double lon) {
         int yIndex = getLatitudeIndex(lat);
         int xIndex = getLongitudeIndex(lon);
+
         return getMinGrid()[yIndex][xIndex];
     }
 
@@ -421,6 +435,7 @@ public class LatLonGrid extends Grid {
     public double getMax(double lat, double lon) {
         int yIndex = getLatitudeIndex(lat);
         int xIndex = getLongitudeIndex(lon);
+
         return getMaxGrid()[yIndex][xIndex];
     }
 
@@ -524,8 +539,9 @@ public class LatLonGrid extends Grid {
     public void addValue(double lat, double lon, double value) {
         int yIndex = getLatitudeIndex(lat);
         int xIndex = getLongitudeIndex(lon);
-        if(yIndex<0 || xIndex<0) {
-            System.err.println("Bad index:" + yIndex +"/" + xIndex + " " + lat +"/" + lon); 
+        if ((yIndex < 0) || (xIndex < 0)) {
+            System.err.println("Bad index:" + yIndex + "/" + xIndex + " "
+                               + lat + "/" + lon);
             System.err.println("grid:" + this);
         }
         addValueToIndex(yIndex, xIndex, value);
@@ -578,9 +594,9 @@ public class LatLonGrid extends Grid {
      * @return _more_
      */
     public String toString() {
-        return "llg: north=" + getNorth() + " west=" + getWest() +
-            " south=" + getSouth() +" east=" +getEast()  + 
-            " dimensions:" + getWidth() + "/" + getHeight();
+        return "llg: north=" + getNorth() + " west=" + getWest() + " south="
+               + getSouth() + " east=" + getEast() + " dimensions:"
+               + getWidth() + "/" + getHeight();
     }
 
 
@@ -747,6 +763,7 @@ public class LatLonGrid extends Grid {
             index = table.length - 1;
         }
         int[] c = table[index];
+
         return new Color(c[0], c[1], c[2]);
     }
 
@@ -764,6 +781,7 @@ public class LatLonGrid extends Grid {
                           ? 0.5
                           : (value - min) / (max - min));
         Color  c       = getColor(table, percent);
+
         return ((0xff << 24) | (c.getRed() << 16) | (c.getGreen() << 8)
                 | c.getBlue());
     }
@@ -861,6 +879,7 @@ public class LatLonGrid extends Grid {
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             generateGrid();
+
             return;
         }
         LatLonGrid llg = new LatLonGrid(360, 180, 90, -180, -90, 180);
@@ -982,77 +1001,124 @@ public class LatLonGrid extends Grid {
         if (cnt > 0) {
             theGrid[y][x] = sum / cnt;
         }
+
         return true;
     }
 
- 
+
     //Copied from http://code.google.com/p/convex-hull/source/checkout
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Aug 23, '13
+     * @author         Enter your name here...    
+     */
     public static class FastConvexHull {
 
-	public static ArrayList<Point> execute(ArrayList<Point> points) {
+        /**
+         * _more_
+         *
+         * @param points _more_
+         *
+         * @return _more_
+         */
+        public static ArrayList<Point> execute(ArrayList<Point> points) {
             ArrayList<Point> xSorted = (ArrayList<Point>) points.clone();
             Collections.sort(xSorted, new XCompare());
-		
-            int n = xSorted.size();
-		
+
+            int     n      = xSorted.size();
+
             Point[] lUpper = new Point[n];
-		
+
             lUpper[0] = xSorted.get(0);
             lUpper[1] = xSorted.get(1);
-		
+
             int lUpperSize = 2;
-		
+
             for (int i = 2; i < n; i++) {
                 lUpper[lUpperSize] = xSorted.get(i);
                 lUpperSize++;
-			
-                while (lUpperSize > 2 && !rightTurn(lUpper[lUpperSize - 3], lUpper[lUpperSize - 2], lUpper[lUpperSize - 1])) {
+
+                while ((lUpperSize > 2)
+                        && !rightTurn(lUpper[lUpperSize - 3],
+                                      lUpper[lUpperSize - 2],
+                                      lUpper[lUpperSize - 1])) {
                     // Remove the middle point of the three last
                     lUpper[lUpperSize - 2] = lUpper[lUpperSize - 1];
                     lUpperSize--;
                 }
             }
-		
+
             Point[] lLower = new Point[n];
-		
+
             lLower[0] = xSorted.get(n - 1);
             lLower[1] = xSorted.get(n - 2);
-		
+
             int lLowerSize = 2;
-		
+
             for (int i = n - 3; i >= 0; i--) {
                 lLower[lLowerSize] = xSorted.get(i);
                 lLowerSize++;
-			
-                while (lLowerSize > 2 && !rightTurn(lLower[lLowerSize - 3], lLower[lLowerSize - 2], lLower[lLowerSize - 1])) {
+
+                while ((lLowerSize > 2)
+                        && !rightTurn(lLower[lLowerSize - 3],
+                                      lLower[lLowerSize - 2],
+                                      lLower[lLowerSize - 1])) {
                     // Remove the middle point of the three last
                     lLower[lLowerSize - 2] = lLower[lLowerSize - 1];
                     lLowerSize--;
                 }
             }
-		
+
             ArrayList<Point> result = new ArrayList<Point>();
-		
+
             for (int i = 0; i < lUpperSize; i++) {
                 result.add(lUpper[i]);
             }
-		
+
             for (int i = 1; i < lLowerSize - 1; i++) {
                 result.add(lLower[i]);
             }
-		
-            return result;
-	}
-	
-	private static  boolean rightTurn(Point a, Point b, Point c) {
-            return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x) > 0;
-	}
 
-	private static class XCompare implements Comparator<Point> {
+            return result;
+        }
+
+        /**
+         * _more_
+         *
+         * @param a _more_
+         * @param b _more_
+         * @param c _more_
+         *
+         * @return _more_
+         */
+        private static boolean rightTurn(Point a, Point b, Point c) {
+            return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x) > 0;
+        }
+
+        /**
+         * Class description
+         *
+         *
+         * @version        $version$, Fri, Aug 23, '13
+         * @author         Enter your name here...    
+         */
+        private static class XCompare implements Comparator<Point> {
+
+            /**
+             * _more_
+             *
+             * @param o1 _more_
+             * @param o2 _more_
+             *
+             * @return _more_
+             */
             public int compare(Point o1, Point o2) {
                 return (new Integer(o1.x)).compareTo(new Integer(o2.x));
             }
-	}
+        }
     }
 
 

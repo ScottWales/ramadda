@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -75,8 +74,8 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        StringBuffer sb      = new StringBuffer();
-        String       formUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        StringBuffer sb = new StringBuffer();
+        String formUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                           entry);
         String query = request.getString(ARG_QUERY, "");
         sb.append(HtmlUtils.form(formUrl, ""));

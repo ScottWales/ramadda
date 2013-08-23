@@ -1,7 +1,28 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.util;
 
+
 import ucar.unidata.util.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -50,16 +71,16 @@ public class MyTrace {
     private static boolean showLineNumber = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable accumTable = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable accumCntTable = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable accum1Table = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private static List accumList = new ArrayList();
 
 
@@ -174,6 +195,7 @@ public class MyTrace {
             sb = new StringBuffer();
             traceMsgs.put(t, sb);
         }
+
         return sb;
     }
 
@@ -188,6 +210,7 @@ public class MyTrace {
             tab = new Integer(0);
             tabs.put(t, tab);
         }
+
         return tab;
     }
 
@@ -284,6 +307,7 @@ public class MyTrace {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -476,6 +500,7 @@ public class MyTrace {
                     line = line.substring(line.indexOf("(") + 1,
                                           line.length() - 1);
                     suff = "   " + line;
+
                     break;
                 }
             }
@@ -601,6 +626,7 @@ public class MyTrace {
         Long l    = (Long) accum1Table.get(name);
         if (l == null) {
             msg("Cannot find accum:" + name);
+
             return;
         }
         long delta = time - l.longValue();
@@ -630,8 +656,8 @@ public class MyTrace {
             String  name  = (String) accumList.get(i);
             Long    total = (Long) accumTable.get(name);
             Integer cnt   = (Integer) accumCntTable.get(name);
-            long nanos = total.longValue();
-            msg(name + " Time:" + (nanos/1000000) + " count:" + cnt);
+            long    nanos = total.longValue();
+            msg(name + " Time:" + (nanos / 1000000) + " count:" + cnt);
         }
         accumList     = new ArrayList();
         accum1Table   = new Hashtable();
@@ -673,4 +699,3 @@ public class MyTrace {
 
 
 }
-

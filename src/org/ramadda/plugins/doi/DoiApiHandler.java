@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -56,15 +55,16 @@ import java.util.regex.*;
 public class DoiApiHandler extends RepositoryManager implements RequestHandler {
 
 
+    /** _more_          */
     public static final String ARG_DOI = "doi";
 
     /**
      *     ctor
-     *    
+     *
      *     @param repository the repository
      *     @param node xml from api.xml
      *     @param props propertiesn
-     *    
+     *
      *     @throws Exception on badness
      */
     public DoiApiHandler(Repository repository) throws Exception {
@@ -85,30 +85,42 @@ public class DoiApiHandler extends RepositoryManager implements RequestHandler {
     public Result processDoiSearch(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.p());
-        if(!request.defined(ARG_DOI)) {
+        if ( !request.defined(ARG_DOI)) {
             makeForm(request, sb);
+
             return new Result("", sb);
         }
-        
-        Entry entry =  getEntryManager().getEntryFromMetadata(request, DoiMetadataHandler.TYPE_DOI, request.getString(ARG_DOI,""), 2);
-        if(entry==null) {
+
+        Entry entry = getEntryManager().getEntryFromMetadata(request,
+                          DoiMetadataHandler.TYPE_DOI,
+                          request.getString(ARG_DOI, ""), 2);
+        if (entry == null) {
             sb.append("Could not find DOI:" + request.getString(ARG_DOI, ""));
             sb.append(HtmlUtils.p());
             makeForm(request, sb);
-            return new Result("",sb);
+
+            return new Result("", sb);
         }
         request.put(ARG_ENTRYID, entry.getId());
+
         return getEntryManager().processEntryShow(request);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     */
     private void makeForm(Request request, StringBuffer sb) {
-        String       base   = getRepository().getUrlBase();
+        String base = getRepository().getUrlBase();
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.form(base + "/doi"));
         sb.append(HtmlUtils.formEntry("DOI",
-                                      HtmlUtils.input(ARG_DOI,request.getString(ARG_DOI, ""))));
+                                      HtmlUtils.input(ARG_DOI,
+                                          request.getString(ARG_DOI, ""))));
 
-        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Find DOI","")));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Find DOI", "")));
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.formTableClose());
     }

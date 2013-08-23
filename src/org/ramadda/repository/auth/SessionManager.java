@@ -85,7 +85,7 @@ public class SessionManager extends RepositoryManager {
     public static final String COOKIE_NAME = "repositorysession";
 
 
-    /** _more_          */
+    /** _more_ */
     private String cookieName;
 
     /** _more_ */
@@ -94,7 +94,7 @@ public class SessionManager extends RepositoryManager {
 
     //This holds sessions for anonymous users. The timeout is 24 hours. Max size is 1000
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, Session> anonymousSessionMap =
         new TTLCache<String, Session>(1000 * 3600 * 24, 1000);
 

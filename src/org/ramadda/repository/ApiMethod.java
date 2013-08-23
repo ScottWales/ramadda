@@ -84,7 +84,7 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_ADMIN = "admin";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ISUSER = "isuser";
 
     /** _more_ */

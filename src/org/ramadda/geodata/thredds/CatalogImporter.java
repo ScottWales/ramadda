@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,13 +27,14 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -115,16 +115,17 @@ public class CatalogImporter extends OutputHandler {
         if ( !request.getUser().getAdmin()) {
             return;
         }
-        /******
-        Let's not put the THREDDS importer into the File menu
-        if (state.group != null) {
-            links.add(makeLink(request, state.group, OUTPUT_CATALOG_IMPORT));
-            Link hr = new Link(true);
-            hr.setLinkType(OutputType.TYPE_FILE);
-            //take the hr out for now
-            //links.add(hr);
-        }
-        ******/
+
+        /**
+         * Let's not put the THREDDS importer into the File menu
+         * if (state.group != null) {
+         *   links.add(makeLink(request, state.group, OUTPUT_CATALOG_IMPORT));
+         *   Link hr = new Link(true);
+         *   hr.setLinkType(OutputType.TYPE_FILE);
+         *   //take the hr out for now
+         *   //links.add(hr);
+         * }
+         */
     }
 
 

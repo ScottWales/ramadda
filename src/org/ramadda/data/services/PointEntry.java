@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,9 +21,11 @@
 package org.ramadda.data.services;
 
 
-import org.ramadda.data.record.*;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.binary.*;
+
+
+import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 
 
@@ -33,6 +34,7 @@ import org.ramadda.repository.*;
 import ucar.unidata.util.IOUtil;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -45,11 +47,21 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
-    public static final String SUFFIX_BINARY_DOUBLE = ".dllb";    
-    public static final String SUFFIX_BINARY_FLOAT = ".fllb";    
+    /** _more_          */
+    public static final String SUFFIX_BINARY_DOUBLE = ".dllb";
 
-    public static final String FILE_BINARY_DOUBLE = "lightweight" + SUFFIX_BINARY_DOUBLE;
-    public static final String FILE_BINARY_FLOAT = "lightweight" + SUFFIX_BINARY_FLOAT;
+    /** _more_          */
+    public static final String SUFFIX_BINARY_FLOAT = ".fllb";
+
+    /** _more_          */
+    public static final String FILE_BINARY_DOUBLE = "lightweight"
+                                                    + SUFFIX_BINARY_DOUBLE;
+
+    /** _more_          */
+    public static final String FILE_BINARY_FLOAT = "lightweight"
+                                                   + SUFFIX_BINARY_FLOAT;
+
+    /** _more_          */
     public static final String FILE_BINARY_DEFAULT = FILE_BINARY_FLOAT;
 
 
@@ -73,16 +85,38 @@ public class PointEntry extends RecordEntry {
 
 
 
+    /**
+     * _more_
+     *
+     * @param l _more_
+     *
+     * @return _more_
+     */
     public static List<PointEntry> toPointEntryList(List l) {
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
-        for(Object o: l) pointEntries.add((PointEntry)o);
+        for (Object o : l) {
+            pointEntries.add((PointEntry) o);
+        }
+
         return pointEntries;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getOutputHandler();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public PointFile getPointFile() throws Exception {
         return (PointFile) getRecordFile();
     }
@@ -101,20 +135,36 @@ public class PointEntry extends RecordEntry {
         if (recordFile == null) {
             long records = getNumRecordsFromEntry(-1);
             //            System.err.println ("PointEntry.getRecordFile");
-            recordFile = getPointOutputHandler().createAndInitializeRecordFile(getRequest(),
-                                                                               getEntry(), records);
+            recordFile =
+                getPointOutputHandler().createAndInitializeRecordFile(
+                    getRequest(), getEntry(), records);
             setRecordFile(recordFile);
         }
+
         return recordFile;
     }
 
 
 
-    public static  boolean isDoubleBinaryFile(File f) {
+    /**
+     * _more_
+     *
+     * @param f _more_
+     *
+     * @return _more_
+     */
+    public static boolean isDoubleBinaryFile(File f) {
         return f.toString().endsWith(SUFFIX_BINARY_DOUBLE);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean isArealCoverage() throws Exception {
         return getRecordFile().isCapable(PointFile.ACTION_AREAL_COVERAGE);
     }
@@ -128,14 +178,15 @@ public class PointEntry extends RecordEntry {
         File entryDir = getOutputHandler().getStorageManager().getEntryDir(
                             getEntry().getId(), true);
         //Look for one that exists
-        for(String file: new String[]{FILE_BINARY_DOUBLE, FILE_BINARY_FLOAT}){
-            File quickscanFile = new File(IOUtil.joinDir(entryDir,
-                                                         file));
-            if(quickscanFile.exists()) {
+        for (String file : new String[] { FILE_BINARY_DOUBLE,
+                                          FILE_BINARY_FLOAT }) {
+            File quickscanFile = new File(IOUtil.joinDir(entryDir, file));
+            if (quickscanFile.exists()) {
                 return quickscanFile;
             }
         }
-        return new File(IOUtil.joinDir(entryDir,FILE_BINARY_DEFAULT));
+
+        return new File(IOUtil.joinDir(entryDir, FILE_BINARY_DEFAULT));
     }
 
 
@@ -156,6 +207,7 @@ public class PointEntry extends RecordEntry {
             System.err.println("POINT: Using quick scan file #records = "
                                + quickscanFile.getNumRecords());
             quickscanFile.visit(visitor, visitInfo, getFilter());
+
             return;
         }
         super.visit(visitor, visitInfo);
@@ -183,26 +235,27 @@ public class PointEntry extends RecordEntry {
                 getOutputHandler().getStorageManager().getEntryDir(
                     getEntry().getId(), true);
             File quickscanFile = getQuickScanFile();
-            if (!quickscanFile.exists()) {
+            if ( !quickscanFile.exists()) {
                 //Write to a tmp file and only move it over when we are done
                 File tmpFile = new File(IOUtil.joinDir(entryDir,
-                                                       "tmpfile.bin"));
+                                   "tmpfile.bin"));
                 pointFile.setDefaultSkip(0);
                 System.err.println("POINT: making quickscan file ");
-                writeBinaryFile(tmpFile,
-                                pointFile,isDoubleBinaryFile(quickscanFile));
+                writeBinaryFile(tmpFile, pointFile,
+                                isDoubleBinaryFile(quickscanFile));
                 tmpFile.renameTo(quickscanFile);
                 System.err.println("POINT: done making quickscan file");
             }
 
-            if(isDoubleBinaryFile(quickscanFile)) {
+            if (isDoubleBinaryFile(quickscanFile)) {
                 binaryPointFile =
                     new DoubleLatLonBinaryFile(quickscanFile.toString());
-            } else{
+            } else {
                 binaryPointFile =
                     new FloatLatLonBinaryFile(quickscanFile.toString());
             }
         }
+
         return binaryPointFile;
     }
 
@@ -212,20 +265,24 @@ public class PointEntry extends RecordEntry {
      *
      * @param outputFile file to write to
      * @param pointFile file to read from
+     * @param asDouble _more_
      *
      * @throws Exception On badness
      */
-    public void writeBinaryFile(File outputFile, PointFile pointFile, boolean asDouble)
+    public void writeBinaryFile(File outputFile, PointFile pointFile,
+                                boolean asDouble)
             throws Exception {
 
-        if(asDouble) {
-            DoubleLatLonBinaryFile.writeBinaryFile(pointFile,
-                                                      getPointOutputHandler().getStorageManager().getUncheckedFileOutputStream(outputFile),
-                                                      null);
+        if (asDouble) {
+            DoubleLatLonBinaryFile
+                .writeBinaryFile(pointFile, getPointOutputHandler()
+                    .getStorageManager()
+                    .getUncheckedFileOutputStream(outputFile), null);
         } else {
-            FloatLatLonBinaryFile.writeBinaryFile(pointFile,
-                                                  getPointOutputHandler().getStorageManager().getUncheckedFileOutputStream(outputFile),
-                                                  null);
+            FloatLatLonBinaryFile
+                .writeBinaryFile(pointFile, getPointOutputHandler()
+                    .getStorageManager()
+                    .getUncheckedFileOutputStream(outputFile), null);
         }
     }
 

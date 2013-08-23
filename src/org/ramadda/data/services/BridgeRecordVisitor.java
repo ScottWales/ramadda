@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -122,13 +121,25 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     }
 
 
-    public BridgeRecordVisitor() {
-    }
+    /**
+     * _more_
+     */
+    public BridgeRecordVisitor() {}
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public RecordOutputHandler getHandler() {
         return handler;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Object getProcessId() {
         return processId;
     }
@@ -245,7 +256,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
     public final boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                      Record record) {
         numPoints++;
-        if (handler !=null &&  !handler.jobOK(processId)) {
+        if ((handler != null) && !handler.jobOK(processId)) {
             return false;
         }
         try {

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -84,20 +83,20 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map) {
-        String url = getRepository().getHtmlOutputHandler().getImageUrl(request, entry);
+        String url =
+            getRepository().getHtmlOutputHandler().getImageUrl(request,
+                entry);
         //        this.addImageLayer('Test', '/repository/images/dilbert.gif',88,-180,-88,180,500,500);
         //    this.addImageLayer = function(name, url, north,west,south,east, width,height) {
         //map.addMarker("id", lat, lon, null, info);
         //    public static String jsMakeArgs(String[]args, boolean andSquote) {
-        map.addJS(HtmlUtils.call("theMap.addImageLayer", 
-                                 HtmlUtils.jsMakeArgs(new String[]{
-                                         HtmlUtils.squote(entry.getName()),
-                                         HtmlUtils.squote(url),
-                                         ""+entry.getNorth(),
-                                         "" + entry.getWest(),
-                                         ""+entry.getSouth(),
-                                         ""+entry.getEast(),
-                                         "400","400"},false)));
+        map.addJS(HtmlUtils.call("theMap.addImageLayer",
+                                 HtmlUtils.jsMakeArgs(new String[] {
+            HtmlUtils.squote(entry.getName()), HtmlUtils.squote(url),
+            "" + entry.getNorth(), "" + entry.getWest(),
+            "" + entry.getSouth(), "" + entry.getEast(), "400", "400"
+        }, false)));
+
         return true;
     }
 

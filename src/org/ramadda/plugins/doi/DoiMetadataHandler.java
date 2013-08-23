@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,15 +28,16 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.metadata.*;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
 
 
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -79,7 +79,10 @@ import java.util.List;
  */
 public class DoiMetadataHandler extends MetadataHandler {
 
+    /** _more_          */
     public static final String ID_TYPE_DOI = "doi";
+
+    /** _more_          */
     public static final String ID_TYPE_ARK = "ark";
 
     /** _more_ */
@@ -111,23 +114,53 @@ public class DoiMetadataHandler extends MetadataHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
-        throws Exception {
-        String type = metadata.getAttr1();
-        String label = (type.equals(ID_TYPE_DOI)?"DOI":"ARK");
-        return new String[]{label, getHref(metadata.getAttr2())};
+            throws Exception {
+        String type  = metadata.getAttr1();
+        String label = (type.equals(ID_TYPE_DOI)
+                        ? "DOI"
+                        : "ARK");
+
+        return new String[] { label, getHref(metadata.getAttr2()) };
     }
 
     //http://n2t.net/ark:/99999/fk47h23wj
     //ark:/99999/fk47h23wj
     //http://dx.doi.org/
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     *
+     * @return _more_
+     */
     public static String getUrl(String id) {
-        if(id.startsWith("doi:")) 
+        if (id.startsWith("doi:")) {
             return id.replace("doi:", "http://dx.doi.org/");
+        }
+
         return id.replace("ark:", "http://n2t.net/ark:");
     }
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     *
+     * @return _more_
+     */
     public static String getHref(String id) {
         return HtmlUtils.href(getUrl(id), id);
     }

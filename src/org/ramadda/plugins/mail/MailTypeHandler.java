@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -50,6 +49,7 @@ import javax.mail.internet.*;
  */
 public class MailTypeHandler extends GenericTypeHandler {
 
+    /** _more_          */
     public static final String TYPE_MESSAGE = "mail_message";
 
     /**
@@ -107,7 +107,8 @@ public class MailTypeHandler extends GenericTypeHandler {
             entry.setName(subject);
         }
         String       from     = InternetAddress.toString(message.getFrom());
-        String       to = InternetAddress.toString(message.getAllRecipients());
+        String       to =
+            InternetAddress.toString(message.getAllRecipients());
         StringBuffer desc     = new StringBuffer();
         Object       content  = message.getContent();
         Date         fromDttm = message.getSentDate();
@@ -134,8 +135,9 @@ public class MailTypeHandler extends GenericTypeHandler {
         //Set the description from the mail message
         if (entry.getDescription().length() == 0) {
             String description = desc.toString();
-            if(description.length()> Entry.MAX_DESCRIPTION_LENGTH) {
-                description = description.substring(0,Entry.MAX_DESCRIPTION_LENGTH-1);
+            if (description.length() > Entry.MAX_DESCRIPTION_LENGTH) {
+                description = description.substring(0,
+                        Entry.MAX_DESCRIPTION_LENGTH - 1);
             }
             System.err.println("desc length:" + description.length());
             entry.setDescription(description);
@@ -166,7 +168,8 @@ public class MailTypeHandler extends GenericTypeHandler {
                     if (partContent instanceof MimeMultipart) {
                         processContent(request, entry, partContent, desc);
                     } else {
-                        String contentType = part.getContentType().toLowerCase();
+                        String contentType =
+                            part.getContentType().toLowerCase();
                         //Only ingest the text
                         if (contentType.indexOf("text/plain") >= 0) {
                             //                        System.err.println ("part content:" + partContent.getClass().getName());
@@ -174,14 +177,15 @@ public class MailTypeHandler extends GenericTypeHandler {
                             desc.append("\n");
                         }
                     }
+
                     continue;
                 }
                 if (disposition.equalsIgnoreCase(Part.ATTACHMENT)
                         || disposition.equalsIgnoreCase(Part.INLINE)) {
                     if (part.getFileName() != null) {
                         InputStream inputStream = part.getInputStream();
-                        File        f = getStorageManager().getTmpFile(request,
-                                                                       part.getFileName());
+                        File f = getStorageManager().getTmpFile(request,
+                                     part.getFileName());
                         OutputStream outputStream =
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(inputStream, outputStream);
@@ -239,8 +243,8 @@ public class MailTypeHandler extends GenericTypeHandler {
 
         sb.append(HtmlUtils.formEntry(msgLabel("Date"),
                                       getPageHandler().formatDate(request,
-                                                                 new Date(entry.getStartDate()),
-                                                                   (String)null)));
+                                          new Date(entry.getStartDate()),
+                                          (String) null)));
         StringBuffer attachmentsSB = new StringBuffer();
         getMetadataManager().decorateEntry(request, entry, attachmentsSB,
                                            false);

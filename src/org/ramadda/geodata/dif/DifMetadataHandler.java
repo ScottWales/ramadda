@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -89,6 +88,7 @@ public class DifMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_LOCATION = "dif.location";
 
+    /** _more_          */
     public static final String TYPE_PROJECT = "dif.project";
 
     /** _more_ */
@@ -98,11 +98,11 @@ public class DifMetadataHandler extends MetadataHandler {
     public static final String TYPE_DATA_SET_LANGUAGE =
         "dif.data_set_language";
 
-    public static final String TYPE_INSTRUMENT =
-        "dif.instrument";
+    /** _more_          */
+    public static final String TYPE_INSTRUMENT = "dif.instrument";
 
-    public static final String TYPE_PLATFORM =
-        "dif.platform";
+    /** _more_          */
+    public static final String TYPE_PLATFORM = "dif.platform";
 
     /** _more_ */
     public static final String TYPE_ORIGINATING_CENTER =

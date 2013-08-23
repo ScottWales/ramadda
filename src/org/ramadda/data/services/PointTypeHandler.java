@@ -1,3 +1,22 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
@@ -9,23 +28,23 @@ import org.ramadda.data.record.RecordFileFactory;
 import org.ramadda.data.record.RecordVisitorGroup;
 
 import org.ramadda.data.record.VisitInfo;
+import org.ramadda.data.services.PointEntry;
 
 import org.ramadda.data.services.RecordEntry;
-import org.ramadda.data.services.PointEntry;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
-import ucar.unidata.util.Misc;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.grid.LatLonGrid;
 
 
 
 import org.w3c.dom.*;
+
+import ucar.unidata.util.Misc;
 
 
 import java.io.BufferedOutputStream;
@@ -38,9 +57,9 @@ import java.io.FileOutputStream;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Date;
 import java.util.Properties;
 
 
@@ -50,8 +69,9 @@ import java.util.Properties;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public   class PointTypeHandler extends RecordTypeHandler {
+public class PointTypeHandler extends RecordTypeHandler {
 
+    /** _more_          */
     public static final String ARG_PROPERTIES_FILE = "properties.file";
 
     /**
@@ -67,11 +87,21 @@ public   class PointTypeHandler extends RecordTypeHandler {
     }
 
 
-    public  RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
-        RecordOutputHandler poh = (RecordOutputHandler) getRepository().getOutputHandler(PointOutputHandler.class);
-        if(poh == null) {
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
+        RecordOutputHandler poh =
+            (RecordOutputHandler) getRepository().getOutputHandler(
+                PointOutputHandler.class);
+        if (poh == null) {
             poh = new PointOutputHandler(getRepository(), null);
         }
+
         return poh;
     }
 
@@ -91,32 +121,36 @@ public   class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-        System.err.println ("POINT: initNewEntry");
+        System.err.println("POINT: initNewEntry");
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
-        PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
+        PointOutputHandler outputHandler =
+            (PointOutputHandler) getRecordOutputHandler();
         RecordVisitorGroup visitorGroup = new RecordVisitorGroup();
-        PointEntry         pointEntry   = (PointEntry) outputHandler.doMakeEntry(getRepository().getTmpRequest(), entry);
-        RecordFile        pointFile    = pointEntry.getRecordFile();
+        PointEntry pointEntry = (PointEntry) outputHandler.doMakeEntry(
+                                    getRepository().getTmpRequest(), entry);
+        RecordFile       pointFile    = pointEntry.getRecordFile();
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
         pointEntries.add(pointEntry);
-        PointMetadataHarvester metadataHarvester = doMakeMetadataHarvester(pointEntry);
+        PointMetadataHarvester metadataHarvester =
+            doMakeMetadataHarvester(pointEntry);
         visitorGroup.addVisitor(metadataHarvester);
-        Request          request       = getRepository().getTmpRequest();
-        final File       quickScanFile = pointEntry.getQuickScanFile();
+        Request    request       = getRepository().getTmpRequest();
+        final File quickScanFile = pointEntry.getQuickScanFile();
 
 
-        DataOutputStream dos           = new DataOutputStream(
+        DataOutputStream dos = new DataOutputStream(
                                    new BufferedOutputStream(
                                        new FileOutputStream(quickScanFile)));
-        boolean quickscanDouble = PointEntry.isDoubleBinaryFile(quickScanFile);
+        boolean quickscanDouble =
+            PointEntry.isDoubleBinaryFile(quickScanFile);
         //Make the latlon binary file when we ingest the  datafile
-        visitorGroup.addVisitor(
-            outputHandler.makeLatLonBinVisitor(
-                                                  request, entry, pointEntries, null, dos, quickscanDouble));
+        visitorGroup.addVisitor(outputHandler.makeLatLonBinVisitor(request,
+                entry, pointEntries, null, dos, quickscanDouble));
         log("initializeNewEntry: visting file");
-        System.err.println("POINT: pointFile.visit:"  + pointFile);
-        pointFile.visit(visitorGroup, new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
+        System.err.println("POINT: pointFile.visit:" + pointFile);
+        pointFile.visit(visitorGroup, new VisitInfo(VisitInfo.QUICKSCAN_NO),
+                        null);
         dos.close();
         log("init new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
@@ -124,20 +158,32 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
-        throws Exception {
+            throws Exception {
         //Check for an uploaded properties file
         if (newEntry) {
-            String propertyFileName = request.getUploadedFile(ARG_PROPERTIES_FILE);
-            if(propertyFileName!=null) {
-                String contents = getStorageManager().readSystemResource(propertyFileName);
+            String propertyFileName =
+                request.getUploadedFile(ARG_PROPERTIES_FILE);
+            if (propertyFileName != null) {
+                String contents =
+                    getStorageManager().readSystemResource(propertyFileName);
                 //Append the properties file contents
                 Object[] values = entry.getTypeHandler().getValues(entry);
-                if(values[1]!=null) {
+                if (values[1] != null) {
                     values[1] = "\n" + contents;
                 } else {
-                    values[1] =  contents;
+                    values[1] = contents;
                 }
                 System.err.println("value:" + values[1]);
             }
@@ -147,12 +193,20 @@ public   class PointTypeHandler extends RecordTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     */
     @Override
-    public void doFinalEntryInitialization(Request request, Entry entry)  {
+    public void doFinalEntryInitialization(Request request, Entry entry) {
         try {
-            super.doFinalEntryInitialization(request,  entry);
-            getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
-            getEntryManager().setTimeFromChildren(request, entry.getParentEntry(), null);
+            super.doFinalEntryInitialization(request, entry);
+            getEntryManager().setBoundsFromChildren(request,
+                    entry.getParentEntry());
+            getEntryManager().setTimeFromChildren(request,
+                    entry.getParentEntry(), null);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -166,24 +220,38 @@ public   class PointTypeHandler extends RecordTypeHandler {
      * @return _more_
      */
     public PointMetadataHarvester doMakeMetadataHarvester(
-                                                          RecordEntry pointEntry) {
+            RecordEntry pointEntry) {
         return new PointMetadataHarvester();
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param column _more_
+     * @param formBuffer _more_
+     * @param entry _more_
+     * @param values _more_
+     * @param state _more_
+     *
+     * @throws Exception _more_
+     */
     public void addColumnToEntryForm(Request request, Column column,
                                      StringBuffer formBuffer, Entry entry,
                                      Object[] values, Hashtable state)
             throws Exception {
-        super.addColumnToEntryForm(request, column,
-                                   formBuffer, entry,
-                                   values,  state);
+        super.addColumnToEntryForm(request, column, formBuffer, entry,
+                                   values, state);
 
 
 
-        if(entry == null && column.getName().equals("properties")) {
-            formBuffer.append(HtmlUtils.formEntry(msgLabel("Or upload properties"), 
-                                                  HtmlUtils.fileInput(ARG_PROPERTIES_FILE,HtmlUtils.SIZE_70)));
+        if ((entry == null) && column.getName().equals("properties")) {
+            formBuffer.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Or upload properties"),
+                    HtmlUtils.fileInput(
+                        ARG_PROPERTIES_FILE, HtmlUtils.SIZE_70)));
         }
 
     }
@@ -204,7 +272,9 @@ public   class PointTypeHandler extends RecordTypeHandler {
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
-            if (filename.endsWith(".csv") || filename.endsWith(".txt") || filename.endsWith(".xyz")|| filename.endsWith(".tsv")) {
+            if (filename.endsWith(".csv") || filename.endsWith(".txt")
+                    || filename.endsWith(".xyz")
+                    || filename.endsWith(".tsv")) {
                 //Look to see if there is also a properties file
                 Hashtable props = RecordFile.getPropertiesForFile(path,
                                       PointFile.DFLT_PROPERTIES_FILE);
@@ -212,6 +282,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
                     return false;
                 }
             }
+
             return super.canHandleResource(path, filename);
         } catch (Exception exc) {
             //If the loading flaked out then just keep going
@@ -226,6 +297,8 @@ public   class PointTypeHandler extends RecordTypeHandler {
      * _more_
      *
      * @param pointEntry _more_
+     *
+     * @param recordEntry _more_
      * @param metadata _more_
      *
      * @throws Exception _more_
@@ -235,10 +308,11 @@ public   class PointTypeHandler extends RecordTypeHandler {
             throws Exception {
 
         PointEntry pointEntry = (PointEntry) recordEntry;
-        Entry entry = pointEntry.getEntry();
+        Entry      entry      = pointEntry.getEntry();
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
-        if (pointEntry.getRecordFile().isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
+        if (pointEntry.getRecordFile().isCapable(
+                PointFile.ACTION_BOUNDINGPOLYGON)) {
             if ( !entry.hasMetadataOfType(
                     MetadataHandler.TYPE_SPATIAL_POLYGON)) {
                 LatLonGrid llg = new LatLonGrid(80, 40,
@@ -252,7 +326,7 @@ public   class PointTypeHandler extends RecordTypeHandler {
                     new PointMetadataHarvester(llg);
                 System.err.println("POINT: visiting binary file");
                 pointEntry.getBinaryPointFile().visit(metadata2,
-                                                      new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
+                        new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
                 List<double[]> polygon = llg.getBoundingPolygon();
                 StringBuffer[] sb = new StringBuffer[] { new StringBuffer(),
                         new StringBuffer(), new StringBuffer(),
@@ -288,23 +362,25 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
         //If the file has metadata then it better match up with the values that are defined in types.xml
         Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();
-        if(fileMetadata!=null) {
-            if(fileMetadata.length!=values.length-2) {
-                throw new IllegalArgumentException("Bad file metadata count:" + fileMetadata +" was expecting:" + (values.length-2));
+        if (fileMetadata != null) {
+            if (fileMetadata.length != values.length - 2) {
+                throw new IllegalArgumentException("Bad file metadata count:"
+                        + fileMetadata + " was expecting:"
+                        + (values.length - 2));
             }
-            for(int i=0;i<fileMetadata.length;i++) {
-                values[i+2] = fileMetadata[i];
+            for (int i = 0; i < fileMetadata.length; i++) {
+                values[i + 2] = fileMetadata[i];
             }
         }
 
         Properties properties = metadata.getProperties();
-        if(properties!=null) {
+        if (properties != null) {
             String contents = makePropertiesString(properties);
             //Append the properties file contents
-            if(values[1]!=null) {
+            if (values[1] != null) {
                 values[1] = "\n" + contents;
             } else {
-                values[1] =  contents;
+                values[1] = contents;
             }
         }
 
@@ -315,14 +391,14 @@ public   class PointTypeHandler extends RecordTypeHandler {
         entry.setSouth(metadata.getMinLatitude());
         entry.setEast(metadata.getMaxLongitude());
         entry.setWest(metadata.getMinLongitude());
-        if (!Double.isNaN(metadata.getMinElevation())) {
+        if ( !Double.isNaN(metadata.getMinElevation())) {
             entry.setAltitudeBottom(metadata.getMinElevation());
         }
         if ( !Double.isNaN(metadata.getMaxElevation())) {
             entry.setAltitudeTop(metadata.getMaxElevation());
         }
 
-        
+
 
 
         if (metadata.hasTimeRange()) {
@@ -356,59 +432,62 @@ public   class PointTypeHandler extends RecordTypeHandler {
 
         RecordOutputHandler outputHandler = getRecordOutputHandler();
         //TODO: let the output handler add services
-        /****** 
-        String[][] values = {
-            { outputHandler.OUTPUT_LATLONALTCSV.toString(),
-              "Lat/Lon/Alt CSV", ".csv", outputHandler.ICON_POINTS },
-            { outputHandler.OUTPUT_LAS.toString(), "LAS 1.2", ".las",
-              outputHandler.ICON_POINTS },
-            //            {outputHandler.OUTPUT_ASC.toString(),
-            //             "ARC Ascii Grid",
-            //             ".asc",null},
-            { outputHandler.OUTPUT_KMZ.toString(), ".kmz",
-              "Google Earth KMZ", getIconUrl(request, ICON_KML) }
-        };
 
-
-
-
-        for (String[] tuple : values) {
-            String product = tuple[0];
-            String name    = tuple[1];
-            String suffix  = tuple[2];
-            String icon    = tuple[3];
-            url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
-                                + entry.getName() + suffix, new String[] {
-                ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
-                outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
-                //ARG_ASYNCH, "false", 
-                //                PointOutputHandler.ARG_POINT_SKIP,
-                //                macro(PointOutputHandler.ARG_POINT_SKIP), 
-                //                ARG_BBOX,  macro(ARG_BBOX), 
-                //                ARG_DEFAULTBBOX, dfltBbox
-            }, false);
-            services.add(new Service(product, name,
-                                     request.getAbsoluteUrl(url), icon));
-        }
-
-        *****/
+        /**
+         * String[][] values = {
+         *   { outputHandler.OUTPUT_LATLONALTCSV.toString(),
+         *     "Lat/Lon/Alt CSV", ".csv", outputHandler.ICON_POINTS },
+         *   { outputHandler.OUTPUT_LAS.toString(), "LAS 1.2", ".las",
+         *     outputHandler.ICON_POINTS },
+         *   //            {outputHandler.OUTPUT_ASC.toString(),
+         *   //             "ARC Ascii Grid",
+         *   //             ".asc",null},
+         *   { outputHandler.OUTPUT_KMZ.toString(), ".kmz",
+         *     "Google Earth KMZ", getIconUrl(request, ICON_KML) }
+         * };
+         *
+         *
+         *
+         *
+         * for (String[] tuple : values) {
+         *   String product = tuple[0];
+         *   String name    = tuple[1];
+         *   String suffix  = tuple[2];
+         *   String icon    = tuple[3];
+         *   url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
+         *                       + entry.getName() + suffix, new String[] {
+         *       ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
+         *       outputHandler.OUTPUT_PRODUCT.getId(), ARG_PRODUCT, product,
+         *       //ARG_ASYNCH, "false",
+         *       //                PointOutputHandler.ARG_POINT_SKIP,
+         *       //                macro(PointOutputHandler.ARG_POINT_SKIP),
+         *       //                ARG_BBOX,  macro(ARG_BBOX),
+         *       //                ARG_DEFAULTBBOX, dfltBbox
+         *   }, false);
+         *   services.add(new Service(product, name,
+         *                            request.getAbsoluteUrl(url), icon));
+         * }
+         *
+         */
     }
 
 
-    /**                                                                         
-     * _more_                                                                   
-     *                                                                          
-     * @param request _more_                                                    
-     * @param entry _more_                                                      
-     * @param map _more_                                                        
-     *                                                                          
-     * @return _more_                                                           
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param map _more_
+     *
+     * @return _more_
      */
     @Override
-        public boolean addToMap(Request request, Entry entry, MapInfo map) {
+    public boolean addToMap(Request request, Entry entry, MapInfo map) {
         try {
-            PointOutputHandler outputHandler = (PointOutputHandler) getRecordOutputHandler();
+            PointOutputHandler outputHandler =
+                (PointOutputHandler) getRecordOutputHandler();
             outputHandler.addToMap(request, entry, map);
+
             return true;
         } catch (Exception exc) {
             throw new RuntimeException(exc);

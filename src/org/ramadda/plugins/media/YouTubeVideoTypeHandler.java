@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,9 +30,10 @@ import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.IOUtil;
+
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.IOUtil;
 
 
 import ucar.unidata.xml.XmlUtil;
@@ -48,22 +48,22 @@ import java.util.List;
  */
 public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_WIDTH = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_HEIGHT = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_START = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_END = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DISPLAY = 4;
 
-    /** _more_          */
+    /** _more_ */
     private int idCnt = 0;
 
     /**
@@ -87,16 +87,18 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     public String getDefaultEntryName(String path) {
-        String html = IOUtil.readContents(path, "");
-        String title =  StringUtil.findPattern(html,"<title>(.*)</title>");
-        if(title == null) {
-            title =  StringUtil.findPattern(html,"<TITLE>(.*)</TITLE>");
+        String html  = IOUtil.readContents(path, "");
+        String title = StringUtil.findPattern(html, "<title>(.*)</title>");
+        if (title == null) {
+            title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
         }
         System.err.println("title:" + title);
-        if(title!=null) {
+        if (title != null) {
             title = title.replace("- YouTube", "");
+
             return title;
         }
+
         //TODO: fetch the web page and get the title
         return "YouTube Video";
     }
@@ -124,11 +126,11 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
             return null;
         }
 
-        StringBuffer sb  = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         sb.append(entry.getDescription());
         sb.append(HtmlUtils.p());
-        String       url = entry.getResource().getPath();
-        String       id  = StringUtil.findPattern(url, "v=([^&]+)&");
+        String url = entry.getResource().getPath();
+        String id  = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
             id = StringUtil.findPattern(url, "v=([^&]+)");
         }
@@ -171,7 +173,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         sb.append("</iframe>\n");
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry, "video_cue", false);
+            getMetadataManager().findMetadata(request, entry, "video_cue",
+                false);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             StringBuffer links = new StringBuffer();
             for (Metadata metadata : metadataList) {
@@ -222,7 +225,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      */
     public static void main(String[] args) {
         String pattern = "^http://www.youtube.com/watch\\?v=.*";
-        String url     =
+        String url =
             "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
         System.err.println(url.matches(pattern));
     }

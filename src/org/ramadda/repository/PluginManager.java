@@ -85,7 +85,7 @@ import java.util.zip.*;
  */
 public class PluginManager extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PLUGIN_ALL =
         "/org/ramadda/repository/resources/plugins/allplugins.jar";
 
@@ -127,7 +127,7 @@ public class PluginManager extends RepositoryManager {
     private List<String> outputDefFiles = new ArrayList<String>();
 
 
-    /** _more_          */
+    /** _more_ */
     private List<String> classDefFiles = new ArrayList<String>();
 
 
@@ -579,7 +579,7 @@ public class PluginManager extends RepositoryManager {
      */
     private class MyClassLoader extends MultiJarClassLoader {
 
-        /** _more_          */
+        /** _more_ */
         private HashSet seenClasses = new HashSet();
 
         /**

@@ -52,28 +52,28 @@ import java.util.Properties;
  */
 public class JettyServer implements Constants {
 
-    /** _more_          */
+    /** _more_ */
     private String[] args;
 
-    /** _more_          */
+    /** _more_ */
     private int port;
 
-    /** _more_          */
+    /** _more_ */
     private int sslPort = -1;
 
-    /** _more_          */
+    /** _more_ */
     private Server server;
 
-    /** _more_          */
+    /** _more_ */
     private RepositoryServlet baseServlet;
 
-    /** _more_          */
+    /** _more_ */
     private ServletContextHandler context;
 
-    /** _more_          */
+    /** _more_ */
     private Repository baseRepository;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<RepositoryServlet, ServletHolder> servletToHolder =
         new Hashtable<RepositoryServlet, ServletHolder>();
 

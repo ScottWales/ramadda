@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -58,7 +57,7 @@ public class KmlEntryOutputHandler extends OutputHandler {
         new OutputType("Display as HTML", "kml.html", OutputType.TYPE_VIEW,
                        "", ICON_KML);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_KMZ_IMAGE =
         new OutputType("Display as HTML", "kml.image", OutputType.TYPE_VIEW,
                        "", ICON_KML);

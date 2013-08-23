@@ -148,7 +148,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                                   "/search/form",
                                                   "Advanced Search");
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
                                                   "/search/type",
                                                   "Search by Type");

@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -124,7 +123,8 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
             throws Exception {
         super.processEntry(request, interp, info, processInfo, theEntry);
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        DataProcessInfo      dataProcessInfo   = (DataProcessInfo) processInfo;
+        DataProcessInfo      dataProcessInfo   =
+            (DataProcessInfo) processInfo;
 
         String path = dataOutputHandler.getCdmManager().getPath(theEntry);
         if (path != null) {
@@ -173,7 +173,8 @@ public class DataJythonTypeHandler extends JythonTypeHandler {
             throws Exception {
         super.cleanup(request, entry, interp, processInfo);
         CdmDataOutputHandler dataOutputHandler = getDataOutputHandler();
-        DataProcessInfo      dataProcessInfo   = (DataProcessInfo) processInfo;
+        DataProcessInfo      dataProcessInfo   =
+            (DataProcessInfo) processInfo;
         for (DataSource dataSource : dataProcessInfo.dataSources) {
             dataSource.doRemove();
         }

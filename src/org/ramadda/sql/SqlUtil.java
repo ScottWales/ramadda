@@ -1,3 +1,22 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.sql;
 
@@ -144,6 +163,7 @@ public class SqlUtil {
         if (toks.size() > 0) {
             return " WHERE " + StringUtil.join(" AND ", toks);
         }
+
         return " ";
     }
 
@@ -160,6 +180,7 @@ public class SqlUtil {
             sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
         }
+
         return sdf.format(d);
     }
 
@@ -176,6 +197,7 @@ public class SqlUtil {
     public static String getDateString(String dttm)
             throws java.text.ParseException {
         Date date = DateUtil.parse(dttm);
+
         return SqlUtil.format(date);
 
     }
@@ -196,6 +218,7 @@ public class SqlUtil {
             }
             s = s + "?";
         }
+
         return s;
     }
 
@@ -237,6 +260,7 @@ public class SqlUtil {
         for (int i = 0; i < s.length; i++) {
             l.add(unDot(s[i]));
         }
+
         return StringUtil.join(",", l);
     }
 
@@ -253,6 +277,7 @@ public class SqlUtil {
         if (idx >= 0) {
             col = col.substring(idx + 1);
         }
+
         return col;
     }
 
@@ -419,6 +444,7 @@ public class SqlUtil {
         } else if (notNots.size() > 0) {
             return group(sb.toString());
         }
+
         return "";
     }
 
@@ -519,6 +545,7 @@ public class SqlUtil {
         sb.append(" VALUES (");
         sb.append(values);
         sb.append(")");
+
         return sb.toString();
     }
 
@@ -545,6 +572,7 @@ public class SqlUtil {
             sb.append(" ? ");
         }
         sb.append(" )");
+
         return sb.toString();
     }
 
@@ -566,6 +594,7 @@ public class SqlUtil {
         sb.append(table);
         sb.append(" WHERE ");
         sb.append(where);
+
         return sb.toString();
     }
 
@@ -586,6 +615,7 @@ public class SqlUtil {
         sb.append(table);
         sb.append(" WHERE ");
         sb.append(colId + "=" + id);
+
         return sb.toString();
     }
 
@@ -698,6 +728,7 @@ public class SqlUtil {
         }
         sb.append(" WHERE ");
         sb.append(colId + " = ?");
+
         return sb.toString();
     }
 
@@ -726,6 +757,7 @@ public class SqlUtil {
         }
         sb.append(" WHERE ");
         clause.addClause(sb);
+
         return sb.toString();
     }
 
@@ -991,6 +1023,7 @@ public class SqlUtil {
                                 ? " NOT "
                                 : "") + " LIKE " + quote(value) + " ";
         }
+
         return " " + col + (doNot
                             ? " <> "
                             : "=") + (quoteThem
@@ -1122,6 +1155,7 @@ public class SqlUtil {
         if (sb.toString().length() > 0) {
             result.add(sb.toString());
         }
+
         return result;
     }
 
@@ -1158,6 +1192,7 @@ public class SqlUtil {
 
         double[] actual = new double[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
 
 
@@ -1196,6 +1231,7 @@ public class SqlUtil {
 
         float[] actual = new float[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
     }
 
@@ -1252,6 +1288,7 @@ public class SqlUtil {
             System.arraycopy(current, 0, actual, 0, cnt);
             arrays.set(column, actual);
         }
+
         return arrays;
     }
 
@@ -1288,6 +1325,7 @@ public class SqlUtil {
 
         int[] actual = new int[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
     }
 
@@ -1376,6 +1414,7 @@ public class SqlUtil {
         }
         String[] actual = new String[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
     }
 
@@ -1404,6 +1443,7 @@ public class SqlUtil {
             }
             values.add(tuple);
         }
+
         return values;
     }
 
@@ -1443,6 +1483,7 @@ public class SqlUtil {
 
         double[] actual = new double[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
     }
 
@@ -1474,6 +1515,7 @@ public class SqlUtil {
 
         Date[] actual = new Date[cnt];
         System.arraycopy(current, 0, actual, 0, cnt);
+
         return actual;
     }
 
@@ -1600,6 +1642,7 @@ public class SqlUtil {
                 }
                 stmt = null;
             }
+
             return lastResultSet;
         }
 
@@ -1633,21 +1676,25 @@ public class SqlUtil {
                     }
                     if ( !lastResultSet.next()) {
                         checkClose();
+
                         return null;
                     }
                     //Run through the offset
                     while (offset-- > 0) {
                         if ( !lastResultSet.next()) {
                             checkClose();
+
                             return null;
                         }
                     }
                     cnt++;
+
                     return lastResultSet;
                 }
 
                 if (lastResultSet.next()) {
                     cnt++;
+
                     return lastResultSet;
                 }
 
@@ -1657,11 +1704,13 @@ public class SqlUtil {
                 lastResultSet = stmt.getResultSet();
                 if (lastResultSet.next()) {
                     cnt++;
+
                     return lastResultSet;
                 }
 
             } catch (SQLException exc) {}
             checkClose();
+
             return null;
         }
 
@@ -1799,6 +1848,7 @@ public class SqlUtil {
             value = cleanUp(value);
             cleanArgs.put(key, value);
         }
+
         return cleanArgs;
     }
 
@@ -1814,6 +1864,7 @@ public class SqlUtil {
     public static String cleanUp(String value) {
         //TODO: Atually implement this!!!!
         value = value.replace("'", "");
+
         return value;
     }
 
@@ -1828,6 +1879,7 @@ public class SqlUtil {
     public static String cleanName(String value) {
         value = value.replaceAll(" ", "_");
         value = value.replaceAll("\\.", "_");
+
         return value;
     }
 
@@ -1877,6 +1929,7 @@ public class SqlUtil {
         if (connectionManager != null) {
             connectionManager.initSelectStatement(statement);
         }
+
         return statement;
     }
 
@@ -1928,6 +1981,7 @@ public class SqlUtil {
         if (debug) {
             System.err.println("sql: " + sql);
         }
+
         return sql;
     }
 
@@ -2034,6 +2088,7 @@ public class SqlUtil {
             stmt.setQueryTimeout(timeout);
         }
         stmt.execute();
+
         return stmt;
     }
 
@@ -2056,6 +2111,7 @@ public class SqlUtil {
         StringBuffer sb = new StringBuffer();
         clause.addClause(sb);
         String query = makeDelete(table, sb.toString());
+
         return connection.prepareStatement(query);
     }
 

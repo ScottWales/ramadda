@@ -131,37 +131,37 @@ public class GraphOutputHandler extends OutputHandler {
     /** _more_ */
     static long cnt = System.currentTimeMillis();
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_GRAPHURL = "graphurl";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NODEID = "nodeid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SOURCE = "source";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TARGET = "target";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SOURCE_ID = "source_id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TARGET_ID = "target_id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
     /**
@@ -297,7 +297,7 @@ public class GraphOutputHandler extends OutputHandler {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private int graphCnt = 0;
 
     /**

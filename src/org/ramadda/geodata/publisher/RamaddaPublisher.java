@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,31 +21,8 @@
 package org.ramadda.geodata.publisher;
 
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.geom.Rectangle2D;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
 import org.ramadda.repository.client.InteractiveRepositoryClient;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -64,9 +40,39 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.view.geoloc.NavigatedDisplay;
 import ucar.unidata.xml.XmlUtil;
+
 import ucar.visad.Util;
 import ucar.visad.display.Animation;
+
 import visad.DateTime;
+
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.geom.Rectangle2D;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+
+import java.text.SimpleDateFormat;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 /**
@@ -269,7 +275,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             treeComp = new JLabel(repositoryClient.getDefaultGroupName());
         }
 
-        Insets     i        = new Insets(1, 1, 1, 1);
+        Insets i = new Insets(1, 1, 1, 1);
         JComponent bboxComp = GuiUtils.vbox(
                                   GuiUtils.wrap(GuiUtils.inset(northFld, i)),
                                   GuiUtils.hbox(
@@ -280,7 +286,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
 
 
-        Dimension   dim          = new Dimension(200, 50);
+        Dimension dim = new Dimension(200, 50);
         JScrollPane descScroller = GuiUtils.makeScrollPane(descFld,
                                        (int) dim.getWidth(),
                                        (int) dim.getHeight());
@@ -347,7 +353,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             List      dataSources        = getIdv().getDataSources();
             for (int i = 0; i < dataSources.size(); i++) {
                 DataSource dataSource = (DataSource) dataSources.get(i);
-                String     ramaddaId  =
+                String ramaddaId =
                     (String) dataSource.getProperty("ramadda.id");
                 String ramaddaHost =
                     (String) dataSource.getProperty("ramadda.host");
@@ -441,8 +447,8 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
             if (fromViewManager != null) {
                 if ((fromViewManager instanceof MapViewManager)) {
-                    MapViewManager     mvm = (MapViewManager) fromViewManager;
-                    NavigatedDisplay   navDisplay = mvm.getNavigatedDisplay();
+                    MapViewManager   mvm = (MapViewManager) fromViewManager;
+                    NavigatedDisplay navDisplay = mvm.getNavigatedDisplay();
                     Rectangle2D.Double bbox = navDisplay.getLatLonBox(false,
                                                   false);
                     if (bbox != null) {
@@ -532,17 +538,15 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
 
 
-                String fromDate =
-                    formatDate(fromDateFld.getDate());
-                String toDate =
-                    formatDate(toDateFld.getDate());
-                int      cnt = 0;
+                String   fromDate = formatDate(fromDateFld.getDate());
+                String   toDate   = formatDate(toDateFld.getDate());
+                int      cnt      = 0;
 
 
-                Document doc = XmlUtil.makeDocument();
+                Document doc      = XmlUtil.makeDocument();
                 //Create the top level node
                 Element root = XmlUtil.create(doc, TAG_ENTRIES);
-                List    tags = StringUtil.split(tagFld.getText().trim(), ",",
+                List tags = StringUtil.split(tagFld.getText().trim(), ",",
                                              true, true);
 
                 String mainId    = (cnt++) + "";
@@ -641,11 +645,11 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     ZipInputStream zin = new ZipInputStream(
                                              new FileInputStream(
                                                  new File(zidvFile)));
-                    ZipEntry         ze;
+                    ZipEntry ze;
                     SimpleDateFormat sdf =
                         new SimpleDateFormat(DataSource.DATAPATH_DATE_FORMAT);
                     while ((ze = zin.getNextEntry()) != null) {
-                        String entryName  = ze.getName();
+                        String entryName = ze.getName();
                         String dateString =
                             StringUtil.findPattern(entryName,
                                 "(" + DataSource.DATAPATH_DATE_PATTERN + ")");
@@ -670,9 +674,8 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         });
                         if (dttm != null) {
                             attrs.addAll(Misc.newList(ATTR_FROMDATE,
-                                                      formatDate(dttm),
-                                    ATTR_TODATE,
-                                                      formatDate(dttm)));
+                                    formatDate(dttm), ATTR_TODATE,
+                                    formatDate(dttm)));
                         }
                         node = XmlUtil.create(TAG_ENTRY, root, attrs);
                     }
@@ -743,6 +746,13 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
     }
 
+    /**
+     * _more_
+     *
+     * @param d _more_
+     *
+     * @return _more_
+     */
     private String formatDate(Date d) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(d);
     }

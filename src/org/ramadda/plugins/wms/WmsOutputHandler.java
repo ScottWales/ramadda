@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -178,8 +177,8 @@ public class WmsOutputHandler extends OutputHandler {
         //Go through each layer, find its styles and then use the WmsUtil method to extract out the
         //urls and other information from the DOM
         for (Element layerNode : layerNodes) {
-            String[]      message = new String[] { null };
-            List<Element> styles  = XmlUtil.findChildren(layerNode,
+            String[] message = new String[] { null };
+            List<Element> styles = XmlUtil.findChildren(layerNode,
                                        WmsUtil.TAG_STYLE);
 
             //Throw in the parent layer node so we get its title, etc.
@@ -234,7 +233,7 @@ public class WmsOutputHandler extends OutputHandler {
     public String getUrl(WmsSelection wms) {
         double width  = wms.getBounds().getDegreesX();
         double height = wms.getBounds().getDegreesY();
-        String url    = wms.assembleRequest(wms.getBounds(), 600,
+        String url = wms.assembleRequest(wms.getBounds(), 600,
                                          (int) (600 * height / width));
 
         return url;

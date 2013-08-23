@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -90,17 +89,12 @@ public class DifUtil {
     public static final String TAG_Online_Resource = "Online_Resource";
 
 
+    /** _more_          */
     public static final String[] TAGS_Data_Set_Citation = {
-        TAG_Dataset_Creator,
-        TAG_Dataset_Title,
-        TAG_Dataset_Series_Name,
-        TAG_Dataset_Release_Date,
-        TAG_Dataset_Release_Place,
-        TAG_Dataset_Publisher,
-        TAG_Version,
-        TAG_Issue_Identification,
-        TAG_Data_Presentation_Form,
-        TAG_Other_Citation_Details,
+        TAG_Dataset_Creator, TAG_Dataset_Title, TAG_Dataset_Series_Name,
+        TAG_Dataset_Release_Date, TAG_Dataset_Release_Place,
+        TAG_Dataset_Publisher, TAG_Version, TAG_Issue_Identification,
+        TAG_Data_Presentation_Form, TAG_Other_Citation_Details,
         TAG_Online_Resource,
     };
 
@@ -200,14 +194,10 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Detailed_Variable = "Detailed_Variable";
 
-    public static final String []TAGS_Parameters = {
-        TAG_Parameters,
-        TAG_Category,
-        TAG_Topic,
-        TAG_Term,
-        TAG_Variable_Level_1,
-        TAG_Variable_Level_2,
-        TAG_Variable_Level_3
+    /** _more_          */
+    public static final String[] TAGS_Parameters = {
+        TAG_Parameters, TAG_Category, TAG_Topic, TAG_Term,
+        TAG_Variable_Level_1, TAG_Variable_Level_2, TAG_Variable_Level_3
     };
 
 
@@ -223,14 +213,21 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Long_Name = "Long_Name";
 
+    /** _more_          */
     public static final String TAG_Source_Name = "Source_Name";
 
 
-    public static final String[] TAGS_Sensor_Name = {TAG_Short_Name, TAG_Long_Name};
+    /** _more_          */
+    public static final String[] TAGS_Sensor_Name = { TAG_Short_Name,
+            TAG_Long_Name };
 
-    public static final String []TAGS_Project = {TAG_Short_Name, TAG_Long_Name};
+    /** _more_          */
+    public static final String[] TAGS_Project = { TAG_Short_Name,
+            TAG_Long_Name };
 
-    public static final String []TAGS_Source_Name = {TAG_Short_Name, TAG_Long_Name};
+    /** _more_          */
+    public static final String[] TAGS_Source_Name = { TAG_Short_Name,
+            TAG_Long_Name };
 
 
 
@@ -338,13 +335,9 @@ public class DifUtil {
 
 
     /** _more_ */
-    public static final String[] TAGS_Location = {
-        TAG_Location_Type,
-        TAG_Location_Subregion1,
-        TAG_Location_Subregion2,
-        TAG_Location_Subregion3,
-        TAG_Detailed_Location
-    };
+    public static final String[] TAGS_Location = { TAG_Location_Type,
+            TAG_Location_Subregion1, TAG_Location_Subregion2,
+            TAG_Location_Subregion3, TAG_Detailed_Location };
 
 
 
@@ -430,7 +423,10 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Distribution_Fees = "Fees";
 
-    public static final String[] TAGS_Distribution = {TAG_Distribution_Media, TAG_Distribution_Size, TAG_Distribution_Format, TAG_Distribution_Fees};
+    /** _more_          */
+    public static final String[] TAGS_Distribution = { TAG_Distribution_Media,
+            TAG_Distribution_Size, TAG_Distribution_Format,
+            TAG_Distribution_Fees };
 
 
     /** _more_ */
@@ -473,10 +469,9 @@ public class DifUtil {
     public static final String TAG_URL = "URL";
 
 
-    public static final String []TAGS_Related_URL = {
-        TAG_URL,
-        TAG_Description
-    };
+    /** _more_          */
+    public static final String[] TAGS_Related_URL = { TAG_URL,
+            TAG_Description };
 
 
 

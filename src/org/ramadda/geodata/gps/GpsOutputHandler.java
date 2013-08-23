@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -67,13 +66,13 @@ import java.util.zip.*;
  */
 public class GpsOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_TEQC = "gps.teqc";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_RUNPKR = "gps.runpkr";
 
-    /** _more_          */
+    /** _more_ */
     public static final String OPUS_URL =
         "http://www.ngs.noaa.gov/OPUS-cgi/OPUS/prod/upload.prl";
 
@@ -93,17 +92,17 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String URL_ADDOPUS = "/gps/addopus";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_COORD_LONLATALT = "coord.lonlatalt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_COORD_XYZ = "coord.xyz";
 
 
     /** _more_ */
     public static final String ARG_OPUS = "opus";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_RINEX_ID = "rinex.id";
 
     /** _more_ */
@@ -160,13 +159,13 @@ public class GpsOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String ARG_GPS_FILE = "gps.file";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_GPS_SELECTED = "gps.selected";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_GPS_ANTENNA_TYPE = "gps.antenna.type";
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_GPS_ANTENNA_HEIGHT = "gps.antenna.height";
 
     /** _more_ */
@@ -188,7 +187,7 @@ public class GpsOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
                        "/gps/gps.png", "Field Project");
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_GPS_BULKEDIT =
         new OutputType("Edit GPS Metadata", "gps.bulkedit",
                        OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
@@ -489,7 +488,7 @@ public class GpsOutputHandler extends OutputHandler {
         OutputStream os = request.getHttpServletResponse().getOutputStream();
         request.getHttpServletResponse().setContentType("application/zip");
         ZipOutputStream zos = new ZipOutputStream(os);
-        File[] files        = getWorkDir(request.getString(ARG_RINEX_DOWNLOAD,
+        File[] files = getWorkDir(request.getString(ARG_RINEX_DOWNLOAD,
                            "bad")).listFiles();
         for (File f : files) {
             if ( !f.getName().endsWith(RINEX_SUFFIX) || (f.length() == 0)) {
@@ -703,8 +702,8 @@ public class GpsOutputHandler extends OutputHandler {
         boolean anyOK = false;
         sb.append(msgHeader("Results"));
         sb.append("<ul>");
-        String                   uniqueId       = getRepository().getGUID();
-        File                     workDir        = getWorkDir(uniqueId);
+        String uniqueId = getRepository().getGUID();
+        File   workDir  = getWorkDir(uniqueId);
 
         Hashtable<String, Entry> fileToEntryMap = new Hashtable<String,
                                                       Entry>();
@@ -718,8 +717,10 @@ public class GpsOutputHandler extends OutputHandler {
 
             if ( !isRawGps(rawEntry)) {
                 sb.append("<li>");
-                sb.append("Skipping:" + rawEntry.getName() +" because its not a raw GPS file");
+                sb.append("Skipping:" + rawEntry.getName()
+                          + " because its not a raw GPS file");
                 sb.append(HtmlUtils.p());
+
                 continue;
             }
 
@@ -729,22 +730,27 @@ public class GpsOutputHandler extends OutputHandler {
                         + rawFile);
             }
 
-            String   inputFile = getRawFile(rawFile.toString(), sb);
-            if(inputFile==null) {
+            String inputFile = getRawFile(rawFile.toString(), sb);
+            if (inputFile == null) {
                 sb.append("<li>");
-                sb.append("Skipping:" + rawEntry.getName() + " because it is trimble and runpkr is not installed");
+                sb.append(
+                    "Skipping:" + rawEntry.getName()
+                    + " because it is trimble and runpkr is not installed");
                 sb.append(HtmlUtils.p());
+
                 continue;
             }
 
-            if(!new File(inputFile).exists()) {
+            if ( !new File(inputFile).exists()) {
                 sb.append("<li>");
-                sb.append("Could not find raw file for " + rawEntry.getName());
+                sb.append("Could not find raw file for "
+                          + rawEntry.getName());
                 sb.append(HtmlUtils.p());
+
                 continue;
             }
 
-            GregorianCalendar cal       =
+            GregorianCalendar cal =
                 new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
             cal.setTime(new Date(rawEntry.getStartDate()));
 
@@ -759,13 +765,15 @@ public class GpsOutputHandler extends OutputHandler {
 
             File rinexFile = new File(IOUtil.joinDir(workDir, tail));
 
-            int cnt = 0;
-            while(fileToEntryMap.get(rinexFile.toString())!=null) {
+            int  cnt       = 0;
+            while (fileToEntryMap.get(rinexFile.toString()) != null) {
                 cnt++;
-                if(cnt==1) {
-                    sb.append("Note:" + rawEntry.getName() + " is a duplicate file.");
+                if (cnt == 1) {
+                    sb.append("Note:" + rawEntry.getName()
+                              + " is a duplicate file.");
                 }
-                rinexFile = new File(IOUtil.joinDir(workDir, "copy_"+ cnt+"_" + tail));
+                rinexFile = new File(IOUtil.joinDir(workDir,
+                        "copy_" + cnt + "_" + tail));
             }
             //            System.err.println ("rinex file:" + rinexFile.toString());
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
@@ -791,13 +799,13 @@ public class GpsOutputHandler extends OutputHandler {
             args.add(inputFile);
             //            System.err.println("work dir:" + workDir +" rinex file:" + rinexFile);
             //            System.err.println("args:" + args);
-            String[] results = getRepository().executeCommand(args, workDir);
-            String  errorMsg =results[1];
-            String outMsg = results[0];
+            String[] results  = getRepository().executeCommand(args, workDir);
+            String   errorMsg = results[1];
+            String   outMsg   = results[0];
             sb.append("<li>");
             sb.append(rawEntry.getName());
 
-            if(rinexFile.exists()) {
+            if (rinexFile.exists()) {
                 if (rinexFile.length() == 0) {
                     sb.append(" ... Error: Zero length RINEX file created. ");
                 } else {
@@ -845,6 +853,7 @@ public class GpsOutputHandler extends OutputHandler {
                 if ( !f.getName().endsWith(RINEX_SUFFIX)
                         || (f.length() == 0)) {
                     System.err.println("skipping:" + f);
+
                     continue;
                 }
                 //Get the name first
@@ -894,8 +903,7 @@ public class GpsOutputHandler extends OutputHandler {
 
         sb.append(HtmlUtils.p());
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT,
-                                   OUTPUT_GPS_TORINEX.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_GPS_TORINEX.getId()));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, mainEntry.getId()));
         sb.append(HtmlUtils.hidden(ARG_RINEX_DOWNLOAD, uniqueId));
         sb.append(HtmlUtils.submit(msg("Download Results")));
@@ -997,8 +1005,8 @@ public class GpsOutputHandler extends OutputHandler {
                 }
             }
             if (changed.size() > 0) {
-                sb.append(getPageHandler().showDialogNote(changed.size() + " "
-                        + msg("entries have been updated")));
+                sb.append(getPageHandler().showDialogNote(changed.size()
+                        + " " + msg("entries have been updated")));
             } else if (selected.size() > 0) {
                 sb.append(
                     getPageHandler().showDialogNote(
@@ -1277,7 +1285,7 @@ public class GpsOutputHandler extends OutputHandler {
 
             final double[] pts = { maxLat, minLon, minLat, maxLon };
 
-            Entry newEntry     = getEntryManager().addFileEntry(request, f,
+            Entry newEntry = getEntryManager().addFileEntry(request, f,
                                  parent, fileName, request.getUser(),
                                  typeHandler, new EntryInitializer() {
                 public void initEntry(Entry entry) {
@@ -1318,8 +1326,10 @@ public class GpsOutputHandler extends OutputHandler {
      * @return _more_
      */
     private boolean isTrimble(String file) {
-        file  = file.toLowerCase();
-        return file.endsWith(".t00") || file.endsWith(".t01") || file.endsWith(".t02");
+        file = file.toLowerCase();
+
+        return file.endsWith(".t00") || file.endsWith(".t01")
+               || file.endsWith(".t02");
     }
 
 
@@ -1328,37 +1338,41 @@ public class GpsOutputHandler extends OutputHandler {
      * _more_
      *
      * @param inputFile _more_
+     * @param msgBuffer _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private String getRawFile(String inputFile, StringBuffer msgBuffer) throws Exception {
-        if (!isTrimble(inputFile)) {
+    private String getRawFile(String inputFile, StringBuffer msgBuffer)
+            throws Exception {
+        if ( !isTrimble(inputFile)) {
             return inputFile;
         }
 
-        if (!haveRunPkr()) {
+        if ( !haveRunPkr()) {
             return null;
         }
         File datFile = getStorageManager().getTmpFile(
-                                                      getRepository().getTmpRequest(),
-                                                      IOUtil.getFileTail(
-                                                                         IOUtil.stripExtension(
-                                                                                               inputFile)) + ".dat");
+                           getRepository().getTmpRequest(),
+                           IOUtil.getFileTail(
+                               IOUtil.stripExtension(inputFile)) + ".dat");
         ProcessBuilder pb1 = new ProcessBuilder(runPkrPath, "-d", "-g",
-                                                inputFile, datFile.toString());
+                                 inputFile, datFile.toString());
         Process process1 = pb1.start();
-        String  errorMsg =
+        String errorMsg =
             new String(IOUtil.readBytes(process1.getErrorStream()));
         String outMsg =
             new String(IOUtil.readBytes(process1.getInputStream()));
         process1.waitFor();
         inputFile = datFile.toString();
-        msgBuffer.append("run pkr:" + errorMsg +" " + outMsg +" " + datFile.exists() +" datFile:" + datFile);
-        if(!datFile.exists()) {
-            msgBuffer.append("run pkr file does not exist " + errorMsg +" " + outMsg);
+        msgBuffer.append("run pkr:" + errorMsg + " " + outMsg + " "
+                         + datFile.exists() + " datFile:" + datFile);
+        if ( !datFile.exists()) {
+            msgBuffer.append("run pkr file does not exist " + errorMsg + " "
+                             + outMsg);
         }
+
         return inputFile;
     }
 
@@ -1376,15 +1390,17 @@ public class GpsOutputHandler extends OutputHandler {
      */
     private String extractGpsMetadata(File rinexFile, String flag)
             throws Exception {
-        String inputFile = getRawFile(rinexFile.toString(), new StringBuffer());
+        String inputFile = getRawFile(rinexFile.toString(),
+                                      new StringBuffer());
         if (inputFile == null) {
             //If its a trimble file and we don't have runpkr installed
             return "none";
         }
 
-        ProcessBuilder pb = new ProcessBuilder(teqcPath, flag, inputFile);
-        Process        process  = pb.start();
-        String         errorMsg =
+        ProcessBuilder pb      = new ProcessBuilder(teqcPath, flag,
+                                     inputFile);
+        Process        process = pb.start();
+        String errorMsg =
             new String(IOUtil.readBytes(process.getErrorStream()));
         String outMsg =
             new String(IOUtil.readBytes(process.getInputStream()));
@@ -1883,8 +1899,8 @@ public class GpsOutputHandler extends OutputHandler {
             return new Result(OPUS_TITLE, sb);
         }
         if (request.exists(ARG_OPUS)) {
-            StringBuffer msgBuff  = new StringBuffer();
-            Entry        newEntry = processAddOpus(request,
+            StringBuffer msgBuff = new StringBuffer();
+            Entry newEntry = processAddOpus(request,
                                             request.getString(ARG_OPUS, ""),
                                             msgBuff);
             if (newEntry == null) {
@@ -2008,7 +2024,8 @@ public class GpsOutputHandler extends OutputHandler {
         String opusFileName = IOUtil.stripExtension(rinexEntry.getName())
                               + ".opus";
         //Write the text out
-        File f = getStorageManager().getTmpFile(request, opusFileName);
+        File         f = getStorageManager().getTmpFile(request,
+                             opusFileName);
         OutputStream out = getStorageManager().getFileOutputStream(f);
         out.write(opus.getBytes());
         out.flush();

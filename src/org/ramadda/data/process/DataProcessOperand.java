@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -18,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.process;
 
 
@@ -44,13 +44,19 @@ public class DataProcessOperand {
      * @param entry the entry
      */
     public DataProcessOperand(Entry entry) {
-    	this(Misc.newList(entry));
+        this(Misc.newList(entry));
     }
-    
+
+    /**
+     * _more_
+     *
+     * @param description _more_
+     * @param entry _more_
+     */
     public DataProcessOperand(String description, Entry entry) {
-    	this(description, Misc.newList(entry));
+        this(description, Misc.newList(entry));
     }
-    
+
     /**
      * Create an operand with a description and list of entries
      *
@@ -58,9 +64,9 @@ public class DataProcessOperand {
      * @param entries      the entries
      */
     public DataProcessOperand(List<Entry> entries) {
-    	this("", entries);
+        this("", entries);
     }
-    
+
     /**
      * Create an operand with a description and list of entries
      *

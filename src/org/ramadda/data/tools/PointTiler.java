@@ -1,27 +1,29 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.tools;
 
-import org.ramadda.data.record.*;
+
 import org.ramadda.data.point.*;
+
+import org.ramadda.data.record.*;
 import org.ramadda.data.tools.*;
 import org.ramadda.util.grid.LatLonGrid;
 import org.ramadda.util.grid.ObjectGrid;
@@ -108,9 +110,12 @@ public class PointTiler extends RecordTool {
      * @param nCols _more_
      * @param nRows _more_
      * @param destDir _more_
+     *
+     * @throws Exception _more_
      */
     public PointTiler(double north, double west, double south, double east,
-                      int nCols, int nRows, File destDir) throws Exception {
+                      int nCols, int nRows, File destDir)
+            throws Exception {
         super(null);
         setBounds(north, west, south, east);
         setSize(nCols, nRows);
@@ -142,8 +147,8 @@ public class PointTiler extends RecordTool {
         /*        if (jobStatus != null) {
             jobStatus.updateStatus(message);
             } else {*/
-            System.err.println(message);
-            //        }
+        System.err.println(message);
+        //        }
     }
 
 
@@ -180,7 +185,7 @@ public class PointTiler extends RecordTool {
      *
      * @param message error message
      */
-    public  void usage(String message) {
+    public void usage(String message) {
         if ((message != null) && (message.length() > 0)) {
             System.err.println("Error:" + message);
         }
@@ -202,8 +207,7 @@ public class PointTiler extends RecordTool {
      * @return List of tiled files
      * @throws Exception On badness
      */
-    public List<File> doTile(List<File> inputFiles)
-            throws Exception {
+    public List<File> doTile(List<File> inputFiles) throws Exception {
 
         //        this.jobStatus = jobStatus;
 
@@ -269,6 +273,7 @@ public class PointTiler extends RecordTool {
                 PointRecord pointRecord = (PointRecord) record;
                 if ( !pointRecord.isValidPosition()) {
                     badcnt[0]++;
+
                     //                    System.err.println("\t bad " +  badcnt[0]);
                     return true;
                 }
@@ -303,6 +308,7 @@ public class PointTiler extends RecordTool {
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
+
                 return true;
             }
         };
@@ -409,9 +415,11 @@ public class PointTiler extends RecordTool {
                 west  = Double.parseDouble(args[++i]);
                 south = Double.parseDouble(args[++i]);
                 east  = Double.parseDouble(args[++i]);
+
                 continue;
             } else if (arg.equals("-calcbounds")) {
                 calcBounds = true;
+
                 continue;
             } else if (arg.equals("-skip")) {
                 if (i + 1 >= args.length) {

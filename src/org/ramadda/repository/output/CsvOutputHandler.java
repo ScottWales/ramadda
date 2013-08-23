@@ -118,10 +118,10 @@ public class CsvOutputHandler extends OutputHandler {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FIELDS = "fields";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DELIMITER = "delimiter";
 
 

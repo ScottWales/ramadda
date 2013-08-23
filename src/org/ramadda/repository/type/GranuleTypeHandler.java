@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.repository.type;
 
 
@@ -40,11 +41,11 @@ import java.util.regex.Pattern;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class GranuleTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     String collectionId = null;
 
     /**

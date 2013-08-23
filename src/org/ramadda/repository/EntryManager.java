@@ -104,14 +104,14 @@ import javax.swing.ImageIcon;
  */
 public class EntryManager extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ENTRYID_PROCESS = "process";
 
-    /** _more_          */
+    /** _more_ */
     private EntryUtil entryUtil;
 
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug = false;
 
 
@@ -130,7 +130,7 @@ public class EntryManager extends RepositoryManager {
     public static final int ENTRY_CACHE_LIMIT = 5000;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String SESSION_FOLDERS = "folders";
 
     /** _more_ */
@@ -913,32 +913,32 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_SPATIAL = "extedit.spatial";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_TEMPORAL = "extedit.temporal";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_MD5 = "extedit.md5";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_REPORT = "extedit.report";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_SETPARENTID =
         "extedit.setparentid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_NEWTYPE = "extedit.newtype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_RECURSE = "extedit.recurse";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE = "extedit.changetype";
 
 
@@ -9291,10 +9291,10 @@ public class EntryManager extends RepositoryManager {
         return children;
     }
 
-    /** _more_          */
+    /** _more_ */
     private ProcessFileTypeHandler processFileTypeHandler;
 
-    /** _more_          */
+    /** _more_ */
     private Entry processEntry;
 
     /**

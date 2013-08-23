@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -110,10 +109,12 @@ public class DifOutputHandler extends OutputHandler {
             return;
         }
         if (state.getEntry() != null) {
-            /*** For now don't add these into the Links menu
-                 links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_XML));
-                 links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_TEXT));
-            ****/
+
+            /**
+             * * For now don't add these into the Links menu
+             *    links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_XML));
+             *    links.add(makeLink(request, state.getEntry(), OUTPUT_DIF_TEXT));
+             */
         }
     }
 
@@ -172,8 +173,8 @@ public class DifOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        Document doc  = XmlUtil.makeDocument();
-        Element  root = XmlUtil.create(doc, DifUtil.TAG_DIF, null,
+        Document doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, DifUtil.TAG_DIF, null,
                                       new String[] {
             "xmlns", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/",
             "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance",

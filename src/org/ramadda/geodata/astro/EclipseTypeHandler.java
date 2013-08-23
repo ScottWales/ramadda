@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -66,22 +65,22 @@ import java.util.List;
  */
 public class EclipseTypeHandler extends FitsTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_BASE = FITS_PROPS.length;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LOCATION = IDX_BASE + 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SOURCE = IDX_BASE + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SOURCETYPE = IDX_BASE + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MAGNITUDE = IDX_BASE + 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_MAGNITUDE = "MAGNITUD";
 
 
@@ -126,21 +125,30 @@ public class EclipseTypeHandler extends FitsTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeNewEntry(Entry entry) throws Exception {
         super.initializeNewEntry(entry);
-        File imageFile = getFitsOutputHandler().outputImage(getRepository().getTmpRequest(), entry.getFile(),-1);
-        if(imageFile!=null) {
+        File imageFile = getFitsOutputHandler().outputImage(
+                             getRepository().getTmpRequest(),
+                             entry.getFile(), -1);
+        if (imageFile != null) {
             String fileName = getStorageManager().copyToEntryDir(entry,
-                                                                 imageFile).getName();
+                                  imageFile).getName();
             Metadata thumbnailMetadata =
                 new Metadata(getRepository().getGUID(), entry.getId(),
                              ContentMetadataHandler.TYPE_THUMBNAIL, false,
                              fileName, null, null, null, null);
 
-            System.err.println ("Adding metadata: " + entry);
+            System.err.println("Adding metadata: " + entry);
             entry.addMetadata(thumbnailMetadata);
         } else {
-            System.err.println ("Failed to make image:" + entry.getFile());
+            System.err.println("Failed to make image:" + entry.getFile());
         }
     }
 

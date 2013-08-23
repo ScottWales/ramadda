@@ -81,7 +81,7 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     List<Column> columns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private Column categoryColumn;
 
     /** _more_ */

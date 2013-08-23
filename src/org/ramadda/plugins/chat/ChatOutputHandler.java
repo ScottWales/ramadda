@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -25,6 +24,9 @@ package org.ramadda.plugins.chat;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -34,8 +36,6 @@ import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -81,7 +81,7 @@ import java.util.zip.*;
  */
 public class ChatOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CHAT_PORT = "ramadda.chat.port";
 
     /** _more_ */
@@ -353,7 +353,8 @@ public class ChatOutputHandler extends OutputHandler {
             } else if (type.equals("SESSION")) {
                 writeMessage("SESSION", XmlUtil.attr("id", connectionId), "");
             } else if (type.equals("FILE")) {
-                Request      request = new Request(getRepository(), this.user);
+                Request      request = new Request(getRepository(),
+                                           this.user);
                 StringBuffer sb      = new StringBuffer();
                 List<Entry>  entries = new ArrayList<Entry>();
                 if (entry.isGroup()) {
@@ -376,7 +377,7 @@ public class ChatOutputHandler extends OutputHandler {
                                 entry, true, false);
                     } else {
                         entryType = "url";
-                        url       = request.entryUrl(
+                        url = request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, entry);
                     }
                     if (url == null) {

@@ -76,7 +76,7 @@ import java.util.zip.*;
  */
 public class ZipOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
     /** _more_ */

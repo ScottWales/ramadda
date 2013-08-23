@@ -85,7 +85,7 @@ import java.util.zip.*;
  */
 public class OutputHandler extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final JQuery JQ = null;
 
     /** max connections attribute */

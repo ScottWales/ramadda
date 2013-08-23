@@ -115,7 +115,7 @@ public class Admin extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public RequestUrl URL_ADMIN_LOCAL = new RequestUrl(this, "/admin/local",
                                             "Local Repositories");
 

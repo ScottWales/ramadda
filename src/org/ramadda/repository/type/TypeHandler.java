@@ -171,7 +171,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private TypeHandler parent;
 
-    /** _more_          */
+    /** _more_ */
     private SpecialSearch specialSearch;
 
 

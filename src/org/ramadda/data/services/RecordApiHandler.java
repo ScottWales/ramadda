@@ -1,3 +1,22 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
@@ -11,6 +30,7 @@ import org.jfree.ui.*;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
+import org.ramadda.data.services.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -19,16 +39,15 @@ import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.search.*;
-import org.ramadda.data.services.*;
 import org.ramadda.repository.type.TypeHandler;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
 import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
@@ -77,24 +96,30 @@ import java.util.zip.*;
  */
 
 public abstract class RecordApiHandler extends SpecialSearch implements RequestHandler,
-                                                              RecordConstants {
+        RecordConstants {
 
 
     /**
      * ctor
      *
      * @param repository the main ramadda repository
+     * @param node _more_
      * @param props extra properties
      *
      * @throws Exception On badness
      */
     public RecordApiHandler(Repository repository, Element node,
-                          Hashtable props)
+                            Hashtable props)
             throws Exception {
         super(repository, node, props);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public abstract RecordOutputHandler getRecordOutputHandler();
 
 
@@ -107,8 +132,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
      * @throws Exception On badness
      */
     public void makeHeader(Request request, StringBuffer sb)
-            throws Exception {
-    }
+            throws Exception {}
 
 
     /**
@@ -141,7 +165,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
      */
     public Result processMetricsRequest(Request request) throws Exception {
         RecordOutputHandler loh = getRecordOutputHandler();
-        StringBuffer sb = new StringBuffer();
+        StringBuffer        sb  = new StringBuffer();
         makeHeader(request, sb);
         boolean isAdmin = request.getUser().getAdmin();
         if ( !isAdmin) {
@@ -157,18 +181,21 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         long                      totalNumPoints = 0;
         long                      totalSize      = 0;
         long                      totalJobs      = 0;
-        for(JobInfo jobInfo: getRecordOutputHandler().getRecordJobManager().readJobs(JOB_TYPE_POINT)) {
-            int    numberOfPoints = jobInfo.getNumPoints();
+        for (JobInfo jobInfo :
+                getRecordOutputHandler().getRecordJobManager().readJobs(
+                    JOB_TYPE_POINT)) {
+            int numberOfPoints = jobInfo.getNumPoints();
             totalNumPoints += numberOfPoints;
             long productSize = jobInfo.getProductSize();
             totalSize += productSize;
             String entryId = jobInfo.getEntryId();
-            long[] values = info.get(entryId);
+            long[] values  = info.get(entryId);
             if (values == null) {
                 Entry entry = getEntryManager().getEntry(request, entryId);
                 if (entry == null) {
                     System.err.println("missing entry from metrics:"
                                        + entryId);
+
                     continue;
                 }
                 entries.add(entry);
@@ -300,7 +327,8 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             SqlUtil.readString(getDatabaseManager().getIterator(stmt), 1);
         if (values.length == 0) {
             if ( !csv) {
-                sb.append(getPageHandler().showDialogNote("You have no jobs"));
+                sb.append(
+                    getPageHandler().showDialogNote("You have no jobs"));
             }
 
             return makeResult(request, sb);
@@ -314,21 +342,22 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
                 "<tr class=\"result-header\"><td align=center>&nbsp;</td><td align=center><b>Job Name</b></td><td align=center><b>Date</b></td><td align=center><b>Collection</b></td><td align=center><b>Contact</b></td><td align=center><b># Points</b></td><td align=center><b>IP</b></td></tr>");
 
         }
-        RecordOutputHandler loh =getRecordOutputHandler();
+        RecordOutputHandler loh = getRecordOutputHandler();
         for (String blob : values) {
             blob = blob.replaceAll(
                 "org.unavco.projects.nlas.ramadda.JobInfo",
                 "org.ramadda.repository.job.JobInfo");
             JobInfo jobInfo = (JobInfo) getRepository().decodeObject(blob);
 
-            Entry   entry   = getEntryManager().getEntry(request,
+            Entry entry = getEntryManager().getEntry(request,
                               jobInfo.getEntryId());
             if (entry == null) {
                 continue;
             }
             if ( !csv) {
                 String jobUrl = loh.getRecordJobManager().getJobUrl(request,
-                                                                   entry, jobInfo.getJobId(), loh.OUTPUT_RESULTS);
+                                    entry, jobInfo.getJobId(),
+                                    loh.OUTPUT_RESULTS);
                 sb.append("<tr>");
                 sb.append(HtmlUtils.col(HtmlUtils.href(jobUrl,
                         msg("Details"))));

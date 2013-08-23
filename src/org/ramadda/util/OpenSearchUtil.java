@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -154,8 +153,8 @@ public class OpenSearchUtil {
 
 
     public static Element getRoot() throws Exception {
-        Document doc  = XmlUtil.makeDocument();
-        Element  root = XmlUtil.create(doc, TAG_OPENSEARCHDESCRIPTION, null,
+        Document doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, TAG_OPENSEARCHDESCRIPTION, null,
                                       new String[] {
             ATTR_XMLNS, XMLNS, ATTR_XMLNS_GEO, XMLNS_GEO, ATTR_XMLNS_TIME,
             XMLNS_TIME,

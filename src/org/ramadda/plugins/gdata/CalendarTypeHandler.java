@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -210,7 +209,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         CalendarFeed resultFeed = getFeed(entry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
             CalendarEntry calendar = resultFeed.getEntries().get(i);
-            String        entryId  = getSynthId(entry, TYPE_CALENDAR,
+            String entryId = getSynthId(entry, TYPE_CALENDAR,
                                         IOUtil.getFileTail(calendar.getId()));
             String       title    = calendar.getTitle().getPlainText();
             Entry        newEntry = new Entry(entryId, this, true);
@@ -284,8 +283,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
         //        System.err.println("Feed:" + feedUrl);
         CalendarEventFeed resultFeed = getEventFeed(mainEntry, feedUrl);
         for (int i = 0; i < resultFeed.getEntries().size(); i++) {
-            CalendarEventEntry event   = resultFeed.getEntries().get(i);
-            String             entryId = getSynthId(mainEntry, TYPE_EVENT,
+            CalendarEventEntry event = resultFeed.getEntries().get(i);
+            String entryId = getSynthId(mainEntry, TYPE_EVENT,
                                         calendarId + ":"
                                         + IOUtil.getFileTail(event.getId()));
             String       title    = event.getTitle().getPlainText();
@@ -397,7 +396,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             return null;
         }
 
-        String calendarId      = toks.get(1);
+        String calendarId = toks.get(1);
         String calendarEntryId = getSynthId(mainEntry, TYPE_CALENDAR,
                                             calendarId);
         Entry calendarEntry = getEntryManager().getEntry(request,
@@ -482,7 +481,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String          userId    = "jeff.mcwhirter@gmail.com";
+        String userId = "jeff.mcwhirter@gmail.com";
         CalendarService myService =
             new CalendarService("exampleCo-exampleApp-1");
         myService.setUserCredentials(userId, args[0]);

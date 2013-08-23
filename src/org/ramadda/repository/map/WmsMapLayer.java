@@ -44,25 +44,25 @@ import java.util.List;
  */
 public class WmsMapLayer {
 
-    /** _more_          */
+    /** _more_ */
     private String url;
 
-    /** _more_          */
+    /** _more_ */
     private String id;
 
-    /** _more_          */
+    /** _more_ */
     private String label;
 
-    /** _more_          */
+    /** _more_ */
     private String labelArg;
 
-    /** _more_          */
+    /** _more_ */
     private String legendImage;
 
-    /** _more_          */
+    /** _more_ */
     private String legendText = "";
 
-    /** _more_          */
+    /** _more_ */
     private String legendLabel;
 
     /**

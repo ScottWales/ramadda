@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -48,9 +47,13 @@ public class TempDir {
     /** _more_ */
     private File dir;
 
+    /** _more_          */
     boolean recurse = true;
 
+    /** _more_          */
     boolean filesOk = true;
+
+    /** _more_          */
     boolean dirsOk = true;
 
     /** _more_ */
@@ -87,8 +90,14 @@ public class TempDir {
         this(dir, true);
     }
 
+    /**
+     * _more_
+     *
+     * @param dir _more_
+     * @param recurse _more_
+     */
     public TempDir(File dir, boolean recurse) {
-        this.dir = dir;
+        this.dir     = dir;
         this.recurse = recurse;
     }
 
@@ -147,32 +156,36 @@ public class TempDir {
      * @return _more_
      */
     public List<File> findFilesToScour() {
-        List<File> results  = new ArrayList<File>();
+        List<File> results = new ArrayList<File>();
 
-        long       t1       = System.currentTimeMillis();
+        long       t1      = System.currentTimeMillis();
         List<File> allFiles;
-        if(recurse) {
-            allFiles  = IOUtil.getFiles(dir, true);
+        if (recurse) {
+            allFiles = IOUtil.getFiles(dir, true);
         } else {
             allFiles = new ArrayList<File>();
-            for(File f:dir.listFiles()) {
+            for (File f : dir.listFiles()) {
                 allFiles.add(f);
             }
         }
 
-        
-        List<File>  prunedFiles = new ArrayList<File>();
-        for(File f: allFiles) {
-            if(!filesOk && f.isFile()) continue;
-            if(!dirsOk && f.isDirectory()) continue;
+
+        List<File> prunedFiles = new ArrayList<File>();
+        for (File f : allFiles) {
+            if ( !filesOk && f.isFile()) {
+                continue;
+            }
+            if ( !dirsOk && f.isDirectory()) {
+                continue;
+            }
             prunedFiles.add(f);
         }
 
         allFiles = prunedFiles;
 
-        long       t2       = System.currentTimeMillis();
+        long t2 = System.currentTimeMillis();
 
-        long       t3       = System.currentTimeMillis();
+        long t3 = System.currentTimeMillis();
         //Sort files oldest first
         IOUtil.FileWrapper[] files =
             IOUtil.sortFilesOnAge(IOUtil.FileWrapper.toArray(allFiles,
@@ -325,39 +338,39 @@ public class TempDir {
     }
 
     /**
-       Set the FilesOk property.
-
-       @param value The new value for FilesOk
-    **/
-    public void setFilesOk (boolean value) {
-	filesOk = value;
+     *  Set the FilesOk property.
+     *
+     *  @param value The new value for FilesOk
+     */
+    public void setFilesOk(boolean value) {
+        filesOk = value;
     }
 
     /**
-       Get the FilesOk property.
-
-       @return The FilesOk
-    **/
-    public boolean getFilesOk () {
-	return filesOk;
+     *  Get the FilesOk property.
+     *
+     *  @return The FilesOk
+     */
+    public boolean getFilesOk() {
+        return filesOk;
     }
 
     /**
-       Set the DirsOk property.
-
-       @param value The new value for DirsOk
-    **/
-    public void setDirsOk (boolean value) {
-	dirsOk = value;
+     *  Set the DirsOk property.
+     *
+     *  @param value The new value for DirsOk
+     */
+    public void setDirsOk(boolean value) {
+        dirsOk = value;
     }
 
     /**
-       Get the DirsOk property.
-
-       @return The DirsOk
-    **/
-    public boolean getDirsOk () {
-	return dirsOk;
+     *  Get the DirsOk property.
+     *
+     *  @return The DirsOk
+     */
+    public boolean getDirsOk() {
+        return dirsOk;
     }
 
 

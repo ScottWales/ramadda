@@ -66,7 +66,7 @@ public interface DataTypes {
     public static final String DATATYPE_ENUMERATIONPLUS = "enumerationplus";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATATYPE_LIST = "list";
 
     /** _more_ */

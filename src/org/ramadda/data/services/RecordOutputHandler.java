@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -157,26 +156,25 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return List of RecordEntry
      */
     public List<RecordEntry> makeRecordEntries(Request request,
-                                             List<Entry> entries,
-                                             boolean checkIfSelected) {
+            List<Entry> entries, boolean checkIfSelected) {
         List<RecordEntry> recordEntries = new ArrayList<RecordEntry>();
-        boolean          hasAnyArgs   = request.exists(ARG_RECORDENTRY_CHECK);
-        List<String>     ids          = request.get(ARG_RECORDENTRY,
-                                                    new ArrayList<String>());
+        boolean           hasAnyArgs = request.exists(ARG_RECORDENTRY_CHECK);
+        List<String> ids = request.get(ARG_RECORDENTRY,
+                                       new ArrayList<String>());
 
         for (Entry entry : entries) {
             if ( !canHandleEntry(entry)) {
                 continue;
             }
             if (checkIfSelected && hasAnyArgs
-                && !ids.contains(entry.getId())) {
+                    && !ids.contains(entry.getId())) {
                 continue;
             }
             if (entry.getTypeHandler() instanceof RecordTypeHandler) {
                 recordEntries.add(doMakeEntry(request, entry));
-            } else {
-            }
+            } else {}
         }
+
         return recordEntries;
     }
 
@@ -193,23 +191,47 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param recordEntries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public List<RecordEntry> doSubsetEntries(
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
 
-        List<RecordEntry>  result  = new ArrayList<RecordEntry>();
-        for(RecordEntry recordEntry: recordEntries) {
-            RecordTypeHandler recordType = (RecordTypeHandler) recordEntry.getEntry().getTypeHandler();
-            if(recordType.includedInRequest(request, recordEntry)) {
+        List<RecordEntry> result = new ArrayList<RecordEntry>();
+        for (RecordEntry recordEntry : recordEntries) {
+            RecordTypeHandler recordType =
+                (RecordTypeHandler) recordEntry.getEntry().getTypeHandler();
+            if (recordType.includedInRequest(request, recordEntry)) {
                 result.add(recordEntry);
             }
         }
+
         return result;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param recordFile _more_
+     * @param filters _more_
+     *
+     * @throws Exception _more_
+     */
     public void getFilters(Request request, Entry entry,
-                           RecordFile recordFile, List<RecordFilter> filters) throws Exception {
-        RecordTypeHandler typeHandler = (RecordTypeHandler) entry.getTypeHandler();
+                           RecordFile recordFile, List<RecordFilter> filters)
+            throws Exception {
+        RecordTypeHandler typeHandler =
+            (RecordTypeHandler) entry.getTypeHandler();
         typeHandler.getFilters(request, entry, recordFile, filters);
     }
 
@@ -255,9 +277,14 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return _more_
      */
     public String getProductDirName() {
-        return getDomainBase() +"_products";
+        return getDomainBase() + "_products";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDomainBase() {
         return "record";
     }
@@ -296,9 +323,10 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return The FormHandler
      */
     public RecordFormHandler getFormHandler() {
-        if(formHandler == null) {
+        if (formHandler == null) {
             formHandler = new RecordFormHandler(this);
         }
+
         return formHandler;
     }
 
@@ -313,9 +341,10 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @return is job running and ok
      */
     public boolean jobOK(Object jobId) {
-        if(jobId == null || jobManager == null) {
+        if ((jobId == null) || (jobManager == null)) {
             return true;
         }
+
         return jobManager.jobOK(jobId);
     }
 
@@ -611,9 +640,12 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @param recordFile _more_
      *
      * @return The record filter.
+     *
+     * @throws Exception _more_
      */
     public RecordFilter getFilter(Request request, Entry entry,
-                                  RecordFile recordFile) throws Exception {
+                                  RecordFile recordFile)
+            throws Exception {
         List<RecordFilter> filters = new ArrayList<RecordFilter>();
         getFilters(request, entry, recordFile, filters);
         if (filters.size() == 0) {
@@ -622,6 +654,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         if (filters.size() == 1) {
             return filters.get(0);
         }
+
         return new CollectionRecordFilter(filters);
     }
 
@@ -788,29 +821,30 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      * @param request the request
      * @param mainEntry Either the Point Collection or File Entry
      * @param pointEntries _more_
+     * @param recordEntries _more_
      * @param jobInfo processing job
      *
      * @return result
      *
      * @throws Exception on badness
      */
-    public Result outputEntrySubset(Request request, Entry mainEntry,
-                                    List<?extends RecordEntry> recordEntries,
-                                    JobInfo jobInfo)
+    public Result outputEntrySubset(
+            Request request, Entry mainEntry,
+            List<? extends RecordEntry> recordEntries, JobInfo jobInfo)
             throws Exception {
         RecordEntry recordEntry = recordEntries.get(0);
-        String     ext        =
-            IOUtil.getFileExtension(recordEntry.getRecordFile().getFilename());
-        VisitInfo    visitInfo = recordEntry.getRecordFile().doMakeVisitInfo();
+        String ext = IOUtil.getFileExtension(
+                         recordEntry.getRecordFile().getFilename());
+        VisitInfo visitInfo = recordEntry.getRecordFile().doMakeVisitInfo();
         OutputStream outputStream = getOutputStream(request,
                                         jobInfo.getJobId(), mainEntry, ext);
         RecordIO recordOutput = new RecordIO(outputStream);
         recordEntry.getRecordFile().write(recordOutput, visitInfo,
-                                        recordEntry.getFilter(), true);
+                                          recordEntry.getFilter(), true);
         for (int i = 1; i < recordEntries.size(); i++) {
             recordEntry = recordEntries.get(i);
             recordEntry.getRecordFile().write(recordOutput, visitInfo,
-                                            recordEntry.getFilter(), false);
+                    recordEntry.getFilter(), false);
         }
         recordOutput.close();
         jobInfo.setNumPoints(visitInfo.getCount());
@@ -828,14 +862,29 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      */
     public RecordFile doMakeRecordFile(Entry entry) throws Exception {
         RecordTypeHandler type = (RecordTypeHandler) entry.getTypeHandler();
-        return (RecordFile)type.doMakeRecordFile(entry);
+
+        return (RecordFile) type.doMakeRecordFile(entry);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param services _more_
+     */
     public void getServices(Request request, Entry entry,
-                            List<Service> services) {
-    }
+                            List<Service> services) {}
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param icon _more_
+     *
+     * @return _more_
+     */
     public String getIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().iconUrl(icon));
     }

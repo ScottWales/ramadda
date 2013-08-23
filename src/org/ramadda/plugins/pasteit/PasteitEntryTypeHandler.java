@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -65,16 +64,16 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param sb _more_
+     * @param parentEntry _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
-@Override
+    @Override
     public void addSpecialToEntryForm(Request request, StringBuffer sb,
-                                      Entry parentEntry,
-                                      Entry entry)
+                                      Entry parentEntry, Entry entry)
             throws Exception {
-    super.addSpecialToEntryForm(request, sb, parentEntry, entry);
+        super.addSpecialToEntryForm(request, sb, parentEntry, entry);
         //Only on a new entry
         if (entry != null) {
             return;
@@ -102,7 +101,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
             if (name.indexOf(".") < 0) {
                 name = name + "." + request.getString(ARG_SUFFIX, "");
             }
-            File             f = getStorageManager().getTmpFile(request, name);
+            File         f   = getStorageManager().getTmpFile(request, name);
             OutputStream out = getStorageManager().getFileOutputStream(f);
             out.write(request.getString(ARG_TEXT, "").getBytes());
             out.flush();

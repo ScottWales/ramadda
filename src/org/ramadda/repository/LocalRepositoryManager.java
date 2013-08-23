@@ -67,42 +67,42 @@ import java.util.TimeZone;
 public class LocalRepositoryManager extends RepositoryManager {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_MASTER_ENABLED = "ramadda.master.enabled";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_NEW = "local.new";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_SURE = "local.sure";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_NAME = "local.name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_CONTACT = "local.contact";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_ID = "local.id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_ADMIN = "local.admin";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_CHANGE = "local.change";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_LOCAL_STATUS = "local.status";
 
     //    public static final String ARG_LOCAL_ = "local.id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String STATUS_ACTIVE = "active";
 
-    /** _more_          */
+    /** _more_ */
     public static final String STATUS_STOPPED = "stopped";
 
-    /** _more_          */
+    /** _more_ */
     public static final String STATUS_DELETED = "deleted";
 
 
@@ -110,11 +110,11 @@ public class LocalRepositoryManager extends RepositoryManager {
      * Holds the currently running repositories
      */
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Repository> children = new Hashtable<String,
                                                          Repository>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> childrenIds = new ArrayList<String>();
 
 
@@ -696,17 +696,17 @@ public class LocalRepositoryManager extends RepositoryManager {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class Local {
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         String contact;
 
-        /** _more_          */
+        /** _more_ */
         String status;
 
         /**

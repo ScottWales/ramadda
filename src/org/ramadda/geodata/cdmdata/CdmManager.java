@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -202,8 +201,9 @@ public class CdmManager extends RepositoryManager {
         tdsConfig = tdsConfig.replaceAll("%ncssdir%", outdir);
         File outputFile = new File(IOUtil.joinDir(nj22Dir.getDir(),
                               "threddsConfig.xml"));
-        InputStream  is = new ByteArrayInputStream(tdsConfig.getBytes());
-        OutputStream os = getStorageManager().getUncheckedFileOutputStream(outputFile);
+        InputStream is = new ByteArrayInputStream(tdsConfig.getBytes());
+        OutputStream os =
+            getStorageManager().getUncheckedFileOutputStream(outputFile);
         IOUtil.writeTo(is, os);
         ThreddsConfig.init(outputFile.toString());
 

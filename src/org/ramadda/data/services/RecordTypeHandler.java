@@ -1,7 +1,25 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.services;
 
-import org.ramadda.data.record.filter.*;
 
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.point.PointMetadataHarvester;
@@ -11,8 +29,10 @@ import org.ramadda.data.record.RecordVisitorGroup;
 
 import org.ramadda.data.record.VisitInfo;
 
-import org.ramadda.data.services.RecordEntry;
+import org.ramadda.data.record.filter.*;
 import org.ramadda.data.services.PointEntry;
+
+import org.ramadda.data.services.RecordEntry;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
@@ -27,6 +47,8 @@ import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
+
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -36,13 +58,12 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import ucar.unidata.util.Misc;
-import java.util.Hashtable;
-import java.util.Date;
 import java.lang.reflect.*;
 
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -54,14 +75,18 @@ import java.util.Properties;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public abstract  class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
+public abstract class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
 
+    /** _more_          */
     public static final int IDX_RECORD_COUNT = 0;
+
+    /** _more_          */
     public static final int IDX_PROPERTIES = 1;
 
     /** _more_ */
-    private  RecordFileFactory recordFileFactory;
+    private RecordFileFactory recordFileFactory;
 
+    /** _more_          */
     private RecordOutputHandler recordOutputHandler;
 
 
@@ -77,24 +102,48 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         super(repository, node);
     }
 
-    public  RecordOutputHandler getRecordOutputHandler() {
-        if(recordOutputHandler==null) {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public RecordOutputHandler getRecordOutputHandler() {
+        if (recordOutputHandler == null) {
             try {
                 recordOutputHandler = doMakeRecordOutputHandler();
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
+
         return recordOutputHandler;
     }
 
 
-    public  RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
         return new RecordOutputHandler(getRepository(), null);
     }
 
 
-    public boolean includedInRequest(Request request, RecordEntry recordEntry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param recordEntry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean includedInRequest(Request request, RecordEntry recordEntry)
+            throws Exception {
         return true;
     }
 
@@ -114,13 +163,13 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
         //        super.addToInformationTabs(request, entry, tabTitles, tabContents);
         try {
             RecordOutputHandler outputHandler = getRecordOutputHandler();
-            if(outputHandler!=null) {
+            if (outputHandler != null) {
                 tabTitles.add(msg("File Format"));
-                StringBuffer sb         = new StringBuffer();
-                RecordEntry   recordEntry = outputHandler.doMakeEntry(request,
-                                                                      entry);
+                StringBuffer sb = new StringBuffer();
+                RecordEntry recordEntry = outputHandler.doMakeEntry(request,
+                                              entry);
                 outputHandler.getFormHandler().getEntryMetadata(request,
-                                                                recordEntry, sb);
+                        recordEntry, sb);
                 tabContents.add(sb.toString());
             }
         } catch (Exception exc) {
@@ -174,7 +223,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      */
     public void initializeEntry(Entry entry, File originalFile)
             throws Exception {
-        
+
         Hashtable existingProperties = getRecordProperties(entry);
         if ((existingProperties != null) && (existingProperties.size() > 0)) {
             return;
@@ -188,27 +237,35 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
 
 
         //Make the properties string
-        String contents = makePropertiesString(properties);
-        Object[] values = entry.getTypeHandler().getValues(entry);
+        String   contents = makePropertiesString(properties);
+        Object[] values   = entry.getTypeHandler().getValues(entry);
         //Append the properties file contents
-        if(values[IDX_PROPERTIES]!=null) {
+        if (values[IDX_PROPERTIES] != null) {
             values[IDX_PROPERTIES] = "\n" + contents;
         } else {
-            values[IDX_PROPERTIES] =  contents;
+            values[IDX_PROPERTIES] = contents;
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     *
+     * @return _more_
+     */
     public String makePropertiesString(Hashtable properties) {
         StringBuffer sb = new StringBuffer();
         for (java.util.Enumeration keys = properties.keys();
-             keys.hasMoreElements(); ) {
+                keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             sb.append(key);
             sb.append("=");
             sb.append(properties.get(key));
             sb.append("\n");
         }
-        return  sb.toString();
+
+        return sb.toString();
     }
 
 
@@ -231,10 +288,16 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Entry entry) throws Exception {
-    }
+    public void initializeNewEntry(Entry entry) throws Exception {}
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getEntryCategory(Entry entry) {
         return getProperty("entry.category", "");
     }
@@ -264,11 +327,14 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        Object[] values = entry.getTypeHandler().getValues(entry);
-        String   propertiesString =  values[IDX_PROPERTIES]!=null?values[IDX_PROPERTIES].toString():"";
+        Object[] values           = entry.getTypeHandler().getValues(entry);
+        String   propertiesString = (values[IDX_PROPERTIES] != null)
+                                    ? values[IDX_PROPERTIES].toString()
+                                    : "";
         if (propertiesString != null) {
             Properties p = new Properties();
             p.load(new ByteArrayInputStream(propertiesString.getBytes()));
+
             return p;
         }
 
@@ -285,46 +351,84 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      * @throws Exception On badness
      */
     public RecordFile doMakeRecordFile(Entry entry) throws Exception {
-        Hashtable properties = getRecordProperties(entry);
+        Hashtable  properties = getRecordProperties(entry);
         RecordFile recordFile = doMakeRecordFile(entry, properties);
         //Explicitly set the properties to force a call to initProperties
         recordFile.setProperties(properties);
+
         return recordFile;
     }
 
-    private RecordFile doMakeRecordFile(Entry entry, Hashtable properties) throws Exception {
-        String recordFileClass= getProperty("record.file.class",(String) null);
-        if(recordFileClass!= null)  {
-            return doMakeRecordFile(entry, recordFileClass,properties);
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param properties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private RecordFile doMakeRecordFile(Entry entry, Hashtable properties)
+            throws Exception {
+        String recordFileClass = getProperty("record.file.class",
+                                             (String) null);
+        if (recordFileClass != null) {
+            return doMakeRecordFile(entry, recordFileClass, properties);
         }
         String path = entry.getFile().toString();
+
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(path,
-                                                                    properties);
+                properties);
     }
 
 
-    private RecordFile doMakeRecordFile(Entry entry, String className, Hashtable properties) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param className _more_
+     * @param properties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private RecordFile doMakeRecordFile(Entry entry, String className,
+                                        Hashtable properties)
+            throws Exception {
         Class c = Misc.findClass(className);
-        Constructor ctor = Misc.findConstructor(c,
-                                                new Class[] { String.class, Hashtable.class });
-        if(ctor!=null) {
-            return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString(),
-                                                              properties});
+        Constructor ctor = Misc.findConstructor(c, new Class[] { String.class,
+                Hashtable.class });
+        if (ctor != null) {
+            return (RecordFile) ctor.newInstance(new Object[] {
+                entry.getFile().toString(),
+                properties });
         }
-        ctor = Misc.findConstructor(c,
-                                    new Class[] { String.class});
+        ctor = Misc.findConstructor(c, new Class[] { String.class });
 
-        if(ctor!=null) {
-            return (RecordFile) ctor.newInstance(new Object[]{entry.getFile().toString()});
-            
+        if (ctor != null) {
+            return (RecordFile) ctor.newInstance(new Object[] {
+                entry.getFile().toString() });
+
         }
-        throw new IllegalArgumentException("Could not find constructor for " +className);
+
+        throw new IllegalArgumentException("Could not find constructor for "
+                                           + className);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param recordFile _more_
+     * @param filters _more_
+     */
     public void getFilters(Request request, Entry entry,
-                           RecordFile recordFile, List<RecordFilter> filters) {
-    }
+                           RecordFile recordFile,
+                           List<RecordFilter> filters) {}
 
     /**
      * _more_
@@ -340,6 +444,7 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
     public boolean canHandleResource(String path, String filename) {
         try {
             boolean ok = getRecordFileFactory().canLoad(path);
+
             return ok;
         } catch (Exception exc) {
             //If the point loading flaked out then just keep going
@@ -355,15 +460,21 @@ public abstract  class RecordTypeHandler extends GenericTypeHandler implements R
      *
      * @return _more_
      */
-    public  RecordFileFactory getRecordFileFactory() {
-        if(recordFileFactory==null) {
+    public RecordFileFactory getRecordFileFactory() {
+        if (recordFileFactory == null) {
             recordFileFactory = doMakeRecordFileFactory();
         }
+
         return recordFileFactory;
     }
 
 
-    public  RecordFileFactory doMakeRecordFileFactory() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public RecordFileFactory doMakeRecordFileFactory() {
         return new RecordFileFactory();
     }
 

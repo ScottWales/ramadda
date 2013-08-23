@@ -1,33 +1,37 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
+
 package org.ramadda.data.point.text;
+
+
+import org.ramadda.data.point.*;
 
 
 
 
 import org.ramadda.data.record.*;
-import org.ramadda.data.point.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.Station;
 import org.ramadda.util.XlsUtil;
-import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
@@ -50,44 +54,66 @@ import javax.swing.*;
  */
 public abstract class TextFile extends PointFile implements Fields {
 
-    static int cnt =0;
-    int mycnt = cnt++;
+    /** _more_          */
+    static int cnt = 0;
 
     /** _more_          */
+    int mycnt = cnt++;
+
+    /** _more_ */
     public static final String PROP_FIELDS = "fields";
 
 
 
+    /** _more_          */
     public static final String ATTR_TYPE = "type";
+
+    /** _more_          */
     public static final String ATTR_MISSING = "missing";
+
+    /** _more_          */
     public static final String ATTR_VALUE = "value";
+
+    /** _more_          */
     public static final String ATTR_FORMAT = "format";
 
+    /** _more_          */
     public static final String ATTR_UNIT = "unit";
+
+    /** _more_          */
     public static final String ATTR_SEARCHABLE = "searchable";
+
+    /** _more_          */
     public static final String ATTR_CHARTABLE = "chartable";
 
 
+    /** _more_          */
     public static final String TYPE_STRING = "string";
-    public static final String TYPE_DATE = "date";
 
     /** _more_          */
+    public static final String TYPE_DATE = "date";
+
+    /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
+
+    /** _more_          */
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
+
+    /** _more_          */
     public static final String PROP_DELIMITER = "delimiter";
 
+    /** _more_          */
     protected String firstDataLine = null;
 
 
-    /** _more_          */
+    /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 
 
     /**
      * _more_
      */
-    public TextFile() {
-    }
+    public TextFile() {}
 
     /**
      * ctor
@@ -129,32 +155,52 @@ public abstract class TextFile extends PointFile implements Fields {
     public RecordIO doMakeInputIO(boolean buffered) throws IOException {
         String file = getFilename();
         Reader reader;
-        if(file.endsWith(".xls")) {
-            reader= new StringReader(XlsUtil.xlsToCsv(file));
+        if (file.endsWith(".xls")) {
+            reader = new StringReader(XlsUtil.xlsToCsv(file));
         } else {
-            reader= new FileReader(getFilename());
+            reader = new FileReader(getFilename());
         }
-        return new RecordIO(
-                            new BufferedReader(reader));
+
+        return new RecordIO(new BufferedReader(reader));
     }
 
 
-    private static Hashtable<String,String> fieldsMap = new Hashtable<String,String>();
+    /** _more_          */
+    private static Hashtable<String, String> fieldsMap =
+        new Hashtable<String, String>();
 
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     public String getFieldsFileContents(String path) throws IOException {
         String fields = fieldsMap.get(path);
-        if(fields==null) {
+        if (fields == null) {
             fields = IOUtil.readContents(path, getClass()).trim();
-            fields = fields.replaceAll("\n"," ");
+            fields = fields.replaceAll("\n", " ");
             fieldsMap.put(path, fields);
         }
+
         return fields;
     }
-    
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     public String getFieldsFileContents() throws IOException {
         String path = getClass().getCanonicalName();
-        path = path.replaceAll("\\.","/");
-        path = "/" + path +".fields.txt";
+        path = path.replaceAll("\\.", "/");
+        path = "/" + path + ".fields.txt";
+
         //        System.err.println ("path:" + path);
         return getFieldsFileContents(path);
     }
@@ -169,22 +215,47 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public int getSkipLines(VisitInfo visitInfo) {
         int skipLines = Integer.parseInt(getProperty(PROP_SKIPLINES, "0"));
+
         return skipLines;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getHeaderDelimiter() {
-        return getProperty(PROP_HEADER_DELIMITER,(String) null);
+        return getProperty(PROP_HEADER_DELIMITER, (String) null);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isHeaderStandard() {
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean readHeader() {
         return false;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         return recordIO;
     }
@@ -202,29 +273,58 @@ public abstract class TextFile extends PointFile implements Fields {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<String> getHeaderLines() {
         return headerLines;
     }
 
-    public Station  setLocation(String siteId, TextRecord record) {
+    /**
+     * _more_
+     *
+     * @param siteId _more_
+     * @param record _more_
+     *
+     * @return _more_
+     */
+    public Station setLocation(String siteId, TextRecord record) {
         Station station = setLocation(siteId);
-        if(station!=null) {
+        if (station != null) {
             record.setLocation(station);
         }
+
         return station;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param lines _more_
+     */
     public void setHeaderLines(List<String> lines) {
         headerLines = lines;
     }
 
+    /**
+     * _more_
+     */
     public void initAfterClone() {
         super.initAfterClone();
         headerLines = new ArrayList<String>();
     }
 
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
     public boolean isHeaderLine(String line) {
         return line.startsWith("#");
     }
@@ -240,38 +340,48 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
 
-        boolean haveReadHeader = headerLines.size()>0;
-        String headerDelimiter = getHeaderDelimiter();
-        if(headerDelimiter!=null) {
-            while(true) {
+        boolean haveReadHeader  = headerLines.size() > 0;
+        String  headerDelimiter = getHeaderDelimiter();
+        if (headerDelimiter != null) {
+            while (true) {
                 String line = visitInfo.getRecordIO().readLine();
-                if(line == null) break;
-                line  = line.trim();
-                if(line.equals(headerDelimiter)) break;
-                if(!haveReadHeader) {
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (line.equals(headerDelimiter)) {
+                    break;
+                }
+                if ( !haveReadHeader) {
                     headerLines.add(line);
                 }
             }
-        } else if(isHeaderStandard()) {
-            while(true) {
+        } else if (isHeaderStandard()) {
+            while (true) {
                 String line = visitInfo.getRecordIO().readLine();
-                if(line == null) break;
+                if (line == null) {
+                    break;
+                }
                 line = line.trim();
-                if(line.length()==0) break;
+                if (line.length() == 0) {
+                    break;
+                }
 
-                if(!isHeaderLine(line)) {
+                if ( !isHeaderLine(line)) {
                     firstDataLine = line;
+
                     break;
                 }
 
 
-                if(!haveReadHeader) {
+                if ( !haveReadHeader) {
                     headerLines.add(line);
-                    line  = line.substring(1);
+                    line = line.substring(1);
                     int idx = line.indexOf("=");
-                    if(idx>=0)  {
-                        List<String> toks = StringUtil.splitUpTo(line,"=",2);
-                        putProperty(toks.get(0),toks.get(1));
+                    if (idx >= 0) {
+                        List<String> toks = StringUtil.splitUpTo(line, "=",
+                                                2);
+                        putProperty(toks.get(0), toks.get(1));
                     }
                 }
             }
@@ -279,14 +389,16 @@ public abstract class TextFile extends PointFile implements Fields {
             int skipCnt = getSkipLines(visitInfo);
             for (int i = 0; i < skipCnt; i++) {
                 String line = visitInfo.getRecordIO().readLine();
-                if(!haveReadHeader) {
+                if ( !haveReadHeader) {
                     headerLines.add(line);
                 }
             }
-            if(headerLines.size()!=skipCnt) {
-                throw new IllegalArgumentException("Bad number of header lines:" + headerLines.size());
+            if (headerLines.size() != skipCnt) {
+                throw new IllegalArgumentException(
+                    "Bad number of header lines:" + headerLines.size());
             }
         }
+
         return visitInfo;
     }
 
@@ -294,28 +406,54 @@ public abstract class TextFile extends PointFile implements Fields {
 
 
 
+    /**
+     * _more_
+     *
+     * @param fields _more_
+     */
     public void putFields(String[] fields) {
         putProperty(PROP_FIELDS, makeFields(fields));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param fields _more_
+     *
+     * @return _more_
+     */
     public String makeFields(String[] fields) {
-        StringBuffer sb  = new StringBuffer();
-        for(int i=0;i<fields.length;i++) { 
-            if(fields[i] == null) continue;
-            if(i>0) sb.append(",");
-            sb.append (fields[i]);
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i] == null) {
+                continue;
+            }
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(fields[i]);
         }
+
         return sb.toString();
     }
 
-    public String makeField(String id, String ... attrs) {
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param attrs _more_
+     *
+     * @return _more_
+     */
+    public String makeField(String id, String... attrs) {
         StringBuffer asb = new StringBuffer();
-        for(String attr: attrs) {
+        for (String attr : attrs) {
             asb.append(attr);
             asb.append(" ");
         }
-        return id +"[" + asb +"]";
+
+        return id + "[" + asb + "]";
     }
 
     /**
@@ -351,35 +489,90 @@ public abstract class TextFile extends PointFile implements Fields {
                 return false;
             }
         }
+
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @param d _more_
+     *
+     * @return _more_
+     */
     public String attrValue(double d) {
-        return attrValue(""+d);
+        return attrValue("" + d);
     }
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public String attrValue(String v) {
         return HtmlUtils.attr(ATTR_VALUE, v);
     }
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public String attrType(String v) {
         return HtmlUtils.attr(ATTR_TYPE, v);
     }
+
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public String attrMissing(double v) {
-        return HtmlUtils.attr(ATTR_MISSING, ""+v);
+        return HtmlUtils.attr(ATTR_MISSING, "" + v);
     }
+
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public String attrFormat(String v) {
         return HtmlUtils.attr(ATTR_FORMAT, v);
     }
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public String attrUnit(String v) {
         return HtmlUtils.attr(ATTR_UNIT, v);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String attrChartable() {
         return HtmlUtils.attr(ATTR_CHARTABLE, "true");
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String attrSearchable() {
         return HtmlUtils.attr(ATTR_SEARCHABLE, "true");
     }

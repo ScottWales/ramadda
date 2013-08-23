@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -53,17 +52,17 @@ public class OpusTypeHandler extends SolutionTypeHandler {
     /** _more_ */
     public static final String TYPE_OPUS = "gps_solution_opus";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_OPUS_MAIL_URL = "gps.opus.mail.url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_OPUS_MAIL_USER = "gps.opus.mail.user";
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean monitoringOpus = false;
 
-    /** _more_          */
+    /** _more_ */
     private String opusUser;
 
     /**
@@ -227,10 +226,10 @@ Easting (X)  [meters]      379359.228           836346.070
         Z:      4089011.143(m)   0.010(m)           4089011.067(m)   0.010(m)
          */
         //        List<String> 
-        String   eol          = "($|\\r?\\n)";
+        String   eol    = "($|\\r?\\n)";
 
-        Object[] values       = entry.getTypeHandler().getValues(entry);
-        String   coordPattern =
+        Object[] values = entry.getTypeHandler().getValues(entry);
+        String coordPattern =
             "[^\\r\\n]+\\s+(-?[0-9\\.]+)\\s*\\(m\\)\\s*[0-9\\.]+\\s*\\(m\\)"
             + eol;
 
@@ -308,7 +307,7 @@ Easting (X)  [meters]      379359.228           836346.070
      * @param args _more_
      */
     public static void main(String[] args) {
-        String eol  = "($|\\r?\\n)";
+        String eol = "($|\\r?\\n)";
         String opus =
             " REF FRAME: NAD_83(2011)(EPOCH:2010.0000)              IGS08 (EPOCH:2012.4407)\nsdfsfsd";
         opus = " REF FRAME: IGS08 (EPOCH:2012.4903)\nsdfsdfds";
@@ -388,7 +387,8 @@ Easting (X)  [meters]      379359.228           836346.070
                 //                if(true) continue;
 
                 StringBuffer msgBuff = new StringBuffer();
-                Request tmpRequest   = getRepository().getTmpRequest(opusUser);
+                Request tmpRequest   =
+                    getRepository().getTmpRequest(opusUser);
                 Entry newEntry = gpsOutputHandler.processAddOpus(tmpRequest,
                                      sb.toString(), msgBuff);
                 if (newEntry == null) {

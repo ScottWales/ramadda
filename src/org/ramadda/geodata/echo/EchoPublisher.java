@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -32,13 +31,14 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.sql.Clause;
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -286,9 +286,9 @@ public class EchoPublisher extends Harvester {
     public void writeCollections(List<Entry> collections, OutputStream os,
                                  boolean includeGranules)
             throws Exception {
-        ZipOutputStream zos  = new ZipOutputStream(os);
-        Document        doc  = XmlUtil.makeDocument();
-        Element         root = XmlUtil.create(doc,
+        ZipOutputStream zos = new ZipOutputStream(os);
+        Document        doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc,
                                       EchoUtil.TAG_COLLECTIONMETADATAFILE,
                                       null, new String[] { "xmlns:xsi",
                 "http://www.w3.org/2001/XMLSchema-instance",
@@ -321,8 +321,8 @@ public class EchoPublisher extends Harvester {
      */
     private void makeCollectionNode(Entry entry, Element collectionsNode)
             throws Exception {
-        Document doc            = collectionsNode.getOwnerDocument();
-        Element  collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION,
+        Document doc = collectionsNode.getOwnerDocument();
+        Element collectionNode = XmlUtil.create(doc, EchoUtil.TAG_COLLECTION,
                                      collectionsNode);
 
         /*

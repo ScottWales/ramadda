@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -82,9 +81,9 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
 
-        StringBuffer sb     = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
-        boolean      canAdd = getAccessManager().canDoAction(request, group,
+        boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
 
         if (canAdd) {
@@ -159,7 +158,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
 
         //sort the categories and put the blank one at the end
         cats = new ArrayList<String>(ucar.unidata.util.Misc.sort(cats));
-        if(cats.contains("")) {
+        if (cats.contains("")) {
             cats.remove("");
             cats.add("");
         }

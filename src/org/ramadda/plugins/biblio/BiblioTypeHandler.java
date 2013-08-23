@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,14 +30,14 @@ import org.ramadda.repository.type.*;
 
 import org.w3c.dom.*;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-import java.text.SimpleDateFormat;
 
 
 /**
@@ -47,6 +46,7 @@ import java.text.SimpleDateFormat;
  */
 public class BiblioTypeHandler extends GenericTypeHandler {
 
+    /** _more_          */
     private SimpleDateFormat dateFormat;
 
     /**
@@ -62,23 +62,50 @@ public class BiblioTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getEntryListName(Request request, Entry entry) {
         return "NAME:" + entry.getName();
     }
 
 
 
-    public String formatDate(Request request, Entry entry, Date date, String extra) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param date _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
+    public String formatDate(Request request, Entry entry, Date date,
+                             String extra) {
         return formatDate(request, date);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param d _more_
+     *
+     * @return _more_
+     */
     public String formatDate(Request request, Date d) {
-        if(dateFormat==null) {
+        if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM");
             dateFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
         }
-        synchronized(dateFormat) {
+        synchronized (dateFormat) {
             return dateFormat.format(d);
         }
     }

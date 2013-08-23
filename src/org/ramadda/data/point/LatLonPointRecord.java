@@ -1,32 +1,33 @@
-
 /*
- * Copyright 2013 ramadda.org
- * http://ramadda.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.point;
 
+
 import org.ramadda.data.record.*;
+
 import java.io.*;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 
 
 
@@ -34,182 +35,345 @@ import java.util.HashSet;
 
 /** This is generated code from generate.tcl. Do not edit it! */
 public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
-    public static final int ATTR_FIRST = org.ramadda.data.record.GeoRecord.ATTR_LAST;
-    public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
-    public static final int ATTR_LATITUDE =  ATTR_FIRST + 1;
+
+    /** _more_          */
+    public static final int ATTR_FIRST =
+        org.ramadda.data.record.GeoRecord.ATTR_LAST;
+
+    /** _more_          */
+    public static final List<RecordField> FIELDS =
+        new ArrayList<RecordField>();
+
+    /** _more_          */
+    public static final int ATTR_LATITUDE = ATTR_FIRST + 1;
+
+    /** _more_          */
     public static final RecordField RECORDATTR_LATITUDE;
-    public static final int ATTR_LONGITUDE =  ATTR_FIRST + 2;
+
+    /** _more_          */
+    public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
+
+    /** _more_          */
     public static final RecordField RECORDATTR_LONGITUDE;
-    public static final int ATTR_ALTITUDE =  ATTR_FIRST + 3;
+
+    /** _more_          */
+    public static final int ATTR_ALTITUDE = ATTR_FIRST + 3;
+
+    /** _more_          */
     public static final RecordField RECORDATTR_ALTITUDE;
-    public static final int ATTR_VALUES =  ATTR_FIRST + 4;
+
+    /** _more_          */
+    public static final int ATTR_VALUES = ATTR_FIRST + 4;
+
+    /** _more_          */
     public static final RecordField RECORDATTR_VALUES;
+
+    /** _more_          */
     public static final int ATTR_LAST = ATTR_FIRST + 5;
-    
+
 
     static {
-    FIELDS.add(RECORDATTR_LATITUDE = new RecordField("latitude", "latitude", "", ATTR_LATITUDE, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
-    RECORDATTR_LATITUDE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return (double) ((LatLonPointRecord)record).latitude;
-    }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return ""+ ((LatLonPointRecord)record).latitude;
-    }
-    });
-    FIELDS.add(RECORDATTR_LONGITUDE = new RecordField("longitude", "longitude", "", ATTR_LONGITUDE, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
-    RECORDATTR_LONGITUDE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return (double) ((LatLonPointRecord)record).longitude;
-    }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return ""+ ((LatLonPointRecord)record).longitude;
-    }
-    });
-    FIELDS.add(RECORDATTR_ALTITUDE = new RecordField("altitude", "altitude", "", ATTR_ALTITUDE, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
-    RECORDATTR_ALTITUDE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return (double) ((LatLonPointRecord)record).altitude;
-    }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
-    return ""+ ((LatLonPointRecord)record).altitude;
-    }
-    });
-    FIELDS.add(RECORDATTR_VALUES = new RecordField("values", "values", "", ATTR_VALUES, "", "double[getNumberOfValues()]", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
-    
-    }
-    
+        FIELDS.add(RECORDATTR_LATITUDE = new RecordField("latitude",
+                "latitude", "", ATTR_LATITUDE, "", "double", "double", 0,
+                SEARCHABLE_NO, CHARTABLE_NO));
+        RECORDATTR_LATITUDE.setValueGetter(new ValueGetter() {
+            public double getValue(Record record, RecordField field,
+                                   VisitInfo visitInfo) {
+                return (double) ((LatLonPointRecord) record).latitude;
+            }
+            public String getStringValue(Record record, RecordField field,
+                                         VisitInfo visitInfo) {
+                return "" + ((LatLonPointRecord) record).latitude;
+            }
+        });
+        FIELDS.add(RECORDATTR_LONGITUDE = new RecordField("longitude",
+                "longitude", "", ATTR_LONGITUDE, "", "double", "double", 0,
+                SEARCHABLE_NO, CHARTABLE_NO));
+        RECORDATTR_LONGITUDE.setValueGetter(new ValueGetter() {
+            public double getValue(Record record, RecordField field,
+                                   VisitInfo visitInfo) {
+                return (double) ((LatLonPointRecord) record).longitude;
+            }
+            public String getStringValue(Record record, RecordField field,
+                                         VisitInfo visitInfo) {
+                return "" + ((LatLonPointRecord) record).longitude;
+            }
+        });
+        FIELDS.add(RECORDATTR_ALTITUDE = new RecordField("altitude",
+                "altitude", "", ATTR_ALTITUDE, "", "double", "double", 0,
+                SEARCHABLE_NO, CHARTABLE_NO));
+        RECORDATTR_ALTITUDE.setValueGetter(new ValueGetter() {
+            public double getValue(Record record, RecordField field,
+                                   VisitInfo visitInfo) {
+                return (double) ((LatLonPointRecord) record).altitude;
+            }
+            public String getStringValue(Record record, RecordField field,
+                                         VisitInfo visitInfo) {
+                return "" + ((LatLonPointRecord) record).altitude;
+            }
+        });
+        FIELDS.add(RECORDATTR_VALUES = new RecordField("values", "values",
+                "", ATTR_VALUES, "", "double[getNumberOfValues()]", "double",
+                0, SEARCHABLE_NO, CHARTABLE_NO));
 
+    }
+
+
+    /** _more_          */
     double latitude;
-    double longitude;
-    double altitude;
-    double[] values = null;
-    
 
-    public  LatLonPointRecord(LatLonPointRecord that)  {
+    /** _more_          */
+    double longitude;
+
+    /** _more_          */
+    double altitude;
+
+    /** _more_          */
+    double[] values = null;
+
+
+    /**
+     * _more_
+     *
+     * @param that _more_
+     */
+    public LatLonPointRecord(LatLonPointRecord that) {
         super(that);
-        this.latitude = that.latitude;
-        this.longitude = that.longitude;
-        this.altitude = that.altitude;
-        this.values = that.values;
-        
+        this.latitude       = that.latitude;
+        this.longitude      = that.longitude;
+        this.altitude       = that.altitude;
+        this.values         = that.values;
+
         this.numberOfValues = that.numberOfValues;
     }
 
 
 
-    public  LatLonPointRecord(RecordFile file)  {
+    /**
+     * _more_
+     *
+     * @param file _more_
+     */
+    public LatLonPointRecord(RecordFile file) {
         super(file);
     }
 
 
 
-    public  LatLonPointRecord(RecordFile file, boolean bigEndian)  {
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param bigEndian _more_
+     */
+    public LatLonPointRecord(RecordFile file, boolean bigEndian) {
         super(file, bigEndian);
     }
 
 
 
-    public int getLastAttribute()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getLastAttribute() {
         return ATTR_LAST;
     }
 
 
 
-    public  boolean equals(Object object)  {
-        if(!super.equals(object)) {System.err.println("bad super"); return false;} if(!(object instanceof LatLonPointRecord)) return false;
-        LatLonPointRecord that = (LatLonPointRecord ) object;
-        if(this.latitude!= that.latitude) {System.err.println("bad latitude");  return false;}
-        if(this.longitude!= that.longitude) {System.err.println("bad longitude");  return false;}
-        if(this.altitude!= that.altitude) {System.err.println("bad altitude");  return false;}
-        if(!java.util.Arrays.equals(this.values, that.values)) {System.err.println("bad values"); return false;}
+    /**
+     * _more_
+     *
+     * @param object _more_
+     *
+     * @return _more_
+     */
+    public boolean equals(Object object) {
+        if ( !super.equals(object)) {
+            System.err.println("bad super");
+
+            return false;
+        }
+        if ( !(object instanceof LatLonPointRecord)) {
+            return false;
+        }
+        LatLonPointRecord that = (LatLonPointRecord) object;
+        if (this.latitude != that.latitude) {
+            System.err.println("bad latitude");
+
+            return false;
+        }
+        if (this.longitude != that.longitude) {
+            System.err.println("bad longitude");
+
+            return false;
+        }
+        if (this.altitude != that.altitude) {
+            System.err.println("bad altitude");
+
+            return false;
+        }
+        if ( !java.util.Arrays.equals(this.values, that.values)) {
+            System.err.println("bad values");
+
+            return false;
+        }
+
         return true;
     }
 
 
 
 
-    
+
+    /** _more_          */
     private int numberOfValues;
 
-//    public LatLonPointRecord(int numberOfValues) {
-//	super(true);
-//        this.numberOfValues = numberOfValues;
-//        values = new double[getNumberOfValues()];
-//    }
+    //    public LatLonPointRecord(int numberOfValues) {
+    //      super(true);
+    //        this.numberOfValues = numberOfValues;
+    //        values = new double[getNumberOfValues()];
+    //    }
 
-//    public LatLonPointRecord(boolean bigEndian, int numberOfValues) {
-//        super(bigEndian);
-//        this.numberOfValues = numberOfValues;
-//        values = new double[getNumberOfValues()];
-//    }
+    //    public LatLonPointRecord(boolean bigEndian, int numberOfValues) {
+    //        super(bigEndian);
+    //        this.numberOfValues = numberOfValues;
+    //        values = new double[getNumberOfValues()];
+    //    }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public int getNumberOfValues() {
         return numberOfValues;
     }
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     */
     public void setNumberOfValues(int v) {
         numberOfValues = v;
     }
 
 
 
-    protected void addFields(List<RecordField> fields)  {
+    /**
+     * _more_
+     *
+     * @param fields _more_
+     */
+    protected void addFields(List<RecordField> fields) {
         super.addFields(fields);
         fields.addAll(FIELDS);
     }
 
 
 
-    public double getValue(int attrId)  {
-        if(attrId == ATTR_LATITUDE) return latitude;
-        if(attrId == ATTR_LONGITUDE) return longitude;
-        if(attrId == ATTR_ALTITUDE) return altitude;
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
+    public double getValue(int attrId) {
+        if (attrId == ATTR_LATITUDE) {
+            return latitude;
+        }
+        if (attrId == ATTR_LONGITUDE) {
+            return longitude;
+        }
+        if (attrId == ATTR_ALTITUDE) {
+            return altitude;
+        }
+
         return super.getValue(attrId);
-        
+
     }
 
 
 
-    public int getRecordSize()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getRecordSize() {
         return super.getRecordSize() + 24 + 0;
     }
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws IOException  {
-        DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
-        latitude =  readDouble(dis);
-        longitude =  readDouble(dis);
-        altitude =  readDouble(dis);
-        if(values==null || values.length!=getNumberOfValues()) values = new double[getNumberOfValues()];
-        readDoubles(dis,values);
-        
-        
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    public ReadStatus read(RecordIO recordIO) throws IOException {
+        DataInputStream dis    = recordIO.getDataInputStream();
+        ReadStatus      status = super.read(recordIO);
+        if (status != ReadStatus.OK) {
+            return status;
+        }
+        latitude  = readDouble(dis);
+        longitude = readDouble(dis);
+        altitude  = readDouble(dis);
+        if ((values == null) || (values.length != getNumberOfValues())) {
+            values = new double[getNumberOfValues()];
+        }
+        readDoubles(dis, values);
+
+
         return ReadStatus.OK;
     }
 
 
 
-    public void write(RecordIO recordIO) throws IOException  {
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @throws IOException _more_
+     */
+    public void write(RecordIO recordIO) throws IOException {
         DataOutputStream dos = recordIO.getDataOutputStream();
         super.write(recordIO);
         writeDouble(dos, latitude);
         writeDouble(dos, longitude);
         writeDouble(dos, altitude);
         write(dos, values);
-        
+
     }
 
 
 
-    public int doPrintCsv(VisitInfo visitInfo,PrintWriter pw)  {
-        boolean includeVector = visitInfo.getProperty(PROP_INCLUDEVECTOR, false);
-        int superCnt = super.doPrintCsv(visitInfo,pw);
-        int myCnt = 0;
-        if(superCnt>0) pw.print(',');
+    /**
+     * _more_
+     *
+     * @param visitInfo _more_
+     * @param pw _more_
+     *
+     * @return _more_
+     */
+    public int doPrintCsv(VisitInfo visitInfo, PrintWriter pw) {
+        boolean includeVector = visitInfo.getProperty(PROP_INCLUDEVECTOR,
+                                    false);
+        int superCnt = super.doPrintCsv(visitInfo, pw);
+        int myCnt    = 0;
+        if (superCnt > 0) {
+            pw.print(',');
+        }
         pw.print(latitude);
         myCnt++;
         pw.print(',');
@@ -218,92 +382,154 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
         pw.print(',');
         pw.print(altitude);
         myCnt++;
-        if(includeVector) {
-        for(int i=0;i<this.values.length;i++) {pw.print(i==0?'|':',');pw.print(this.values[i]);}
-        myCnt++;
+        if (includeVector) {
+            for (int i = 0; i < this.values.length; i++) {
+                pw.print((i == 0)
+                         ? '|'
+                         : ',');
+                pw.print(this.values[i]);
+            }
+            myCnt++;
         }
-        return myCnt+superCnt;
-        
+
+        return myCnt + superCnt;
+
     }
 
 
 
-    public int doPrintCsvHeader(VisitInfo visitInfo,PrintWriter pw)  {
-        int superCnt = super.doPrintCsvHeader(visitInfo,pw);
-        int myCnt = 0;
-        boolean includeVector = visitInfo.getProperty(PROP_INCLUDEVECTOR, false);
-        if(superCnt>0) pw.print(',');
-        RECORDATTR_LATITUDE.printCsvHeader(visitInfo,pw);
-        myCnt++;
-        pw.print(',');
-        RECORDATTR_LONGITUDE.printCsvHeader(visitInfo,pw);
-        myCnt++;
-        pw.print(',');
-        RECORDATTR_ALTITUDE.printCsvHeader(visitInfo,pw);
-        myCnt++;
-        if(includeVector) {
-        pw.print(',');
-        RECORDATTR_VALUES.printCsvHeader(visitInfo,pw);
-        myCnt++;
+    /**
+     * _more_
+     *
+     * @param visitInfo _more_
+     * @param pw _more_
+     *
+     * @return _more_
+     */
+    public int doPrintCsvHeader(VisitInfo visitInfo, PrintWriter pw) {
+        int superCnt = super.doPrintCsvHeader(visitInfo, pw);
+        int myCnt    = 0;
+        boolean includeVector = visitInfo.getProperty(PROP_INCLUDEVECTOR,
+                                    false);
+        if (superCnt > 0) {
+            pw.print(',');
         }
-        return myCnt+superCnt;
-        
+        RECORDATTR_LATITUDE.printCsvHeader(visitInfo, pw);
+        myCnt++;
+        pw.print(',');
+        RECORDATTR_LONGITUDE.printCsvHeader(visitInfo, pw);
+        myCnt++;
+        pw.print(',');
+        RECORDATTR_ALTITUDE.printCsvHeader(visitInfo, pw);
+        myCnt++;
+        if (includeVector) {
+            pw.print(',');
+            RECORDATTR_VALUES.printCsvHeader(visitInfo, pw);
+            myCnt++;
+        }
+
+        return myCnt + superCnt;
+
     }
 
 
 
-    public void print(Appendable buff)  throws Exception  {
+    /**
+     * _more_
+     *
+     * @param buff _more_
+     *
+     * @throws Exception _more_
+     */
+    public void print(Appendable buff) throws Exception {
         super.print(buff);
-        buff.append(" latitude: " + latitude+" \n");
-        buff.append(" longitude: " + longitude+" \n");
-        buff.append(" altitude: " + altitude+" \n");
-        
+        buff.append(" latitude: " + latitude + " \n");
+        buff.append(" longitude: " + longitude + " \n");
+        buff.append(" altitude: " + altitude + " \n");
+
     }
 
 
 
-    public double getLatitude()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double getLatitude() {
         return latitude;
     }
 
 
-    public void setLatitude(double newValue)  {
+    /**
+     * _more_
+     *
+     * @param newValue _more_
+     */
+    public void setLatitude(double newValue) {
         latitude = newValue;
     }
 
 
-    public double getLongitude()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double getLongitude() {
         return longitude;
     }
 
 
-    public void setLongitude(double newValue)  {
+    /**
+     * _more_
+     *
+     * @param newValue _more_
+     */
+    public void setLongitude(double newValue) {
         longitude = newValue;
     }
 
 
-    public double getAltitude()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double getAltitude() {
         return altitude;
     }
 
 
-    public void setAltitude(double newValue)  {
+    /**
+     * _more_
+     *
+     * @param newValue _more_
+     */
+    public void setAltitude(double newValue) {
         altitude = newValue;
     }
 
 
-    public double[] getValues()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double[] getValues() {
         return values;
     }
 
 
-    public void setValues(double[] newValue)  {
+    /**
+     * _more_
+     *
+     * @param newValue _more_
+     */
+    public void setValues(double[] newValue) {
         copy(values, newValue);
     }
 
 
 
 }
-
-
-

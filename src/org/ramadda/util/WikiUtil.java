@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -52,32 +51,32 @@ import java.util.regex.*;
  */
 public class WikiUtil {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_OPEN = "open";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SHOW = "show";
 
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_NOHEADING = "noheading";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_HEADING = "heading";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PREFIX = "{{";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SUFFIX = "}}";
 
 
@@ -96,10 +95,10 @@ public class WikiUtil {
     /** _more_ */
     private boolean replaceNewlineWithP = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean mobile = false;
 
-    /** _more_          */
+    /** _more_ */
     private String user;
 
     /**
@@ -207,7 +206,7 @@ public class WikiUtil {
      * @return _more_
      */
     public String getInfoBox(String property) {
-        StringBuffer sb   = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         List<String> toks = (List<String>) StringUtil.split(property, "\n",
                                 true, true);
         String firstLine = toks.get(0);
@@ -282,30 +281,70 @@ public class WikiUtil {
         return null;
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     private static List<String> splitOnNoWiki(String s) {
-        List<String> content = new ArrayList<String>();
-        int idx = s.indexOf("<nowiki>");
-        int tagLength1 = "<nowiki>".length();
-        int tagLength2 = "</nowiki>".length();
+        List<String> content    = new ArrayList<String>();
+        int          idx        = s.indexOf("<nowiki>");
+        int          tagLength1 = "<nowiki>".length();
+        int          tagLength2 = "</nowiki>".length();
         //.... <nowiki>.....</nowiki> ....
-        while(idx>=0 && s.length()>0) {
-            content.add(s.substring(0,idx));
-            s=s.substring(idx+tagLength1);
+        while ((idx >= 0) && (s.length() > 0)) {
+            content.add(s.substring(0, idx));
+            s = s.substring(idx + tagLength1);
             int idx2 = s.indexOf("</nowiki>");
-            if(idx2<0) {
+            if (idx2 < 0) {
                 content.add(s);
                 s = "";
+
                 break;
             }
             String nowiki = s.substring(0, idx2);
             content.add(nowiki);
-            s = s.substring(idx2+tagLength2);
+            s   = s.substring(idx2 + tagLength2);
             idx = s.indexOf("<nowiki>");
         }
         content.add(s);
+
         return content;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @param text _more_
+     * @param handler _more_
+     *
+     * @return _more_
+     */
+    public String wikify(String text, WikiPageHandler handler) {
+
+
+        StringBuffer mainBuffer = new StringBuffer();
+        List<String> toks       = splitOnNoWiki(text);
+        boolean      isText     = true;
+        for (String s : toks) {
+            if ( !isText) {
+                isText = true;
+                mainBuffer.append(s);
+
+                continue;
+            }
+            isText = false;
+            s      = wikifyInner(s, handler);
+            mainBuffer.append(s);
+        }
+
+        return mainBuffer.toString();
+    }
 
     /**
      * _more_
@@ -315,26 +354,8 @@ public class WikiUtil {
      *
      * @return _more_
      */
-    public String wikify(String text, WikiPageHandler handler) {
+    private String wikifyInner(String s, WikiPageHandler handler) {
 
-
-        StringBuffer mainBuffer = new StringBuffer();
-        List<String> toks = splitOnNoWiki(text);
-        boolean isText = true;
-        for(String s: toks) {
-            if(!isText) {
-                isText = true;
-                mainBuffer.append(s);
-                continue;
-            }
-            isText = false;
-            s = wikifyInner(s, handler);
-            mainBuffer.append(s);
-        }
-        return mainBuffer.toString();
-    }
-
-    private  String wikifyInner(String s, WikiPageHandler handler) {
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
         if (getReplaceNewlineWithP()) {
@@ -531,19 +552,21 @@ public class WikiUtil {
             int idx1 = s.indexOf("{{", baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));
             String property = s.substring(idx1 + 2, idx2);
             //If there were new lines in the property tag they got replaced with <P>
             //Unreplace them
-            property = property.replaceAll("\n<p>\n"," ");
-            baseIdx = idx2 + 2;
+            property = property.replaceAll("\n<p>\n", " ");
+            baseIdx  = idx2 + 2;
 
             if (property.equals(PROP_NOHEADING)) {
                 makeHeadings = false;
@@ -664,6 +687,7 @@ public class WikiUtil {
 
         return s;
 
+
     }
 
 
@@ -723,14 +747,13 @@ public class WikiUtil {
             //            String contents = IOUtil.readContents(new java.io.File(args[0]));
             //            contents = new WikiUtil().wikify(contents, null);
             //            System.out.println("\ncontents:" + contents);
-            for(String c: new String[]{ 
-                    "just text",
-                    "<nowiki>no wiki</nowiki>",
-                    "text<nowiki>no wiki</nowiki>",
-                    "text<nowiki>no wiki</nowiki>more text",
-                    "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>",
-                    "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>and more text"
-                }) {
+            for (String c : new String[] {
+                "just text", "<nowiki>no wiki</nowiki>",
+                "text<nowiki>no wiki</nowiki>",
+                "text<nowiki>no wiki</nowiki>more text",
+                "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>",
+                "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>and more text"
+            }) {
                 System.out.println("Content:" + c);
                 System.out.println(splitOnNoWiki(c));
             }

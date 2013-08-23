@@ -82,13 +82,13 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CAPTION = "caption";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CAPTION_TOP = "caption.top";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CAPTION_BOTTOM = "caption.bottom";
 
     /** _more_ */
@@ -107,7 +107,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_CROP = "image.edit.crop";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMAGE_EDIT_MATTE = "image.edit.matte";
 
     /** _more_ */
@@ -179,7 +179,7 @@ public class ImageOutputHandler extends OutputHandler {
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_CAPTION =
         new OutputType("Caption Image", "image.caption",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);

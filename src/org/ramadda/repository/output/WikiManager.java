@@ -73,29 +73,29 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BLOCK_SHOW = "block.show";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BLOCK_OPEN = "block.open";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BLOCK_TITLE = "block.title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BLOCK_POPUP = "block.popup";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ROW_LABEL = "row.label";
 
 
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_METADATA_TYPES = "metadata.types";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PADDING = "padding";
 
     /** border color */
@@ -128,20 +128,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** src attribute */
     public static final String ATTR_SRC = "src";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PREFIX = "prefix";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
 
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_INCLUDEDESCRIPTION = "includedescription";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
     /** attribute in the tabs tag */
@@ -255,7 +255,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_REQUEST = "request";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_POPUP = "popup";
 
     /** attribute in import tag */
@@ -273,10 +273,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** max image height attribute */
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MAXHEIGHT = "maxheight";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MINHEIGHT = "minheight";
 
     /** attribute in import tag */
@@ -294,13 +294,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the field property */
     public static final String WIKI_PROP_FIELD = "field";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_ROOT = "root";
 
     /** the calendar property */
     public static final String WIKI_PROP_CALENDAR = "calendar";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_GRAPH = "graph";
 
     /** the timeline property */
@@ -318,13 +318,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_MENU = "menu";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_SEARCH = "search";
 
     /** wiki import */
     public static final String WIKI_PROP_TREE = "tree";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_TREEVIEW = "treeview";
 
     /** the table property */
@@ -333,7 +333,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_COMMENTS = "comments";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_TAGCLOUD = "tagcloud";
 
     /** wiki import */
@@ -351,13 +351,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_TABS = "tabs";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_APPLY = "apply";
 
-    /** _more_          */
+    /** _more_ */
     public static final String APPLY_PREFIX = "apply.";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_APPLY_TAG = APPLY_PREFIX + "tag";
 
     /** accordian property */
@@ -429,7 +429,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_RESOURCE = "resource";
 
 

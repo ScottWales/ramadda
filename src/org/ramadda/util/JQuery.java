@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -24,41 +23,105 @@
 
 package org.ramadda.util;
 
+
 /**
  */
 
-public class JQuery  {
+public class JQuery {
 
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     *
+     * @return _more_
+     */
     public static String id(String selector) {
-        return "#"+ selector;
+        return "#" + selector;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     *
+     * @return _more_
+     */
     public static String select(String selector) {
         return "$(" + HtmlUtils.squote(selector) + ")";
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     * @param func _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
     public static String call(String selector, String func, String code) {
-        return select(selector) +"." + func +"(function(event) {" + code +"});\n";
+        return select(selector) + "." + func + "(function(event) {" + code
+               + "});\n";
     }
 
-    public static String submit(String selector,  String code) {
-        return call(selector,"submit", code);
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
+    public static String submit(String selector, String code) {
+        return call(selector, "submit", code);
     }
 
-    public static String change(String selector,  String code) {
-        return call(selector,"change", code);
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
+    public static String change(String selector, String code) {
+        return call(selector, "change", code);
     }
 
-    public static String click(String selector,  String code) {
-        return call(selector,"click", code);
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
+    public static String click(String selector, String code) {
+        return call(selector, "click", code);
     }
 
-    public static String button(String label, String id, StringBuffer js, String code ) {
-        String html = HtmlUtils.tag("button", HtmlUtils.id(id),label);
-        js.append (JQuery.select(JQuery.id(id)) +".button().click(function(event){event.preventDefault();\n" + code +"\n});\n");
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param js _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
+    public static String button(String label, String id, StringBuffer js,
+                                String code) {
+        String html = HtmlUtils.tag("button", HtmlUtils.id(id), label);
+        js.append(
+            JQuery.select(JQuery.id(id))
+            + ".button().click(function(event){event.preventDefault();\n"
+            + code + "\n});\n");
+
         return html;
     }
 }

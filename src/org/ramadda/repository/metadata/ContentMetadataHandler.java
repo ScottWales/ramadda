@@ -72,7 +72,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_THUMBNAIL = "content.thumbnail";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_ICON = "content.icon";
 
     /** _more_ */
@@ -111,7 +111,7 @@ public class ContentMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_ALIAS = "content.alias";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_TEMPLATE = "content.pagetemplate";
 
     /**

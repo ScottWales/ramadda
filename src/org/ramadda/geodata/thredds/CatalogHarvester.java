@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -29,13 +28,13 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
 
 import org.w3c.dom.*;
-
-import org.ramadda.sql.SqlUtil;
 
 
 import ucar.unidata.util.CatalogUtil;
@@ -490,12 +489,12 @@ public class CatalogHarvester extends Harvester {
             tab = tab + "  ";
         }
 
-        URL    catalogUrl = new URL(catalogUrlPath);
-        String name       =
+        URL catalogUrl = new URL(catalogUrlPath);
+        String name =
             XmlUtil.getAttribute(node, ATTR_NAME,
                                  IOUtil.getFileTail(catalogUrlPath));
         NodeList elements = XmlUtil.getElements(node);
-        String   urlPath = XmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
+        String urlPath = XmlUtil.getAttribute(node, CatalogUtil.ATTR_URLPATH,
                              (String) null);
         if (urlPath == null) {
             Element accessNode = XmlUtil.findChild(node,
@@ -608,7 +607,7 @@ public class CatalogHarvester extends Harvester {
                               String name)
             throws Exception {
 
-        URL     catalogUrl  = new URL(catalogUrlPath);
+        URL catalogUrl = new URL(catalogUrlPath);
         Element serviceNode = CatalogUtil.findServiceNodeForDataset(node,
                                   false, (download
                                           ? CatalogUtil.SERVICE_HTTP
@@ -667,7 +666,7 @@ public class CatalogHarvester extends Harvester {
                 URL           fromUrl    = new URL(urlPath);
                 URLConnection connection = fromUrl.openConnection();
                 InputStream   fromStream = connection.getInputStream();
-                OutputStream  toStream   =
+                OutputStream toStream =
                     getStorageManager().getFileOutputStream(newFile);
                 int bytes = IOUtil.writeTo(fromStream, toStream);
                 toStream.close();

@@ -95,7 +95,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private boolean searchOpen = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doSearchInitially = true;
 
     /** _more_ */
@@ -116,7 +116,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private List<String> tabs = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<SyntheticField> syntheticFields =
         new ArrayList<SyntheticField>();
 
@@ -693,17 +693,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class SyntheticField {
 
-        /** _more_          */
+        /** _more_ */
         String label;
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         List<String> fields = new ArrayList<String>();
 
         /**

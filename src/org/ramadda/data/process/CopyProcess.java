@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -103,16 +102,19 @@ public class CopyProcess extends DataProcess {
             }
         }
 
-        return new DataProcessOutput(new DataProcessOperand("Copied Entries", results));
+        return new DataProcessOutput(new DataProcessOperand("Copied Entries",
+                results));
     }
-    
+
     /**
      * Can we handle this type of DataProcessInput?
-     * 
+     *
+     *
+     * @param dpi _more_
      * @return true if we can handle
      */
     public boolean canHandle(DataProcessInput dpi) {
-    	return dpi != null && !dpi.getOperands().isEmpty();
+        return (dpi != null) && !dpi.getOperands().isEmpty();
     }
 
 }

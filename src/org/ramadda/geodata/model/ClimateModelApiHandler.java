@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -174,13 +173,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         Entry      lastEntry = null;
         for (DataProcessOutput dpo : outputs) {
             for (DataProcessOperand op : dpo.getOperands()) {
-              for (Entry granule : op.getEntries()) {
-                  if (granule.isFile()) {
-                      lastFile = granule.getFile();
-                      files.add(lastFile);
-                  }
-                  lastEntry = granule;
-              }
+                for (Entry granule : op.getEntries()) {
+                    if (granule.isFile()) {
+                        lastFile = granule.getFile();
+                        files.add(lastFile);
+                    }
+                    lastEntry = granule;
+                }
             }
         }
 
@@ -260,7 +259,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 //TODO: fix this later 
                 operands.add(new DataProcessOperand(collection, entries));
 
-                tmp.append("<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 150px; overflow-y: auto\">");
+                tmp.append(
+                    "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 150px; overflow-y: auto\">");
                 tmp.append(getEntryManager().getEntryLink(request,
                         collectionEntry));
                 tmp.append("<ul>");
@@ -375,12 +375,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     values.add(selectedValue);
                 }
                 sb.append("\n");
-                String selectBox = HtmlUtils.select(arg, values,
-                                       selectedValue,
-                                       " style=\"max-width:250px;min-width:250px;\" "
-                                       + HtmlUtils.attr("id",
-                                           getFieldSelectId(formId,
-                                               collection, fieldIdx)));
+                String selectBox =
+                    HtmlUtils.select(
+                        arg, values, selectedValue,
+                        " style=\"max-width:250px;min-width:250px;\" "
+                        + HtmlUtils.attr(
+                            "id",
+                            getFieldSelectId(formId, collection, fieldIdx)));
                 sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()),
                         selectBox));
                 sb.append("\n");

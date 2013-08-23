@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2011 Jeff McWhirter/ramadda.org
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -36,22 +36,23 @@ import java.util.List;
  */
 public abstract class Record implements Cloneable {
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean CHARTABLE_YES = true;
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean CHARTABLE_NO = false;
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean SEARCHABLE_YES = true;
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean SEARCHABLE_NO = false;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_INCLUDEVECTOR = "includevector";
 
+    /** _more_          */
     public static final long UNDEFINED_TIME = -9999;
 
 
@@ -84,7 +85,8 @@ public abstract class Record implements Cloneable {
     /** Are we in quick scan mode */
     private boolean quickScan = false;
 
-    private long recordTime =  UNDEFINED_TIME;
+    /** _more_          */
+    private long recordTime = UNDEFINED_TIME;
 
     /**
      * Ctor
@@ -136,6 +138,7 @@ public abstract class Record implements Cloneable {
         for (int i = 0; i < mask.length; i++) {
             mask[i] = true;
         }
+
         return mask;
     }
 
@@ -186,6 +189,7 @@ public abstract class Record implements Cloneable {
         this.write(new RecordIO(new FileOutputStream(getClass()
                 + "test.dat")));
         that.read(new RecordIO(new FileInputStream(getClass() + "test.dat")));
+
         return this.equals(that);
     }
 
@@ -218,6 +222,7 @@ public abstract class Record implements Cloneable {
             fields = new ArrayList<RecordField>();
             addFields(fields);
         }
+
         return fields;
     }
 
@@ -242,10 +247,19 @@ public abstract class Record implements Cloneable {
         for (int i = 0; (i < b.length) && (i < strings.length); i++) {
             b[i] = strings[i];
         }
+
         return b;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param what _more_
+     * @param values _more_
+     *
+     * @return _more_
+     */
     public boolean haveValueInSet(String what, HashSet<String> values) {
         return false;
     }
@@ -263,14 +277,30 @@ public abstract class Record implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
     public String getStringValue(int attrId) {
         Object object = getObjectValue(attrId);
-        if(object == null) {
-            throw new IllegalArgumentException("Unknown attribute id:" + attrId);
+        if (object == null) {
+            throw new IllegalArgumentException("Unknown attribute id:"
+                    + attrId);
         }
+
         return object.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
     public Object getObjectValue(int attrId) {
         throw new IllegalArgumentException("Unknown attribute id:" + attrId);
     }
@@ -278,9 +308,12 @@ public abstract class Record implements Cloneable {
 
     /**
      * _more_
+     *
+     * @param buff _more_
+     *
+     * @throws Exception _more_
      */
-    public void print(Appendable buff) throws Exception {
-    }
+    public void print(Appendable buff) throws Exception {}
 
 
     /**
@@ -296,15 +329,34 @@ public abstract class Record implements Cloneable {
         return ReadStatus.OK;
     }
 
-    public final ReadStatus readNextRecord(RecordIO recordIO) throws IOException {
-        ReadStatus status =read(recordIO);
-        if(status!=ReadStatus.OK) return status;
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    public final ReadStatus readNextRecord(RecordIO recordIO)
+            throws IOException {
+        ReadStatus status = read(recordIO);
+        if (status != ReadStatus.OK) {
+            return status;
+        }
         initializeAfterRead(recordIO);
+
         return status;
     }
 
-    public void initializeAfterRead(RecordIO recordIO) throws IOException {
-    }
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @throws IOException _more_
+     */
+    public void initializeAfterRead(RecordIO recordIO) throws IOException {}
 
     /**
      * _more_
@@ -385,6 +437,7 @@ public abstract class Record implements Cloneable {
                              ? 1
                              : 0) << i);
         }
+
         return value;
     }
 
@@ -409,6 +462,7 @@ public abstract class Record implements Cloneable {
      */
     public boolean isBitSet(short s, int bit) {
         short mask = (short) (1 << bit);
+
         return (s & mask) != 0;
     }
 
@@ -428,6 +482,7 @@ public abstract class Record implements Cloneable {
         } else {
             s = (short) (s & ~mask);
         }
+
         return s;
     }
 
@@ -443,6 +498,7 @@ public abstract class Record implements Cloneable {
      */
     public boolean isBitSet(int s, int bit) {
         int mask = (int) (1 << bit);
+
         return (s & mask) != 0;
     }
 
@@ -462,6 +518,7 @@ public abstract class Record implements Cloneable {
         } else {
             s = (int) (s & ~mask);
         }
+
         return s;
     }
 
@@ -476,6 +533,7 @@ public abstract class Record implements Cloneable {
      */
     public boolean isBitSet(byte s, int bit) {
         byte mask = (byte) (1 << bit);
+
         return (s & mask) != 0;
     }
 
@@ -495,6 +553,7 @@ public abstract class Record implements Cloneable {
         } else {
             s = (byte) (s & ~mask);
         }
+
         return s;
     }
 
@@ -592,25 +651,55 @@ public abstract class Record implements Cloneable {
     }
 
 
-    public String readString(DataInputStream dis) 
-        throws IOException {
+    /**
+     * _more_
+     *
+     * @param dis _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    public String readString(DataInputStream dis) throws IOException {
         return dis.readUTF();
     }
 
 
+    /**
+     * _more_
+     *
+     * @param dis _more_
+     * @param v _more_
+     *
+     * @throws IOException _more_
+     */
     public void readStrings(DataInputStream dis, String[] v)
-        throws IOException {
+            throws IOException {
         for (int i = 0; i < v.length; i++) {
             v[i] = readString(dis);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param dos _more_
+     * @param v _more_
+     *
+     * @throws IOException _more_
+     */
     public void write(DataOutputStream dos, String[] v) throws IOException {
         for (int i = 0; i < v.length; i++) {
             dos.writeUTF(v[i]);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param original _more_
+     * @param newValue _more_
+     */
     public void copy(String[] original, String[] newValue) {
         if (original.length < newValue.length) {
             throw new IllegalArgumentException("length mismatch "
@@ -661,6 +750,7 @@ public abstract class Record implements Cloneable {
      */
     public short readUnsignedByte(DataInputStream dis) throws IOException {
         readBytes(dis, work, 1);
+
         return unsignedByteToShort(work[0]);
     }
 
@@ -708,6 +798,7 @@ public abstract class Record implements Cloneable {
     public static final short unsignedByteToShort(byte b) {
         short i = 0;
         i |= b & 0xFF;
+
         return i;
     }
 
@@ -724,6 +815,7 @@ public abstract class Record implements Cloneable {
         if ( !bigEndian) {
             return readLELong(dis);
         }
+
         return dis.readLong();
     }
 
@@ -742,6 +834,7 @@ public abstract class Record implements Cloneable {
             // must cast to long or the shift would be done modulo 32
             accum |= (long) (dis.readByte() & 0xff) << shiftBy;
         }
+
         return accum;
     }
 
@@ -765,6 +858,7 @@ public abstract class Record implements Cloneable {
             b1 = b2;
             b2 = tmp;
         }
+
         return (short) (b1 << 8 | b2);
     }
 
@@ -780,6 +874,7 @@ public abstract class Record implements Cloneable {
      */
     public int readUnsignedShort(DataInputStream dis) throws IOException {
         readBytes(dis, work, 2);
+
         return unsignedShortToInt(work);
     }
 
@@ -795,6 +890,7 @@ public abstract class Record implements Cloneable {
      */
     public long readUnsignedInt(DataInputStream dis) throws IOException {
         readBytes(dis, work, 4);
+
         return unsignedIntToLong(work);
     }
 
@@ -815,6 +911,7 @@ public abstract class Record implements Cloneable {
         l |= b[2] & 0xFF;
         l <<= 8;
         l |= b[3] & 0xFF;
+
         return l;
     }
 
@@ -883,6 +980,7 @@ public abstract class Record implements Cloneable {
         i |= b[0] & 0xFF;
         i <<= 8;
         i |= b[1] & 0xFF;
+
         return i;
     }
 
@@ -900,6 +998,7 @@ public abstract class Record implements Cloneable {
         if ( !bigEndian) {
             return readLEInt(dis);
         }
+
         return dis.readInt();
     }
 
@@ -917,6 +1016,7 @@ public abstract class Record implements Cloneable {
         for (int shiftBy = 0; shiftBy < 32; shiftBy += 8) {
             accum |= (dis.readByte() & 0xff) << shiftBy;
         }
+
         return accum;
     }
 
@@ -938,6 +1038,7 @@ public abstract class Record implements Cloneable {
         if ( !bigEndian) {
             return readLEDouble(dis);
         }
+
         return dis.readDouble();
     }
 
@@ -957,6 +1058,7 @@ public abstract class Record implements Cloneable {
             // must cast to long or the shift would be done modulo 32
             accum |= ((long) (dis.readByte() & 0xff)) << shiftBy;
         }
+
         return Double.longBitsToDouble(accum);
     }
 
@@ -987,6 +1089,7 @@ public abstract class Record implements Cloneable {
         if ( !bigEndian) {
             return readLEFloat(dis);
         }
+
         return dis.readFloat();
     }
 
@@ -1005,6 +1108,7 @@ public abstract class Record implements Cloneable {
         for (int shiftBy = 0; shiftBy < 32; shiftBy += 8) {
             accum |= (dis.readByte() & 0xff) << shiftBy;
         }
+
         return Float.intBitsToFloat(accum);
     }
 
@@ -1487,6 +1591,7 @@ public abstract class Record implements Cloneable {
         for (int i = 0; i < a.length; i++) {
             f[i] = (float) a[i];
         }
+
         return f;
     }
 
@@ -1503,6 +1608,7 @@ public abstract class Record implements Cloneable {
         if ( !(object instanceof Record)) {
             return false;
         }
+
         return true;
     }
 
@@ -1535,11 +1641,27 @@ public abstract class Record implements Cloneable {
         return getRecordTime() != UNDEFINED_TIME;
     }
 
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public boolean isMissingValue(RecordField field, double v) {
         return getRecordFile().isMissingValue(this, field, v);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public boolean isMissingValue(RecordField field, String s) {
         return getRecordFile().isMissingValue(this, field, s);
     }

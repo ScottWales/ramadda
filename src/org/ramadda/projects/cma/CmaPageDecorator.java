@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -21,10 +20,14 @@
 
 package org.ramadda.projects.cma;
 
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+
 import ucar.unidata.util.Misc;
+
 import java.util.List;
+
 
 /**
  * @author Jeff McWhirter
@@ -32,8 +35,11 @@ import java.util.List;
 public class CmaPageDecorator extends PageDecorator {
 
     //Make this an object so we don't have linker problems when loading the plugins
+
+    /** _more_          */
     private Object cdmManager;
 
+    /** _more_          */
     private boolean cdmError = false;
 
     /**
@@ -42,61 +48,88 @@ public class CmaPageDecorator extends PageDecorator {
     public CmaPageDecorator() {}
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     */
     public CmaPageDecorator(Repository repository) {
         super(repository);
     }
 
     /**
-       This is called when no ARG_OUTPUT is specified. It can return the OUTPUT_TYPE to use for the given entry
-    */
+     *  This is called when no ARG_OUTPUT is specified. It can return the OUTPUT_TYPE to use for the given entry
+     *
+     * @param repository _more_
+     * @param request _more_
+     * @param entry _more_
+     * @param subFolders _more_
+     * @param subEntries _more_
+     *
+     * @return _more_
+     */
     @Override
-        public String getDefaultOutputType(Repository repository, Request request,
-                                           Entry entry, List<Entry> subFolders,List<Entry>subEntries) {
-        if(cdmError) return null;
+    public String getDefaultOutputType(Repository repository,
+                                       Request request, Entry entry,
+                                       List<Entry> subFolders,
+                                       List<Entry> subEntries) {
+        if (cdmError) {
+            return null;
+        }
 
-        if(entry.isGroup()) {
+        if (entry.isGroup()) {
             //Look at each child entry 
-            for(Entry child: subEntries) {
+            for (Entry child : subEntries) {
                 //If there are any images then use the image player
                 if (child.getResource().isImage()) {
                     return ImageOutputHandler.OUTPUT_PLAYER.getId();
                 }
             }
+
             return null;
         }
 
-        if(!entry.isFile()) {
+        if ( !entry.isFile()) {
             return null;
         }
 
-        if(!entry.getResource().getPath().endsWith(".nc")) {
+        if ( !entry.getResource().getPath().endsWith(".nc")) {
             return null;
         }
 
         //Here we use the CdmManager from the cdmdata plugin to determine what kind of entry we have
-        try  {
-            if(cdmManager == null) {
-                cdmManager = repository.getRepositoryManager(Misc.findClass("org.ramadda.geodata.cdmdata.CdmManager"));
-                if(cdmManager == null) {
+        try {
+            if (cdmManager == null) {
+                cdmManager = repository.getRepositoryManager(
+                    Misc.findClass("org.ramadda.geodata.cdmdata.CdmManager"));
+                if (cdmManager == null) {
                     cdmError = true;
-                    System.err.println("CmaPageDecorator: could  not find CdmManager");
+                    System.err.println(
+                        "CmaPageDecorator: could  not find CdmManager");
+
                     return null;
                 }
             }
-            if(!((org.ramadda.geodata.cdmdata.CdmManager)cdmManager).canLoadAsCdm(entry)) {
+            if ( !((org.ramadda.geodata.cdmdata.CdmManager) cdmManager)
+                    .canLoadAsCdm(entry)) {
                 return null;
             }
-            if(((org.ramadda.geodata.cdmdata.CdmManager)cdmManager).canLoadAsGrid(entry)) {
+            if (((org.ramadda.geodata.cdmdata.CdmManager) cdmManager)
+                    .canLoadAsGrid(entry)) {
                 return "data.gridsubset.form";
             }
-            if(((org.ramadda.geodata.cdmdata.CdmManager)cdmManager).canLoadAsPoint(entry)) {
+            if (((org.ramadda.geodata.cdmdata.CdmManager) cdmManager)
+                    .canLoadAsPoint(entry)) {
                 return "data.point.map";
             }
+
             return "data.cdl";
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             cdmError = true;
-            repository.getLogManager().logError("ERROR: CmaPageDecorator entry=" + entry, exc);
+            repository.getLogManager().logError(
+                "ERROR: CmaPageDecorator entry=" + entry, exc);
         }
+
         return null;
     }
 
@@ -114,7 +147,7 @@ public class CmaPageDecorator extends PageDecorator {
      */
     @Override
     public String decoratePage(Repository repository, Request request,
-                                   String html, Entry entry) {
+                               String html, Entry entry) {
         //Do nothing
         return super.decoratePage(repository, request, html, entry);
     }

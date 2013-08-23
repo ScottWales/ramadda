@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -99,15 +98,14 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
     /** start month identifier */
     public static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
-                                                     + "startmonth";
+                                                    + "startmonth";
 
     /** end month identifier */
-    public static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX
-                                                   + "endmonth";
+    public static final String ARG_CDO_ENDMONTH = ARG_CDO_PREFIX + "endmonth";
 
     /** start month identifier */
     public static final String ARG_CDO_STARTYEAR = ARG_CDO_PREFIX
-                                                    + "startyear";
+                                                   + "startyear";
 
     /** end month identifier */
     public static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX + "endyear";
@@ -316,8 +314,8 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     public List<DataProcess> getDataProcesses() {
         List<DataProcess> processes = new ArrayList<DataProcess>();
         //TODO: put this back
-        if(isEnabled()) {
-        //if (true) {
+        if (isEnabled()) {
+            //if (true) {
             processes.add(new CDOAreaStatistics());
         }
 
@@ -1366,11 +1364,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
         /**
          * Can we handle this type of DataProcessInput?
-         * 
+         *
+         *
+         * @param dpi _more_
          * @return true if we can handle
          */
         public boolean canHandle(DataProcessInput dpi) {
-        	return isEnabled();
+            return isEnabled();
         }
-        }
+    }
 }

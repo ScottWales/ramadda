@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,14 +27,15 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.EntryGroup;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -79,7 +79,7 @@ import java.util.zip.*;
  */
 public class CatalogOutputHandler extends OutputHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_OPENDAP = "/cdmdata/opendap.gif";
 
     /** _more_ */
@@ -179,7 +179,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                        List<Metadata> metadataList,
                                        Element node, String tab)
             throws Exception {
-        NodeList              elements         = XmlUtil.getElements(node);
+        NodeList elements = XmlUtil.getElements(node);
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
 
@@ -353,7 +353,7 @@ public class CatalogOutputHandler extends OutputHandler {
                           ? entries.get(0).getName()
                           : group.getName());
         Document doc   = XmlUtil.makeDocument();
-        Element  root  = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
+        Element root = XmlUtil.create(doc, CatalogUtil.TAG_CATALOG, null,
                                       new String[] {
             "xmlns",
             "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
@@ -380,13 +380,16 @@ public class CatalogOutputHandler extends OutputHandler {
             entries = getEntryUtil().sortEntriesOnDate(entries, true);
             for (Entry entry : entries) {
                 if (canDataLoad(request, entry)) {
-                    outputEntry(entry, request, catalogInfo, root, doingLatest);
+                    outputEntry(entry, request, catalogInfo, root,
+                                doingLatest);
                     didone = true;
+
                     break;
                 }
             }
         } else if (justOneEntry) {
-            outputEntry(entries.get(0), request, catalogInfo, root, doingLatest);
+            outputEntry(entries.get(0), request, catalogInfo, root,
+                        doingLatest);
         } else {
             topDataset = XmlUtil.create(doc, CatalogUtil.TAG_DATASET, root,
                                         new String[] { CatalogUtil.ATTR_NAME,
@@ -436,7 +439,7 @@ public class CatalogOutputHandler extends OutputHandler {
                            getEntryManager().getFullEntryShowUrl(request),
                            "Resolver");
 
-                Node    firstChild    = topDataset.getFirstChild();
+                Node firstChild = topDataset.getFirstChild();
                 Element latestDataset = XmlUtil.create(catalogInfo.doc,
                                             CatalogUtil.TAG_DATASET, null,
                                             new String[] {
@@ -607,11 +610,13 @@ public class CatalogOutputHandler extends OutputHandler {
      * @param request _more_
      * @param catalogInfo _more_
      * @param dataset _more_
+     * @param doingLatest _more_
      *
      * @throws Exception _more_
      */
     public void addServices(Entry entry, Request request,
-                            CatalogInfo catalogInfo, Element dataset, boolean doingLatest)
+                            CatalogInfo catalogInfo, Element dataset,
+                            boolean doingLatest)
             throws Exception {
 
         File   f    = entry.getFile();
@@ -652,7 +657,9 @@ public class CatalogOutputHandler extends OutputHandler {
         }
 
         //Just add the opendap link if we are doing the latest
-        if(doingLatest) return;
+        if (doingLatest) {
+            return;
+        }
 
 
         for (Service service : services) {
@@ -750,12 +757,14 @@ public class CatalogOutputHandler extends OutputHandler {
      * @param request _more_
      * @param catalogInfo _more_
      * @param parent _more_
+     * @param doLatest _more_
      *
      *
      * @throws Exception _more_
      */
     public void outputEntry(Entry entry, Request request,
-                            CatalogInfo catalogInfo, Element parent, boolean doLatest)
+                            CatalogInfo catalogInfo, Element parent,
+                            boolean doLatest)
             throws Exception {
 
         if (entry.getType().equals("cataloglink")) {

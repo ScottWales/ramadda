@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -170,8 +169,8 @@ public class FeedTypeHandler extends GenericTypeHandler {
         NodeList children = XmlUtil.getElements(channel, RssUtil.TAG_ITEM);
         HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
-            Element item  = (Element) children.item(childIdx);
-            String  title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
+            Element item = (Element) children.item(childIdx);
+            String title = XmlUtil.getGrandChildText(item, RssUtil.TAG_TITLE,
                                "");
 
             String link = XmlUtil.getGrandChildText(item, RssUtil.TAG_LINK,
@@ -254,8 +253,8 @@ public class FeedTypeHandler extends GenericTypeHandler {
         NodeList children = XmlUtil.getElements(root, AtomUtil.TAG_ENTRY);
         HashSet  seen     = new HashSet();
         for (int childIdx = 0; childIdx < children.getLength(); childIdx++) {
-            Element item  = (Element) children.item(childIdx);
-            String  title = XmlUtil.getGrandChildText(item,
+            Element item = (Element) children.item(childIdx);
+            String title = XmlUtil.getGrandChildText(item,
                                AtomUtil.TAG_TITLE, "");
             String guid = XmlUtil.getGrandChildText(item, AtomUtil.TAG_ID,
                               "" + childIdx);

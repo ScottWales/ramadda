@@ -87,7 +87,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat dateParser = null;
 
     /** _more_ */
@@ -127,7 +127,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FORMAT = "format";
 
     /** _more_ */
@@ -139,7 +139,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_GROUP = "group";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_UNIT = "unit";
 
     /** _more_ */
@@ -163,19 +163,19 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_ISINDEX = "isindex";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ISCATEGORY = "iscategory";
 
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ADVANCED = "advanced";
 
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_EDITABLE = "editable";
 
     /** _more_ */
@@ -239,16 +239,16 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean isIndex;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isCategory;
 
     /** _more_ */
     private boolean canSearch;
 
-    /** _more_          */
+    /** _more_ */
     private boolean advancedSearch;
 
-    /** _more_          */
+    /** _more_ */
     private boolean editable;
 
     /** _more_ */

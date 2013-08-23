@@ -55,7 +55,7 @@ public class EntryUtil extends RepositoryManager {
 
     //Cache for 1 hour
 
-    /** _more_          */
+    /** _more_ */
     private TTLObject<Hashtable<String, Integer>> typeCache =
         new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000);
 

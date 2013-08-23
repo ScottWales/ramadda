@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,15 +25,15 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
-
-
-import org.w3c.dom.*;
 
 import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+
+import org.w3c.dom.*;
 
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
@@ -342,7 +341,7 @@ public class CatalogTypeHandler extends GenericTypeHandler {
             if (child.getTagName().equals(CatalogUtil.TAG_DATASET)) {
                 //                String datasetId = getId(mainEntry, child);
                 String datasetId = getId(mainEntry, child.getBaseURI(), "");
-                String entryId   = getCatalogId(mainEntry,
+                String entryId = getCatalogId(mainEntry,
                                      url + ":id:" + datasetId);
                 childIdToParent.put(entryId, parentId);
                 ids.add(entryId);

@@ -570,7 +570,7 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug = false;
 
     /**

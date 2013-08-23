@@ -56,10 +56,10 @@ public class Entry implements Cloneable {
     public static final double NONGEO = -999999;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
-    /** _more_          */
+    /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
 
     /** List of comments */

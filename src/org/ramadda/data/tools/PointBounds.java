@@ -1,12 +1,33 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.tools;
 
-import org.ramadda.data.tools.*;
+
+import org.ramadda.data.point.*;
 
 
 import org.ramadda.data.record.*;
-import org.ramadda.data.point.*;
 import org.ramadda.data.record.filter.*;
+
+import org.ramadda.data.tools.*;
 import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.*;
@@ -34,24 +55,52 @@ public class PointBounds extends RecordTool {
     /** _more_ */
     private static boolean debug = false;
 
-    private int   skip   = 0;
-    private int   max    = 0;
-    private int   width   = 40;
-    private int   height  = 40;
-    private String kmlFile  = null;
-    private String name   = null;
+    /** _more_          */
+    private int skip = 0;
+
+    /** _more_          */
+    private int max = 0;
+
+    /** _more_          */
+    private int width = 40;
+
+    /** _more_          */
+    private int height = 40;
+
+    /** _more_          */
+    private String kmlFile = null;
+
+    /** _more_          */
+    private String name = null;
+
+    /** _more_          */
     private boolean doPolygon = false;
 
 
-   public PointBounds (String[]args) throws Exception {
-       super(null);
-       process(args);
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public PointBounds(String[] args) throws Exception {
+        super(null);
+        process(args);
     }
 
 
-   public PointBounds (String factoryClass, String[]args) throws Exception {
-       super(factoryClass);
-       process(args);
+    /**
+     * _more_
+     *
+     * @param factoryClass _more_
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public PointBounds(String factoryClass, String[] args) throws Exception {
+        super(factoryClass);
+        process(args);
     }
 
 
@@ -87,6 +136,8 @@ public class PointBounds extends RecordTool {
      *
      * @param args _more_
      *
+     * @param argArray _more_
+     *
      * @throws Exception _more_
      */
     public void process(String[] argArray) throws Exception {
@@ -95,7 +146,7 @@ public class PointBounds extends RecordTool {
             usage("No input files given");
         }
 
-        List<String>  args = processArgs(argArray);
+        List<String> args = processArgs(argArray);
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
             if (arg.equals("-help")) {
@@ -103,41 +154,49 @@ public class PointBounds extends RecordTool {
             }
             if (arg.equals("-polygon")) {
                 doPolygon = true;
+
                 continue;
             }
             if (arg.equals("-kml")) {
                 kmlFile = args.get(i + 1);
                 i++;
+
                 continue;
             }
             if (arg.equals("-name")) {
                 name = args.get(i + 1);
                 i++;
+
                 continue;
             }
             if (arg.equals("-width")) {
                 i++;
                 width = Integer.parseInt(args.get(i));
+
                 continue;
             }
             if (arg.equals("-debug")) {
                 debug = true;
+
                 continue;
             }
 
             if (arg.equals("-skip")) {
                 i++;
                 skip = Integer.parseInt(args.get(i));
+
                 continue;
             }
             if (arg.equals("-max")) {
                 i++;
                 max = Integer.parseInt(args.get(i));
+
                 continue;
             }
             if (arg.equals("-height")) {
                 i++;
                 height = Integer.parseInt(args.get(i));
+
                 continue;
             }
 
@@ -159,9 +218,10 @@ public class PointBounds extends RecordTool {
                 continue;
             }
             if (arg.equals("-kml") || arg.equals("-width")
-                || arg.equals("-skip") ||arg.equals("-max") ||  arg.equals("-height")
-                    || arg.equals("-name")) {
+                    || arg.equals("-skip") || arg.equals("-max")
+                    || arg.equals("-height") || arg.equals("-name")) {
                 i++;
+
                 continue;
             }
 
@@ -229,13 +289,11 @@ public class PointBounds extends RecordTool {
             west  = Math.min(west, metadata.getMinLongitude());
             south = Math.min(south, metadata.getMinLatitude());
             east  = Math.max(east, metadata.getMaxLongitude());
-            System.out.println("File:" + arg + " " +metadata.getMaxLatitude()
-                               + " " + 
-                               metadata.getMinLongitude()
-                               + " " + 
-                               metadata.getMinLatitude()
-                               + " " + 
-                               metadata.getMaxLongitude());
+            System.out.println("File:" + arg + " "
+                               + metadata.getMaxLatitude() + " "
+                               + metadata.getMinLongitude() + " "
+                               + metadata.getMinLatitude() + " "
+                               + metadata.getMaxLongitude());
         }
 
         if ( !doPolygon) {
@@ -247,12 +305,12 @@ public class PointBounds extends RecordTool {
 
     }
 
-    /**                                                                         
-     * _more_                                                                   
-     *                                                                          
-     * @param args _more_                                                       
-     *                                                                          
-     * @throws Exception _more_                                                 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
         new PointBounds(args);

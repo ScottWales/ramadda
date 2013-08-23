@@ -68,7 +68,7 @@ public class StorageManager extends RepositoryManager {
     /** file separator */
     public static final String FILE_SEPARATOR = "_file_";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DFLT_CIPHER = "DES";
 
     /** the full log file */
@@ -161,7 +161,7 @@ public class StorageManager extends RepositoryManager {
     private File tmpDir;
 
 
-    /** _more_          */
+    /** _more_ */
     private File processDir;
 
     /** the htdocs directory */
@@ -215,7 +215,7 @@ public class StorageManager extends RepositoryManager {
     /** list of directories that are okay to write to */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
-    /** _more_          */
+    /** _more_ */
     private String encryptionPassword;
 
     /**

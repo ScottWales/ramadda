@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -79,7 +78,7 @@ public class DocsTest {
         for (String url : urls) {
             DocumentQuery    query      = new DocumentQuery(new URL(url));
             DocumentListFeed allEntries = new DocumentListFeed();
-            DocumentListFeed tempFeed   = client.getFeed(query,
+            DocumentListFeed tempFeed = client.getFeed(query,
                                             DocumentListFeed.class);
             do {
                 allEntries.getEntries().addAll(tempFeed.getEntries());

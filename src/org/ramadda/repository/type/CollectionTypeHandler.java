@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.repository.type;
 
 
@@ -68,58 +69,58 @@ import java.util.zip.*;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final JQuery JQ = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SEARCH = "search";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_FIELD = "field";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_REQUEST = "request";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REQUEST_METADATA = "metadata";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REQUEST_SEARCH = "search";
 
-    /** _more_          */
+    /** _more_ */
     public static final String REQUEST_DOWNLOAD = "download";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_GRANULE_TYPE = "granule_type";
 
-    /** _more_          */
+    /** _more_ */
     private JsonOutputHandler jsonOutputHandler;
 
-    /** _more_          */
+    /** _more_ */
     private ZipOutputHandler zipOutputHandler;
 
 
-    /** _more_          */
+    /** _more_ */
     private String dbColumnCollectionId;
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> columns;
 
-    /** _more_          */
+    /** _more_ */
     private String selectArg = "select";
 
-    /** _more_          */
+    /** _more_ */
     private TypeHandler granuleTypeHandler;
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<Object, Object> cache = new TTLCache<Object,
                                                  Object>(60 * 60 * 1000);
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Properties> labelCache = new Hashtable<String,
                                                            Properties>();
 

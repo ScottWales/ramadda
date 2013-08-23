@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -112,7 +111,7 @@ public class GpxTypeHandler extends GenericTypeHandler {
         if (bounds == null) {
             bounds = XmlUtil.findChild(root, GpxUtil.TAG_BOUNDS);
         }
-        boolean hasBounds  = false;
+        boolean hasBounds = false;
         if (bounds != null) {
             System.err.println("bounds:" + bounds);
             hasBounds = true;
@@ -181,19 +180,19 @@ public class GpxTypeHandler extends GenericTypeHandler {
 
         long             minTime = -1;
         long             maxTime = -1;
-        double maxLat = Double.NEGATIVE_INFINITY;
-        double minLat = Double.POSITIVE_INFINITY;
-        double maxLon = Double.NEGATIVE_INFINITY;
-        double minLon = Double.POSITIVE_INFINITY;
+        double           maxLat  = Double.NEGATIVE_INFINITY;
+        double           minLat  = Double.POSITIVE_INFINITY;
+        double           maxLon  = Double.NEGATIVE_INFINITY;
+        double           minLon  = Double.POSITIVE_INFINITY;
 
 
         //        <time>2012-11-24T14:47:34</time>
         //        System.err.println ("Looking for time");
-             
+
         for (Element child :
                 ((List<Element>) XmlUtil.findDescendants(root,
                     GpxUtil.TAG_TIME))) {
-            String time  = XmlUtil.getChildText(child);
+            String time = XmlUtil.getChildText(child);
             if (time != null) {
                 Date dttm = sdf.parse(time);
                 minTime = (minTime == -1)
@@ -223,15 +222,26 @@ public class GpxTypeHandler extends GenericTypeHandler {
                 ((List<Element>) XmlUtil.findChildren(root,
                     GpxUtil.TAG_WPT))) {
             Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
-            if(linkNode!=null) {
-                String href = XmlUtil.getAttribute(linkNode, GpxUtil.ATTR_HREF);
-                Element textNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TEXT);
-                Element typeNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TYPE);
+            if (linkNode != null) {
+                String href = XmlUtil.getAttribute(linkNode,
+                                  GpxUtil.ATTR_HREF);
+                Element textNode = XmlUtil.findChild(linkNode,
+                                       GpxUtil.TAG_TEXT);
+                Element typeNode = XmlUtil.findChild(linkNode,
+                                       GpxUtil.TAG_TYPE);
             }
-            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
-            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
-            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
-            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+            maxLat = Math.max(maxLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  maxLat));
+            minLat = Math.min(minLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  minLat));
+            maxLon = Math.max(maxLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  maxLon));
+            minLon = Math.min(minLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  minLon));
         }
 
 
@@ -239,19 +249,35 @@ public class GpxTypeHandler extends GenericTypeHandler {
         for (Element child :
                 ((List<Element>) XmlUtil.findChildren(root,
                     GpxUtil.TAG_RTEPT))) {
-            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
-            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
-            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
-            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+            maxLat = Math.max(maxLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  maxLat));
+            minLat = Math.min(minLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  minLat));
+            maxLon = Math.max(maxLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  maxLon));
+            minLon = Math.min(minLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  minLon));
         }
 
         for (Element child :
                 ((List<Element>) XmlUtil.findDescendants(root,
                     GpxUtil.TAG_TRKPT))) {
-            maxLat = Math.max(maxLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,maxLat));
-            minLat = Math.min(minLat, XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,minLat));
-            maxLon = Math.max(maxLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,maxLon));
-            minLon = Math.min(minLon, XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,minLon));
+            maxLat = Math.max(maxLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  maxLat));
+            minLat = Math.min(minLat,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+                                  minLat));
+            maxLon = Math.max(maxLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  maxLon));
+            minLon = Math.min(minLon,
+                              XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+                                  minLon));
         }
 
         if (minTime > 0) {
@@ -259,16 +285,19 @@ public class GpxTypeHandler extends GenericTypeHandler {
             entry.setEndDate(maxTime);
         }
 
-        if(!hasBounds) {
-            if(maxLat != Double.NEGATIVE_INFINITY)  {
+        if ( !hasBounds) {
+            if (maxLat != Double.NEGATIVE_INFINITY) {
                 entry.setNorth(maxLat);
             }
-            if(minLat != Double.POSITIVE_INFINITY) 
+            if (minLat != Double.POSITIVE_INFINITY) {
                 entry.setSouth(minLat);
-            if(maxLon != Double.NEGATIVE_INFINITY) 
+            }
+            if (maxLon != Double.NEGATIVE_INFINITY) {
                 entry.setEast(maxLon);
-            if(minLon != Double.POSITIVE_INFINITY) 
+            }
+            if (minLon != Double.POSITIVE_INFINITY) {
                 entry.setWest(minLon);
+            }
         }
 
 
@@ -377,12 +406,12 @@ public class GpxTypeHandler extends GenericTypeHandler {
                     GpxUtil.TAG_RTE))) {
             List<double[]> points = new ArrayList<double[]>();
             for (Element trackPoint :
-                     ((List<Element>) XmlUtil.findChildren(track,
-                                                           GpxUtil.TAG_RTEPT))) {
+                    ((List<Element>) XmlUtil.findChildren(track,
+                        GpxUtil.TAG_RTEPT))) {
                 double lat = XmlUtil.getAttribute(trackPoint,
-                                                  GpxUtil.ATTR_LAT, 0.0);
+                                 GpxUtil.ATTR_LAT, 0.0);
                 double lon = XmlUtil.getAttribute(trackPoint,
-                                                  GpxUtil.ATTR_LON, 0.0);
+                                 GpxUtil.ATTR_LON, 0.0);
                 points.add(new double[] { lat, lon });
             }
             float[][] coords = new float[2][points.size()];
@@ -431,10 +460,13 @@ public class GpxTypeHandler extends GenericTypeHandler {
                     break;
                 }
                 Element linkNode = XmlUtil.findChild(child, GpxUtil.TAG_LINK);
-                if(linkNode!=null) {
-                    String href = XmlUtil.getAttribute(linkNode, GpxUtil.ATTR_HREF);
-                    Element textNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TEXT);
-                    Element typeNode = XmlUtil.findChild(linkNode, GpxUtil.TAG_TYPE);
+                if (linkNode != null) {
+                    String href = XmlUtil.getAttribute(linkNode,
+                                      GpxUtil.ATTR_HREF);
+                    Element textNode = XmlUtil.findChild(linkNode,
+                                           GpxUtil.TAG_TEXT);
+                    Element typeNode = XmlUtil.findChild(linkNode,
+                                           GpxUtil.TAG_TYPE);
 
                 }
 
@@ -477,16 +509,16 @@ public class GpxTypeHandler extends GenericTypeHandler {
             }
 
             for (Element track :
-                ((List<Element>) XmlUtil.findChildren(root,
-                    GpxUtil.TAG_RTE))) {
+                    ((List<Element>) XmlUtil.findChildren(root,
+                        GpxUtil.TAG_RTE))) {
                 List<double[]> points = new ArrayList<double[]>();
                 for (Element trackPoint :
-                         ((List<Element>) XmlUtil.findChildren(track,
-                                                           GpxUtil.TAG_RTEPT))) {
+                        ((List<Element>) XmlUtil.findChildren(track,
+                            GpxUtil.TAG_RTEPT))) {
                     double lat = XmlUtil.getAttribute(trackPoint,
-                                                      GpxUtil.ATTR_LAT, 0.0);
+                                     GpxUtil.ATTR_LAT, 0.0);
                     double lon = XmlUtil.getAttribute(trackPoint,
-                                                      GpxUtil.ATTR_LON, 0.0);
+                                     GpxUtil.ATTR_LON, 0.0);
                     points.add(new double[] { lat, lon });
                 }
                 map.addLines("", points);

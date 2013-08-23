@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -125,14 +124,14 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                                && (subGroups.size() == 0);
 
         // can't use category since that is the data type
-        String   topCategory = request.getString(ARG_TOP, DEFAULT_TOPCATEGORY);
+        String topCategory = request.getString(ARG_TOP, DEFAULT_TOPCATEGORY);
 
-        String   title       = (justOneEntry
-                                ? entries.get(0).getName()
-                                : group.getName());
+        String title       = (justOneEntry
+                              ? entries.get(0).getName()
+                              : group.getName());
         title = request.getString(ARG_TITLE, title);
-        Document doc         = XmlUtil.makeDocument();
-        Element  root        = XmlUtil.create(doc, TAG_BUNDLES, null,
+        Document doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, TAG_BUNDLES, null,
                                       new String[] { ATTR_NAME,
                 title });
 
@@ -178,7 +177,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
             return;
         }
         if (entry.isGroup()) {
-            String      subCat   = category + ">" + entry.getName();
+            String subCat = category + ">" + entry.getName();
             List<Entry> children = getEntryManager().getChildren(request,
                                        entry);
             for (Entry child : children) {
@@ -189,7 +188,7 @@ public class IdvBundlesOutputHandler extends OutputHandler {
                 return;
             }
             String name = entry.getName();
-            String url  = request.getAbsoluteUrl(
+            String url = request.getAbsoluteUrl(
                              getEntryManager().getEntryResourceUrl(
                                  request, entry, false, false));
             XmlUtil.create(TAG_BUNDLE, root, new String[] {

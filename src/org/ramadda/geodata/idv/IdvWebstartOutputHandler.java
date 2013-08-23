@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -223,7 +222,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                 || entry.getResource().getPath().endsWith(".zidv")) {
 
             String fileTail = getStorageManager().getFileTail(entry);
-            String url      =
+            String url =
                 HtmlUtils.url(request.url(getRepository().URL_ENTRY_GET)
                               + "/" + fileTail, ARG_ENTRYID, entry.getId());
             url = request.getAbsoluteUrl(url);
@@ -232,12 +231,12 @@ public class IdvWebstartOutputHandler extends OutputHandler {
         } else {
 
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request,entry,
+                getMetadataManager().findMetadata(request, entry,
                     ContentMetadataHandler.TYPE_ATTACHMENT, true);
 
             if (getCdmManager().canLoadAsCdm(entry)) {
                 String embeddedBundle = null;
-                String opendapUrl     =
+                String opendapUrl =
                     getDataOutputHandler().getAbsoluteOpendapUrl(request,
                         entry);
                 if (metadataList != null) {

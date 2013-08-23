@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -233,16 +232,16 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        StringBuffer sb       = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
 
-        NcmlUtil     ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
+        NcmlUtil ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));
         String timeCoordinate = entry.getValue(INDEX_COORDINATE, "time");
-        String        files           = entry.getValue(INDEX_FILES, "").trim();
-        String        pattern = entry.getValue(INDEX_PATTERN, "").trim();
-        boolean       ingest          = getIngest(entry);
-        boolean       recurse         = getRecurse(entry);
-        List<String>  fields          = getFields(entry);
+        String       files   = entry.getValue(INDEX_FILES, "").trim();
+        String       pattern = entry.getValue(INDEX_PATTERN, "").trim();
+        boolean      ingest  = getIngest(entry);
+        boolean      recurse = getRecurse(entry);
+        List<String> fields  = getFields(entry);
         final boolean harvestMetadata =
             Misc.equals(entry.getValue(INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
@@ -287,7 +286,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<String> sortedChillens      = new ArrayList<String>();
         boolean      childrenAggregation = false;
-        List<Entry>  childrenEntries     =
+        List<Entry> childrenEntries =
             getRepository().getEntryManager().getChildren(request, entry);
 
         //Check if the user specified any files directly
@@ -330,7 +329,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 dummyEntries.add(makeDummyEntry(dataFile));
             }
 
-            boolean readOnly =getRepository().isReadOnly();
+            boolean readOnly = getRepository().isReadOnly();
 
             if (ingest) {
                 //See if we have all of the files
@@ -344,9 +343,10 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                         continue;
                     }
                     //If the repository is readonly then don't add the entry to the repository
-                    if(readOnly) {
+                    if (readOnly) {
                         //System.err.println("Read only  - making dummy entry " + dataFile);
                         childrenEntries.add(makeDummyEntry(dataFile));
+
                         continue;
                     }
 
@@ -368,10 +368,12 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                         }
                     };
                     //                    System.err.println("Adding file to aggregation:" + dataFile);
-                    Request addRequest = new Request(getRepository(), entry.getUser()); 
-                    Entry newEntry = getEntryManager().addFileEntry(addRequest,
-                                         dataFile, entry, dataFile.getName(),
-                                         entry.getUser(), null, initializer);
+                    Request addRequest = new Request(getRepository(),
+                                             entry.getUser());
+                    Entry newEntry =
+                        getEntryManager().addFileEntry(addRequest, dataFile,
+                            entry, dataFile.getName(), entry.getUser(), null,
+                            initializer);
                     childrenEntries.add(newEntry);
                 }
                 if (addedNewOne && (harvestMetadata || harvestFullMetadata)) {
@@ -435,13 +437,23 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param dataFile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private Entry makeDummyEntry(File dataFile) throws Exception {
         Entry dummyEntry = new Entry();
         dummyEntry.setTypeHandler(
-                                  getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
-        
+            getRepository().getTypeHandler(TypeHandler.TYPE_FILE));
+
         dummyEntry.setResource(new Resource(dataFile,
                                             Resource.TYPE_LOCAL_FILE));
+
         return dummyEntry;
     }
 
@@ -456,7 +468,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {
         super.childEntryChanged(entry, isNew);
-        Entry       parent   = entry.getParentEntry();
+        Entry parent = entry.getParentEntry();
         List<Entry> children =
             getEntryManager().getChildren(getRepository().getTmpRequest(),
                                           parent);

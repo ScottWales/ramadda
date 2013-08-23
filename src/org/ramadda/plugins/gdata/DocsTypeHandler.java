@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -228,7 +227,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         for (DocumentListEntry docListEntry : allEntries.getEntries()) {
             java.util.List<com.google.gdata.data.Link> links =
                 docListEntry.getParentLinks();
-            Entry  newEntry;
+            Entry newEntry;
             String entryId =
                 getSynthId(mainEntry,
                            IOUtil.getFileTail(docListEntry.getId()));
@@ -380,7 +379,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
         //        String url = "https://docs.google.com/feeds/default/private/full?showfolders=true";
         DocumentQuery    query      = new DocumentQuery(new URL(url));
         DocumentListFeed allEntries = new DocumentListFeed();
-        DocumentListFeed tempFeed   = client.getFeed(query,
+        DocumentListFeed tempFeed = client.getFeed(query,
                                         DocumentListFeed.class);
         do {
             allEntries.getEntries().addAll(tempFeed.getEntries());

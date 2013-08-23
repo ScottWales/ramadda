@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -161,7 +160,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             return entries;
         }
 
-        URL      feedUrl  = new URL(PICASA_ROOT + userId + "?kind=album");
+        URL feedUrl = new URL(PICASA_ROOT + userId + "?kind=album");
         UserFeed userFeed =
             ((PicasawebService) getService(entry)).getFeed(feedUrl,
                 UserFeed.class);
@@ -247,11 +246,11 @@ public class PhotosTypeHandler extends GdataTypeHandler {
         List<Entry> entries = new ArrayList<Entry>();
         String      userId  = getUserId(mainEntry);
         URL feedUrl = new URL(PICASA_ROOT + userId + "/albumid/" + albumId);
-        AlbumFeed   feed    =
+        AlbumFeed feed =
             ((PicasawebService) getService(mainEntry)).getFeed(feedUrl,
                 AlbumFeed.class);
         for (PhotoEntry photo : feed.getPhotoEntries()) {
-            String name  = photo.getTitle().getPlainText();
+            String name = photo.getTitle().getPlainText();
             String newId = getSynthId(mainEntry, TYPE_PHOTO,
                                       photo.getAlbumId() + ":"
                                       + photo.getGphotoId());

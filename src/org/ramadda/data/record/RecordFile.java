@@ -1,27 +1,28 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.record;
 
 
 import org.ramadda.data.record.filter.*;
+
 import ucar.unidata.util.IOUtil;
 
 import java.io.*;
@@ -30,12 +31,13 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
+import java.util.TimeZone;
 import java.util.zip.*;
 
 
@@ -49,9 +51,14 @@ import java.util.zip.*;
  */
 public abstract class RecordFile {
 
-    private static final RecordVisitorGroup dummy1=null;
-    private static final RecordCountVisitor dummy2=null;
-    private static final GeoRecord dummy3=null;
+    /** _more_          */
+    private static final RecordVisitorGroup dummy1 = null;
+
+    /** _more_          */
+    private static final RecordCountVisitor dummy2 = null;
+
+    /** _more_          */
+    private static final GeoRecord dummy3 = null;
 
 
 
@@ -70,6 +77,7 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
+    /** _more_          */
     private Object[] fileMetadata;
 
 
@@ -78,12 +86,23 @@ public abstract class RecordFile {
      */
     public RecordFile() {}
 
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     */
     public RecordFile(Hashtable properties) {
         this.properties = properties;
     }
 
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param properties _more_
+     */
     public RecordFile(String filename, Hashtable properties) {
-        this.filename = filename;
+        this.filename   = filename;
         this.properties = properties;
     }
 
@@ -100,33 +119,67 @@ public abstract class RecordFile {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Object[] getFileMetadata() {
         return fileMetadata;
     }
 
-    public void setFileMetadata( Object[] metadata) {
+    /**
+     * _more_
+     *
+     * @param metadata _more_
+     */
+    public void setFileMetadata(Object[] metadata) {
         fileMetadata = metadata;
     }
 
-    public void initAfterClone() {
-    }
+    /**
+     * _more_
+     */
+    public void initAfterClone() {}
 
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param properties _more_
+     *
+     * @return _more_
+     *
+     * @throws CloneNotSupportedException _more_
+     */
     public RecordFile cloneMe(String filename, Hashtable properties)
             throws CloneNotSupportedException {
         RecordFile that = cloneMe();
         that.initAfterClone();
         that.setFilename(filename);
-        if(properties == null) {
-            properties = getPropertiesForFile(filename, that.getPropertiesFileName());
+        if (properties == null) {
+            properties = getPropertiesForFile(filename,
+                    that.getPropertiesFileName());
         }
         that.setProperties(properties);
+
         return that;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Hashtable getProperties() {
         return properties;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getPropertiesFileName() {
         return "record.properties";
     }
@@ -154,26 +207,34 @@ public abstract class RecordFile {
                 throw new RuntimeException(exc);
             }
         }
+
         return p;
     }
 
 
 
-    public static Hashtable getPropertiesForFile(String file, String defaultCommonFile) {
-        File f = new File(file);
-        File parent = f.getParentFile();
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param defaultCommonFile _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable getPropertiesForFile(String file,
+            String defaultCommonFile) {
+        File   f      = new File(file);
+        File   parent = f.getParentFile();
         String commonFile;
-        if(parent == null) {
+        if (parent == null) {
             commonFile = defaultCommonFile;
         } else {
-            commonFile = parent+File.separator + defaultCommonFile;
+            commonFile = parent + File.separator + defaultCommonFile;
         }
-        File[] propertiesFiles =
-            new File[] {
-            new File(commonFile),
-            new File(IOUtil.stripExtension(file) + ".properties"), 
-            new File(file + ".properties"), 
-        };
+        File[] propertiesFiles = new File[] { new File(commonFile),
+                new File(IOUtil.stripExtension(file) + ".properties"),
+                new File(file + ".properties"), };
+
         return getProperties(propertiesFiles);
     }
 
@@ -198,34 +259,55 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public  boolean canLoad(String file) {
+    public boolean canLoad(String file) {
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @param action _more_
+     *
+     * @return _more_
+     */
     public boolean isCapable(String action) {
-        String p = (String)getProperty(action);
-        if(p!=null) {
+        String p = (String) getProperty(action);
+        if (p != null) {
             return p.trim().equals("true");
         }
+
         return false;
     }
 
-    public boolean canLoad(String file, String[] suffixes, boolean checkForNumberSuffix) {
-        for(String suffix: suffixes) {
-            if(file.endsWith(suffix)) {
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param suffixes _more_
+     * @param checkForNumberSuffix _more_
+     *
+     * @return _more_
+     */
+    public boolean canLoad(String file, String[] suffixes,
+                           boolean checkForNumberSuffix) {
+        for (String suffix : suffixes) {
+            if (file.endsWith(suffix)) {
                 return true;
             }
         }
-        if(!checkForNumberSuffix) return false;
+        if ( !checkForNumberSuffix) {
+            return false;
+        }
         file = file.trim();
-        while(file.matches(".*\\.\\d+\\z")) {
+        while (file.matches(".*\\.\\d+\\z")) {
             file = IOUtil.stripExtension(file);
-            for(String suffix: suffixes) {
-                if(file.endsWith(suffix)) {
+            for (String suffix : suffixes) {
+                if (file.endsWith(suffix)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -242,6 +324,7 @@ public abstract class RecordFile {
         if (properties == null) {
             return null;
         }
+
         return properties.get(key);
     }
 
@@ -259,8 +342,18 @@ public abstract class RecordFile {
     }
 
 
-    public String getProperty(RecordField field, Hashtable properties, String prop,
-                              String dflt) {
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param properties _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getProperty(RecordField field, Hashtable properties,
+                              String prop, String dflt) {
         return getProperty(properties, prop, dflt);
     }
 
@@ -283,6 +376,7 @@ public abstract class RecordFile {
         if (value != null) {
             return value;
         }
+
         return dflt;
     }
 
@@ -302,8 +396,14 @@ public abstract class RecordFile {
     }
 
 
-    public void getInfo(Appendable buff) throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param buff _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getInfo(Appendable buff) throws Exception {}
 
     /**
      * Make the input io object
@@ -361,6 +461,7 @@ public abstract class RecordFile {
                 if (ze.isDirectory()) {
                     continue;
                 }
+
                 break;
                 /*                String path = ze.getName();
                 if(path.toLowerCase().endsWith(".las")) {
@@ -381,6 +482,7 @@ public abstract class RecordFile {
         if (buffered) {
             size = 1000000;
         }
+
         //        System.err.println("buffer size:" + size);
         return new BufferedInputStream(is, size);
     }
@@ -398,6 +500,11 @@ public abstract class RecordFile {
             new BufferedOutputStream(new FileOutputStream(filename), 10000));
     }
 
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     */
     public void setProperties(Hashtable properties) {
         this.properties = properties;
     }
@@ -419,6 +526,7 @@ public abstract class RecordFile {
         } else {
             //            System.err.println("full scan");
         }
+
         return record;
     }
 
@@ -442,6 +550,7 @@ public abstract class RecordFile {
     public List<RecordField> getFields() {
         Record            record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
+
         return new ArrayList<RecordField>(fields);
     }
 
@@ -459,6 +568,7 @@ public abstract class RecordFile {
                 result.add(attr);
             }
         }
+
         return result;
     }
 
@@ -479,6 +589,7 @@ public abstract class RecordFile {
                 result.add(attr);
             }
         }
+
         return result;
     }
 
@@ -532,6 +643,7 @@ public abstract class RecordFile {
         if (defaultSkip >= 0) {
             return defaultSkip;
         }
+
         return 0;
     }
 
@@ -559,7 +671,9 @@ public abstract class RecordFile {
                                             Record record)
             throws IOException {
         visitInfo.addRecordIndex(1);
-        Record.ReadStatus status = record.readNextRecord(visitInfo.getRecordIO());
+        Record.ReadStatus status =
+            record.readNextRecord(visitInfo.getRecordIO());
+
         return status;
     }
 
@@ -633,13 +747,13 @@ public abstract class RecordFile {
                 try {
                     //This sets the record index
                     Record.ReadStatus status = readNextRecord(visitInfo,
-                                                              record);
+                                                   record);
                     if (status == Record.ReadStatus.EOF) {
                         break;
                     }
                     record.index = visitInfo.getRecordIndex();
                     if (status == Record.ReadStatus.OK) {
-                        if(!processAfterReading(visitInfo, record)) {
+                        if ( !processAfterReading(visitInfo, record)) {
                             continue;
                         }
                         if ((filter == null)
@@ -687,18 +801,41 @@ public abstract class RecordFile {
         }
     }
 
-    public void setDateIndices(int[]indices) {
+    /**
+     * _more_
+     *
+     * @param indices _more_
+     */
+    public void setDateIndices(int[] indices) {
         dateIndices = indices;
     }
 
 
-    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
-        if(dateIndices!=null) {
+    /**
+     * _more_
+     *
+     * @param visitInfo _more_
+     * @param record _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+            throws Exception {
+        if (dateIndices != null) {
             setDateFromFields(record, dateIndices);
         }
+
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @param visitor _more_
+     * @param visitInfo _more_
+     */
     public void visitorFinished(RecordVisitor visitor, VisitInfo visitInfo) {
         visitor.finished(this, visitInfo);
     }
@@ -721,6 +858,7 @@ public abstract class RecordFile {
                 }
                 cnt[0]++;
                 record.printCsv(visitInfo, pw);
+
                 return true;
             }
         };
@@ -760,6 +898,7 @@ public abstract class RecordFile {
         visitInfo.addRecordIndex(howMany);
         visitInfo.getRecordIO().getDataInputStream().skipBytes(howMany
                 * record.getRecordSize());
+
         return true;
     }
 
@@ -778,6 +917,7 @@ public abstract class RecordFile {
         Record   record   = (Record) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
         record.readNextRecord(recordIO);
+
         return record;
     }
 
@@ -809,9 +949,14 @@ public abstract class RecordFile {
      * _more_
      *
      * @param outputStream _more_
+     *
+     * @param recordOutput _more_
      * @param visitInfo _more_
      * @param filter _more_
+     * @param writeHeader _more_
      *
+     *
+     * @return _more_
      * @throws Exception On badness
      */
     public VisitInfo write(RecordIO recordOutput, VisitInfo visitInfo,
@@ -820,10 +965,10 @@ public abstract class RecordFile {
         if (visitInfo == null) {
             visitInfo = doMakeVisitInfo();
         }
-        RecordIO recordInput  = doMakeInputIO(getSkip(visitInfo) == 0);
+        RecordIO recordInput = doMakeInputIO(getSkip(visitInfo) == 0);
         recordInput = readHeader(recordInput);
         visitInfo.setRecordIO(recordInput);
-        if(writeHeader) {
+        if (writeHeader) {
             writeHeader(recordOutput);
         }
         try {
@@ -833,15 +978,26 @@ public abstract class RecordFile {
                 recordInput.close();
             } catch (Exception ignore) {}
         }
+
         return visitInfo;
     }
 
 
 
 
-    public void writeRecords(RecordIO recordInput, RecordIO recordOutput, VisitInfo visitInfo,
-                             RecordFilter filter)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param recordInput _more_
+     * @param recordOutput _more_
+     * @param visitInfo _more_
+     * @param filter _more_
+     *
+     * @throws Exception _more_
+     */
+    public void writeRecords(RecordIO recordInput, RecordIO recordOutput,
+                             VisitInfo visitInfo, RecordFilter filter)
+            throws Exception {
         Record record = makeRecord(visitInfo);
         int    index  = 0;
         if (visitInfo.getStart() > 0) {
@@ -850,15 +1006,14 @@ public abstract class RecordFile {
         }
         long t1 = System.currentTimeMillis();
         while (true) {
-            if ((visitInfo.getStop() > 0)
-                && (index > visitInfo.getStop())) {
+            if ((visitInfo.getStop() > 0) && (index > visitInfo.getStop())) {
                 break;
             }
             try {
                 record.readNextRecord(recordInput);
                 record.index = index;
                 if ((filter == null)
-                    || filter.isRecordOk(record, visitInfo)) {
+                        || filter.isRecordOk(record, visitInfo)) {
                     visitInfo.incrCount();
                     record.write(recordOutput);
                 }
@@ -970,53 +1125,105 @@ public abstract class RecordFile {
         return "";
     }
 
+    /**
+     * _more_
+     *
+     * @param format _more_
+     *
+     * @return _more_
+     */
     public static SimpleDateFormat makeDateFormat(String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         return sdf;
     }
 
-    public boolean isMissingValue(Record record, RecordField field, double v) {
+    /**
+     * _more_
+     *
+     * @param record _more_
+     * @param field _more_
+     * @param v _more_
+     *
+     * @return _more_
+     */
+    public boolean isMissingValue(Record record, RecordField field,
+                                  double v) {
         double missing = field.getMissingValue();
+
         return missing == v;
     }
 
 
-    public boolean isMissingValue(Record record, RecordField field, String s) {
-        return s.equals("---") || s.equals("n.v.") || s.length()==0 || s.equals("null") || s.equals("nan") || s.equals("NAN") || s.equals("NA") || s.equals("NaN");
+    /**
+     * _more_
+     *
+     * @param record _more_
+     * @param field _more_
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public boolean isMissingValue(Record record, RecordField field,
+                                  String s) {
+        return s.equals("---") || s.equals("n.v.") || (s.length() == 0)
+               || s.equals("null") || s.equals("nan") || s.equals("NAN")
+               || s.equals("NA") || s.equals("NaN");
     }
 
 
+    /** _more_          */
     public static final String FILE_SEPARATOR = "_file_";
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
     public String getOriginalFilename(String name) {
         File f = new File(name);
         name = f.getName();
         int idx = name.indexOf(FILE_SEPARATOR);
-        if(idx>=0) {
-            name = name.substring(idx+FILE_SEPARATOR.length());
+        if (idx >= 0) {
+            name = name.substring(idx + FILE_SEPARATOR.length());
         }
+
         return name;
     }
 
 
+    /** _more_          */
     protected int[] dateIndices;
-    private static SimpleDateFormat[] sdfs = new SimpleDateFormat[]{
-        makeDateFormat("yyyy"),
-        makeDateFormat("yyyy-MM"),
-        makeDateFormat("yyyy-MM-dd"),
-        makeDateFormat("yyyy-MM-dd-HH"),
+
+    /** _more_          */
+    private static SimpleDateFormat[] sdfs = new SimpleDateFormat[] {
+        makeDateFormat("yyyy"), makeDateFormat("yyyy-MM"),
+        makeDateFormat("yyyy-MM-dd"), makeDateFormat("yyyy-MM-dd-HH"),
         makeDateFormat("yyyy-MM-dd-HH-mm"),
         makeDateFormat("yyyy-MM-dd-HH-mm-ss"),
     };
 
-    public SimpleDateFormat getDateFormat(Record record, int [] indices) {
+    /**
+     * _more_
+     *
+     * @param record _more_
+     * @param indices _more_
+     *
+     * @return _more_
+     */
+    public SimpleDateFormat getDateFormat(Record record, int[] indices) {
         int goodCnt = 0;
-        for(int i=0;i<indices.length;i++) {
-            if(indices[i]<0) break;
+        for (int i = 0; i < indices.length; i++) {
+            if (indices[i] < 0) {
+                break;
+            }
             goodCnt++;
         }
-        return sdfs[goodCnt-1];
+
+        return sdfs[goodCnt - 1];
     }
 
 
@@ -1024,16 +1231,30 @@ public abstract class RecordFile {
      * This gets called after a record has been read
      * It extracts and creates the record date/time
      */
-    public void setDateFromFields(Record record, int [] indices) throws Exception {
-        StringBuffer dttm=new StringBuffer();
-        SimpleDateFormat sdf = getDateFormat(record, indices);
-        for(int i=0;i<indices.length;i++) {
-            if(indices[i]<0) break;
-            if(i>0) {
+
+    /**
+     * _more_
+     *
+     * @param record _more_
+     * @param indices _more_
+     *
+     * @throws Exception _more_
+     */
+    public void setDateFromFields(Record record, int[] indices)
+            throws Exception {
+        StringBuffer     dttm = new StringBuffer();
+        SimpleDateFormat sdf  = getDateFormat(record, indices);
+        for (int i = 0; i < indices.length; i++) {
+            if (indices[i] < 0) {
+                break;
+            }
+            if (i > 0) {
                 dttm.append("-");
             }
-            int v =(int)record.getValue(indices[i]);
-            if(v<10) dttm.append("0");
+            int v = (int) record.getValue(indices[i]);
+            if (v < 10) {
+                dttm.append("0");
+            }
             dttm.append(v);
         }
         Date date = sdf.parse(dttm.toString());

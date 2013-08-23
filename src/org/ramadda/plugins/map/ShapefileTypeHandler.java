@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -63,10 +62,10 @@ import java.util.List;
  */
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     private static final int IDX_LON = 0;
 
-    /** _more_          */
+    /** _more_ */
     private static final int IDX_LAT = 1;
 
 

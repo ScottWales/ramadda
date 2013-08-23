@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -58,10 +57,10 @@ public class CountdownTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    /** _more_          */
+    /** _more_ */
     private int countdownCnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     private String countdownHtml;
 
     /**
@@ -90,9 +89,7 @@ public class CountdownTypeHandler extends GenericTypeHandler {
         }
         StringBuffer sb = new StringBuffer(countdownHtml);
         sb.append("<table><tr><td><center>");
-        sb.append(
-            getPageHandler().formatDate(
-                request, entry.getStartDate(),
+        sb.append(getPageHandler().formatDate(request, entry.getStartDate(),
                 getEntryUtil().getTimezone(entry)));
         Date   to = new Date(entry.getStartDate());
         String id = "countdownid_" + (countdownCnt++);

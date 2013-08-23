@@ -1,11 +1,32 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 package org.ramadda.data.tools;
 
 
-import org.ramadda.data.record.*;
-import org.ramadda.data.tools.*;
 import org.ramadda.data.point.*;
-import org.ramadda.data.services.*;
+
+
+import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
+import org.ramadda.data.services.*;
+import org.ramadda.data.tools.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -24,16 +45,25 @@ import java.util.List;
  * @version        Enter version here..., Fri, May 21, '10
  * @author         Enter your name here...
  */
-public  class Point2Netcdf extends RecordTool {
+public class Point2Netcdf extends RecordTool {
 
-    public Point2Netcdf (String factoryClass, String[]args) throws Exception {
+    /**
+     * _more_
+     *
+     * @param factoryClass _more_
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public Point2Netcdf(String factoryClass, String[] args) throws Exception {
+
         super(factoryClass);
         double             north     = 0,
-            south     = 0,
-            west      = 0,
-            east      = 0;
+                           south     = 0,
+                           west      = 0,
+                           east      = 0;
 
-        List<String>       inFiles    = new ArrayList<String>();
+        List<String>       inFiles   = new ArrayList<String>();
         String             outFile   = null;
         String             prefix    = null;
         final boolean[]    doHeader  = { false };
@@ -48,6 +78,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 outFile = args[++i];
+
                 continue;
             }
             if (arg.equals("-class")) {
@@ -55,6 +86,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 setRecordFileClass(args[++i]);
+
                 continue;
             }
             if (arg.equals("-bounds")) {
@@ -62,11 +94,12 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 filters.add(
-                            new LatLonBoundsFilter(
-                                                   Double.parseDouble(args[++i]),
-                                                   Double.parseDouble(args[++i]),
-                                                   Double.parseDouble(args[++i]),
-                                                   Double.parseDouble(args[++i])));
+                    new LatLonBoundsFilter(
+                        Double.parseDouble(args[++i]),
+                        Double.parseDouble(args[++i]),
+                        Double.parseDouble(args[++i]),
+                        Double.parseDouble(args[++i])));
+
                 continue;
             }
             if (arg.equals("-skip")) {
@@ -74,6 +107,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 visitInfo.setSkip(Integer.parseInt(args[++i]));
+
                 continue;
             }
             if (arg.equals("-start")) {
@@ -81,6 +115,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 visitInfo.setStart(Integer.parseInt(args[++i]));
+
                 continue;
             }
             if (arg.equals("-max")) {
@@ -88,6 +123,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 visitInfo.setMax(Integer.parseInt(args[++i]));
+
                 continue;
             }
             if (arg.equals("-prefix")) {
@@ -95,6 +131,7 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 prefix = args[++i];
+
                 continue;
             }
             if (arg.equals("-randomized")) {
@@ -102,20 +139,24 @@ public  class Point2Netcdf extends RecordTool {
                     usage("Need " + arg + " argument");
                 }
                 filters.add(
-                            new RandomizedFilter(Double.parseDouble(args[++i])));
+                    new RandomizedFilter(Double.parseDouble(args[++i])));
+
                 continue;
             }
 
             if (arg.equals("-header")) {
                 doHeader[0] = true;
+
                 continue;
             }
             if (arg.equals("-latlonalt")) {
                 latLonAlt[0] = true;
+
                 continue;
             }
             if (arg.equals("-lonlatalt")) {
                 lonLatAlt[0] = true;
+
                 continue;
             }
             if (arg.startsWith("-")) {
@@ -127,7 +168,7 @@ public  class Point2Netcdf extends RecordTool {
         if (inFiles.size() == 0) {
             usage("Need to specify an input file");
         }
-        for(String inFile: inFiles) {
+        for (String inFile : inFiles) {
             OutputStream os;
             if (outFile != null) {
                 os = new FileOutputStream(outFile);
@@ -139,19 +180,19 @@ public  class Point2Netcdf extends RecordTool {
                 outputWriter.println(prefix);
             }
 
-            if(getRecordFileClass()==null) {
-                if(inFile.endsWith(".txt")) {
+            if (getRecordFileClass() == null) {
+                if (inFile.endsWith(".txt")) {
                     setRecordFileClass("org.ramadda.data.point.text.CsvFile");
                 }
             }
 
 
             RecordFile file = doMakeRecordFile(inFile);
-        
-            File destFile = new File(IOUtil.stripExtension(inFile) +".nc");
+
+            File destFile   = new File(IOUtil.stripExtension(inFile) + ".nc");
             System.err.println("writing:" + destFile);
             RecordVisitor visitor = new NetcdfVisitor(destFile);
-            RecordFilter filter = null;
+            RecordFilter  filter  = null;
             if (filters.size() == 1) {
                 filter = filters.get(0);
             } else if (filters.size() > 1) {
@@ -160,6 +201,7 @@ public  class Point2Netcdf extends RecordTool {
             file.visit(visitor, visitInfo, filter);
             outputWriter.close();
         }
+
     }
 
     /**

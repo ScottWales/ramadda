@@ -1,5 +1,25 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.sql;
+
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -103,7 +123,10 @@ public class Clause {
     /** database column name we are a clause for */
     private String column;
 
+    /** _more_          */
     private String columnPrefix = null;
+
+    /** _more_          */
     private String columnSuffix = null;
 
     /** the operand value */
@@ -183,6 +206,7 @@ public class Clause {
         if ((clauses == null) || (clauses.length == 0)) {
             return null;
         }
+
         return new Clause(EXPR_OR, clauses);
     }
 
@@ -197,6 +221,7 @@ public class Clause {
         if ((clauses == null) || (clauses.length == 0)) {
             return null;
         }
+
         return new Clause(EXPR_AND, clauses);
     }
 
@@ -242,6 +267,7 @@ public class Clause {
             value = value.trim();
             clauses.add(Clause.eq(colName, new Integer(value).intValue()));
         }
+
         return clauses;
     }
 
@@ -263,6 +289,7 @@ public class Clause {
             value = value.trim();
             clauses.add(Clause.eq(colName, value));
         }
+
         return clauses;
     }
 
@@ -280,6 +307,7 @@ public class Clause {
         if (not) {
             return neq(column, value);
         }
+
         return eq(column, value);
     }
 
@@ -421,6 +449,7 @@ public class Clause {
         if (not) {
             return notLike(column, value);
         }
+
         return like(column, value);
     }
 
@@ -481,6 +510,7 @@ public class Clause {
         clause.column = column;
         clause.extraSelectForInClause = " select " + what + " from " + from
                                         + " ";
+
         return clause;
     }
 
@@ -511,6 +541,7 @@ public class Clause {
         for (int i = 0; i < clauses.size(); i++) {
             array[i] = clauses.get(i);
         }
+
         return array;
     }
 
@@ -532,6 +563,7 @@ public class Clause {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -591,13 +623,16 @@ public class Clause {
             if (notClauses.size() == 1) {
                 return notClauses.get(0);
             }
+
             return Clause.and(toArray(notClauses));
         } else if (clauses.size() > 0) {
             if (clauses.size() == 1) {
                 return clauses.get(0);
             }
+
             return Clause.or(toArray(clauses));
         }
+
         return new Clause();
     }
 
@@ -624,6 +659,7 @@ public class Clause {
 
             return false;
         }
+
         return column.startsWith(table + ".");
     }
 
@@ -647,6 +683,7 @@ public class Clause {
      */
     public List<String> getTableNames(List<String> names) {
         doGetTableNames(names);
+
         return names;
     }
 
@@ -668,6 +705,7 @@ public class Clause {
                 }
                 clause.doGetTableNames(names);
             }
+
             return;
         }
 
@@ -707,6 +745,7 @@ public class Clause {
         if (column == null) {
             return false;
         }
+
         return column.equals(col);
     }
 
@@ -724,6 +763,7 @@ public class Clause {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -741,7 +781,7 @@ public class Clause {
             return sb;
         }
         String columnName = column;
-        if(columnPrefix!=null) {
+        if (columnPrefix != null) {
             columnName = columnPrefix + columnName + columnSuffix;
         }
         if (subClauses != null) {
@@ -772,6 +812,7 @@ public class Clause {
                     sb.append(")");
                 }
             }
+
             return sb;
         }
 
@@ -794,6 +835,7 @@ public class Clause {
             String theExpr = columnName + " " + expr + " ?";
             sb.append(SqlUtil.group(theExpr));
         }
+
         return sb;
     }
 
@@ -819,6 +861,7 @@ public class Clause {
                     col = subClauses[i].setValue(stmt, col);
                 }
             }
+
             return col;
         }
 
@@ -830,11 +873,18 @@ public class Clause {
             System.err.println("   value:" + value + " " + col);
         }
         SqlUtil.setValue(stmt, value, col);
+
         return col + 1;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param prefix _more_
+     * @param suffix _more_
+     */
     public void setColumnModifier(String prefix, String suffix) {
         this.columnPrefix = prefix;
         this.columnSuffix = suffix;
@@ -902,7 +952,7 @@ public class Clause {
     public String toString() {
         if (column != null) {
             String columnName = column;
-            if(columnPrefix!=null) {
+            if (columnPrefix != null) {
                 columnName = columnPrefix + columnName + columnSuffix;
             }
 
@@ -922,13 +972,16 @@ public class Clause {
             } else {
                 svalue = "" + value;
             }
+
             return columnName + " " + expr + " " + svalue;
         } else if (subClauses != null) {
             if (subClauses.length == 1) {
                 return subClauses[0].toString();
             }
+
             return "(" + Misc.join(" " + expr + " ", subClauses) + ")";
         }
+
         return "clause:null";
     }
 

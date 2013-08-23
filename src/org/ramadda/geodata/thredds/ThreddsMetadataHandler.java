@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -31,6 +30,8 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.metadata.*;
+
+import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -53,8 +54,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
-
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.CatalogUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -562,12 +561,12 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             List<Variable> variables = dataset.getVariables();
             //            System.err.println(entry.getResource());
-            
+
             for (Variable var : variables) {
                 if (var instanceof CoordinateAxis) {
-                    boolean axisWasRecognized = true;
-                    CoordinateAxis ca       = (CoordinateAxis) var;
-                    AxisType       axisType = ca.getAxisType();
+                    boolean        axisWasRecognized = true;
+                    CoordinateAxis ca                = (CoordinateAxis) var;
+                    AxisType       axisType          = ca.getAxisType();
                     if (axisType == null) {
                         continue;
                     }
@@ -631,10 +630,10 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             System.out.println(exc);
                         }
                     } else {
-                        axisWasRecognized  = false;
+                        axisWasRecognized = false;
                         //                        System.err.println("unknown axis:" + axisType + " for var:" + var.getName());
                     }
-                    if(axisWasRecognized) {
+                    if (axisWasRecognized) {
                         continue;
                     }
                 }
@@ -953,11 +952,11 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                                 Metadata.DFLT_EXTRA);
         } else if (isTag(tag, TYPE_PUBLISHER) || isTag(tag, TYPE_CREATOR)) {
             Element nameNode = XmlUtil.findChild(child, CatalogUtil.TAG_NAME);
-            String  name       = XmlUtil.getChildText(nameNode).trim();
-            String  vocabulary = XmlUtil.getAttribute(nameNode,
+            String  name     = XmlUtil.getChildText(nameNode).trim();
+            String vocabulary = XmlUtil.getAttribute(nameNode,
                                     ATTR_VOCABULARY, "");
-            String  email       = "";
-            String  url         = "";
+            String email = "";
+            String url   = "";
             Element contactNode = XmlUtil.findChild(child,
                                       CatalogUtil.TAG_CONTACT);
             if (contactNode != null) {

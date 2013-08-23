@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -22,10 +21,16 @@
 package org.ramadda.data.services;
 
 
-import org.ramadda.data.point.*;
-import org.ramadda.data.point.*;
+import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.plot.*;
+import org.jfree.chart.renderer.xy.*;
+import org.jfree.data.xy.*;
+import org.jfree.ui.*;
 
-import org.ramadda.util.ColorTable;
+
+import org.ramadda.data.point.*;
+import org.ramadda.data.point.*;
 
 import org.ramadda.data.point.PointFile;
 
@@ -41,6 +46,8 @@ import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
+
+import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.grid.*;
 
@@ -72,13 +79,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.renderer.xy.*;
-import org.jfree.data.xy.*;
-import org.jfree.ui.*;
-
 /**
  *
  * @author         Jeff McWhirter
@@ -92,7 +92,9 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static IdwGrid dummyField1 = null;
 
-    private static org.ramadda.data.process.DataProcessProvider dummyDataProcessProvider = null;
+    /** _more_          */
+    private static org.ramadda.data.process.DataProcessProvider dummyDataProcessProvider =
+        null;
 
     /** _more_ */
     private static ObjectGrid dummyField2 = null;
@@ -106,28 +108,38 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static GridVisitor dummyField5 = null;
 
+    /** _more_          */
     private RecordFileFactory dummyField6 = null;
 
+    /** _more_          */
     private PointTypeHandler dummyField7 = null;
-    private RecordCollectionTypeHandler dummyField8  = null;
+
+    /** _more_          */
+    private RecordCollectionTypeHandler dummyField8 = null;
+
+    /** _more_          */
     private RecordApiHandler dummyField9 = null;
 
+    /** _more_          */
     private PointJobManager dummyField10 = null;
 
+    /** _more_          */
     private RecordCollectionHarvester dummyField11 = null;
 
+    /** _more_          */
     private PointCollectionTypeHandler dummyField12 = null;
 
     /** _more_ */
     public static final String LABEL_ALTITUDE = "Altitude";
 
+    /** _more_          */
     public static List<Integer> xindices = new ArrayList<Integer>();
 
     /** _more_ */
-    public     static int[] drawCnt = { 0 };
+    public static int[] drawCnt = { 0 };
 
     /** _more_ */
-    public     static boolean debugChart = false;
+    public static boolean debugChart = false;
 
 
     /**
@@ -139,10 +151,20 @@ public class PointFormHandler extends RecordFormHandler {
         super(recordOutputHandler);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getOutputHandler();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getSessionPrefix() {
         return "points.";
     }
@@ -214,7 +236,7 @@ public class PointFormHandler extends RecordFormHandler {
                                          RecordEntry recordEntry)
             throws Exception {
         long numRecords = recordEntry.getNumRecords();
-        int  skipFactor = (int) (numRecords
+        int skipFactor = (int) (numRecords
                                 / request.get(ARG_NUMPOINTS, 1000));
         if (skipFactor == 0) {
             skipFactor = 1000;
@@ -222,15 +244,15 @@ public class PointFormHandler extends RecordFormHandler {
 
 
 
-        String         polylineProperty = "mapline" + skipFactor;
+        String polylineProperty = "mapline" + skipFactor;
 
-        List<double[]> polyLine         =
+        List<double[]> polyLine =
             (List<double[]>) recordEntry.getEntry().getTransientProperty(
                 polylineProperty);
         if (polyLine == null) {
             final List<double[]> pts         = new ArrayList<double[]>();
             final Bearing        workBearing = new Bearing();
-            RecordVisitor        visitor     =
+            RecordVisitor visitor =
                 new BridgeRecordVisitor(getOutputHandler()) {
                 double[] lastPoint;
                 double   maxDistance   = 0;
@@ -280,7 +302,8 @@ public class PointFormHandler extends RecordFormHandler {
             };
 
             getRecordJobManager().visitSequential(request, recordEntry,
-                    visitor, new VisitInfo(VisitInfo.QUICKSCAN_YES, skipFactor));
+                    visitor,
+                    new VisitInfo(VisitInfo.QUICKSCAN_YES, skipFactor));
             polyLine = pts;
             recordEntry.getEntry().putTransientProperty(polylineProperty,
                     polyLine);
@@ -390,6 +413,7 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
         sb.append(HtmlUtils.formClose());
+
         return new Result("", sb);
     }
 
@@ -426,7 +450,8 @@ public class PointFormHandler extends RecordFormHandler {
     public Result outputEntryForm(Request request, Entry entry,
                                   StringBuffer sb)
             throws Exception {
-        RecordEntry recordEntry = getPointOutputHandler().doMakeEntry(request, entry);
+        RecordEntry recordEntry =
+            getPointOutputHandler().doMakeEntry(request, entry);
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
@@ -435,19 +460,46 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
         sb.append("</td><td></td></tr>");
         sb.append(HtmlUtils.formTableClose());
+
         return new Result("", sb);
     }
 
 
 
-   public void addToEntryForm(Request request, Entry entry, StringBuffer sb,  RecordEntry recordEntry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param recordEntry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToEntryForm(Request request, Entry entry, StringBuffer sb,
+                               RecordEntry recordEntry)
+            throws Exception {
         addSelectForm(request, entry, sb, false, recordEntry, "");
         addSettingsForm(request, entry, sb, recordEntry);
 
-   }
+    }
 
 
-   public void addToGroupForm(Request request, Entry group, StringBuffer sb, List<? extends RecordEntry> recordEntries, String extra) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param sb _more_
+     * @param recordEntries _more_
+     * @param extra _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToGroupForm(Request request, Entry group, StringBuffer sb,
+                               List<? extends RecordEntry> recordEntries,
+                               String extra)
+            throws Exception {
         addSelectForm(request, group, sb, true, recordEntries.get(0), extra);
         addSettingsForm(request, group, sb, recordEntries.get(0));
     }
@@ -466,7 +518,7 @@ public class PointFormHandler extends RecordFormHandler {
      * @throws Exception On badness
      */
     public void addSettingsForm(Request request, Entry entry,
-                                 StringBuffer sb, RecordEntry recordEntry)
+                                StringBuffer sb, RecordEntry recordEntry)
             throws Exception {
 
         boolean      showUrl = request.get(ARG_SHOWURL, false);
@@ -668,13 +720,13 @@ public class PointFormHandler extends RecordFormHandler {
      * @throws Exception On badness
      */
     public void addSelectForm(Request request, Entry entry, StringBuffer sb,
-                               boolean forGroup, RecordEntry recordEntry,
-                               String extraSubset)
+                              boolean forGroup, RecordEntry recordEntry,
+                              String extraSubset)
             throws Exception {
 
-        long                     numRecords   = forGroup
-                ? 0
-                : recordEntry.getNumRecords();
+        long numRecords = forGroup
+                          ? 0
+                          : recordEntry.getNumRecords();
 
         List<HtmlUtils.Selector> pointFormats =
             new ArrayList<HtmlUtils.Selector>();
@@ -691,12 +743,14 @@ public class PointFormHandler extends RecordFormHandler {
         sb.append("<tr><td width=15%>");
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
         sb.append("</td><td></td></tr>");
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
+        sb.append(
+            HtmlUtils.hidden(
+                ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
 
 
         StringBuffer    productSB      = new StringBuffer();
         HashSet<String> selectedFormat = getFormats(request);
-        StringBuffer    formats        =
+        StringBuffer formats =
             new StringBuffer(
                 "<table border=0 cellpadding=4 cellspacing=0><tr valign=top>");
 
@@ -780,12 +834,12 @@ public class PointFormHandler extends RecordFormHandler {
         if ( !didMetadata) {
             map.addBox(entry,
                        new MapBoxProperties(MapInfo.DFLT_BOX_COLOR, false,
-                                         true));
+                                            true));
         } else {
             map.centerOn(entry);
         }
-        SessionManager sm          = getRepository().getSessionManager();
-        String         mapSelector =
+        SessionManager sm = getRepository().getSessionManager();
+        String mapSelector =
             map.makeSelector(ARG_AREA, true,
                              new String[] {
                                  request.getStringOrSession(ARG_AREA_NORTH,
@@ -801,7 +855,7 @@ public class PointFormHandler extends RecordFormHandler {
                 mapSelector));
 
         if (recordEntry != null) {
-            String help        = "Probablity a point will be included 0.-1.0";
+            String help = "Probablity a point will be included 0.-1.0";
             String probHelpImg =
                 HtmlUtils.img(getRepository().iconUrl(ICON_HELP), help);
             String prob =
@@ -810,21 +864,20 @@ public class PointFormHandler extends RecordFormHandler {
                                   request.getString(ARG_PROBABILITY, ""),
                                   4) + probHelpImg;
             if (recordEntry.getRecordFile().isCapable(
-                                                      PointFile.ACTION_TIME)) {
+                    PointFile.ACTION_TIME)) {
 
                 boolean showTime = true;
                 subsetSB.append(
-                                formEntry(
-                                          request,
-                                          msgLabel("Date Range"), getPageHandler().makeDateInput(
-                                                                                                request, ARG_FROMDATE, "entryform",
-                                                                                                null, null,
-                                                                                                showTime) + HtmlUtils.space(1)
-                                    + HtmlUtils.img(iconUrl(ICON_RANGE))
-                                    + HtmlUtils.space(1) +
-                                    getPageHandler().makeDateInput(request, ARG_TODATE,
-                                                                  "entryform", null, null,
-                                                                  showTime)));
+                    formEntry(
+                        request, msgLabel("Date Range"),
+                        getPageHandler().makeDateInput(
+                            request, ARG_FROMDATE, "entryform", null, null,
+                            showTime) + HtmlUtils.space(1)
+                                      + HtmlUtils.img(iconUrl(ICON_RANGE))
+                                      + HtmlUtils.space(1)
+                                      + getPageHandler().makeDateInput(
+                                          request, ARG_TODATE, "entryform",
+                                          null, null, showTime)));
             }
 
             if (recordEntry.getRecordFile().isCapable(
@@ -1063,16 +1116,16 @@ public class PointFormHandler extends RecordFormHandler {
         public List<Double> alts;
 
         /** _more_ */
-        public         int minX = Integer.MAX_VALUE;
+        public int minX = Integer.MAX_VALUE;
 
         /** _more_ */
-        public         int maxX = 0;
+        public int maxX = 0;
 
         /** _more_ */
-        public         int minIndex = Integer.MAX_VALUE;
+        public int minIndex = Integer.MAX_VALUE;
 
         /** _more_ */
-        public         int maxIndex = 0;
+        public int maxIndex = 0;
 
         /**
          * _more_
@@ -1148,7 +1201,7 @@ public class PointFormHandler extends RecordFormHandler {
                            rangeAxis, dataset, series, item, crosshairState,
                            pass);
             RectangleEdge domainEdge = plot.getDomainAxisEdge();
-            int           x = (int) domainAxis.valueToJava2D(item, dataArea,
+            int x = (int) domainAxis.valueToJava2D(item, dataArea,
                         domainEdge);
             plotInfo.setX(x);
             drawCnt[0]++;
@@ -1181,18 +1234,24 @@ public class PointFormHandler extends RecordFormHandler {
     public Result outputEntryMap(Request request, OutputType outputType,
                                  PointEntry pointEntry)
             throws Exception {
+
         StringBuffer js         = new StringBuffer();
         long         numRecords = pointEntry.getNumRecords();
         Entry        entry      = pointEntry.getEntry();
         int numPointsToPlot = request.get(ARG_NUMPOINTS, TIMESERIES_POINTS);
         StringBuffer sb         = new StringBuffer();
-        String script = IOUtil.readContents("/org/unavco/projects/nlas/ramadda/htdocs/nlas/nlas.js","");
+        String script =
+            IOUtil.readContents(
+                "/org/unavco/projects/nlas/ramadda/htdocs/nlas/nlas.js", "");
         sb.append(HtmlUtils.script(script));
-        sb.append(HtmlUtils.script("var pointDataDomainBase = \"" + getOutputHandler().getDomainBase() +"\";\n"));
+        sb.append(HtmlUtils.script("var pointDataDomainBase = \""
+                                   + getOutputHandler().getDomainBase()
+                                   + "\";\n"));
 
-        StringBuffer mapSB   = new StringBuffer();
-        boolean      showMap = pointEntry.getPointFile().isCapable(PointFile.ACTION_MAPINCHART) &&
-            request.get(ARG_MAP_SHOW, true)
+        StringBuffer mapSB = new StringBuffer();
+        boolean showMap =
+            pointEntry.getPointFile().isCapable(PointFile.ACTION_MAPINCHART)
+            && request.get(ARG_MAP_SHOW, true)
             && getRepository().getMapManager().shouldShowMaps();
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
                           300, false);
@@ -1207,9 +1266,10 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.cssClass("point_timeseries_div")
                 + HtmlUtils.id("point_timeseries_div")));
 
-        boolean      hasWaveform     = pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
+        boolean hasWaveform =
+            pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
-        String       waveformDisplay = request.getString(ARG_WAVEFORM_DISPLAY,
+        String waveformDisplay = request.getString(ARG_WAVEFORM_DISPLAY,
                                      "normal");
         StringBuffer timeSeriesImageUrl = new StringBuffer(( !hasWaveform
                 ? request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
@@ -1218,8 +1278,8 @@ public class PointFormHandler extends RecordFormHandler {
                 getPointOutputHandler().OUTPUT_TIMESERIES_IMAGE.toString() })
                 : request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                    new String[] {
-ARG_NUMPOINTS, "" + numPointsToPlot, ARG_OUTPUT, getPointOutputHandler().OUTPUT_TIMESERIES_IMAGE.toString(), ARG_WAVEFORM_DISPLAY,
-waveformDisplay, ARG_WAVEFORM_NAME, waveformName
+ARG_NUMPOINTS, "" + numPointsToPlot, ARG_OUTPUT, getPointOutputHandler().OUTPUT_TIMESERIES_IMAGE.toString(),
+ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
 })));
 
 
@@ -1230,7 +1290,9 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         StringBuffer formSB = new StringBuffer();
         formSB.append(HtmlUtils.formTable());
         formSB.append(HtmlUtils.form(formUrl));
-        formSB.append(HtmlUtils.hidden(ARG_OUTPUT, getPointOutputHandler().OUTPUT_CHART.toString()));
+        formSB.append(
+            HtmlUtils.hidden(
+                ARG_OUTPUT, getPointOutputHandler().OUTPUT_CHART.toString()));
         formSB.append(HtmlUtils.hidden(ARG_ENTRYID,
                                        pointEntry.getEntry().getId()));
 
@@ -1248,7 +1310,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             attrShow.append("<table>");
 
             List<String[]> names = new ArrayList<String[]>();
-            if(pointEntry.isArealCoverage()) {
+            if (pointEntry.isArealCoverage()) {
                 names.add(new String[] { FIELD_ALTITUDE, LABEL_ALTITUDE,
                                          "true" });
             }
@@ -1272,10 +1334,10 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                 String  colorSelect = HtmlUtils.colorSelect(carg, color);
 
 
-                if(value) {
+                if (value) {
                     timeSeriesImageUrl.append("&" + arg + "=" + value);
                     timeSeriesImageUrl.append("&" + carg + "="
-                                              + HtmlUtils.urlEncode(color));
+                            + HtmlUtils.urlEncode(color));
                 }
 
                 attrShow.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
@@ -1371,14 +1433,14 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             String waveformUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                  new String[] { ARG_OUTPUT,
-                    getPointOutputHandler().OUTPUT_WAVEFORM_IMAGE.toString(), ARG_WAVEFORM_NAME,
-                    waveformName });
+                    getPointOutputHandler().OUTPUT_WAVEFORM_IMAGE.toString(),
+                    ARG_WAVEFORM_NAME, waveformName });
 
             String waveformCsvUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                  new String[] { ARG_OUTPUT,
-                    getPointOutputHandler().OUTPUT_WAVEFORM_CSV.toString(), ARG_WAVEFORM_NAME,
-                    waveformName });
+                    getPointOutputHandler().OUTPUT_WAVEFORM_CSV.toString(),
+                    ARG_WAVEFORM_NAME, waveformName });
 
 
             String waveformImage = HtmlUtils.img(waveformUrl, "",
@@ -1422,6 +1484,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         Result result = new Result("", sb);
 
         return result;
+
     }
 
     /**
@@ -1442,11 +1505,12 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         File imageFile =
             getRepository().getStorageManager().getTmpFile(request,
                 "timeseries.png");
-        PlotInfo      plotInfo = new PlotInfo();
+        PlotInfo plotInfo = new PlotInfo();
         BufferedImage newImage = makeTimeseriesImage(request, pointEntry,
                                      plotInfo);
         ImageUtils.writeImageToFile(newImage, imageFile);
-        InputStream is     = getStorageManager().getFileInputStream(imageFile);
+        InputStream is     =
+            getStorageManager().getFileInputStream(imageFile);
         Result      result = new Result("", is, "image/png");
 
         return result;
@@ -1467,13 +1531,14 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             PointEntry pointEntry, final PlotInfo plotInfo)
             throws Exception {
 
-        Entry     entry           = pointEntry.getEntry();
-        int       width           = TIMESERIES_WIDTH;
-        int       height          = TIMESERIES_HEIGHT;
-        long      numRecords      = pointEntry.getNumRecords();
+        Entry entry      = pointEntry.getEntry();
+        int   width      = TIMESERIES_WIDTH;
+        int   height     = TIMESERIES_HEIGHT;
+        long  numRecords = pointEntry.getNumRecords();
         final int numPointsToPlot = request.get(ARG_NUMPOINTS,
                                         TIMESERIES_POINTS);
-        final boolean        hasWaveform    = pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
+        final boolean hasWaveform =
+            pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
         //XXXX
         System.err.println("WAVE:" + hasWaveform);
 
@@ -1507,7 +1572,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
             }
         }
 
-        if(fields.size()==0 && tmpFields.size()>0) {
+        if ((fields.size() == 0) && (tmpFields.size() > 0)) {
             fields.add(tmpFields.get(0));
             request.put(ARG_CHART_SHOW + tmpFields.get(0).getName(), "true");
         }
@@ -1556,12 +1621,12 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
 
         JFreeChart chart = createTimeseriesChart(request, entry,
                                new XYSeriesCollection(), null);
-        XYPlot                      plot = (XYPlot) chart.getPlot();
-        int                         lineCnt             = 0;
-        int[]                       colorCnt            = { 0 };
-        int                         numberOfAxisLegends = 0;
+        XYPlot plot                = (XYPlot) chart.getPlot();
+        int    lineCnt             = 0;
+        int[]  colorCnt            = { 0 };
+        int    numberOfAxisLegends = 0;
 
-        Hashtable<String, double[]> valueRanges         = new Hashtable<String,
+        Hashtable<String, double[]> valueRanges = new Hashtable<String,
                                                       double[]>();
 
         for (int extraCnt = 0; extraCnt < series.size(); extraCnt++) {
@@ -1572,7 +1637,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                 unit = null;
             }
 
-            if(unit == null) {
+            if (unit == null) {
                 unit = extraCnt + "";
             }
             if (unit == null) {
@@ -1718,7 +1783,8 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                             y = byteIdx;
                         }
                         //                        if(y>40)
-                        System.err.println("draw:" + x + " " + barWidthToUse + " " + y  );
+                        System.err.println("draw:" + x + " " + barWidthToUse
+                                           + " " + y);
                         g2.drawLine(x - barWidthToUse, y, x + barWidthToUse,
                                     y);
                     }
@@ -1733,6 +1799,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         BufferedImage newImage = chart.createBufferedImage(width
                                      + (numberOfAxisLegends
                                         * TIMESERIES_AXIS_WIDTHPER), height);
+
         return newImage;
     }
 
@@ -1754,10 +1821,12 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         StringBuffer sb    = new StringBuffer();
         StringBuffer js    = new StringBuffer();
         sb.append(js);
-        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-                                      ARG_OUTPUT,
-                                      getPointOutputHandler().OUTPUT_WAVEFORM_IMAGE.toString());
+        String url =
+            request.entryUrl(
+                getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+                getPointOutputHandler().OUTPUT_WAVEFORM_IMAGE.toString());
         sb.append(HtmlUtils.img(url));
+
         return new Result("", sb);
     }
 
@@ -1866,7 +1935,7 @@ waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                 if (i > 0) {
                     sb.append(",");
                 }
-                double percent  = i / (double) values.length;
+                double percent = i / (double) values.length;
                 double altitude = waveform.getAltitude0()
                                   + (heightDiff * percent);
                 sb.append(altitude);

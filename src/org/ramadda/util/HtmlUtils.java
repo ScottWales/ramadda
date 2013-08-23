@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -213,7 +212,7 @@ public class HtmlUtils {
     /** _more_ */
     public static final String TAG_SCRIPT = "script";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_STYLE = "style";
 
     /** _more_ */
@@ -551,8 +550,10 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String open(String comp, String attrs) {
-        if(attrs.length()==0)
+        if (attrs.length() == 0) {
             return "<" + comp + ">";
+        }
+
         return "<" + comp + " " + attrs + ">";
     }
 
@@ -973,8 +974,15 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param content _more_
+     *
+     * @return _more_
+     */
     public static String div(String content) {
-        return div(content,"");
+        return div(content, "");
     }
 
     /**
@@ -1478,10 +1486,10 @@ public class HtmlUtils {
     public static String makeLatLonInput(String arg, String value,
                                          String tip) {
         return input(arg, value,
-                     style("margin:0px;") +
-                     attrs(ATTR_SIZE, "5") + id(arg) + ((tip != null)
-                ? title(tip)
-                : ""));
+                     style("margin:0px;") + attrs(ATTR_SIZE, "5") + id(arg)
+                     + ((tip != null)
+                        ? title(tip)
+                        : ""));
     }
 
 
@@ -1641,9 +1649,19 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     * @param checked _more_
+     * @param label _more_
+     *
+     * @return _more_
+     */
     public static String labeledCheckbox(String name, String value,
                                          boolean checked, String label) {
-        return checkbox(name, value, checked, "") +space(1) + label;
+        return checkbox(name, value, checked, "") + space(1) + label;
     }
 
     /**
@@ -2681,29 +2699,48 @@ public class HtmlUtils {
                    tag(TAG_TD,
                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                              CLASS_FORMLABEL), left) + tag(TAG_TD, "",
-                                 right))+"\n";
+                                 right)) + "\n";
 
     }
 
 
-    public static String formEntry(String left, String right, int rightColSpan) {
+    /**
+     * _more_
+     *
+     * @param left _more_
+     * @param right _more_
+     * @param rightColSpan _more_
+     *
+     * @return _more_
+     */
+    public static String formEntry(String left, String right,
+                                   int rightColSpan) {
         return tag(TAG_TR, "",
                    tag(TAG_TD,
                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-                             CLASS_FORMLABEL), left) + tag(TAG_TD, attr("colspan", ""+rightColSpan),
-                                 right));
+                             CLASS_FORMLABEL), left) + tag(TAG_TD,
+                                 attr("colspan", "" + rightColSpan), right));
 
     }
 
 
-    public static String formEntry(String left, String[]cols) {
+    /**
+     * _more_
+     *
+     * @param left _more_
+     * @param cols _more_
+     *
+     * @return _more_
+     */
+    public static String formEntry(String left, String[] cols) {
         StringBuffer sb = new StringBuffer();
         sb.append(tag(TAG_TD,
                       attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                             CLASS_FORMLABEL), left));
-        for(String col: cols) {
+        for (String col : cols) {
             sb.append(tag(TAG_TD, "", col));
         }
+
         return tag(TAG_TR, "", sb.toString());
     }
 
@@ -2993,8 +3030,9 @@ public class HtmlUtils {
      * @return  the script enclosed in a tag
      */
     public static String script(String s) {
-        s = be.belgampaul.tools.javascript.JsBeautify.jsBeautify(s,2);
+        s = be.belgampaul.tools.javascript.JsBeautify.jsBeautify(s, 2);
         String js = tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"), s);
+
         return js;
     }
 
@@ -3003,12 +3041,23 @@ public class HtmlUtils {
 
 
 
-    public static String call(String function, String ... args) {
+    /**
+     * _more_
+     *
+     * @param function _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String call(String function, String... args) {
         StringBuffer sb = new StringBuffer();
-        for(int i=0;i<args.length;i++) {
-            if(i>0) sb.append(",");
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
             sb.append(args[i]);
         }
+
         return function + "(" + sb + ");";
     }
 
@@ -3034,7 +3083,8 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String importJS(String jsUrl) {
-        return tag(TAG_SCRIPT, attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
+        return tag(TAG_SCRIPT,
+                   attrs(ATTR_SRC, jsUrl, ATTR_TYPE, "text/JavaScript"), "");
     }
 
 
@@ -3214,8 +3264,8 @@ public class HtmlUtils {
      * @param showImg _more_
      */
     public static void setBlockHideShowImage(String hideImg, String showImg) {
-        if(blockHideImageUrl==null) {
-            blockHideImageUrl         = hideImg;
+        if (blockHideImageUrl == null) {
+            blockHideImageUrl = hideImg;
             blockShowImageUrl = showImg;
         }
     }
@@ -3230,7 +3280,7 @@ public class HtmlUtils {
      */
     public static void setInlineHideShowImage(String hideImg,
             String showImg) {
-        if(inlineHideImageUrl==null) {
+        if (inlineHideImageUrl == null) {
             inlineHideImageUrl = hideImg;
             inlineShowImageUrl = showImg;
         }
@@ -3390,10 +3440,10 @@ public class HtmlUtils {
      */
     public static String[] getToggle(String label, boolean visible,
                                      String hideImg, String showImg) {
-        String id   = "block_" + (blockCnt++);
-        String img  = HtmlUtils.img(visible
-                                    ? hideImg
-                                    : showImg, "", HtmlUtils.id(id + "img"));
+        String id  = "block_" + (blockCnt++);
+        String img = HtmlUtils.img(visible
+                                   ? hideImg
+                                   : showImg, "", HtmlUtils.id(id + "img"));
         String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
@@ -3429,7 +3479,7 @@ public class HtmlUtils {
         String       id         = "block_" + (blockCnt++);
         StringBuffer sb         = contentSB;
         String       img        = "";
-        String       js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
+        String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
                         squote(id) + "," + squote(id + "img") + ","
                         + squote("") + "," + squote("")));
         sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
@@ -3526,7 +3576,7 @@ public class HtmlUtils {
         if (showImg == null) {
             showImg = blockShowImageUrl;
         }
-        String       id = "block_" + (blockCnt++);
+        String id = "block_" + (blockCnt++);
         StringBuffer sb =
             new StringBuffer(
                 "<table border=0 width=\"100%\"><tr valign=top>");
@@ -3580,9 +3630,9 @@ public class HtmlUtils {
      */
     public static String makeShowHideBlock(String clickHtml, String label,
                                            String content, boolean visible) {
-        String       id   = "block_" + (blockCnt++);
-        StringBuffer sb   = new StringBuffer();
-        String       link =
+        String       id = "block_" + (blockCnt++);
+        StringBuffer sb = new StringBuffer();
+        String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + "" + "','" + ""
                 + "')"), clickHtml,
@@ -3606,17 +3656,28 @@ public class HtmlUtils {
     }
 
 
-    public static String jsMakeArgs(String[]args, boolean andSquote) {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     * @param andSquote _more_
+     *
+     * @return _more_
+     */
+    public static String jsMakeArgs(String[] args, boolean andSquote) {
         StringBuffer sb = new StringBuffer();
-        for(int i=0;i<args.length;i++) {
+        for (int i = 0; i < args.length; i++) {
             String s = args[i];
-            if(andSquote) {
-                s  = s.replaceAll("'","\\\\'");
+            if (andSquote) {
+                s = s.replaceAll("'", "\\\\'");
                 s = squote(s);
             }
-            if(i>0) sb.append(", ");
+            if (i > 0) {
+                sb.append(", ");
+            }
             sb.append(s);
         }
+
         return sb.toString();
     }
 
@@ -3699,7 +3760,8 @@ public class HtmlUtils {
      */
     public static void main(String[] args) throws Exception {
         for (String a : args) {
-            System.err.println(a+":"+  java.net.URLDecoder.decode(a, "UTF-8"));
+            System.err.println(a + ":"
+                               + java.net.URLDecoder.decode(a, "UTF-8"));
         }
         if (true) {
             return;
@@ -3773,23 +3835,30 @@ public class HtmlUtils {
     }
 
 
-    public static void makeAccordian(StringBuffer sb, List<String> titles, List<String> contents) {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param titles _more_
+     * @param contents _more_
+     */
+    public static void makeAccordian(StringBuffer sb, List<String> titles,
+                                     List<String> contents) {
 
         String accordianId = "accordion_" + (tabCnt++);
         sb.append(
-                  HtmlUtils.open(
-                                 HtmlUtils.TAG_DIV,
-                                 HtmlUtils.cssClass(
-                                                    "ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                                                                                                             accordianId)));
+            HtmlUtils.open(
+                HtmlUtils.TAG_DIV,
+                HtmlUtils.cssClass("ui-accordion ui-widget ui-helper-reset")
+                + HtmlUtils.id(accordianId)));
         for (int i = 0; i < titles.size(); i++) {
             String title   = titles.get(i);
             String content = contents.get(i);
             sb.append(
-                      HtmlUtils.open(
-                                     HtmlUtils.TAG_H3,
-                                     HtmlUtils.cssClass(
-                                                        "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+                HtmlUtils.open(
+                    HtmlUtils.TAG_H3,
+                    HtmlUtils.cssClass(
+                        "ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
             sb.append("<a href=\"#\">");
             sb.append(title);
             sb.append("</a></h3>");
@@ -3798,16 +3867,23 @@ public class HtmlUtils {
         sb.append("</div>");
         String args =
             "autoHeight: false, navigation: true, collapsible: true";
-        sb.append(HtmlUtils.script("$(function() {\n$(\"#"
-                                   + accordianId + "\" ).accordion({"
-                                   + args + "});});\n"));
+        sb.append(HtmlUtils.script("$(function() {\n$(\"#" + accordianId
+                                   + "\" ).accordion({" + args + "});});\n"));
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String comment(String s) {
         s = s.replaceAll("\n", " ");
-        return "\n<!-- " + s +" -->\n";
+
+        return "\n<!-- " + s + " -->\n";
     }
 
     /**
@@ -3862,6 +3938,7 @@ public class HtmlUtils {
                 }
             }
         }
+
         return dflt;
     }
 

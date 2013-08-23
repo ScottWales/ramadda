@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -33,27 +32,30 @@ import org.ramadda.repository.Result;
  * A class for holding process information
  */
 public abstract class DataProcess {
-	
-	private String dataProcessId;
-	private String dataProcessLabel;
-	
-	/**
-	 * Default ctor
-	 */
-	public DataProcess() {
-		this("foo","bar");
-	}
-	
-	/**
-	 * Create a DataProcess
-	 * 
-	 * @param id       the unique id for this DataProcess
-	 * @param label    the label for this DataProcess
-	 */
-	public DataProcess(String id, String label) {
-		this.dataProcessId = id;
-		this.dataProcessLabel = label;
-	}
+
+    /** _more_          */
+    private String dataProcessId;
+
+    /** _more_          */
+    private String dataProcessLabel;
+
+    /**
+     * Default ctor
+     */
+    public DataProcess() {
+        this("foo", "bar");
+    }
+
+    /**
+     * Create a DataProcess
+     *
+     * @param id       the unique id for this DataProcess
+     * @param label    the label for this DataProcess
+     */
+    public DataProcess(String id, String label) {
+        this.dataProcessId    = id;
+        this.dataProcessLabel = label;
+    }
 
     /**
      * Add to form
@@ -64,9 +66,8 @@ public abstract class DataProcess {
      *
      * @throws Exception  problem adding to the form
      */
-    public abstract void addToForm(Request request,
-                          DataProcessInput input,
-                          StringBuffer sb)
+    public abstract void addToForm(Request request, DataProcessInput input,
+                                   StringBuffer sb)
      throws Exception;
 
 
@@ -80,8 +81,8 @@ public abstract class DataProcess {
      *
      * @throws Exception  problem processing
      */
-    public abstract DataProcessOutput processRequest(
-            Request request, DataProcessInput input)
+    public abstract DataProcessOutput processRequest(Request request,
+            DataProcessInput input)
      throws Exception;
 
     /**
@@ -90,7 +91,7 @@ public abstract class DataProcess {
      * @return  the ID
      */
     public String getDataProcessId() {
-    	return dataProcessId;
+        return dataProcessId;
     }
 
     /**
@@ -99,12 +100,14 @@ public abstract class DataProcess {
      * @return the label
      */
     public String getDataProcessLabel() {
-    	return dataProcessLabel;
+        return dataProcessLabel;
     }
-    
+
     /**
      * Can we handle this type of DataProcessInput?
-     * 
+     *
+     *
+     * @param dpi _more_
      * @return true if we can handle
      */
     public abstract boolean canHandle(DataProcessInput dpi);

@@ -1,18 +1,43 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 package org.ramadda.geodata.cdmdata;
+
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.util.Utils;
+
 import org.w3c.dom.Element;
+
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.units.DateUnit;
+
 import ucar.unidata.util.Misc;
 
 import java.io.File;
+
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +47,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class DoradeRadarTypeHandler extends RadarTypeHandler {
+
     /**
      * _more_
      *
@@ -36,15 +62,22 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeNewEntry(Entry entry) throws Exception {
-        Object[] values = entry.getTypeHandler().getValues(entry);
-        File f = entry.getFile();
-        NetcdfFile ncf =  NetcdfFile.open(f.toString());
-        float [] elev, aziv, disv, lonv, altv, latv;
-        double [] timev;
+        Object[]   values = entry.getTypeHandler().getValues(entry);
+        File       f      = entry.getFile();
+        NetcdfFile ncf    = NetcdfFile.open(f.toString());
+        float[]    elev, aziv, disv, lonv, altv, latv;
+        double[]   timev;
         //Merge all of the attributes into one map
-        Hashtable<String,String> attrMap = new Hashtable<String,String>();
-        List<Attribute> attrs      = ncf.getGlobalAttributes();
+        Hashtable<String, String> attrMap = new Hashtable<String, String>();
+        List<Attribute>           attrs   = ncf.getGlobalAttributes();
         for (Attribute attr : attrs) {
             String name  = attr.getName();
             String value = attr.getStringValue();
@@ -54,31 +87,45 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
             attrMap.put(name, value);
         }
 
-        elev = (float [])ncf.findVariable("elevation").read().get1DJavaArray(Float.TYPE);
-        aziv = (float [])ncf.findVariable("azimuth").read().get1DJavaArray(Float.TYPE);
-        altv = (float [])ncf.findVariable("altitudes_1").read().get1DJavaArray(Float.TYPE);
-        lonv = (float [])ncf.findVariable("longitudes_1").read().get1DJavaArray(Float.TYPE);
-        latv = (float [])ncf.findVariable("latitudes_1").read().get1DJavaArray(Float.TYPE);
-        disv = (float [])ncf.findVariable("distance_1").read().get1DJavaArray(Float.TYPE);
-        timev = (double [])ncf.findVariable("rays_time").read().get1DJavaArray(Double.TYPE);
+        elev = (float[]) ncf.findVariable("elevation").read().get1DJavaArray(
+            Float.TYPE);
+        aziv = (float[]) ncf.findVariable("azimuth").read().get1DJavaArray(
+            Float.TYPE);
+        altv = (float[]) ncf.findVariable(
+            "altitudes_1").read().get1DJavaArray(Float.TYPE);
+        lonv = (float[]) ncf.findVariable(
+            "longitudes_1").read().get1DJavaArray(Float.TYPE);
+        latv = (float[]) ncf.findVariable(
+            "latitudes_1").read().get1DJavaArray(Float.TYPE);
+        disv = (float[]) ncf.findVariable("distance_1").read().get1DJavaArray(
+            Float.TYPE);
+        timev = (double[]) ncf.findVariable(
+            "rays_time").read().get1DJavaArray(Double.TYPE);
 
-        String stationId = Misc.getProperty(attrMap, "radar_name", "Dorade");
-        String stationName =  "Dorade Radar";
-        double radarLat =  latv[0];
-        double radarLon = lonv[0];
-        double altitude =  elev[0];
+        String stationId   = Misc.getProperty(attrMap, "radar_name",
+                                 "Dorade");
+        String stationName = "Dorade Radar";
+        double radarLat    = latv[0];
+        double radarLon    = lonv[0];
+        double altitude    = elev[0];
 
-        String product = Misc.getProperty(attrMap, CdmUtil.ATTR_KEYWORDS_VOCABULARY, "");
+        String product = Misc.getProperty(attrMap,
+                                          CdmUtil.ATTR_KEYWORDS_VOCABULARY,
+                                          "");
 
-        Date startDate = new Date((long)timev[0]);
+        Date startDate = new Date((long) timev[0]);
 
-        float latMin = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MINLAT, "0.0f"));
-        float latMax = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MAXLAT, "0.0f"));
-        float lonMin = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MINLON, "0.0f"));
-        float lonMax = Float.parseFloat(Misc.getProperty(attrMap, CdmUtil.ATTR_MAXLON, "0.0f"));
+        float latMin = Float.parseFloat(Misc.getProperty(attrMap,
+                           CdmUtil.ATTR_MINLAT, "0.0f"));
+        float latMax = Float.parseFloat(Misc.getProperty(attrMap,
+                           CdmUtil.ATTR_MAXLAT, "0.0f"));
+        float lonMin = Float.parseFloat(Misc.getProperty(attrMap,
+                           CdmUtil.ATTR_MINLON, "0.0f"));
+        float lonMax = Float.parseFloat(Misc.getProperty(attrMap,
+                           CdmUtil.ATTR_MAXLON, "0.0f"));
 
         //Flip them
-        if(lonMin>lonMax) {
+        if (lonMin > lonMax) {
             float tmp = lonMin;
             lonMin = lonMax;
             lonMax = tmp;
@@ -86,14 +133,15 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
 
 
 
-        if(!Utils.stringDefined(entry.getDescription())) {
-            entry.setDescription(Misc.getProperty(attrMap, CdmUtil.ATTR_SUMMARY, ""));
+        if ( !Utils.stringDefined(entry.getDescription())) {
+            entry.setDescription(Misc.getProperty(attrMap,
+                    CdmUtil.ATTR_SUMMARY, ""));
         }
 
-        values[IDX_STATION_ID] = stationId;
-        values[IDX_STATION_NAME] = stationName;
-        values[IDX_STATION_LAT] = radarLat;
-        values[IDX_STATION_LON] = radarLon;
+        values[IDX_STATION_ID]      = stationId;
+        values[IDX_STATION_NAME]    = stationName;
+        values[IDX_STATION_LAT]     = radarLat;
+        values[IDX_STATION_LON]     = radarLon;
         values[IDX_STATION_PRODUCT] = product;
 
         entry.setStartDate(startDate.getTime());

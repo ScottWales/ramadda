@@ -1,9 +1,30 @@
+/*
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.point.aon;
 
-import org.ramadda.data.record.*;
+
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
+
+import org.ramadda.data.record.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -18,13 +39,12 @@ import java.util.List;
 
 /**
  */
-public class BoreholePointFile extends SingleSiteTextFile  {
+public class BoreholePointFile extends SingleSiteTextFile {
 
     /**
      * _more_
      */
-    public BoreholePointFile() {
-    }
+    public BoreholePointFile() {}
 
     /**
      * ctor
@@ -47,31 +67,45 @@ public class BoreholePointFile extends SingleSiteTextFile  {
      *
      * @throws IOException _more_
      */
-    public BoreholePointFile(String filename,
-                             Hashtable properties)
+    public BoreholePointFile(String filename, Hashtable properties)
             throws IOException {
         super(filename, properties);
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDelimiter() {
         return ",";
     }
 
     /**
-       Overwrite the record making method so we can check for empty lines
+     *  Overwrite the record making method so we can check for empty lines
+     *
+     * @param visitInfo _more_
+     *
+     * @return _more_
      */
-@Override
+    @Override
     public Record doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields()) {
-                public boolean lineOk(String line) {
-                    if(!super.lineOk(line)) return false;
-                    if(line.startsWith(",")) return false;
-                    return true;
+            public boolean lineOk(String line) {
+                if ( !super.lineOk(line)) {
+                    return false;
+                }
+                if (line.startsWith(",")) {
+                    return false;
                 }
 
-            };
+                return true;
+            }
+
+        };
         record.setDelimiter(getDelimiter());
+
         return record;
     }
 
@@ -82,7 +116,7 @@ public class BoreholePointFile extends SingleSiteTextFile  {
      *
      * @return _more_
      */
-@Override
+    @Override
     public int getSkipLines(VisitInfo visitInfo) {
         return 14;
     }
@@ -117,58 +151,67 @@ YEAR,DATE,0.0,0.25,0.5,0.75,1.0,2.0,3.0,4.0
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        List<String>header = getHeaderLines();
+        List<String> header = getHeaderLines();
 
-        List<String> toks = StringUtil.split(header.get(1),",");
-        String siteId =  toks.get(0);
+        List<String> toks   = StringUtil.split(header.get(1), ",");
+        String       siteId = toks.get(0);
         siteId = siteId.replaceAll("_COMMA_", " - ");
         //PI/Data contact =Vladimir E. Romanovsky
         String contact = toks.get(4);
-        if(contact.indexOf("=")>0) {
-            contact = StringUtil.findPattern(contact,".*=(.*)");
+        if (contact.indexOf("=") > 0) {
+            contact = StringUtil.findPattern(contact, ".*=(.*)");
         }
 
         //Location: N 67.41069 E 63.39578,,,Professor,,,,,,,,,,,
-        String locationString =  StringUtil.findPattern(header.get(2),"Location:\\s(.*),");
-        if(locationString==null) {
-            throw new IllegalArgumentException("Could not read location from:" +header.get(2));
+        String locationString = StringUtil.findPattern(header.get(2),
+                                    "Location:\\s(.*),");
+        if (locationString == null) {
+            throw new IllegalArgumentException(
+                "Could not read location from:" + header.get(2));
         }
 
-        toks = StringUtil.split(locationString," ", true, true);
-        if(toks.size()!=4) {
-            throw new IllegalArgumentException("Could not read location from:" +header.get(2));
+        toks = StringUtil.split(locationString, " ", true, true);
+        if (toks.size() != 4) {
+            throw new IllegalArgumentException(
+                "Could not read location from:" + header.get(2));
         }
-        double lat =  Misc.decodeLatLon(toks.get(1)+toks.get(0));
-        double lon =  Misc.decodeLatLon(toks.get(3)+toks.get(2));
-        setLocation(lat,lon,0);
+        double lat = Misc.decodeLatLon(toks.get(1) + toks.get(0));
+        double lon = Misc.decodeLatLon(toks.get(3) + toks.get(2));
+        setLocation(lat, lon, 0);
 
         //LOOK: this needs to be in the same order as the aontypes.xml defines in the point plugin
-        setFileMetadata(new Object[]{
-                siteId,
-                contact
-            });
-        String tempAttrs = attrChartable() + attrSearchable() + attrUnit("Celsius");
-        String fields = makeFields(new String[]{
-                makeField(FIELD_SITE_ID, attrType(TYPE_STRING), attrValue(siteId.trim())),
-                makeField(FIELD_LATITUDE, attrValue(lat)),
-                makeField(FIELD_LONGITUDE, attrValue(lon)),
-                makeField(FIELD_YEAR,""),
-                makeField(FIELD_DATE,attrType(TYPE_DATE), attrFormat("dd-MMM-yyyy")),
-                makeField("Temperature_0_Meter",  tempAttrs),
-                makeField("Temperature_025_Meter", tempAttrs),
-                makeField("Temperature_05_Meter", tempAttrs),
-                makeField("Temperature_075_Meter",  tempAttrs),
-                makeField("Temperature_1_Meter",  tempAttrs),
-                makeField("Temperature_2_Meter",  tempAttrs),
-                makeField("Temperature_3_Meter",  tempAttrs),
-                makeField("Temperature_4_Meter",  tempAttrs),
-            });
+        setFileMetadata(new Object[] { siteId, contact });
+        String tempAttrs = attrChartable() + attrSearchable()
+                           + attrUnit("Celsius");
+        String fields = makeFields(new String[] {
+            makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
+                      attrValue(siteId.trim())),
+            makeField(FIELD_LATITUDE, attrValue(lat)),
+            makeField(FIELD_LONGITUDE, attrValue(lon)),
+            makeField(FIELD_YEAR, ""),
+            makeField(FIELD_DATE, attrType(TYPE_DATE),
+                      attrFormat("dd-MMM-yyyy")),
+            makeField("Temperature_0_Meter", tempAttrs),
+            makeField("Temperature_025_Meter", tempAttrs),
+            makeField("Temperature_05_Meter", tempAttrs),
+            makeField("Temperature_075_Meter", tempAttrs),
+            makeField("Temperature_1_Meter", tempAttrs),
+            makeField("Temperature_2_Meter", tempAttrs),
+            makeField("Temperature_3_Meter", tempAttrs),
+            makeField("Temperature_4_Meter", tempAttrs),
+        });
         putProperty(PROP_FIELDS, fields);
+
         return visitInfo;
     }
 
 
-    public static void main(String[]args) {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
         PointFile.test(args, BoreholePointFile.class);
     }
 

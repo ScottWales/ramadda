@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.repository.job;
 
 
@@ -83,7 +84,7 @@ public class JobInfo implements Constants {
     /** db column for jobs table */
     public static final String DB_COL_USER_ID = "user_id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DB_COL_TYPE = "type";
 
     /** db column for jobs table */
@@ -118,7 +119,7 @@ public class JobInfo implements Constants {
     /** job status */
     private String status = STATUS_RUNNING;
 
-    /** _more_          */
+    /** _more_ */
     private String type = "processing";
 
     /** The processing can add various status messages */
@@ -148,10 +149,10 @@ public class JobInfo implements Constants {
     /** job name the user gave */
     private String jobName;
 
-    /** _more_          */
+    /** _more_ */
     private String jobUrl;
 
-    /** _more_          */
+    /** _more_ */
     private String jobStatusUrl;
 
     /** job description the user gave */
@@ -172,7 +173,7 @@ public class JobInfo implements Constants {
     /** file size of the products */
     private long productSize;
 
-    /** _more_          */
+    /** _more_ */
     private StringBuffer extraInfo = new StringBuffer();
 
     /**

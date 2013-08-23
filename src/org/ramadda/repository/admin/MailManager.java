@@ -78,14 +78,14 @@ import javax.mail.internet.MimeMessage;
  */
 public class MailManager extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SMTP_PASSWORD =
         "ramadda.admin.smtp.password";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SMTP_STARTTLS =
         "ramadda.admin.smtp.starttls";
 

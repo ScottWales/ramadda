@@ -57,7 +57,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class RepositoryClient extends RepositoryBase {
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_URL = "-url";
 
 
@@ -65,13 +65,13 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_ */
     public static final String CMD_FETCH = "-fetch";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SEARCH = "-search";
 
     /** _more_ */
     public static final String CMD_PRINT = "-print";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_TIMEOUT = "-timeout";
 
     /** _more_ */
@@ -92,14 +92,14 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_ */
     public static final String CMD_FILE = "-file";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_FILES = "-files";
     //    public static final String CMD_ = ;
 
-    /** _more_          */
+    /** _more_ */
     private static String ATTR_LOCALFILES = "localfiles";
 
-    /** _more_          */
+    /** _more_ */
     private static String ATTR_LOCALFILE_PATH = "localfilepath";
 
 
@@ -149,16 +149,16 @@ public class RepositoryClient extends RepositoryBase {
     /** _more_ */
     private String importParentId;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doingSearch = false;
 
-    /** _more_          */
+    /** _more_ */
     private List<String[]> searchArgs = new ArrayList<String[]>();
 
-    /** _more_          */
+    /** _more_ */
     private int timeout = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int callTimestamp = 0;
 
     /**

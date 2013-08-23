@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2013 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -295,10 +294,20 @@ JQ.button(
     }
 
 
-    public List<DataProcess> getDataProcessesToRun(Request request) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<DataProcess> getDataProcessesToRun(Request request)
+            throws Exception {
         List<DataProcess> processesToRun = new ArrayList<DataProcess>();
         String selectedProcess = request.getString(ARG_DATA_PROCESS_ID,
-                                                   (String) null);
+                                     (String) null);
         if (selectedProcess != null) {
             for (DataProcess process : processes) {
                 if (process.getDataProcessId().equals(selectedProcess)) {
@@ -306,6 +315,7 @@ JQ.button(
                 }
             }
         }
+
         return processesToRun;
     }
 
@@ -333,34 +343,37 @@ JQ.button(
 
         List<File>  files   = new ArrayList<File>();
         //Process each one in turn
-        boolean didProcess = false;
+        boolean           didProcess     = false;
         List<DataProcess> processesToRun = getDataProcessesToRun(request);
-        File processDir = getStorageManager().createProcessDir();
-        for(DataProcess process: processesToRun) {
+        File              processDir = getStorageManager().createProcessDir();
+        for (DataProcess process : processesToRun) {
             System.err.println("MODEL: applying process: "
                                + process.getDataProcessLabel());
-            DataProcessOperand op = new DataProcessOperand(entries);
-            DataProcessInput dpi = new DataProcessInput(processDir, op);
+            DataProcessOperand op  = new DataProcessOperand(entries);
+            DataProcessInput   dpi = new DataProcessInput(processDir, op);
             didProcess = true;
             DataProcessOutput output = process.processRequest(request, dpi);
             if (output.hasOutput()) {
                 for (DataProcessOperand oper : output.getOperands()) {
-                  for (Entry outEntry : oper.getEntries()) {
-                    if (outEntry.getResource().isFile()) {
-                        files.add(outEntry.getResource().getTheFile());
+                    for (Entry outEntry : oper.getEntries()) {
+                        if (outEntry.getResource().isFile()) {
+                            files.add(outEntry.getResource().getTheFile());
+                        }
                     }
-                  }
                 }
             }
         }
 
         String processId = processDir.getName();
-        String processEntryId = getStorageManager().getProcessDirEntryId(processId);
+        String processEntryId =
+            getStorageManager().getProcessDirEntryId(processId);
 
-        if(false) {
-            String       entryUrl = 
-                HtmlUtils.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                              ARG_ENTRYID, processEntryId);
+        if (false) {
+            String entryUrl =
+                HtmlUtils.url(
+                    request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                    ARG_ENTRYID, processEntryId);
+
             return new Result(entryUrl);
         }
 

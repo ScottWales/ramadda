@@ -67,10 +67,10 @@ import java.util.List;
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int THUMBNAIL_WIDTH = 400;
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_THUMBNAIL_SCALEDOWN =
         "metadata.thumbnail.scaledown";
 

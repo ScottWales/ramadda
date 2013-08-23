@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,12 +27,6 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
-
-import org.ramadda.util.WikiUtil;
-
-
-import org.w3c.dom.*;
 
 
 import org.ramadda.sql.Clause;
@@ -41,6 +34,13 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.WikiUtil;
+
+
+import org.w3c.dom.*;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -262,12 +262,14 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param sb _more_
+     * @param parentEntry _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
-@Override
-    public void addToEntryForm(Request request, StringBuffer sb, Entry parentEntry, Entry entry)
+    @Override
+    public void addToEntryForm(Request request, StringBuffer sb,
+                               Entry parentEntry, Entry entry)
             throws Exception {
         super.addToEntryForm(request, sb, parentEntry, entry);
         Element root = getRoot(entry);
@@ -287,12 +289,12 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
             numberOfSlides = children.getLength();
 
             for (int i = 0; i < children.getLength(); i++) {
-                Element node  = (Element) children.item(i);
+                Element node = (Element) children.item(i);
 
 
-                String  title = XmlUtil.getAttribute(node, ATTR_SLIDE_TITLE,
+                String title = XmlUtil.getAttribute(node, ATTR_SLIDE_TITLE,
                                    "");
-                String  type = XmlUtil.getAttribute(node, ATTR_SLIDE_TYPE, "");
+                String type = XmlUtil.getAttribute(node, ATTR_SLIDE_TYPE, "");
                 boolean visible = XmlUtil.getAttribute(node,
                                       ATTR_SLIDE_VISIBLE, true);
                 String contents = XmlUtil.getGrandChildText(node,
@@ -300,7 +302,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
                 String note = XmlUtil.getGrandChildText(node, TAG_NOTE, "");
                 String slideBlock = getSlideEdit(request, entry, cnt, title,
                                         type, contents, note);
-                String hdr      = msg("Slide") + " #" + cnt + " " + title;
+                String hdr = msg("Slide") + " #" + cnt + " " + title;
                 String editForm =
                     HtmlUtils.insetLeft(makeCommands(cnt, true, visible)
                                         + HtmlUtils.br() + slideBlock, 30);
@@ -314,12 +316,12 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         //Add 3 new ones at first or always a new one at the end
 
         for (int i = 0; i < 2; i++) {
-            String title      = "";
-            String type       = TYPE_PLAIN;
-            String contents   = "";
+            String title    = "";
+            String type     = TYPE_PLAIN;
+            String contents = "";
             String slideBlock = getSlideEdit(request, entry, cnt, title,
                                              type, contents, "");
-            String hdr      = msg("New Slide");
+            String hdr = msg("New Slide");
             String editForm = HtmlUtils.insetLeft(makeCommands(cnt, false,
                                   true) + HtmlUtils.br() + slideBlock, 30);
             slides.append(HtmlUtils.hidden(ARG_SLIDE_EXTRA + cnt, "true"));
@@ -448,8 +450,8 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         super.initializeEntryFromForm(request, entry, parent, newEntry);
-        Document doc  = XmlUtil.makeDocument();
-        Element  root = XmlUtil.create(doc, TAG_SLIDESHOW, null,
+        Document doc = XmlUtil.makeDocument();
+        Element root = XmlUtil.create(doc, TAG_SLIDESHOW, null,
                                       new String[] {});
         int           cnt          = 0;
         StringBuffer  slides       = new StringBuffer();
@@ -592,9 +594,9 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
     public Result getSlideshow(Request request, Entry entry)
             throws Exception {
 
-        Element      root     = getRoot(entry);
-        StringBuffer sb       = new StringBuffer();
-        String       template =
+        Element      root = getRoot(entry);
+        StringBuffer sb   = new StringBuffer();
+        String template =
             getRepository().getResource(
                 "/org.ramadda.plugins.slideshow/htdocs/slideshow/template.html");
 

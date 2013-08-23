@@ -34,10 +34,10 @@ import java.util.zip.*;
  */
 public class FileWriter {
 
-    /** _more_          */
+    /** _more_ */
     private ZipOutputStream zos;
 
-    /** _more_          */
+    /** _more_ */
     private File directory;
 
     /**

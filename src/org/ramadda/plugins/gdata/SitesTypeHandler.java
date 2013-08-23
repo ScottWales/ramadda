@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -175,7 +174,8 @@ public class SitesTypeHandler extends GdataTypeHandler {
         }
         String      site        = mainEntry.getValue(2, "");
         String url = "https://sites.google.com/feeds/content/site/" + site;
-        SiteFeed    contentFeed = client.getFeed(new URL(url), SiteFeed.class);
+        SiteFeed    contentFeed = client.getFeed(new URL(url),
+                                      SiteFeed.class);
         List<Entry> entries     = new ArrayList<Entry>();
         for (BaseEntry entry : contentFeed.getEntries()) {
             entry = entry.getAdaptedEntry();
@@ -185,9 +185,9 @@ public class SitesTypeHandler extends GdataTypeHandler {
             } else {
                 parentId = getSynthId(mainEntry, parentId);
             }
-            String title    = entry.getTitle().getPlainText();
-            String entryId  = getEntryId(entry);
-            Entry  newEntry = new Entry(getSynthId(mainEntry, entryId), this,
+            String title   = entry.getTitle().getPlainText();
+            String entryId = getEntryId(entry);
+            Entry newEntry = new Entry(getSynthId(mainEntry, entryId), this,
                                        true);
             String blob = "";
             if (entry instanceof BaseContentEntry) {

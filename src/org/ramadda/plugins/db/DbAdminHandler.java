@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -51,52 +50,52 @@ import java.util.List;
 
 public class DbAdminHandler extends AdminHandlerImpl {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TABLES = "tables";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TABLE = "table";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_COLUMN = "column";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_PROPERTY = "property";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_HANDLER = "handler";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VALUES = "values";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VALUE = "value";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ROWS = "rows";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SIZE = "size";
 
 
@@ -130,19 +129,23 @@ public class DbAdminHandler extends AdminHandlerImpl {
             Element root     = XmlUtil.getRoot(pluginFile, getClass());
             List    children = XmlUtil.findChildren(root, TAG_TABLE);
             for (int i = 0; i < children.size(); i++) {
-                Element tableNode    = (Element) children.get(i);
-                String  tableId = XmlUtil.getAttribute(tableNode, ATTR_ID);
-                Class   handlerClass =
+                Element tableNode = (Element) children.get(i);
+                String  tableId   = XmlUtil.getAttribute(tableNode, ATTR_ID);
+                Class handlerClass =
                     Misc.findClass(XmlUtil.getAttribute(tableNode,
                         ATTR_HANDLER,
                         "org.ramadda.plugins.db.DbTypeHandler"));
                 Constructor ctor = Utils.findConstructor(handlerClass,
-                                                         new Class[] { this.getClass(),
+                                       new Class[] { this.getClass(),
                         Repository.class, String.class, tableNode.getClass(),
                         String.class });
-                if(ctor == null) {
-                    System.err.println ("failed to get ctor:" + handlerClass.getName() + " " + XmlUtil.toString(tableNode));
-                    throw new IllegalArgumentException ("DbAdminHandler: could not find constructor");
+                if (ctor == null) {
+                    System.err.println("failed to get ctor:"
+                                       + handlerClass.getName() + " "
+                                       + XmlUtil.toString(tableNode));
+
+                    throw new IllegalArgumentException(
+                        "DbAdminHandler: could not find constructor");
                 }
 
                 DbTypeHandler typeHandler =

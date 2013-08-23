@@ -134,12 +134,12 @@ public class JobManager extends RepositoryManager {
     /** _more_ */
     protected int currentJobs = 0;
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object,
                                                      JobInfo>(60 * 24 * 60
                                                          * 1000);
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
                                                          JobInfo>();
 

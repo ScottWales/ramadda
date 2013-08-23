@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -157,14 +156,16 @@ public class OrcaConverter extends ImportHandler {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param root _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-@Override
-    public Element getDOM(Request request,Element root) throws Exception {
+    @Override
+    public Element getDOM(Request request, Element root) throws Exception {
         if ( !root.getTagName().equals(TAG_REGISTRYOBJECTS)) {
             return null;
         }
@@ -223,7 +224,8 @@ public class OrcaConverter extends ImportHandler {
 
                 continue;
             }
-            String  key = XmlUtil.getGrandChildText(repositoryObject, TAG_KEY);
+            String  key = XmlUtil.getGrandChildText(repositoryObject,
+                              TAG_KEY);
             Element mainElement = null;
             String  partName    = "";
             String  entryType   = "";
@@ -285,9 +287,9 @@ public class OrcaConverter extends ImportHandler {
 
 
 
-            StringBuffer childTags    = new StringBuffer();
+            StringBuffer childTags = new StringBuffer();
 
-            List         descriptions = XmlUtil.findChildren(mainElement,
+            List descriptions = XmlUtil.findChildren(mainElement,
                                     TAG_DESCRIPTION);
             StringBuffer desc = new StringBuffer();
             for (int j = 0; j < descriptions.size(); j++) {
@@ -352,13 +354,13 @@ public class OrcaConverter extends ImportHandler {
                                    TAG_RELATEDOBJECT);
             for (int j = 0; j < related.getLength(); j++) {
                 Element relatedObject = (Element) related.item(j);
-                String  relatedKey = XmlUtil.getGrandChildText(relatedObject,
+                String relatedKey = XmlUtil.getGrandChildText(relatedObject,
                                         TAG_KEY);
                 Object relatedTo = keyMap.get(relatedKey);
                 if (relatedTo == null) {
                     continue;
                 }
-                String  type     = "";
+                String type = "";
                 Element relation = XmlUtil.findChild(relatedObject,
                                        TAG_RELATION);
                 if (relation != null) {
@@ -407,7 +409,7 @@ public class OrcaConverter extends ImportHandler {
             Element node = (Element) addresses.item(j);
             String  tag  = node.getTagName();
             if (tag.equals(TAG_ELECTRONIC)) {
-                String type  = XmlUtil.getAttribute(node, ATTR_TYPE);
+                String type = XmlUtil.getAttribute(node, ATTR_TYPE);
                 String value = XmlUtil.getGrandChildText(node,
                                    TAG_VALUE).trim();
                 if (type.equals("url")) {

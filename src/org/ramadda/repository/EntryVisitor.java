@@ -99,29 +99,29 @@ import java.util.regex.*;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public abstract class EntryVisitor implements Constants {
 
-    /** _more_          */
+    /** _more_ */
     private Repository repository;
 
-    /** _more_          */
+    /** _more_ */
     private Request request;
 
-    /** _more_          */
+    /** _more_ */
     private boolean recurse;
 
-    /** _more_          */
+    /** _more_ */
     private int totalCnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int processedCnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     private Object actionId;
 
-    /** _more_          */
+    /** _more_ */
     private StringBuffer sb = new StringBuffer();
 
 

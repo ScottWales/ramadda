@@ -72,7 +72,7 @@ import java.util.Properties;
  */
 public class ProcessFileTypeHandler extends LocalFileTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     private String processId = "test";
 
     /**

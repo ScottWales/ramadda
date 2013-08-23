@@ -110,7 +110,7 @@ public abstract class Harvester extends RepositoryManager {
     public static final String UNIT_DAY = "day";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_GENERATEMD5 = "generatemd5";
 
     /** _more_ */
@@ -207,7 +207,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     private boolean active = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean generateMd5 = false;
 
     /** _more_ */

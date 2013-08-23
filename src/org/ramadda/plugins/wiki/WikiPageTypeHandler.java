@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -28,6 +27,13 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
+
+import org.ramadda.sql.Clause;
+
+
+import org.ramadda.sql.SqlUtil;
+import org.ramadda.sql.SqlUtil;
+
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.WikiUtil;
@@ -35,12 +41,6 @@ import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
-
-import org.ramadda.sql.Clause;
-
-
-import org.ramadda.sql.SqlUtil;
-import org.ramadda.sql.SqlUtil;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
@@ -69,7 +69,7 @@ import java.util.Properties;
  */
 public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_WIKI_TEXTAREA = "wikipage.wikitext";
 
 
@@ -114,10 +114,22 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param group _more_
+     * @param subGroups _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
-        throws Exception {
-            return getRepository().getOutputHandler(
+            throws Exception {
+        return getRepository().getOutputHandler(
             WikiPageOutputHandler.OUTPUT_WIKI).outputEntry(
             request, request.getOutput(), group);
     }
@@ -257,7 +269,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
             Hashtable         ids             = new Hashtable();
             List<Association> newAssociations = new ArrayList<Association>();
             for (Enumeration keys = links.keys(); keys.hasMoreElements(); ) {
-                Entry       linkedEntry = (Entry) keys.nextElement();
+                Entry linkedEntry = (Entry) keys.nextElement();
                 Association tmp = new Association(getRepository().getGUID(),
                                       "", ASSOC_WIKILINK, entry.getId(),
                                       linkedEntry.getId());
@@ -299,12 +311,14 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @param request _more_
      * @param sb _more_
+     * @param parentEntry _more_
      * @param entry _more_
      *
      * @throws Exception _more_
      */
-@Override
-    public void addToEntryForm(Request request, StringBuffer sb, Entry parentEntry, Entry entry)
+    @Override
+    public void addToEntryForm(Request request, StringBuffer sb,
+                               Entry parentEntry, Entry entry)
             throws Exception {
 
         String size = HtmlUtils.SIZE_70;
@@ -383,7 +397,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
         String right = HtmlUtils.div(help.toString(),
                                      HtmlUtils.cssClass(CSS_CLASS_SMALLHELP));
-        right      = "";
+        right = "";
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
         sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
@@ -456,7 +470,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         List<WikiPageHistory> history = new ArrayList<WikiPageHistory>();
         int                   version = 1;
         while ((results = iter.getNext()) != null) {
-            int             col = 1;
+            int col = 1;
             WikiPageHistory wph = new WikiPageHistory(
                                       version++,
                                       getUserManager().findUser(

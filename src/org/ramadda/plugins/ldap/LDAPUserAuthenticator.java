@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -59,10 +58,10 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
     /** default value for admin role */
     private static final String DFLT_GROUP_ADMIN = "ramaddaadmin";
 
-    /** _more_          */
+    /** _more_ */
     private static final String PROP_GROUP_ATTR = "ldap.group.attribute";
 
-    /** _more_          */
+    /** _more_ */
     private static final String DFLT_GROUP_ATTR = "memberUid";
 
     /** property name */
@@ -144,6 +143,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         if (manager == null) {
             return false;
         }
+
         return manager.isEnabled();
     }
 
@@ -168,6 +168,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         LDAPManager.debug("Authenticate user: " + userId);
         if ( !isEnabled()) {
             LDAPManager.debug("LDAP not enabled");
+
             return null;
         }
         userCache.remove(userId);
@@ -235,7 +236,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
                                               DFLT_GROUP_ATTR);
 
             List<String> groups = getManager().getGroupsForUser(userId,
-                                                         groupMemberAttribute);
+                                      groupMemberAttribute);
             for (String group : groups) {
                 //Is this user a member of the ramadda admin group?
                 if (group.equals(adminGroup)) {
@@ -259,9 +260,11 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             return user;
         } catch (javax.naming.NameNotFoundException nnfe) {
             LDAPManager.log("Could not find user: " + userId + " " + nnfe);
+
             return null;
         } catch (Exception exc) {
             logError("LDAP Error: finding user", exc);
+
             return null;
         }
     }
@@ -282,6 +285,7 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
             return getManager().getAllGroups();
         } catch (Exception exception) {
             LDAPManager.log("LDAPUserAuthenticatorgetAllRoles:" + exception);
+
             return null;
         }
     }

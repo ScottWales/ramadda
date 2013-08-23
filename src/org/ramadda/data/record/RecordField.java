@@ -1,35 +1,36 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.record;
+
 
 import org.ramadda.util.Utils;
 
 import java.io.*;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-import java.text.SimpleDateFormat;
 
 
 /**
@@ -50,19 +51,35 @@ public class RecordField {
     /** _more_ */
     public static final String PROP_SEARCH_SUFFIX = "search.suffix";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_BITFIELDS = "bitfields";
 
 
+    /** _more_          */
     public static final String TYPE_NUMERIC = "numeric";
-    public static final String  TYPE_STRING= "string";
+
+    /** _more_          */
+    public static final String TYPE_STRING = "string";
+
+    /** _more_          */
     public static final String TYPE_DATE = "date";
+
+    /** _more_          */
     public static final String TYPE_INTEGER = "integer";
 
+    /** _more_          */
     private boolean isTypeNumeric = true;
+
+    /** _more_          */
     private boolean isTypeString = false;
+
+    /** _more_          */
     private boolean isTypeDate = false;
+
+    /** _more_          */
     private SimpleDateFormat dateFormat;
+
+    /** _more_          */
     private double roundingFactor = 0;
 
     /** _more_ */
@@ -98,20 +115,26 @@ public class RecordField {
     /** _more_ */
     private ValueGetter valueGetter;
 
-    /** _more_          */
+    /** _more_ */
     private boolean skip = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean synthetic = false;
 
+    /** _more_          */
     private double defaultDoubleValue = Double.NaN;
+
+    /** _more_          */
     private String defaultStringValue = null;
 
+    /** _more_          */
     private String headerPattern = null;
 
+    /** _more_          */
     private String type = TYPE_NUMERIC;
 
-    private double missingValue  =Double.NaN;
+    /** _more_          */
+    private double missingValue = Double.NaN;
 
 
     /**
@@ -206,6 +229,13 @@ public class RecordField {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param pw _more_
+     * @param name _more_
+     * @param value _more_
+     */
     private void attr(PrintWriter pw, String name, String value) {
         pw.print(name);
         pw.append("=\"");
@@ -228,17 +258,17 @@ public class RecordField {
             attr(pw, "unit", unit);
         }
         if (arity > 1) {
-            attr(pw, "size", ""+arity);
+            attr(pw, "size", "" + arity);
         }
-        if(isTypeString) {
+        if (isTypeString) {
             attr(pw, "type", TYPE_STRING);
-        }  else if(isTypeDate) {
+        } else if (isTypeDate) {
             attr(pw, "type", TYPE_DATE);
-        }  else {
+        } else {
             //Default is numeric
         }
 
-        if(Utils.stringDefined(label)) {
+        if (Utils.stringDefined(label)) {
             attr(pw, "label", label);
         }
 
@@ -378,6 +408,7 @@ public class RecordField {
         if ((v == null) || !v.equals("true")) {
             return false;
         }
+
         return true;
     }
 
@@ -400,6 +431,7 @@ public class RecordField {
         if (s == null) {
             return null;
         }
+
         return s.split(",");
     }
 
@@ -444,6 +476,7 @@ public class RecordField {
         if ((v == null) || !v.equals("true")) {
             return false;
         }
+
         return true;
     }
 
@@ -508,20 +541,20 @@ public class RecordField {
 
 
     /**
-Set the RoundingFactor property.
-
-@param value The new value for RoundingFactor
-    **/
-    public void setRoundingFactor (double value) {
+     * Set the RoundingFactor property.
+     *
+     * @param value The new value for RoundingFactor
+     */
+    public void setRoundingFactor(double value) {
         roundingFactor = value;
     }
 
     /**
-Get the RoundingFactor property.
-
-@return The RoundingFactor
-    **/
-    public double getRoundingFactor () {
+     * Get the RoundingFactor property.
+     *
+     * @return The RoundingFactor
+     */
+    public double getRoundingFactor() {
         return roundingFactor;
     }
 
@@ -563,147 +596,183 @@ Get the RoundingFactor property.
         return synthetic;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasDefaultValue() {
         return hasDefaultDoubleValue() || hasDefaultStringValue();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasDefaultDoubleValue() {
         return !Double.isNaN(defaultDoubleValue);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean hasDefaultStringValue() {
-        return defaultStringValue!=null;
+        return defaultStringValue != null;
     }
 
 
     /**
-       Set the DefaultValue property.
-
-       @param value The new value for DefaultValue
-    **/
-    public void setDefaultDoubleValue (double value) {
-	defaultDoubleValue = value;
+     *  Set the DefaultValue property.
+     *
+     *  @param value The new value for DefaultValue
+     */
+    public void setDefaultDoubleValue(double value) {
+        defaultDoubleValue = value;
     }
 
     /**
-       Get the DefaultValue property.
-
-       @return The DefaultValue
-    **/
-    public double getDefaultDoubleValue () {
-	return defaultDoubleValue;
+     *  Get the DefaultValue property.
+     *
+     *  @return The DefaultValue
+     */
+    public double getDefaultDoubleValue() {
+        return defaultDoubleValue;
     }
 
     /**
-       Set the DefaultStringValue property.
-
-       @param value The new value for DefaultStringValue
-    **/
-    public void setDefaultStringValue (String value) {
-	defaultStringValue = value;
+     *  Set the DefaultStringValue property.
+     *
+     *  @param value The new value for DefaultStringValue
+     */
+    public void setDefaultStringValue(String value) {
+        defaultStringValue = value;
     }
 
     /**
-       Get the DefaultStringValue property.
-
-       @return The DefaultStringValue
-    **/
-    public String getDefaultStringValue () {
-	return defaultStringValue;
+     *  Get the DefaultStringValue property.
+     *
+     *  @return The DefaultStringValue
+     */
+    public String getDefaultStringValue() {
+        return defaultStringValue;
     }
 
 
 
 
     /**
-       Set the Type property.
-
-       @param value The new value for Type
-    **/
-    public void setType (String value) {
-	type = value;
-        isTypeNumeric = value.equals(TYPE_NUMERIC) || value.equals(TYPE_INTEGER);
+     *  Set the Type property.
+     *
+     *  @param value The new value for Type
+     */
+    public void setType(String value) {
+        type = value;
+        isTypeNumeric = value.equals(TYPE_NUMERIC)
+                        || value.equals(TYPE_INTEGER);
         isTypeString = value.equals(TYPE_STRING);
-        isTypeDate = value.equals(TYPE_DATE);
+        isTypeDate   = value.equals(TYPE_DATE);
     }
 
     /**
-       Get the Type property.
-
-       @return The Type
-    **/
-    public String getType () {
-	return type;
+     *  Get the Type property.
+     *
+     *  @return The Type
+     */
+    public String getType() {
+        return type;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isTypeString() {
         return isTypeString;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isTypeInteger() {
         return (isTypeNumeric && type.equals(TYPE_INTEGER));
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isTypeNumeric() {
         return isTypeNumeric;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isTypeDate() {
         return isTypeDate;
     }
 
     /**
-       Set the DateFormat property.
-
-       @param value The new value for DateFormat
-    **/
-    public void setDateFormat (SimpleDateFormat value) {
-	dateFormat = value;
+     *  Set the DateFormat property.
+     *
+     *  @param value The new value for DateFormat
+     */
+    public void setDateFormat(SimpleDateFormat value) {
+        dateFormat = value;
     }
 
     /**
-       Get the DateFormat property.
-
-       @return The DateFormat
-    **/
-    public SimpleDateFormat getDateFormat () {
-	return dateFormat;
+     *  Get the DateFormat property.
+     *
+     *  @return The DateFormat
+     */
+    public SimpleDateFormat getDateFormat() {
+        return dateFormat;
     }
 
     /**
-       Set the MissingValue property.
-
-       @param value The new value for MissingValue
-    **/
-    public void setMissingValue (double value) {
-	missingValue = value;
+     *  Set the MissingValue property.
+     *
+     *  @param value The new value for MissingValue
+     */
+    public void setMissingValue(double value) {
+        missingValue = value;
     }
 
     /**
-       Get the MissingValue property.
-
-       @return The MissingValue
-    **/
-    public double getMissingValue () {
-	return missingValue;
+     *  Get the MissingValue property.
+     *
+     *  @return The MissingValue
+     */
+    public double getMissingValue() {
+        return missingValue;
     }
 
     /**
-       Set the HeaderPattern property.
-
-       @param value The new value for HeaderPattern
-    **/
-    public void setHeaderPattern (String value) {
-	headerPattern = value;
+     *  Set the HeaderPattern property.
+     *
+     *  @param value The new value for HeaderPattern
+     */
+    public void setHeaderPattern(String value) {
+        headerPattern = value;
     }
 
     /**
-       Get the HeaderPattern property.
-
-       @return The HeaderPattern
-    **/
-    public String getHeaderPattern () {
-	return headerPattern;
+     *  Get the HeaderPattern property.
+     *
+     *  @return The HeaderPattern
+     */
+    public String getHeaderPattern() {
+        return headerPattern;
     }
 
 

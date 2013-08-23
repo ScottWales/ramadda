@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -39,15 +38,24 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.ColorTable;
-import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.SelectionRectangle;
 
 import org.ramadda.util.TempDir;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.grid.*;
 
 import org.w3c.dom.*;
+
+
+import ucar.ma2.DataType;
+
+import ucar.nc2.Attribute;
+//import ucar.nc2.ft.point.writer.CFPointObWriter;
+//import ucar.nc2.ft.point.writer.PointObVar;
+import ucar.nc2.dt.point.CFPointObWriter;
+import ucar.nc2.dt.point.PointObVar;
 
 import ucar.unidata.data.gis.KmlUtil;
 
@@ -75,14 +83,6 @@ import java.util.List;
 import java.util.zip.*;
 
 
-import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
-//import ucar.nc2.ft.point.writer.CFPointObWriter;
-//import ucar.nc2.ft.point.writer.PointObVar;
-import ucar.nc2.dt.point.CFPointObWriter;
-import ucar.nc2.dt.point.PointObVar;
-
-
 /**
  */
 public class PointOutputHandler extends RecordOutputHandler {
@@ -103,16 +103,16 @@ public class PointOutputHandler extends RecordOutputHandler {
     public final OutputType OUTPUT_METADATA;
 
     /** output type */
-    public final  OutputType OUTPUT_POINTCOUNT;
+    public final OutputType OUTPUT_POINTCOUNT;
 
     /** output type */
-    public final  OutputType OUTPUT_CHART;
+    public final OutputType OUTPUT_CHART;
 
     /** output type */
-    public final  OutputType OUTPUT_FORM;
+    public final OutputType OUTPUT_FORM;
 
     /** output type */
-    public final  OutputType OUTPUT_TIMESERIES_IMAGE;
+    public final OutputType OUTPUT_TIMESERIES_IMAGE;
 
     /** output type */
     public OutputType OUTPUT_LAS;
@@ -163,13 +163,13 @@ public class PointOutputHandler extends RecordOutputHandler {
     public final OutputType OUTPUT_ASC;
 
     /** output type */
-    public final  OutputType OUTPUT_WAVEFORM;
+    public final OutputType OUTPUT_WAVEFORM;
 
     /** output type */
-    public final  OutputType OUTPUT_WAVEFORM_IMAGE;
+    public final OutputType OUTPUT_WAVEFORM_IMAGE;
 
     /** output type */
-    public final  OutputType OUTPUT_WAVEFORM_CSV;
+    public final OutputType OUTPUT_WAVEFORM_CSV;
 
 
     /**
@@ -181,136 +181,126 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public PointOutputHandler(Repository repository, Element element)
             throws Exception {
+
         super(repository, element);
         String category = getOutputCategory();
-        String base= getDomainBase();
+        String base     = getDomainBase();
 
-        OUTPUT_PRODUCT =
-            new OutputType("Results", base +".product", OutputType.TYPE_OTHER);
+        OUTPUT_PRODUCT = new OutputType("Results", base + ".product",
+                                        OutputType.TYPE_OTHER);
 
-        OUTPUT_RESULTS =
-            new OutputType("Results", base +".results", OutputType.TYPE_OTHER);
+        OUTPUT_RESULTS = new OutputType("Results", base + ".results",
+                                        OutputType.TYPE_OTHER);
 
-        OUTPUT_VIEW = new OutputType("View Data",
-                                     base +".view",
-                                     OutputType.TYPE_OTHER,
-                                     "", ICON_DATA,
+        OUTPUT_VIEW = new OutputType("View Data", base + ".view",
+                                     OutputType.TYPE_OTHER, "", ICON_DATA,
                                      category);
 
-        OUTPUT_METADATA =
-            new OutputType("Metadata ", base +".metadata",
-                           OutputType.TYPE_OTHER, "", ICON_METADATA,
-                           category);
+        OUTPUT_METADATA = new OutputType("Metadata ", base + ".metadata",
+                                         OutputType.TYPE_OTHER, "",
+                                         ICON_METADATA, category);
 
 
-        OUTPUT_GETPOINTINDEX =
-            new OutputType("Point index query", base +".getpointindex",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
+        OUTPUT_GETPOINTINDEX = new OutputType("Point index query",
+                base + ".getpointindex", OutputType.TYPE_OTHER, "",
+                ICON_DATA, category);
 
-        OUTPUT_GETLATLON =
-            new OutputType("Lat/Lon query", base +".getlatlon",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
+        OUTPUT_GETLATLON = new OutputType("Lat/Lon query",
+                                          base + ".getlatlon",
+                                          OutputType.TYPE_OTHER, "",
+                                          ICON_DATA, category);
 
 
 
-        OUTPUT_IMAGE = new OutputType("Image",
-                                      base +".image",
-                                      OutputType.TYPE_OTHER,
-                                      "png", ICON_IMAGE,
-                                      category);
+        OUTPUT_IMAGE = new OutputType("Image", base + ".image",
+                                      OutputType.TYPE_OTHER, "png",
+                                      ICON_IMAGE, category);
 
-        OUTPUT_BOUNDS =
-            new OutputType("Point Bounds", base +".bounds",
-                           OutputType.TYPE_OTHER);
+        OUTPUT_BOUNDS = new OutputType("Point Bounds", base + ".bounds",
+                                       OutputType.TYPE_OTHER);
 
-        OUTPUT_NC = new OutputType("NetCDF Point",
-                                   base +".nc",
-                                   OutputType.TYPE_OTHER,
-                                   "nc", ICON_DATA,
+        OUTPUT_NC = new OutputType("NetCDF Point", base + ".nc",
+                                   OutputType.TYPE_OTHER, "nc", ICON_DATA,
                                    category);
 
-        OUTPUT_HILLSHADE =
-        new OutputType("Hill Shade Image", base +".hillshade",
-                       OutputType.TYPE_OTHER, "png", ICON_IMAGE,
-                       category);
+        OUTPUT_HILLSHADE = new OutputType("Hill Shade Image",
+                                          base + ".hillshade",
+                                          OutputType.TYPE_OTHER, "png",
+                                          ICON_IMAGE, category);
 
-        OUTPUT_KMZ =
-        new OutputType("Google Earth", base +".kmz", OutputType.TYPE_OTHER,
-                       "kmz", ICON_KML, category);
+        OUTPUT_KMZ = new OutputType("Google Earth", base + ".kmz",
+                                    OutputType.TYPE_OTHER, "kmz", ICON_KML,
+                                    category);
 
-        OUTPUT_KML_TRACK =
-            new OutputType("Google Earth", base +".kml.track",
-                           OutputType.TYPE_OTHER, "kml", ICON_KML,
-                           category);
+        OUTPUT_KML_TRACK = new OutputType("Google Earth",
+                                          base + ".kml.track",
+                                          OutputType.TYPE_OTHER, "kml",
+                                          ICON_KML, category);
 
-        OUTPUT_SUBSET =
-            new OutputType("Native format", base +".subset",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
-
-
-        OUTPUT_KML =
-            new OutputType("Google Earth", base +".kml", OutputType.TYPE_OTHER,
-                           "kml", ICON_KML, category);
+        OUTPUT_SUBSET = new OutputType("Native format", base + ".subset",
+                                       OutputType.TYPE_OTHER, "", ICON_DATA,
+                                       category);
 
 
-        OUTPUT_LATLONALTBIN =
-            new OutputType("Binary - Lat/Lon/Alt", base +".latlonaltbin",
-                           OutputType.TYPE_OTHER, "llab", ICON_CSV,
-                           category);
-
-        OUTPUT_LATLONALTCSV =
-            new OutputType("CSV - Lat/Lon/Alt", base +".latlonaltcsv",
-                           OutputType.TYPE_OTHER, "csv", ICON_CSV,
-                           category);
-
-        OUTPUT_CSV =
-        new OutputType("CSV - all fields", base +".csv",
-                       OutputType.TYPE_OTHER, "csv", ICON_CSV,
-                       category);
+        OUTPUT_KML = new OutputType("Google Earth", base + ".kml",
+                                    OutputType.TYPE_OTHER, "kml", ICON_KML,
+                                    category);
 
 
-        OUTPUT_ASC =
-            new OutputType("ARC ASCII Grid", base +".asc", OutputType.TYPE_OTHER,
-                           "asc", ICON_DATA, category);
+        OUTPUT_LATLONALTBIN = new OutputType("Binary - Lat/Lon/Alt",
+                                             base + ".latlonaltbin",
+                                             OutputType.TYPE_OTHER, "llab",
+                                             ICON_CSV, category);
 
-        OUTPUT_POINTCOUNT =
-            new OutputType("Point Count", base +".count", OutputType.TYPE_OTHER);
+        OUTPUT_LATLONALTCSV = new OutputType("CSV - Lat/Lon/Alt",
+                                             base + ".latlonaltcsv",
+                                             OutputType.TYPE_OTHER, "csv",
+                                             ICON_CSV, category);
+
+        OUTPUT_CSV = new OutputType("CSV - all fields", base + ".csv",
+                                    OutputType.TYPE_OTHER, "csv", ICON_CSV,
+                                    category);
 
 
-        OUTPUT_CHART =
-            new OutputType("Chart ", base +".chart",
-                           OutputType.TYPE_OTHER, "", "/icons/chart.png", category);
+        OUTPUT_ASC = new OutputType("ARC ASCII Grid", base + ".asc",
+                                    OutputType.TYPE_OTHER, "asc", ICON_DATA,
+                                    category);
 
-        OUTPUT_FORM =
-            new OutputType("Subset and Products", base +".form",
-                           OutputType.TYPE_OTHER, "", ICON_TOOLS,
-                           category);
+        OUTPUT_POINTCOUNT = new OutputType("Point Count", base + ".count",
+                                           OutputType.TYPE_OTHER);
 
-        OUTPUT_TIMESERIES_IMAGE =
-            new OutputType("", base +".timeseriesimage",
-                           OutputType.TYPE_OTHER, "", ICON_IMAGE,
-                           category);
 
-        OUTPUT_WAVEFORM =
-            new OutputType("Waveform", base +".waveform",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
-        OUTPUT_WAVEFORM_IMAGE =
-            new OutputType("Waveform", base +".waveformimage",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
-        OUTPUT_WAVEFORM_CSV =
-            new OutputType("Waveform CSV", base +".waveformcsv",
-                           OutputType.TYPE_OTHER, "", ICON_DATA,
-                           category);
+        OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
+                                      OutputType.TYPE_OTHER, "",
+                                      "/icons/chart.png", category);
+
+        OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
+                                     OutputType.TYPE_OTHER, "", ICON_TOOLS,
+                                     category);
+
+        OUTPUT_TIMESERIES_IMAGE = new OutputType("",
+                base + ".timeseriesimage", OutputType.TYPE_OTHER, "",
+                ICON_IMAGE, category);
+
+        OUTPUT_WAVEFORM = new OutputType("Waveform", base + ".waveform",
+                                         OutputType.TYPE_OTHER, "",
+                                         ICON_DATA, category);
+        OUTPUT_WAVEFORM_IMAGE = new OutputType("Waveform",
+                base + ".waveformimage", OutputType.TYPE_OTHER, "",
+                ICON_DATA, category);
+        OUTPUT_WAVEFORM_CSV = new OutputType("Waveform CSV",
+                                             base + ".waveformcsv",
+                                             OutputType.TYPE_OTHER, "",
+                                             ICON_DATA, category);
+
 
 
 
     }
 
+    /**
+     * _more_
+     */
     protected void addDefaultOutputTypes() {
         //Add the output types
         addType(OUTPUT_RESULTS);
@@ -328,7 +318,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_ASC);
         addType(OUTPUT_CHART);
         addType(OUTPUT_FORM);
-        
+
 
         addType(OUTPUT_WAVEFORM);
         addType(OUTPUT_TIMESERIES_IMAGE);
@@ -341,14 +331,29 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDomainName() {
         return "Points";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getOutputCategory() {
         return OUTPUT_CATEGORY;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDomainBase() {
         return "points";
     }
@@ -416,16 +421,16 @@ public class PointOutputHandler extends RecordOutputHandler {
             throws Exception {
         long pointCount = 0;
         storeSession(request);
-        double             north     = request.get(ARG_AREA_NORTH, 90.0);
-        double             south     = request.get(ARG_AREA_SOUTH, -90.0);
-        double             east      = request.get(ARG_AREA_EAST, 180.0);
-        double             west      = request.get(ARG_AREA_WEST, -180.0);
+        double north = request.get(ARG_AREA_NORTH, 90.0);
+        double south = request.get(ARG_AREA_SOUTH, -90.0);
+        double east  = request.get(ARG_AREA_EAST, 180.0);
+        double west  = request.get(ARG_AREA_WEST, -180.0);
 
         Rectangle2D.Double queryRect = new Rectangle2D.Double(west, south,
                                            east - west, north - south);
         for (RecordEntry entry : subsetEntries) {
-            Rectangle2D.Double entryBounds  = entry.getEntry().getBounds();
-            Rectangle2D        intersection =
+            Rectangle2D.Double entryBounds = entry.getEntry().getBounds();
+            Rectangle2D intersection =
                 entryBounds.createIntersection(queryRect);
             double percent =
                 (intersection.getWidth() * intersection.getHeight())
@@ -452,27 +457,32 @@ public class PointOutputHandler extends RecordOutputHandler {
             Request request, List<? extends RecordEntry> recordEntries)
             throws Exception {
 
-        List<RecordEntry> goodEntries  = super.doSubsetEntries(request, recordEntries);
+        List<RecordEntry> goodEntries = super.doSubsetEntries(request,
+                                            recordEntries);
 
-        Date[] dateRange = request.getDateRange(ARG_FROMDATE,ARG_TODATE,
-                                                 "", new Date());
+        Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, "",
+                               new Date());
 
-        if(dateRange[0]!=null || dateRange[1]!=null) {
-            System.err.println ("have date range");
+        if ((dateRange[0] != null) || (dateRange[1] != null)) {
+            System.err.println("have date range");
             List<RecordEntry> timeEntries = new ArrayList<RecordEntry>();
             for (RecordEntry recordEntry : goodEntries) {
                 Entry entry = recordEntry.getEntry();
 
-                if(dateRange[0]!=null) {
-                    if(entry.getEndDate() <dateRange[0].getTime()) {
-                        System.err.println ("Skipping " + entry + " because of time range");
+                if (dateRange[0] != null) {
+                    if (entry.getEndDate() < dateRange[0].getTime()) {
+                        System.err.println("Skipping " + entry
+                                           + " because of time range");
+
                         continue;
                     }
                 }
 
-                if(dateRange[1]!=null) {
-                    if(entry.getStartDate() >dateRange[1].getTime()) {
-                        System.err.println ("Skipping " + entry + " because of time range");
+                if (dateRange[1] != null) {
+                    if (entry.getStartDate() > dateRange[1].getTime()) {
+                        System.err.println("Skipping " + entry
+                                           + " because of time range");
+
                         continue;
                     }
                 }
@@ -488,9 +498,9 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
         storeSession(request);
         theBbox.normalizeLongitude();
-        SelectionRectangle[] bboxes = theBbox.splitOnDateLine();
+        SelectionRectangle[] bboxes       = theBbox.splitOnDateLine();
 
-        List<RecordEntry> spaceEntries = new ArrayList<RecordEntry>();
+        List<RecordEntry>    spaceEntries = new ArrayList<RecordEntry>();
         for (RecordEntry recordEntry : goodEntries) {
             Entry entry = recordEntry.getEntry();
 
@@ -534,6 +544,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param entry the entry
      * @param asynch Is this an asynchronous request
      * @param pointEntries List of entries to process
+     * @param recordEntries _more_
      * @param jobId The job ID
      *
      * @return the result
@@ -542,10 +553,12 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public Result processEntries(Request request, Entry entry,
                                  boolean asynch,
-                                 List<? extends RecordEntry> recordEntries, Object jobId)
+                                 List<? extends RecordEntry> recordEntries,
+                                 Object jobId)
             throws Exception {
 
-        List<PointEntry> pointEntries  = PointEntry.toPointEntryList(recordEntries);
+        List<PointEntry> pointEntries =
+            PointEntry.toPointEntryList(recordEntries);
         if ( !getRecordJobManager().canAcceptJob()) {
             return makeRequestErrorResult(request,
                                           "Too many processing requests");
@@ -563,14 +576,14 @@ public class PointOutputHandler extends RecordOutputHandler {
         //If more than one format is selected and this is a synchronous call then raise an error
         if ((formats.size() > 1) && !asynch) {
             return makeRequestErrorResult(
-                                   request,
+                request,
                 "Cannot have more than one product format selected when doing an aysnchronous request");
         }
 
 
-        List<RecordVisitor> visitors    = new ArrayList<RecordVisitor>();
-        Result              result      = null;
-        JobInfo             info        = null;
+        List<RecordVisitor> visitors = new ArrayList<RecordVisitor>();
+        Result              result   = null;
+        JobInfo             info     = null;
         if (jobId != null) {
             info = getRecordJobManager().getJobInfo(jobId);
         }
@@ -580,10 +593,9 @@ public class PointOutputHandler extends RecordOutputHandler {
         final JobInfo theJobInfo = info;
 
         try {
-            result = createVisitors(request, entry,
-                                    asynch, pointEntries, theJobInfo,  formats,
-                                    visitors);
-            if(result!=null) {
+            result = createVisitors(request, entry, asynch, pointEntries,
+                                    theJobInfo, formats, visitors);
+            if (result != null) {
                 return result;
             }
 
@@ -600,7 +612,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 RecordVisitorGroup groupVisitor =
                     new RecordVisitorGroup(visitors) {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) throws Exception {
+                            VisitInfo visitInfo, Record record)
+                            throws Exception {
                         if ( !super.visitRecord(file, visitInfo, record)) {
                             return false;
                         }
@@ -626,13 +639,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                 info.addStatusItem("Point reading complete");
                 info.setNumPoints(groupVisitor.getCount());
                 info.setCurrentStatus("Processing products...");
-                for(RecordVisitor visitor: visitors) {
-                    if(visitor instanceof GridVisitor) {
+                for (RecordVisitor visitor : visitors) {
+                    if (visitor instanceof GridVisitor) {
                         GridVisitor gridVisitor = (GridVisitor) visitor;
                         gridVisitor.finishedWithAllFiles();
                         info.addStatusItem("Generating gridded products");
-                        outputEntryGrid(request, entry, gridVisitor.getGrid(),
-                                        formats, jobId);
+                        outputEntryGrid(request, entry,
+                                        gridVisitor.getGrid(), formats,
+                                        jobId);
                         memoryCheck("POINT: memory after grid:");
                     }
                 }
@@ -646,12 +660,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                 return new Result(XmlUtil.tag(TAG_RESPONSE,
                         XmlUtil.attr(ATTR_CODE, CODE_OK), "OK"), MIME_XML);
             }
+
             return getDummyResult();
         } catch (Exception exc) {
             try {
                 getRecordJobManager().setError(info, exc.toString());
             } catch (Exception noop) {}
             getLogManager().logError("processing point request", exc);
+
             return makeRequestErrorResult(request, exc.getMessage());
         }
     }
@@ -679,18 +695,17 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
-            || request.getString(ARG_PRODUCT,
-                                 "").equals(OUTPUT_POINTCOUNT.getId());
+                                  || request.getString(ARG_PRODUCT,
+                                      "").equals(OUTPUT_POINTCOUNT.getId());
 
 
-        if(doingPointCount) {
+        if (doingPointCount) {
             List<PointEntry> pointEntries = new ArrayList<PointEntry>();
             pointEntries.add((PointEntry) doMakeEntry(request, entry));
-            long pointCount = getApproximatePointCount(request,
-                                                       pointEntries);
+            long pointCount = getApproximatePointCount(request, pointEntries);
 
             return makePointCountResult(request, pointCount);
-           
+
         }
 
 
@@ -710,45 +725,46 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (outputType.equals(OUTPUT_VIEW)) {
             return getFormHandler().outputEntryView(request, outputType,
-                                                    doMakeEntry(request, entry));
+                    doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_METADATA)) {
             return getFormHandler().outputEntryMetadata(request, outputType,
-                                                        doMakeEntry(request, entry));
+                    doMakeEntry(request, entry));
         }
 
         if (request.defined(ARG_GETDATA)) {
             if ( !request.defined(ARG_PRODUCT)) {
                 return getPointFormHandler().outputEntryForm(
-                                                             request, entry,
-                                                             new StringBuffer(
-                                                                              getPageHandler().showDialogError(
-                                                                                                              "No products selected")));
+                    request, entry,
+                    new StringBuffer(
+                        getPageHandler().showDialogError(
+                            "No products selected")));
             }
         }
 
         if (outputType.equals(OUTPUT_CHART)) {
-            return getPointFormHandler().outputEntryMap(request, outputType, (PointEntry) doMakeEntry(request, entry));
+            return getPointFormHandler().outputEntryMap(request, outputType,
+                    (PointEntry) doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_WAVEFORM)) {
             return getPointFormHandler().outputEntryWaveform(request,
-                                                             outputType, (PointEntry) doMakeEntry(request, entry));
+                    outputType, (PointEntry) doMakeEntry(request, entry));
         }
         if (outputType.equals(OUTPUT_WAVEFORM_IMAGE)) {
             return getPointFormHandler().outputEntryWaveformImage(request,
-                                                                  outputType, (PointEntry) doMakeEntry(request, entry));
+                    outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_WAVEFORM_CSV)) {
             return getPointFormHandler().outputEntryWaveformCsv(request,
-                                                                outputType, (PointEntry) doMakeEntry(request, entry));
+                    outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_TIMESERIES_IMAGE)) {
             return getPointFormHandler().outputEntryTimeSeriesImage(request,
-                                                                    outputType, (PointEntry) doMakeEntry(request, entry));
+                    outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
 
@@ -766,22 +782,32 @@ public class PointOutputHandler extends RecordOutputHandler {
                 StringBuffer sb = new StringBuffer();
                 if ( !outputType.equals(OUTPUT_FORM)) {
                     sb.append(
-                              getPageHandler().showDialogError(
-                                                              "Unknown output type:" + outputType));
+                        getPageHandler().showDialogError(
+                            "Unknown output type:" + outputType));
                 }
 
                 return getPointFormHandler().outputEntryForm(request, entry);
             }
+
             return result;
         }
+
         return getRecordJobManager().handleAsynchRequest(request, entry,
-                                                        outputType, pointEntries);
+                outputType, pointEntries);
 
         //        return null;
     }
 
 
-    private Result  makePointCountResult(Request request, long pointCount) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param pointCount _more_
+     *
+     * @return _more_
+     */
+    private Result makePointCountResult(Request request, long pointCount) {
         if (request.responseInXml()) {
             return makeRequestOKResult(request,
                                        "<pointcount>" + pointCount
@@ -790,6 +816,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (request.responseInText()) {
             return makeRequestOKResult(request, "" + pointCount);
         }
+
         return makeRequestOKResult(request,
                                    "Estimated point count:" + pointCount);
     }
@@ -822,8 +849,10 @@ public class PointOutputHandler extends RecordOutputHandler {
                               final List<Entry> subGroups,
                               final List<Entry> entries)
             throws Exception {
-        Result parentResult  = super.outputGroup(request, outputType, group, subGroups, entries);
-        if(parentResult!=null) {
+
+        Result parentResult = super.outputGroup(request, outputType, group,
+                                  subGroups, entries);
+        if (parentResult != null) {
             return parentResult;
         }
 
@@ -833,37 +862,37 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         boolean doingPointCount = request.get(ARG_POINTCOUNT, false)
-            || request.getString(ARG_PRODUCT,
-                                 "").equals(OUTPUT_POINTCOUNT.getId());
+                                  || request.getString(ARG_PRODUCT,
+                                      "").equals(OUTPUT_POINTCOUNT.getId());
         //If its a getdata request then check if a product type (e.g., csv) has been selected
         if ( !doingPointCount && request.defined(ARG_GETDATA)) {
             if ( !request.defined(ARG_PRODUCT)) {
                 return getPointFormHandler().outputGroupForm(
-                                                             request, group, subGroups, entries,
-                                                             new StringBuffer(
-                                                                              getPageHandler().showDialogError(
-                                                                                                              "No products selected")));
+                    request, group, subGroups, entries,
+                    new StringBuffer(
+                        getPageHandler().showDialogError(
+                            "No products selected")));
             }
         }
 
 
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputGroupForm(request, group,
-                                                         subGroups, entries, new StringBuffer());
+                    subGroups, entries, new StringBuffer());
         }
 
 
         final List<PointEntry> pointEntries =
-            PointEntry.toPointEntryList(doSubsetEntries(request, makeRecordEntries(request, entries, true)));
+            PointEntry.toPointEntryList(doSubsetEntries(request,
+                makeRecordEntries(request, entries, true)));
 
         boolean asynch = request.get(ARG_ASYNCH, false);
         if ( !doingPointCount && (pointEntries.size() == 0) && asynch) {
             return makeRequestErrorResult(
-                                          request, "No entries found that matched the criteria");
+                request, "No entries found that matched the criteria");
         }
 
-        long pointCount = getApproximatePointCount(request,
-                                                   pointEntries);
+        long pointCount = getApproximatePointCount(request, pointEntries);
 
         if (doingPointCount) {
             return makePointCountResult(request, pointCount);
@@ -886,15 +915,15 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (tooManyPoints) {
             if (request.responseInXml()) {
                 return makeRequestErrorResult(request,
-                                              "Too many points selected:" + pointCount);
+                        "Too many points selected:" + pointCount);
             }
             StringBuffer sb = new StringBuffer(
-                                               getPageHandler().showDialogError(
-                                                                               "Too many points selected: "
-                                                                               + pointCount));
+                                  getPageHandler().showDialogError(
+                                      "Too many points selected: "
+                                      + pointCount));
 
             return getPointFormHandler().outputGroupForm(request, group,
-                                                         subGroups, entries, sb);
+                    subGroups, entries, sb);
         }
 
 
@@ -910,12 +939,12 @@ public class PointOutputHandler extends RecordOutputHandler {
             StringBuffer sb = new StringBuffer();
             if ( !outputType.equals(OUTPUT_FORM)) {
                 sb.append(
-                          getPageHandler().showDialogError(
-                                                          "Unknown output type:" + outputType));
+                    getPageHandler().showDialogError(
+                        "Unknown output type:" + outputType));
             }
 
             return getPointFormHandler().outputGroupForm(request, group,
-                                                         subGroups, entries, sb);
+                    subGroups, entries, sb);
         }
 
         if ( !request.defined(ARG_PRODUCT)) {
@@ -924,78 +953,94 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         return getRecordJobManager().handleAsynchRequest(request, group,
-                                                        outputType, pointEntries);
+                outputType, pointEntries);
+
 
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param asynch _more_
+     * @param pointEntries _more_
+     * @param jobInfo _more_
+     * @param formats _more_
+     * @param visitors _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result createVisitors(Request request, Entry entry,
                                  boolean asynch,
-                                 List<? extends PointEntry> pointEntries, JobInfo jobInfo,
-                                 HashSet<String> formats,
+                                 List<? extends PointEntry> pointEntries,
+                                 JobInfo jobInfo, HashSet<String> formats,
                                  List<RecordVisitor> visitors)
-        throws Exception {
+            throws Exception {
 
-        Result              result      = null;
-            //Make a RecordVisitor for each point product type
-            if (formats.contains(OUTPUT_CSV.getId())) {
-                visitors.add(makeCsvVisitor(request, entry, pointEntries,
-                                            jobInfo.getJobId()));
-            }
-            if (formats.contains(OUTPUT_NC.getId())) {
-                visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
-                                               jobInfo.getJobId()));
-            }
-            if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
-                visitors.add(makeLatLonAltCsvVisitor(request, entry,
-                                                     pointEntries, jobInfo.getJobId()));
-            }
-            if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
-                visitors.add(makeLatLonAltBinVisitor(request, entry,
-                                                     pointEntries, jobInfo.getJobId(), null, true));
-            }
-
-            if (formats.contains(OUTPUT_NC.getId())) {
-                visitors.add(makeNcVisitor(request, entry, pointEntries,
+        Result result = null;
+        //Make a RecordVisitor for each point product type
+        if (formats.contains(OUTPUT_CSV.getId())) {
+            visitors.add(makeCsvVisitor(request, entry, pointEntries,
+                                        jobInfo.getJobId()));
+        }
+        if (formats.contains(OUTPUT_NC.getId())) {
+            visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
+        }
+        if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
+            visitors.add(makeLatLonAltCsvVisitor(request, entry,
+                    pointEntries, jobInfo.getJobId()));
+        }
+        if (formats.contains(OUTPUT_LATLONALTBIN.getId())) {
+            visitors.add(makeLatLonAltBinVisitor(request, entry,
+                    pointEntries, jobInfo.getJobId(), null, true));
+        }
 
+        if (formats.contains(OUTPUT_NC.getId())) {
+            visitors.add(makeNcVisitor(request, entry, pointEntries,
+                                       jobInfo.getJobId()));
+
+        }
+
+        if (formats.contains(OUTPUT_NC.getId())) {
+            //            result = outputEntryNc(request, entry,  pointEntries,
+            //                                    jobInfo.getJobId());
+        }
+
+        //Tracks just do them
+        if (formats.contains(OUTPUT_KML_TRACK.getId())) {
+            result = outputEntryKmlTrack(request, entry, pointEntries,
+                                         jobInfo.getJobId());
+        }
+
+        //TODO: Subset we just do directly
+        //We need to do a visitor based approach
+        if (formats.contains(OUTPUT_SUBSET.getId())) {
+            //This is the subset to the original format
+            jobInfo.setCurrentStatus("Creating Point file...");
+            result = outputEntrySubset(request, entry, pointEntries, jobInfo);
+            jobInfo.addStatusItem("Point file created");
+            if ( !jobOK(jobInfo.getJobId())) {
+                return result;
             }
-
-            if (formats.contains(OUTPUT_NC.getId())) {
-                //            result = outputEntryNc(request, entry,  pointEntries,
-                //                                    jobInfo.getJobId());
-            }
-
-            //Tracks just do them
-            if (formats.contains(OUTPUT_KML_TRACK.getId())) {
-                result = outputEntryKmlTrack(request, entry, pointEntries,
-                                             jobInfo.getJobId());
-            }
-
-            //TODO: Subset we just do directly
-            //We need to do a visitor based approach
-            if (formats.contains(OUTPUT_SUBSET.getId())) {
-                //This is the subset to the original format
-                jobInfo.setCurrentStatus("Creating Point file...");
-                result = outputEntrySubset(request, entry, pointEntries,
-                                           jobInfo);
-                jobInfo.addStatusItem("Point file created");
-                if ( !jobOK(jobInfo.getJobId())) {
-                    return result;
-                }
-            }
+        }
 
 
-            //Check if we need to make a grid
-            if (formats.contains(OUTPUT_ASC.getId())
+        //Check if we need to make a grid
+        if (formats.contains(OUTPUT_ASC.getId())
                 || formats.contains(OUTPUT_IMAGE.getId())
                 || formats.contains(OUTPUT_KMZ.getId())
                 || formats.contains(OUTPUT_HILLSHADE.getId())) {
-                visitors.add(makeGridVisitor(request, pointEntries,
-                                             getBounds(request, pointEntries)));
-            }
-            return null;
+            visitors.add(makeGridVisitor(request, pointEntries,
+                                         getBounds(request, pointEntries)));
         }
+
+        return null;
+    }
 
 
 
@@ -1011,16 +1056,15 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception on badness
      */
-    public RecordVisitor makeCsvVisitor(final Request request,
-                                        final Entry mainEntry,
-                                        List<? extends PointEntry> pointEntries,
-                                        final Object jobId)
+    public RecordVisitor makeCsvVisitor(
+            final Request request, final Entry mainEntry,
+            List<? extends PointEntry> pointEntries, final Object jobId)
             throws Exception {
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
                                     mainEntry, ".csv") {
             private CsvVisitor csvVisitor = null;
-            int                cnt = 0;
+            int                cnt        = 0;
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record)
                     throws Exception {
@@ -1028,13 +1072,15 @@ public class PointOutputHandler extends RecordOutputHandler {
                     //Set the georeference flag
                     if (request.get(ARG_GEOREFERENCE, false)) {
                         visitInfo.putProperty("georeference",
-                                              new Boolean(true));
+                                new Boolean(true));
                     }
-                    String url =  request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
-                                                                     ARG_ENTRYID, mainEntry.getId()));
+                    String url = request.getAbsoluteUrl(
+                                     request.url(
+                                         repository.URL_ENTRY_SHOW,
+                                         ARG_ENTRYID, mainEntry.getId()));
                     visitInfo.putProperty(CsvVisitor.PROP_SOURCE, url);
                     csvVisitor = new CsvVisitor(getThePrintWriter(),
-                                                getFields(request, record.getFields()));
+                            getFields(request, record.getFields()));
                 }
                 if ( !jobOK(jobId)) {
                     return false;
@@ -1049,22 +1095,36 @@ public class PointOutputHandler extends RecordOutputHandler {
                         csvVisitor.visitRecord(file, visitInfo, record);
                     } catch (Exception exc) {
                         System.err.println("ERROR:" + exc);
+
                         throw exc;
                     }
                 }
+
                 return true;
             }
         };
+
         return visitor;
     }
 
 
-    public RecordVisitor makeNetcdfVisitor(final Request request,
-                                        Entry mainEntry,
-                                        List<? extends PointEntry> pointEntries,
-                                        final Object jobId)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param pointEntries _more_
+     * @param jobId _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public RecordVisitor makeNetcdfVisitor(
+            final Request request, Entry mainEntry,
+            List<? extends PointEntry> pointEntries, final Object jobId)
             throws Exception {
-        return  new NetcdfVisitor(this, request, jobId, mainEntry);
+        return new NetcdfVisitor(this, request, jobId, mainEntry);
     }
 
 
@@ -1123,6 +1183,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             System.err.println("POINT: bad grid neighborhood size: "
                                + llg.getCellIndexDelta());
             System.err.println("POINT: llg: " + llg);
+
             throw new IllegalArgumentException("bad grid neighborhood size: "
                     + llg.getCellIndexDelta());
         }
@@ -1142,6 +1203,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param pointEntries entries to process
      * @param jobId The job ID
      * @param inputDos _more_
+     * @param doDouble _more_
      *
      * @return the visitor
      *
@@ -1149,17 +1211,18 @@ public class PointOutputHandler extends RecordOutputHandler {
      */
     public RecordVisitor makeLatLonAltBinVisitor(Request request,
             Entry mainEntry, List<? extends PointEntry> pointEntries,
-                                                 final Object jobId, final DataOutputStream inputDos, final boolean doDouble)
+            final Object jobId, final DataOutputStream inputDos,
+            final boolean doDouble)
             throws Exception {
 
-        final int[]cnt ={0};
+        final int[]   cnt     = { 0 };
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
             @Override
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record) {
                 try {
-                    if (!jobOK(jobId)) {
+                    if ( !jobOK(jobId)) {
                         return false;
                     }
                     GeoRecord geoRecord = (GeoRecord) record;
@@ -1172,14 +1235,14 @@ public class PointOutputHandler extends RecordOutputHandler {
                         //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
                         //                        }
                         //FIX
-                        if(doDouble) {
+                        if (doDouble) {
                             dos.writeDouble(geoRecord.getLatitude());
                             dos.writeDouble(geoRecord.getLongitude());
                             dos.writeDouble(geoRecord.getAltitude());
                         } else {
-                            dos.writeFloat((float)geoRecord.getLatitude());
-                            dos.writeFloat((float)geoRecord.getLongitude());
-                            dos.writeFloat((float)geoRecord.getAltitude());
+                            dos.writeFloat((float) geoRecord.getLatitude());
+                            dos.writeFloat((float) geoRecord.getLongitude());
+                            dos.writeFloat((float) geoRecord.getAltitude());
                         }
                     }
 
@@ -1189,27 +1252,42 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
             }
             public String toString() {
-                 return "LatLonAltBin visitor";
-           }
+                return "LatLonAltBin visitor";
+            }
         };
 
         return visitor;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param pointEntries _more_
+     * @param jobId _more_
+     * @param inputDos _more_
+     * @param doDouble _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public RecordVisitor makeLatLonBinVisitor(Request request,
             Entry mainEntry, List<? extends PointEntry> pointEntries,
-                                                 final Object jobId, final DataOutputStream inputDos, final boolean doDouble)
+            final Object jobId, final DataOutputStream inputDos,
+            final boolean doDouble)
             throws Exception {
 
-        final int[]cnt ={0};
+        final int[]   cnt     = { 0 };
 
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
             @Override
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record) {
                 try {
-                    if (!jobOK(jobId)) {
+                    if ( !jobOK(jobId)) {
                         return false;
                     }
                     GeoRecord geoRecord = (GeoRecord) record;
@@ -1222,12 +1300,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                         //                            System.err.println("double:" + geoRecord.getLatitude() + " float:" + ((float)geoRecord.getLatitude()));
                         //                        }
                         //FIX
-                        if(doDouble) {
+                        if (doDouble) {
                             dos.writeDouble(geoRecord.getLatitude());
                             dos.writeDouble(geoRecord.getLongitude());
                         } else {
-                            dos.writeFloat((float)geoRecord.getLatitude());
-                            dos.writeFloat((float)geoRecord.getLongitude());
+                            dos.writeFloat((float) geoRecord.getLatitude());
+                            dos.writeFloat((float) geoRecord.getLongitude());
                         }
                     }
 
@@ -1237,8 +1315,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
             }
             public String toString() {
-                 return "LatLonAltBin visitor";
-           }
+                return "LatLonAltBin visitor";
+            }
         };
 
         return visitor;
@@ -1332,9 +1410,9 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception On badness
      */
-    public RecordVisitor makeNcVisitor(Request request, Entry mainEntry,
-                                       List<?extends PointEntry> pointEntries,
-                                       final Object jobId)
+    public RecordVisitor makeNcVisitor(
+            Request request, Entry mainEntry,
+            List<? extends PointEntry> pointEntries, final Object jobId)
             throws Exception {
 
         final OutputStream outputStream = getOutputStream(request, jobId,
@@ -1498,7 +1576,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 IOUtil.close(os);
                 IOUtil.close(imageInputStream);
                 if (doKmz) {
-                    String  imageFileName = imageSuffix;
+                    String imageFileName = imageSuffix;
                     Element groundOverlay = KmlUtil.groundOverlay(folder,
                                                 imageLabel, desc,
                                                 imageFileName,
@@ -1542,7 +1620,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 IOUtil.close(imageInputStream);
 
                 if (doKmz) {
-                    String  imageFileName = "hillshade" + imageSuffix;
+                    String imageFileName = "hillshade" + imageSuffix;
                     Element groundOverlay = KmlUtil.groundOverlay(folder,
                                                 "Hill shaded  image "
                                                 + imageLabel, desc,
@@ -1756,7 +1834,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                       List<? extends PointEntry> entries,
                                       Object jobId)
             throws Exception {
-        Element root      = KmlUtil.kml(mainEntry.getName() + " Tracks");
+        Element root = KmlUtil.kml(mainEntry.getName() + " Tracks");
         Element topFolder = KmlUtil.folder(root,
                                            mainEntry.getName() + " Tracks",
                                            false);
@@ -1896,7 +1974,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     public Result outputEntryGetLatLon(Request request, PointEntry pointEntry)
             throws Exception {
         long numRecords = pointEntry.getNumRecords();
-        int  index      = (int) Math.min(numRecords - 1,
+        int index = (int) Math.min(numRecords - 1,
                                    request.get(ARG_POINTINDEX, 0));
         //Use the extra short binary file
         PointRecord record =
@@ -1910,23 +1988,32 @@ public class PointOutputHandler extends RecordOutputHandler {
         return result;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param services _more_
+     */
     public void getServices(Request request, Entry entry,
                             List<Service> services) {
         super.getServices(request, entry, services);
-        if(!canHandleEntry(entry)) return;
+        if ( !canHandleEntry(entry)) {
+            return;
+        }
         String url;
         String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
                           + entry.getEast() + "," + entry.getNorth();
 
         String lasProduct = null;
-        if(OUTPUT_LAS!=null)lasProduct = OUTPUT_LAS.toString();
+        if (OUTPUT_LAS != null) {
+            lasProduct = OUTPUT_LAS.toString();
+        }
         String[][] values = {
-            { OUTPUT_LATLONALTCSV.toString(),
-              "Lat/Lon/Alt CSV", ".csv", ICON_POINTS },
-            { lasProduct, "LAS 1.2", ".las",
-              ICON_POINTS },
-            { OUTPUT_KMZ.toString(), ".kmz",
-              "Google Earth KMZ", getIconUrl(request, ICON_KML) }
+            { OUTPUT_LATLONALTCSV.toString(), "Lat/Lon/Alt CSV", ".csv",
+              ICON_POINTS }, { lasProduct, "LAS 1.2", ".las", ICON_POINTS },
+            { OUTPUT_KMZ.toString(), ".kmz", "Google Earth KMZ",
+              getIconUrl(request, ICON_KML) }
         };
 
 
@@ -1934,10 +2021,12 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         for (String[] tuple : values) {
             String product = tuple[0];
-            if(product == null) continue;
-            String name    = tuple[1];
-            String suffix  = tuple[2];
-            String icon    = tuple[3];
+            if (product == null) {
+                continue;
+            }
+            String name   = tuple[1];
+            String suffix = tuple[2];
+            String icon   = tuple[3];
             url = HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
                                 + entry.getName() + suffix, new String[] {
                 ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
@@ -2062,20 +2151,31 @@ public class PointOutputHandler extends RecordOutputHandler {
         return request.get(ARG_RECORD_SKIPZ, dflt);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param recordFile _more_
+     * @param filters _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void getFilters(Request request, Entry entry,
-                           RecordFile recordFile, List<RecordFilter> filters) throws Exception  {
+                           RecordFile recordFile, List<RecordFilter> filters)
+            throws Exception {
         super.getFilters(request, entry, recordFile, filters);
         //      filters.add(new AltitudeFilter(0, Double.NaN));
 
 
-         Date[] dateRange = request.getDateRange(ARG_FROMDATE,ARG_TODATE,
-                                                 "", new Date());
+        Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE, "",
+                               new Date());
 
-         if(dateRange[0]!=null || dateRange[1]!=null) {
-             System.err.println ("date:" + dateRange[0] + " " + dateRange[1]);
-             filters.add(new TimeFilter(dateRange[0],dateRange[1]));
-         }
+        if ((dateRange[0] != null) || (dateRange[1] != null)) {
+            System.err.println("date:" + dateRange[0] + " " + dateRange[1]);
+            filters.add(new TimeFilter(dateRange[0], dateRange[1]));
+        }
 
 
         SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
@@ -2083,8 +2183,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             bbox.normalizeLongitude();
             //If the request crosses the dateline then split it into to and make an OR filter
             if (bbox.allDefined() && bbox.crossesDateLine()) {
-                SelectionRectangle[] bboxes     = bbox.splitOnDateLine();
-                RecordFilter         leftFilter =
+                SelectionRectangle[] bboxes = bbox.splitOnDateLine();
+                RecordFilter leftFilter =
                     new LatLonBoundsFilter(bboxes[0].getNorth(),
                                            bboxes[0].getWest(),
                                            bboxes[0].getSouth(),
@@ -2095,18 +2195,18 @@ public class PointOutputHandler extends RecordOutputHandler {
                                            bboxes[1].getSouth(),
                                            bboxes[1].getEast());
                 filters.add(CollectionRecordFilter.or(new RecordFilter[] {
-                            leftFilter,
-                            rightFilter }));
+                    leftFilter,
+                    rightFilter }));
             } else {
                 filters.add(new LatLonBoundsFilter(bbox.getNorth(90),
-                                                   bbox.getWest(-180.0), bbox.getSouth(-90.0),
-                                                   bbox.getEast(180.0)));
+                        bbox.getWest(-180.0), bbox.getSouth(-90.0),
+                        bbox.getEast(180.0)));
             }
         }
 
         if (request.defined(ARG_PROBABILITY)) {
             filters.add(new RandomizedFilter(request.get(ARG_PROBABILITY,
-                                                         0.5)));
+                    0.5)));
         }
 
         for (RecordField field : recordFile.getSearchableFields()) {
@@ -2114,15 +2214,15 @@ public class PointOutputHandler extends RecordOutputHandler {
                 double v = request.get(ARG_SEARCH_PREFIX + field.getName(),
                                        0.0);
                 filters.add(
-                            new NumericRecordFilter(
-                                                    NumericRecordFilter.OP_EQUALS, field.getParamId(),
-                                                    v));
+                    new NumericRecordFilter(
+                        NumericRecordFilter.OP_EQUALS, field.getParamId(),
+                        v));
             }
 
             if (field.isBitField()) {
-                String[] bitFields    = field.getBitFields();
-                String   urlArgPrefix = ARG_SEARCH_PREFIX + field.getName()
-                    + "_" + ARG_BITFIELD + "_";
+                String[] bitFields = field.getBitFields();
+                String urlArgPrefix = ARG_SEARCH_PREFIX + field.getName()
+                                      + "_" + ARG_BITFIELD + "_";
                 for (int bitIdx = 0; bitIdx < bitFields.length; bitIdx++) {
                     String bitField = bitFields[bitIdx].trim();
                     if (bitField.length() == 0) {
@@ -2130,8 +2230,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                     }
                     if (request.defined(urlArgPrefix + bitIdx)) {
                         filters.add(new BitmaskRecordFilter(bitIdx,
-                                                            request.get(urlArgPrefix + bitIdx, false),
-                                                            field.getParamId()));
+                                request.get(urlArgPrefix + bitIdx, false),
+                                field.getParamId()));
                         System.err.println("bit:" + bitFields[bitIdx]);
                     }
                 }
@@ -2144,24 +2244,30 @@ public class PointOutputHandler extends RecordOutputHandler {
                 double v = request.get(ARG_SEARCH_PREFIX + field.getName()
                                        + "_min", 0.0);
                 filters.add(
-                            new NumericRecordFilter(
-                                                    NumericRecordFilter.OP_GE, field.getParamId(), v));
+                    new NumericRecordFilter(
+                        NumericRecordFilter.OP_GE, field.getParamId(), v));
             }
             if (request.defined(ARG_SEARCH_PREFIX + field.getName()
                                 + "_max")) {
                 double v = request.get(ARG_SEARCH_PREFIX + field.getName()
                                        + "_max", 0.0);
                 filters.add(
-                            new NumericRecordFilter(
-                                                    NumericRecordFilter.OP_LE, field.getParamId(), v));
+                    new NumericRecordFilter(
+                        NumericRecordFilter.OP_LE, field.getParamId(), v));
             }
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean canHandleEntry(Entry entry) {
         //entry.getTypeHandler().isType("lidar") || entry.getTypeHandler().isType("lidar_collection") || 
-        return 
-            entry.getTypeHandler().isType("type_point");
+        return entry.getTypeHandler().isType("type_point");
     }
 
 
@@ -2179,7 +2285,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception on badness
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-        throws Exception {
+            throws Exception {
 
         Entry entry = state.getEntry();
         if (entry == null) {
@@ -2191,6 +2297,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         if (entry.getTypeHandler() instanceof RecordCollectionTypeHandler) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_FORM));
+
             return;
         }
 
@@ -2199,7 +2306,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if ( !getRepository().getAccessManager().canAccessFile(request,
-                                                               state.entry)) {
+                state.entry)) {
             return;
         }
 
@@ -2222,9 +2329,9 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @throws Exception on badness
      */
-    public RecordFile createAndInitializeRecordFile(Request request, Entry entry,
-                                                    long numRecords)
-        throws Exception {
+    public RecordFile createAndInitializeRecordFile(Request request,
+            Entry entry, long numRecords)
+            throws Exception {
         RecordFile recordFile = (RecordFile) doMakeRecordFile(entry);
         if (numRecords < 0) {
             numRecords = recordFile.getNumRecords();
@@ -2234,19 +2341,26 @@ public class PointOutputHandler extends RecordOutputHandler {
             recordFile.setDefaultSkip(skip);
         } else if (request.defined(RecordFormHandler.ARG_NUMPOINTS)) {
             recordFile.setDefaultSkip(
-                                     (int) (numRecords
-                                            / request.get(RecordFormHandler.ARG_NUMPOINTS, 1000)));
+                (int) (numRecords
+                       / request.get(RecordFormHandler.ARG_NUMPOINTS, 1000)));
         } else if (numRecords < 10000) {
             recordFile.setDefaultSkip(0);
         } else {
             //Default is 10000 points
             //            recordFile.setDefaultSkip((int)(numRecords/10000));
         }
+
         return recordFile;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param outputs _more_
+     * @param forCollection _more_
+     */
     public void getPointFormats(List<HtmlUtils.Selector> outputs,
                                 boolean forCollection) {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));

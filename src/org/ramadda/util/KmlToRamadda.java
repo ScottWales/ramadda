@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -43,7 +42,7 @@ public class KmlToRamadda implements org.ramadda.repository.Constants {
     /** _more_ */
     static int counter = 0;
 
-    /** _more_          */
+    /** _more_ */
     static int count = 0;
 
     /**

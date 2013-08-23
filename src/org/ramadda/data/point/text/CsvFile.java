@@ -1,43 +1,42 @@
 /*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- * http://www.unavco.org
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
- */
-/*
- * Copyright 2010 UNAVCO, 6350 Nautilus Drive, Boulder, CO 80301
- *
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package org.ramadda.data.point.text;
 
 
+import org.ramadda.data.point.*;
+
+
 
 import org.ramadda.data.record.*;
-import org.ramadda.data.point.*;
 
 import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.StringUtil;
 
-import java.text.SimpleDateFormat;
 import java.awt.*;
 import java.awt.image.*;
 
 import java.io.*;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -56,10 +55,10 @@ import javax.swing.*;
 public class CsvFile extends TextFile {
 
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_          */
+    /** _more_ */
     private String delimiter = null;
 
 
@@ -105,26 +104,44 @@ public class CsvFile extends TextFile {
     public boolean canLoad(String filename) {
         String f = filename.toLowerCase();
         //A hack to not include lidar coordinate txt files
-        if(f.indexOf("coords")>=0 || f.indexOf("coordinates")>=0) {
+        if ((f.indexOf("coords") >= 0) || (f.indexOf("coordinates") >= 0)) {
             return false;
         }
-        if(f.indexOf("target")>=0 ) {
+        if (f.indexOf("target") >= 0) {
             return false;
         }
+
         return (f.endsWith(".csv") || f.endsWith(".txt")
-               || f.endsWith(".xyz")  || f.endsWith(".tsv"));
+                || f.endsWith(".xyz") || f.endsWith(".tsv"));
     }
 
+    /**
+     * _more_
+     *
+     * @param action _more_
+     *
+     * @return _more_
+     */
     public boolean isCapable(String action) {
-        if(action.equals(ACTION_GRID)) return true;
-        if(action.equals(ACTION_DECIMATE)) return true;
+        if (action.equals(ACTION_GRID)) {
+            return true;
+        }
+        if (action.equals(ACTION_DECIMATE)) {
+            return true;
+        }
+
         return super.isCapable(action);
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDelimiter() {
-        if(delimiter == null) {
+        if (delimiter == null) {
             delimiter = getProperty(PROP_DELIMITER, ",");
             if (delimiter.length() == 0) {
                 delimiter = " ";
@@ -134,33 +151,48 @@ public class CsvFile extends TextFile {
                 delimiter = "\t";
             }
         }
+
         return delimiter;
     }
 
 
+    /**
+     * _more_
+     */
     public void initAfterClone() {
         super.initAfterClone();
-        fields  =null;
+        fields    = null;
         delimiter = null;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<RecordField> getFields() {
-       if(fields == null) {
+        if (fields == null) {
             fields = doMakeFields();
         }
+
         return fields;
     }
 
-    public List<RecordField>doMakeFields() {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<RecordField> doMakeFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
             try {
-                RecordIO recordIO = doMakeInputIO(true);
+                RecordIO  recordIO  = doMakeInputIO(true);
                 VisitInfo visitInfo = new VisitInfo();
                 visitInfo.setRecordIO(recordIO);
                 visitInfo = prepareToVisit(visitInfo);
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
             fieldString = getProperty(PROP_FIELDS, null);
@@ -168,19 +200,28 @@ public class CsvFile extends TextFile {
 
         if (fieldString == null) {
             throw new IllegalArgumentException("Properties must have a "
-                                               + PROP_FIELDS + " value");
+                    + PROP_FIELDS + " value");
         }
-        return    doMakeFields(fieldString);
+
+        return doMakeFields(fieldString);
     }
 
 
-    public  List<RecordField>doMakeFields(String fieldString) {
+    /**
+     * _more_
+     *
+     * @param fieldString _more_
+     *
+     * @return _more_
+     */
+    public List<RecordField> doMakeFields(String fieldString) {
+
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
         //        System.err.println ("fields:" + fieldString);
-        String defaultMissing = getProperty("missing",(String)null);
-        String[] toks = fieldString.split(",");
-        List<RecordField>fields = new ArrayList<RecordField>();
-        int paramId = 1;
+        String defaultMissing     = getProperty("missing", (String) null);
+        String[]          toks    = fieldString.split(",");
+        List<RecordField> fields  = new ArrayList<RecordField>();
+        int               paramId = 1;
         for (String tok : toks) {
             List<String> pair  = StringUtil.splitUpTo(tok, "[", 2);
             String       name  = pair.get(0).trim();
@@ -196,79 +237,94 @@ public class CsvFile extends TextFile {
             Hashtable properties = parseAttributes(attrs);
             //            System.err.println ("props:" + properties);
             RecordField field = new RecordField(name, name, "", paramId++,
-                                                getProperty(properties, "unit", ""));
-            String precision = getProperty(properties, "precision",(String)null);
-            if(precision!=null) {
-                field.setRoundingFactor(Math.pow(10,Integer.parseInt(precision)));
+                                    getProperty(properties, "unit", ""));
+            String precision = getProperty(properties, "precision",
+                                           (String) null);
+            if (precision != null) {
+                field.setRoundingFactor(Math.pow(10,
+                        Integer.parseInt(precision)));
             }
 
 
-            String missing = getProperty(properties, "missing",defaultMissing);
-            if(missing!=null) {
+            String missing = getProperty(properties, "missing",
+                                         defaultMissing);
+            if (missing != null) {
                 field.setMissingValue(Double.parseDouble(missing));
             }
 
 
             String fmt = getProperty(properties, "fmt", (String) null);
-            if(fmt==null) {
+            if (fmt == null) {
                 fmt = getProperty(properties, "format", (String) null);
             }
 
-            if(fmt!=null) {
+            if (fmt != null) {
                 field.setType(field.TYPE_DATE);
                 field.setDateFormat(new SimpleDateFormat(fmt));
             }
 
-            String type = getProperty(properties,"type",(String)null);
-            if(type!=null) {
+            String type = getProperty(properties, "type", (String) null);
+            if (type != null) {
                 field.setType(type);
             }
-            String value = getProperty(properties,"value",(String)null);
-            if(value!=null) {
-                if(field.isTypeString()) {
+            String value = getProperty(properties, "value", (String) null);
+            if (value != null) {
+                if (field.isTypeString()) {
                     field.setDefaultStringValue(value);
-                } else if(field.isTypeDate()) {
+                } else if (field.isTypeDate()) {
                     field.setDefaultStringValue(value);
                 } else {
                     field.setDefaultDoubleValue(Double.parseDouble(value));
                 }
             }
-            if(getProperty(field, properties,"chartable","false").equals("true")) {
+            if (getProperty(field, properties, "chartable",
+                            "false").equals("true")) {
                 field.setChartable(true);
             }
-            if(getProperty(field, properties,"skip","false").equals("true")) {
+            if (getProperty(field, properties, "skip",
+                            "false").equals("true")) {
                 field.setSkip(true);
             }
-            if(getProperty(field, properties,"synthetic","false").equals("true")) {
+            if (getProperty(field, properties, "synthetic",
+                            "false").equals("true")) {
                 field.setSynthetic(true);
             }
-            if(getProperty(field, properties,"searchable","false").equals("true")) {
+            if (getProperty(field, properties, "searchable",
+                            "false").equals("true")) {
                 field.setSearchable(true);
             }
-            if(getProperty(field, properties,"value","false").equals("true")) {
+            if (getProperty(field, properties, "value",
+                            "false").equals("true")) {
                 field.setSearchable(true);
-            }                
-            String label =  (String)properties.get("label");
-            if(label==null) {
-                label = (String)properties.get("description");
             }
-            if(label!=null) {
+            String label = (String) properties.get("label");
+            if (label == null) {
+                label = (String) properties.get("description");
+            }
+            if (label != null) {
                 field.setDescription(label);
             }
             field.setValueGetter(new ValueGetter() {
-                    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
-                        TextRecord textRecord = (TextRecord) record;
-                        return textRecord.getValue(field.getParamId());
-                    }
-                    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
-                        TextRecord textRecord = (TextRecord) record;
-                        return textRecord.getStringValue(field.getParamId());
-                    }
-                });
+                public double getValue(Record record, RecordField field,
+                                       VisitInfo visitInfo) {
+                    TextRecord textRecord = (TextRecord) record;
+
+                    return textRecord.getValue(field.getParamId());
+                }
+                public String getStringValue(Record record,
+                                             RecordField field,
+                                             VisitInfo visitInfo) {
+                    TextRecord textRecord = (TextRecord) record;
+
+                    return textRecord.getStringValue(field.getParamId());
+                }
+            });
 
             fields.add(field);
         }
+
         return fields;
+
     }
 
 
@@ -307,6 +363,7 @@ public class CsvFile extends TextFile {
                   attrName  = "" + c;
                   state     = STATE_INNAME;
                   gotEquals = false;
+
                   break;
               }
 
@@ -316,21 +373,25 @@ public class CsvFile extends TextFile {
                       if ( !gotEquals) {
                           gotEquals = (c == '=');
                       }
+
                       break;
                   }
                   if ((c == '\"') || (c == '\'')) {
                       gotDblQuote    = (c == '\"');
                       gotSingleQuote = (c == '\'');
                       state          = STATE_INVALUE;
+
                       break;
                   }
                   if (gotEquals) {
                       attrValue += c;
                       state     = STATE_INVALUE;
+
                       break;
                   }
 
                   attrName += c;
+
                   break;
               }
 
@@ -343,16 +404,19 @@ public class CsvFile extends TextFile {
                       state     = STATE_LOOKINGFORNAME;
                       attrName  = "";
                       attrValue = "";
+
                       break;
                   }
                   attrValue += c;
+
                   break;
               }
             }
         }
-        if(attrName.length()>0) {
+        if (attrName.length() > 0) {
             ht.put(attrName.toLowerCase().trim(), attrValue.trim());
         }
+
         return ht;
     }
 
@@ -370,6 +434,7 @@ public class CsvFile extends TextFile {
         TextRecord record = new TextRecord(this, getFields());
         record.setFirstDataLine(firstDataLine);
         record.setDelimiter(getDelimiter());
+
         return record;
     }
 
@@ -377,10 +442,13 @@ public class CsvFile extends TextFile {
      * _more_
      *
      * @param args _more_
+     *
+     * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        if(true) {
+        if (true) {
             PointFile.test(args, CsvFile.class);
+
             return;
         }
 
@@ -408,6 +476,7 @@ public class CsvFile extends TextFile {
                                     + pointRecord.getAltitude());
 
                         }
+
                         return true;
                     }
                 };

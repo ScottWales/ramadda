@@ -99,20 +99,20 @@ public class UserManager extends RepositoryManager {
     public static final String PROP_LOGIN_ALLOWEDIPS =
         "ramadda.login.allowedips";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PASSWORD_DIGEST =
         "ramadda.password.hash.digest";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PASSWORD_ITERATIONS =
         "ramadda.password.hash.iterations";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PASSWORD_SALT1 =
         "ramadda.password.hash.salt1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_PASSWORD_SALT2 =
         "ramadda.password.hash.salt2";
 

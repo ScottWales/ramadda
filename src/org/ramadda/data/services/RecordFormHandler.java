@@ -1,6 +1,5 @@
 /*
-* Copyright 2008-2012 Jeff McWhirter/ramadda.org
-*                     Don Murray/CU-CIRES
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -281,7 +280,8 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                                  StringBuffer sb)
             throws Exception {
         sb.append(recordEntry.getRecordFile().getHtmlDescription());
-        List<RecordField> fields     = recordEntry.getRecordFile().getFields();
+        List<RecordField> fields     =
+            recordEntry.getRecordFile().getFields();
         long              numRecords = recordEntry.getNumRecords();
         if (numRecords > 0) {
             sb.append(HtmlUtils.b(msgLabel("Number of points")));
@@ -337,7 +337,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                                   final RecordEntry recordEntry)
             throws Exception {
 
-        final StringBuffer      sb     = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         final List<RecordField> fields =
             recordEntry.getRecordFile().getFields();
         int start = request.get(ARG_START, 0);
@@ -348,8 +348,10 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         sb.append("<table cellspacing=0 cellpadding=5 border=1>");
         final int[]   cnt     = { 0 };
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
+
             public boolean doVisitRecord(RecordFile file,
                                          VisitInfo visitInfo, Record record) {
+
                 if (cnt[0] == 0) {
                     String style = HtmlUtils.style("background: #c3d9ff;");
                     sb.append("<tr valign=bottom>");
@@ -359,7 +361,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                     for (int fieldCnt = 0; fieldCnt < fields.size();
                             fieldCnt++) {
                         RecordField field = fields.get(fieldCnt);
-                        if(field.getSkip()) {
+                        if (field.getSkip()) {
                             continue;
                         }
                         if (field.getSynthetic()) {
@@ -397,21 +399,24 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                     if (field.getSynthetic()) {
                         continue;
                     }
-                    if(field.getSkip()) {
+                    if (field.getSkip()) {
                         continue;
                     }
 
-                    if(field.isTypeString()) {
+                    if (field.isTypeString()) {
                         sb.append("<td align=right>");
                         sb.append(record.getStringValue(field.getParamId()));
                         sb.append("</td>");
+
                         continue;
                     }
-                    if(field.isTypeDate()) {
+                    if (field.isTypeDate()) {
                         sb.append("<td align=right>");
-                        Date date = (Date) record.getObjectValue(field.getParamId());
+                        Date date =
+                            (Date) record.getObjectValue(field.getParamId());
                         sb.append(formatDate(date));
                         sb.append("</td>");
+
                         continue;
                     }
                     if (field.isBitField()) {
@@ -450,7 +455,9 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                 cnt[0]++;
 
                 return true;
+
             }
+
         };
 
         VisitInfo visitInfo = new VisitInfo();

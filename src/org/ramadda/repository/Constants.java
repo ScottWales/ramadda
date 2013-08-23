@@ -334,7 +334,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ZIPTREE = "ramadda.icon.ziptree";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ICON = "ramadda.icon";
 
 
@@ -350,7 +350,7 @@ public interface Constants {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showcategories";
 
     /** _more_ */
@@ -518,7 +518,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_DECORATE = "decorate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_TREEVIEW = "treeview";
 
     /** _more_ */
@@ -1156,10 +1156,10 @@ public interface Constants {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SETFROMCHILDREN = "setfromchildren";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SETFROMCHILDREN_RECURSE =
         "setfromchildren.recurse";
 
@@ -1472,7 +1472,7 @@ public interface Constants {
     /** _more_ */
     public static final String TAG_ENTRIES = "entries";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_WIKITEXT = "wikitext";
 
     /** _more_ */
@@ -1576,10 +1576,10 @@ public interface Constants {
     public static final String ARG_SHUTDOWN_CONFIRM = "shutdown.confirm";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_MAP_ICONSONLY = "iconsonly";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_MAP_EXTRA = "map.extra";
 
     /** _more_ */
@@ -1606,10 +1606,10 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ADMIN_SMTP = "ramadda.admin.smtp";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SMTP_PASSWORD =
         "ramadda.admin.smtp.password";
 
@@ -2045,11 +2045,11 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_PROXY_PORT = "ramadda.proxy.port";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENCRYPT_PASSWORD =
         "ramadda.encrypt.password";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENCRYPT_CIPHER = "ramadda.encrypt.cipher";
 
 
@@ -2227,22 +2227,22 @@ public interface Constants {
     /** the alt attribute for images */
     public static final String ATTR_ALT = "alt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LABEL_NEW_ENTRY = "New Entry";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LABEL_ENTRY = "Entry";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LABEL_ENTRIES = "Entries";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LABEL_EMPTY_FOLDER = "This folder is empty";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LABEL_NO_ENTRIES_FOUND = "No entries found";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_IMPORT_TYPE = "import.type";
 
 
