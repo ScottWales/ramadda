@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2004  WTS Systems, L.L.C.
@@ -47,119 +46,119 @@ import java.util.Vector;
 
 public abstract class Glyph implements Cloneable {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_CENTER = "MM";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_V_UPPER = "U";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_V_MIDDLE = "M";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_V_LOWER = "L";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_H_LEFT = "L";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_H_MIDDLE = "M";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_H_RIGHT = "R";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_UL = PT_V_UPPER + PT_H_LEFT;
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_LR = PT_V_LOWER + PT_H_RIGHT;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_PREFIX = "P";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_P1 = PT_PREFIX + "1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PT_P2 = PT_PREFIX + "2";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String GROUP = "GROUP";
 
-    /** _more_          */
+    /** _more_ */
     public static final String HTMLTEXT = "HTMLTEXT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String XML = "XML";
 
-    /** _more_          */
+    /** _more_ */
     public static final String RECTANGLE = "RECTANGLE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FRECTANGLE = "FRECTANGLE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ROUNDRECT = "ROUNDRECT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FROUNDRECT = "FROUNDRECT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CIRCLE = "CIRCLE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FCIRCLE = "FCIRCLE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String IMAGE = "IMAGE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TEXT = "TEXT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LINE = "LINE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PLINE = "PLINE";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PTS = "pts";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COLOR = "color";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BGCOLOR = "bgcolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIDTH = "width";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FILL = "fill";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TEXT = "text";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DOHTML = "dohtml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CHILDREN = "children";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PARENT = "parent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_IMAGE = "image";
 
-    /** _more_          */
+    /** _more_ */
     public static Hashtable idToGlyph = new Hashtable();
 
 
-    /** _more_          */
+    /** _more_ */
     public String filter;
 
     /**
@@ -167,56 +166,56 @@ public abstract class Glyph implements Cloneable {
      */
     public static final int MIN_DISTANCE_TO_STRETCH = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SEL_WIDTH = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int H_SEL_WIDTH = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final Color highlightColor = Color.yellow;
 
-    /** _more_          */
+    /** _more_ */
     private Glyph parent;
 
-    /** _more_          */
+    /** _more_ */
     private boolean filled = false;
 
-    /** _more_          */
+    /** _more_ */
     private int width = 1;
 
-    /** _more_          */
+    /** _more_ */
     private Color color = Color.black;
 
-    /** _more_          */
+    /** _more_ */
     private Color bgColor = null;
 
-    /** _more_          */
+    /** _more_ */
     public boolean underline = false;
 
-    /** _more_          */
+    /** _more_ */
     public String url;
 
-    /** _more_          */
+    /** _more_ */
     public int startAngle = 0;
 
-    /** _more_          */
+    /** _more_ */
     public int lengthAngle = 360;
 
-    /** _more_          */
+    /** _more_ */
     public int offsetX = 0;
 
-    /** _more_          */
+    /** _more_ */
     public int offsetY = 0;
 
 
-    /** _more_          */
+    /** _more_ */
     public int baseline;
 
-    /** _more_          */
+    /** _more_ */
     private String id = "";
 
-    /** _more_          */
+    /** _more_ */
     protected String typeName;
 
 
@@ -353,7 +352,7 @@ public abstract class Glyph implements Cloneable {
 
 
     /**
-     * Hook for setting points from the attribute line*
+     * Hook for setting points from the attribute line
      *
      * @param p _more_
      * @param cnt _more_
@@ -495,6 +494,7 @@ public abstract class Glyph implements Cloneable {
                 dflt = Integer.decode(v).intValue();
             } catch (Exception exc) {}
         }
+
         return dflt;
     }
 
@@ -512,6 +512,7 @@ public abstract class Glyph implements Cloneable {
                 dflt = new Double(v).doubleValue();
             } catch (Exception exc) {}
         }
+
         return dflt;
     }
 
@@ -591,6 +592,7 @@ public abstract class Glyph implements Cloneable {
         if ((match == null) || match.equals(name)) {
             return XmlNode.attr(name, value);
         }
+
         return "";
     }
 
@@ -744,6 +746,7 @@ public abstract class Glyph implements Cloneable {
             bounds.width  += 4;
             bounds.height += 4;
         }
+
         return bounds;
     }
 
@@ -773,6 +776,7 @@ public abstract class Glyph implements Cloneable {
      */
     public String stretchTo(int x, int y, String pt, boolean correct) {
         moveBy(x, y);
+
         return PT_CENTER;
     }
 
@@ -795,4 +799,3 @@ public abstract class Glyph implements Cloneable {
 
 
 }
-

@@ -1,25 +1,25 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.tableview;
+
 
 import com.infocetera.util.*;
 
@@ -48,78 +48,78 @@ import java.util.*;
 public class TableView extends ScrollCanvas implements ItemListener,
         ActionListener, KeyListener, MouseListener, MouseMotionListener {
 
-    /** _more_          */
+    /** _more_ */
     public int topMargin = 20;
 
-    /** _more_          */
+    /** _more_ */
     public int bottomMargin = 10;
 
-    /** _more_          */
+    /** _more_ */
     public int leftMargin = 1;
 
-    /** _more_          */
+    /** _more_ */
     public int rightMargin = 1;
 
-    /** _more_          */
+    /** _more_ */
     public int rowCloseSize = 6;
 
-    /** _more_          */
+    /** _more_ */
     public int rowOpenSize = 25;
 
-    /** _more_          */
+    /** _more_ */
     public int columns;
 
-    /** _more_          */
+    /** _more_ */
     String[] headers;
 
 
-    /** _more_          */
+    /** _more_ */
     public String error;
 
-    /** _more_          */
+    /** _more_ */
     public static final GuiUtils GU = null;
 
-    /** _more_          */
+    /** _more_ */
     TableRow hilite;
 
-    /** _more_          */
+    /** _more_ */
     int hiliteColumn = -1;
 
-    /** _more_          */
+    /** _more_ */
     Vector rows = new Vector();
 
 
-    /** _more_          */
+    /** _more_ */
     static Font labelFont = new Font("Dialog", Font.BOLD, 12);
 
-    /** _more_          */
+    /** _more_ */
     static Font widgetFont = new Font("Dialog", 0, 12);
 
-    /** _more_          */
+    /** _more_ */
     static Font smallWidgetFont = new Font("Dialog", Font.BOLD, 8);
 
-    /** _more_          */
+    /** _more_ */
     public Color bgColor = new Color(51, 204, 255);
 
-    /** _more_          */
+    /** _more_ */
     String dirPath;
 
-    /** _more_          */
+    /** _more_ */
     TableViewApplet tableViewApplet;
 
-    /** _more_          */
+    /** _more_ */
     Button floatBtn;
 
-    /** _more_          */
+    /** _more_ */
     Frame floatFrame;
 
-    /** _more_          */
+    /** _more_ */
     boolean floating = false;
 
-    /** _more_          */
+    /** _more_ */
     Container oldParent;
 
-    /** _more_          */
+    /** _more_ */
     boolean needLayout = true;
 
 
@@ -149,6 +149,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
         Button b = new Button(l);
         b.addActionListener(this);
         b.setFont(smallWidgetFont);
+
         return b;
     }
 
@@ -164,6 +165,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
         floatBtn = getButton("Float");
         mainPanel.add("North", floatBtn);
         mainPanel.add("Center", this);
+
         return mainPanel;
     }
 
@@ -198,6 +200,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
             }
         }
         tokens.addElement(tok);
+
         return tokens;
     }
 
@@ -303,9 +306,11 @@ public class TableView extends ScrollCanvas implements ItemListener,
             TableRow p = (TableRow) rows.elementAt(i);
             if (p.contains(x, y)) {
                 closest = p;
+
                 break;
             }
         }
+
         return closest;
     }
 
@@ -455,6 +460,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
                         print("err:" + exc);
                     }
                 }
+
                 return;
             }
 
@@ -547,13 +553,13 @@ public class TableView extends ScrollCanvas implements ItemListener,
 
 
 
-    /** _more_          */
+    /** _more_ */
     public Image bufferedImage = null;
 
-    /** _more_          */
+    /** _more_ */
     public int bufferWidth;
 
-    /** _more_          */
+    /** _more_ */
     public int bufferHeight;
 
     /**
@@ -622,6 +628,7 @@ public class TableView extends ScrollCanvas implements ItemListener,
         if (error != null) {
             g.setColor(Color.red);
             g.drawString(error, 20, 20);
+
             return;
         }
 
@@ -652,10 +659,12 @@ public class TableView extends ScrollCanvas implements ItemListener,
             //            url = tableViewApplet.getUrlPrefix() + url;
             System.err.println(url);
             URL imageUrl = new URL(url);
+
             return tableViewApplet.getImage(imageUrl);
         } catch (Exception exc) {
             System.err.println("setImage " + url + "\n" + exc);
         }
+
         return null;
 
     }
@@ -678,10 +687,12 @@ public class TableView extends ScrollCanvas implements ItemListener,
             int    length           = imageStream.available();
             byte[] thanksToNetscape = new byte[length];
             imageStream.read(thanksToNetscape);
+
             return Toolkit.getDefaultToolkit().createImage(thanksToNetscape);
         } catch (Exception exc) {
             print(exc + " getting resource ");
         }
+
         return null;
     }
 
@@ -702,4 +713,3 @@ public class TableView extends ScrollCanvas implements ItemListener,
 
 
 }
-

@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.chart;
 
@@ -46,19 +45,19 @@ import java.util.Vector;
  */
 public class ChartCanvas extends Canvas {
 
-    /** _more_          */
+    /** _more_ */
     public ChartApplet myApplet;
 
-    /** _more_          */
+    /** _more_ */
     Component legend;
 
-    /** _more_          */
+    /** _more_ */
     Component leftAxis;
 
-    /** _more_          */
+    /** _more_ */
     static Font pieFont = new Font("Dialog", Font.BOLD, 8);
 
-    /** _more_          */
+    /** _more_ */
     static Font labelFont = new Font("Dialog", Font.BOLD, 16);
 
     /**
@@ -90,52 +89,52 @@ public class ChartCanvas extends Canvas {
         rainbow = baseColors;
     }
 
-    /** _more_          */
+    /** _more_ */
     public Image chartImage = null;
 
-    /** _more_          */
+    /** _more_ */
     public int chartWidth;
 
-    /** _more_          */
+    /** _more_ */
     public int chartHeight;
 
-    /** _more_          */
+    /** _more_ */
     public Image bufferedImage = null;
 
-    /** _more_          */
+    /** _more_ */
     public int bufferWidth;
 
-    /** _more_          */
+    /** _more_ */
     public int bufferHeight;
 
 
-    /** _more_          */
+    /** _more_ */
     public Vector searchRectList;
 
-    /** _more_          */
+    /** _more_ */
     public Vector displayRectList;
 
-    /** _more_          */
+    /** _more_ */
     public Vector dataList;
 
-    /** _more_          */
+    /** _more_ */
     public Rectangle hilite;
 
-    /** _more_          */
+    /** _more_ */
     public int hiliteIdx = -1;
 
-    /** _more_          */
+    /** _more_ */
     public boolean justRepaintHilite = false;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public boolean forPrint = false;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ROW_CENTRIC = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COL_CENTRIC = 1;
 
     /**
@@ -171,6 +170,7 @@ public class ChartCanvas extends Canvas {
         if (isColCentric(centric)) {
             return numDataCols;
         }
+
         return numDataRows;
     }
 
@@ -185,6 +185,7 @@ public class ChartCanvas extends Canvas {
         if ( !isColCentric(centric)) {
             return numDataCols;
         }
+
         return numDataRows;
     }
 
@@ -242,6 +243,7 @@ public class ChartCanvas extends Canvas {
         if (total != 0.0) {
             return (value) / total;
         }
+
         return 1.0;
 
 
@@ -297,49 +299,49 @@ public class ChartCanvas extends Canvas {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_BAR_ROW = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_BAR_COL = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_LINE_ROW = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_LINE_COL = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_PIE_ROW = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_PIE_COL = 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_KIVIAT_ROW = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_KIVIAT_COL = 7;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_SCATTER_ROW = 8;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_SCATTER_COL = 9;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_STACK_ROW = 10;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_STACK_COL = 11;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_GRADIENT_GRAY = 12;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_GRADIENT_COLOR = 13;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CHART_DATAGRID = 14;
 
     /**
@@ -353,10 +355,11 @@ public class ChartCanvas extends Canvas {
         if ((chartType / 2) * 2 == chartType) {
             return ROW_CENTRIC;
         }
+
         return COL_CENTRIC;
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] chartNames = {
         "Grid", "Bar chart - rows", "Bar chart - columns",
         "Stacked bars - rows", "Stacked bars - columns", "Line chart - rows",
@@ -368,7 +371,7 @@ public class ChartCanvas extends Canvas {
         //    "Scatter plot - cols",
     };
 
-    /** _more_          */
+    /** _more_ */
     public static final int[] chartTypes = {
         CHART_DATAGRID, CHART_BAR_ROW, CHART_BAR_COL, CHART_STACK_ROW,
         CHART_STACK_COL, CHART_LINE_ROW, CHART_LINE_COL, CHART_PIE_ROW,
@@ -378,7 +381,7 @@ public class ChartCanvas extends Canvas {
     };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] chartKeys = {
         "DATAGRID", "BAR_ROW", "BAR_COL", "STACK_ROW", "STACK_COL",
         "LINE_ROW", "LINE_COL", "PIE_ROW", "PIE_COL", "GRADIENT_GRAY",
@@ -392,105 +395,105 @@ public class ChartCanvas extends Canvas {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public int chartType = CHART_LINE_ROW;
 
-    /** _more_          */
+    /** _more_ */
     public Color grayGradient[];
 
-    /** _more_          */
+    /** _more_ */
     public Color indexedColors[];
 
-    /** _more_          */
+    /** _more_ */
     public Color[] rainbow = null;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public Color[] colors = {
         Color.blue, Color.red, Color.green, Color.cyan, Color.magenta,
         Color.orange, Color.pink, Color.yellow
     };
 
-    /** _more_          */
+    /** _more_ */
     public Color[] darker = {
         Color.blue.darker(), Color.red.darker(), Color.green.darker(),
         Color.cyan.darker(), Color.magenta.darker(), Color.orange.darker(),
         Color.pink.darker(), Color.yellow.darker()
     };
 
-    /** _more_          */
+    /** _more_ */
     public String entries[][];
 
-    /** _more_          */
+    /** _more_ */
     public String rowHeaders[];
 
-    /** _more_          */
+    /** _more_ */
     public String colHeaders[];
 
-    /** _more_          */
+    /** _more_ */
     public double data[][];
 
-    /** _more_          */
+    /** _more_ */
     double[] rowTotal;
 
-    /** _more_          */
+    /** _more_ */
     double[] colTotal;
 
-    /** _more_          */
+    /** _more_ */
     public int numRows;
 
-    /** _more_          */
+    /** _more_ */
     public int numCols;
 
-    /** _more_          */
+    /** _more_ */
     public int numDataRows;
 
-    /** _more_          */
+    /** _more_ */
     public int numDataCols;
 
-    /** _more_          */
+    /** _more_ */
     public double maxAxisValue = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     public int numAxisTicks = 14;
 
-    /** _more_          */
+    /** _more_ */
     public double maxValue = -100000.0;
 
-    /** _more_          */
+    /** _more_ */
     public double minValue = 100000.0;
 
-    /** _more_          */
+    /** _more_ */
     public double maxColSum = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     public double maxRowSum = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     public double[] sumRow;
 
-    /** _more_          */
+    /** _more_ */
     public double[] sumCol;
 
-    /** _more_          */
+    /** _more_ */
     public double[] maxRow;
 
-    /** _more_          */
+    /** _more_ */
     public double[] minRow;
 
-    /** _more_          */
+    /** _more_ */
     public double[] maxCol;
 
-    /** _more_          */
+    /** _more_ */
     public double[] minCol;
 
 
 
-    /** _more_          */
+    /** _more_ */
     String xLabel = "";
 
-    /** _more_          */
+    /** _more_ */
     String yLabel = "";
 
 
@@ -543,6 +546,7 @@ public class ChartCanvas extends Canvas {
             for (int i = 0; i < chartKeys.length; i++) {
                 if (chartKeys[i].equals(tmp)) {
                     chartType = chartTypes[i];
+
                     break;
                 }
             }
@@ -772,7 +776,7 @@ public class ChartCanvas extends Canvas {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final GuiUtils GU = null;
 
 
@@ -799,6 +803,7 @@ public class ChartCanvas extends Canvas {
             if (r.contains(x, y)) {
                 hiliteIdx = i;
                 hilite    = (Rectangle) displayRectList.elementAt(i);
+
                 break;
             }
         }
@@ -843,6 +848,7 @@ public class ChartCanvas extends Canvas {
         if (hiliteChanged) {
             repaint();
         }
+
         return true;
     }
 
@@ -865,8 +871,10 @@ public class ChartCanvas extends Canvas {
                 url = GU.replace(url, "%HTTP%", myApplet.getUrlPrefix());
                 myApplet.showUrl(url, "CHARTCLICK");
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -921,50 +929,50 @@ public class ChartCanvas extends Canvas {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int BASE3D_DIMENSION = 8;
 
-    /** _more_          */
+    /** _more_ */
     int threeD1 = BASE3D_DIMENSION;
 
-    /** _more_          */
+    /** _more_ */
     int threeD2 = BASE3D_DIMENSION;
 
 
-    /** _more_          */
+    /** _more_ */
     int leftMargin = 50;
 
-    /** _more_          */
+    /** _more_ */
     int rightMargin = 10;
 
-    /** _more_          */
+    /** _more_ */
     int topMargin = 10;
 
-    /** _more_          */
+    /** _more_ */
     int bottomMargin = 50;
 
-    /** _more_          */
+    /** _more_ */
     int displayWidth;
 
-    /** _more_          */
+    /** _more_ */
     int displayHeight;
 
-    /** _more_          */
+    /** _more_ */
     int xOrigin;
 
-    /** _more_          */
+    /** _more_ */
     int yOrigin;
 
-    /** _more_          */
+    /** _more_ */
     int xExtent;
 
-    /** _more_          */
+    /** _more_ */
     int yExtent;
 
-    /** _more_          */
+    /** _more_ */
     double doubleDisplayHeight;
 
-    /** _more_          */
+    /** _more_ */
     double scale;
 
     /**
@@ -1109,21 +1117,25 @@ public class ChartCanvas extends Canvas {
 
           case CHART_LINE_ROW : {
               printMajorColorKey(g, ROW_CENTRIC);
+
               return;
           }
 
           case CHART_LINE_COL : {
               printMajorColorKey(g, centric);
+
               return;
           }
 
           case CHART_GRADIENT_GRAY : {
               printGradientKey(g, grayGradient);
+
               return;
           }
 
           case CHART_GRADIENT_COLOR : {
               printGradientKey(g, rainbow);
+
               return;
           }
 
@@ -1144,6 +1156,7 @@ public class ChartCanvas extends Canvas {
           case CHART_KIVIAT_ROW :
           case CHART_KIVIAT_COL : {
               printMinorColorKey(g, centric);
+
               return;
           }
 
@@ -1191,10 +1204,10 @@ public class ChartCanvas extends Canvas {
         g.drawImage(chartImage, 0, 0, Color.white, null);
     }
 
-    /** _more_          */
+    /** _more_ */
     int hTrans = 0;
 
-    /** _more_          */
+    /** _more_ */
     int vTrans = 0;
 
 
@@ -1211,49 +1224,58 @@ public class ChartCanvas extends Canvas {
           case CHART_STACK_ROW :
           case CHART_STACK_COL : {
               printBarChart(g, getCentric(chartType), true);
+
               return;
           }
 
           case CHART_LINE_ROW :
           case CHART_LINE_COL : {
               printLineChart(g, getCentric(chartType));
+
               return;
           }
 
           case CHART_PIE_ROW :
           case CHART_PIE_COL : {
               printPieChart(g, getCentric(chartType));
+
               return;
           }
 
           case CHART_GRADIENT_GRAY : {
               printColorGradient(g, grayGradient);
+
               return;
           }
 
           case CHART_GRADIENT_COLOR : {
               printColorGradient(g, rainbow);
+
               return;
           }
 
           case CHART_KIVIAT_ROW : {
               printKiviat(g, ROW_CENTRIC);
+
               return;
           }
 
           case CHART_KIVIAT_COL : {
               printKiviat(g, COL_CENTRIC);
+
               return;
           }
 
           case CHART_SCATTER_COL :
           case CHART_SCATTER_ROW : {
               printScatterChart(g, getCentric(chartType));
+
               return;
           }
 
           case CHART_DATAGRID : {
               printDataGrid(g);
+
               return;
           }
 
@@ -1261,6 +1283,7 @@ public class ChartCanvas extends Canvas {
           case CHART_BAR_ROW :
           case CHART_BAR_COL : {
               printBarChart(g, getCentric(chartType), false);
+
               return;
           }
 
@@ -2009,4 +2032,3 @@ public class ChartCanvas extends Canvas {
 
 
 }
-

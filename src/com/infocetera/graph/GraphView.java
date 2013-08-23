@@ -1,19 +1,22 @@
 /*
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.graph;
 
@@ -23,6 +26,7 @@ import com.infocetera.glyph.HtmlGlyph;
 import com.infocetera.util.*;
 
 import com.infocetera.util.XmlNode;
+
 import org.w3c.dom.*;
 
 //import com.infocetera.chart.GIFEncoder;
@@ -57,163 +61,163 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         MouseMotionListener, ImageObserver {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final Cursor DEFAULT_CURSOR =
         new Cursor(Cursor.DEFAULT_CURSOR);
 
-    /** _more_          */
+    /** _more_ */
     public static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_TITLEATTR = "setTitleAttribute";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_MAXCONNECTIONS = "setMaxConnections";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_TIGHTNESS = "setTightness";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DIRECTION = "setDirection";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LEVEL = "setLevel";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LAYOUT = "setLayout";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SHAPEFLAG = "setShapeFlag";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_FLAG = "setFlag";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_FLOAT = "float";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SHOWNODELIST = "showNodeList";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LOAD = "load";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_NEW = "new";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_RELOAD = "reload";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_REMOVE = "remove";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_NAV_BACK = "navBack";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_NAV_BACKBACK = "navBackBack";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_NAV_FWD = "navFwd";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_NAV_FWDFWD = "navFwdFwd";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GFX = "gfx";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SHAPE = "shape";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SHAPETYPE = "type";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GRAPH = "graph";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_MESSAGE = "message";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_NODETYPE = "nodetype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_EDGETYPE = "edgetype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_CANVAS = "canvas";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_EDGE = "edge";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_NODE = "node";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_COMMAND = "command";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BGCOLOR = "bgcolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BGIMAGE = "bgimage";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COMMAND = "command";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FONTSIZE = "fontsize";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FONTFACE = "fontface";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LEVEL = "level";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MERGE = "merge";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MESSAGE = "message";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SIMPLEGUI = "simplegui";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TARGET = "target";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FROM = "from";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TO = "to";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
 
     /** You can specify the id of the default center node as an applet param */
     public static final String PARAM_DFLTNODE = "dfltnode";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PARAM_SKINURL = "skinurl";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DEFAULTSKIN =
         "/com/infocetera/graph/defaultskin.xml";
 
@@ -233,10 +237,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     String skinPath;
 
 
-    /** _more_          */
+    /** _more_ */
     private String nodeUrl;
 
-    /** _more_          */
+    /** _more_ */
     private String delimiter = ",";
 
     /**
@@ -244,14 +248,14 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     private Vector nodesToLoad = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable shapeVisibility = new Hashtable();
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable dynamicallyLoadedNodes = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     public static final String DFLT_FONT = "Dialog";
 
 
@@ -267,7 +271,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     private String fatalErrorMsg = null;
 
 
-    /** _more_          */
+    /** _more_ */
     private String message = null;
 
     /**
@@ -275,17 +279,17 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     static Font labelFont = new Font(DFLT_FONT, Font.BOLD, 12);
 
-    /** _more_          */
+    /** _more_ */
     static Font widgetFont = new Font(DFLT_FONT, 0, 12);
 
-    /** _more_          */
+    /** _more_ */
     static Font smallWidgetFont = new Font(DFLT_FONT, Font.BOLD, 8);
 
-    /** _more_          */
+    /** _more_ */
     static Font theFont = new Font(DFLT_FONT, 0, 14);
 
 
-    /** _more_          */
+    /** _more_ */
     Vector titleAttributes = new Vector();
 
     /**
@@ -293,14 +297,14 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     public static Color mouseOverColor = new Color(255, 255, 204);
 
-    /** _more_          */
+    /** _more_ */
     public static Color highlightColor = Color.yellow;
 
-    /** _more_          */
+    /** _more_ */
     private XmlUi xmlUi;
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean haveInited = false;
 
 
@@ -321,10 +325,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     boolean simpleGui = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean amLoading = false;
 
-    /** _more_          */
+    /** _more_ */
     private String loadingString = "";
 
 
@@ -334,7 +338,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     public int maxLevel = 2;
 
 
-    /** _more_          */
+    /** _more_ */
     private int maxConnections = 500;
 
 
@@ -368,118 +372,120 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (b != null) {
             return b.booleanValue();
         }
+
         return dflt;
     }
 
-    /** _more_          */
+    /** _more_ */
     private int layoutDirection = GraphNode.DIR_BOTH;
 
-    /** _more_          */
+    /** _more_ */
     private boolean scaleWithLevel = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showAllEdges = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showMouseOver = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean pauseMouseOver = true;
 
+    /** _more_          */
     private boolean showText = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean relativeToLevel = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean animateMoves = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean edgeLabel = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean nodeLabel = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showAllLabels = false;
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     Hashtable nodeTypeMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     Vector nodeTypes = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector nodeHideButtons = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Hashtable nodeHideMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     Panel nodePanel = new Panel(new GridLayout(0, 1));
 
-    /** _more_          */
+    /** _more_ */
     Hashtable edgeTypeMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     Vector edgeTypes = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector edgeHideButtons = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Hashtable edgeHideMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     Panel edgePanel = new Panel(new GridLayout(0, 1));
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_RADIAL = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_RELAX1 = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_RELAX2 = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_VTREE = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_HTREE = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_CIRCULAR1 = 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_CIRCULAR2 = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_VHIER = 7;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_HHIER = 8;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_RECTILINEAR = 9;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_HISTORY = 10;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_NONE = 11;
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] LAYOUT_NAMES = {
         "radial", "relax1", "relax2", "vtree", "htree", "circular1",
         "circular2", "vhier", "hhier", "rectilinear", "history", "none"
     };
 
-    /** _more_          */
+    /** _more_ */
     public int layoutType = LAYOUT_RELAX1;
 
     /**
@@ -499,13 +505,13 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     int historyIdx = -1;
 
-    /** _more_          */
+    /** _more_ */
     public static int TICKS = 4;
 
-    /** _more_          */
+    /** _more_ */
     int animTicks = 0;
 
-    /** _more_          */
+    /** _more_ */
     int totalTicks = 0;
 
 
@@ -551,13 +557,13 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     GraphNode hilite = null;
 
-    /** _more_          */
+    /** _more_ */
     GraphShape hiliteShape;
 
-    /** _more_          */
+    /** _more_ */
     GraphNode popupNode = null;
 
-    /** _more_          */
+    /** _more_ */
     GraphNode draggedNode = null;
 
 
@@ -578,7 +584,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     Hashtable nodeTypeToVector = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     Hashtable listToNodeType = new Hashtable();
 
 
@@ -593,20 +599,20 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     Hashtable idToEdge = new Hashtable();
 
 
-    /** _more_          */
+    /** _more_ */
     Component contents;
 
 
-    /** _more_          */
+    /** _more_ */
     Panel leftPanel;
 
-    /** _more_          */
+    /** _more_ */
     Frame floatFrame;
 
-    /** _more_          */
+    /** _more_ */
     Frame nodeListFrame;
 
-    /** _more_          */
+    /** _more_ */
     boolean isMain;
 
 
@@ -661,6 +667,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             contents = doMakeContents();
             initializeState();
         }
+
         return contents;
     }
 
@@ -761,10 +768,12 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             if (simpleGui) {
                 return this;
             }
+
             return xmlUi.getContents();
         } catch (Exception exc) {
             System.err.println("Error parsing skin xml:" + uiXml);
             exc.printStackTrace();
+
             return new Label(exc.getMessage());
 
         }
@@ -864,6 +873,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if ((fromId == null) || (toId == null)) {
             System.err.println("Error: Ill formed edge xml fromId:" + fromId
                                + " toId:" + toId);
+
             return;
         }
 
@@ -907,6 +917,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                     addNodeToList(theNode, theNode.getTypeName());
                 }
             }
+
             return;
         }
 
@@ -941,6 +952,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if ((value == null) && (canvasXml != null)) {
             value = (String) canvasXml.getAttribute(name);
         }
+
         return value;
     }
 
@@ -1057,6 +1069,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             nodeTypeMap.put(nodeType, node);
             nodeTypes.addElement(nodeType);
         }
+
         return node;
     }
 
@@ -1142,6 +1155,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         for (int i = 0; i < model.getSize(); i++) {
             items.add(model.getElementAt(i));
         }
+
         return items;
     }
 
@@ -1162,6 +1176,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (title == null) {
             title = getTitle(node);
         }
+
         return title;
     }
 
@@ -1187,6 +1202,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (idx >= 0) {
             title = title.substring(0, idx);
         }
+
         return title;
     }
 
@@ -1202,6 +1218,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (type == null) {
             return null;
         }
+
         return (XmlNode) edgeTypeMap.get(type);
     }
 
@@ -1225,6 +1242,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 if (n != null) {
                     nodeSelect(n);
                 }
+
                 return;
             }
         }
@@ -1251,6 +1269,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 if (n != null) {
                     nodeSelect(n);
                 }
+
                 return;
             }
         }
@@ -1299,6 +1318,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (b == null) {
             addShapeVisibility(id, value);
         }
+
         return ((b == null)
                 ? value
                 : b.booleanValue());
@@ -1324,6 +1344,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             XmlNode cbmi = new XmlNode("cbmenuitem", attrs);
             xmlUi.addMenuItem("menu.shape", cbmi);
         }
+
         return b.booleanValue();
     }
 
@@ -1411,8 +1432,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         }
         if (graphApplet.isNodeLoaded(node.id)) {
             node.haveLoadedGraph = true;
+
             return false;
         }
+
         return true;
     }
 
@@ -1454,8 +1477,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             } else {
                 nodesToLoad.addElement(nodeId);
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -1712,6 +1737,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                     sortedNodes.insertElementAt(node, j);
                     sortedEdges.insertElementAt(edge, j);
                     node = null;
+
                     break;
                 }
             }
@@ -1735,6 +1761,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             displayNodes.removeElement(node);
             ((GraphEdge) sortedEdges.elementAt(i)).setLevel(-1);
         }
+
         return new Vector[] { goodNodes, goodEdges };
     }
 
@@ -1951,6 +1978,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         while (nodes.size() > 0) {
             if (cnt++ > 1000) {
                 System.err.println("Bad things");
+
                 return;
             }
             node = (GraphNode) nodes.elementAt(0);
@@ -2238,6 +2266,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                           minChildX + (maxChildX - minChildX) / 2);
             }
         }
+
         return currentX;
     }
 
@@ -2305,6 +2334,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 edge.joint = new Point(GraphEdge.HEADX, GraphEdge.TAILY);
             }
         }
+
         return currentY;
     }
 
@@ -2325,8 +2355,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
         if (draggedNode != null) {
             if (((layoutType != LAYOUT_RELAX1)
-                    && (layoutType != LAYOUT_RELAX2)) || (layoutType == LAYOUT_NONE)) {
+                    && (layoutType != LAYOUT_RELAX2)) || (layoutType
+                       == LAYOUT_NONE)) {
                 needLayout = false;
+
                 return;
             }
         }
@@ -2365,27 +2397,32 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
           case LAYOUT_RELAX2 :
               checkNodeForLoad(centerNode);
               doLayoutRelax(centerNode, layoutType == LAYOUT_RELAX2);
+
               break;
 
 
           case LAYOUT_CIRCULAR1 :
               doLayoutCircular(centerNode, true);
+
               break;
 
           case LAYOUT_CIRCULAR2 :
               doLayoutCircular(centerNode, false);
+
               break;
 
 
           case LAYOUT_HTREE :
           case LAYOUT_VTREE :
               doLayoutTree(centerNode, layoutType == LAYOUT_VTREE);
+
               break;
 
 
           case LAYOUT_HHIER :
           case LAYOUT_VHIER :
               doLayoutHier(centerNode, layoutType == LAYOUT_VHIER);
+
               break;
 
           case LAYOUT_HISTORY : {
@@ -2406,6 +2443,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                   x += node.bounds.width + 10;
                   y += node.bounds.height + 10;
               }
+
               break;
           }
 
@@ -2421,6 +2459,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                                          * (double) Math.min(middleX,
                                              middleY)) - 10.0);
               doLayoutRadial(centerNode, 0.0, 360.0, radius, 0);
+
               break;
           }
 
@@ -2461,10 +2500,12 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 if (edge.getHead() == null) {
                     p.haveOthersNotLoaded = true;
                     p.haveOthers          = true;
+
                     continue;
                 }
                 if (edge.getHead().getNeedsLayout()) {
                     p.haveOthers = true;
+
                     break;
                 }
             }
@@ -2474,10 +2515,12 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 if (edge.getTail() == null) {
                     p.haveOthersNotLoaded = true;
                     p.haveOthers          = true;
+
                     continue;
                 }
                 if (edge.getTail().getNeedsLayout()) {
                     p.haveOthers = true;
+
                     break;
                 }
             }
@@ -2527,6 +2570,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 if (p.level >= q.level) {
                     displayNodes.insertElementAt(p, j);
                     p = null;
+
                     break;
                 }
             }
@@ -2577,6 +2621,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
           case LAYOUT_RELAX2 :
               shiftX = (draggedNode == null);
               shiftY = (draggedNode == null);
+
               break;
 
 
@@ -2585,6 +2630,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
           case LAYOUT_VTREE :
               shiftX = false;
               shiftY = false;
+
               break;
         }
 
@@ -2667,6 +2713,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if ( !edge.getHead().getVisible()) {
             return false;
         }
+
         return true;
     }
 
@@ -2685,6 +2732,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 visible.addElement(n);
             }
         }
+
         return visible;
     }
 
@@ -2702,6 +2750,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 return b.booleanValue();
             }
         }
+
         return true;
     }
 
@@ -2736,6 +2785,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 return containsShape;
             }
         }
+
         return null;
     }
 
@@ -2749,35 +2799,39 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     public void mouseClicked(MouseEvent e) {
         //Right click?
 
-        if (e.getClickCount()>1) {
+        if (e.getClickCount() > 1) {
             int        x             = translateInputX(e.getX());
             int        y             = translateInputY(e.getY());
             GraphShape containsShape = find(x, y);
             GraphNode  closest       = hilite;
 
-            if(closest == null)
-                closest       = ((containsShape != null)
-                                 ? containsShape.glyph
-                                 : null);
-            if(closest!=null) {
+            if (closest == null) {
+                closest = ((containsShape != null)
+                           ? containsShape.glyph
+                           : null);
+            }
+            if (closest != null) {
                 Vector types = closest.getTypeList();
                 for (int j = 0; j < types.size(); j++) {
                     XmlNode tmpType = (XmlNode) types.elementAt(j);
-                    Vector nodes =  tmpType.getChildren();
+                    Vector  nodes   = tmpType.getChildren();
                     for (int i = 0; i < nodes.size(); i++) {
                         XmlNode child = (XmlNode) nodes.elementAt(i);
                         if ( !child.getTag().equals(TAG_COMMAND)) {
                             continue;
                         }
-                        String doubleClick   = child.getAttribute("doubleclick");
-                        if(doubleClick!=null && doubleClick.equals("true")) {
+                        String doubleClick =
+                            child.getAttribute("doubleclick");
+                        if ((doubleClick != null)
+                                && doubleClick.equals("true")) {
                             String command = child.getAttribute(ATTR_COMMAND);
                             handleCommands(command, closest, null, null);
+
                             return;
                         }
                     }
                 }
-            }                    
+            }
         }
 
 
@@ -2800,6 +2854,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 popupNode = hilite;
                 showNodeMenu(hilite, this, e.getX(), e.getY());
             }
+
             return;
         }
     }
@@ -2837,6 +2892,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         mi.setActionCommand(command);
         mi.addActionListener(this);
         mi.setEnabled(enabled);
+
         return mi;
     }
 
@@ -2896,6 +2952,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             String command = child.getAttribute(ATTR_COMMAND);
             popup.add(makeMenuItem(label, "menu:" + command, true, node));
         }
+
         return popup;
     }
 
@@ -2929,10 +2986,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
      */
     public void mouseExited(MouseEvent e) {}
 
-    /** _more_          */
+    /** _more_ */
     int clickX = 0;
 
-    /** _more_          */
+    /** _more_ */
     int clickY = 0;
 
     /**
@@ -2955,6 +3012,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         clearMouseOver(this);
         if (hilite == null) {
             draggedNode = null;
+
             return;
         }
         hilite.moveBy(scaleInputX(e.getX() - clickX),
@@ -2981,6 +3039,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         //If right mouse then do nothing
         if (draggedNode != null) {
             draggedNode = null;
+
             return;
         }
         draggedNode = null;
@@ -3108,6 +3167,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 return xmlNode;
             }
         }
+
         return null;
     }
 
@@ -3205,6 +3265,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 allNodes.removeElement(theNode);
                 setNeedLayout();
             }
+
             return;
         }
 
@@ -3212,6 +3273,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (func.equals(CMD_LOAD)) {
             addNodeToLoad(node.id, node, false);
             repaint();
+
             return;
         }
 
@@ -3221,12 +3283,14 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             String   window = args[0];
             String   url    = node.processTemplate(args[1]);
             graphApplet.showUrl(url, window);
+
             return;
         }
 
         if (func.equals(CMD_MAXCONNECTIONS)) {
             maxConnections = new Integer(params).intValue();
             setNeedLayout();
+
             return;
         }
 
@@ -3234,6 +3298,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (func.equals(CMD_TIGHTNESS)) {
             tightness = new Double(params).doubleValue();
             setNeedLayout();
+
             return;
         }
 
@@ -3247,11 +3312,13 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 titleAttributes.removeElement(attr);
             }
             resetNodesDisplay();
+
             return;
         }
 
         if (func.equals(CMD_NEW)) {
             graphApplet.makeView();
+
             return;
         }
 
@@ -3259,6 +3326,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             layoutType = GuiUtils.getIndex(LAYOUT_NAMES, null, params,
                                            layoutType);
             setNeedLayout();
+
             return;
         }
 
@@ -3266,6 +3334,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (func.equals(CMD_LEVEL)) {
             maxLevel = new Integer(params).intValue();
             setNeedLayout();
+
             return;
         }
 
@@ -3273,6 +3342,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
         if (func.equals(CMD_RELOAD)) {
             graphApplet.reload();
+
             return;
         }
 
@@ -3292,6 +3362,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             }
             shapeVisibility.put(flag, value);
             setShapeVisibility();
+
             return;
         }
 
@@ -3329,6 +3400,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             } else {
                 System.err.println("Unknown flag:" + flag);
             }
+
             return;
         }
 
@@ -3345,6 +3417,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 System.err.println("Bad layout direction:" + params);
             }
             setNeedLayout();
+
             return;
         }
 
@@ -3362,6 +3435,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                 nodeListFrame.setLocation(10, 10);
             }
             nodeListFrame.show();
+
             return;
         }
 
@@ -3369,6 +3443,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (func.equals(CMD_FLOAT)) {
             needLayout = true;
             toggleFloat();
+
             return;
         }
 
@@ -3408,6 +3483,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             if ( !isMain) {
                 stop();
                 graphApplet.removeView(this);
+
                 return;
             }
             xmlUi.setLabel("floatbutton", "Float window");
@@ -3631,7 +3707,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean repaintPending = false;
 
     /**
@@ -3654,7 +3730,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     }
 
 
-    /** _more_          */
+    /** _more_ */
     long lastRepaintTime = 0;
 
 
@@ -3689,10 +3765,10 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     Hashtable mouseOverMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     boolean showingMouseOver = false;
 
 
@@ -3743,6 +3819,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
         if (fatalErrorMsg != null) {
             drawMouseOver(g, fatalErrorMsg, 10, 10);
+
             return;
         }
 
@@ -3847,8 +3924,19 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
     }
 
-    public boolean okToDrawText(GraphShape shape,boolean isHighlight) {
-        if(isHighlight) return true;
+    /**
+     * _more_
+     *
+     * @param shape _more_
+     * @param isHighlight _more_
+     *
+     * @return _more_
+     */
+    public boolean okToDrawText(GraphShape shape, boolean isHighlight) {
+        if (isHighlight) {
+            return true;
+        }
+
         //        if(displayNodes.size()>75) return false;
         return showText;
         //        return false;
@@ -3885,6 +3973,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                     }
                 };
                 t.start();
+
                 return;
             }
         }
@@ -3964,6 +4053,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         g.setColor(Color.black);
         g.drawRect(gb.x, gb.y, gb.width, gb.height);
         glyph.paint(g, this);
+
         return new Point(x + gb.width, y + gb.height);
     }
 
@@ -3984,13 +4074,16 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
                                int height) {
         if ((flags & ImageObserver.ERROR) != 0) {
             graphApplet.debug("Image error:" + graphApplet.getImagePath(img));
+
             return false;
         }
 
         if ((flags & ImageObserver.ALLBITS) != 0) {
             repaint();
+
             return false;
         }
+
         return true;
     }
 
@@ -4021,6 +4114,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
     public Label getLabel(String l) {
         Label label = new Label(l);
         label.setFont(labelFont);
+
         return label;
     }
 
@@ -4039,6 +4133,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
         if (bg.equals(Color.blue)) {
             return Color.white;
         }
+
         return Color.black;
     }
 
@@ -4068,6 +4163,7 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
             w.addItemListener(listener);
         }
         w.setFont(widgetFont);
+
         return w;
     }
 
@@ -4075,4 +4171,3 @@ public class GraphView extends ScrollCanvas implements ListSelectionListener,
 
 
 }
-

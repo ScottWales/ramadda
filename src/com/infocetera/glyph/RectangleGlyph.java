@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -53,19 +52,19 @@ import java.awt.Rectangle;
  */
 public class RectangleGlyph extends Glyph {
 
-    /** _more_          */
+    /** _more_ */
     public Rectangle bounds;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_RECT = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_RRECT = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_CIRCLE = 2;
 
-    /** _more_          */
+    /** _more_ */
     int type;
 
 
@@ -120,6 +119,7 @@ public class RectangleGlyph extends Glyph {
                                             bounds.height);
         clonedObject.typeName = typeName;
         clonedObject.type     = type;
+
         return clonedObject;
     }
 
@@ -182,6 +182,7 @@ public class RectangleGlyph extends Glyph {
                   g.setColor(getColor());
               }
               GuiUtils.drawRect(g, r.x, r.y, r.width, r.height, newW);
+
               break;
           }
 
@@ -196,6 +197,7 @@ public class RectangleGlyph extends Glyph {
               }
               GuiUtils.drawRoundRect(g, r.x, r.y, r.width, r.height, radius,
                                      radius, newW);
+
               break;
           }
 
@@ -208,6 +210,7 @@ public class RectangleGlyph extends Glyph {
               }
               GuiUtils.drawArc(g, r.x + offsetX, r.y + offsetY, r.width,
                                r.height, startAngle, lengthAngle, newW);
+
               break;
           }
         }
@@ -234,6 +237,7 @@ public class RectangleGlyph extends Glyph {
             double d2 = (bounds.x + bounds.width - x);
             double d3 = (y - bounds.y);
             double d4 = (bounds.y + bounds.height - y);
+
             return Math.min(d1, Math.min(d2, Math.min(d3, d4)));
         }
 
@@ -242,12 +246,14 @@ public class RectangleGlyph extends Glyph {
             if (y < bounds.y) {
                 return (bounds.y - y);
             }
+
             return (y - (bounds.y + bounds.height));
         }
         if (iny) {
             if (x < bounds.x) {
                 return (bounds.x - x);
             }
+
             return (x - (bounds.x + bounds.width));
         }
 
@@ -329,6 +335,7 @@ public class RectangleGlyph extends Glyph {
             }
         }
         boundsChanged();
+
         return vs + hs;
     }
 
@@ -405,6 +412,7 @@ public class RectangleGlyph extends Glyph {
                 && (hMin <= MIN_DISTANCE_TO_STRETCH)) {
             return vS + hS;
         }
+
         return PT_CENTER;
     }
 
@@ -457,4 +465,3 @@ public class RectangleGlyph extends Glyph {
     }
 
 }
-

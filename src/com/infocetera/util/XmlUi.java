@@ -1,19 +1,22 @@
 /*
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2004  WTS Systems, L.L.C.
@@ -305,6 +308,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
     /** xml attribute name */
     public static final String ATTR_ORIENTATION = "orientation";
 
+    /** _more_          */
     public static final String ATTR_BORDER = "border";
 
     /** xml attribute name */
@@ -520,6 +524,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
     /** _more_ */
     public static final String VALUE_LAYOUTBORDER = "border";
 
+    /** _more_          */
     public static final String VALUE_LAYOUTTAB = "tab";
 
     /** _more_ */
@@ -570,6 +575,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 return JLabel.RIGHT;
             }
         }
+
         return JLabel.LEFT;
     }
 
@@ -617,6 +623,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 ItemSelectable s = (ItemSelectable) v.elementAt(i);
                 if (getState(s)) {
                     onIdx = i;
+
                     break;
                 }
             }
@@ -719,14 +726,15 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         int    left   = node.getAttribute(ATTR_MARGINLEFT, margin);
         int    bottom = node.getAttribute(ATTR_MARGINBOTTOM, margin);
         int    right  = node.getAttribute(ATTR_MARGINRIGHT, margin);
-        Color color = node.getAttribute("color", Color.black);
-        String border =  node.getAttribute(ATTR_BORDER, "");
+        Color  color  = node.getAttribute("color", Color.black);
+        String border = node.getAttribute(ATTR_BORDER, "");
 
 
-        if(comp instanceof JComponent) {
+        if (comp instanceof JComponent) {
             JComponent jcomp = (JComponent) comp;
-            if(border.equals("matte")) {
-                jcomp.setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, color));
+            if (border.equals("matte")) {
+                jcomp.setBorder(BorderFactory.createMatteBorder(top, left,
+                        bottom, right, color));
             }
         }
     }
@@ -811,6 +819,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             makingUi   = false;
             //      myContents.invalidate();
         }
+
         return myContents;
     }
 
@@ -825,6 +834,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
     public static XmlNode wrap(XmlNode node) {
         XmlNode root = new XmlNode(TAG_PANEL, new Hashtable());
         root.appendChild(node);
+
         return root;
     }
 
@@ -858,6 +868,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
         if (uiNode == null) {
             System.err.println("No ui tag found in:" + root);
+
             return GuiUtils.inset(new JLabel("Error: No <ui> tag found"), 4,
                                   4);
         }
@@ -865,6 +876,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             return GuiUtils.inset(
                 new JLabel("Error: <ui> tag must have only one child"), 4, 4);
         }
+
         return GuiUtils.inset(xmlToUi(uiNode.get(0)), 0, 0);
     }
 
@@ -888,6 +900,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 reffedNode.addAttribute(attr, node.getAttribute(attr));
             }
         }
+
         return reffedNode;
     }
 
@@ -909,6 +922,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         }
 
         reffedNode = reffedNode.copy();
+
         return reffedNode;
     }
 
@@ -951,6 +965,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if (comp != null) {
             setAttrs(comp, node);
         }
+
         return comp;
 
     }
@@ -965,7 +980,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
      *
      * @return _more_
      */
-   private Container layoutBorder(XmlNode node, Vector children) {
+    private Container layoutBorder(XmlNode node, Vector children) {
         if (children.size() == 0) {
             return new JPanel();
         }
@@ -996,6 +1011,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
         GuiUtils.doLayout(panel, new Component[] { childComponent }, 1,
                           GuiUtils.DS_Y, GuiUtils.DS_Y);
+
         return panel;
     }
 
@@ -1012,16 +1028,16 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
     private Container layoutContainer(Container panel, XmlNode node,
                                       Vector xmlChildren) {
         panel.removeAll();
-        String panelId     = node.getAttribute(ATTR_ID);
-        String layout      = node.getAttribute(ATTR_LAYOUT, "");
-        Vector children    = new Vector();
-        Vector nodes       = new Vector();
-        int    hspace      = node.getAttribute(ATTR_HSPACE, 0);
-        int    vspace      = node.getAttribute(ATTR_VSPACE, 0);
-        int    rows        = node.getAttribute(ATTR_ROWS, 0);
-        int    cols        = node.getAttribute(ATTR_COLS, 1);
-        String defaultComp = node.getAttribute(ATTR_DEFAULT, "nocomp");
-        JTabbedPane tabs=null;
+        String      panelId     = node.getAttribute(ATTR_ID);
+        String      layout      = node.getAttribute(ATTR_LAYOUT, "");
+        Vector      children    = new Vector();
+        Vector      nodes       = new Vector();
+        int         hspace      = node.getAttribute(ATTR_HSPACE, 0);
+        int         vspace      = node.getAttribute(ATTR_VSPACE, 0);
+        int         rows        = node.getAttribute(ATTR_ROWS, 0);
+        int         cols        = node.getAttribute(ATTR_COLS, 1);
+        String      defaultComp = node.getAttribute(ATTR_DEFAULT, "nocomp");
+        JTabbedPane tabs        = null;
 
         if (layout.equals(VALUE_LAYOUTBORDER)) {
             panel.setLayout(new BorderLayout());
@@ -1051,10 +1067,11 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             }
             if (layout.equals(VALUE_LAYOUTBORDER)) {
                 String place = childXmlNode.getAttribute(ATTR_PLACE,
-                                   "Center");   
+                                   "Center");
                 panel.add(place, childComponent);
             } else if (layout.equals(VALUE_LAYOUTTAB)) {
-                tabs.add(childXmlNode.getAttribute(ATTR_LABEL), childComponent);
+                tabs.add(childXmlNode.getAttribute(ATTR_LABEL),
+                         childComponent);
             } else if (layout.equals(VALUE_LAYOUTCARD)) {
                 String childId = childXmlNode.getAttribute(ATTR_ID);
                 panel.add(childId, childComponent);
@@ -1066,12 +1083,14 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                         hspace);
                 GuiUtils.doLayout(panel, new Component[] { childComponent },
                                   1, GuiUtils.DS_Y, GuiUtils.DS_Y);
+
                 break;
             } else if (layout.equals(VALUE_LAYOUTWRAP)) {
                 GuiUtils.tmpInsets = new Insets(vspace, hspace, vspace,
                         hspace);
                 GuiUtils.doLayout(panel, new Component[] { childComponent },
                                   1, GuiUtils.DS_N, GuiUtils.DS_N);
+
                 break;
             } else if ( !layout.equals(VALUE_LAYOUTGRIDBAG)) {
                 panel.add(childComponent);
@@ -1094,6 +1113,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         }
 
         containerToNodeList.put(panel, nodes);
+
         return panel;
     }
 
@@ -1144,10 +1164,12 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 tb.setActionListener(this);
                 tb.setAction(action);
             }
+
             return tb;
         } catch (Exception exc) {
             exc.printStackTrace();
         }
+
         return null;
     }
 
@@ -1258,6 +1280,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 XmlNode childElement = (XmlNode) children.get(i);
                 if (childElement.getTag().equals(TAG_SEPARATOR)) {
                     menu.addSeparator();
+
                     continue;
                 }
                 Component childComponent = xmlToUi(childElement);
@@ -1365,6 +1388,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             comp = new JLabel("Unknown tag:" + tag);
             System.err.println("Unknown tag:" + node);
         }
+
         return comp;
 
     }
@@ -1403,6 +1427,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 return values[fidx];
             }
         }
+
         return dflt;
 
     }
@@ -1482,6 +1507,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         } else if (selectable instanceof Checkbox) {
             return ((Checkbox) selectable).getState();
         }
+
         return false;
     }
 
@@ -1556,6 +1582,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
         if ( !makingUi && isInGroup(selectable) && !getState(selectable)) {
             setState(selectable, true);
+
             return;
         }
 
@@ -1640,6 +1667,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if (comp == null) {
             System.err.println("Unable to find: " + compId);
         }
+
         return comp;
     }
 
@@ -1656,6 +1684,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if ((idx1 < 0) || (idx2 < 0)) {
             return null;
         }
+
         return cmd.substring(idx1 + 1, idx2);
     }
 
@@ -1671,6 +1700,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if (idx < 0) {
             return new String[] { null, null };
         }
+
         return new String[] { cmd.substring(0, idx), cmd.substring(idx + 1) };
     }
 
@@ -1691,6 +1721,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if ( !((idx1 < idx2) && (idx2 < idx3))) {
             return null;
         }
+
         return new String[] { cmd.substring(idx1 + 1, idx2),
                               cmd.substring(idx2 + 1, idx3) };
     }
@@ -1707,6 +1738,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
         if (cmd.startsWith("ui.message")) {
             String msg = extractOneArg(cmd);
             message(msg);
+
             return;
         }
 
@@ -1716,6 +1748,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
             Component comp   = (Component) idToComponent.get(compId);
             if (comp == null) {
                 System.err.println("Unable to find: " + compId);
+
                 return;
             }
             Container parent = (Container) componentToParent.get(comp);
@@ -1742,20 +1775,24 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 Component mb = (Component) source;
                 popupMenu.show(mb, 0, mb.getBounds().height);
             }
+
             return;
         } else if (cmd.startsWith(ACTION_WRITE)) {
             String[] args = extractTwoArgsFromCmd(cmd);
             if (args == null) {
                 System.err.println("Failed to read args " + cmd);
+
                 return;
             }
             Component comp = (Component) idToComponent.get(args[0]);
             if (comp == null) {
                 System.err.println("Component not found ");
+
                 return;
             }
             if ( !(comp instanceof JTextComponent)) {
                 System.err.println("Bad component type: " + comp);
+
                 return;
             }
             ((JTextComponent) comp).setText(((JTextComponent) comp).getText()
@@ -1769,6 +1806,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 if ((panel == null) || (comp == null)) {
                     System.err.println("Unable to find: " + args[0] + " or "
                                        + args[1]);
+
                     return;
                 }
                 CardLayout layout = (CardLayout) panel.getLayout();
@@ -1781,6 +1819,7 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
                 Container panel = (Container) idToComponent.get(arg);
                 if (panel == null) {
                     System.err.println("Unable to find: " + arg);
+
                     return;
                 }
                 CardLayout layout = (CardLayout) panel.getLayout();
@@ -2040,4 +2079,3 @@ public class XmlUi implements ActionListener, ItemListener, KeyListener {
 
 
 }
-

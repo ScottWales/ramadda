@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /*
  * @(#)GIFEncoder.java    0.90 4/21/96 Adam Doppelt
@@ -74,25 +73,25 @@ import java.net.*;
  *                                 sverrehu@ifi.uio.no<P>
  * </CENTER>
  * @version 0.90 21 Apr 1996
- * @author <A HREF="http://www.cs.brown.edu/people/amd/">Adam Doppelt</A> 
+ * @author <A HREF="http://www.cs.brown.edu/people/amd/">Adam Doppelt</A>
  */
 
 
 public class GIFEncoder {
 
-    /** _more_          */
+    /** _more_ */
     short width_, height_;
 
-    /** _more_          */
+    /** _more_ */
     int numColors_;
 
-    /** _more_          */
+    /** _more_ */
     byte pixels_[], colors_[];
 
-    /** _more_          */
+    /** _more_ */
     ScreenDescriptor sd_;
 
-    /** _more_          */
+    /** _more_ */
     ImageDescriptor id_;
 
     /**
@@ -297,13 +296,13 @@ public class GIFEncoder {
  */
 class BitFile {
 
-    /** _more_          */
+    /** _more_ */
     OutputStream output_;
 
-    /** _more_          */
+    /** _more_ */
     byte buffer_[];
 
-    /** _more_          */
+    /** _more_ */
     int index_, bitsLeft_;
 
     /**
@@ -385,37 +384,37 @@ class BitFile {
  */
 class LZWStringTable {
 
-    /** _more_          */
+    /** _more_ */
     private final static int RES_CODES = 2;
 
-    /** _more_          */
+    /** _more_ */
     private final static short HASH_FREE = (short) 0xFFFF;
 
-    /** _more_          */
+    /** _more_ */
     private final static short NEXT_FIRST = (short) 0xFFFF;
 
-    /** _more_          */
+    /** _more_ */
     private final static int MAXBITS = 12;
 
-    /** _more_          */
+    /** _more_ */
     private final static int MAXSTR = (1 << MAXBITS);
 
-    /** _more_          */
+    /** _more_ */
     private final static short HASHSIZE = 9973;
 
-    /** _more_          */
+    /** _more_ */
     private final static short HASHSTEP = 2039;
 
-    /** _more_          */
+    /** _more_ */
     byte strChr_[];
 
-    /** _more_          */
+    /** _more_ */
     short strNxt_[];
 
-    /** _more_          */
+    /** _more_ */
     short strHsh_[];
 
-    /** _more_          */
+    /** _more_ */
     short numStrings_;
 
     /**
@@ -588,13 +587,13 @@ class LZWCompressor {
  */
 class ScreenDescriptor {
 
-    /** _more_          */
+    /** _more_ */
     public short localScreenWidth_, localScreenHeight_;
 
-    /** _more_          */
+    /** _more_ */
     private byte byte_;
 
-    /** _more_          */
+    /** _more_ */
     public byte backgroundColorIndex_, pixelAspectRatio_;
 
     /**
@@ -676,13 +675,13 @@ class ScreenDescriptor {
  */
 class ImageDescriptor {
 
-    /** _more_          */
+    /** _more_ */
     public byte separator_;
 
-    /** _more_          */
+    /** _more_ */
     public short leftPosition_, topPosition_, width_, height_;
 
-    /** _more_          */
+    /** _more_ */
     private byte byte_;
 
     /**
@@ -831,4 +830,3 @@ class BitUtils {
 
 
 }
-

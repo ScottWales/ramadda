@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.graph;
 
@@ -40,38 +39,38 @@ import java.util.Vector;
  */
 public class GraphGlyph {
 
-    /** _more_          */
+    /** _more_ */
     static Hashtable fontMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_          */
+    /** _more_ */
     public String id;
 
-    /** _more_          */
+    /** _more_ */
     public boolean dirty = true;
 
-    /** _more_          */
+    /** _more_ */
     XmlNode xmlNode;
 
-    /** _more_          */
+    /** _more_ */
     private XmlNode glyphType;
 
-    /** _more_          */
+    /** _more_ */
     protected Vector types;
 
-    /** _more_          */
+    /** _more_ */
     public GraphView graphView;
 
 
-    /** _more_          */
+    /** _more_ */
     double scale = 1.0;
 
-    /** _more_          */
+    /** _more_ */
     double levelScale = 1.0;
 
-    /** _more_          */
+    /** _more_ */
     private String title;
 
 
@@ -87,6 +86,11 @@ public class GraphGlyph {
         xmlNode   = nodeNode;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getLabel() {
         return graphView.getTitle(this);
     }
@@ -147,6 +151,7 @@ public class GraphGlyph {
         if (v == null) {
             return dflt;
         }
+
         return GuiUtils.getColor(v);
     }
 
@@ -164,6 +169,7 @@ public class GraphGlyph {
         if (v == null) {
             return dflt;
         }
+
         return Integer.decode(v).intValue();
     }
 
@@ -180,6 +186,7 @@ public class GraphGlyph {
         if (v == null) {
             return dflt;
         }
+
         return new Boolean(v).booleanValue();
     }
 
@@ -227,6 +234,7 @@ public class GraphGlyph {
         if (value == null) {
             value = graphView.getAttr(name);
         }
+
         return ((value == null)
                 ? dflt
                 : value);
@@ -258,6 +266,7 @@ public class GraphGlyph {
             f = new Font(face, style, size);
             fontMap.put(key, f);
         }
+
         return f;
     }
 
@@ -279,4 +288,3 @@ public class GraphGlyph {
 
 
 }
-

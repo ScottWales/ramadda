@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.gantt;
 
@@ -43,22 +42,22 @@ import java.util.Vector;
  */
 public class GanttTask {
 
-    /** _more_          */
+    /** _more_ */
     private GregorianCalendar cal = new GregorianCalendar();
 
-    /** _more_          */
+    /** _more_ */
     public static int MILESTONE_WIDTH = GanttView.ROWHEIGHT / 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SEL_WIDTH = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int H_SEL_WIDTH = 3;
 
-    /** _more_          */
+    /** _more_ */
     private static Color DFLT_COLOR = new Color(0, 128, 192);
 
-    /** _more_          */
+    /** _more_ */
     private static Color[] PRIORITY_COLOR = {
         GuiUtils.getColor("#FFFFFF"), GuiUtils.getColor("#FFEEEE"),
         GuiUtils.getColor("#FFDDDD"), GuiUtils.getColor("#FFAAAA"),
@@ -67,106 +66,106 @@ public class GanttTask {
         GuiUtils.getColor("#FF1111"), GuiUtils.getColor("#FF0000")
     };
 
-    /** _more_          */
+    /** _more_ */
     private Color completeColor = Color.orange;
 
-    /** _more_          */
+    /** _more_ */
     public static final int CLICKBOX_WIDTH = 8;
 
-    /** _more_          */
+    /** _more_ */
     public static final int XPERTAB = 10;
 
-    /** _more_          */
+    /** _more_ */
     Rectangle mainBox = new Rectangle();
 
-    /** _more_          */
+    /** _more_ */
     Rectangle headerBox = new Rectangle();
 
-    /** _more_          */
+    /** _more_ */
     Rectangle headerClickBox = new Rectangle(0, 0, CLICKBOX_WIDTH,
                                              CLICKBOX_WIDTH);
 
-    /** _more_          */
+    /** _more_ */
     public static final Font boldFont = new Font("Times", Font.BOLD, 12);
 
-    /** _more_          */
+    /** _more_ */
     public static final Font normalFont = new Font("Times", 0, 12);
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static int BOXHEIGHT = 10;
 
 
-    /** _more_          */
+    /** _more_ */
     GanttView view;
 
-    /** _more_          */
+    /** _more_ */
     GanttResource resource;
 
-    /** _more_          */
+    /** _more_ */
     GanttStatus status;
 
-    /** _more_          */
+    /** _more_ */
     TaskType type;
 
-    /** _more_          */
+    /** _more_ */
     int priority = 1;
 
-    /** _more_          */
+    /** _more_ */
     String label;
 
-    /** _more_          */
+    /** _more_ */
     private Vector subTasks = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector toDependencies = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector fromDependencies = new Vector();
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean visible = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean childrenVisible = true;
 
-    /** _more_          */
+    /** _more_ */
     private long startDate;
 
-    /** _more_          */
+    /** _more_ */
     private long endDate;
 
-    /** _more_          */
+    /** _more_ */
     private Date startDateObj;
 
-    /** _more_          */
+    /** _more_ */
     private Date endDateObj;
 
-    /** _more_          */
+    /** _more_ */
     private int duration;
 
-    /** _more_          */
+    /** _more_ */
     private double complete;
 
-    /** _more_          */
+    /** _more_ */
     private String name;
 
-    /** _more_          */
+    /** _more_ */
     private GanttTask parent;
 
-    /** _more_          */
+    /** _more_ */
     private int absolutePosition = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int position = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int tabPosition = 0;
 
-    /** _more_          */
+    /** _more_ */
     private String id;
 
 
@@ -460,6 +459,7 @@ public class GanttTask {
      */
     public String getDateString(Date date) {
         cal.setTime(date);
+
         return GanttView.days[cal.get(Calendar.DAY_OF_WEEK)] + " "
                + GanttView.months[cal.get(Calendar.MONTH)] + " "
                + cal.get(Calendar.DAY_OF_MONTH) + ", "
@@ -517,6 +517,7 @@ public class GanttTask {
         if (this == descendant) {
             return true;
         }
+
         return isAncestor(descendant.getParentTask());
     }
 
@@ -724,6 +725,7 @@ public class GanttTask {
           case TreePanel.TREE_RANGE :
               return (double) (GanttView.DAY_FACTOR + startDate - endDate);
         }
+
         return 0.0;
     }
 
@@ -743,6 +745,7 @@ public class GanttTask {
             GanttTask child = (GanttTask) subTasks.elementAt(i);
             total += child.getTotalWeight(weightBy);
         }
+
         return total;
     }
 
@@ -786,6 +789,7 @@ public class GanttTask {
                 node.add(child.getTreeNode(weightBy, colorBy));
             }
         } else {}
+
         return node;
     }
 
@@ -1067,8 +1071,10 @@ public class GanttTask {
             if (type.isMilestone()) {
                 return Color.black;
             }
+
             return DFLT_COLOR;
         }
+
         return null;
     }
 
@@ -1290,4 +1296,3 @@ public class GanttTask {
 
 
 }
-

@@ -1,23 +1,22 @@
 /*
- *
- * 
- * 
- * 
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -302,6 +301,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         //       b.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         b.setPreferredSize(new Dimension(icon.getIconWidth() + 2,
                                          icon.getIconHeight() + 2));
+
         return b;
     }
 
@@ -332,6 +332,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         GuiUtils.tmpAnchor = GridBagConstraints.EAST;
         GuiUtils.tmpFill   = GridBagConstraints.NONE;
         GuiUtils.tmpInsets = new Insets(2, 2, 2, 2);
+
         return GuiUtils.doLayout(new Component[] { buttons,
                 new JLabel(" ") }, 1, GuiUtils.DS_N, GuiUtils.DS_NY);
     }
@@ -346,6 +347,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (selectButton == null) {
             return false;
         }
+
         return selectButton.isSelected();
     }
 
@@ -490,6 +492,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (currentCommand != null) {
             debug("EditCanvas.focusLost command = " + currentCommand);
             setCommand(currentCommand.doFocusLost(e));
+
             return;
         }
     }
@@ -504,6 +507,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (currentCommand != null) {
             debug("EditCanvas.keyReleased calling setCommand");
             setCommand(currentCommand.doKeyReleased(e));
+
             return;
         }
     }
@@ -535,6 +539,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (currentCommand != null) {
             debug("EditCanvas.keyPressed calling setCommand");
             setCommand(currentCommand.doKeyPress(evt));
+
             return;
         }
         int  code = evt.getKeyCode();
@@ -565,6 +570,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
             } else {
                 super.keyPressed(evt);
             }
+
             return;
         }
 
@@ -641,6 +647,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if ( !enabled) {
             mi.setEnabled(false);
         }
+
         return mi;
     }
 
@@ -656,6 +663,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         JMenuItem mi = new JMenuItem(label);
         mi.setActionCommand(command);
         mi.addActionListener(this);
+
         return mi;
     }
 
@@ -667,6 +675,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
      */
     public JMenu makeEditMenu() {
         JMenu editMenu = new JMenu("Edit");
+
         return makeEditMenu(editMenu);
     }
 
@@ -694,6 +703,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
                                   hasSelection));
         editMenu.add(makeMenuItem("Ungroup     Ctrl+u", CMD_EDIT_UNGROUP,
                                   hasSelection));
+
         return editMenu;
     }
 
@@ -721,6 +731,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
                                   hasSelection));
         editMenu.add(makeMenuItem("Ungroup     Ctrl+u", CMD_EDIT_UNGROUP,
                                   hasSelection));
+
         return editMenu;
     }
 
@@ -756,6 +767,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
 
         displayMenu.add(makeMenuItem("To front", CMD_GFX_TOFRONT));
         displayMenu.add(makeMenuItem("To back", CMD_GFX_TOBACK));
+
         return displayMenu;
     }
 
@@ -772,6 +784,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
                 return tb.color;
             }
         }
+
         return Color.black;
     }
 
@@ -789,6 +802,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         alignMenu.add(makeMenuItem("Left", CMD_ALIGN_LEFT));
         alignMenu.add(makeMenuItem("Middle", CMD_ALIGN_MIDDLE));
         alignMenu.add(makeMenuItem("Right", CMD_ALIGN_RIGHT));
+
         return alignMenu;
     }
 
@@ -814,6 +828,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
                 cbx.setState(true);
             }
         }
+
         //    GuiUtils.tmpInsets = new Insets(1,1,0,0);
         return GuiUtils.doLayout(colorCbx, (vertical
                                             ? 1
@@ -880,6 +895,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         contents = GuiUtils.topCenterBottom(top, super.doMakeContents(),
                                             null);
         contents.add("West", palette);
+
         return contents;
     }
 
@@ -1084,11 +1100,13 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         //Right click?
         if ((e.getModifiers() & e.BUTTON1_MASK) == 0) {
             showCanvasMenu(this, e.getX(), e.getY());
+
             return;
         }
 
         if (currentUrl != null) {
             socketApplet.showUrl(currentUrl, "CHAT.URL");
+
             return;
         }
 
@@ -1226,6 +1244,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
 
         if (idx <= 0) {
             mousePressedBase(e);
+
             return;
         }
 
@@ -1248,6 +1267,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
                 }
                 notifyGlyphCreateComplete(glyph, true);
                 addGlyph(glyph);
+
                 return;
             }
             glyph.setWidth(widthList.getSelectedIndex() + 1);
@@ -1349,6 +1369,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
             }
             selectedFile = socketApplet.getFullUrl(selectedFile);
         }
+
         return selectedFile;
     }
 
@@ -1369,8 +1390,10 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
             if (file != null) {
                 return new ImageGlyph(this, x, y, file);
             }
+
             return null;
         }
+
         return super.createGlyph(s, x, y, fromHere);
     }
 
@@ -1469,6 +1492,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (currentCommand != null) {
             setCommand(currentCommand.doMousePressed(e, x, y));
             repaint();
+
             return;
         }
 
@@ -1486,6 +1510,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
         if (nearestGlyph == null) {
             clearSelection();
             setCommand(new DragRectCommand(this, e, x, y));
+
             return;
         }
 
@@ -1533,6 +1558,7 @@ public class EditCanvas extends DisplayCanvas implements MouseListener,
             scrollToPoint(x, y);
             setCommand(currentCommand.doMouseDragged(e, translateInputX(x),
                     translateInputY(y)));
+
             return;
         }
 
@@ -1751,6 +1777,7 @@ class DragRectCommand extends CanvasCommand {
         currentX = x;
         currentY = y;
         canvas.repaint();
+
         return this;
     }
 
@@ -1768,6 +1795,7 @@ class DragRectCommand extends CanvasCommand {
     public CanvasCommand doMouseReleased(MouseEvent e, int x, int y) {
         canvas.select(getRect());
         canvas.repaint();
+
         return null;
     }
 
@@ -1779,5 +1807,4 @@ class DragRectCommand extends CanvasCommand {
 
 
 }  //DragRectCommand
-
 

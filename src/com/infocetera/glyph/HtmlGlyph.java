@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2004  WTS Systems, L.L.C.
@@ -47,76 +46,76 @@ import java.util.Vector;
  */
 public class HtmlGlyph extends TextGlyph implements ImageObserver {
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] WHITESPACE = { " ", "\n", "\t" };
 
-    /** _more_          */
+    /** _more_ */
     public static final int DFLT_FONT_SIZE = 12;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LI_SIZE = 7;
 
-    /** _more_          */
+    /** _more_ */
     public static final int UL_SIZE = 16;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DIV = "div";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_SPAN = "span";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_CENTER = "center";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_H1 = "h1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_H2 = "h2";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_H3 = "h3";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_H4 = "h4";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_HR = "hr";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_LI = "li";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_UL = "ul";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_BOLD = "b";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_IT = "i";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_P = "p";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_BR = "br";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_FONT = "font";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_IMG = "img";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_A = "a";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] BLOCKTAGS = {
         TAG_DIV, TAG_H1, TAG_H2, TAG_H3, TAG_H4, TAG_CENTER
     };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] OPENTAGS = {
         TAG_DIV, TAG_H1, TAG_H2, TAG_H3, TAG_H4, TAG_CENTER, TAG_SPAN,
         TAG_FONT
@@ -124,116 +123,116 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean treatNewLineAsBreak = true;
 
-    /** _more_          */
+    /** _more_ */
     private static int baseRowHeight = 1;
 
-    /** _more_          */
+    /** _more_ */
     private static int baseWidth;
 
-    /** _more_          */
+    /** _more_ */
     private static int maxWidth;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntRowHeight;
 
 
-    /** _more_          */
+    /** _more_ */
     private static boolean nextTimeNewRow = false;
 
-    /** _more_          */
+    /** _more_ */
     private static int numRows;
 
-    /** _more_          */
+    /** _more_ */
     private static String crntFontName = "Dialog";
 
-    /** _more_          */
+    /** _more_ */
     private static Font crntFont;
 
-    /** _more_          */
+    /** _more_ */
     private static FontMetrics crntFm;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntFontHeight;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntFontSize;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntBoldOpen;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntItalicOpen;
 
 
-    /** _more_          */
+    /** _more_ */
     private static Vector alignStack;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntAlign;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector bgColorStack;
 
-    /** _more_          */
+    /** _more_ */
     private static Color crntBgColor;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector colorStack;
 
-    /** _more_          */
+    /** _more_ */
     private static Color crntColor;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector sizeStack;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector hrefStack;
 
-    /** _more_          */
+    /** _more_ */
     private static String crntHref;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector hrList = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private static Vector rowsToBeAligned = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private static Vector alignments = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private static int numUls;
 
 
-    /** _more_          */
+    /** _more_ */
     private static int crntLeft;
 
-    /** _more_          */
+    /** _more_ */
     private static Vector rowGlyphs;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntX;
 
-    /** _more_          */
+    /** _more_ */
     private static int crntY;
 
-    /** _more_          */
+    /** _more_ */
     Hashtable crntAttrs;
 
 
-    /** _more_          */
+    /** _more_ */
     protected boolean fixedWidth = false;
 
-    /** _more_          */
+    /** _more_ */
     private Vector tokens = null;
 
-    /** _more_          */
+    /** _more_ */
     private boolean addedExtraToken = false;
 
-    /** _more_          */
+    /** _more_ */
     public Vector children = new Vector();
 
     /**
@@ -343,7 +342,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     String tmp = "";
 
     /**
@@ -441,6 +440,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
      */
     public String stretchTo(int x, int y, String pt, boolean correct) {
         moveBy(x, y);
+
         return pt;
     }
 
@@ -541,6 +541,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
                         }
                     }
                 }
+
                 continue;
             }
 
@@ -678,7 +679,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
 
     }
 
-    /** _more_          */
+    /** _more_ */
     static boolean prok = true;
 
     /**
@@ -707,6 +708,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -743,6 +745,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
         if (crntAttrs == null) {
             return null;
         }
+
         return (String) crntAttrs.get(attr);
     }
 
@@ -925,7 +928,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     static Hashtable fonts = new Hashtable();
 
     /**
@@ -950,6 +953,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
             font = new Font(crntFontName, style, crntFontSize);
             fonts.put(key, font);
         }
+
         return font;
     }
 
@@ -997,6 +1001,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
                 canvas.elementChanged(this);
             }
         }
+
         return true;
     }
 
@@ -1015,6 +1020,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
             dflt = stack.elementAt(lastIdx);
             stack.removeElementAt(lastIdx);
         }
+
         return dflt;
     }
 
@@ -1031,6 +1037,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
             stack = new Vector();
         }
         stack.addElement(v);
+
         return stack;
     }
 
@@ -1049,7 +1056,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
          *         ChatApplet.replaceFrom.elementAt(i).toString(),
          *         ChatApplet.replaceTo.elementAt(i).toString(),
          *         false);
-         *         }**
+         *         }
          */
 
         Vector       isTag     = new Vector();
@@ -1062,6 +1069,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
             int idx = line.indexOf("<");
             if (idx < 0) {
                 prefix.append(line);
+
                 break;
             }
             if (idx > 0) {
@@ -1071,6 +1079,7 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
             int idx2 = line.indexOf(">");
             if (idx2 < 0) {
                 prefix.append(line);
+
                 break;
             }
             if (prefix.length() > 0) {
@@ -1129,9 +1138,9 @@ public class HtmlGlyph extends TextGlyph implements ImageObserver {
                     attrs.elementAt(i) });
 
         }
+
         return realTokens;
     }
 
 
 }
-

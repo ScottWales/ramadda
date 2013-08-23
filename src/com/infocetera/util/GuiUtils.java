@@ -1,23 +1,22 @@
 /*
- *
- * 
- * 
- * 
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -219,6 +218,7 @@ public class GuiUtils {
      */
     public static Container inset(Component c, int h, int v) {
         tmpInsets = new Insets(v, h, v, h);
+
         return doLayout(new Component[] { c }, 1, DS_Y, DS_Y);
     }
 
@@ -240,6 +240,7 @@ public class GuiUtils {
                                    new Insets(vGap, hGap, vGap, hGap),
                                    borderColors, null);
         doLayout(p, new Component[] { c }, 1, DS_Y, DS_N);
+
         return p;
     }
 
@@ -269,6 +270,7 @@ public class GuiUtils {
                 v.addElement(new String[] { cmd, "" });
             }
         }
+
         return v;
     }
 
@@ -291,6 +293,7 @@ public class GuiUtils {
         while (tok.hasMoreTokens()) {
             cw[cnt++] = new Double(tok.nextToken()).doubleValue();
         }
+
         return cw;
     }
 
@@ -315,6 +318,7 @@ public class GuiUtils {
         if (r != null) {
             cont.add("East", r);
         }
+
         return cont;
 
     }
@@ -340,6 +344,7 @@ public class GuiUtils {
         if (b != null) {
             cont.add("South", b);
         }
+
         return cont;
     }
 
@@ -358,6 +363,7 @@ public class GuiUtils {
         for (int i = 0; i < comps.length; i++) {
             p.add(comps[i]);
         }
+
         return p;
     }
 
@@ -377,6 +383,7 @@ public class GuiUtils {
         JPanel   c   = new JPanel();
         double[] wxa = { wx };
         double[] wya = { wy };
+
         return doLayout(c, comps, cols, wxa, wya);
     }
 
@@ -514,6 +521,7 @@ public class GuiUtils {
             }
             consts.gridwidth = 1;
         }
+
         return c;
 
     }
@@ -530,6 +538,7 @@ public class GuiUtils {
         for (int i = 0; i < v.size(); i++) {
             compArray[i] = (Component) v.elementAt(i);
         }
+
         return compArray;
     }
 
@@ -571,6 +580,7 @@ public class GuiUtils {
         Point pp = getScreenLocation(parent, top);
         pp.x += p.x;
         pp.y += p.y;
+
         return pp;
     }
 
@@ -718,6 +728,7 @@ public class GuiUtils {
         tmp = Math.min(tmp, distance(p.x, p.y, r.x + r.width, r.y));
         tmp = Math.min(tmp,
                        distance(p.x, p.y, r.x + r.width, r.y + r.height));
+
         return tmp;
     }
 
@@ -798,6 +809,7 @@ public class GuiUtils {
                                           target.y - origin.y), theta);
         ret.x += origin.x;
         ret.y += origin.y;
+
         return ret;
     }
 
@@ -881,18 +893,22 @@ public class GuiUtils {
 
           case PT_NW :
               g.drawString(t, x, y + h);
+
               break;
 
           case PT_NE :
               g.drawString(t, x - w, y + h);
+
               break;
 
           case PT_SW :
               g.drawString(t, x, y);
+
               break;
 
           case PT_SE :
               g.drawString(t, x - w, y);
+
               break;
         }
     }
@@ -940,6 +956,7 @@ public class GuiUtils {
                     runningWidth += fm.charWidth(t.charAt(i));
                 }
                 i--;
+
                 return t.substring(0, i);
             }
         }
@@ -1109,6 +1126,7 @@ public class GuiUtils {
             //            IfcApplet.debug ("GuiUtils.getImageResource:" + gif + " read:" + bytes.length);
             return Toolkit.getDefaultToolkit().createImage(bytes);
         }
+
         //        IfcApplet.debug ("GuiUtils.getImageResource:" + gif + " failed");
         return null;
     }
@@ -1138,14 +1156,14 @@ public class GuiUtils {
                                       boolean printError) {
         try {
             InputStream inputStream = null;
-            System.err.println ("read resource:" + resource);
+            System.err.println("read resource:" + resource);
             //            IfcApplet.debug ("read resource:" + resource);
             if ( !resource.startsWith("http:")) {
                 inputStream = c.getResourceAsStream(resource);
             }
             if (inputStream == null) {
                 URL url = new URL(resource);
-                System.err.println ("read url:" + url);
+                System.err.println("read url:" + url);
                 //                IfcApplet.debug ("   read url:" + url);
                 URLConnection connection = url.openConnection();
                 inputStream = connection.getInputStream();
@@ -1168,6 +1186,7 @@ public class GuiUtils {
             }
             byte[] finalBytes = new byte[totalBytes];
             System.arraycopy(bytes, 0, finalBytes, 0, totalBytes);
+
             return finalBytes;
         } catch (Exception exc) {
             if (printError) {
@@ -1176,6 +1195,7 @@ public class GuiUtils {
                 exc.printStackTrace();
             }
         }
+
         return null;
     }
 
@@ -1195,6 +1215,7 @@ public class GuiUtils {
                 idx = tmpIdx;
             }
         }
+
         return idx;
     }
 
@@ -1219,6 +1240,7 @@ public class GuiUtils {
             source = source.substring(idx + 1);
         }
         tokens.addElement(source);
+
         return tokens;
     }
 
@@ -1273,6 +1295,7 @@ public class GuiUtils {
             idx = workSource.indexOf(pattern);
         }
         dest.append(source);
+
         return dest.toString();
     }
 
@@ -1356,6 +1379,7 @@ public class GuiUtils {
             if (s.equals("orange")) {
                 return Color.orange;
             }
+
             return dflt;
         }
     }
@@ -1372,6 +1396,7 @@ public class GuiUtils {
             if (parent.getParent() == null) {
                 parent.invalidate();
                 parent.validate();
+
                 return;
             }
             parent = parent.getParent();
@@ -1394,6 +1419,7 @@ public class GuiUtils {
         if (bytes == null) {
             return null;
         }
+
         return new String(bytes);
     }
 
@@ -1416,6 +1442,7 @@ public class GuiUtils {
             }
             parent = parent.getParent();
         }
+
         return null;
     }
 
@@ -1442,6 +1469,7 @@ public class GuiUtils {
     public static Vector vector(Object initial) {
         Vector v = new Vector();
         v.addElement(initial);
+
         return v;
     }
 
@@ -1467,8 +1495,8 @@ public class GuiUtils {
                         : i);
             }
         }
+
         return dflt;
     }
 
 }
-

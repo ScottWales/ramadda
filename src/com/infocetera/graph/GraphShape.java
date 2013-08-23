@@ -1,19 +1,22 @@
 /*
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.graph;
 
@@ -36,249 +39,249 @@ public class GraphShape {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_NONE = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_V = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_H = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int LAYOUT_GRID = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] LAYOUTS = { "none", "v", "h", "grid" };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final Rectangle EMPTY_RECTANGLE = new Rectangle(0, 0, 0, 0);
 
-    /** _more_          */
+    /** _more_ */
     double lastScale = 1.0;
 
-    /** _more_          */
+    /** _more_ */
     Font myFont = null;
 
-    /** _more_          */
+    /** _more_ */
     Font myScaledFont = null;
 
-    /** _more_          */
+    /** _more_ */
     int fontSize = -1;
 
-    /** _more_          */
+    /** _more_ */
     String fontFace = "Dialog";
 
-    /** _more_          */
+    /** _more_ */
     int fontStyle = Font.PLAIN;
 
 
-    /** _more_          */
+    /** _more_ */
     boolean okToDrawText = true;
 
-    /** _more_          */
+    /** _more_ */
     int fromAnchor;
 
-    /** _more_          */
+    /** _more_ */
     int toAnchor;
 
-    /** _more_          */
+    /** _more_ */
     int dx = 0;
 
-    /** _more_          */
+    /** _more_ */
     int dy = 0;
 
 
-    /** _more_          */
+    /** _more_ */
     public String id;
 
-    /** _more_          */
+    /** _more_ */
     private String[] flags;
 
-    /** _more_          */
+    /** _more_ */
     private boolean[] flagIsProperty;
 
-    /** _more_          */
+    /** _more_ */
     private boolean[] flagIsNot;
 
-    /** _more_          */
+    /** _more_ */
     private boolean flagsAreOr;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_NONE = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_PARENT = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_IMAGE = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_TEXT = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_RECT = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_RRECT = 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_OVAL = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_CIRCLE = 7;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_TRIANGLE = 8;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_3DRECT = 9;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHAPE_BARREL = 10;
 
-    /** _more_          */
+    /** _more_ */
     public static String[] SHAPES = {
         "none", "parent", "image", "text", "rect", "rrect", "oval", "circle",
         "triangle", "3drect", "barrel"
     };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FONTFACE = "fontface";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FONTSIZE = "fontsize";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FONTSTYLE = "fontstyle";
 
-    /** _more_          */
+    /** _more_ */
     public static final int SRC_NODE = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SRC_SIBLING = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SRC_ID = 2;
 
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean connectable;
 
-    /** _more_          */
+    /** _more_ */
     private boolean initVisible = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean visible = true;
 
-    /** _more_          */
+    /** _more_ */
     private Color color;
 
-    /** _more_          */
+    /** _more_ */
     private Color fillColor;
 
-    /** _more_          */
+    /** _more_ */
     private Color[] borderColors;
 
-    /** _more_          */
+    /** _more_ */
     private Insets insets;
 
-    /** _more_          */
+    /** _more_ */
     private int borderType;
 
 
-    /** _more_          */
+    /** _more_ */
     private int layoutType = LAYOUT_NONE;
 
-    /** _more_          */
+    /** _more_ */
     private int layoutRows = -1;
 
-    /** _more_          */
+    /** _more_ */
     private int layoutCols = -1;
 
-    /** _more_          */
+    /** _more_ */
     private int hGap = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int vGap = 0;
 
 
-    /** _more_          */
+    /** _more_ */
     private int shapeType;
 
-    /** _more_          */
+    /** _more_ */
     private String shapeName;
 
-    /** _more_          */
+    /** _more_ */
     GraphShape parent;
 
-    /** _more_          */
+    /** _more_ */
     GraphNode glyph;
 
-    /** _more_          */
+    /** _more_ */
     GraphView gv;
 
 
-    /** _more_          */
+    /** _more_ */
     int boundsSrc = SRC_NODE;
 
-    /** _more_          */
+    /** _more_ */
     String boundsSrcId;
 
 
-    /** _more_          */
+    /** _more_ */
     Image image;
 
-    /** _more_          */
+    /** _more_ */
     String imageUrl;
 
-    /** _more_          */
+    /** _more_ */
     Rectangle bounds = new Rectangle(0, 0, 0, 0);
 
-    /** _more_          */
+    /** _more_ */
     Rectangle searchBounds = new Rectangle(0, 0, 0, 0);
 
-    /** _more_          */
+    /** _more_ */
     String text;
 
-    /** _more_          */
+    /** _more_ */
     String href;
 
-    /** _more_          */
+    /** _more_ */
     String alt;
 
 
 
-    /** _more_          */
+    /** _more_ */
     String[] textLines;
 
-    /** _more_          */
+    /** _more_ */
     int textWidth;
 
-    /** _more_          */
+    /** _more_ */
     int maxTextWidth = 0;
 
-    /** _more_          */
+    /** _more_ */
     int textMaxLines;
 
-    /** _more_          */
+    /** _more_ */
     int align;
 
-    /** _more_          */
+    /** _more_ */
     int width;
 
-    /** _more_          */
+    /** _more_ */
     int height;
 
-    /** _more_          */
+    /** _more_ */
     Vector childShapes = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     XmlNode xmlNode;
 
 
@@ -321,6 +324,7 @@ public class GraphShape {
         if (v != null) {
             v = glyph.processTemplate(v);
         }
+
         return v;
     }
 
@@ -334,6 +338,7 @@ public class GraphShape {
      */
     public String getAttr(String n, String dflt) {
         String v = getAttr(n);
+
         return ((v == null)
                 ? dflt
                 : v);
@@ -350,6 +355,7 @@ public class GraphShape {
      */
     public int getAttr(String n, int dflt) {
         String v = getAttr(n);
+
         return ((v == null)
                 ? dflt
                 : new Integer(v).intValue());
@@ -365,6 +371,7 @@ public class GraphShape {
      */
     public boolean getAttr(String n, boolean dflt) {
         String v = getAttr(n);
+
         return ((v == null)
                 ? dflt
                 : new Boolean(v).booleanValue());
@@ -380,6 +387,7 @@ public class GraphShape {
      */
     public Color getAttr(String n, Color dflt) {
         String v = getAttr(n);
+
         return ((v == null)
                 ? dflt
                 : GuiUtils.getColor(v, dflt));
@@ -551,6 +559,7 @@ public class GraphShape {
                 children.addElement(child);
             }
         }
+
         return children;
     }
 
@@ -571,6 +580,7 @@ public class GraphShape {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -642,6 +652,7 @@ public class GraphShape {
             myFont = GraphGlyph.getFont(getFontFace(), getFontStyle(),
                                         getFontSize());
         }
+
         return myFont;
     }
 
@@ -681,6 +692,7 @@ public class GraphShape {
             while (true) {
                 if (--size < 6) {
                     okToDrawText = false;
+
                     break;
                 }
                 myScaledFont = GraphGlyph.getFont(myScaledFont.getFamily(),
@@ -696,11 +708,12 @@ public class GraphShape {
             debugfont = false;
         }
         okToDrawText = (fontScale > 0.6);
+
         //    okToDrawText = true;
         return myScaledFont;
     }
 
-    /** _more_          */
+    /** _more_ */
     static boolean debugfont = true;
 
 
@@ -724,7 +737,7 @@ public class GraphShape {
         return visible;
     }
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug = false;
 
     /**
@@ -736,6 +749,7 @@ public class GraphShape {
         if (parent != null) {
             return "  " + parent.tab();
         }
+
         return "";
     }
 
@@ -774,10 +788,12 @@ public class GraphShape {
                     if (v) {
                         ok = true;
                     }
+
                     break;
                 } else {
                     if ( !v) {
                         ok = false;
+
                         break;
                     }
                 }
@@ -820,7 +836,7 @@ public class GraphShape {
         }
         if ((shapeType == SHAPE_TEXT)
                 || ((shapeType == SHAPE_IMAGE) && (image != null))
-            || (!isParent())) {
+                || ( !isParent())) {
             if (searchBounds.contains(x, y)) {
                 return this;
             }
@@ -838,6 +854,7 @@ public class GraphShape {
                 return this;
             }
         }
+
         return null;
     }
 
@@ -910,6 +927,7 @@ public class GraphShape {
      * @param g _more_
      */
     private void setDimensions(Rectangle base, Graphics g) {
+
         bounds = new Rectangle(EMPTY_RECTANGLE);
         if (isParent()) {
             int cnt = 0;
@@ -924,25 +942,28 @@ public class GraphShape {
                     bounds = bounds.union(childShape.searchBounds);
                 }
             }
+
             return;
         }
 
         switch (shapeType) {
+
           case SHAPE_IMAGE :
               if (image == null) {
                   makeImage();
               }
               if (image != null) {
                   //bounds = new Rectangle(base);
-                  bounds.width = image.getWidth(glyph);
+                  bounds.width  = image.getWidth(glyph);
                   bounds.height = image.getHeight(glyph);
                   //                  bounds = new Rectangle(0, 0, image.getWidth(glyph),
                   //                                         image.getHeight(glyph));
               }
+
               break;
 
           case SHAPE_TEXT :
-              if(true) {
+              if (true) {
                   g.setFont(getFont(g));
                   Vector lines = new Vector();
                   if (textWidth > 0) {
@@ -958,21 +979,23 @@ public class GraphShape {
                           if (chars[i] == '\n') {
                               lines.addElement(sb.toString());
                               sb = null;
+
                               continue;
                           }
                           sb.append(chars[i]);
                           if (i == chars.length - 1) {
                               lines.addElement(sb.toString());
+
                               continue;
                           }
 
                           cnt++;
                           if (cnt > textWidth) {
                               if ((chars[i] != ' ') && (chars[i + 1] != ' ')
-                                  && (chars[i + 1] != '\n')) {
+                                      && (chars[i + 1] != '\n')) {
                                   if ((i < chars.length - 2)
-                                      && ((chars[i + 2] == ' ')
-                                          || (chars[i + 2] == '\n'))) {
+                                          && ((chars[i + 2] == ' ')
+                                              || (chars[i + 2] == '\n'))) {
                                       sb.append(chars[i + 1]);
                                       i++;
                                   } else {
@@ -1012,29 +1035,33 @@ public class GraphShape {
                   for (int i = 0; i < textLines.length; i++) {
                       textLines[i] = (String) lines.elementAt(i);
                       maxTextWidth = Math.max(maxTextWidth,
-                                              fm.stringWidth(textLines[i]));
+                              fm.stringWidth(textLines[i]));
                   }
                   bounds.width = maxTextWidth;
                   bounds.height = textLines.length
-                      * (fm.getMaxDescent() + fm.getMaxAscent());
+                                  * (fm.getMaxDescent() + fm.getMaxAscent());
               } else {
-                  bounds.width = 40;
+                  bounds.width  = 40;
                   bounds.height = 40;
               }
+
               break;
+
           default :
               bounds = new Rectangle(base);
               //              IfcApplet.debug("     calculateBounds: base=" +  base);
               if (width != -1) {
-                  bounds.x-=width/2;
+                  bounds.x     -= width / 2;
                   bounds.width = width;
               }
               if (height != -1) {
-                  bounds.y-=height/2;
+                  bounds.y      -= height / 2;
                   bounds.height = height;
               }
+
               break;
         }
+
 
     }
 
@@ -1045,7 +1072,8 @@ public class GraphShape {
      * @param boundsMap _more_
      * @param siblingBounds _more_
      */
-    public void calculateBounds(Graphics g, Hashtable<String,Rectangle> boundsMap,
+    public void calculateBounds(Graphics g,
+                                Hashtable<String, Rectangle> boundsMap,
                                 Rectangle siblingBounds) {
         int maxWidth  = 0;
         int maxHeight = 0;
@@ -1068,12 +1096,15 @@ public class GraphShape {
 
         Rectangle base = null;
         switch (boundsSrc) {
+
           case SRC_ID :
-              base =  boundsMap.get(boundsSrcId);
+              base = boundsMap.get(boundsSrcId);
+
               break;
 
           case SRC_SIBLING :
               base = siblingBounds;
+
               break;
         }
         if (base == null) {
@@ -1169,6 +1200,7 @@ public class GraphShape {
         if ( !isHighlight && (color != null)) {
             return color;
         }
+
         return (isHighlight
                 ? GraphView.highlightColor
                 : Color.black);
@@ -1185,6 +1217,7 @@ public class GraphShape {
         if ( !isHighlight && (color != null)) {
             return color;
         }
+
         return (isHighlight
                 ? GraphView.highlightColor
                 : Color.black);
@@ -1200,6 +1233,7 @@ public class GraphShape {
         if (color != null) {
             return color;
         }
+
         return Color.black;
     }
 
@@ -1295,6 +1329,7 @@ public class GraphShape {
 
           case SHAPE_IMAGE :
               g.drawImage(image, posX, posY, baseW, baseH, null, null);
+
               break;
 
           case SHAPE_TEXT :
@@ -1309,7 +1344,8 @@ public class GraphShape {
                   if (fillColor != null) {
                       //todo: handle multiple lines
                       g.setColor(fillColor);
-                      g.fillRect(textX-3,posY, sb.width+6, lineHeight+2);
+                      g.fillRect(textX - 3, posY, sb.width + 6,
+                                 lineHeight + 2);
                       g.setColor(getColor());
                   }
 
@@ -1330,6 +1366,7 @@ public class GraphShape {
                       textY += lineHeight;
                   }
               }
+
               break;
 
           case SHAPE_RECT :
@@ -1361,6 +1398,7 @@ public class GraphShape {
                   g.drawLine(right, top, right, bottom);
                   g.drawLine(left, bottom, right, bottom);
               }
+
               break;
 
           case SHAPE_RRECT :
@@ -1382,6 +1420,7 @@ public class GraphShape {
               g.drawArc(arcLeft, arcTop, arcW, arcH, 90, 180);
               g.drawLine(left, bottom + 1, right, bottom + 1);
               g.drawArc(right - radius, arcTop, arcW, arcH, 90, -180);
+
               break;
 
           case SHAPE_OVAL :
@@ -1394,6 +1433,7 @@ public class GraphShape {
               g.setColor(getLineColor(isHighlight));
               g.drawOval(sb.x - offset, sb.y - offset, sb.width + offset * 2,
                          sb.height + offset * 2);
+
               break;
 
           case SHAPE_CIRCLE :
@@ -1404,6 +1444,7 @@ public class GraphShape {
               }
               g.setColor(getLineColor(isHighlight));
               g.drawOval(sb.x, midY(sb) - sb.width / 2, sb.width, sb.width);
+
               break;
 
           case SHAPE_BARREL :
@@ -1424,6 +1465,7 @@ public class GraphShape {
                         180);
               g.drawLine(sb.x, sb.y, sb.x, sb.y + sb.height);
               g.drawLine(right(sb), sb.y, right(sb), sb.y + sb.height);
+
               break;
 
           case SHAPE_TRIANGLE :
@@ -1432,6 +1474,7 @@ public class GraphShape {
               int[] ys = { sb.y + sb.height, sb.y, sb.y + sb.height,
                            sb.y + sb.height };
               g.fillPolygon(xs, ys, xs.length);
+
               break;
         }
 
@@ -1447,4 +1490,3 @@ public class GraphShape {
     }
 
 }
-

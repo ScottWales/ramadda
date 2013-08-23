@@ -1,18 +1,22 @@
 /*
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.graph;
 
@@ -34,77 +38,78 @@ import java.util.*;
  */
 public class GraphEdge extends GraphGlyph {
 
+    /** _more_          */
     private static Font labelFont;
 
-    /** _more_          */
+    /** _more_ */
     public static final Point TAILPOINT = new Point(0, 0);
 
-    /** _more_          */
+    /** _more_ */
     public static final Point HEADPOINT = new Point(0, 0);
 
-    /** _more_          */
+    /** _more_ */
     public static final int HEADY = -9990;
 
-    /** _more_          */
+    /** _more_ */
     public static final int HEADX = -9991;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TAILX = -9992;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TAILY = -9993;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CIRCLE = "circle";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ARROW = "arrow";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COLOR = "color";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_WIDTH = "width";
 
-    /** _more_          */
+    /** _more_ */
     private boolean visible = true;
 
-    /** _more_          */
+    /** _more_ */
     public String edgeType = null;
 
-    /** _more_          */
+    /** _more_ */
     private String tailId;
 
-    /** _more_          */
+    /** _more_ */
     private String headId;
 
-    /** _more_          */
+    /** _more_ */
     private int level = -1;
 
-    /** _more_          */
+    /** _more_ */
     Point[] points;
 
-    /** _more_          */
+    /** _more_ */
     Point joint;
 
 
-    /** _more_          */
+    /** _more_ */
     private GraphNode tail;
 
-    /** _more_          */
+    /** _more_ */
     private GraphNode head;
 
-    /** _more_          */
+    /** _more_ */
     public Color myColor = null;
 
-    /** _more_          */
+    /** _more_ */
     public int lineWidth = 1;
 
-    /** _more_          */
+    /** _more_ */
     public int arrow = 0;
 
-    /** _more_          */
+    /** _more_ */
     public int circle = 0;
 
 
@@ -188,6 +193,7 @@ public class GraphEdge extends GraphGlyph {
                 level = Math.max(level, tail.level);
             }
         }
+
         return level;
     }
 
@@ -311,6 +317,7 @@ public class GraphEdge extends GraphGlyph {
         if (tail != butNot) {
             return tail;
         }
+
         return head;
     }
 
@@ -347,6 +354,7 @@ public class GraphEdge extends GraphGlyph {
         if (c == TAILY) {
             return tail.getInEdgeAnchor().y;
         }
+
         return c;
     }
 
@@ -361,8 +369,9 @@ public class GraphEdge extends GraphGlyph {
      */
     public void paint(GraphView gv, Graphics g, GraphNode centerNode,
                       GraphNode highlightNode, boolean onlyHighlight) {
-        if(labelFont == null) {
-            labelFont =  GraphGlyph.getFont("Dialog", Font.PLAIN, 12);
+
+        if (labelFont == null) {
+            labelFont = GraphGlyph.getFont("Dialog", Font.PLAIN, 12);
         }
         if ((level < 0) && !gv.getShowAllEdges()) {
             return;
@@ -392,10 +401,10 @@ public class GraphEdge extends GraphGlyph {
         }
 
 
-        Point tp  = null;
-        Point hp  = gv.scalePoint(head.getInEdgeAnchor());
+        Point  tp    = null;
+        Point  hp    = gv.scalePoint(head.getInEdgeAnchor());
 
-        int   slw = gv.scale(getLineWidth());
+        int    slw   = gv.scale(getLineWidth());
 
         String label = getLabel();
 
@@ -452,7 +461,7 @@ public class GraphEdge extends GraphGlyph {
             Point p3 = GuiUtils.rotatePoint(new Point(ap.x - offset,
                            ap.y + offset), tp, angle);
 
-            
+
             if (arrow < 0) {
                 int[] xs = { p1.x, p2.x, p3.x, p1.x };
                 int[] ys = { p1.y, p2.y, p3.y, p1.y };
@@ -467,10 +476,10 @@ public class GraphEdge extends GraphGlyph {
                 g.drawString(graphView.getTitle(this), p1.x, p1.y);
             }
         }
+
     }
 
 
 
 
 }
-

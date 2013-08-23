@@ -1,19 +1,22 @@
 /*
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.gantt;
 
@@ -46,44 +49,44 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         MouseMotionListener, KeyListener, ItemListener {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final long DAY_FACTOR = 24 * 60 * 60 * 1000;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ROWHEIGHT = 20;
 
-    /** _more_          */
+    /** _more_ */
     public static final Font boldLblFont = new Font("Times", Font.BOLD, 12);
 
-    /** _more_          */
+    /** _more_ */
     public static final Font normalLblFont = new Font("Times", 0, 12);
 
-    /** _more_          */
+    /** _more_ */
     public static final Font smallFont = new Font("Times", 0, 10);
 
-    /** _more_          */
+    /** _more_ */
     public static String[] days = {
         "", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
         "Saturday"
     };
 
-    /** _more_          */
+    /** _more_ */
     public static String[] shortDays = {
         "", "S", "M", "T", "W", "T", "F", "S"
     };
 
-    /** _more_          */
+    /** _more_ */
     public static String[] medDays = {
         "", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
 
-    /** _more_          */
+    /** _more_ */
     public static String[] months = {
         "January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"
     };
 
-    /** _more_          */
+    /** _more_ */
     public static String[] shortMonths = {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
         "Nov", "Dec"
@@ -91,273 +94,273 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_COLORBY = "colorby";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_TOGGLE_SUBTASKS = "togglesubtasks";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SCROLLTOPOSITION = "scrolltoposition";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SCROLLTODATE = "scrolltodate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_HILITE = "hilite";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SELECT = "select";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_MESSAGE = "message";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_XML = "xml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_PAUSE = "pause";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_SHOW = "show";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LEGEND_SHOW = "legend.show";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LEGEND_HIDE = "legend.hide";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_TREE_SHOW = "tree.show";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_REPAINT = "repaint";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_FLOAT = "float";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_RELOAD = "reload";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DISPLAY = "display";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DISPLAY_POPUP = "display.popup";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DISPLAY_DAY = "display.day";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DISPLAY_WEEK = "display.week";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_DISPLAY_MONTH = "display.month";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int DISPLAY_DAY = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DISPLAY_WEEK = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DISPLAY_MONTH = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] DISPLAY_NAMES = { " Day  ", " Week ",
             " Month" };
 
-    /** _more_          */
+    /** _more_ */
     public static final double[] DISPLAY_X = { 30.0, 20.0, 2.5 };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PARAM_DATAURL = "dataurl";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PARAM_CHANGEDATECOMMANDS =
         "changedatecommands";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PARAM_CHANGEPARENTCOMMANDS =
         "changeparentcommands";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_GANTT = "gantt";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_COMMAND = "command";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_DEPENDENCY = "dependency";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TASK = "task";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RESOURCE = "resource";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_STATUS = "status";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CHILDRENVISIBLE = "childrenvisible";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_HILITECOLOR = "hilitecolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BGCOLOR = "bgcolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_HEADERBGCOLOR = "headerbgcolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COLOR = "color";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RESOURCE = "resource";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MILESTONE = "milestone";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PRIORITY = "priority";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATUS = "status";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TASKFILLCOLOR = "fillcolor";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_START = "start";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_END = "end";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COMPLETE = "complete";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LENGTH = "length";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_COMMANDS = "commands";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_NUMTASKS = "numtasks";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FROM = "from";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TO = "to";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final GuiUtils GU = null;
 
-    /** _more_          */
+    /** _more_ */
     public static Color bgColor = Color.white;
 
-    /** _more_          */
+    /** _more_ */
     public static Color weekendColor = new Color(234, 234, 234);
 
-    /** _more_          */
+    /** _more_ */
     public static Color headerBgColor = Color.white;
 
-    /** _more_          */
+    /** _more_ */
     public static Color hiliteColor = Color.orange;
 
-    /** _more_          */
+    /** _more_ */
     public static Color mouseOverColor = new Color(255, 255, 204);
 
 
 
     //  public static Color headerLineColor = new Color (0, 128,192);
 
-    /** _more_          */
+    /** _more_ */
     public static Color headerLineColor = Color.gray;
 
-    /** _more_          */
+    /** _more_ */
     public static Color clickBoxColor = new Color(255, 255, 204);
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_ID, POS2_ID, WIDTH_ID;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_TASKNAME, POS2_TASKNAME, WIDTH_TASKNAME;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_DURATION, POS2_DURATION, WIDTH_DURATION;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_COMPLETE, POS2_COMPLETE, WIDTH_COMPLETE;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_RESOURCE, POS2_RESOURCE, WIDTH_RESOURCE;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_TYPE, POS2_TYPE, WIDTH_TYPE;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_STATUS, POS2_STATUS, WIDTH_STATUS;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_STARTDATE, POS2_STARTDATE, WIDTH_STARTDATE;
 
-    /** _more_          */
+    /** _more_ */
     public static int POS_ENDDATE, POS2_ENDDATE, WIDTH_ENDDATE;
 
-    /** _more_          */
+    /** _more_ */
     public static int WIDTH_COL1;
 
-    /** _more_          */
+    /** _more_ */
     public static int VISIBLE_COL1;
 
-    /** _more_          */
+    /** _more_ */
     public static int HEIGHT_HEADER = 30;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static String[] TASKHEADER_TITLES;
 
-    /** _more_          */
+    /** _more_ */
     public static int[] TASKHEADER_POS;
 
-    /** _more_          */
+    /** _more_ */
     public static int[] TASKHEADER_POS2;
 
     static {
@@ -421,89 +424,90 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         VISIBLE_COL1 = POS2_TASKNAME;
 
     }
+
     ;
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int COLOR_DFLT = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COLOR_RESOURCE = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COLOR_TYPE = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COLOR_PRIORITY = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int COLOR_STATUS = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] COLORBYS = { "default", "resource",
             "tasktype", "priority", "status" };
 
-    /** _more_          */
+    /** _more_ */
     private int colorByIndex = 0;
 
 
 
-    /** _more_          */
+    /** _more_ */
     private static final GregorianCalendar cal = new GregorianCalendar();
 
 
-    /** _more_          */
+    /** _more_ */
     String changeDateCommands;
 
-    /** _more_          */
+    /** _more_ */
     String changeParentCommands;
 
-    /** _more_          */
+    /** _more_ */
     String error = null;
 
 
-    /** _more_          */
+    /** _more_ */
     Frame legendFrame;
 
-    /** _more_          */
+    /** _more_ */
     Vector treePanels = new Vector();
 
 
-    /** _more_          */
+    /** _more_ */
     XmlUi xmlUi;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_DEPENDENCIES = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_MOUSEOVER = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_NAME = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_RESOURCE = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_STATUS = 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_TYPE = 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_PRIORITY = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SHOW_LENGTH = 7;
 
-    /** _more_          */
+    /** _more_ */
     public static boolean[] showState = {
         true, false, true, false, false, false, false, false
     };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] SHOW_NAMES = {
         "Dependencies", "Mouse over", "Task name", "Resource", "Status",
         "Task type", "Priority", "Length"
@@ -521,7 +525,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
     }
 
 
-    /** _more_          */
+    /** _more_ */
     StringBuffer lblBuff = new StringBuffer();
 
     /**
@@ -547,184 +551,191 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
               case SHOW_NAME :
                   lblBuff.append(task.getName());
+
                   break;
 
               case SHOW_RESOURCE :
                   lblBuff.append(task.getResource().getName());
+
                   break;
 
               case SHOW_STATUS :
                   lblBuff.append(task.getStatus().getName());
+
                   break;
 
               case SHOW_TYPE :
                   lblBuff.append(task.getType().getName());
+
                   break;
 
               case SHOW_PRIORITY :
                   lblBuff.append(task.getPriority());
+
                   break;
 
               case SHOW_LENGTH :
                   lblBuff.append(task.getDuration());
+
                   break;
             }
         }
+
         return lblBuff.toString();
     }
 
 
-    /** _more_          */
+    /** _more_ */
     boolean floating = false;
 
-    /** _more_          */
+    /** _more_ */
     Frame floatFrame;
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     int displayType = DISPLAY_WEEK;
 
-    /** _more_          */
+    /** _more_ */
     double xPerDay = DISPLAY_X[DISPLAY_WEEK];
 
 
-    /** _more_          */
+    /** _more_ */
     GanttApplet ganttApplet;
 
-    /** _more_          */
+    /** _more_ */
     private Component contents;
 
-    /** _more_          */
+    /** _more_ */
     private RowList rowList;
 
-    /** _more_          */
+    /** _more_ */
     private ScrollCanvas mainHeaderCanvas;
 
-    /** _more_          */
+    /** _more_ */
     private ScrollCanvas taskHeaderCanvas;
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     Vector selectionSet = new Vector();
 
 
-    /** _more_          */
+    /** _more_ */
     GanttTask hilite = null;
 
-    /** _more_          */
+    /** _more_ */
     int initialMouseDX;
 
-    /** _more_          */
+    /** _more_ */
     Hashtable movedTasks;
 
-    /** _more_          */
+    /** _more_ */
     boolean mouseDown = false;
 
-    /** _more_          */
+    /** _more_ */
     boolean dragPropagate = false;
 
-    /** _more_          */
+    /** _more_ */
     boolean dragStart = false;
 
-    /** _more_          */
+    /** _more_ */
     boolean dragEnd = false;
 
-    /** _more_          */
+    /** _more_ */
     boolean dragComplete = false;
 
 
-    /** _more_          */
+    /** _more_ */
     boolean changedDate = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private long actualMinDate;
 
-    /** _more_          */
+    /** _more_ */
     private long actualMaxDate;
 
-    /** _more_          */
+    /** _more_ */
     private long minDate = Long.MAX_VALUE;
 
-    /** _more_          */
+    /** _more_ */
     private long maxDate = Long.MIN_VALUE;
 
-    /** _more_          */
+    /** _more_ */
     private int numDays = 1;
 
-    /** _more_          */
+    /** _more_ */
     private Calendar startCal;
 
-    /** _more_          */
+    /** _more_ */
     private Calendar endCal;
 
-    /** _more_          */
+    /** _more_ */
     private int fromYear;
 
-    /** _more_          */
+    /** _more_ */
     private int fromMonth;
 
-    /** _more_          */
+    /** _more_ */
     private int toYear;
 
-    /** _more_          */
+    /** _more_ */
     private int toMonth;
 
 
 
-    /** _more_          */
+    /** _more_ */
     private Vector commands = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector commandNumTasks = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector commandLabels = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector commandTypes = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Vector resources = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable resourceMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private Vector types = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable typeMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private Vector statuses = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable statusMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     boolean haveLoaded = false;
 
-    /** _more_          */
+    /** _more_ */
     Vector allTasks = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector visibleTasks = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector topTasks = new Vector();
 
 
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable taskMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     boolean simpleUI = false;
 
 
@@ -776,10 +787,11 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      * _more_
      */
     private void processXml() {
-        String xml = "";
-        long start = (System.currentTimeMillis()-1000*60*60)/1000;
-        long end = System.currentTimeMillis()/1000;
-        String tmpxml = "<root><task name=\"foo\" start=\"" + start +"\" end=\"" + end +"\"></task></root>";
+        String xml   = "";
+        long   start = (System.currentTimeMillis() - 1000 * 60 * 60) / 1000;
+        long   end   = System.currentTimeMillis() / 1000;
+        String tmpxml = "<root><task name=\"foo\" start=\"" + start
+                        + "\" end=\"" + end + "\"></task></root>";
         try {
             xml = GuiUtils.readUrl(
                 ganttApplet.getFullUrl(
@@ -793,7 +805,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             //      setAllTasks ();
             //      setDisplayType (displayType);
         } catch (Exception e) {
-            print("error " + e +"\n" + IfcApplet.getStackTrace(e));
+            print("error " + e + "\n" + IfcApplet.getStackTrace(e));
         }
     }
 
@@ -807,12 +819,17 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         try {
             processXmlInner(xml);
             print("Processed xml");
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             print("Error:" + IfcApplet.getStackTrace(exc));
             print(xml);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param xml _more_
+     */
     private void processXmlInner(String xml) {
         XmlNode root = XmlNode.parse(xml);
         Vector  top  = root.getChildren();
@@ -917,6 +934,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
               minDate -= ((minDow - 1) * DAY_FACTOR);
               long maxDow = maxCal.get(Calendar.DAY_OF_WEEK);
               maxDate += ((7 - maxDow) * DAY_FACTOR);
+
               break;
 
           case DISPLAY_MONTH :
@@ -926,6 +944,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
               long dim = (long) getDaysInMonth(maxCal.get(Calendar.MONTH),
                              maxCal.get(Calendar.YEAR));
               maxDate += ((dim - maxDom - 1) * DAY_FACTOR);
+
               break;
         }
 
@@ -1163,7 +1182,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         taskHeaderCanvas.repaint();
     }
 
-    /** _more_          */
+    /** _more_ */
     Hashtable seen;
 
     /**
@@ -1244,6 +1263,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             }
             position = recurseTaskPositions(child, position, doingVisible);
         }
+
         return position;
     }
 
@@ -1265,6 +1285,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             resourceMap.put(id, resource);
             resources.addElement(resource);
         }
+
         return resource;
     }
 
@@ -1286,6 +1307,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             typeMap.put(id, type);
             types.addElement(type);
         }
+
         return type;
     }
 
@@ -1306,6 +1328,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             statusMap.put(id, status);
             statuses.addElement(status);
         }
+
         return status;
     }
 
@@ -1337,6 +1360,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             //Initialize the display type to be week
             handleAction(CMD_DISPLAY_WEEK, null);
         }
+
         return contents;
     }
 
@@ -1409,6 +1433,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         components.put("taskheader", taskHeader);
         components.put("maincanvas", mainCanvas);
         xmlUi = new XmlUi(ganttApplet, uiRoot, components, this, this);
+
         return xmlUi.getContents();
     }
 
@@ -1424,6 +1449,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         MenuItem mi = new MenuItem(label);
         mi.setActionCommand(command);
         mi.addActionListener(this);
+
         return mi;
     }
 
@@ -1483,6 +1509,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             b = new Checkbox(l, init);
         }
         b.addItemListener(this);
+
         return b;
     }
 
@@ -1494,6 +1521,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      */
     Panel filler() {
         Panel p = new Panel();
+
         //    p.setBackground (bgColor);
         return p;
     }
@@ -1501,13 +1529,13 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int BOX_MAIN = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int BOX_CLICK = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int BOX_HEADER = 3;
 
 
@@ -1538,6 +1566,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             }
 
         }
+
         return closest;
     }
 
@@ -1702,13 +1731,13 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      */
     private static class TaskActionListener implements ActionListener {
 
-        /** _more_          */
+        /** _more_ */
         Vector tasks;
 
-        /** _more_          */
+        /** _more_ */
         GanttView view;
 
-        /** _more_          */
+        /** _more_ */
         String command;
 
         /**
@@ -1762,6 +1791,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         Object sel = e.getItemSelectable();
         if (true) {
             repaint();
+
             return;
         }
     }
@@ -1839,6 +1869,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if (id == null) {
             return null;
         }
+
         return (GanttTask) taskMap.get(id);
     }
 
@@ -1855,6 +1886,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if ((task == null) && (tasks != null) && (tasks.size() > 0)) {
             task = (GanttTask) tasks.elementAt(0);
         }
+
         return task;
     }
 
@@ -1885,6 +1917,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             for (int i = 0; i < SHOW_NAMES.length; i++) {
                 if (SHOW_NAMES[i].toLowerCase().startsWith(type)) {
                     showState[i] = value;
+
                     break;
                 }
             }
@@ -1893,6 +1926,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 task.setLabel(null);
             }
             repaint();
+
             return;
         }
 
@@ -1901,6 +1935,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             colorByIndex = GuiUtils.getIndex(COLORBYS, null, params,
                                              colorByIndex);
             repaint();
+
             return;
         }
 
@@ -1909,6 +1944,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             if (task != null) {
                 scrollToDate(task.getStartDate());
             }
+
             return;
         }
         if (func.equals(CMD_SCROLLTOPOSITION)) {
@@ -1916,6 +1952,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             if (task != null) {
                 scrollToPosition(task);
             }
+
             return;
         }
 
@@ -1925,6 +1962,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             if (task != null) {
                 selectionSet.addElement(task);
             }
+
             return;
         }
 
@@ -1932,6 +1970,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
         if (func.equals(CMD_MESSAGE)) {
             showMessage(params);
+
             return;
         }
 
@@ -1989,11 +2028,13 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             } else {
                 showResultXml(GuiUtils.readUrl(params));
             }
+
             return;
         }
 
         if (func.equals(CMD_RELOAD)) {
             doLoad();
+
             return;
         }
 
@@ -2068,6 +2109,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             }
             legendFrame.setBackground(ganttApplet.getBackground());
             legendFrame.setVisible(true);
+
             return;
         }
 
@@ -2076,6 +2118,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             if (legendFrame != null) {
                 legendFrame.setVisible(false);
             }
+
             return;
         }
 
@@ -2087,6 +2130,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 setTaskPositions();
                 repaintAll();
             }
+
             return;
         }
 
@@ -2108,27 +2152,32 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
         if (func.equals(CMD_DISPLAY)) {
             setDisplayType(new Integer(params).intValue());
+
             return;
 
         }
 
         if (func.equals(CMD_DISPLAY_MONTH)) {
             setDisplayType(DISPLAY_MONTH);
+
             return;
         }
 
         if (func.equals(CMD_DISPLAY_WEEK)) {
             setDisplayType(DISPLAY_WEEK);
+
             return;
         }
 
         if (func.equals(CMD_DISPLAY_DAY)) {
             setDisplayType(DISPLAY_DAY);
+
             return;
         }
 
         if (func.equals(CMD_FLOAT)) {
             toggleFloat();
+
             return;
         }
 
@@ -2193,6 +2242,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             String k = keys.nextElement().toString();
             s = GuiUtils.replace(s, k, h.get(k).toString());
         }
+
         return s;
     }
 
@@ -2208,6 +2258,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if ((position >= 0) && (position < visibleTasks.size())) {
             return (GanttTask) visibleTasks.elementAt(position);
         }
+
         return null;
     }
 
@@ -2294,6 +2345,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         }
         if ((hilite == null) || (changeDateCommands == null)) {
             message("");
+
             return;
         }
 
@@ -2394,6 +2446,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if ((e.getModifiers() & e.BUTTON1_MASK) == 0) {
             GanttTask task = findTask(x, y, BOX_MAIN);
             showTaskMenu(task, true, this, e.getX(), e.getY());
+
             return;
         }
 
@@ -2401,6 +2454,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if ((task == null) && (selectionSet.size() > 0)) {
             selectionSet.removeAllElements();
             repaint();
+
             return;
         }
 
@@ -2520,6 +2574,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 //      showUrl  (getUrl (closest), "_test");
             } else {}
         }
+
         return true;
     }
 
@@ -2663,6 +2718,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                   }
                   currentDate += days * DAY_FACTOR;
               }
+
               break;
           }
 
@@ -2698,6 +2754,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                                    b.height - 2);
                   }
               }
+
               break;
 
           }
@@ -2739,6 +2796,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                       dom       = 1;
                   }
               }
+
               break;
           }
 
@@ -2763,6 +2821,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
      */
     public String formatDate(Date dt, boolean longDay) {
         cal.setTime(dt);
+
         return (longDay
                 ? days[cal.get(Calendar.DAY_OF_WEEK)]
                 : medDays[cal.get(Calendar.DAY_OF_WEEK)]) + " "
@@ -2806,6 +2865,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
     public int dateToX(long date) {
         long diff    = date - minDate;
         long dayDiff = diff / (DAY_FACTOR);
+
         return (int) ((dayDiff) * xPerDay + 0.5);
     }
 
@@ -2823,6 +2883,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if (isLeapYear(year)) {
             return 366;
         }
+
         return 365;
     }
 
@@ -2885,6 +2946,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
         if (isLeapYear(year)) {
             return 29;
         }
+
         return 28;
     }
 
@@ -2913,11 +2975,13 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             haveLoaded = true;
             g.drawString("Loading chart", 20, 20);
             doLoad();
+
             return;
         }
 
         if (error != null) {
             g.drawString(error, 20, 20);
+
             return;
         }
 
@@ -3060,7 +3124,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
     }
 
 
-    /** _more_          */
+    /** _more_ */
     Hashtable mouseOverMap = new Hashtable();
 
     /**
@@ -3114,6 +3178,7 @@ public class GanttView extends ScrollCanvas implements MouseListener,
                 }
             };
             t.start();
+
             return;
         }
         //    mouseOverMap.remove (comp);
@@ -3201,10 +3266,12 @@ public class GanttView extends ScrollCanvas implements MouseListener,
             int    length           = imageStream.available();
             byte[] thanksToNetscape = new byte[length];
             imageStream.read(thanksToNetscape);
+
             return Toolkit.getDefaultToolkit().createImage(thanksToNetscape);
         } catch (Exception exc) {
             print(exc + " getting resource ");
         }
+
         return null;
     }
 
@@ -3223,4 +3290,3 @@ public class GanttView extends ScrollCanvas implements MouseListener,
 
 
 }
-

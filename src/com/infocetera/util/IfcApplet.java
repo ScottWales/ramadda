@@ -1,23 +1,22 @@
 /*
- *
- * 
- * 
- * 
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -59,7 +58,7 @@ public class IfcApplet extends Applet {
 
 
     /** _more_ */
-    public static boolean debug=false;
+    public static boolean debug = false;
 
     /** _more_ */
     static Image errorImage;
@@ -110,9 +109,17 @@ public class IfcApplet extends Applet {
      */
     public void initInner() {}
 
+    /**
+     * _more_
+     *
+     * @param exc _more_
+     *
+     * @return _more_
+     */
     public static String getStackTrace(Throwable exc) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         exc.printStackTrace(new PrintStream(baos));
+
         return baos.toString();
     }
 
@@ -127,6 +134,7 @@ public class IfcApplet extends Applet {
      */
     public boolean getParameter(String p, boolean dflt) {
         String v = getParameter(p);
+
         return ((v == null)
                 ? dflt
                 : new Boolean(v).booleanValue());
@@ -142,11 +150,13 @@ public class IfcApplet extends Applet {
      */
     public String getParameter(String p, String dflt) {
         String v = getParameter(p);
+
         return ((v == null)
                 ? dflt
                 : v);
     }
 
+    /** _more_          */
     static JTextArea debugText;
 
     /**
@@ -156,8 +166,8 @@ public class IfcApplet extends Applet {
      */
     public static void debug(String msg) {
         if (debug) {
-            if(debugText==null) {
-                debugText = new JTextArea("",25,50);
+            if (debugText == null) {
+                debugText = new JTextArea("", 25, 50);
                 debugText.setEditable(false);
                 JFrame f = new JFrame("Chat debug");
                 f.getContentPane().add(new JScrollPane(debugText));
@@ -165,8 +175,8 @@ public class IfcApplet extends Applet {
                 f.show();
             }
 
-            if(debugText!=null) {
-                debugText.setText(debugText.getText()+"\n" + msg);
+            if (debugText != null) {
+                debugText.setText(debugText.getText() + "\n" + msg);
             }
             System.err.println(msg);
         }
@@ -181,7 +191,7 @@ public class IfcApplet extends Applet {
      */
     public static void errorMsg(String l1, Throwable exc) {
         errorMsg(l1 + " " + exc);
-        debug(l1+" " + exc);
+        debug(l1 + " " + exc);
         exc.printStackTrace();
         debug(getStackTrace(exc));
     }
@@ -285,29 +295,32 @@ public class IfcApplet extends Applet {
                         IfcApplet.class);
             } else {
                 String urlPath = ifcApplet.getFullUrl(imagePath);
-                urlPath = urlPath.replaceAll(" ","+");
+                urlPath = urlPath.replaceAll(" ", "+");
                 URL url = new URL(urlPath);
                 debug("reading image:" + urlPath);
                 byte[] bytes =
                     GuiUtils.readResource(ifcApplet.getFullUrl(imagePath),
                                           IfcApplet.class, true);
-                if(bytes==null) {
+                if (bytes == null) {
                     errorMsg("Failed to read image: " + urlPath);
                     debug("Failed to read image: " + urlPath);
+
                     return null;
-                } 
+                }
                 image = Toolkit.getDefaultToolkit().createImage(bytes);
             }
             if (image != null) {
                 pathToImage.put(imagePath, image);
                 imageToPath.put(image, imagePath);
             }
+
             return image;
         } catch (MalformedURLException mfue) {
             debug("IfcApplet.getImage: failed to read:" + imagePath);
         } catch (Exception exc) {
             errorMsg("Error reading image: " + imagePath, exc);
         }
+
         return null;
     }
 
@@ -395,6 +408,7 @@ public class IfcApplet extends Applet {
         } catch (Exception exc) {
             System.err.println("Error reading url:" + url + " " + exc);
         }
+
         return url;
     }
 
@@ -414,11 +428,12 @@ public class IfcApplet extends Applet {
             url = new URL(baseUrl, url).toString();
         } catch (MalformedURLException mfue) {
             debug("Error creating url:" + url + "\n" + mfue);
+
             return null;
         }
+
         return processUrl(url);
     }
 
 
 }
-

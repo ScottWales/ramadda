@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.gantt;
 
@@ -48,66 +47,66 @@ import java.util.*;
 public class TreePanel extends ScrollCanvas implements MouseListener,
         MouseMotionListener {
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_CLOSE = "close";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_WEIGHTBY = "weightby";
 
-    /** _more_          */
+    /** _more_ */
     public static final int TREE_DURATION = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TREE_COMPLETE = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TREE_LEFT = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TREE_RANGE = 3;
 
-    /** _more_          */
+    /** _more_ */
     static final String[] WEIGHT_TREE_BY = { "duration", "complete", "left",
                                              "range" };
 
-    /** _more_          */
+    /** _more_ */
     int weightTreeBy = TREE_DURATION;
 
 
-    /** _more_          */
+    /** _more_ */
     GanttView view;
 
-    /** _more_          */
+    /** _more_ */
     Dimension lastSize;
 
-    /** _more_          */
+    /** _more_ */
     NestedTreeNode treeHilite;
 
-    /** _more_          */
+    /** _more_ */
     GanttTask hilite;
 
-    /** _more_          */
+    /** _more_ */
     int mouseX;
 
-    /** _more_          */
+    /** _more_ */
     int mouseY;
 
-    /** _more_          */
+    /** _more_ */
     XmlUi xmlUi;
 
-    /** _more_          */
+    /** _more_ */
     NestedTreeNode treeRoot;
 
-    /** _more_          */
+    /** _more_ */
     Frame treeFrame;
 
-    /** _more_          */
+    /** _more_ */
     int colorByIndex = GanttView.COLOR_RESOURCE;
 
-    /** _more_          */
+    /** _more_ */
     Vector taskIds = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     int level = 2;
 
 
@@ -223,11 +222,13 @@ public class TreePanel extends ScrollCanvas implements MouseListener,
             weightTreeBy = GuiUtils.getIndex(WEIGHT_TREE_BY, null, params,
                                              weightTreeBy);
             makeTree();
+
             return;
         }
 
         if (func.equals(CMD_CLOSE)) {
             doClose();
+
             return;
         }
 
@@ -235,6 +236,7 @@ public class TreePanel extends ScrollCanvas implements MouseListener,
             colorByIndex = GuiUtils.getIndex(GanttView.COLORBYS, null,
                                              params, colorByIndex);
             makeTree();
+
             return;
         }
 
@@ -334,6 +336,7 @@ public class TreePanel extends ScrollCanvas implements MouseListener,
     public void mouseClicked(MouseEvent e) {
         if ((e.getModifiers() & e.BUTTON1_MASK) == 0 && (hilite != null)) {
             view.showTaskMenu(hilite, true, this, e.getX(), e.getY());
+
             return;
         }
     }
@@ -376,4 +379,3 @@ public class TreePanel extends ScrollCanvas implements MouseListener,
 
 
 }
-

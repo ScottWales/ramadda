@@ -1,23 +1,22 @@
 /*
- *
- * 
- * 
- * 
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -133,6 +132,7 @@ public class XmlNode {
             newChildren.addElement(newChild);
         }
         newNode.children = newChildren;
+
         return newNode;
     }
 
@@ -147,6 +147,7 @@ public class XmlNode {
         if (tag == null) {
             return false;
         }
+
         return tag.equals(t);
     }
 
@@ -205,6 +206,7 @@ public class XmlNode {
                               contentNonWhite = true;
                           }
                           content += c;
+
                           break;
                       }
 
@@ -222,6 +224,7 @@ public class XmlNode {
                       if (peek(chars, currentChar + 1) != '/') {
                           state = STATE_LOOKINGFORTAGNAME;
                           tag   = null;
+
                           break;
                       }
 
@@ -234,6 +237,7 @@ public class XmlNode {
                           errorMsg =
                               "Error: Unexpected end of input. Could not find close tag for: "
                               + parentTag;
+
                           break;
                       }
                       String closeTag = "";
@@ -247,6 +251,7 @@ public class XmlNode {
                               }
                               errorMsg = "Error: unexpected close tag:"
                                          + closeTag + " for tag:" + parentTag;
+
                               break;
                           }
                           currentChar++;
@@ -269,6 +274,7 @@ public class XmlNode {
                       }
                       currentParent = currentParent.parent;
                       state         = STATE_LOOKINGFORTAG;
+
                       break;
                   }
 
@@ -278,6 +284,7 @@ public class XmlNode {
                       }
                       if (c == '>') {
                           errorMsg = "found \">\" when looking for tag name";
+
                           break;
                       }
                       if ((c == '!') && (chars.length > (currentChar + 3))
@@ -293,12 +300,14 @@ public class XmlNode {
                                   currentChar = j + 3;
                                   foundClose  = true;
                                   state       = STATE_LOOKINGFORTAG;
+
                                   break;
                               }
                           }
                           if ( !foundClose) {
                               errorMsg = "Failed to find close comment tag";
                           }
+
                           break;
                       }
 
@@ -307,6 +316,7 @@ public class XmlNode {
                       tag        = "" + c;
                       attrs      = "";
                       inQuote    = false;
+
                       break;
                   }
 
@@ -326,6 +336,7 @@ public class XmlNode {
                           } else {
                               currentChar++;
                           }
+
                           break;
                       }
                       if (gotTagName && (c == '"')) {
@@ -344,6 +355,7 @@ public class XmlNode {
                               tag += c;
                           }
                       }
+
                       break;
                   }
                 }
@@ -393,6 +405,7 @@ public class XmlNode {
             }
         }
         error("Error: Read to end of input - all whitespace");
+
         return -1;
     }
 
@@ -409,6 +422,7 @@ public class XmlNode {
         if ((idx + delta) >= chars.length) {
             error("Error: End of input reached");
         }
+
         return idx + delta;
 
     }
@@ -425,6 +439,7 @@ public class XmlNode {
         if (idx >= chars.length) {
             error("Error: End of input reached");
         }
+
         return chars[idx];
     }
 
@@ -467,6 +482,7 @@ public class XmlNode {
         for (int i = 0; i < raw.length; i++) {
             s = GuiUtils.replace(s, raw[i], encoded[i]);
         }
+
         return s;
     }
 
@@ -481,6 +497,7 @@ public class XmlNode {
         for (int i = 0; i < raw.length; i++) {
             s = GuiUtils.replace(s, encoded[i], raw[i]);
         }
+
         return s;
     }
 
@@ -515,6 +532,7 @@ public class XmlNode {
             String value = (String) attributes.get(name);
             s += " " + name + "=\"" + encode(value) + "\"";
         }
+
         return s;
     }
 
@@ -552,6 +570,7 @@ public class XmlNode {
                   attrName  = "" + c;
                   state     = STATE_INNAME;
                   gotEquals = false;
+
                   break;
               }
 
@@ -561,21 +580,25 @@ public class XmlNode {
                       if ( !gotEquals) {
                           gotEquals = (c == '=');
                       }
+
                       break;
                   }
                   if ((c == '\"') || (c == '\'')) {
                       gotDblQuote    = (c == '\"');
                       gotSingleQuote = (c == '\'');
                       state          = STATE_INVALUE;
+
                       break;
                   }
                   if (gotEquals) {
                       attrValue += c;
                       state     = STATE_INVALUE;
+
                       break;
                   }
 
                   attrName += c;
+
                   break;
               }
 
@@ -589,13 +612,16 @@ public class XmlNode {
                       state     = STATE_LOOKINGFORNAME;
                       attrName  = "";
                       attrValue = "";
+
                       break;
                   }
                   attrValue += c;
+
                   break;
               }
             }
         }
+
         return ht;
     }
 
@@ -695,6 +721,7 @@ public class XmlNode {
         if ((attr == null) && (parent != null)) {
             return parent.getAttributeFromTree(name);
         }
+
         return attr;
     }
 
@@ -723,6 +750,7 @@ public class XmlNode {
         if (attributes == null) {
             return null;
         }
+
         return (String) attributes.get(name);
     }
 
@@ -742,6 +770,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Boolean(value).booleanValue();
     }
 
@@ -758,6 +787,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return GuiUtils.getColor(value);
     }
 
@@ -774,6 +804,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Integer(value).intValue();
     }
 
@@ -790,6 +821,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Long(value).longValue();
     }
 
@@ -806,6 +838,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Double(value).doubleValue();
     }
 
@@ -822,6 +855,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return value;
     }
 
@@ -842,6 +876,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Boolean(value).booleanValue();
     }
 
@@ -858,6 +893,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return GuiUtils.getColor(value);
     }
 
@@ -874,6 +910,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return new Integer(value).intValue();
     }
 
@@ -890,6 +927,7 @@ public class XmlNode {
         if (value == null) {
             return dflt;
         }
+
         return value;
     }
 
@@ -921,6 +959,7 @@ public class XmlNode {
         if ( !hasSingleTextNode()) {
             return null;
         }
+
         return ((XmlNode) children.elementAt(0)).value;
     }
 
@@ -933,6 +972,7 @@ public class XmlNode {
         if (children.size() != 1) {
             return false;
         }
+
         return ((XmlNode) children.elementAt(0)).isText();
     }
 
@@ -944,6 +984,7 @@ public class XmlNode {
     public String toString() {
         StringBuffer buff = new StringBuffer();
         toString(buff, "");
+
         return buff.toString();
     }
 
@@ -961,6 +1002,7 @@ public class XmlNode {
                 return child;
             }
         }
+
         return null;
     }
 
@@ -982,6 +1024,7 @@ public class XmlNode {
                               : child));
             }
         }
+
         return v;
     }
 
@@ -1085,4 +1128,3 @@ public class XmlNode {
 
 
 }
-

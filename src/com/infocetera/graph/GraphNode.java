@@ -1,23 +1,22 @@
 /*
- * 
- * 
- * 
- * 
- * 
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 package com.infocetera.graph;
 
@@ -25,8 +24,8 @@ package com.infocetera.graph;
 //import com.infocetera.util.ConfigurableGlyph;
 
 import com.infocetera.util.GuiUtils;
-import com.infocetera.util.XmlNode;
 import com.infocetera.util.IfcApplet;
+import com.infocetera.util.XmlNode;
 
 import java.awt.*;
 
@@ -39,56 +38,56 @@ import java.util.*;
  */
 public class GraphNode extends GraphGlyph implements ImageObserver {
 
-    /** _more_          */
+    /** _more_ */
     private static XmlNode DFLTSHAPE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DIR_OUT = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DIR_IN = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int DIR_BOTH = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TOOLTIP = "tooltip";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LOADED = "loaded";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_EDGES = "edges";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MOUSEOVER = "mouse";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public boolean haveLoadedGraph = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isCenter = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean beenCenter = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isHilite = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean beenHilite = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private Vector shapes;
 
 
@@ -114,58 +113,58 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public int level = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int prevLevel = 0;
 
-    /** _more_          */
+    /** _more_ */
     public boolean haveOthers = false;
 
-    /** _more_          */
+    /** _more_ */
     public boolean haveOthersNotLoaded = false;
 
-    /** _more_          */
+    /** _more_ */
     public String nodeTypeName;
 
-    /** _more_          */
+    /** _more_ */
     public String mouseOver;
 
-    /** _more_          */
+    /** _more_ */
     Vector outEdges = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector inEdges = new Vector();
 
-    /** _more_          */
+    /** _more_ */
     Vector allEdges;
 
-    /** _more_          */
+    /** _more_ */
     public Rectangle bounds = new Rectangle();
 
-    /** _more_          */
+    /** _more_ */
     int currentX = 0;
 
-    /** _more_          */
+    /** _more_ */
     int currentY = 0;
 
-    /** _more_          */
+    /** _more_ */
     double destX = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     double destY = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     int originalX = 0;
 
-    /** _more_          */
+    /** _more_ */
     int originalY = 0;
 
-    /** _more_          */
+    /** _more_ */
     double dx = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     double dy = 0.0;
 
     /**
@@ -219,6 +218,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
             template = template.substring(idx2 + 1);
         }
         buff.append(template);
+
         return buff.toString();
     }
 
@@ -248,13 +248,16 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
      * @return _more_
      */
     public Point getOutEdgeAnchor() {
-        if(true) return new Point(currentX, currentY);
+        if (true) {
+            return new Point(currentX, currentY);
+        }
         for (int i = 0; i < shapes.size(); i++) {
             GraphShape shape = (GraphShape) shapes.elementAt(i);
             if (shape.getVisible() && shape.getConnectable()) {
                 return GuiUtils.getPointOnRect(GuiUtils.PT_C, shape.bounds);
             }
         }
+
         return new Point(currentX, currentY);
     }
 
@@ -305,14 +308,17 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
         if ((flags & ImageObserver.ERROR) != 0) {
             graphView.graphApplet.debug(
                 "Image error:" + graphView.graphApplet.getImagePath(img));
+
             return false;
         }
 
         dirty = true;
         if ((flags & ImageObserver.ALLBITS) != 0) {
             graphView.repaint();
+
             return false;
         }
+
         return true;
     }
 
@@ -399,6 +405,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
                 + "</shape>";
             DFLTSHAPE = XmlNode.parse(xml).get(0);
         }
+
         return DFLTSHAPE.copy();
     }
 
@@ -546,6 +553,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
         if (allEdges == null) {
             allEdges = merge(outEdges, inEdges);
         }
+
         return allEdges;
     }
 
@@ -562,6 +570,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
         for (int i = 0; i < v2.size(); i++) {
             merged.addElement(v2.elementAt(i));
         }
+
         return merged;
     }
 
@@ -637,6 +646,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
             nodes.addElement(other);
             visitedEdges.addElement(edge);
         }
+
         return new Vector[] { nodes, visitedEdges };
     }
 
@@ -713,6 +723,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
                 return containsShape;
             }
         }
+
         return null;
     }
 
@@ -808,6 +819,7 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
         if (bounds.width > bounds.height) {
             return bounds.width / 2;
         }
+
         return bounds.height / 2;
     }
 
@@ -847,8 +859,9 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
 
         bounds = new Rectangle(currentX, currentY, 1, 1);
         Rectangle tmpBounds = new Rectangle(currentX, currentY, 1, 1);
-        int       cnt       = 0;
-        Hashtable<String,Rectangle> boundsMap = new Hashtable<String,Rectangle>();
+        int cnt = 0;
+        Hashtable<String, Rectangle> boundsMap = new Hashtable<String,
+                                                     Rectangle>();
 
         //        IfcApplet.debug("graphNode: x=" +  currentX +" y=" + currentY);
         for (int i = 0; i < shapes.size(); i++) {
@@ -933,4 +946,3 @@ public class GraphNode extends GraphGlyph implements ImageObserver {
 
 
 }
-

@@ -1,23 +1,22 @@
 /*
- *
- * 
- * 
- * 
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+* Copyright 2008-2013 Geode Systems LLC
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+* software and associated documentation files (the "Software"), to deal in the Software 
+* without restriction, including without limitation the rights to use, copy, modify, 
+* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+* permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies 
+* or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+* DEALINGS IN THE SOFTWARE.
+*/
 
 /**
  * (C) 1999-2002  WTS Systems, L.L.C.
@@ -267,6 +266,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         if (value == null) {
             value = getParameter(name);
         }
+
         return value;
     }
 
@@ -280,6 +280,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
      */
     public String getProperty(String name, String dflt) {
         String value = getProperty(name);
+
         return ((value != null)
                 ? value
                 : dflt);
@@ -303,6 +304,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         } catch (Exception exc) {
             errorMsg("Initialization error for:" + name + " " + exc);
         }
+
         return dflt;
     }
 
@@ -325,6 +327,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         } catch (Exception exc) {
             errorMsg("Initialization error for:" + name + " " + exc);
         }
+
         return dflt;
     }
 
@@ -342,6 +345,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         if (value == null) {
             return dflt;
         }
+
         return GuiUtils.getColor(value);
     }
 
@@ -434,6 +438,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         } catch (MalformedURLException mue) {
             errorMsg("The polling url is malformed:\n" + urlString);
             isConnected = false;
+
             return;
         }
         pollErrorCount = 0;
@@ -468,6 +473,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
                 + " on port: " + port
                 + "\nUnable to connect to the chat server.\nThe server  may be down or you may be behind a firewall that \nis disallowing access", exc);
             runThread = null;
+
             return;
         }
 
@@ -609,6 +615,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
             root = XmlNode.parse(messages);
         } catch (Exception exc) {
             errorMsg("An error occurred while processing messages.\n" + exc);
+
             return;
         }
 
@@ -637,6 +644,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         String type = message.getAttribute(ATTR_TYPE);
         if (type == null) {
             System.err.println("Error: bad message format:" + message);
+
             return;
         }
         if (debug) {
@@ -886,6 +894,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         for (int i = 0; i < from.length; i++) {
             url = GuiUtils.replace(url, from[i], to[i]);
         }
+
         return url;
     }
 
@@ -957,6 +966,7 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         } catch (Exception exc) {
             System.err.println("Error reading url:" + url + " " + exc);
         }
+
         return url;
     }
 
@@ -973,9 +983,9 @@ public abstract class SocketApplet extends IfcApplet implements Runnable {
         if (filePrefix != null) {
             return filePrefix + f;
         }
+
         return f;
     }
 
 
 }
-
