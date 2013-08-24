@@ -107,17 +107,19 @@ public class NetcdfPointFile extends PointFile {
             FeatureDatasetPoint pod = getDataset(getFilename());
             List                 vars         = pod.getDataVariables();
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
-                cnt++;
                 String label = var.getDescription();
                 if(!Utils.stringDefined(label)) label = var.getShortName();
                 String unit = var.getUnitsString();
                 RecordField field = new RecordField(var.getShortName(),
                                                     label,
                                                     label,
-                                                    cnt,unit);
+                                                    cnt++,unit);
                 if ((var.getDataType() == DataType.STRING)
                     || (var.getDataType() == DataType.CHAR)) {
                     field.setType(field.TYPE_STRING);
+                } else {
+                    field.setChartable(true);
+                    field.setSearchable(true);
                 }
                 fields.add(field);
             }
@@ -168,6 +170,7 @@ public class NetcdfPointFile extends PointFile {
         if (action.equals(ACTION_TRACKS)) {
             return false;
         }
+        if(action.equals(ACTION_MAPINCHART)) return true;
         //        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
         return super.isCapable(action);
     }

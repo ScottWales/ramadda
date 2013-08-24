@@ -2228,8 +2228,11 @@ public class Request implements Constants, Cloneable {
      */
     public String getServerName() {
         String serverName = null;
-        if (httpServletRequest != null) {
-            serverName = httpServletRequest.getServerName();
+        try {
+            if (httpServletRequest != null) {
+                serverName = httpServletRequest.getServerName();
+            }
+        } catch(Exception ignoreThis) {
         }
         if ((serverName == null) || (serverName.trim().length() == 0)) {
             serverName = repository.getHostname();
@@ -2244,10 +2247,11 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
+        try {
         if (httpServletRequest != null) {
             httpServletRequest.getServerPort();
         }
-
+        } catch(Exception ignoreThis) {}
         return repository.getPort();
     }
 

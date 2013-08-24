@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
@@ -47,6 +49,8 @@ import ucar.nc2.time.CalendarDateRange;
 public class NetcdfRecord extends DataRecord {
 
     private PointFeatureIterator iterator;
+    private List<RecordField> dataFields = new ArrayList<RecordField>();
+
 
     /**
      * _more_
@@ -58,6 +62,7 @@ public class NetcdfRecord extends DataRecord {
         super(file, fields);
         this.iterator = iterator;
         initFields(fields);
+        for(int i=2;i<fields.size();i++) dataFields.add(fields.get(i));
     }
 
 
@@ -72,21 +77,42 @@ public class NetcdfRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws IOException {
-        ReadStatus status = ReadStatus.OK;
+        
 
         if (!iterator.hasNext()) {
             return ReadStatus.EOF;
         }
 
 
+
         PointFeature po = (PointFeature) iterator.next();
+        StructureData structure  = po.getData();
         ucar.unidata.geoloc.EarthLocation el = po.getLocation();
         if (el == null) {
+            System.err.println ("skipping");
             return ReadStatus.SKIP;
         }
+        setLocation(el.getLongitude(), el.getLatitude(), el.getAltitude());
+        int cnt =0;
+        values[cnt++]  = el.getLongitude();
+        values[cnt++]  = el.getLatitude();
+        //TODO: Time
+        //        System.err.println ("reading:" +el);
 
-        setLocation(el.getLongitude(), el.getLatitude(), 0);
-        return status;
+        for(RecordField field: dataFields) {
+            StructureMembers.Member member =
+                structure.findMember(field.getName());
+            if (field.isTypeString()) {
+                objectValues[cnt] = structure.getScalarString(member);
+            } else {
+                values[cnt] = structure.convertScalarFloat(member);
+                //                System.err.println ("reading:" +values[cnt]);
+            }
+            cnt++;
+        }
+
+
+        return ReadStatus.OK;
     }
 
 

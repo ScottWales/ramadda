@@ -45,23 +45,23 @@ public class DataRecord extends PointRecord {
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
     /** _more_ */
-    List<RecordField> fields;
+    protected List<RecordField> fields;
 
     /** _more_ */
-    double[] values;
+    protected     double[] values;
 
     /** _more_          */
-    Object[] objectValues;
+    protected     Object[] objectValues;
 
 
     /** _more_          */
-    boolean[] hasDefault;
+    protected     boolean[] hasDefault;
 
     /** _more_          */
-    boolean[] skip;
+    protected     boolean[] skip;
 
     /** _more_          */
-    boolean[] synthetic;
+    protected     boolean[] synthetic;
 
     /** _more_ */
      int idxX;
@@ -83,7 +83,7 @@ public class DataRecord extends PointRecord {
     public DataRecord(DataRecord that) {
         super(that);
         this.fields  = that.fields;
-        values       = null;
+        values      = null;
         objectValues = null;
     }
 
@@ -228,6 +228,13 @@ public class DataRecord extends PointRecord {
         }
 
 
+        checkIndices();
+        
+
+    }
+
+
+    public void  checkIndices()   {
         if (idxX == -1) {
             throw new IllegalArgumentException(
                 "Could not find x index, e.g., longitude, lon, x, etc.");
@@ -238,8 +245,7 @@ public class DataRecord extends PointRecord {
         }
 
     }
-
-
+    
     /**
      * _more_
      *
@@ -305,6 +311,7 @@ public class DataRecord extends PointRecord {
             return values[idx];
         }
 
+        System.err.println ("attrId:" + attrId +"  " + values.length + " idx=" + idx);
         return super.getValue(attrId);
     }
 
