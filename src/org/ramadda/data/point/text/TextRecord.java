@@ -40,7 +40,7 @@ import java.util.List;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class TextRecord extends PointRecord {
+public class TextRecord extends DataRecord {
 
     /** _more_ */
     public static final int ATTR_FIRST =
@@ -94,14 +94,6 @@ public class TextRecord extends PointRecord {
     /** _more_          */
     private int idxTime;
 
-    /** _more_          */
-    private int idxRed = -1;
-
-    /** _more_          */
-    private int idxGreen = -1;
-
-    /** _more_          */
-    private int idxBlue = -1;
 
     /** _more_          */
     private int badCnt = 0;
@@ -116,9 +108,6 @@ public class TextRecord extends PointRecord {
      */
     public TextRecord(TextRecord that) {
         super(that);
-        this.fields  = that.fields;
-        values       = null;
-        objectValues = null;
         tokens       = null;
     }
 
@@ -130,8 +119,9 @@ public class TextRecord extends PointRecord {
      * @param fields _more_
      */
     public TextRecord(RecordFile file, List<RecordField> fields) {
-        super(file);
+        super(file, fields);
         initFields(fields);
+
     }
 
 
@@ -200,135 +190,6 @@ public class TextRecord extends PointRecord {
     /**
      * _more_
      *
-     * @param fields _more_
-     */
-    private void initFields(List<RecordField> fields) {
-
-        String timeField = (String) getRecordFile().getProperty("field.time");
-        String timeFormat =
-            (String) getRecordFile().getProperty("field.time.format");
-
-        String latField =
-            (String) getRecordFile().getProperty("field.latitude");
-        String lonField =
-            (String) getRecordFile().getProperty("field.longitude");
-        this.fields  = fields;
-        values       = new double[fields.size()];
-        objectValues = new Object[fields.size()];
-        hasDefault   = new boolean[fields.size()];
-        skip         = new boolean[fields.size()];
-        synthetic    = new boolean[fields.size()];
-        int[]      timeIndices   = {
-            -1, -1, -1, -1, -1, -1
-        };
-        boolean    gotDateFields = false;
-        String[][] timeFields    = {
-            { "year", "yyyy" }, { "month" }, { "day", "dom" },
-            { "hour", "hr" }, { "minute" }, { "second" },
-        };
-
-        idxX = idxY = idxZ = idxTime = -1;
-        int     numFields = 0;
-        boolean seenLon   = false;
-        boolean seenLat   = false;
-        for (int i = 0; i < fields.size(); i++) {
-            RecordField field = fields.get(i);
-            hasDefault[i] = field.hasDefaultValue();
-            skip[i]       = field.getSkip();
-            synthetic[i]  = field.getSynthetic();
-            if ( !synthetic[i] && !skip[i] && !hasDefault[i]) {
-                numFields++;
-            }
-            if (field.isTypeDate() && (idxTime == -1)) {
-                idxTime = i;
-
-                continue;
-            }
-            String name = field.getName().toLowerCase();
-            for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
-                boolean gotOne = false;
-                for (String timeFieldName : timeFields[timeIdx]) {
-                    if (name.equals(timeFieldName)) {
-                        gotDateFields = true;
-                        //                        System.err.println("got time:" + name + " idx:" + i);
-                        timeIndices[timeIdx] = i + 1;
-                        gotOne               = true;
-
-                        break;
-                    }
-                    if (gotOne) {
-                        break;
-                    }
-                }
-            }
-            if ((latField != null) && latField.equalsIgnoreCase(name)) {
-                idxY = i;
-
-                continue;
-            }
-            if ((lonField != null) && lonField.equalsIgnoreCase(name)) {
-                idxX = i;
-
-                continue;
-            }
-            if (name.equals("red") || name.equals("r")) {
-                idxRed = i;
-            } else if (name.equals("green") || name.equals("g")) {
-                idxGreen = i;
-            } else if (name.equals("blue") || name.equals("b")) {
-                idxBlue = i;
-            } else if (name.equals("x")) {
-                if (idxX == -1) {
-                    idxX = i;
-                }
-            } else if (name.equals("longitude") || name.equals("long")
-                       || name.equals("lon")) {
-                if ( !seenLon) {
-                    idxX    = i;
-                    seenLon = true;
-                }
-            } else if (name.equals("y")) {
-                if (idxY == -1) {
-                    idxY = i;
-                }
-
-            } else if (name.equals("latitude") || name.equals("lat")) {
-                if ( !seenLat) {
-                    idxY    = i;
-                    seenLat = true;
-                }
-            } else if (name.equals("z") || name.equals("altitude")
-                       || name.equals("elevation") || name.equals("elev")
-                       || name.equals("alt")) {
-                if (idxZ == -1) {
-                    idxZ = i;
-                }
-            }
-        }
-
-        //timeField
-
-        if (gotDateFields) {
-            getRecordFile().setDateIndices(timeIndices);
-        }
-
-        tokens = new String[numFields];
-
-        if (idxX == -1) {
-            throw new IllegalArgumentException(
-                "Could not find x index, e.g., longitude, lon, x, etc.");
-        }
-        if (idxY == -1) {
-            throw new IllegalArgumentException(
-                "Could not find y index, e.g., latitude, lat, y, etc.");
-        }
-
-    }
-
-
-    /**
-     * _more_
-     *
      * @return _more_
      */
     @Override
@@ -355,20 +216,6 @@ public class TextRecord extends PointRecord {
         return super.getRecordTime();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public short[] getRgb() {
-        if ((idxRed >= 0) && (idxGreen >= 0) && (idxBlue >= 0)) {
-            return new short[] { (short) values[idxRed],
-                                 (short) values[idxGreen],
-                                 (short) values[idxBlue] };
-        }
-
-        return null;
-    }
 
     /**
      * _more_

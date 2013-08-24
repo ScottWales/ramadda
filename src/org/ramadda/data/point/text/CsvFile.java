@@ -56,9 +56,6 @@ public class CsvFile extends TextFile {
 
 
     /** _more_ */
-    private List<RecordField> fields;
-
-    /** _more_ */
     private String delimiter = null;
 
 
@@ -161,23 +158,11 @@ public class CsvFile extends TextFile {
      */
     public void initAfterClone() {
         super.initAfterClone();
-        fields    = null;
         delimiter = null;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public List<RecordField> getFields() {
-        if (fields == null) {
-            fields = doMakeFields();
-        }
 
-        return fields;
-    }
 
     /**
      * _more_
