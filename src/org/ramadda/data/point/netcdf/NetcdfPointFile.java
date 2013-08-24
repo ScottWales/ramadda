@@ -123,8 +123,7 @@ public class NetcdfPointFile extends PointFile {
                 }
                 fields.add(field);
             }
-            System.err.println ("fields: " + fields);
-
+            //            System.err.println ("fields: " + fields);
         } catch(Exception exc) {
             throw new RuntimeException(exc);
         }
