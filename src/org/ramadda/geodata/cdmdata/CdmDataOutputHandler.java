@@ -1622,6 +1622,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         String               icon           = iconUrl("/icons/pointdata.gif");
 
         PointFeatureIterator dataIterator   = getPointIterator(pod);
+
         List                 columnDataList = new ArrayList();
         while (dataIterator.hasNext()) {
             PointFeature po = (PointFeature) dataIterator.next();

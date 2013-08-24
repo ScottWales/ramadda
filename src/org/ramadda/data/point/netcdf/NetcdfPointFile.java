@@ -46,6 +46,7 @@ import ucar.nc2.time.CalendarDateRange;
 
 
 
+
 import java.util.Formatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class NetcdfPointFile extends PointFile {
                 fields.add(field);
             }
             System.err.println ("fields: " + fields);
-                //            PointFeatureIterator dataIterator = getPointIterator(pod);
+
         } catch(Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -201,28 +202,16 @@ public class NetcdfPointFile extends PointFile {
      * @return the new record
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
-        NetcdfRecord record = new NetcdfRecord(this, getFields());
+        try {
+        FeatureDatasetPoint pod = getDataset(getFilename());
+        PointFeatureIterator dataIterator = getPointIterator(pod);
+        NetcdfRecord record = new NetcdfRecord(this,  getFields(), dataIterator);
         return record;
+        } catch(Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     *
-     * @throws IOException _more_
-     */
-    public Record.ReadStatus readNextRecord(VisitInfo visitInfo,
-                                            Record record)
-            throws IOException {
-        return Record.ReadStatus.OK;
-    }
 
 
 

@@ -140,7 +140,9 @@ public abstract class RecordFile {
     /**
      * _more_
      */
-    public void initAfterClone() {}
+    public void initAfterClone() {
+        fields    = null;
+    }
 
     /**
      * _more_
@@ -542,15 +544,25 @@ public abstract class RecordFile {
     public abstract Record doMakeRecord(VisitInfo visitInfo);
 
 
+    private List<RecordField> fields;
+
+
+
     /**
      * Get the fields for the default record
      *
      * @return List of fields in the default record
      */
     public List<RecordField> getFields() {
+        if (fields == null) {
+            fields = doMakeFields();
+        }
+        return fields;
+    }
+
+    public List<RecordField> doMakeFields() {
         Record            record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
-
         return new ArrayList<RecordField>(fields);
     }
 

@@ -32,16 +32,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import ucar.ma2.DataType;
+import ucar.nc2.*;
+import ucar.nc2.ft.*;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
- */
+
+
+
 public class NetcdfRecord extends DataRecord {
 
+    private PointFeatureIterator iterator;
 
     /**
      * _more_
@@ -49,8 +54,9 @@ public class NetcdfRecord extends DataRecord {
      * @param file _more_
      * @param fields _more_
      */
-    public NetcdfRecord(RecordFile file, List<RecordField> fields) {
+    public NetcdfRecord(RecordFile file, List<RecordField> fields, PointFeatureIterator iterator) {
         super(file, fields);
+        this.iterator = iterator;
         initFields(fields);
     }
 
@@ -64,14 +70,22 @@ public class NetcdfRecord extends DataRecord {
      *
      * @throws IOException _more_
      */
+    @Override
     public ReadStatus read(RecordIO recordIO) throws IOException {
         ReadStatus status = ReadStatus.OK;
 
+        if (!iterator.hasNext()) {
+            return ReadStatus.EOF;
+        }
 
 
-        //        setLocation(values[idxX], values[idxY], ((idxZ >= 0)
-        //                ? values[idxZ]
-        //                : 0));
+        PointFeature po = (PointFeature) iterator.next();
+        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+        if (el == null) {
+            return ReadStatus.SKIP;
+        }
+
+        setLocation(el.getLongitude(), el.getLatitude(), 0);
         return status;
     }
 
