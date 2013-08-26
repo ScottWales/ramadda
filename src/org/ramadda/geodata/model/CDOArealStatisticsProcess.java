@@ -217,10 +217,10 @@ public class CDOArealStatisticsProcess extends DataProcess {
             System.err.println("Looking for climo");
             List<Entry> climo = findClimatology(request, oneOfThem);
             if (climo == null) {
-                System.err.println("found squat");
+                throw new Exception("Unable to find climatology for "
+                                    + oneOfThem.getName());
             } else if (climo.size() > 1) {
                 System.err.println("found too many");
-
             } else {
                 climEntry = climo.get(0);
                 System.err.println("found climo: " + climEntry);

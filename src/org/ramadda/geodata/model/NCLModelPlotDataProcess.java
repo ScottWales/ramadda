@@ -68,6 +68,18 @@ public class NCLModelPlotDataProcess extends DataProcess {
     /** output type */
     public final static String ARG_NCL_OUTPUT = "ncl.output";
 
+    /** output type */
+    public final static String ARG_NCL_UNITS = "ncl.units";
+
+    /** _more_          */
+    private static final String ARG_NCL_CINT = "ncl.cint";
+
+    /** _more_          */
+    private static final String ARG_NCL_CMIN = "ncl.cmin";
+
+    /** _more_          */
+    private static final String ARG_NCL_CMAX = "ncl.cmax";
+
     /**
      * Create a new map process
      *
@@ -76,7 +88,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
      * @throws Exception  badness
      */
     public NCLModelPlotDataProcess(Repository repository) throws Exception {
-        this(repository, "NCLPlot", "Plots");
+        this(repository, "NCLPlot", "Plot Options");
     }
 
     /**
@@ -110,6 +122,16 @@ public class NCLModelPlotDataProcess extends DataProcess {
                           StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
+        Entry first = input.getOperands().get(0).getEntries().get(0);
+
+        CdmDataOutputHandler dataOutputHandler =
+            nclOutputHandler.getDataOutputHandler();
+        GridDataset dataset =
+            dataOutputHandler.getCdmManager().getGridDataset(first,
+                first.getResource().getPath());
+        List<GridDatatype> grids = dataset.getGrids();
+        GridDatatype       grid  = grids.get(0);
+
         if (input.getOperands().size() > 1) {
             sb.append(
                 HtmlUtils.formEntry(
@@ -128,15 +150,49 @@ public class NCLModelPlotDataProcess extends DataProcess {
                           + HtmlUtils.radio(
                               NCLOutputHandler.ARG_NCL_PLOTTYPE, "kmz",
                               false) + Repository.msg("Google Earth")
-                                     + "<br>"
-                                     + HtmlUtils.radio(
-                                         NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                         "timeseries",
-                                         false) + Repository.msg(
-                                             "Time Series") + HtmlUtils.radio(
-                                             NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                             "pdf", false) + Repository.msg(
-                                                 "PDF")));
+        /*
+               + "<br>"
+               + HtmlUtils.radio(
+                   NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                   "timeseries",
+                   false) + Repository.msg(
+                       "Time Series") + HtmlUtils.radio(
+                       NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                       "pdf", false) + Repository.msg(
+                           "PDF")
+         */
+        ));
+        // units
+        String units = grid.getUnitsString();
+        if (units.equals("K") || units.equals("degK")) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Output Units"),
+                    HtmlUtils.radio(ARG_NCL_UNITS, "K", true)
+                    + Repository.msg("Kelvin")
+                    + HtmlUtils.radio(ARG_NCL_UNITS, "degC", false)
+                    + Repository.msg("Celsius")));
+        } else if (units.equals("kg m-2 s-1") || units.equals("mm/s")) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Output Units"),
+                    HtmlUtils.radio(ARG_NCL_UNITS, "mm/s", false)
+                    + Repository.msg("mm/s")
+                    + HtmlUtils.radio(ARG_NCL_UNITS, "mm/day", true)
+                    + Repository.msg("mm/day")));
+        }
+        // Contour interval
+        StringBuffer contourSB = new StringBuffer();
+        contourSB.append(Repository.msg("Interval: "));
+        contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CINT, ""));
+        contourSB.append(Repository.msg("Range: Low"));
+        contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMIN, ""));
+        contourSB.append(Repository.msg("High"));
+        contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMAX, ""));
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msgLabel("Override Contour Defaults"),
+                contourSB.toString()));
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -278,6 +334,22 @@ public class NCLModelPlotDataProcess extends DataProcess {
             }
         }
         envMap.put("addCyclic", Boolean.toString(haveOriginalBounds));
+        String outUnits = request.getString(ARG_NCL_UNITS, null);
+        if ((outUnits != null) && !outUnits.isEmpty()) {
+            envMap.put("units", outUnits);
+        }
+
+        // contours
+        double   cint  = request.get(ARG_NCL_CINT, 0.);
+        double   cmin  = request.get(ARG_NCL_CMIN, 0.);
+        double   cmax  = request.get(ARG_NCL_CMAX, 0.);
+        double[] cvals = verifyContourInfo(cint, cmin, cmax);
+        if (cint != 0.) {
+            envMap.put("cint", String.valueOf(cvals[0]));
+            envMap.put("cmin", String.valueOf(cvals[1]));
+            envMap.put("cmax", String.valueOf(cvals[2]));
+        }
+
 
         boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
         String  colormap = "rainbow";
@@ -338,6 +410,50 @@ public class NCLModelPlotDataProcess extends DataProcess {
     }
 
     /**
+     * _more_
+     *
+     * @param cint _more_
+     * @param cmin _more_
+     * @param cmax _more_
+     *
+     * @return _more_
+     */
+    private double[] verifyContourInfo(double cint, double cmin,
+                                       double cmax) {
+
+        if (cint == 0) {
+            cint = 0;
+            cmin = 0;
+            cmax = 0;
+        } else if (cint < 0) {
+            System.err.println(
+                "contour interval must be greater than zero - using default values");
+            cint = 0;
+            cmin = 0;
+            cmax = 0;
+        } else if (cmin >= cmax) {
+            System.err.println(
+                "min must be less than max - using default values");
+            cint = 0;
+            cmin = 0;
+            cmax = 0;
+        } else {
+            double diff = (cmax - cmin) * 1.0;
+            double var  = diff / cint;
+            if (var > 300.) {
+                System.err.println(
+                    "too many contour lines - using default values");
+                cint = 0;
+                cmin = 0;
+                cmax = 0;
+            }
+        }
+
+        return new double[] { cint, cmin, cmax };
+
+    }
+
+    /**
      * Can we handle this type of DataProcessInput?
      *
      * @param dpi  the DataProcessInput
@@ -348,7 +464,23 @@ public class NCLModelPlotDataProcess extends DataProcess {
             return false;
         }
 
-        // TODO: Check the input
+        if (dpi.getOperands().size() > 2) {
+            return false;
+        }
+
+        for (DataProcessOperand op : dpi.getOperands()) {
+            List<Entry> entries = op.getEntries();
+            // TODO: change this when we can handle more than one entry (e.g. daily data)
+            if (entries.isEmpty() || (entries.size() > 1)) {
+                return false;
+            }
+            Entry firstEntry = entries.get(0);
+            if ( !(firstEntry.getTypeHandler()
+                    instanceof ClimateModelFileTypeHandler)) {
+                return false;
+            }
+        }
+
         return true;
     }
 

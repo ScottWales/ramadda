@@ -431,11 +431,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             ClimateCollectionTypeHandler.ARG_DATA_PROCESS_ID,
                             process.getDataProcessId()));
                 }
-                process.addToForm(request, dpi, tmpSB);
-                processTabs.add(HtmlUtils.div(tmpSB.toString(),
+                if (process.canHandle(dpi)) {
+                    process.addToForm(request, dpi, tmpSB);
+                    processTabs.add(HtmlUtils.div(tmpSB.toString(),
                         HtmlUtils.style("min-height:200px;")));
-                processTitles.add(process.getDataProcessLabel());
-                first = false;
+                    processTitles.add(process.getDataProcessLabel());
+                    first = false;
+                }
             }
 
             sb.append(HtmlUtils.submit("Select New Data", ARG_ACTION_SEARCH,

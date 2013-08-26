@@ -65,7 +65,7 @@ local dataOut
 begin
 
   dataOut = dataIn
-  if (unitsIn .ne. unitsOut) then
+  if ((unitsIn .ne. unitsOut) .and. (.not. ismissing(unitsOut) .and. unitsOut .ne. "")) then
 
     ; Temperature
     if (unitsIn .eq. "K" .or. unitsIn .eq. "degK") then
@@ -314,12 +314,13 @@ begin
     opts@maxLon = maxLon
   end if
   units = vardata@units
-  if ((.not. ismissing(units)) .and. \
-      (units .eq. "kg m-2 s-1" .or. \
-        units .eq. "mm/s")) then
-    vardata = changeUnits(vardata, units, "mm/day")
+  outunits = opts@units
+  ;; anomalies have to be handled separately
+  if (opts@isanom .and.  (outunits .eq. "K" .or. outunits .eq. "degC")) then
+    vardata@units = outunits
+  else
+    vardata = changeUnits(vardata, units, opts@units)
   end if
-
   return(vardata)
 
 end
@@ -394,11 +395,7 @@ local unit1, unit2, newData
 begin
 
   remappedData = remapData(data1,data2)
-  unit1 = data1@units
-  unit2 = data2@units
-  if (unit1 .ne. unit2) then
-    remappedData = changeUnits(remappedData, unit2, unit1)
-  end if
+  remappedData = changeUnits(remappedData, data2@units, data1@units)
   return data1-remappedData
 
 end
@@ -509,7 +506,14 @@ begin
   rescf@tiMainFontThicknessF=.8
   rescf@tmXBLabelFontHeightF=0.011
   rescf@tmYLLabelFontHeightF=0.011
+  cint = opts@cint
 
+  if (.not. ismissing(cint) .and. cint .ne. 0.) then
+    rescf@cnLevelSelectionMode = "ManualLevels"
+    rescf@cnLevelSpacingF = opts@cint
+    rescf@cnMinLevelValF = opts@cmin
+    rescf@cnMaxLevelValF = opts@cmax
+  end if
   
   if (doGoogle) then
 
@@ -569,21 +573,25 @@ begin
     end if
     rescf@tiMainString        = plottitle
     mydata = data(0,:,:)
-    symMinMaxPlt(mydata,20,False,rescf)
+    if (cint .eq. 0) then
+      symMinMaxPlt(mydata,20,False,rescf)
+    end if
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
-    res2 = remove_middle_contours(plots(0), rescf, 1)
-    plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
+    if (cint .eq. 0) then
+      res2 = remove_middle_contours(plots(0), rescf, 1)
+      plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
+    end if
     addAnnotation(wks,opts@annotation)
   else
     mydata = data(0,:,:)
     if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
       rescf@tiMainString        = plottitles(0)
     end if
-    if (isanom) then
+    if (isanom .and. cint .eq. 0) then
       symMinMaxPlt(mydata,20,False,rescf)
     end if
     plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
-    if (isanom) then
+    if (isanom .and. cint .eq. 0) then
       res2 = remove_middle_contours(plots(0), rescf, 1)
       plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
     end if
@@ -598,7 +606,7 @@ begin
         rescf@tiMainString        = plottitles(i)
       end if
       plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
-      if (isanom) then
+      if (isanom .and. cint .eq. 0) then
         res2 = remove_middle_contours(plots(i), rescf, 1)
         plots(i) = gsn_csm_contour_map_ce(wks,mydata,res2)
       end if
@@ -674,8 +682,8 @@ begin
       
   else
     if (dopanel) then
-      ;---Create resources for paneling
 
+      ;---Create resources for paneling
       resP                            = True
       resP@gsnMaximize                = True    
       resP@gsnPanelLabelBar           = True    
@@ -687,7 +695,7 @@ begin
       resP@gsnPanelDebug = False ; set to True for debugging
 
       ;---Scale plots based on one of the smaller plots, and not the first one.
-      resP@gsnPanelScalePlotIndex     = 1
+      ;resP@gsnPanelScalePlotIndex     = 1
 
       ;---Add some extra space between plots since they are too close together
       resP@gsnPanelXWhiteSpacePercent = 2
@@ -962,6 +970,22 @@ begin
   minLon=stringtodouble(getenv("minLon"))
   maxLon=stringtodouble(getenv("maxLon"))
   
+  units=getenv("units")
+  if (ismissing(units)) then
+    units = ""
+  end if
+  
+  ;
+  ; contour parameters
+  temp = getenv("cint")
+  if (.not. ismissing(temp)) then
+    cint = stringtofloat(temp)
+  else
+    cint = 0.
+  end if
+  cmin=stringtofloat(getenv("cmin"))
+  cmax=stringtofloat(getenv("cmax"))
+  
   options = True
   options@plottype=plotType
   options@outtype=outType
@@ -976,7 +1000,10 @@ begin
   options@isanom = isanom
   options@annotation = getenv("annotation")
   options@titles = titles
-  
+  options@units=units
+  options@cint=cint
+  options@cmin=cmin
+  options@cmax=cmax
   
   if (plotType.eq."timeseries") then
     ;print("plotting timeseries")
