@@ -55,44 +55,15 @@ public class TextRecord extends DataRecord {
     /** _more_          */
     protected String firstDataLine = null;
 
-    /** _more_ */
-    private List<RecordField> fields;
-
-    /** _more_ */
-    private double[] values;
-
-    /** _more_          */
-    private Object[] objectValues;
 
     /** _more_          */
     private String[] tokens;
-
-    /** _more_          */
-    private boolean[] hasDefault;
-
-    /** _more_          */
-    private boolean[] skip;
-
-    /** _more_          */
-    private boolean[] synthetic;
 
     /** _more_          */
     private String line = "";
 
     /** _more_          */
     private boolean bePickyAboutTokens = true;
-
-    /** _more_ */
-    private int idxX;
-
-    /** _more_ */
-    private int idxY;
-
-    /** _more_ */
-    private int idxZ;
-
-    /** _more_          */
-    private int idxTime;
 
 
     /** _more_          */
@@ -124,6 +95,11 @@ public class TextRecord extends DataRecord {
 
     }
 
+    @Override
+    public void initFields(List<RecordField> fields) {
+        super.initFields(fields);
+        tokens = new String[this.fields.size()];
+    }
 
     /**
      * _more_
@@ -134,15 +110,6 @@ public class TextRecord extends DataRecord {
         super(file);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param bigEndian _more_
-     */
-    public TextRecord(RecordFile file, boolean bigEndian) {
-        super(file, bigEndian);
-    }
 
 
     /**
@@ -212,29 +179,7 @@ public class TextRecord extends DataRecord {
         if (idxTime >= 0) {
             return ((Date) objectValues[idxTime]).getTime();
         }
-
         return super.getRecordTime();
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public int getLastAttribute() {
-        return fields.get(fields.size() - 1).getParamId();
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param fields _more_
-     */
-    protected void addFields(List<RecordField> fields) {
-        super.addFields(fields);
-        fields.addAll(this.fields);
     }
 
 
@@ -348,6 +293,7 @@ public class TextRecord extends DataRecord {
 
                 break;
             }
+
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }

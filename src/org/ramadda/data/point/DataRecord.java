@@ -64,16 +64,16 @@ public class DataRecord extends PointRecord {
     protected     boolean[] synthetic;
 
     /** _more_ */
-     int idxX;
+    protected      int idxX;
 
     /** _more_ */
-     int idxY;
+    protected      int idxY;
 
     /** _more_ */
-     int idxZ;
+    protected      int idxZ;
 
     /** _more_          */
-     int idxTime;
+    protected      int idxTime;
 
     /**
      * _more_
@@ -87,6 +87,16 @@ public class DataRecord extends PointRecord {
         objectValues = null;
     }
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     */
+    public DataRecord(RecordFile file) {
+        super(file);
+    }
+
+
 
     /**
      * _more_
@@ -99,24 +109,6 @@ public class DataRecord extends PointRecord {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
-    public DataRecord(RecordFile file) {
-        super(file);
-    }
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param bigEndian _more_
-     */
-    public DataRecord(RecordFile file, boolean bigEndian) {
-        super(file, bigEndian);
-    }
 
 
     /**
@@ -125,7 +117,6 @@ public class DataRecord extends PointRecord {
      * @param fields _more_
      */
     public void initFields(List<RecordField> fields) {
-
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
             (String) getRecordFile().getProperty("field.time.format");

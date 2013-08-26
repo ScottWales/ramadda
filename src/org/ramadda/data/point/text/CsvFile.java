@@ -433,7 +433,6 @@ public class CsvFile extends TextFile {
     public static void main(String[] args) throws Exception {
         if (true) {
             PointFile.test(args, CsvFile.class);
-
             return;
         }
 
