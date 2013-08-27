@@ -1448,10 +1448,10 @@ public class OutputHandler extends RepositoryManager {
 
             String crumbs = "";
             if (showCrumbs) {
-                crumbs = getEntryManager().getBreadCrumbs(request,
+                crumbs = getPageHandler().getBreadCrumbs(request,
                         ((hideParents || true)
                          ? entry.getParentEntry()
-                         : entry), null, 60);
+                         : entry), null, null, 60);
                 if (hideParents) {
                     crumbs = HtmlUtils.makeToggleInline(
                         "", crumbs

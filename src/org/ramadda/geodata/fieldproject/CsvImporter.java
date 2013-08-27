@@ -184,8 +184,7 @@ public class CsvImporter extends ImportHandler {
         sb.append("<ul>");
         for (Entry entry : entries) {
             sb.append("<li> ");
-            sb.append(getEntryManager().getBreadCrumbs(request, entry, true,
-                    parentEntry)[1]);
+            sb.append(getPageHandler().getBreadCrumbs(request, entry, parentEntry));
         }
 
         return getEntryManager().addEntryHeader(request, parentEntry,

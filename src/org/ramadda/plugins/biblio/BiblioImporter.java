@@ -155,8 +155,8 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     didone = true;
                 }
                 sb.append("<li> ");
-                sb.append(getEntryManager().getBreadCrumbs(request, entry,
-                        true, parentEntry)[1]);
+                sb.append(getPageHandler().getBreadCrumbs(request, entry,
+                                                          parentEntry));
             }
         }
 
@@ -172,8 +172,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     didone = true;
                 }
                 sb.append("<li> ");
-                sb.append(getEntryManager().getBreadCrumbs(request, entry,
-                        true, parentEntry)[1]);
+                sb.append(getPageHandler().getBreadCrumbs(request, entry, parentEntry));
             }
         }
         if (didone) {

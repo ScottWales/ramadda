@@ -709,12 +709,13 @@ public class EntryManager extends RepositoryManager {
             //            if (!entry.isGroup()) {
             String   entryFooter = entryFooter(request, entryForHeader);
 
-            String[] crumbs = getBreadCrumbs(request, entryForHeader, false);
-            sb.append(crumbs[1]);
+            StringBuffer titleCrumbs = new StringBuffer();
+            String crumbs = getZZZ(request, entryForHeader, titleCrumbs);
+            sb.append(crumbs);
             //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
             //                result.setTitle(result.getTitle());
             result.putProperty(PROP_ENTRY_HEADER, sb.toString());
-            result.putProperty(PROP_ENTRY_BREADCRUMBS, crumbs[0]);
+            result.putProperty(PROP_ENTRY_BREADCRUMBS, titleCrumbs.toString());
             result.putProperty(PROP_ENTRY_FOOTER, entryFooter);
             //            }
 
@@ -990,8 +991,7 @@ public class EntryManager extends RepositoryManager {
                             }
                             if (changed) {
                                 incrementProcessedCnt(1);
-                                append(getRepository().getEntryManager()
-                                    .getConfirmBreadCrumbs(getRequest(),
+                                append(getPageHandler().getConfirmBreadCrumbs(getRequest(),
                                         entry));
                                 append(HtmlUtils.br());
                                 updateEntry(getRequest(), entry);
@@ -1224,7 +1224,7 @@ public class EntryManager extends RepositoryManager {
                                             Tables.ENTRIES.COL_ID,
                                             id, new String[]{Tables.ENTRIES.COL_MD5},
                                             new String[]{md5});
-                sb.append(getRepository().getEntryManager().getConfirmBreadCrumbs(request, entry));
+                sb.append(getPageHandler().getConfirmBreadCrumbs(request, entry));
                 sb.append(HtmlUtils.br());
             }
             getActionManager().setActionMessage(actionId,
@@ -2761,7 +2761,6 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryDelete(Request request) throws Exception {
         Entry        entry = getEntry(request);
         StringBuffer sb    = new StringBuffer();
-        //        sb.append(makeEntryHeader(request, entry));
         if (entry.isTopEntry()) {
             sb.append(
                 getPageHandler().showDialogNote(
@@ -2794,8 +2793,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-
-        String       breadcrumbs = getConfirmBreadCrumbs(request, entry);
+        String       breadcrumbs = getPageHandler().getConfirmBreadCrumbs(request, entry);
         StringBuffer inner       = new StringBuffer();
         if (entry.isGroup()) {
             inner.append(
@@ -2920,7 +2918,7 @@ public class EntryManager extends RepositoryManager {
         boolean      anyFolders  = false;
         StringBuffer entryListSB = new StringBuffer();
         for (Entry toBeDeletedEntry : entries) {
-            entryListSB.append(getConfirmBreadCrumbs(request,
+            entryListSB.append(getPageHandler().getConfirmBreadCrumbs(request,
                     toBeDeletedEntry));
             entryListSB.append(HtmlUtils.br());
             if (toBeDeletedEntry.isGroup()) {
@@ -3926,8 +3924,8 @@ public class EntryManager extends RepositoryManager {
         StringBuffer fromList = new StringBuffer();
         for (Entry fromEntry : entries) {
             fromList.append(HtmlUtils.space(3));
-            fromList.append(getEntryManager().getBreadCrumbs(request,
-                    fromEntry));
+            fromList.append(getPageHandler().getBreadCrumbs(request,
+                                                            fromEntry));
             fromList.append(HtmlUtils.br());
         }
 
@@ -4551,7 +4549,7 @@ public class EntryManager extends RepositoryManager {
 
         for (Entry entry : newEntries) {
             sb.append("<li> ");
-            sb.append(getBreadCrumbs(request, entry, true, parent)[1]);
+            sb.append(getPageHandler().getBreadCrumbs(request, entry, parent));
         }
         sb.append("</ul>");
         if (parent != null) {
@@ -4917,23 +4915,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String makeEntryHeader(Request request, Entry entry)
-            throws Exception {
-        String crumbs = getBreadCrumbs(request, entry, false)[1];
-
-        return crumbs;
-    }
-
 
     /**
      * _more_
@@ -5122,7 +5103,6 @@ public class EntryManager extends RepositoryManager {
         }
 
         StringBuffer sb = new StringBuffer();
-        //        sb.append(makeEntryHeader(request, entry));
         request.appendMessage(sb);
 
 
@@ -6048,21 +6028,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getConfirmBreadCrumbs(Request request, Entry entry)
-            throws Exception {
-        return HtmlUtils.img(getIconUrl(request, entry)) + " "
-               + getBreadCrumbs(request, entry);
-    }
+
 
 
     /**
@@ -6075,164 +6041,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getBreadCrumbs(Request request, Entry entry)
-            throws Exception {
-        return getBreadCrumbs(request, entry, null);
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getBreadCrumbs(Request request, Entry entry,
-                                 RequestUrl requestUrl)
-            throws Exception {
-
-        return getBreadCrumbs(request, entry, requestUrl, 80);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param requestUrl _more_
-     * @param lengthLimit _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getBreadCrumbs(Request request, Entry entry,
-                                 RequestUrl requestUrl, int lengthLimit)
-            throws Exception {
-        if (entry == null) {
-            return BLANK;
-        }
-
-        List        breadcrumbs     = new ArrayList();
-        Entry       parent = findGroup(request, entry.getParentEntryId());
-        int         length          = 0;
-        List<Entry> parents         = new ArrayList<Entry>();
-        int         totalNameLength = 0;
-        while (parent != null) {
-            parents.add(parent);
-            String name = parent.getName();
-            totalNameLength += name.length();
-            parent          = findGroup(request, parent.getParentEntryId());
-        }
-
-
-        boolean needToClip = totalNameLength > lengthLimit;
-        String  target     = (request.defined(ARG_TARGET)
-                              ? request.getString(ARG_TARGET, "")
-                              : null);
-        String  targetAttr = ((target != null)
-                              ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
-                              : "");
-
-        for (Entry ancestor : parents) {
-            if (length > lengthLimit) {
-                breadcrumbs.add(0, "...");
-
-                break;
-            }
-            String name = ancestor.getName();
-            if (needToClip && (name.length() > 20)) {
-                name = name.substring(0, 19) + "...";
-            }
-            length += name.length();
-            String link = null;
-            if (target != null) {
-                link = HtmlUtils.href(
-                    request.entryUrl(
-                        getRepository().URL_ENTRY_SHOW, ancestor), name,
-                            targetAttr);
-            } else {
-                link = ((requestUrl == null)
-                        ? getTooltipLink(request, ancestor, name, null)
-                        : HtmlUtils.href(request.entryUrl(requestUrl,
-                        ancestor), name, targetAttr));
-            }
-            breadcrumbs.add(0, link);
-        }
-        if (target != null) {
-            breadcrumbs.add(
-                HtmlUtils.href(
-                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                    entry.getLabel(), targetAttr));
-
-        } else {
-            if (requestUrl == null) {
-                breadcrumbs.add(getTooltipLink(request, entry,
-                        entry.getLabel(), null));
-            } else {
-                breadcrumbs.add(HtmlUtils.href(request.entryUrl(requestUrl,
-                        entry), entry.getLabel()));
-            }
-        }
-        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-        //                entry), entry.getLabel()));
-        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-        //                entry), entry.getLabel()));
-
-        //        System.err.println("BC:" + breadcrumbs);
-
-        String separator = getPageHandler().getTemplateProperty(request,
-                               "ramadda.template.breadcrumbs.separator",
-                               BREADCRUMB_SEPARATOR);
-
-        return StringUtil.join(HtmlUtils.pad(BREADCRUMB_SEPARATOR),
-                               breadcrumbs);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param makeLinkForLastGroup _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String[] getBreadCrumbs(Request request, Entry entry,
-                                   boolean makeLinkForLastGroup)
-            throws Exception {
-        return getBreadCrumbs(request, entry, makeLinkForLastGroup, null);
-    }
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param makeLinkForLastGroup _more_
-     * @param stopAt _more_
-     *
-     * @return A 2 element array.  First element is the title to use. Second is the links
-     *
-     * @throws Exception _more_
-     */
-    public String[] getBreadCrumbs(Request request, Entry entry,
-                                   boolean makeLinkForLastGroup, Entry stopAt)
-            throws Exception {
-
+    private String getZZZ(Request request, Entry entry, StringBuffer title)
+        throws Exception {
         if (request == null) {
             request = getRepository().getTmpRequest(entry);
         }
@@ -6245,7 +6055,7 @@ public class EntryManager extends RepositoryManager {
         List      breadcrumbs = new ArrayList();
         List      titleList   = new ArrayList();
         if (entry == null) {
-            return new String[] { BLANK, BLANK };
+            return BLANK;
         }
         Entry       parent = findGroup(request, entry.getParentEntryId());
         OutputType  output          = OutputHandler.OUTPUT_HTML;
@@ -6254,10 +6064,6 @@ public class EntryManager extends RepositoryManager {
         List<Entry> parents         = new ArrayList<Entry>();
         int         totalNameLength = 0;
         while (parent != null) {
-            if ((stopAt != null)
-                    && parent.getFullName().equals(stopAt.getFullName())) {
-                break;
-            }
             parents.add(parent);
             String name = parent.getName();
             totalNameLength += name.length();
@@ -6277,8 +6083,10 @@ public class EntryManager extends RepositoryManager {
                 name = name.substring(0, 19) + "...";
             }
             length += name.length();
+            //            String linkLabel =  HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+            String linkLabel =  " " + name;
             titleList.add(0, name);
-            String link = getTooltipLink(request, ancestor, name, null);
+            String link = getTooltipLink(request, ancestor, linkLabel, null);
             breadcrumbs.add(0, link);
             ancestor = findGroup(request, ancestor.getParentEntryId());
         }
@@ -6287,97 +6095,92 @@ public class EntryManager extends RepositoryManager {
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
 
         String separator = htmlTemplate.getTemplateProperty(
-                               "ramadda.template.breadcrumbs.separator",
-                               BREADCRUMB_SEPARATOR);
+                                                            "ramadda.template.breadcrumbs.separator",
+                                                            BREADCRUMB_SEPARATOR);
 
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                           OutputType.TYPE_ALL);
-        String entryLink = HtmlUtils.space(1)
-                           + getTooltipLink(request, entry, entry.getLabel(),
-                                            null);
+                                                              OutputType.TYPE_ALL);
+        String entryLink = HtmlUtils.space(1) +
+            getTooltipLink(request, entry, entry.getLabel(), null);
 
-        if (makeLinkForLastGroup) {
-            breadcrumbs.add(entryLink);
-            nav = StringUtil.join(separator, breadcrumbs);
-            nav = HtmlUtils.div(nav, HtmlUtils.cssClass("breadcrumbs"));
-        } else {
-            String img = getPageHandler().makePopupLink(
-                             HtmlUtils.img(getIconUrl(request, entry)),
-                             links, true, false);
+        
+        String img = getPageHandler().makePopupLink(
+                                                    HtmlUtils.img(getIconUrl(request, entry)),
+                                                    links, true, false);
 
 
-            boolean showBreadcrumbs   = pageStyle.getShowBreadcrumbs(entry);
-            boolean showToolbar       = pageStyle.getShowToolbar(entry);
-            boolean showMenubar       = pageStyle.getShowMenubar(entry);
-            boolean showEntryHeader   = pageStyle.getShowEntryHeader(entry);
-            boolean showLayoutToolbar = pageStyle.getShowLayoutToolbar(entry);
+        boolean showBreadcrumbs   = pageStyle.getShowBreadcrumbs(entry);
+        boolean showToolbar       = pageStyle.getShowToolbar(entry);
+        boolean showMenubar       = pageStyle.getShowMenubar(entry);
+        boolean showEntryHeader   = pageStyle.getShowEntryHeader(entry);
+        boolean showLayoutToolbar = pageStyle.getShowLayoutToolbar(entry);
 
-            String  breadcrumbHtml    = "";
-            if (showBreadcrumbs) {
-                breadcrumbHtml = HtmlUtils.div(StringUtil.join(separator,
-                        breadcrumbs), HtmlUtils.cssClass("breadcrumbs"));
-            }
-
-            String toolbar = showToolbar
-                             ? getEntryToolbar(request, entry)
-                             : "";
-            String menubar = showMenubar
-                             ? getEntryMenubar(request, entry)
-                             : "";
-
-
-
-            if (showToolbar || showMenubar) {
-                menubar = HtmlUtils.leftRightBottom(menubar, toolbar,
-                        HtmlUtils.cssClass(CSS_CLASS_MENUBAR));
-            } else {
-                menubar = "";
-            }
-
-            String htmlViewLinks =
-                getRepository().getHtmlOutputHandler().getHtmlHeader(request,
-                    entry);
-
-            String entryHeader = "";
-            String style       = "";
-            if (showEntryHeader) {
-                entryHeader =
-                    "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                    + HtmlUtils.rowBottom("<td><div class=\"entryname\" >"
-                                          + img + entryLink
-                                          + "</div></td><td align=\"right\">"
-                                          + (showLayoutToolbar
-                                             ? HtmlUtils.div(
-                                             htmlViewLinks,
-                                             HtmlUtils.cssClass(
-                                                 "ramadda-header-layoutbar"))
-                                             : "") + "</td>") + "</table>";
-            }
-
-            if (showEntryHeader || showToolbar || showBreadcrumbs) {
-                style = HtmlUtils.cssClass("entryheader");
-            }
-
-            //getRepository().getProperty("ramadda.html.menubarontop", true)
-            boolean menuBarOnTop =
-                htmlTemplate.getTemplateProperty("menubar.position",
-                    getProperty("ramadda.html.menubar.position",
-                                "bottom")).equals("top");
-            if (menuBarOnTop) {
-                nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
-                                    style);
-            } else {
-                nav = HtmlUtils.div(breadcrumbHtml + entryHeader + menubar,
-                                    style);
-            }
-
+        String  breadcrumbHtml    = "";
+        if (showBreadcrumbs) {
+            breadcrumbHtml = HtmlUtils.div(StringUtil.join(separator,
+                                                           breadcrumbs), HtmlUtils.cssClass("breadcrumbs"));
         }
-        String title =
-            StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
-                            titleList);
 
-        return new String[] { title, nav };
+        String toolbar = showToolbar
+            ? getEntryToolbar(request, entry)
+            : "";
+        String menubar = showMenubar
+            ? getEntryMenubar(request, entry)
+            : "";
+
+
+
+        if (showToolbar || showMenubar) {
+            menubar = HtmlUtils.leftRightBottom(menubar, toolbar,
+                                                HtmlUtils.cssClass(CSS_CLASS_MENUBAR));
+        } else {
+            menubar = "";
+        }
+
+        String htmlViewLinks =
+            getRepository().getHtmlOutputHandler().getHtmlHeader(request,
+                                                                 entry);
+
+        String entryHeader = "";
+        String style       = "";
+        if (showEntryHeader) {
+            entryHeader =
+                "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+                + HtmlUtils.rowBottom("<td><div class=\"entryname\" >"
+                                      + img + entryLink
+                                      + "</div></td><td align=\"right\">"
+                                      + (showLayoutToolbar
+                                         ? HtmlUtils.div(
+                                                         htmlViewLinks,
+                                                         HtmlUtils.cssClass(
+                                                                            "ramadda-header-layoutbar"))
+                                         : "") + "</td>") + "</table>";
+        }
+
+        if (showEntryHeader || showToolbar || showBreadcrumbs) {
+            style = HtmlUtils.cssClass("entryheader");
+        }
+
+        //getRepository().getProperty("ramadda.html.menubarontop", true)
+        boolean menuBarOnTop =
+            htmlTemplate.getTemplateProperty("menubar.position",
+                                             getProperty("ramadda.html.menubar.position",
+                                                         "bottom")).equals("top");
+        if (menuBarOnTop) {
+            nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
+                                style);
+        } else {
+            nav = HtmlUtils.div(breadcrumbHtml + entryHeader + menubar,
+                                style);
+        }
+
+
+        title.append(
+                     StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
+                                     titleList));
+
+        return nav;
 
     }
 
@@ -8050,7 +7853,8 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getTemplateEntry(File file) throws Exception {
         File   parent   = file.getParentFile();
-        String type     = (file.isDirectory()
+        boolean isDirectory = file.isDirectory();
+        String type     = (isDirectory
                            ? "dir"
                            : "file");
         String filename = file.getName();
@@ -8063,6 +7867,14 @@ public class EntryManager extends RepositoryManager {
             if (f.exists()) {
                 return parseEntryXml(f, true);
             }
+        }
+
+        if(isDirectory) {
+            File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
+            if (f.exists()) {
+                return parseEntryXml(f, true);
+            }
+            
         }
 
         return null;

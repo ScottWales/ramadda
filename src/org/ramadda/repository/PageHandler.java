@@ -2117,6 +2117,148 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getConfirmBreadCrumbs(Request request, Entry entry)
+            throws Exception {
+        return HtmlUtils.img(getEntryManager().getIconUrl(request, entry)) + " "
+            + getBreadCrumbs(request, entry);
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getBreadCrumbs(Request request, Entry entry)
+            throws Exception {
+        return getBreadCrumbs(request, entry, null,  null, 80);
+    }
+
+
+    public String getBreadCrumbs(Request request, Entry entry, Entry stopAt)
+            throws Exception {
+        return getBreadCrumbs(request, entry, stopAt, null, 80 );
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param requestUrl _more_
+     * @param lengthLimit _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getBreadCrumbs(Request request, Entry entry,
+                                 Entry stopAt, RequestUrl requestUrl, int lengthLimit)
+            throws Exception {
+        if (entry == null) {
+            return BLANK;
+        }
+
+        List        breadcrumbs     = new ArrayList();
+        Entry       parent = getEntryManager().findGroup(request, entry.getParentEntryId());
+        int         length          = 0;
+        List<Entry> parents         = new ArrayList<Entry>();
+        int         totalNameLength = 0;
+        while (parent != null) {
+            parents.add(parent);
+            String name = parent.getName();
+            totalNameLength += name.length();
+            if(stopAt!=null) {
+                if(stopAt.getId().equals(parent.getId())) break;
+            }
+
+            parent          = getEntryManager().findGroup(request, parent.getParentEntryId());
+        }
+
+
+        boolean needToClip = totalNameLength > lengthLimit;
+        String  target     = (request.defined(ARG_TARGET)
+                              ? request.getString(ARG_TARGET, "")
+                              : null);
+        String  targetAttr = ((target != null)
+                              ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
+                              : "");
+
+        for (Entry ancestor : parents) {
+            if (length > lengthLimit) {
+                breadcrumbs.add(0, "...");
+
+                break;
+            }
+            String name = ancestor.getName();
+            if (needToClip && (name.length() > 20)) {
+                name = name.substring(0, 19) + "...";
+            }
+            length += name.length();
+            //xxx
+            //            String linkLabel =  HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+            String linkLabel =   name;
+            String link = null;
+            if (target != null) {
+                link = HtmlUtils.href(
+                    request.entryUrl(
+                        getRepository().URL_ENTRY_SHOW, ancestor), linkLabel,
+                            targetAttr);
+            } else {
+                link = ((requestUrl == null)
+                        ? getEntryManager().getTooltipLink(request, ancestor, name, null)
+                        : HtmlUtils.href(request.entryUrl(requestUrl,
+                        ancestor), linkLabel, targetAttr));
+            }
+            breadcrumbs.add(0, link);
+        }
+        if (target != null) {
+            breadcrumbs.add(
+                HtmlUtils.href(
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                    entry.getLabel(), targetAttr));
+
+        } else {
+            if (requestUrl == null) {
+                breadcrumbs.add(getEntryManager().getTooltipLink(request, entry,
+                        entry.getLabel(), null));
+            } else {
+                breadcrumbs.add(HtmlUtils.href(request.entryUrl(requestUrl,
+                        entry), entry.getLabel()));
+            }
+        }
+        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        //                entry), entry.getLabel()));
+        //        breadcrumbs.add(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+        //                entry), entry.getLabel()));
+
+        //        System.err.println("BC:" + breadcrumbs);
+
+        String separator = getPageHandler().getTemplateProperty(request,
+                               "ramadda.template.breadcrumbs.separator",
+                               BREADCRUMB_SEPARATOR);
+
+        return StringUtil.join(HtmlUtils.pad(BREADCRUMB_SEPARATOR),
+                               breadcrumbs);
+    }
+
+
 
 
 }

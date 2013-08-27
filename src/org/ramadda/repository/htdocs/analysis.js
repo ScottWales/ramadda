@@ -57,6 +57,7 @@ function CollectionForm(formId) {
         //Assemble the other field values up to the currently selected field
         for(var i=0;i<fieldIdx;i++) {
             var val = this.getFieldSelect(collection, i).val();
+            
             if(val!="") {
                 url = url +"&field" + i + "=" + encodeURIComponent(val);
             }

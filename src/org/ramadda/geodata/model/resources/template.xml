@@ -1,0 +1,8 @@
+<entry name="${name}">
+<description><![CDATA[<wiki>
+${description}
+<a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">Download</a>
+{{gallery}}<br>{{tree}}
+</wiki>
+]]></description>
+</entry>

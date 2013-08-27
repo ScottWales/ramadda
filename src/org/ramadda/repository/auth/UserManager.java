@@ -1947,7 +1947,7 @@ public class UserManager extends RepositoryManager {
                     if (haveFrom) {}
                     else {
                         colSB.append(
-                            getEntryManager().getBreadCrumbs(request, entry));
+                            getPageHandler().getBreadCrumbs(request, entry));
                     }
                     colSB.append(HtmlUtils.br());
                 }
@@ -2301,7 +2301,7 @@ public class UserManager extends RepositoryManager {
                             msg("Delete this favorite")));
             sb.append(removeLink);
             sb.append(HtmlUtils.space(1));
-            sb.append(getEntryManager().getBreadCrumbs(request,
+            sb.append(getPageHandler().getBreadCrumbs(request,
                     favorite.getEntry()));
             sb.append(HtmlUtils.br());
         }

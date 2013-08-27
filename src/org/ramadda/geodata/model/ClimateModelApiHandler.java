@@ -145,6 +145,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         processDir = dpi.getProcessDir();
         if (processDir == null) {
             processDir = getStorageManager().createProcessDir();
+            //Don: the template has a name macro in it and gets written out to the file .this.ramadda.xml 
+            //under the process directory.
+            String template = getStorageManager().readSystemResource("/org/ramadda/geodata/model/resources/template.xml");
+            template = template.replace("${name}","Climate model process output");
+            template = template.replace("${description}","Some description");
+            IOUtil.writeFile(new File(IOUtil.joinDir(processDir,".this.ramadda.xml")),
+                             template);
         }
 
 

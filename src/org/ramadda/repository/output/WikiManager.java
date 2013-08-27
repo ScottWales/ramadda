@@ -1083,7 +1083,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_TOOLBAR)) {
             return getEntryManager().getEntryToolbar(request, entry);
         } else if (include.equals(WIKI_PROP_BREADCRUMBS)) {
-            return getEntryManager().getBreadCrumbs(request, entry);
+            return getPageHandler().getBreadCrumbs(request, entry);
         } else if (include.equals(WIKI_PROP_LINK)) {
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);

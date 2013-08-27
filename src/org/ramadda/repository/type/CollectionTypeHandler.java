@@ -933,7 +933,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 sb.append("Found " + entries.size() + " results");
                 sb.append(HtmlUtils.p());
                 for (Entry child : entries) {
-                    sb.append(getEntryManager().getBreadCrumbs(request,
+                    sb.append(getPageHandler().getBreadCrumbs(request,
                             child));
                     sb.append(HtmlUtils.br());
                 }

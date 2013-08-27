@@ -1641,9 +1641,9 @@ public class Admin extends RepositoryManager {
             sb.append(
                 HtmlUtils.row(
                     HtmlUtils.colspan(
-                        getEntryManager().getBreadCrumbs(
-                            request, entry,
-                            getRepository().URL_ACCESS_FORM), 3)));
+                        getPageHandler().getBreadCrumbs(
+                                                        request, entry, null, 
+                                                        getRepository().URL_ACCESS_FORM, 80), 3)));
             List<Permission> permissions =
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {

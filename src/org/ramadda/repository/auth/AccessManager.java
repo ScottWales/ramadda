@@ -872,7 +872,6 @@ public class AccessManager extends RepositoryManager {
 
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
-        //        sb.append(getEntryManager().makeEntryHeader(request, entry));
         request.appendMessage(sb);
 
         StringBuffer currentAccess = new StringBuffer();

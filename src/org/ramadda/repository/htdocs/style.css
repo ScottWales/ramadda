@@ -1196,13 +1196,18 @@ xxxpath.link {
 }
 
 
-.breadcrumbsseparator {
-   font-size: 11pt;
+.breadcrumbs-separator {
+   font-size: 12pt;
+   margin-left:3px;
+   margin-right:3px;
 }
 
 .breadcrumbs {
+//   font-weight: bold;
 //   font-size: 12pt;
+   margin-top:5px;
    text-decoration: none;
+   vertical-align: bottom;
 }
 
 .breadcrumbs a {

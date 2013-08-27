@@ -1213,7 +1213,6 @@ public class MetadataManager extends RepositoryManager {
                                     getEntryManager().getParent(request,
                                         entry), Permission.ACTION_EDIT);
 
-        //        sb.append(getEntryManager().makeEntryHeader(request, entry));
 
         List<Metadata> metadataList = getMetadata(entry);
         sb.append(HtmlUtils.p());

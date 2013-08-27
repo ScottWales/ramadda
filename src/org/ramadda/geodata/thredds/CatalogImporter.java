@@ -200,7 +200,6 @@ public class CatalogImporter extends OutputHandler {
         boolean addShortMetadata = request.get(ATTR_ADDSHORTMETADATA, false);
         boolean      download    = request.get(ARG_RESOURCE_DOWNLOAD, false);
         StringBuffer sb          = new StringBuffer();
-        //        sb.append(getEntryManager().makeEntryHeader(request, group));
         sb.append("<p>");
         final String catalog = request.getString(ARG_CATALOG, "").trim();
         sb.append(request.form(getRepository().URL_ENTRY_SHOW, ""));
