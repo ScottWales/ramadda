@@ -58,7 +58,7 @@ function CollectionForm(formId) {
         for(var i=0;i<fieldIdx;i++) {
             var val = this.getFieldSelect(collection, i).val();
             if(val!="") {
-                url = url +"&field" + i + "=" + val;
+                url = url +"&field" + i + "=" + encodeURIComponent(val);
             }
         }
         var collectionForm = this;
