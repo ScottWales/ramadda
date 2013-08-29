@@ -2586,7 +2586,12 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String table(Object[] columns) {
-        return table(row(cols(columns), "" /*attr(ATTR_VALIGN, VALUE_TOP)*/));
+        return table(columns, "");
+    }
+
+
+    public static String table(Object[] columns, String attrs) {
+        return table(row(cols(columns),""), attrs);
     }
 
 

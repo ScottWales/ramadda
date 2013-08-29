@@ -1444,9 +1444,18 @@ public class PageHandler extends RepositoryManager {
     public String makePopupLink(String link, String menuContents,
                                 String linkAttributes, boolean makeClose,
                                 boolean alignLeft) {
+        StringBuffer sb = new StringBuffer();
+        link = makePopupLink(link, menuContents, linkAttributes, makeClose, alignLeft, sb);
+        return link + sb;
+    }
+
+    public String makePopupLink(String link, String menuContents,
+                                String linkAttributes, boolean makeClose,
+                                boolean alignLeft, StringBuffer popup) {
+
         String compId   = "menu_" + HtmlUtils.blockCnt++;
         String linkId   = "menulink_" + HtmlUtils.blockCnt++;
-        String contents = makePopupDiv(menuContents, compId, makeClose);
+        popup.append(makePopupDiv(menuContents, compId, makeClose));
         String onClick = HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
                              HtmlUtils.comma(new String[] { "event",
                 HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
@@ -1456,7 +1465,7 @@ public class PageHandler extends RepositoryManager {
                                      onClick + HtmlUtils.id(linkId)
                                      + linkAttributes);
 
-        return href + contents;
+        return href;
     }
 
 

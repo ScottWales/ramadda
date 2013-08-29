@@ -124,4 +124,11 @@ public class JQuery {
 
         return html;
     }
+
+
+    public static String ready(String js) {
+        return "$(document).ready(function(){\n" + js +"\n});\n";
+
+    }
+
 }

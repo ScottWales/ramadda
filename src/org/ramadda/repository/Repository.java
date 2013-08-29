@@ -3237,7 +3237,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean cacheResources() {
-        return true;
+        //TODO:
+        return false;
+        //        return true;
     }
 
 

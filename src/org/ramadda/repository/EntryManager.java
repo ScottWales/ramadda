@@ -35,7 +35,9 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlTemplate;
 
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
@@ -710,7 +712,7 @@ public class EntryManager extends RepositoryManager {
             String   entryFooter = entryFooter(request, entryForHeader);
 
             StringBuffer titleCrumbs = new StringBuffer();
-            String crumbs = getZZZ(request, entryForHeader, titleCrumbs);
+            String crumbs = getEntryHeader(request, entryForHeader, titleCrumbs);
             sb.append(crumbs);
             //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
             //                result.setTitle(result.getTitle());
@@ -5838,6 +5840,7 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuffer menu = new StringBuffer();
+        menu.append(HtmlUtils.div(entry.getName(), HtmlUtils.cssClass("ramadda-entry-menu-title")));
         menu.append("<table cellspacing=\"0\" cellpadding=\"4\">");
         menu.append(HtmlUtils.open(HtmlUtils.TAG_TR,
                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
@@ -5845,29 +5848,31 @@ public class EntryManager extends RepositoryManager {
         if (fileSB != null) {
             fileSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      fileSB.toString()));
-        }
-        if (categorySB != null) {
-            categorySB.append("</table>");
-            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      categorySB.toString()));
+                                      HtmlUtils.b(msg("File")) + "<br>" + fileSB.toString()));
         }
         if (actionSB != null) {
             actionSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      actionSB.toString()));
+                                      HtmlUtils.b(msg("Edit")) + "<br>" +                                      actionSB.toString()));
         }
 
         if (htmlSB != null) {
             htmlSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      htmlSB.toString()));
+                                      HtmlUtils.b(msg("View")) + "<br>" + htmlSB.toString()));
         }
+
 
         if (exportSB != null) {
             exportSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      exportSB.toString()));
+                                      HtmlUtils.b(msg("Links")) + "<br>" +                                      exportSB.toString()));
+        }
+
+        if (categorySB != null) {
+            categorySB.append("</table>");
+            menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
+                                      HtmlUtils.b(msg("Data")) + "<br>" +categorySB.toString()));
         }
 
         menu.append(HtmlUtils.close(HtmlUtils.TAG_TR));
@@ -5893,7 +5898,19 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         List<Link>   links = getEntryLinks(request, entry);
         StringBuffer sb    = new StringBuffer();
+
+        OutputType output = HtmlOutputHandler.OUTPUT_TREE;
+        String treeLink = HtmlUtils.href(
+                                     request.entryUrl(
+                                                      getRepository().URL_ENTRY_SHOW, entry,
+                                                      ARG_OUTPUT, output), HtmlUtils.img(
+                                                                                         iconUrl(output.getIcon()),
+                                                                                         output.getLabel()));
+
+        
+        sb.append(treeLink);
         for (Link link : links) {
+
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
                 String href = HtmlUtils.href(link.getUrl(),
                                              HtmlUtils.img(link.getIcon(),
@@ -6029,98 +6046,62 @@ public class EntryManager extends RepositoryManager {
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return A 2 element array.  First element is the title to use. Second is the links
-     *
-     * @throws Exception _more_
-     */
-    private String getZZZ(Request request, Entry entry, StringBuffer title)
+    private String getEntryHeader(Request request, Entry entry, StringBuffer title)
         throws Exception {
+        if (entry == null) {
+            return BLANK;
+        }
         if (request == null) {
             request = getRepository().getTmpRequest(entry);
         }
 
         PageStyle pageStyle   = request.getPageStyle(entry);
 
-        String    target      = (request.defined(ARG_TARGET)
-                                 ? request.getString(ARG_TARGET, "")
-                                 : null);
         List      breadcrumbs = new ArrayList();
         List      titleList   = new ArrayList();
-        if (entry == null) {
-            return BLANK;
-        }
         Entry       parent = findGroup(request, entry.getParentEntryId());
         OutputType  output          = OutputHandler.OUTPUT_HTML;
         int         length          = 0;
 
         List<Entry> parents         = new ArrayList<Entry>();
-        int         totalNameLength = 0;
+        parents.add(entry);
+
         while (parent != null) {
             parents.add(parent);
-            String name = parent.getName();
-            totalNameLength += name.length();
             parent          = findGroup(request, parent.getParentEntryId());
         }
 
-        boolean needToClip = totalNameLength > 80;
-        for (Entry ancestor : parents) {
-            if (length > 100) {
-                titleList.add(0, "...");
-                breadcrumbs.add(0, "...");
-
-                break;
-            }
-            String name = ancestor.getName();
-            if (needToClip && (name.length() > 20)) {
-                name = name.substring(0, 19) + "...";
-            }
-            length += name.length();
-            //            String linkLabel =  HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
-            String linkLabel =  " " + name;
-            titleList.add(0, name);
-            String link = getTooltipLink(request, ancestor, linkLabel, null);
-            breadcrumbs.add(0, link);
-            ancestor = findGroup(request, ancestor.getParentEntryId());
-        }
-        titleList.add(entry.getLabel());
-        String       nav;
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
-
-        String separator = htmlTemplate.getTemplateProperty(
-                                                            "ramadda.template.breadcrumbs.separator",
-                                                            BREADCRUMB_SEPARATOR);
 
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
                                                               OutputType.TYPE_ALL);
-        String entryLink = HtmlUtils.space(1) +
-            getTooltipLink(request, entry, entry.getLabel(), null);
-
         
-        String img = getPageHandler().makePopupLink(
-                                                    HtmlUtils.img(getIconUrl(request, entry)),
-                                                    links, true, false);
+
+        StringBuffer  popup  = new StringBuffer();
+        String menuLink = getPageHandler().makePopupLink(
+                                       HtmlUtils.img(getRepository().iconUrl("/icons/menu_arrow.gif")),
+                                       links, "", true, false, popup);
+
+        for (Entry ancestor : parents) {
+            String name = ancestor.getName();
+            String linkLabel;
+            if(breadcrumbs.size()==0) {
+                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+            } else {
+                linkLabel =   name;
+            }
+            titleList.add(0, name);
+
+            String url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
+            String link =  HtmlUtils.href(url, linkLabel);
+            breadcrumbs.add(0, link);
+        }
 
 
         boolean showBreadcrumbs   = pageStyle.getShowBreadcrumbs(entry);
         boolean showToolbar       = pageStyle.getShowToolbar(entry);
         boolean showMenubar       = pageStyle.getShowMenubar(entry);
-        boolean showEntryHeader   = pageStyle.getShowEntryHeader(entry);
-        boolean showLayoutToolbar = pageStyle.getShowLayoutToolbar(entry);
-
-        String  breadcrumbHtml    = "";
-        if (showBreadcrumbs) {
-            breadcrumbHtml = HtmlUtils.div(StringUtil.join(separator,
-                                                           breadcrumbs), HtmlUtils.cssClass("breadcrumbs"));
-        }
 
         String toolbar = showToolbar
             ? getEntryToolbar(request, entry)
@@ -6130,57 +6111,36 @@ public class EntryManager extends RepositoryManager {
             : "";
 
 
+        String  breadcrumbHtml    = "";
+        if (showBreadcrumbs) {
+            StringBuffer sb = new StringBuffer("<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
 
-        if (showToolbar || showMenubar) {
-            menubar = HtmlUtils.leftRightBottom(menubar, toolbar,
-                                                HtmlUtils.cssClass(CSS_CLASS_MENUBAR));
-        } else {
-            menubar = "";
+            for(Object crumb: breadcrumbs) {
+                sb.append("<li>\n");
+                sb.append(crumb);
+                sb.append("</li>\n");
+            }
+            sb.append("</ul></div></div>");
+            sb.append(HtmlUtils.script(JQuery.ready("jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
+            breadcrumbHtml = sb.toString();
+            sb = new StringBuffer("<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
+            sb.append("<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
+            sb.append(menuLink);
+            sb.append("</div></td>");
+
+            sb.append("<td width=88%>");
+            sb.append(breadcrumbHtml);
+            sb.append("</td>");
+            sb.append("<td width=10% align=right>");
+            sb.append(toolbar);
+            sb.append("</td>");
+            sb.append("</tr></table></div>");
+            sb.append(popup);
+            breadcrumbHtml = sb.toString();
         }
-
-        String htmlViewLinks =
-            getRepository().getHtmlOutputHandler().getHtmlHeader(request,
-                                                                 entry);
-
-        String entryHeader = "";
-        String style       = "";
-        if (showEntryHeader) {
-            entryHeader =
-                "<table border=0 cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-                + HtmlUtils.rowBottom("<td><div class=\"entryname\" >"
-                                      + img + entryLink
-                                      + "</div></td><td align=\"right\">"
-                                      + (showLayoutToolbar
-                                         ? HtmlUtils.div(
-                                                         htmlViewLinks,
-                                                         HtmlUtils.cssClass(
-                                                                            "ramadda-header-layoutbar"))
-                                         : "") + "</td>") + "</table>";
-        }
-
-        if (showEntryHeader || showToolbar || showBreadcrumbs) {
-            style = HtmlUtils.cssClass("entryheader");
-        }
-
-        //getRepository().getProperty("ramadda.html.menubarontop", true)
-        boolean menuBarOnTop =
-            htmlTemplate.getTemplateProperty("menubar.position",
-                                             getProperty("ramadda.html.menubar.position",
-                                                         "bottom")).equals("top");
-        if (menuBarOnTop) {
-            nav = HtmlUtils.div(menubar + breadcrumbHtml + entryHeader,
-                                style);
-        } else {
-            nav = HtmlUtils.div(breadcrumbHtml + entryHeader + menubar,
-                                style);
-        }
-
-
-        title.append(
-                     StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
+        title.append(StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
                                      titleList));
-
-        return nav;
+        return breadcrumbHtml;
 
     }
 
