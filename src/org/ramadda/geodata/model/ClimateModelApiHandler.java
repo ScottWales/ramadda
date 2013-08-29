@@ -258,9 +258,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         //If we are searching or comparing then find the selected entries
         if (request.exists(ARG_ACTION_SEARCH)
                 || request.exists(ARG_ACTION_COMPARE)) {
+            int collectionCnt = 0;
             for (String collection : new String[] { ARG_COLLECTION1,
                     ARG_COLLECTION2 }) {
 
+                collectionCnt++;
                 StringBuffer tmp = new StringBuffer();
                 extra.put(collection, tmp);
                 String selectArg = getCollectionSelectArg(collection);
@@ -271,11 +273,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
                 if (collectionEntry == null) {
                     tmp.append("No collection");
-
                     continue;
                 }
                 List<Entry> entries = findEntries(request, collection,
-                                          collectionEntry);
+                                                  collectionEntry, collectionCnt);
                 if (entries.isEmpty()) {
                     continue;
                 }
@@ -538,13 +539,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @throws Exception  problem with search
      */
     private List<Entry> findEntries(Request request, String collection,
-                                    Entry entry)
+                                    Entry entry, int collectionCnt)
             throws Exception {
         CollectionTypeHandler typeHandler =
             (CollectionTypeHandler) entry.getTypeHandler();
         List<Clause>    clauses   = new ArrayList<Clause>();
         List<Column>    columns   = typeHandler.getGranuleColumns();
         HashSet<String> seenTable = new HashSet<String>();
+        boolean hadAnyFields = false;
         for (int fieldIdx = 0; fieldIdx < columns.size(); fieldIdx++) {
             Column column      = columns.get(fieldIdx);
             String dbTableName = column.getTableName();
@@ -559,9 +561,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             String arg = getFieldSelectArg(collection, fieldIdx);
             String v   = request.getString(arg, "");
             if (v.length() > 0) {
+                hadAnyFields = true;
                 clauses.add(Clause.eq(column.getName(), v));
             }
         }
+        //If we have a fixed collection then don't do the search if no fields were selected
+        if(!hadAnyFields && request.defined(ARG_COLLECTION)) {
+            return new ArrayList<Entry>();
+        }
+
+
         List[] pair = getEntryManager().getEntries(request, clauses,
                           typeHandler.getGranuleTypeHandler());
 
