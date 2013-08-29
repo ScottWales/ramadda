@@ -22,9 +22,13 @@ function CollectionForm(formId) {
         for(var fieldIdx=0;fieldIdx<10;fieldIdx++) {
             this.initField(collection, fieldIdx);
         }
-        var collectionId  =  this.getCollectionSelect(collection).val();
+        var t = this.getCollectionSelect(collection);
+        //        alert('t:' + t.size());
+        var collectionId  =  t.val();
+        
         //If they had one selected 
         if(collectionId!="") {
+            //            alert("updating fields:" + collectionId);
             this.updateFields(collection,  collectionId, 0, true);
         }
     }
@@ -53,7 +57,7 @@ function CollectionForm(formId) {
 
     //Get the list of metadata values for the given field and collection
     this.updateFields = function(collection, collectionId, fieldIdx, fromInit) {
-        var url = this.analysisUrl +"json=test&collection=" + collectionId+"&field=" + fieldIdx;
+        var url = this.analysisUrl +"json=test&thecollection=" + collectionId+"&field=" + fieldIdx;
         //Assemble the other field values up to the currently selected field
         for(var i=0;i<fieldIdx;i++) {
             var val = this.getFieldSelect(collection, i).val();
@@ -97,11 +101,13 @@ function CollectionForm(formId) {
 
     //Get the selected entry id
     this.getSelectedCollectionId = function(collection) {
-        return this.getCollectionSelect(collection).val();
+        var t = this.getCollectionSelect(collection);
+        return t.val();
     }
 
     //Get the collection selector 
     this.getCollectionSelect = function(collection) {
+        //        alert('ID:' + this.getCollectionSelectId(collection));
         return  $('#' + this.getCollectionSelectId(collection));
     }
 

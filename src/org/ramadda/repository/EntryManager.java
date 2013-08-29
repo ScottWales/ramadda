@@ -6100,7 +6100,7 @@ public class EntryManager extends RepositoryManager {
 
         //OutputType.TYPE_ALL
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msg("Links for") + " " + entry.getName());
+                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msg("Here are some links for ") + " " + entry.getName());
         
 
         StringBuffer  popup  = new StringBuffer();

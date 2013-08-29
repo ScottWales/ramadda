@@ -68,6 +68,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** compare action */
     public static final String ARG_ACTION_COMPARE = "action.compare";
 
+    public static final String ARG_COLLECTION = "collection";
+
     /** collection 1 id */
     public static final String ARG_COLLECTION1 = "collection1";
 
@@ -228,6 +230,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @throws Exception on badness
      */
     public Result processCompareRequest(Request request) throws Exception {
+        String fixedCollectionId  = request.getString(ARG_COLLECTION, (String) null);
+        Entry fixedCollection = null;
+
+        if(fixedCollectionId!=null) {
+            //            System.err.println ("Have fixed collection:" + fixedCollectionId);
+        }
+
+        if(fixedCollectionId!=null) {
+            request.put(ARG_COLLECTION1, fixedCollectionId);
+            request.put(ARG_COLLECTION2, fixedCollectionId);
+        }
+
 
         String json = request.getString("json", (String) null);
         if (json != null) {
@@ -249,10 +263,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
                 StringBuffer tmp = new StringBuffer();
                 extra.put(collection, tmp);
+                String selectArg = getCollectionSelectArg(collection);
                 Entry collectionEntry =
-                    getEntryManager().getEntry(request,
-                        request.getString(getCollectionSelectArg(collection),
-                                          ""));
+                    getEntryManager().getEntry(request, request.getString(selectArg,""));
+                //                System.err.println("collectionEntry:" + collectionEntry+" select: " +
+                //                                    request.getString(selectArg,""));
+
                 if (collectionEntry == null) {
                     tmp.append("No collection");
 
@@ -287,6 +303,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (operands.size() >= 1) {
             hasOperands = (operands.get(0).getEntries().size() > 0)
                           || (operands.get(1).getEntries().size() > 0);
+        }
+
+        if(fixedCollectionId!=null && fixedCollection == null) {
+            fixedCollection = getEntryManager().getEntry(request, fixedCollectionId);
+            //            System.err.println("got it:" + fixedCollection);
         }
 
 
@@ -345,8 +366,17 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(
             "Plot monthly maps from different climate model datasets as well as differences between datasets. Means, anomalies and climatologies are available.");
 
+        if(fixedCollection!=null) {
+            sb.append(HtmlUtils.p());
+            sb.append(header("Fixed collection:" + fixedCollection.getName()));
+            sb.append(HtmlUtils.hidden(ARG_COLLECTION, fixedCollection.getId()));
+        }
+
         sb.append("<table><tr valign=top>\n");
         int collectionNumber = 0;
+
+
+
         for (String collection : new String[] { ARG_COLLECTION1,
                 ARG_COLLECTION2 }) {
 
@@ -361,13 +391,22 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
             collectionNumber++;
             String arg = getCollectionSelectArg(collection);
-            String collectionWidget =
-                HtmlUtils.select(arg, tfos, request.getString(arg, ""),
-                                 HtmlUtils.id(getCollectionSelectId(formId,
-                                     collection)));
+            String id = getCollectionSelectId(formId,collection);
 
-            sb.append(HtmlUtils.formEntry(msgLabel("Collection"),
-                                          collectionWidget));
+            
+
+            if(fixedCollection!=null) {
+                sb.append("\n");
+                sb.append(HtmlUtils.hidden(arg, fixedCollection.getId(),
+                                           HtmlUtils.id(id)));
+                sb.append(HtmlUtils.comment("test test"));
+            } else {
+                String collectionWidget =
+                    HtmlUtils.select(arg, tfos, request.getString(arg, ""),
+                                     HtmlUtils.id(id));
+                sb.append(HtmlUtils.formEntry(msgLabel("Collection"),
+                                              collectionWidget));
+            }
 
             Entry        entry   = collections.get(0);
             List<Column> columns = typeHandler.getGranuleColumns();
@@ -595,8 +634,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     private Result processJsonRequest(Request request, String what)
             throws Exception {
+        
+
+        //        System.err.println("Request:" + request);
         Entry entry = getEntryManager().getEntry(request,
-                          request.getString("collection", ""));
+                          request.getString("thecollection", ""));
+        //        System.err.println("Entry:" + entry);
         CollectionTypeHandler typeHandler =
             (CollectionTypeHandler) entry.getTypeHandler();
         List<Clause> clauses = new ArrayList<Clause>();
@@ -610,7 +653,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
         }
 
-        //System.err.println("Clauses:" + clauses);
         int columnIdx = request.get("field", 1);
         if (columnIdx >= columns.size()) {
             return new Result("", new StringBuffer(), Json.MIMETYPE);
@@ -620,18 +662,19 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             new ArrayList<String>(((CollectionTypeHandler) entry
                 .getTypeHandler())
                     .getUniqueColumnValues(entry, columnIdx, clauses, false));
-        //System.err.println("Values:" + values);
         StringBuffer sb = new StringBuffer();
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
                                             values, myColumn);
             tfos.add(0, new TwoFacedObject(""));
             String json = Json.tfoList(tfos);
-            //System.out.println(json);
+            //            System.out.println("json:" + json);
             sb.append(json);
         } else {
             values.add(0, "");
-            sb.append(Json.list(values, true));
+            String json = Json.list(values, true);
+            //            System.out.println("json:" + json);
+            sb.append(json);
         }
 
         return new Result("", sb, Json.MIMETYPE);

@@ -127,11 +127,13 @@ form {
 }
 
 .ramadda-entry-menu-title {
-   font-size: 120%;
-   font-weight:bold;
+  font-style:italic;
+//   font-size: 110%;
+//   font-weight:bold;
    width: 100%;
-   text-align:center;
-   text-decoration: underline;
+  // text-align:center;
+//   text-decoration: underline;
+   border-bottom : 1px #888 solid;
 }
 
 
