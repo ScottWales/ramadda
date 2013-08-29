@@ -68,6 +68,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** compare action */
     public static final String ARG_ACTION_COMPARE = "action.compare";
 
+    /** _more_ */
     public static final String ARG_COLLECTION = "collection";
 
     /** collection 1 id */
@@ -149,11 +150,14 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             processDir = getStorageManager().createProcessDir();
             //Don: the template has a name macro in it and gets written out to the file .this.ramadda.xml 
             //under the process directory.
-            String template = getStorageManager().readSystemResource("/org/ramadda/geodata/model/resources/template.xml");
-            template = template.replace("${name}","Climate model process output");
-            template = template.replace("${description}","Some description");
-            IOUtil.writeFile(new File(IOUtil.joinDir(processDir,".this.ramadda.xml")),
-                             template);
+            String template =
+                getStorageManager().readSystemResource(
+                    "/org/ramadda/geodata/model/resources/template.xml");
+            template = template.replace("${name}",
+                                        "Climate model process output");
+            template = template.replace("${description}", "Some description");
+            IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
+                    ".this.ramadda.xml")), template);
         }
 
 
@@ -230,14 +234,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @throws Exception on badness
      */
     public Result processCompareRequest(Request request) throws Exception {
-        String fixedCollectionId  = request.getString(ARG_COLLECTION, (String) null);
+
+        String fixedCollectionId = request.getString(ARG_COLLECTION,
+                                       (String) null);
         Entry fixedCollection = null;
 
-        if(fixedCollectionId!=null) {
+        if (fixedCollectionId != null) {
             //            System.err.println ("Have fixed collection:" + fixedCollectionId);
         }
 
-        if(fixedCollectionId!=null) {
+        if (fixedCollectionId != null) {
             request.put(ARG_COLLECTION1, fixedCollectionId);
             request.put(ARG_COLLECTION2, fixedCollectionId);
         }
@@ -266,17 +272,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 StringBuffer tmp = new StringBuffer();
                 extra.put(collection, tmp);
                 String selectArg = getCollectionSelectArg(collection);
-                Entry collectionEntry =
-                    getEntryManager().getEntry(request, request.getString(selectArg,""));
+                Entry collectionEntry = getEntryManager().getEntry(request,
+                                            request.getString(selectArg, ""));
                 //                System.err.println("collectionEntry:" + collectionEntry+" select: " +
                 //                                    request.getString(selectArg,""));
 
                 if (collectionEntry == null) {
                     tmp.append("No collection");
+
                     continue;
                 }
                 List<Entry> entries = findEntries(request, collection,
-                                                  collectionEntry, collectionCnt);
+                                          collectionEntry, collectionCnt);
                 if (entries.isEmpty()) {
                     continue;
                 }
@@ -306,8 +313,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                           || (operands.get(1).getEntries().size() > 0);
         }
 
-        if(fixedCollectionId!=null && fixedCollection == null) {
-            fixedCollection = getEntryManager().getEntry(request, fixedCollectionId);
+        if ((fixedCollectionId != null) && (fixedCollection == null)) {
+            fixedCollection = getEntryManager().getEntry(request,
+                    fixedCollectionId);
             //            System.err.println("got it:" + fixedCollection);
         }
 
@@ -367,10 +375,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(
             "Plot monthly maps from different climate model datasets as well as differences between datasets. Means, anomalies and climatologies are available.");
 
-        if(fixedCollection!=null) {
+        if (fixedCollection != null) {
             sb.append(HtmlUtils.p());
-            sb.append(header("Fixed collection:" + fixedCollection.getName()));
-            sb.append(HtmlUtils.hidden(ARG_COLLECTION, fixedCollection.getId()));
+            sb.append(header("Collection: "
+                             + fixedCollection.getName()));
+            sb.append(HtmlUtils.hidden(ARG_COLLECTION,
+                                       fixedCollection.getId()));
         }
 
         sb.append("<table><tr valign=top>\n");
@@ -392,21 +402,21 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
             collectionNumber++;
             String arg = getCollectionSelectArg(collection);
-            String id = getCollectionSelectId(formId,collection);
+            String id  = getCollectionSelectId(formId, collection);
 
-            
 
-            if(fixedCollection!=null) {
+
+            if (fixedCollection != null) {
                 sb.append("\n");
                 sb.append(HtmlUtils.hidden(arg, fixedCollection.getId(),
                                            HtmlUtils.id(id)));
                 sb.append(HtmlUtils.comment("test test"));
             } else {
-                String collectionWidget =
-                    HtmlUtils.select(arg, tfos, request.getString(arg, ""),
-                                     HtmlUtils.id(id));
+                String collectionWidget = HtmlUtils.select(arg, tfos,
+                                              request.getString(arg, ""),
+                                              HtmlUtils.id(id));
                 sb.append(HtmlUtils.formEntry(msgLabel("Collection"),
-                                              collectionWidget));
+                        collectionWidget));
             }
 
             Entry        entry   = collections.get(0);
@@ -422,16 +432,26 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     values.add(selectedValue);
                 }
                 sb.append("\n");
-                String selectBox =
-                    HtmlUtils.select(
-                        arg, values, selectedValue,
-                        " style=\"max-width:250px;min-width:250px;\" "
-                        + HtmlUtils.attr(
-                            "id",
-                            getFieldSelectId(formId, collection, fieldIdx)));
-                sb.append(HtmlUtils.formEntry(msgLabel(column.getLabel()),
-                        selectBox));
-                sb.append("\n");
+                // don't show variable selector for subsequent collections when we have a fixed
+                // collection
+                if (request.defined(ARG_COLLECTION) && (collectionNumber > 1)
+                        && column.getName().equals("variable")) {
+                    sb.append(HtmlUtils.formEntry(msg(""), ""));
+                } else {
+
+                    String selectBox =
+                        HtmlUtils.select(
+                            arg, values, selectedValue,
+                            " style=\"max-width:250px;min-width:250px;\" "
+                            + HtmlUtils.attr(
+                                "id",
+                                getFieldSelectId(
+                                    formId, collection, fieldIdx)));
+                    sb.append(
+                        HtmlUtils.formEntry(
+                            msgLabel(column.getLabel()), selectBox));
+                    sb.append("\n");
+                }
             }
             StringBuffer results = extra.get(collection);
             if (results != null) {
@@ -481,7 +501,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (process.canHandle(dpi)) {
                     process.addToForm(request, dpi, tmpSB);
                     processTabs.add(HtmlUtils.div(tmpSB.toString(),
-                        HtmlUtils.style("min-height:200px;")));
+                            HtmlUtils.style("min-height:200px;")));
                     processTitles.add(process.getDataProcessLabel());
                     first = false;
                 }
@@ -525,6 +545,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         return new Result("Climate Model Comparison", sb);
 
+
     }
 
     /**
@@ -533,6 +554,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @param request   the Request
      * @param collection  the collection
      * @param entry  the entry
+     * @param collectionCnt _more_
      *
      * @return the list of entries (may be empty)
      *
@@ -543,10 +565,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             throws Exception {
         CollectionTypeHandler typeHandler =
             (CollectionTypeHandler) entry.getTypeHandler();
-        List<Clause>    clauses   = new ArrayList<Clause>();
-        List<Column>    columns   = typeHandler.getGranuleColumns();
-        HashSet<String> seenTable = new HashSet<String>();
-        boolean hadAnyFields = false;
+        List<Clause>    clauses      = new ArrayList<Clause>();
+        List<Column>    columns      = typeHandler.getGranuleColumns();
+        HashSet<String> seenTable    = new HashSet<String>();
+        boolean         haveAllFields = true;
         for (int fieldIdx = 0; fieldIdx < columns.size(); fieldIdx++) {
             Column column      = columns.get(fieldIdx);
             String dbTableName = column.getTableName();
@@ -557,16 +579,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                         dbTableName + ".id"));
                 seenTable.add(dbTableName);
             }
-
-            String arg = getFieldSelectArg(collection, fieldIdx);
-            String v   = request.getString(arg, "");
+            String arg = "";
+            if (request.defined(ARG_COLLECTION)
+                    && collection.equals(ARG_COLLECTION2)
+                    && column.getName().equals("variable")) {
+                arg = getFieldSelectArg(ARG_COLLECTION1, fieldIdx);
+            } else {
+                arg = getFieldSelectArg(collection, fieldIdx);
+            }
+            String v = request.getString(arg, "");
             if (v.length() > 0) {
-                hadAnyFields = true;
                 clauses.add(Clause.eq(column.getName(), v));
+            } else {
+            	haveAllFields = false;
             }
         }
         //If we have a fixed collection then don't do the search if no fields were selected
-        if(!hadAnyFields && request.defined(ARG_COLLECTION)) {
+        if ( !haveAllFields && request.defined(ARG_COLLECTION)) {
             return new ArrayList<Entry>();
         }
 
@@ -643,7 +672,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     private Result processJsonRequest(Request request, String what)
             throws Exception {
-        
+
 
         //        System.err.println("Request:" + request);
         Entry entry = getEntryManager().getEntry(request,
