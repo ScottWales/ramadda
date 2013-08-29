@@ -114,6 +114,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
+    public final RequestUrl URL_ENTRY_LINKS = new RequestUrl(this,
+                                                   "/entry/links");
+
 
     /** _more_ */
     public final RequestUrl URL_ASSOCIATION_ADD = new RequestUrl(this,

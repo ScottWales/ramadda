@@ -26,6 +26,7 @@
       <api request="/entry/copy"             method="processEntryCopy"/>
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
       <api request="/entry/export/*"         method="processEntryExport" />
+      <api request="/entry/links"            method="processEntryLinks" />
       <api request="/entry/xmlcreate"        method="processEntryXmlCreate"/>
       <api request="/entry/comments/show"    method="processCommentsShow"/>
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>

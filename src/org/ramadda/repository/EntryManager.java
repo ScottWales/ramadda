@@ -3533,6 +3533,24 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public Result processEntryLinks(Request request) throws Exception {
+        Entry entry = getEntry(request);
+        if (entry == null) {
+            throw new IllegalArgumentException("Unable to find entry:"
+                    + request);
+        }
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(header("Entry Links"));
+
+
+        sb.append(getEntryActionsTable(request, entry,
+                                       OutputType.TYPE_ALL));
+        //                                       OutputType.TYPE_FEEDS));
+        return addEntryHeader(request, entry,
+                                  new Result(msg("Entry Links"), sb));
+    }
+
     /**
      * _more_
      *
@@ -5711,6 +5729,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
 
+
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 
@@ -5730,7 +5749,7 @@ public class EntryManager extends RepositoryManager {
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links)
             throws Exception {
-        return getEntryActionsTable(request, entry, typeMask, links, false);
+        return getEntryActionsTable(request, entry, typeMask, links, false,null);
     }
 
     /**
@@ -5748,7 +5767,7 @@ public class EntryManager extends RepositoryManager {
      */
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links,
-                                       boolean returnNullIfNoneMatch)
+                                       boolean returnNullIfNoneMatch, String header)
             throws Exception {
 
         StringBuffer
@@ -5840,7 +5859,9 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuffer menu = new StringBuffer();
-        menu.append(HtmlUtils.div(entry.getName(), HtmlUtils.cssClass("ramadda-entry-menu-title")));
+        if(header!=null) {
+            menu.append(HtmlUtils.div(header, HtmlUtils.cssClass("ramadda-entry-menu-title")));
+        }
         menu.append("<table cellspacing=\"0\" cellpadding=\"4\">");
         menu.append(HtmlUtils.open(HtmlUtils.TAG_TR,
                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
@@ -5939,13 +5960,13 @@ public class EntryManager extends RepositoryManager {
         List<Link> links = getEntryLinks(request, entry);
 
         String entryMenu = getEntryActionsTable(request, entry,
-                               OutputType.TYPE_FILE, links, true);
+                                                OutputType.TYPE_FILE, links, true,null);
         String editMenu = getEntryActionsTable(request, entry,
-                              OutputType.TYPE_EDIT, links, true);
+                                               OutputType.TYPE_EDIT, links, true, null);
         String exportMenu = getEntryActionsTable(request, entry,
-                                OutputType.TYPE_FEEDS, links, true);
+                                                 OutputType.TYPE_FEEDS, links, true, null);
         String viewMenu = getEntryActionsTable(request, entry,
-                              OutputType.TYPE_VIEW, links, true);
+                                               OutputType.TYPE_VIEW, links, true, null);
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
@@ -6074,8 +6095,12 @@ public class EntryManager extends RepositoryManager {
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
 
 
+        List<Link> linkList = getEntryLinks(request, entry);
+
+
+        //OutputType.TYPE_ALL
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                                                              OutputType.TYPE_ALL);
+                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msg("Links for") + " " + entry.getName());
         
 
         StringBuffer  popup  = new StringBuffer();

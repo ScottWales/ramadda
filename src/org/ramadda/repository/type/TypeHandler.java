@@ -1682,9 +1682,17 @@ public class TypeHandler extends RepositoryManager {
                     links.add(hr);
                 }
             }
-
-
         }
+
+        links.add(
+                  new Link(
+                           HtmlUtils.url(
+                                         getRepository().URL_ENTRY_LINKS.toString(), new String[] {
+                                             ARG_ENTRYID,
+                                             entry.getId() }), getRepository()
+                           .iconUrl("/icons/application-detail.png"), "Links",
+                           OutputType.TYPE_FILE));
+
 
         //Allow users with the rights to export and import
         if (canDoNew) {
