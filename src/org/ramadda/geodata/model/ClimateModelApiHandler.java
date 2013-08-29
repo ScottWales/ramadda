@@ -148,17 +148,24 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         processDir = dpi.getProcessDir();
         if (processDir == null) {
             processDir = getStorageManager().createProcessDir();
+        }
             //Don: the template has a name macro in it and gets written out to the file .this.ramadda.xml 
             //under the process directory.
             String template =
                 getStorageManager().readSystemResource(
                     "/org/ramadda/geodata/model/resources/template.xml");
             template = template.replace("${name}",
-                                        "Climate model process output");
-            template = template.replace("${description}", "Some description");
+                                        "Climate model comparison output");
+            StringBuffer dpiDesc = new StringBuffer("Comparison of ");
+            int cntr = 0;
+            for (DataProcessOperand dpo : dpi.getOperands()) {
+            	if (cntr > 0) dpiDesc.append(" and ");
+            	dpiDesc.append(dpo.getDescription());
+            	cntr++;
+            }
+            template = template.replace("${description}", dpiDesc.toString());
             IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
                     ".this.ramadda.xml")), template);
-        }
 
 
 
@@ -214,10 +221,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             HtmlUtils.url(
                 request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                 ARG_ENTRYID,
-                processEntryId + "/"
-                + IOUtil.getFileTail(lastFile.toString()));
-        // Use this if you want to return the process directory
-        //      processEntryId);
+                // Use this if you want to return the process directory
+                processEntryId);
+                //processEntryId + "/" + IOUtil.getFileTail(lastFile.toString()));
 
         return new Result(entryUrl);
     }
@@ -288,7 +294,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     continue;
                 }
                 //TODO: fix this later 
-                operands.add(new DataProcessOperand(collection, entries));
+                operands.add(new DataProcessOperand(entries.get(0).getName(), entries));
 
                 tmp.append(
                     "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 150px; overflow-y: auto\">");

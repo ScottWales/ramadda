@@ -1,8 +1,12 @@
 <entry name="${name}">
 <description><![CDATA[<wiki>
-${description}
-<a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">Download</a>
-{{gallery}}<br>{{tree}}
+<h2>${description}</h2>
+<p>
+<b>Images</b>
+{{gallery width="500"}}
+<br>
+<b>All Files</b> <a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download)</a>
+{{tree}}
 </wiki>
 ]]></description>
 </entry>
