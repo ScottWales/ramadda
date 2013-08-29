@@ -6136,7 +6136,8 @@ public class EntryManager extends RepositoryManager {
             : "";
 
 
-        String  breadcrumbHtml    = "";
+        String  header    = "";
+
         if (showBreadcrumbs) {
             StringBuffer sb = new StringBuffer("<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
 
@@ -6147,25 +6148,29 @@ public class EntryManager extends RepositoryManager {
             }
             sb.append("</ul></div></div>");
             sb.append(HtmlUtils.script(JQuery.ready("jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
-            breadcrumbHtml = sb.toString();
+            header = sb.toString();
             sb = new StringBuffer("<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
             sb.append("<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
             sb.append(menuLink);
             sb.append("</div></td>");
 
             sb.append("<td width=88%>");
-            sb.append(breadcrumbHtml);
+            sb.append(header);
             sb.append("</td>");
             sb.append("<td width=10% align=right>");
             sb.append(toolbar);
             sb.append("</td>");
             sb.append("</tr></table></div>");
             sb.append(popup);
-            breadcrumbHtml = sb.toString();
+            header = sb.toString();
+        } else {
+            if(!request.isAnonymous()) {
+                header = menuLink + popup;
+            }
         }
         title.append(StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
                                      titleList));
-        return breadcrumbHtml;
+        return header;
 
     }
 
