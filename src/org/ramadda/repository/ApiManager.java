@@ -458,13 +458,12 @@ public class ApiManager extends RepositoryManager {
         if (apiMethod == null) {
             //            System.err.println ("incoming:" + incoming);
             for (ApiMethod tmp : wildCardApiMethods) {
-                String path = tmp.getRequest();
-                //Strip off the trailing "/*"
-                path = path.substring(0, path.length() - 2);
-                if (incoming.startsWith(path)) {
-                    //                    System.err.println ("got it:" + path);
+                if (incoming.startsWith(tmp.getWildcardPath1())) {
                     apiMethod = tmp;
-
+                    break;
+                }
+                if (incoming.equals(tmp.getWildcardPath2())) {
+                    apiMethod = tmp;
                     break;
                 }
             }

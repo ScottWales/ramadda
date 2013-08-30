@@ -315,6 +315,26 @@ public class ApiMethod {
         return request;
     }
 
+    private String wildcardPath1;
+    private String wildcardPath2;
+
+    public String getWildcardPath1() {
+        if(wildcardPath1==null) {
+            wildcardPath1  = request.substring(0, request.length() - 1);
+        }
+        return  wildcardPath1;
+    }
+
+
+    public String getWildcardPath2() {
+        if(wildcardPath2==null) {
+            wildcardPath2  = request.substring(0, request.length() - 2);
+        }
+        return  wildcardPath2;
+    }
+
+
+
     /**
      * _more_
      *
