@@ -9113,9 +9113,11 @@ public class EntryManager extends RepositoryManager {
     public ProcessFileTypeHandler getProcessFileTypeHandler()
             throws Exception {
         if (processFileTypeHandler == null) {
-            processFileTypeHandler =
+            ProcessFileTypeHandler tmp = 
                 new ProcessFileTypeHandler(getRepository(), null);
-        }
+            tmp.setType("type_process");
+            processFileTypeHandler = tmp;
+    }
 
         return processFileTypeHandler;
     }
@@ -9131,7 +9133,13 @@ public class EntryManager extends RepositoryManager {
         if (processEntry == null) {
             TypeHandler typeHandler = getProcessFileTypeHandler();
             //parentEntry = topGroup;
-            Entry parentEntry = parentEntry = new Entry(typeHandler, true);
+            Entry parentEntry  = new Entry(typeHandler, true);
+            parentEntry.setUser(getUserManager().getLocalFileUser());
+            parentEntry.addMetadata(
+                                    new Metadata(
+                                                 getRepository().getGUID(), parentEntry.getId(),
+                                                 ContentMetadataHandler.TYPE_PAGESTYLE, true,  "","false","","",""));
+
             Entry topGroup    = getTopGroup();
             parentEntry.setName("Process Entries");
             parentEntry.setId(ID_PREFIX_SYNTH + ENTRYID_PROCESS);

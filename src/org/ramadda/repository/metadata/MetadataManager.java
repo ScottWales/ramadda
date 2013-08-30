@@ -476,6 +476,7 @@ public class MetadataManager extends RepositoryManager {
         if (entry == null) {
             return;
         }
+        //        System.err.println ("ENTRY:" + entry + " metadata:" + getMetadata(entry));
         for (Metadata metadata : getMetadata(entry)) {
             if ( !firstTime && !metadata.getInherited()) {
                 continue;
@@ -535,8 +536,8 @@ public class MetadataManager extends RepositoryManager {
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
         if (entry.isDummy()) {
-            //            debug("METADATA:getMetadata entry is dummy");
-            return new ArrayList<Metadata>();
+            return entry.getMetadata()==null?
+                new ArrayList<Metadata>(): entry.getMetadata();
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
