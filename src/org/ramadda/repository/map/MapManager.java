@@ -145,7 +145,7 @@ public class MapManager extends RepositoryManager {
 
 
     /** the base for the openlayers URL */
-    private static final String OPENLAYERS_BASE = "/openlayers";
+    private static final String OPENLAYERS_BASE = "/lib/openlayers";
     //    private static final String OPENLAYERS_BASE = "/openlayers2_12";
 
     /**
