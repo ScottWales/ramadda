@@ -5,12 +5,8 @@ var icon_close = "${urlroot}/icons/close.gif";
 var icon_rightarrow = "${urlroot}/icons/grayrightarrow.gif";
 var icon_downdart ="${urlroot}/icons/downdart.gif";
 var icon_rightdart ="${urlroot}/icons/rightdart.gif";
-
 var icon_downdart ="${urlroot}/icons/application_side_contract.png";
 var icon_rightdart ="${urlroot}/icons/application_side_expand.png";
-
-
-
 var icon_progress = "${urlroot}/icons/progress.gif";
 var icon_information = "${urlroot}/icons/information.png";
 var icon_folderclosed = "${urlroot}/icons/folderclosed.png";
@@ -124,20 +120,6 @@ function Util () {
         }
         return '';
     }
-
-
-    this.print = function (s, clear) {
-        var obj = ramaddaUtil.getDomObject("output");
-        if(!obj) {
-            alert('could not find print output\n'+  s);
-            return;
-        }
-        if(clear) {
-	     obj.obj.innerHTML  ="";
-        }
-        obj.obj.innerHTML  =obj.obj.innerHTML+"<br>" +s;
-    }
-
 
 
     this.getEvent = function (event) {
@@ -287,11 +269,6 @@ function hidePopupObject() {
 }
 
 
-
-function hideObjectToHide() {
-    if(objectToHide) {
-    }
-}
 
 function mouseDown(event) {
     if(popupObject) {
@@ -476,162 +453,19 @@ function mouseUpOnEntry(event, entryId, targetId) {
 }
 
 
-
-
-
-function setImage(id,url) {
-    img = ramaddaUtil.getDomObject(id);
-    if(img) {
-        img.obj.src  = url;
-    }
-}
-
-
-
-function Tooltip () {
-    var STATE_INIT = 0;
-    var STATE_LINK = 1;
-    var STATE_TIP = 2;
-    var lastMove = 0;
-    var state = STATE_INIT;
-    var currentID;
-    var hideDelay = 1000;
-    var showDelay = 1000;
-
-    this.debug = function(msg) {
-        ramaddaUtil.print(msg);
-    }
-    this.keyPressed = function (event) {
-        tooltip.doHide();
-        return;
-        if(state==STATE_INIT) return;
-        c =ramaddaUtil.getKeyChar(event);
-        if(c == '\r' && state == STATE_TIP) {
-            tooltip.doHide();
-        }
-    }
-
-    this.onMouseMove = function (event,id,linkId) {
-        lastMove++;
-        if(state!=STATE_INIT) return;
-        event = ramaddaUtil.getEvent(event);
-        setTimeout("tooltip.showLink(" + lastMove+"," +ramaddaUtil.getEventX(event)+","+ ramaddaUtil.getEventY(event) +"," + "'" + id +"'"+  ",'" + linkId +"')", showDelay);
-    }
-
-    this.onMouseOut = function (event,id,linkId) {
-        lastMove++;
-        if(state !=STATE_LINK) return;
-        setTimeout("tooltip.checkHide(" + lastMove+ ")", hideDelay);
-    }
-
-
-    this.onMouseOver = function(event,id,linkId) {
-        event = ramaddaUtil.getEvent(event);
-
-        if(state ==STATE_LINK && currentID && id!=currentID) {
-            this.doHide();
-            currentID = null;
-
-        }
-        lastMove++;
-        if(state!=STATE_INIT) return;
-        setTimeout("tooltip.showLink(" + lastMove+"," +ramaddaUtil.getEventX(event)+","+ ramaddaUtil.getEventY(event) +"," + "'" + id +"'"+",'" + linkId +"')", showDelay);
-    }
-
-
-    this.checkHide  = function(timestamp) {
-	if(timestamp<lastMove) return;
-        this.doHide();
-    }
-
-    this.doHide  = function() {
-        currentID = "";
-        if(state !=STATE_LINK && state!=STATE_TIP)
-            return;
-        state = STATE_INIT;
-        hideObject(ramaddaUtil.getDomObject("tooltipdiv"));
-    }
-
-
-    this.getX = function(link,eventX) {
-        if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
-            return eventX-15;
-            return ramaddaUtil.getLeft(link.obj);
-        } else {
-            return eventX+20;
-        }
-    }
-
-    this.getY = function(link,eventY) {
-        if(link && link.obj.offsetLeft && link.obj.offsetWidth) {
-            return  link.obj.offsetHeight+ramaddaUtil.getTop(link.obj)-2;
-        } else {
-            return eventY;
-        }
-    }
-
-
-    this.onClick  = function(event,id) {
-	state = STATE_TIP;
-        var link = ramaddaUtil.getDomObject(id);
-        x = this.getX(link);
-        y = this.getY(link);
-        var obj = ramaddaUtil.getDomObject("tooltipdiv");
-        if(!obj) return;
-        //        ramaddaUtil.setPosition(obj, x,y);
-        url = "${urlroot}/entry/show?entryid=" + id +"&output=metadataxml";
-	ramaddaUtil.loadXML( url, handleTooltip,obj);
-    }
-
-
-    this.showLink = function(moveId,x,y,id,linkId) {
-        //Don't do this for now
-        if(true) return;
-        if(lastMove!=moveId) return;
-	if(state!=STATE_INIT) return;
-        currentID = id;
-        var obj = ramaddaUtil.getDomObject("tooltipdiv");
-        if(!obj) return;
-        state = STATE_LINK;
-        var link = ramaddaUtil.getDomObject(linkId);
-        x = this.getX(link,x);
-        y = this.getY(link,y);
-        ramaddaUtil.setPosition(obj, x,y);
-        var imgEvents = " onMouseOver=\"tooltip.onMouseOver(event,'" + id +"')\" " +
-        " onMouseOut=\"tooltip.onMouseOut(event,'" + id +"')\" " +
-        " onMouseMove=\"tooltip.onMouseMove(event,'" + id +"')\" " +
-        " onClick=\"tooltip.onClick(event,'" + id +"')\" ";
-	obj.obj.innerHTML = "<div class=tooltip-link-inner><img title=\"Show tooltip\" alt=\"Show tooltip\" " + imgEvents +" src="+icon_information +"></div>";
-        showObject(obj);
-    }
-
-    function handleTooltip(request, obj) {
-        var xmlDoc=request.responseXML.documentElement;
-        text = getChildText(xmlDoc);
-        obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table cellspacing=0 cellpadding=0><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
-        checkTabs(text);
-        showObject(obj);
-    }
-
-}
-
-tooltip = new Tooltip();
-//document.onkeypress = tooltip.keyPressed;
-var keyEvent;
-
-
 function handleKeyPress(event) {
-    keyEvent = event;
     c =ramaddaUtil.getKeyChar(event);
     div = ramaddaUtil.getDomObject("tooltipdiv");
     if(!div) return;
     hideObject(div);
 }
 
+
 document.onkeypress = handleKeyPress;
 
 var groups = new Array();
 var groupList = new Array();
+
 
 
 
@@ -906,17 +740,6 @@ function checkTabs(html) {
     }
 }
 
-function xxxcheckTabs(html) {
-    var re = new RegExp("(tabId[0-9]+)");
-    var m = re.exec(html);
-    if (m != null) {
-        var s =   m[m.length-1];
-        jQuery(function(){
-                jQuery('#'+ s).tabs();
-            });
-    }
-}
-
 
 function hideEntryPopup() {
     hideObject(ramaddaUtil.getDomObject("tooltipdiv"));
@@ -1113,23 +936,7 @@ function  handleFolderList(request, uid) {
             img.obj.src = originalImages[uid];
         }
     }
-
 }
-
-function scrollObject(id,cnt,lastHeight) {
-    var block = ramaddaUtil.getDomObject(id);
-    cnt--;
-    if(cnt>0) {
-          block.style.maxHeight=parseInt(block.style.maxHeight)+20;
-          if(lastHeight!= block.obj.clientHeight) {
-              setTimeout("scrollObject('" + block.id +"',"+cnt+","+(block.obj.clientHeight)+")",100);
-              return;
-          }
-    } 
-    block.style.border = "none";
-    block.style.maxHeight=1000;
-}
-
 
 
 var selectors = new Array();
@@ -1198,12 +1005,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 
 
-function insertText(id,value) {
-    var textComp = ramaddaUtil.getDomObject(id);
-    if(textComp) {
-	insertAtCursor(textComp.obj, value);
-    }
-}
+
 
 function selectClick(id,entryId,value) {
     selector = selectors[id];
@@ -1304,17 +1106,6 @@ function hideElementById(id) {
     hideObject(ramaddaUtil.getDomObject(id));
 }
 
-function setFormValue(id, value) {
-    var obj = ramaddaUtil.getDomObject(id);
-    obj.obj.value   = value;
-}
-
-
-function setHtml(id, html) {
-    var obj = ramaddaUtil.getDomObject(id);
-    obj.obj.innerHTML = html;
-}
-
 function showAjaxPopup(event,srcId,url) {
     ramaddaUtil.loadXML(url, handleAjaxPopup,srcId);
 }
@@ -1373,8 +1164,6 @@ function showPopup(event, srcId, popupId, alignLeft) {
 }
 
 
-
-
 function showStickyPopup(event, srcId, popupId, alignLeft) {
     var popup = ramaddaUtil.getDomObject(popupId);
     var srcObj = ramaddaUtil.getDomObject(srcId);
@@ -1400,9 +1189,6 @@ function showStickyPopup(event, srcId, popupId, alignLeft) {
 }
 
 
-function show(id) {
-    showObject(ramaddaUtil.getDomObject(id));
-}
 
 function hideObject(obj) {
     if(!obj) {
@@ -1467,273 +1253,6 @@ function toggleVisibilityOnObject(obj, display) {
 
 
 
-
-
-
-function findFormElement(form, id) {
-    var form = document.forms[form];
-    if(form) {
-        if(form[id]) return form[id];
-    }
-    obj = ramaddaUtil.getDomObject(id);
-    if(obj) return obj.obj;
-    return null;
-}
-
-
-function selectDate(div,field,id,fmt) {
-    var cal = new CalendarPopup(div);
-    cal.showYearNavigation();
-    cal.select(field,id,fmt);
-}
-
-
-var tabs = new Array();
-
-function tabPress(tabId,ids,what) {
-    if(!tabs[tabId]) {
-        tabs[tabId] = new Tab(ids);
-    }
-    tabs[tabId].toggleTab(what);
-}
-
-
-
-function Tab(ids) {
-    this.ids = ids;
-    this.toggleTab = toggleTab;
-    this.onColor = "#ffffff";
-    this.offColor = "#dddddd";
-
-    for(i=0;i<ids.length;i++) {
-        var contentId  = 'content_'+ids[i];
-        var content = ramaddaUtil.getDomObject(contentId);
-        var titleId  = 'title_'+ids[i];
-        var title = ramaddaUtil.getDomObject(titleId);
-        if(i==0) {
-            this.onStyle = title.style;
-            if(title.style.backgroundColor) {
-                //this.onColor = title.style.backgroundColor;
-            }
-        } else {
-            this.offStyle = title.style;
-            if(title.style.backgroundColor) {
-                //this.offColor = title.style.backgroundColor;
-            }
-        }
-    }
-    //	this.toggleTab(this.ids[0]);
-}
-
-function toggleTab(mainId) {
-    var mainContentId = 'content_' + mainId;
-    for(i=0;i<this.ids.length;i++) {
-	var contentId  = 'content_'+this.ids[i];
-        var content = ramaddaUtil.getDomObject(contentId);
-	var titleId  = 'title_'+this.ids[i];
-	var title = ramaddaUtil.getDomObject(titleId);
-        if(!content) {
-            continue;
-        }
-
-	if(contentId==mainContentId) {
-            content.style.visibility="visible";
-            content.style.display = "block";
-            content.style.backgroundColor=this.onColor;
-            title.style.backgroundColor=this.onColor;
-            title.style.borderBottom = "2px #ffffff  solid";
-	} else {
-            content.style.visibility="hidden";
-            content.style.display = "none";
-            title.style.backgroundColor=this.offColor;
-            title.style.borderBottom = "1px #000000 solid";
-	}
-    }
-}
-
-
-function insertAtCursor(myField, myValue) {
-
-
-    var textScroll = myField.scrollTop;
-
-
-    //IE support
-    if (document.selection) {
-        myField.focus();
-        sel = document.selection.createRange();
-        sel.text = myValue;
-    }
-    //MOZILLA/NETSCAPE support
-    else if (myField.selectionStart || myField.selectionStart == '0') {
-        var startPos = myField.selectionStart;
-        var endPos = myField.selectionEnd;
-        myField.value = myField.value.substring(0, startPos)
-            + myValue
-            + myField.value.substring(endPos, myField.value.length);
-    } else {
-        myField.value += myValue;
-    }
-    myField.scrollTop = textScroll;
-}
-
-
-
-function insertTags(id, tagOpen, tagClose, sampleText) {
-    var textComp = ramaddaUtil.getDomObject(id);
-    if(textComp) {
-	insertTagsInner(textComp.obj, tagOpen,tagClose,sampleText);
-    }
-}
-
-
-
-// apply tagOpen/tagClose to selection in textarea,
-// use sampleText instead of selection if there is none
-function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
-    var selText, isSample = false;
-    tagOpen = tagOpen.replace(/&quote;/gi,'\"');
-    tagClose = tagClose.replace(/&quote;/gi,'\"');
-
-
-    if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla
-        //save textarea scroll position
-        var textScroll = txtarea.scrollTop;
-        //get current selection
-        txtarea.focus();
-        var startPos = txtarea.selectionStart;
-        var endPos = txtarea.selectionEnd;
-        selText = txtarea.value.substring(startPos, endPos);
-        //insert tags
-        checkSelectedText(selText, isSample, sampleText);
-        txtarea.value = txtarea.value.substring(0, startPos)
-            + tagOpen + selText + tagClose
-            + txtarea.value.substring(endPos, txtarea.value.length);
-        //set new selection
-        //        alert(isSample + "  " +txtarea.selectionStart + " " +txtarea.selectionEnd);
-
-        if (isSample) {
-            txtarea.selectionStart = startPos + tagOpen.length;
-            txtarea.selectionEnd = startPos + tagOpen.length + selText.length;
-        } else {
-            txtarea.selectionStart = startPos + tagOpen.length + selText.length + tagClose.length;
-            txtarea.selectionEnd = txtarea.selectionStart-tagClose.length;
-        }
-        //restore textarea scroll position
-        txtarea.scrollTop = textScroll;
-        return;
-    }
-
-
-    if (document.selection  && document.selection.createRange) { // IE/Opera
-        //save window scroll position
-        if (document.documentElement && document.documentElement.scrollTop)
-            var winScroll = document.documentElement.scrollTop
-            else if (document.body)
-                var winScroll = document.body.scrollTop;
-        //get current selection  
-        txtarea.focus();
-        var range = document.selection.createRange();
-        selText = range.text;
-        //insert tags
-        checkSelectedText(selText, isSample, sampleText);
-        range.text = tagOpen + selText + tagClose;
-        //mark sample text as selected
-        if (isSample && range.moveStart) {
-            if (window.opera)
-                tagClose = tagClose.replace(/\n/g,'');
-            range.moveStart('character', - tagClose.length - selText.length); 
-            range.moveEnd('character', - tagClose.length); 
-        }
-        if(range.select) {
-            range.select();   
-        }
-        //restore window scroll position
-        if (document.documentElement && document.documentElement.scrollTop)
-            document.documentElement.scrollTop = winScroll
-            else if (document.body)
-                document.body.scrollTop = winScroll;
-    } 
-
-   }
-
-
-function checkSelectedText(selText, isSample, sampleText){
-    if (!selText) {
-        selText = sampleText;
-        isSample = true;
-    } else if (selText.charAt(selText.length - 1) == ' ') { //exclude ending space char
-        selText = selText.substring(0, selText.length - 1);
-        tagClose += ' ';
-    } 
-}
-
-
-
-
-
-
-
-var http_request = false;
-function makePOSTRequest(url, parameters) {
-    http_request = false;
-
-    if (window.XMLHttpRequest) { // Mozilla, Safari,...
-        http_request = new XMLHttpRequest();
-        if (http_request.overrideMimeType) {
-            // set type accordingly to anticipated content type
-            //http_request.overrideMimeType('text/xml');
-            http_request.overrideMimeType('text/html');
-        }
-    } else if (window.ActiveXObject) { // IE
-        try {
-            http_request = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            try {
-                http_request = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (e) {}
-        }
-    }
-    if (!http_request) {
-        alert('Cannot create XMLHTTP instance');
-        return false;
-    }
-      
-    http_request.onreadystatechange = alertContents;
-    http_request.open('POST', url, true);
-    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    http_request.setRequestHeader("Content-length", parameters.length);
-    http_request.setRequestHeader("Connection", "close");
-    http_request.send(parameters);
-}
-
-function alertContents() {
-    if (http_request.readyState == 4) {
-        if (http_request.status == 200) {
-            result = http_request.responseText;
-        } else {
-            alert('There was a problem with the request.');
-        }
-    }
-}
-
-
-
-function testReturn(request) {
-    jsonText=request.responseText;
-    if(JSON) {
-        entries = JSON.parse(jsonText);
-    }  else {
-        entries = eval('(' + jsonText + ')');
-    }
-
-    var names = "";
-    for (i = 0; i < entries.length; i++) {
-        entry = entries[i];
-        names = names+"\n" + entry.name;
-    }
-    //    alert(names);
-}
 
 
 
@@ -1824,60 +1343,5 @@ function size_format (filesize) {
     return filesize;
 };
 
-
-function Entry (entry) {
-    this.entry = entry;
-    /*
-    for(var key in entry) {
-        if(key == "column.model") {
-            alert(key + "=" + this.entry[key]);
-            break;
-        }
-        }*/
-
-    this.getId = function () {
-        return  this.entry.id;
-    }
-
-    this.getIconImage = function () {
-        return "<img src=\"" + this.entry.icon +"\">";
-    }
-    this.getColumnValue = function (name) {
-        var value = this.entry["column." + name];
-        return value;
-    }
-
-    this.getColumnNames = function () {
-        var names =  this.entry.columnNames;
-        if (!names) names = new Array();
-        return names;
-    }
-
-    this.getColumnLabels = function () {
-        var names =  this.entry.columnLabels;
-        if (!names) names = new Array();
-        return names;
-    }
-
-    this.getName = function () {
-        if(this.entry.name ==null || this.entry.name == "") {
-            return "no name";
-        }
-        return this.entry.name;
-    }
-    this.getFilesize = function () {
-        var size =  parseInt(this.entry.filesize);
-        if(size == size) return size;
-        return 0;
-    }
-    this.getFormattedFilesize = function () {
-        return size_format(this.getFilesize());
-    }
-    this.getLink = function (label) {
-        if(!label) label = this.getName();
-        return  "<a href=\"${urlroot}/entry/show?entryid=" + this.entry.id +"\">" + label +"</a>";
-    }
-
-}
 
 

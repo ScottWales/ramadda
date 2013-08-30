@@ -119,8 +119,9 @@ function SelectForm (formId, entryId, arg, outputDiv, selectValues) {
             var footer= "";
             var columnNames = null;
             var row1 = true;
-            for(var i=0;i<data.length;i++)  {
-                var entry = new Entry(data[i]);
+            var entries = createEntriesFromJson(data);
+            for(var i=0;i<entries.length;i++)  {
+                var entry = entries[i];
                 if(i==0) {
                     columnNames = entry.getColumnNames();
                     widthPerColumn = Math.floor(60/(columnNames.length+1))+"%";
