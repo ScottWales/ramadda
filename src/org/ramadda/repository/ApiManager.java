@@ -459,8 +459,8 @@ public class ApiManager extends RepositoryManager {
             //            System.err.println ("incoming:" + incoming);
             for (ApiMethod tmp : wildCardApiMethods) {
                 String path = tmp.getRequest();
-                //Strip off the star
-                path = path.substring(0, path.length() - 1);
+                //Strip off the trailing "/*"
+                path = path.substring(0, path.length() - 2);
                 if (incoming.startsWith(path)) {
                     //                    System.err.println ("got it:" + path);
                     apiMethod = tmp;
