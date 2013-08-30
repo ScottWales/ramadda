@@ -2901,7 +2901,7 @@ public class TypeHandler extends RepositoryManager {
                         sb.append(
                             HtmlUtils.importJS(
                                 getRepository().fileUrl(
-                                    "/tiny_mce/tiny_mce.js")));
+                                    "/lib/tiny_mce/tiny_mce.js")));
                         if (tinyMceTemplate == null) {
                             tinyMceTemplate = getRepository().getResource(
                                 getRepository().getProperty(

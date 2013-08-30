@@ -314,8 +314,8 @@ public class GraphOutputHandler extends OutputHandler {
                                 int height) {
         String divId = "graph_" + (graphCnt++);
         js.append("function createGraph" + divId + "() {\n");
-        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3.v3.min.js")));
-        sb.append(HtmlUtils.importJS(fileUrl("/d3/d3graph.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/lib/d3/d3.v3.min.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/lib/d3/d3graph.js")));
         sb.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
                                 HtmlUtils.style("width:" + width + ";height:"
                                     + height) + HtmlUtils.id(divId)

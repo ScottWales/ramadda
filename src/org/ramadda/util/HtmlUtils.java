@@ -3118,136 +3118,6 @@ public class HtmlUtils {
         return tag(TAG_STYLE, "", css);
     }
 
-    /** _more_ */
-    static int tabCnt = 0;
-
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabs(List titles, List contents,
-                                  boolean skipEmpty) {
-        return makeTabs(titles, contents, skipEmpty, CLASS_TAB_CONTENT);
-    }
-
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     * @param tabContentClass _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabs(List titles, List contents,
-                                  boolean skipEmpty, String tabContentClass) {
-        return makeTabs(titles, contents, skipEmpty, tabContentClass,
-                        CLASS_TAB_CONTENTS);
-    }
-
-    /**
-     * _more_
-     *
-     * @param titles _more_
-     * @param contents _more_
-     * @param skipEmpty _more_
-     * @param tabContentClass _more_
-     * @param wrapperClass _more_
-     *
-     * @return _more_
-     */
-    public static String makeTabs(List titles, List contents,
-                                  boolean skipEmpty, String tabContentClass,
-                                  String wrapperClass) {
-
-        String       id        = "tab_" + (tabCnt++);
-        String       ids       = "tab_" + (tabCnt++) + "_ids";
-        StringBuffer titleSB   = new StringBuffer("");
-        StringBuffer contentSB = new StringBuffer();
-        StringBuffer idArray   = new StringBuffer("new Array(");
-        int          cnt       = 0;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-
-            String tabId = id + "_" + i;
-            if (cnt > 0) {
-                idArray.append(",");
-            }
-            cnt++;
-            idArray.append(HtmlUtils.squote(tabId));
-        }
-        if ((cnt == 1) && skipEmpty) {
-            return contents.get(0).toString();
-        }
-
-        idArray.append(")");
-
-        String selectedOne = null;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-            String title = titles.get(i).toString();
-            if (title.startsWith("selected:")) {
-                selectedOne = title;
-
-                break;
-            }
-        }
-
-        boolean didone = false;
-        for (int i = 0; i < titles.size(); i++) {
-            String content = contents.get(i).toString();
-            if (skipEmpty && (content.length() == 0)) {
-                continue;
-            }
-            String title = titles.get(i).toString();
-            String tabId = id + "_" + i;
-            contentSB.append("\n");
-            boolean selected = ((selectedOne == null)
-                                ? !didone
-                                : Misc.equals(title, selectedOne));
-            if (selected && (selectedOne != null)) {
-                title = title.substring("selected:".length());
-            }
-            contentSB.append(HtmlUtils.div(content,
-                                           HtmlUtils.cssClass(tabContentClass
-                                               + (selected
-                    ? "_on"
-                    : "_off")) + HtmlUtils.id("content_" + tabId)
-                               + HtmlUtils.style("display:" + (selected
-                    ? "block"
-                    : "none") + ";visibility:" + (selected
-                    ? "visible"
-                    : "hidden"))));
-            String link = HtmlUtils.href("javascript:" + "tabPress("
-                                         + HtmlUtils.squote(id) + ","
-                                         + idArray + ","
-                                         + HtmlUtils.squote(tabId)
-                                         + ")", title);
-            titleSB.append(HtmlUtils.span(link, (selected
-                    ? HtmlUtils.cssClass("tab_title_on")
-                    : HtmlUtils.cssClass("tab_title_off")) + HtmlUtils.id(
-                        "title_" + tabId)));
-            didone = true;
-        }
-
-        return HtmlUtils.div(
-            titleSB.toString(),
-            HtmlUtils.cssClass("tab_titles")) + HtmlUtils.div(
-                contentSB.toString(), HtmlUtils.cssClass(wrapperClass));
-    }
-
 
     /** _more_ */
     private static String blockHideImageUrl;
@@ -3850,7 +3720,7 @@ public class HtmlUtils {
     public static void makeAccordian(StringBuffer sb, List<String> titles,
                                      List<String> contents) {
 
-        String accordianId = "accordion_" + (tabCnt++);
+        String accordianId = "accordion_" + (blockCnt++);
         sb.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV,

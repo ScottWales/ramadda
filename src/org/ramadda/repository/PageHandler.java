@@ -1266,39 +1266,6 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param formName _more_
-     * @param fieldName _more_
-     *
-     * @return _more_
-     */
-    public String getCalendarSelector(String formName, String fieldName) {
-        String anchorName = "anchor." + fieldName;
-        String divName    = "div." + fieldName;
-        String call =
-            HtmlUtils.call("selectDate",
-                           HtmlUtils.comma(HtmlUtils.squote(divName),
-        //                              "document.forms['"  + formName + "']." + fieldName, 
-        "findFormElement('" + formName + "','" + fieldName
-                            + "')", HtmlUtils.squote(anchorName),
-                                    HtmlUtils.squote(
-                                        "yyyy-MM-dd"))) + "return false;";
-
-        return HtmlUtils
-            .href("#", HtmlUtils
-                .img(iconUrl(ICON_CALENDAR), " Choose date", HtmlUtils
-                    .attr(HtmlUtils.ATTR_BORDER, "0")), HtmlUtils
-                        .onMouseClick(call) + HtmlUtils
-                        .attrs(HtmlUtils.ATTR_NAME, anchorName, HtmlUtils
-                            .ATTR_ID, anchorName)) + HtmlUtils
-                                .div("", HtmlUtils
-                                    .attrs(HtmlUtils
-                                        .ATTR_ID, divName, HtmlUtils
-                                        .ATTR_STYLE, "position:absolute;visibility:hidden;background-color:white;layer-background-color:white;"));
-    }
-
 
 
     /**

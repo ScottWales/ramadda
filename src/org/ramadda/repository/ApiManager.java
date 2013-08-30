@@ -456,10 +456,13 @@ public class ApiManager extends RepositoryManager {
 
         ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
         if (apiMethod == null) {
+            //            System.err.println ("incoming:" + incoming);
             for (ApiMethod tmp : wildCardApiMethods) {
                 String path = tmp.getRequest();
-                path = path.substring(0, path.length() - 2);
+                //Strip off the star
+                path = path.substring(0, path.length() - 1);
                 if (incoming.startsWith(path)) {
+                    //                    System.err.println ("got it:" + path);
                     apiMethod = tmp;
 
                     break;

@@ -1896,12 +1896,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             buf.append(
                 HtmlUtils.importJS(
                     getRepository().fileUrl(
-                        "/fancybox/jquery.fancybox-1.3.4.pack.js")));
+                        "/lib/fancybox/jquery.fancybox-1.3.4.pack.js")));
             buf.append("\n");
             buf.append("<link rel=\"stylesheet\" href=\"");
             buf.append(
                 getRepository().fileUrl(
-                    "/fancybox/jquery.fancybox-1.3.4.css"));
+                    "/lib/fancybox/jquery.fancybox-1.3.4.css"));
             buf.append("\" type=\"text/css\" media=\"screen\" />");
             buf.append("\n");
             buf.append(
