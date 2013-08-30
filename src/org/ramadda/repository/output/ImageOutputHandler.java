@@ -916,7 +916,7 @@ public class ImageOutputHandler extends OutputHandler {
      *       entries = getEntryUtil().sortEntriesOnDate(entries, true);
      *   }
      *   finalSB.append(
-     *       HtmlUtils.importJS(getRepository().fileUrl("/slides/js/slides.min.jquery.js")));
+     *       HtmlUtils.importJS(getRepository().fileUrl("/lib/slides/js/slides.min.jquery.js")));
      *   String slidesTemplate = repository.getResource("ramadda.html.slides");
      *   System.out.println(slidesTemplate);
      *   finalSB.append(slidesTemplate);

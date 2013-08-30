@@ -1584,7 +1584,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     + width + "px;height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
                 sb.append("<link rel=\"stylesheet\" href=\"");
-                sb.append(getRepository().fileUrl("/slides/paginate.css"));
+                sb.append(getRepository().fileUrl("/lib/slides/paginate.css"));
                 sb.append("\" type=\"text/css\" media=\"screen\" />");
                 sb.append("\n");
 
@@ -1597,7 +1597,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     "preload: false, preloadImage: "
                     + HtmlUtils
                         .squote(getRepository()
-                            .fileUrl("/slides/img/loading.gif")) + ", play: "
+                            .fileUrl("/lib/slides/img/loading.gif")) + ", play: "
                                 + startSpeed
                                 + ", pause: 2500, hoverPause: true"
                                 + ", generatePagination: " + shownav + "\n";
@@ -1618,7 +1618,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         "#",
                         HtmlUtils.img(
                             getRepository().fileUrl(
-                                "/slides/img/arrow-prev.png"), "Prev",
+                                "/lib/slides/img/arrow-prev.png"), "Prev",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "prev"));
 
@@ -1627,7 +1627,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         "#",
                         HtmlUtils.img(
                             getRepository().fileUrl(
-                                "/slides/img/arrow-next.png"), "Next",
+                                "/lib/slides/img/arrow-next.png"), "Next",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "next"));
 
@@ -1662,7 +1662,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append(
                     HtmlUtils.importJS(
                         getRepository().fileUrl(
-                            "/slides/slides.min.jquery.js")));
+                            "/lib/slides/slides.min.jquery.js")));
 
                 sb.append(HtmlUtils.script(js.toString()));
 
