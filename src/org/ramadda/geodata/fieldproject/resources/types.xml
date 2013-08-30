@@ -132,6 +132,7 @@
 <td width="50%">
 {{description wikify="true"}}
 
+{{information}}
 
 {{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
 

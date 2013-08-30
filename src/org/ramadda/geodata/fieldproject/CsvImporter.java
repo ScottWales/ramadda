@@ -31,6 +31,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.Misc;
 
 import ucar.unidata.util.IOUtil;
 
@@ -114,20 +115,50 @@ public class CsvImporter extends ImportHandler {
         int    IDX_DESCRIPTION = 3;
 
         String entryType       = "project_site";
+        List<String> columns = (List<String>)Misc.toList(new String[]{
+            "site_type", 
+            "status",
+            "short_name",
+            //            "location",
+            "network"
+            });
+        System.err.println("Columns:" + columns);
+
         for (String line : StringUtil.split(csv, "\n", true, true)) {
+            if(line.startsWith("#")) {
+                line = line.substring(1);
+                List<String> toks = StringUtil.splitUpTo(line,"=",2);
+                if(toks.size()== 2 && toks.get(0).equals("fields")) {
+                    columns = StringUtil.split(toks.get(1).trim(),",");
+                }
+                continue;
+            }
             List<String> toks = StringUtil.split(line, ",");
             double       lat  = Double.parseDouble(getValue(IDX_LAT, toks));
             double       lon  = Double.parseDouble(getValue(IDX_LON, toks));
             String       name = getValue(IDX_NAME, toks);
             String       desc = getValue(IDX_DESCRIPTION, toks);
-            sb.append(XmlUtil.tag("entry", XmlUtil.attrs(new String[] {
+            StringBuffer innerXml = new StringBuffer();
+            int colCnt = 0;
+            for(String col: columns) {
+                String colValue = getValue(IDX_DESCRIPTION+colCnt+1,toks);
+                if(Utils.stringDefined(colValue)) {
+                    innerXml.append(XmlUtil.tag(col,"", colValue));
+                }
+                colCnt++;
+            }
+            String attrs = XmlUtil.attrs(new String[] {
                 ATTR_TYPE, entryType, ATTR_LATITUDE, "" + lat, ATTR_LONGITUDE,
                 "" + lon, ATTR_NAME, name, ATTR_DESCRIPTION, desc
-            })));
+                });
+            sb.append(XmlUtil.tag("entry", attrs, innerXml.toString()));
         }
 
 
         sb.append("</entries>");
+        //        System.out.println(sb);
+
+            
 
         return new ByteArrayInputStream(sb.toString().getBytes());
 
