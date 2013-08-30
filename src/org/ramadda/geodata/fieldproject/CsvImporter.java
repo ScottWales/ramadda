@@ -122,8 +122,6 @@ public class CsvImporter extends ImportHandler {
             //            "location",
             "network"
             });
-        System.err.println("Columns:" + columns);
-
         for (String line : StringUtil.split(csv, "\n", true, true)) {
             if(line.startsWith("#")) {
                 line = line.substring(1);
@@ -156,10 +154,6 @@ public class CsvImporter extends ImportHandler {
 
 
         sb.append("</entries>");
-        //        System.out.println(sb);
-
-            
-
         return new ByteArrayInputStream(sb.toString().getBytes());
 
 

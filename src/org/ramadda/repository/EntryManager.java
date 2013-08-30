@@ -6117,7 +6117,8 @@ public class EntryManager extends RepositoryManager {
             if(breadcrumbs.size()==0) {
                 linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
             } else {
-                linkLabel =   name;
+                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+                //                linkLabel =   name;
             }
             titleList.add(0, name);
 
