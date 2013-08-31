@@ -66,25 +66,25 @@ form {
 }
 
 .entry-list-form {
-  width: 100%;
+//  width: 100%;
   padding: 5px;
   padding-left: 10px;
   border: 1px #aaa solid;
   border-bottom: 0px;
-  border-right: 0px;
+//  border-right: 0px;
 }
 
 .entry-list-table {
   border : 1px #aaa solid;
-  border-bottom : 0px #888 solid;
+  border-bottom : 0px #aaa solid;
   background-color: #efefef;
-  font-weight: bold; 
 }
 
 .entry-list-header-column {
+   font-weight: bold; 
    border-right : 1px #aaa solid;
    text-align: center;
-   padding:0px;
+   padding-bottom:1px;
    padding-top:5px;
 }
 
@@ -98,7 +98,7 @@ form {
 .ramadda-entry-row {
   margin-top:2px;
   padding: 2px;
-  border-bottom:1px #efefef dotted;
+  border-bottom:1px #eee dotted;
 }
 
 

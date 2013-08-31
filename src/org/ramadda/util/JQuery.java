@@ -125,6 +125,22 @@ public class JQuery {
         return html;
     }
 
+    public static String makeButton(String label, String id, StringBuffer js, 
+                                    String code) {
+        String html = HtmlUtils.tag("button", HtmlUtils.id(id), label);
+        js.append(
+            JQuery.select(JQuery.id(id))
+            + ".button().click(function(event){\n"
+            + code + "\n});\n");
+
+        return html;
+    }
+
+    public static String buttonize(String id) {
+        return  JQuery.select(JQuery.id(id))
+            + ".button().click(function(event){});\n";
+    }
+
 
     public static String ready(String js) {
         return "$(document).ready(function(){\n" + js +"\n});\n";

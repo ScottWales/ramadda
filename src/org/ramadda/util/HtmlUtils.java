@@ -3232,6 +3232,11 @@ public class HtmlUtils {
     public static int blockCnt = 0;
 
 
+    public static String getUniqueId(String prefix)  {
+        return prefix + (blockCnt++);
+    }
+
+
     /**
      * _more_
      *

@@ -1724,11 +1724,12 @@ public class PageHandler extends RepositoryManager {
      */
     public String formatDateShort(Request request, Date d, String timezone,
                                   String extraAlt) {
-        SimpleDateFormat sdf = getSDF(getProperty(PROP_DATE_SHORTFORMAT,
-                                   DEFAULT_TIME_SHORTFORMAT), timezone);
         if (d == null) {
             return BLANK;
         }
+
+        SimpleDateFormat sdf = getSDF(getProperty(PROP_DATE_SHORTFORMAT,
+                                   DEFAULT_TIME_SHORTFORMAT), timezone);
 
         Date   now      = new Date();
         long   diff     = now.getTime() - d.getTime();

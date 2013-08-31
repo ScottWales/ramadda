@@ -1171,8 +1171,8 @@ public class OutputHandler extends RepositoryManager {
         linkCategories.add("File");
         linkMap.put("File", new ArrayList<HtmlUtils.Selector>());
 
-        linkCategories.add("View");
-        linkMap.put("View", new ArrayList<HtmlUtils.Selector>());
+        linkCategories.add("Edit");
+        linkMap.put("Edit", new ArrayList<HtmlUtils.Selector>());
 
         for (Link link : links) {
             OutputType outputType = link.getOutputType();
@@ -1185,7 +1185,9 @@ public class OutputHandler extends RepositoryManager {
             } else if (outputType.getIsEdit()) {
                 category = "Edit";
             } else {
-                category = "View";
+                continue;
+                //Skip view items
+                //                category = "View";
             }
             List<HtmlUtils.Selector> linksForCategory = linkMap.get(category);
 
@@ -1221,8 +1223,16 @@ public class OutputHandler extends RepositoryManager {
         selectSB.append(HtmlUtils.select(ARG_OUTPUT, tfos));
         selectSB.append(HtmlUtils.space(2));
         selectSB.append(msgLabel("to"));
-        selectSB.append(HtmlUtils.submit(msg("All"), "getall"));
-        selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected"));
+
+        StringBuffer js = new StringBuffer();
+
+        String allButtonId = HtmlUtils.getUniqueId("getall");
+        String selectedButtonId = HtmlUtils.getUniqueId("getselected");
+        selectSB.append(HtmlUtils.submit(msg("All"), "getall", HtmlUtils.id(allButtonId)));
+        selectSB.append(HtmlUtils.space(1));
+        selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected", HtmlUtils.id(selectedButtonId)));
+        js.append(JQuery.buttonize(allButtonId));
+        js.append(JQuery.buttonize(selectedButtonId));
         selectSB.append(HtmlUtils.space(4));
         selectSB.append(getSortLinks(request));
 
@@ -1235,6 +1245,7 @@ public class OutputHandler extends RepositoryManager {
                                                 "Show/Hide Form"), HtmlUtils.id(
                                                 base + "img"));
         //        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
+
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link =  HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
@@ -1246,16 +1257,15 @@ public class OutputHandler extends RepositoryManager {
                                      + HtmlUtils.id(selectId) + (hideIt
                 ? HtmlUtils.style("display:none; visibility:hidden;")
                 : "")));
-        formSB.append(
-            HtmlUtils.script(
-                HtmlUtils.callln(
+
+        js.append(HtmlUtils.callln(
                     base + "= new EntryFormList",
                     HtmlUtils.comma(
                         HtmlUtils.squote(formId),
                         HtmlUtils.squote(base + "img"),
                         HtmlUtils.squote(selectId), (hideIt
-                ? "0"
-                : "1")))));
+                                                     ? "0": "1"))));
+        formSB.append(HtmlUtils.script(js.toString()));
 
         return new String[] { link, base, formSB.toString() };
 
@@ -1411,7 +1421,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append(HtmlUtils.comment("entry list header"));
         sb.append("\n");
 
-        sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date Modified</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\">&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
+        sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" >&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
 
         link  = "";
 
