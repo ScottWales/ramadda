@@ -1785,7 +1785,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                              group.isDummy());
                 sb.append(HtmlUtils.br());
                 sb.append(link);
-                sb.append(HtmlUtils.br());
+                //                sb.append(HtmlUtils.br());
                 sb.append(groupsSB.toString());
             } else {
                 if ( !Utils.stringDefined(group.getDescription())) {

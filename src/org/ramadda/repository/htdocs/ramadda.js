@@ -580,8 +580,6 @@ function EntryFormList(formId,img,selectId, initialOn) {
                 } else {
                     hideObject(form.elements[i]);
                 }
-
-                
             }
         }
 
@@ -590,7 +588,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
             obj = ramaddaUtil.getDomObject(this.entries[i]);
             if(!obj) continue;
             if(this.on) {
-                showObject(obj,"inline");
+                showObject(obj,"block");
             } else {
                 hideObject(obj);
             }
@@ -678,7 +676,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         }
         
         this.row.style.backgroundColor = this.overColor;
-        this.row.style.border =  "1px #ddd  dotted";
+        //        this.row.style.border =  "1px #ddd  dotted";
     }
 
     this.mouseClick = function(event) {
@@ -714,7 +712,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         this.setRowColor();
         //        mouseOutOnEntry(event, "", rowId);
         //        this.row.style.borderBottom =  "1px #fff  solid";
-        this.row.style.border =  "1px #fff  solid";
+        //        this.row.style.border =  "1px #fff  solid";
     }
 }
 

@@ -53,14 +53,71 @@ form {
    margin-left:25px;
 }
 
-.ramadda-entry-list {
-    max-height: 200px; 
+
+.entry-list {
+//    max-height: 250px; 
     overflow-y: auto;
-    margin-left:20px;
-    border-left : 1px #ccc solid;
-    border-bottom : 1px #ccc solid;
-    border-top : 1px #ccc solid;
+    border: 1px #aaa solid;
 }
+
+.entry-list-settings {
+  border-left : 1px #aaa solid;
+  border-right : 1px #aaa solid;
+}
+
+.entry-list-form {
+  width: 100%;
+  padding: 5px;
+  padding-left: 10px;
+  border: 1px #aaa solid;
+  border-bottom: 0px;
+  border-right: 0px;
+}
+
+.entry-list-table {
+  border : 1px #aaa solid;
+  border-bottom : 0px #888 solid;
+  background-color: #efefef;
+  font-weight: bold; 
+}
+
+.entry-list-header-column {
+   border-right : 1px #aaa solid;
+   text-align: center;
+   padding:0px;
+   padding-top:5px;
+}
+
+
+.ramadda-entry-table {
+   max-height: 600px; 
+   overflow-y: auto;
+}
+
+
+.ramadda-entry-row {
+  margin-top:2px;
+  padding: 2px;
+  border-bottom:1px #efefef dotted;
+}
+
+
+.ramadda-entry-row-label {
+//    font-style:italic;
+    white-space:nowrap;
+}
+
+
+
+
+.ramadda-folder-block {
+   border : 0px;
+   margin:0px;
+   padding:0px;
+   padding-left:12px;
+}
+
+
 
 
 .shadow-box {
@@ -328,8 +385,7 @@ a.ramadda-heading-2-link:visited {
 
 
 .ramadda-datetime {
-   font-size:9px;
-   color:#666;
+//   color:#666;
    font-style:italic;
    margin:0px;
    white-space:nowrap;
@@ -547,32 +603,6 @@ a.ramadda-menuitem-link {
    display:none;
 }
 
-.ramadda-entry-table {
-   max-height: 600px; 
-   overflow-y: auto;
-}
-
-
-.ramadda-entry-row {
-  margin-top:2px;
-  border:1px #fff solid;
-}
-
-
-.ramadda-entry-row-label {
-    font-style:italic;
-    white-space:nowrap;
-}
-
-
-
-
-.ramadda-folder-block {
-   border : 0px;
-   margin:0px;
-   padding:0px;
-   padding-left:12px;
-}
 
 .image-outer {
   border: 1px solid #aaa;

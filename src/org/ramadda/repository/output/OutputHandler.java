@@ -1153,7 +1153,8 @@ public class OutputHandler extends RepositoryManager {
 
         String       base   = "toggleentry" + (entryCnt++);
         String       formId = "entryform_" + (HtmlUtils.blockCnt++);
-        StringBuffer formSB = new StringBuffer();
+        StringBuffer formSB = new StringBuffer("");
+        
         formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
                                        HtmlUtils.id(formId)));
 
@@ -1236,13 +1237,12 @@ public class OutputHandler extends RepositoryManager {
         //        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
-        String link = HtmlUtils.space(2)
-                      + HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
+        String link =  HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
                           + ".groupToggleVisibility()"), linkLabel,
                               linkExtra);
         String selectId = base + "select";
-        formSB.append(HtmlUtils.span(selectSB.toString(),
-                                     HtmlUtils.cssClass("entrylistform")
+        formSB.append(HtmlUtils.div(selectSB.toString(),
+                                     HtmlUtils.cssClass("entry-list-form")
                                      + HtmlUtils.id(selectId) + (hideIt
                 ? HtmlUtils.style("display:none; visibility:hidden;")
                 : "")));
@@ -1396,6 +1396,7 @@ public class OutputHandler extends RepositoryManager {
 
         String link = "";
         String base = "";
+        String afterHeader = "";
         if (doFormOpen) {
             String[] tuple = getEntryFormStart(request,
                                  ((entriesToCheck != null)
@@ -1403,8 +1404,15 @@ public class OutputHandler extends RepositoryManager {
                                   : entries), true, "Search Results");
             link = tuple[0];
             base = tuple[1];
-            sb.append(tuple[2]);
+            afterHeader = tuple[2];
         }
+
+        sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date Modified</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\">&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
+
+
+        sb.append(afterHeader);
+        link  = "";
+        sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("entry-list")));
 
 
         boolean        doCategories = request.get(ARG_SHOWCATEGORIES, false);
@@ -1467,13 +1475,13 @@ public class OutputHandler extends RepositoryManager {
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                       entry, entry.getLabel(), null, true,
                                       crumbs);
-            entryLink.setLink(cbxSB + entryLink.getLink());
+            //            entryLink.setLink(cbxSB + entryLink.getLink());
 
             StringBuffer buffer = cb.get(doCategories
                                          ? entry.getTypeHandler().getCategory(
                                              entry).getLabel().toString()
                                          : "");
-            decorateEntryRow(request, entry, buffer, entryLink, rowId, "");
+            decorateEntryRow(request, entry, buffer, entryLink, rowId, cbxSB.toString());
         }
 
 
@@ -1492,7 +1500,7 @@ public class OutputHandler extends RepositoryManager {
                 sb.append(
                     HtmlUtils.div(
                         cb.get(category).toString(),
-                        HtmlUtils.cssClass("ramadda-entry-list")));
+                        HtmlUtils.cssClass("entry-list")));
                 sb.append(HtmlUtils.p());
             } else {
                 sb.append(cb.get(category));
@@ -1503,6 +1511,7 @@ public class OutputHandler extends RepositoryManager {
             }
         }
 
+        sb.append(HtmlUtils.close("div"));
         sb.append(HtmlUtils.script(jsSB.toString()));
         sb.append("\n\n");
 
@@ -1527,6 +1536,7 @@ public class OutputHandler extends RepositoryManager {
             rowId = "entryrow_" + (HtmlUtils.blockCnt++);
         }
 
+        
         sb.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV,
@@ -1544,11 +1554,13 @@ public class OutputHandler extends RepositoryManager {
                                             "entryRowOut",
                                             HtmlUtils.squote(rowId)))));
         sb.append(
-            "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr>");
-
+            "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">");
+        sb.append("<tr>");
+        sb.append("<td width=8>");
+        sb.append(extra);
+        sb.append("</td>");
 
         sb.append("<td>");
-        sb.append(extra);
         sb.append(link.getLink());
         sb.append("</td>");
 
@@ -1561,28 +1573,19 @@ public class OutputHandler extends RepositoryManager {
         sb.append(descSB);
         */
 
-
         StringBuffer extraAlt  = new StringBuffer();
-        String       userLabel = "";
-        extraAlt.append(", ");
-        extraAlt.append(entry.getUser().getId());
-        if (entry.getResource().isFile()) {
-            extraAlt.append(", ");
-            extraAlt.append(
-                formatFileLength(entry.getResource().getFileSize()));
-
-        }
+        //        extraAlt.append(entry.getUser().getId());
 
         boolean showDate = !request.get(ARG_TREEVIEW, false);
         //TODO: 
-        showDate = false;
+        //        showDate = false;
         if (showDate) {
             if (request.isMobile()) {
-                sb.append("<td align=right><div "
+                sb.append("<td width=200 align=right><div "
                           + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
                           + ">");
             } else {
-                sb.append("<td align=right width=100><div "
+                sb.append("<td align=right width=200><div "
                           + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
                           + ">");
             }
@@ -1590,6 +1593,21 @@ public class OutputHandler extends RepositoryManager {
                     new Date(entry.getStartDate()), extraAlt.toString()));
             sb.append("</div></td>");
         }
+
+        sb.append("<td width=\"100\" align=right "
+                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+        if (entry.getResource().isFile()) {
+            sb.append(formatFileLength(entry.getResource().getFileSize()));
+        } else {
+            sb.append("---");
+        }
+        sb.append("</td>");
+
+
+        sb.append("<td width=\"200\" align=right "
+                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + "><div style=\"max-width:190px; overflow-x: hidden;\">");
+        sb.append(entry.getTypeHandler().getLabel());
+        sb.append("</div></td>");
 
 
         sb.append("<td width=\"1%\" align=right "

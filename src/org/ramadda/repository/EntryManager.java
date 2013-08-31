@@ -6107,9 +6107,10 @@ public class EntryManager extends RepositoryManager {
         String menuLinkImg = HtmlUtils.img(getRepository().iconUrl("/icons/menu_arrow.gif"),
                                            msg("Click to show menu"),
                                            HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
-       String menuLink = getPageHandler().makePopupLink(
+        String menuLink = getPageHandler().makePopupLink(
                                                          menuLinkImg,
-                                       links, "", true, false, popup);
+                                                         links, "", true, false, popup);
+
 
         for (Entry ancestor : parents) {
             String name = ancestor.getName();
