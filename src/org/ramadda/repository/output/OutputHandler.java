@@ -1407,11 +1407,20 @@ public class OutputHandler extends RepositoryManager {
             afterHeader = tuple[2];
         }
 
+        sb.append("\n");
+        sb.append(HtmlUtils.comment("entry list header"));
+        sb.append("\n");
+
         sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date Modified</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\">&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
 
+        link  = "";
+
+        sb.append("\n");
+        sb.append(HtmlUtils.comment("after entry list header"));
+        sb.append("\n");
 
         sb.append(afterHeader);
-        link  = "";
+        sb.append("\n");
         sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("entry-list")));
 
 

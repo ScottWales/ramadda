@@ -359,8 +359,8 @@ public class WikiUtil {
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
         if (getReplaceNewlineWithP()) {
-            s = s.replaceAll("\r\n\r\n", "\n<p>\n");
-            s = s.replaceAll("\r\r", "\n<p>\n");
+            s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
+            s = s.replaceAll("\r\r", "\n<p></p>\n");
         }
         //        System.err.println (s);
         s = s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");

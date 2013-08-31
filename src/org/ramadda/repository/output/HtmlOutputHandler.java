@@ -1703,7 +1703,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("<p></p>");
         request.appendMessage(sb);
 
         String messageLeft = request.getLeftMessage();
