@@ -1400,8 +1400,7 @@ public class HtmlOutputHandler extends OutputHandler {
         request.put(ARG_TREEVIEW, "true");
         StringBuffer listSB = new StringBuffer();
         sb.append("<table width=\"100%\"><tr valign=\"top\">");
-        String link = getEntriesList(request, listSB, children, true, true,
-                                     true, false);
+        String link = getEntriesList(request, listSB, children, true, false);
         sb.append(HtmlUtils.col(link,
                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "350")));
         String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();",
@@ -1778,17 +1777,9 @@ public class HtmlOutputHandler extends OutputHandler {
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
             if (allEntries.size() > 0) {
-                StringBuffer groupsSB = new StringBuffer();
-                String link = getEntriesList(request, groupsSB, allEntries,
-                                             allEntries, true, false, true,
-                                             group.isDummy(),
-                                             group.isDummy());
-                sb.append(HtmlUtils.br());
-                sb.append(link);
-                //                sb.append(HtmlUtils.br());
-                sb.append(groupsSB.toString());
+                getEntriesList(request, sb, allEntries, true, group.isDummy());
             } else {
-                if ( !Utils.stringDefined(group.getDescription())) {
+                if (!Utils.stringDefined(group.getDescription())) {
                     sb.append(
                         getPageHandler().showDialogNote(
                             msg(LABEL_EMPTY_FOLDER)));

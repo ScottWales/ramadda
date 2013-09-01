@@ -5593,7 +5593,7 @@ public class EntryManager extends RepositoryManager {
                                ? ""
                                : HtmlUtils.div("",
                                    HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                       "display:none;visibility:hidden",
+                                       "display:none;",
                                        HtmlUtils.ATTR_CLASS,
                                        CSS_CLASS_FOLDER_BLOCK,
                                        HtmlUtils.ATTR_ID, uid)));
@@ -5648,6 +5648,7 @@ public class EntryManager extends RepositoryManager {
                                                                    qid,
                                                                    qlinkId)));
 
+        tooltipEvents = "";
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
                              : null);

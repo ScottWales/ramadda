@@ -814,8 +814,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
         if (doDay) {
             StringBuffer tmp = new StringBuffer();
-            String link = getEntriesList(request, tmp, dayItems, true, true,
-                                         true, false);
+            String link = getEntriesList(request, tmp, dayItems, true, false);
 
             request.remove(ARG_MONTH);
             request.remove(ARG_YEAR);
@@ -1214,8 +1213,7 @@ public class CalendarOutputHandler extends OutputHandler {
             String       link = "";
             if (dayItems.size() > 0) {
                 if (dayItems.get(0) instanceof Entry) {
-                    link = getEntriesList(request, tmp, dayItems, true, true,
-                                          true, false);
+                    link = getEntriesList(request, tmp, dayItems, true, false);
                 } else {
                     link = StringUtil.join(" ", dayItems);
                 }

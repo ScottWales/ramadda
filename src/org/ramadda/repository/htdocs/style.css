@@ -54,6 +54,11 @@ form {
 }
 
 
+.entry-list-block {
+   padding-left:30px;
+   padding-right:30px;
+}
+
 .entry-list {
 //    max-height: 250px; 
     overflow-y: auto;
@@ -66,12 +71,10 @@ form {
 }
 
 .entry-list-form {
-//  width: 100%;
   padding: 5px;
   padding-left: 10px;
   border: 1px #aaa solid;
   border-bottom: 0px;
-//  border-right: 0px;
 }
 
 .entry-list-table {
@@ -94,25 +97,19 @@ form {
    overflow-y: auto;
 }
 
-
 .ramadda-entry-row {
   margin-top:2px;
   padding: 2px;
+  padding-right: 0px;
   border-bottom:1px #eee dotted;
 }
 
-
 .ramadda-entry-row-label {
-//    font-style:italic;
     white-space:nowrap;
 }
 
-
-
-
 .ramadda-folder-block {
-   border : 0px;
-   margin:0px;
+   margin-right:0px;
    padding:0px;
    padding-left:12px;
 }

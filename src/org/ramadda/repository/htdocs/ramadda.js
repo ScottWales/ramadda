@@ -864,44 +864,31 @@ var changeImages = new Array();
 
 function folderClick(uid, url, changeImg) {
     changeImages[uid] = changeImg;
-    var block = ramaddaUtil.getDomObject('block_'+uid);
-    if(!block) {
-	block = ramaddaUtil.getDomObject(uid);    
-    }
-
-    if(!block) {
-//        alert("no block " + uid);
+    var jqBlock = $("#"+uid);
+    if(jqBlock.size() ==0) {
 	return;
     }
-    var img = ramaddaUtil.getDomObject("img_" +uid);
-    if(!block.obj.isOpen) {
-	originalImages[uid] = img.obj.src;
-        block.obj.isOpen = 1;
-        //        Effect.SlideDown(block.obj.id, {'duration' : 0.4});
-        showObject(block);
-        if(img) img.obj.src = icon_progress;
+    var jqImage = $("#img_" +uid);
+    var showing = jqBlock.css('display') != "none";
+    if(!showing) {
+	originalImages[uid] = jqImage.attr('src');
+        jqBlock.show();
+        jqImage.attr('src', icon_progress);
 	ramaddaUtil.loadXML( url, handleFolderList,uid);
     } else {
-	if(changeImg && img) {
+	if(changeImg) {
             if(originalImages[uid]) {
-                img.obj.src = originalImages[uid];
+                jqImage.attr('src', originalImages[uid]);
             } else 
-                img.obj.src = icon_folderclosed;
+                jqImage.attr('src', icon_folderclosed);
         }
-        block.obj.isOpen = 0;
-//        Effect.SlideUp(block.obj.id, {'duration' : 0.5});
-        hideObject(block);
+        jqBlock.hide();
     }
 }
 
 
 
 function  handleFolderList(request, uid) {
-    var block = ramaddaUtil.getDomObject('block_'+uid);
-    if(!block) {
-	block = ramaddaUtil.getDomObject(uid);    
-    }
-    var img = ramaddaUtil.getDomObject("img_" +uid);
     if(request.responseXML!=null) {
         var xmlDoc=request.responseXML.documentElement;
 	var script;
@@ -919,7 +906,7 @@ function  handleFolderList(request, uid) {
             html = getChildText(xmlDoc);
         }
 	if(html) {
-            block.obj.innerHTML = "<div>"+html+"</div>";
+            $("#" + uid).html("<div>"+html+"</div>");
             checkTabs(html);
 	}
 	if(script) {
@@ -927,12 +914,10 @@ function  handleFolderList(request, uid) {
 	}
     }
     
-    if(img) {
-        if(changeImages[uid]) {
-            img.obj.src = icon_folderopen;
-        } else {
-            img.obj.src = originalImages[uid];
-        }
+    if(changeImages[uid]) {
+        $("#img_" +uid).attr('src', icon_folderopen);
+    } else {
+        $("#img_" +uid).attr('src', originalImages[uid]);
     }
 }
 

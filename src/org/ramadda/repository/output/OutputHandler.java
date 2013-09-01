@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -973,10 +973,11 @@ public class OutputHandler extends RepositoryManager {
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.div("",
                                 HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                    "display:none;visibility:hidden",
-                                    HtmlUtils.ATTR_CLASS,
-                                    CSS_CLASS_FOLDER_BLOCK,
-                                    HtmlUtils.ATTR_ID, uid)));
+                                                //"display:none;xxxvisibility:hidden",
+                                                "display:none;",
+                                                HtmlUtils.ATTR_CLASS,
+                                                CSS_CLASS_FOLDER_BLOCK,
+                                                HtmlUtils.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1333,53 +1334,6 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getBreadcrumbList(Request request, StringBuffer sb,
-                                    List entries)
-            throws Exception {
-        return getEntriesList(request, sb, entries, true, true, false, true);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param entries _more_
-     * @param request _more_
-     * @param doFormOpen _more_
-     * @param doFormClose _more_
-     * @param doCbx _more_
-     * @param showCrumbs _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public String getEntriesList(Request request, StringBuffer sb,
-                                 List entries, boolean doFormOpen,
-                                 boolean doFormClose, boolean doCbx,
-                                 boolean showCrumbs)
-            throws Exception {
-        return getEntriesList(request, sb, entries, null, doFormOpen,
-                              doFormClose, doCbx, showCrumbs, false);
-    }
-
-
-
-
     /**
      * _more_
      *
@@ -1397,42 +1351,31 @@ public class OutputHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getEntriesList(Request request, StringBuffer sb,
-                                 List entries, List<Entry> entriesToCheck,
-                                 boolean doFormOpen, boolean doFormClose,
-                                 boolean doCbx, boolean showCrumbs,
-                                 boolean hideParents)
+    public String getEntriesList(Request request, 
+                                 StringBuffer sb,
+                                 List entries, 
+                                 boolean doForm, 
+                                 boolean showCrumbs)
             throws Exception {
 
         String link = "";
         String base = "";
         String afterHeader = "";
-        if (doFormOpen) {
-            String[] tuple = getEntryFormStart(request,
-                                 ((entriesToCheck != null)
-                                  ? entriesToCheck
-                                  : entries), true, "Search Results");
+
+        if (doForm) {
+            String[] tuple = getEntryFormStart(request,entries, true, "Search Results");
             link = tuple[0];
             base = tuple[1];
             afterHeader = tuple[2];
         }
 
-        sb.append("\n");
-        sb.append(HtmlUtils.comment("entry list header"));
-        sb.append("\n");
+        sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("entry-list-block")));
 
         sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" >&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
 
         link  = "";
-
-        sb.append("\n");
-        sb.append(HtmlUtils.comment("after entry list header"));
-        sb.append("\n");
-
         sb.append(afterHeader);
-        sb.append("\n");
         sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("entry-list")));
-
 
         boolean        doCategories = request.get(ARG_SHOWCATEGORIES, false);
         CategoryBuffer cb           = new CategoryBuffer();
@@ -1452,7 +1395,7 @@ public class OutputHandler extends RepositoryManager {
                         HtmlUtils.squote(entry.getId()),
                         HtmlUtils.squote(rowId), HtmlUtils.squote(cbxId),
                         HtmlUtils.squote(cbxWrapperId))));
-            if (doCbx) {
+            if (doForm) {
                 cbxSB.append(HtmlUtils.hidden("all_" + entry.getId(), "1"));
                 String cbx =
                     HtmlUtils.checkbox(
@@ -1476,19 +1419,11 @@ public class OutputHandler extends RepositoryManager {
             String crumbs = "";
             if (showCrumbs) {
                 crumbs = getPageHandler().getBreadCrumbs(request,
-                        ((hideParents || true)
-                         ? entry.getParentEntry()
-                         : entry), null, null, 60);
-                if (hideParents) {
-                    crumbs = HtmlUtils.makeToggleInline(
-                        "", crumbs
-                        + HtmlUtils.pad(
-                            Repository.BREADCRUMB_SEPARATOR), false);
-                } else {
-                    crumbs = crumbs
-                             + HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR);
-                }
-
+                                                         entry.getParentEntry(), null, null, 60);
+                crumbs = HtmlUtils.makeToggleInline(
+                                                    "", crumbs
+                                                    + HtmlUtils.pad(
+                                                                    Repository.BREADCRUMB_SEPARATOR), false);
             }
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
@@ -1507,10 +1442,12 @@ public class OutputHandler extends RepositoryManager {
 
 
         for (String category : cb.getCategories()) {
-            sb.append(
-                HtmlUtils.open(
+            /*
+              sb.append(
+              HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
                     HtmlUtils.cssClass(CSS_CLASS_FOLDER_BLOCK)));
+            */
             sb.append("\n\n");
             if (doCategories) {
                 if (category.length() > 0) {
@@ -1524,12 +1461,13 @@ public class OutputHandler extends RepositoryManager {
             } else {
                 sb.append(cb.get(category));
             }
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            if (doFormClose) {
-                sb.append(getEntryFormEnd(request, base));
-            }
+            //            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         }
 
+        if (doForm) {
+            sb.append(getEntryFormEnd(request, base));
+        }
+        sb.append(HtmlUtils.close("div"));
         sb.append(HtmlUtils.close("div"));
         sb.append(HtmlUtils.script(jsSB.toString()));
         sb.append("\n\n");
