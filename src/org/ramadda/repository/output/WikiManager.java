@@ -1791,7 +1791,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean showDetails = Misc.getProperty(props,
                                                       ATTR_DETAILS, true);
 
-            String link = getHtmlOutputHandler().getEntriesList(request, sb, children, true, false);
+            String link = getHtmlOutputHandler().getEntriesList(request, sb, children, true, false, showDetails);
 
             if (showCategories) {
                 request.remove(ARG_SHOWCATEGORIES);

@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
@@ -971,13 +971,10 @@ public class OutputHandler extends RepositoryManager {
                                 HtmlUtils.squote(type))), linkText));
 
         sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.div("",
-                                HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                                //"display:none;xxxvisibility:hidden",
-                                                "display:none;",
-                                                HtmlUtils.ATTR_CLASS,
-                                                CSS_CLASS_FOLDER_BLOCK,
-                                                HtmlUtils.ATTR_ID, uid)));
+        sb.append(HtmlUtils.div("", HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
+        //"display:none;xxxvisibility:hidden",
+        "display:none;", HtmlUtils.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
+                         HtmlUtils.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1155,7 +1152,7 @@ public class OutputHandler extends RepositoryManager {
         String       base   = "toggleentry" + (entryCnt++);
         String       formId = "entryform_" + (HtmlUtils.blockCnt++);
         StringBuffer formSB = new StringBuffer("");
-        
+
         formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
                                        HtmlUtils.id(formId)));
 
@@ -1225,13 +1222,15 @@ public class OutputHandler extends RepositoryManager {
         selectSB.append(HtmlUtils.space(2));
         selectSB.append(msgLabel("to"));
 
-        StringBuffer js = new StringBuffer();
+        StringBuffer js               = new StringBuffer();
 
-        String allButtonId = HtmlUtils.getUniqueId("getall");
-        String selectedButtonId = HtmlUtils.getUniqueId("getselected");
-        selectSB.append(HtmlUtils.submit(msg("All"), "getall", HtmlUtils.id(allButtonId)));
+        String       allButtonId      = HtmlUtils.getUniqueId("getall");
+        String       selectedButtonId = HtmlUtils.getUniqueId("getselected");
+        selectSB.append(HtmlUtils.submit(msg("All"), "getall",
+                                         HtmlUtils.id(allButtonId)));
         selectSB.append(HtmlUtils.space(1));
-        selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected", HtmlUtils.id(selectedButtonId)));
+        selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected",
+                                         HtmlUtils.id(selectedButtonId)));
         js.append(JQuery.buttonize(allButtonId));
         js.append(JQuery.buttonize(selectedButtonId));
         selectSB.append(HtmlUtils.space(4));
@@ -1249,23 +1248,22 @@ public class OutputHandler extends RepositoryManager {
 
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
-        String link =  HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
+        String link = HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
                           + ".groupToggleVisibility()"), linkLabel,
                               linkExtra);
         String selectId = base + "select";
         formSB.append(HtmlUtils.div(selectSB.toString(),
-                                     HtmlUtils.cssClass("entry-list-form")
-                                     + HtmlUtils.id(selectId) + (hideIt
+                                    HtmlUtils.cssClass("entry-list-form")
+                                    + HtmlUtils.id(selectId) + (hideIt
                 ? HtmlUtils.style("display:none; visibility:hidden;")
                 : "")));
 
-        js.append(HtmlUtils.callln(
-                    base + "= new EntryFormList",
-                    HtmlUtils.comma(
-                        HtmlUtils.squote(formId),
-                        HtmlUtils.squote(base + "img"),
-                        HtmlUtils.squote(selectId), (hideIt
-                                                     ? "0": "1"))));
+        js.append(HtmlUtils.callln(base + "= new EntryFormList",
+                                   HtmlUtils.comma(HtmlUtils.squote(formId),
+                                       HtmlUtils.squote(base + "img"),
+                                       HtmlUtils.squote(selectId), (hideIt
+                ? "0"
+                : "1"))));
         formSB.append(HtmlUtils.script(js.toString()));
 
         return new String[] { link, base, formSB.toString() };
@@ -1286,10 +1284,11 @@ public class OutputHandler extends RepositoryManager {
     public void addEntryCheckbox(Request request, Entry entry,
                                  StringBuffer htmlSB, StringBuffer jsSB)
             throws Exception {
-        String rowId        = "entryrow_" + (HtmlUtils.blockCnt++);
-        String cbxId        = "entry_" + (HtmlUtils.blockCnt++);
-        String cbxArgId     = "entry_" + entry.getId();
-        String cbxWrapperId = "cbx_" + (HtmlUtils.blockCnt++);
+        boolean showDetails  = true;
+        String  rowId        = "entryrow_" + (HtmlUtils.blockCnt++);
+        String  cbxId        = "entry_" + (HtmlUtils.blockCnt++);
+        String  cbxArgId     = "entry_" + entry.getId();
+        String  cbxWrapperId = "cbx_" + (HtmlUtils.blockCnt++);
         jsSB.append(
             HtmlUtils.callln(
                 "new EntryRow",
@@ -1313,7 +1312,7 @@ public class OutputHandler extends RepositoryManager {
                                 "event", HtmlUtils.squote(cbxId)))));
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
-                             entry.getLabel()), rowId, cbx);
+                             entry.getLabel()), rowId, cbx, showDetails);
     }
 
 
@@ -1344,38 +1343,48 @@ public class OutputHandler extends RepositoryManager {
      * @param doFormOpen _more_
      * @param doFormClose _more_
      * @param doCbx _more_
+     * @param doForm _more_
      * @param showCrumbs _more_
      * @param hideParents _more_
+     * @param showDetails _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public String getEntriesList(Request request, 
-                                 StringBuffer sb,
-                                 List entries, 
-                                 boolean doForm, 
-                                 boolean showCrumbs)
+    public String getEntriesList(Request request, StringBuffer sb,
+                                 List entries, boolean doForm,
+                                 boolean showCrumbs, boolean showDetails)
             throws Exception {
 
-        String link = "";
-        String base = "";
+        String link        = "";
+        String base        = "";
         String afterHeader = "";
 
         if (doForm) {
-            String[] tuple = getEntryFormStart(request,entries, true, "Search Results");
-            link = tuple[0];
-            base = tuple[1];
+            String[] tuple = getEntryFormStart(request, entries, true,
+                                 "Search Results");
+            link        = tuple[0];
+            base        = tuple[1];
             afterHeader = tuple[2];
         }
 
-        sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("entry-list-block")));
+        String prefix = (showDetails
+                         ? "entry-list"
+                         : "entry-tree");
 
-        sb.append("<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>" + link +"</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" >&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
+        sb.append(HtmlUtils.open("div",
+                                 HtmlUtils.cssClass(prefix + "-block")));
+        if (showDetails) {
+            sb.append(
+                "<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>"
+                + link
+                + "</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" >&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
 
-        link  = "";
-        sb.append(afterHeader);
-        sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("entry-list")));
+            link = "";
+            sb.append(afterHeader);
+        }
+        sb.append(HtmlUtils.open("div", HtmlUtils.cssClass(prefix)));
 
         boolean        doCategories = request.get(ARG_SHOWCATEGORIES, false);
         CategoryBuffer cb           = new CategoryBuffer();
@@ -1419,23 +1428,24 @@ public class OutputHandler extends RepositoryManager {
             String crumbs = "";
             if (showCrumbs) {
                 crumbs = getPageHandler().getBreadCrumbs(request,
-                                                         entry.getParentEntry(), null, null, 60);
+                        entry.getParentEntry(), null, null, 60);
                 crumbs = HtmlUtils.makeToggleInline(
-                                                    "", crumbs
-                                                    + HtmlUtils.pad(
-                                                                    Repository.BREADCRUMB_SEPARATOR), false);
+                    "",
+                    crumbs + HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
+                    false);
             }
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                       entry, entry.getLabel(), null, true,
                                       crumbs);
-            //            entryLink.setLink(cbxSB + entryLink.getLink());
+            //entryLink.setLink(cbxSB + entryLink.getLink());
 
             StringBuffer buffer = cb.get(doCategories
                                          ? entry.getTypeHandler().getCategory(
                                              entry).getLabel().toString()
                                          : "");
-            decorateEntryRow(request, entry, buffer, entryLink, rowId, cbxSB.toString());
+            decorateEntryRow(request, entry, buffer, entryLink, rowId,
+                             cbxSB.toString(), showDetails);
         }
 
 
@@ -1453,10 +1463,8 @@ public class OutputHandler extends RepositoryManager {
                 if (category.length() > 0) {
                     sb.append(subHeader(category));
                 }
-                sb.append(
-                    HtmlUtils.div(
-                        cb.get(category).toString(),
-                        HtmlUtils.cssClass("entry-list")));
+                sb.append(HtmlUtils.div(cb.get(category).toString(),
+                                        HtmlUtils.cssClass(prefix)));
                 sb.append(HtmlUtils.p());
             } else {
                 sb.append(cb.get(category));
@@ -1473,6 +1481,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append("\n\n");
 
         return link;
+
     }
 
 
@@ -1485,15 +1494,18 @@ public class OutputHandler extends RepositoryManager {
      * @param link _more_
      * @param rowId _more_
      * @param extra _more_
+     * @param showDetails _more_
      */
     protected void decorateEntryRow(Request request, Entry entry,
                                     StringBuffer sb, EntryLink link,
-                                    String rowId, String extra) {
+                                    String rowId, String extra,
+                                    boolean showDetails) {
+
         if (rowId == null) {
             rowId = "entryrow_" + (HtmlUtils.blockCnt++);
         }
 
-        
+
         sb.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV,
@@ -1530,10 +1542,15 @@ public class OutputHandler extends RepositoryManager {
         sb.append(descSB);
         */
 
-        StringBuffer extraAlt  = new StringBuffer();
+        StringBuffer extraAlt = new StringBuffer();
         //        extraAlt.append(entry.getUser().getId());
 
         boolean showDate = !request.get(ARG_TREEVIEW, false);
+
+        if ( !showDetails) {
+            showDate = false;
+        }
+
         //TODO: 
         //        showDate = false;
         if (showDate) {
@@ -1551,38 +1568,48 @@ public class OutputHandler extends RepositoryManager {
             sb.append("</div></td>");
         }
 
-        sb.append("<td width=\"100\" align=right "
-                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
-        if (entry.getResource().isFile()) {
-            sb.append(formatFileLength(entry.getResource().getFileSize()));
-        } else {
-            sb.append("---");
+        if (showDetails) {
+            sb.append("<td width=\"100\" align=right "
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+            if (entry.getResource().isFile()) {
+                sb.append(
+                    formatFileLength(entry.getResource().getFileSize()));
+            } else {
+                sb.append("---");
+            }
+            sb.append("</td>");
         }
-        sb.append("</td>");
 
+        if (showDetails) {
+            sb.append(
+                "<td width=\"200\" align=right "
+                + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
+                + "><div style=\"max-width:190px; overflow-x: hidden;\">");
+            sb.append(entry.getTypeHandler().getLabel());
+            sb.append("</div></td>");
+        }
 
-        sb.append("<td width=\"200\" align=right "
-                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + "><div style=\"max-width:190px; overflow-x: hidden;\">");
-        sb.append(entry.getTypeHandler().getLabel());
-        sb.append("</div></td>");
+        if (showDetails) {
+            sb.append("<td width=\"1%\" align=right "
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
+            sb.append(HtmlUtils.space(1));
+            sb.append("  ");
+            sb.append(
+                HtmlUtils.div(
+                    HtmlUtils.img(
+                        getRepository().iconUrl(ICON_BLANK), "",
+                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10")
+                        + HtmlUtils.id(
+                            "entrymenuarrow_" + rowId)), HtmlUtils.cssClass(
+                                "entrymenuarrow")));
 
+            sb.append("</td></tr>");
+        }
 
-        sb.append("<td width=\"1%\" align=right "
-                  + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
-        sb.append(HtmlUtils.space(1));
-        sb.append("  ");
-        sb.append(
-            HtmlUtils.div(
-                HtmlUtils.img(
-                    getRepository().iconUrl(ICON_BLANK), "",
-                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10")
-                    + HtmlUtils.id(
-                        "entrymenuarrow_" + rowId)), HtmlUtils.cssClass(
-                            "entrymenuarrow")));
-
-        sb.append("</td></tr></table>");
+        sb.append("</table>");
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         sb.append(link.getFolderBlock());
+
 
     }
 
@@ -2089,6 +2116,47 @@ public class OutputHandler extends RepositoryManager {
         return new Result(
             title, new StringBuffer(getPageHandler().showDialogError(msg)));
     }
+
+
+    private String folderWikiTemplate;
+    private String fileWikiTemplate;
+    private Hashtable<String,String> typeToWikiTemplate = new Hashtable<String,String>();
+
+    protected String getWikiTemplate(Request request, Entry entry) throws Exception {
+        String type = entry.getTypeHandler().getType();
+        String wiki = typeToWikiTemplate.get(type);
+        if(wiki!=null) {
+            return wiki;
+        }
+
+        String property = getProperty("ramadda.wiki.template." + type, null);
+        if(property!=null) {
+            //            wiki = getRepository().getResource(property);
+        }
+
+
+
+        if(wiki == null) {
+            if(entry.isGroup()) {
+                if(folderWikiTemplate == null) {
+                    folderWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
+                }
+                wiki = folderWikiTemplate;
+                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
+            } else {
+                if(fileWikiTemplate == null) {
+                    fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+                }
+                wiki = fileWikiTemplate;
+                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+            }
+        }
+        if(wiki!=null)  {
+            //            typeToWikiTemplate.put(type, wiki);
+        }
+        return wiki;
+    }
+
 
 
 

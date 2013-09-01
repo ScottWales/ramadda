@@ -55,8 +55,8 @@ form {
 
 
 .entry-list-block {
-   padding-left:30px;
-   padding-right:30px;
+   padding-left:0px;
+   padding-right:0px;
 }
 
 .entry-list {
@@ -1449,6 +1449,7 @@ a.toggleblocklabellink:visited {
 	padding-top: .5em;
 	padding-bottom: .17em;
 	border-bottom: 1px solid #aaa;
+        padding-right:10px;
 }
 .wiki-h1 { font-size: 188%; }
 .wiki-h2 { font-size: 150%; }
@@ -1456,10 +1457,10 @@ a.toggleblocklabellink:visited {
 	border-bottom: none;
 	font-weight: bold;
 }
-.wiki-h3 { font-size: 132%; }
+.wiki-h3 { font-size: 132%;}
 .wiki-h4 { font-size: 116%; }
-.wiki-h5 { font-size: 100%; }
-.wiki-h6 { font-size: 80%;  }
+.wiki-h5 { font-size: 100%;  color:#aaa; }
+.wiki-h6 { font-size: 80%;  color:#aaa; }
 
 .wiki-hr {
 	height: 1px;

@@ -448,6 +448,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 return new Result("", xml, "text/xml");
             }
             String wikiTemplate = getWikiText(request, entry);
+
+
+            if(wikiTemplate == null) {
+                wikiTemplate =  getWikiTemplate(request, entry);
+            }
+
             if (wikiTemplate != null) {
                 String wiki = getWikiManager().wikifyEntry(request, entry,
                                   wikiTemplate);
@@ -513,17 +519,18 @@ public class HtmlOutputHandler extends OutputHandler {
 
         StringBuffer sb           = new StringBuffer();
         String       wikiTemplate = getWikiText(request, entry);
+        if(wikiTemplate == null) {
+            wikiTemplate =  getWikiTemplate(request, entry);
+        }
+
         if (wikiTemplate != null) {
             sb.append(getWikiManager().wikifyEntry(request, entry,
-                    wikiTemplate));
+                                                   wikiTemplate));
         } else {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
                                           false, false);
-            //            sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
-            //                    informationBlock, true));
             sb.append(informationBlock);
-            //            sb.append(getAttachmentsHtml(request, entry));
         }
 
         return makeLinksResult(request, msg("Entry"), sb, new State(entry));
@@ -1400,7 +1407,7 @@ public class HtmlOutputHandler extends OutputHandler {
         request.put(ARG_TREEVIEW, "true");
         StringBuffer listSB = new StringBuffer();
         sb.append("<table width=\"100%\"><tr valign=\"top\">");
-        String link = getEntriesList(request, listSB, children, true, false);
+        String link = getEntriesList(request, listSB, children, true, false, false);
         sb.append(HtmlUtils.col(link,
                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "350")));
         String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();",
@@ -1702,7 +1709,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        StringBuffer sb = new StringBuffer("<p></p>");
+        StringBuffer sb = new StringBuffer("");
         request.appendMessage(sb);
 
         String messageLeft = request.getLeftMessage();
@@ -1734,7 +1741,13 @@ public class HtmlOutputHandler extends OutputHandler {
                 || Misc.equals(request.getString(ARG_OUTPUT, ""),
                                OUTPUT_HTML.getId())) {
             wikiTemplate = getWikiText(request, group);
+            if(wikiTemplate == null) {
+                wikiTemplate = getWikiTemplate(request, group);
+            }
+
         }
+
+
 
         String head = null;
 
@@ -1769,6 +1782,10 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
+        if(wikiTemplate == null) {
+            wikiTemplate = getRepository().getResource("/org/ramadda/repository/resources/templates/folder.wiki.txt");
+        }
+
         if (wikiTemplate != null) {
             sb.append(getWikiManager().wikifyEntry(request, group,
                     wikiTemplate, true, subGroups, entries));
@@ -1777,7 +1794,7 @@ public class HtmlOutputHandler extends OutputHandler {
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
             if (allEntries.size() > 0) {
-                getEntriesList(request, sb, allEntries, true, group.isDummy());
+                getEntriesList(request, sb, allEntries, true, group.isDummy(), true);
             } else {
                 if (!Utils.stringDefined(group.getDescription())) {
                     sb.append(
@@ -1810,6 +1827,11 @@ public class HtmlOutputHandler extends OutputHandler {
 
         return result;
     }
+
+
+
+
+
 
 
 
