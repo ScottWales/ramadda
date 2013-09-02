@@ -9,6 +9,8 @@
 </td>
 <td width=5>&nbsp;</td>
 <td width="25%">
+=====Information=====
+{{information details="false"}}
 {{map message="" width="250" height="250" prefix="=====Location=====" }}
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" }}
 <p>

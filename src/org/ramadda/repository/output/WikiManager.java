@@ -1068,6 +1068,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         StringBuffer sb     = new StringBuffer();
         if (include.equals(WIKI_PROP_INFORMATION)) {
+            boolean details = Misc.getProperty(props, ATTR_DETAILS,
+                                               false);
+            if(!details) {
+                return entry.getTypeHandler().getEntryContent(entry, request,
+                                                              false, true).toString();
+            }
             return getRepository().getHtmlOutputHandler().getInformationTabs(
                 request, entry, false, true);
         } else if (include.equals(WIKI_PROP_TAGCLOUD)) {
