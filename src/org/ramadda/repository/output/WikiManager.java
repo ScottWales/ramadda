@@ -543,6 +543,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the id for my parent */
     public static final String ID_PARENT = "parent";
 
+    public static final String ID_ANCESTORS = "ancestors";
+
     /** the id for my grandparent */
     public static final String ID_GRANDPARENT = "grandparent";
 
@@ -1819,7 +1821,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (children.size() == 0) {
                 return null;
             }
-
+            boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
+                                      false);
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
             String separator = (isList
@@ -1832,10 +1835,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                ? "<li>"
                                : Misc.getProperty(props, ATTR_TAGOPEN,
                                    "<li>"));
+
             String       tagClose = (isList
                                      ? ""
                                      : Misc.getProperty(props, ATTR_TAGCLOSE,
                                          ""));
+
+            if(includeIcon) {
+                tagOpen = "";
+                tagClose = "<br>";
+            }
 
             List<String> links    = new ArrayList<String>();
             for (Entry child : children) {
@@ -1851,10 +1860,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                            child);
                 }
 
-                String href = HtmlUtils.href(url, child.getName(),
+                String linkLabel = child.getName();
+                if(includeIcon) {
+                    linkLabel = HtmlUtils.img(getEntryManager().getIconUrl(request,
+                                                                           child)) +" " + linkLabel;
+                }
+                String href = HtmlUtils.href(url, linkLabel,
                                              HtmlUtils.cssClass(cssClass)
                                              + HtmlUtils.style(style));
-                links.add(tagOpen + href + tagClose);
+                StringBuffer link = new StringBuffer();
+                link.append(tagOpen);
+                link.append(href);
+                link.append(tagClose);
+                links.add(link.toString());
             }
 
             return StringUtil.join(separator, links);
@@ -2127,7 +2145,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                         attrPrefix + ATTR_ENTRIES,
                                         (String) null);
         if (userDefinedEntries != null) {
-            children = getEntries(request, userDefinedEntries);
+            children = getEntries(request, entry, userDefinedEntries);
         }
 
 
@@ -2281,10 +2299,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      *
      * @throws Exception problem getting entries
      */
-    private List<Entry> getEntries(Request request, String ids)
+    private List<Entry> getEntries(Request request, Entry baseEntry, String ids)
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
+            if(entryid.equals(ID_ANCESTORS)) {
+                List<Entry> tmp = new ArrayList<Entry>();
+                Entry   parent  = baseEntry.getParentEntry();
+                while(parent!=null) {
+                    tmp.add(0,parent);
+                    parent  = parent.getParentEntry();
+                }
+                entries.addAll(tmp);
+                continue;
+            }
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
                 entries.add(entry);

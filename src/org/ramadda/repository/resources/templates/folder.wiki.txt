@@ -10,7 +10,7 @@
 <td width=5>&nbsp;</td>
 <td width="25%">
 {{map message="" width="250" height="250" prefix="=====Location=====" }}
-{{list details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" }}
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" }}
 <p>
 {{properties prefix="=====Properties=====" message=""}}
 <p>

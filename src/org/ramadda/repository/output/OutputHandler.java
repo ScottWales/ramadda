@@ -1379,7 +1379,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append(
                 "<table class=\"entry-list-table\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20>"
                 + link
-                + "</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" >&nbsp;&nbsp;&nbsp;Kind</td></tr></table>");
+                + "</td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" align=center>Kind</td></tr></table>");
 
             link = "";
             sb.append(afterHeader);
@@ -2142,17 +2142,17 @@ public class OutputHandler extends RepositoryManager {
                     folderWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
                 }
                 wiki = folderWikiTemplate;
-                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
+                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
             } else {
                 if(fileWikiTemplate == null) {
                     fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 }
                 wiki = fileWikiTemplate;
-                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
             }
         }
         if(wiki!=null)  {
-            //            typeToWikiTemplate.put(type, wiki);
+            typeToWikiTemplate.put(type, wiki);
         }
         return wiki;
     }

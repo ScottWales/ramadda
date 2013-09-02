@@ -10,6 +10,8 @@
 <td width=30%>
 {{map message=""}}
 <p>
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" }}
+<p>
 {{menu menus="file"  prefix="=====Links====="}}
 {{menu menus="other"  message=""}}
 </td>

@@ -62,33 +62,34 @@ form {
 .entry-list {
 //    max-height: 250px; 
     overflow-y: auto;
-    border: 1px #aaa solid;
+    border: 1px #888 solid;
 }
 
 .entry-list-settings {
-  border-left : 1px #aaa solid;
-  border-right : 1px #aaa solid;
+  border-left : 1px #888 solid;
+  border-right : 1px #888 solid;
 }
 
 .entry-list-form {
   padding: 5px;
   padding-left: 10px;
-  border: 1px #aaa solid;
+  border: 1px #888 solid;
   border-bottom: 0px;
 }
 
 .entry-list-table {
-  border : 1px #aaa solid;
-  border-bottom : 0px #aaa solid;
-  background-color: #efefef;
+  border : 1px #888 solid;
+  border-bottom : 0px #888 solid;
+  background-color: #eaeaea;
 }
 
 .entry-list-header-column {
    font-weight: bold; 
-   border-right : 1px #aaa solid;
+   border-right : 1px #888 solid;
    text-align: center;
-   padding-bottom:1px;
-   padding-top:5px;
+   padding-bottom:0px;
+   padding-top:4px;
+   color: #222;
 }
 
 .entry-arrow {
@@ -100,10 +101,18 @@ form {
    max-height: 300px; 
    overflow-y: auto;
 //   background-color : #efefef;
-   border: 1px #000 solid; 
+   border: 1px #888 solid; 
    padding: 5px;
+   margin-top: 5px;
+   margin-bottom: 10px;
    margin-right: 10px;
    margin-left: 10px;
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+
 }
 
 
