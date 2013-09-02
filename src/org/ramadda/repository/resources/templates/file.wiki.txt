@@ -1,19 +1,21 @@
 == {{name}} ==
 <table border=0 width=100% cellspacing=10 cellpadding=0>
 <tr valign=top>
-<td width-70%>
+<td width=70%>
 <br>
 {{description}}
 <p>
-{{information}}
+{{information details="true"}}
 </td>
 <td width=30%>
+<div style="max-width: 280px; overflow-x: hidden;">
 {{map message=""}}
 <p>
-{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" }}
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" maxheight="200"}}
 <p>
 {{menu menus="file"  prefix="=====Links====="}}
 {{menu menus="other"  message=""}}
+</div>
 </td>
 </tr></table>
 

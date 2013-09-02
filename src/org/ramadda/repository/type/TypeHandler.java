@@ -2040,9 +2040,18 @@ public class TypeHandler extends RepositoryManager {
 
             if (showCreated) {
                 sb.append(formEntry(request, msgLabel("Created by"),
-                                    userSearchLink + " @ "
-                                    + formatDate(request,
-                                        entry.getCreateDate(), entry)));
+                                    userSearchLink));
+            }
+
+            sb.append(formEntry(request, msgLabel("Created"),
+                                formatDate(request,
+                                           entry.getCreateDate(), entry)));
+
+            if(entry.getCreateDate()!= entry.getChangeDate()) {
+                sb.append(formEntry(request, msgLabel("Modified"),
+                                    formatDate(request,
+                                               entry.getChangeDate(), entry)));
+
             }
 
             Resource resource      = entry.getResource();
@@ -2096,9 +2105,16 @@ public class TypeHandler extends RepositoryManager {
                     //                            + HtmlUtils.space(1) + msg("bytes")));
                 }
             }
+            boolean hasDataDate = false;
 
-            if ((entry.getCreateDate() != entry.getStartDate())
-                    || (entry.getCreateDate() != entry.getEndDate())) {
+            if(Math.abs(entry.getCreateDate()-entry.getStartDate())>60000) {
+                hasDataDate = true;
+            } else if(Math.abs(entry.getCreateDate()-entry.getEndDate())>60000) {
+                hasDataDate = true;
+            }
+
+
+            if (hasDataDate) {
                 if (entry.getEndDate() != entry.getStartDate()) {
                     String startDate = formatDate(request,
                                            entry.getStartDate(), entry);
@@ -2113,18 +2129,9 @@ public class TypeHandler extends RepositoryManager {
                                             + ARG_FROM, startDate,
                                                 ARG_DATA_DATE + "." + ARG_TO,
                                                 endDate));
-                    String searchLink =
-                        HtmlUtils.href(
-                            searchUrl,
-                            HtmlUtils.img(
-                                getRepository().iconUrl(ICON_SEARCH),
-                                "Search for entries with this date range",
-                                " border=0 "));
-                    sb.append(formEntry(request, msgLabel("Date Range"),
-                                        searchLink + HtmlUtils.space(1)
-                                        + startDate + HtmlUtils.space(1)
-                                        + HtmlUtils.img(iconUrl(ICON_RANGE))
-                                        + HtmlUtils.space(1) + endDate));
+                    sb.append(formEntry(request, msgLabel("Start Date"),
+                                        startDate));
+                    sb.append(formEntry(request, msgLabel("End Date"), endDate));
                 } else {
                     boolean showTime    = okToShowInForm(entry, "time", true);
                     StringBuffer dateSB = new StringBuffer();

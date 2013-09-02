@@ -486,7 +486,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** list of import items for the text editor menu */
     public static final String[] WIKIPROPS = {
-        WIKI_PROP_GROUP + "Information", WIKI_PROP_INFORMATION,
+        WIKI_PROP_GROUP + "Information", prop(WIKI_PROP_INFORMATION, attrs(ATTR_DETAILS, "false")),
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_RESOURCE,
         WIKI_PROP_DATE_FROM, WIKI_PROP_DATE_TO, WIKI_PROP_LINK,
         WIKI_PROP_HTML, WIKI_PROP_IMPORT, WIKI_PROP_GROUP + "Layout",
@@ -1013,12 +1013,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return HtmlUtils.formEntry(rowLabel, result);
         }
 
+        int maxHeight = Misc.getProperty(props, "maxheight", -1);
 
 
         if (prefix != null) {
             sb.append(makeWikiUtil(request, false).wikify(prefix, null));
         }
+        if (maxHeight > 0) {
+            sb.append("<div style=\"max-height: " + maxHeight
+                         + "px;  overflow-y: auto;\">");
+        }
+
+
         sb.append(result);
+        if (maxHeight > 0) {
+            sb.append("</div>");
+        }
         if (suffix != null) {
             sb.append(makeWikiUtil(request, false).wikify(suffix, null));
         }
