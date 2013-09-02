@@ -2123,6 +2123,7 @@ public class OutputHandler extends RepositoryManager {
     private Hashtable<String,String> typeToWikiTemplate = new Hashtable<String,String>();
 
     protected String getWikiTemplate(Request request, Entry entry) throws Exception {
+        if(entry.isDummy()) return null;
         String type = entry.getTypeHandler().getType();
         String wiki = typeToWikiTemplate.get(type);
         if(wiki!=null) {
@@ -2131,7 +2132,7 @@ public class OutputHandler extends RepositoryManager {
 
         String property = getProperty("ramadda.wiki.template." + type, null);
         if(property!=null) {
-            //            wiki = getRepository().getResource(property);
+            wiki = getRepository().getResource(property);
         }
 
 

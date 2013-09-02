@@ -62,30 +62,30 @@ form {
 .entry-list {
 //    max-height: 250px; 
     overflow-y: auto;
-    border: 1px #888 solid;
+    border: 1px #aaa solid;
 }
 
 .entry-list-settings {
-  border-left : 1px #888 solid;
-  border-right : 1px #888 solid;
+  border-left : 1px #aaa solid;
+  border-right : 1px #aaa solid;
 }
 
 .entry-list-form {
   padding: 5px;
   padding-left: 10px;
-  border: 1px #888 solid;
+  border: 1px #aaa solid;
   border-bottom: 0px;
 }
 
 .entry-list-table {
-  border : 1px #888 solid;
-  border-bottom : 0px #888 solid;
+  border : 1px #aaa solid;
+  border-bottom : 0px #aaa solid;
   background-color: #eaeaea;
 }
 
 .entry-list-header-column {
    font-weight: bold; 
-   border-right : 1px #888 solid;
+   border-right : 1px #aaa solid;
    text-align: center;
    padding-bottom:0px;
    padding-top:4px;
