@@ -5490,7 +5490,7 @@ public class EntryManager extends RepositoryManager {
                                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                            "10"));
             }
-            prefix = HtmlUtils.span(prefix, HtmlUtils.cssClass("arrow"));
+            prefix = HtmlUtils.span(prefix, HtmlUtils.cssClass("entry-arrow"));
 
         }
 

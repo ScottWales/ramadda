@@ -448,8 +448,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 return new Result("", xml, "text/xml");
             }
             String wikiTemplate = getWikiText(request, entry);
-
-
             if(wikiTemplate == null) {
                 wikiTemplate =  getWikiTemplate(request, entry);
             }
@@ -460,7 +458,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 wiki = getRepository().translate(request, wiki);
                 StringBuffer xml = new StringBuffer("<content>\n");
                 XmlUtil.appendCdata(xml,
-                                    "<div class=inline>" + wiki + "</div>");
+                                    "<div class=entry-inline>" + wiki + "</div>");
                 xml.append("\n</content>");
 
                 return new Result("", xml, "text/xml");
@@ -1744,7 +1742,6 @@ public class HtmlOutputHandler extends OutputHandler {
             if(wikiTemplate == null) {
                 wikiTemplate = getWikiTemplate(request, group);
             }
-
         }
 
 
@@ -1782,9 +1779,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-        if(wikiTemplate == null) {
-            wikiTemplate = getRepository().getResource("/org/ramadda/repository/resources/templates/folder.wiki.txt");
-        }
+
 
         if (wikiTemplate != null) {
             sb.append(getWikiManager().wikifyEntry(request, group,

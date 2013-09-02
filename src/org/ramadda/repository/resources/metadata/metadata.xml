@@ -74,7 +74,7 @@
       <element name="Value"  searchable="true"/>
       <template type="thredds"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
       <template type="atom"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
-      <template type="html"><![CDATA[ ${Name}=${Value}]]></template>
+      <template type="html"><![CDATA[${Name}=${Value}]]></template>
     </type>
 
     <type name="Synonym" id="synonym"  searchable="true" browsable="true">

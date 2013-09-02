@@ -91,6 +91,23 @@ form {
    padding-top:5px;
 }
 
+.entry-arrow {
+      margin-right: 5px;
+      margin-bottom:2px;
+}
+
+.entry-inline {
+   max-height: 300px; 
+   overflow-y: auto;
+//   background-color : #efefef;
+   border: 1px #000 solid; 
+   padding: 5px;
+   margin-right: 10px;
+   margin-left: 10px;
+}
+
+
+
 
 .ramadda-entry-table {
    max-height: 600px; 
@@ -195,18 +212,17 @@ form {
 
 .ramadda-popup {
    display: none;
-   padding:1px;
+   padding:5px;
    text-decoration: none;
    border : 1px #888 solid;
    background-color : #FFFFFF;
    position:absolute;
    left:-10000px; 
    z-index: 10000;
-//Shadow effect
   /* offset left, top, thickness, color with alpha */
-  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
   /* IE */
   filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
   /* slightly different syntax for IE8 */
@@ -633,11 +649,6 @@ a.image-link {
 
 
 
-.inline {
-   max-height: 300px; 
-   overflow-y: auto;
-}
-
 .sortlinkon  {
   font-size: 10pt;
   background-color : #eee;
@@ -685,10 +696,7 @@ a.image-link {
 .subheader-off a {
 }
 
-.arrow {
-      margin-right: 2px;
-      margin-bottom:4px;
-}
+
 
 .nav {
    font-weight: bold;

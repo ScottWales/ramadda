@@ -1,0 +1,18 @@
+== {{name}} ==
+<table border=0 width=100% cellspacing=10 cellpadding=0>
+<tr valign=top>
+<td width-70%>
+<br>
+{{description}}
+<p>
+{{information}}
+</td>
+<td width=30%>
+{{map message=""}}
+<p>
+{{menu menus="file"  prefix="=====Links====="}}
+{{menu menus="other"  message=""}}
+</td>
+</tr></table>
+
+
