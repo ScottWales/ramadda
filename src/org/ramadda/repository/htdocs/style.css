@@ -87,7 +87,7 @@ form {
    font-weight: bold; 
    border-right : 1px #aaa solid;
    text-align: center;
-   padding-bottom:0px;
+   padding-bottom:1px;
    padding-top:4px;
    color: #222;
 }
@@ -1474,10 +1474,10 @@ a.toggleblocklabellink:visited {
 	border-bottom: none;
 	font-weight: bold;
 }
-.wiki-h3 { font-size: 132%;}
-.wiki-h4 { font-size: 116%; }
-.wiki-h5 { font-size: 100%;  color:#aaa; }
-.wiki-h6 { font-size: 80%;  color:#aaa; }
+.wiki-h3 { font-size: 132%; }
+.wiki-h4 { font-size: 110%; color: #888;}
+.wiki-h5 { font-size: 100%;}
+.wiki-h6 { font-size: 80%;}
 
 .wiki-hr {
 	height: 1px;

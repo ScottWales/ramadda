@@ -6160,10 +6160,10 @@ public class EntryManager extends RepositoryManager {
             sb.append(menuLink);
             sb.append("</div></td>");
 
-            sb.append("<td width=88%>");
+            sb.append("<td xwidth=88%>");
             sb.append(header);
             sb.append("</td>");
-            sb.append("<td width=10% align=right>");
+            sb.append("<td xwidth=10% align=right>");
             sb.append(toolbar);
             sb.append("</td>");
             sb.append("</tr></table></div>");

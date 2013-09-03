@@ -1,7 +1,7 @@
 <table border=0 width=100% cellspacing=10 cellpadding=0>
 <tr valign=top>
 <td width="70%">
-==== {{name}} ====
+=== {{name}} ===
 {{description}}
 <p>
 {{tree details="true" message=""}}
@@ -9,16 +9,18 @@
 </td>
 <td width=5>&nbsp;</td>
 <td width="30%">
-=====Information=====
+====Information====
 <div style="max-width: 280px; overflow-x: hidden;">
 {{information details="false"}}
-{{map message="" width="250" height="250" prefix="=====Location=====" }}
+{{map message="" width="250" height="250" prefix="====Locations====" }}
 <p>
-{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" maxheight="200"}}
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="====Related====" box.maxheight="200" box.style="border: 1px #ccc solid;"}}
 <p>
-{{properties prefix="=====Properties=====" message="" maxheight="300"}}
+{{list includeicon="true" details="false" entries="ancestors" message="" prefix="====Lineage====" box.maxheight="200"  box.style="border: 1px #ccc solid;"}}
 <p>
-{{menu menus="file"  prefix="=====Links====="}}
+{{properties prefix="====Properties====" message="" box.maxheight="300"}}
+<p>
+{{menu menus="file"  prefix="====Links===="}}
 </div>
 </td>
 </tr>

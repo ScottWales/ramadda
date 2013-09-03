@@ -2159,7 +2159,7 @@ public class TypeHandler extends RepositoryManager {
                 //Only show the created by and type when the user is logged in
                 //                if ( !request.isAnonymous()) {
                 if (okToShowInHtml(entry, "type", true)) {
-                    sb.append(formEntry(request, msgLabel("Type"),
+                    sb.append(formEntry(request, msgLabel("Kind"),
                                         msg(typeDesc)));
                 }
                 //                }
@@ -3428,7 +3428,7 @@ public class TypeHandler extends RepositoryManager {
                                : "");
             basicSB.append(
                 formEntry(
-                    request, msgLabel("Type"),
+                    request, msgLabel("Kind"),
                     typeSelect + HtmlUtils.space(1)
                     + HtmlUtils.submitImage(
                         getRepository().iconUrl(ICON_SEARCH), "submit_type",
@@ -3440,7 +3440,7 @@ public class TypeHandler extends RepositoryManager {
                                             typeHandlers.get(0).getType()));
             basicSB.append(
                 formEntry(
-                    request, msgLabel("Type"),
+                    request, msgLabel("Kind"),
                     msg(typeHandlers.get(0).getDescription())));
         }
 

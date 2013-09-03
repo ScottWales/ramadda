@@ -1,19 +1,20 @@
-== {{name}} ==
+=== {{name}} ===
 <table border=0 width=100% cellspacing=10 cellpadding=0>
 <tr valign=top>
 <td width=70%>
-<br>
 {{description}}
-<p>
+<br>
 {{information details="true"}}
 </td>
 <td width=30%>
 <div style="max-width: 280px; overflow-x: hidden;">
-{{map message=""}}
+{{map message="" prefix="====Location===="}}
+<br>
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="====Related====" box.maxheight="200" box.style="border: 1px #ccc solid;"}}
 <p>
-{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="=====Related=====" maxheight="200"}}
+{{list includeicon="true" details="false" entries="ancestors" message="" prefix="====Lineage====" box.maxheight="200" box.style="border: 1px #ccc solid;"}}
 <p>
-{{menu menus="file"  prefix="=====Links====="}}
+{{menu menus="file"  prefix="====Links===="}}
 {{menu menus="other"  message=""}}
 </div>
 </td>

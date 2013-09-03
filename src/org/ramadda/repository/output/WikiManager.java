@@ -1013,22 +1013,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return HtmlUtils.formEntry(rowLabel, result);
         }
 
-        int maxHeight = Misc.getProperty(props, "maxheight", -1);
-
-
+        StringBuffer style =new StringBuffer();
+        int maxHeight = Misc.getProperty(props, "box." + ATTR_MAXHEIGHT, -1);
+        style.append(Misc.getProperty(props, "box." +ATTR_STYLE,""));
+        if (maxHeight > 0) {
+            style.append(" max-height: " + maxHeight
+                         + "px;  overflow-y: auto; ");
+        }
         if (prefix != null) {
             sb.append(makeWikiUtil(request, false).wikify(prefix, null));
         }
-        if (maxHeight > 0) {
-            sb.append("<div style=\"max-height: " + maxHeight
-                         + "px;  overflow-y: auto;\">");
-        }
-
-
+        sb.append(HtmlUtils.open("div",HtmlUtils.style(style.toString())));
         sb.append(result);
-        if (maxHeight > 0) {
-            sb.append("</div>");
-        }
+        sb.append(HtmlUtils.close("div"));
+
         if (suffix != null) {
             sb.append(makeWikiUtil(request, false).wikify(suffix, null));
         }
