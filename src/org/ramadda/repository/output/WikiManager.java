@@ -135,6 +135,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ATTR_SUFFIX = "suffix";
 
 
+    public static final String ATTR_IF = "if";
+
+
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
@@ -377,6 +380,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** wiki import */
     public static final String WIKI_PROP_INFORMATION = "information";
+
+    public static final String WIKI_PROP_DOWNLOAD = "download";
 
     /** wiki import */
     public static final String WIKI_PROP_IMAGE = "image";
@@ -1016,6 +1021,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         StringBuffer style =new StringBuffer();
         int maxHeight = Misc.getProperty(props, "box." + ATTR_MAXHEIGHT, -1);
         style.append(Misc.getProperty(props, "box." +ATTR_STYLE,""));
+        String cssClass = Misc.getProperty(props, "box." +ATTR_CLASS,"div");
+
         if (maxHeight > 0) {
             style.append(" max-height: " + maxHeight
                          + "px;  overflow-y: auto; ");
@@ -1023,7 +1030,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         if (prefix != null) {
             sb.append(makeWikiUtil(request, false).wikify(prefix, null));
         }
-        sb.append(HtmlUtils.open("div",HtmlUtils.style(style.toString())));
+        sb.append(HtmlUtils.open("div",
+                                 HtmlUtils.cssClass(cssClass) + 
+                                 HtmlUtils.style(style.toString())));
         sb.append(result);
         sb.append(HtmlUtils.close("div"));
 
@@ -1074,6 +1083,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         boolean      wikify = Misc.getProperty(props, ATTR_WIKIFY, true);
 
+        String criteria  = Misc.getProperty(props, ATTR_IF, (String) null);
+        if(criteria!=null) {
+            
+        }
+
         StringBuffer sb     = new StringBuffer();
         if (include.equals(WIKI_PROP_INFORMATION)) {
             boolean details = Misc.getProperty(props, ATTR_DETAILS,
@@ -1123,14 +1137,19 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 if (message != null) {
                     return message;
                 }
-
                 return "";
             }
 
             String url = entry.getTypeHandler().getEntryResourceUrl(request,
                              entry);
-            String label = Misc.getProperty(props, ATTR_TITLE, url);
-
+            String label = Misc.getProperty(props, ATTR_TITLE, "Download");
+            boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
+                                                   false);
+            if(includeIcon) {
+                label = HtmlUtils.img(iconUrl("/icons/download.png")) + 
+                                      HtmlUtils.space(2) + label;
+                return HtmlUtils.div(HtmlUtils.href(url, label), HtmlUtils.cssClass("entry-download-box"));
+            }
             return HtmlUtils.href(url, label);
         } else if (include.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();

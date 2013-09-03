@@ -2151,16 +2151,14 @@ public class TypeHandler extends RepositoryManager {
                                         dateSB.toString()));
                 }
             }
-            String typeDesc = entry.getTypeHandler().getDescription();
-            if ((typeDesc == null) || (typeDesc.trim().length() == 0)) {
-                typeDesc = entry.getTypeHandler().getType();
-            }
+
+
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
                 //                if ( !request.isAnonymous()) {
                 if (okToShowInHtml(entry, "type", true)) {
                     sb.append(formEntry(request, msgLabel("Kind"),
-                                        msg(typeDesc)));
+                                        getFileTypeDescription(entry)));
                 }
                 //                }
             }
@@ -3263,13 +3261,31 @@ public class TypeHandler extends RepositoryManager {
         String img = ICON_FILE;
         if (path != null) {
             String suffix = IOUtil.getFileExtension(path.toLowerCase());
-            String prop   = getRepository().getProperty("icon" + suffix);
+            String prop   = getRepository().getProperty("file.icon" + suffix);
             if (prop != null) {
                 img = prop;
             }
         }
 
         return iconUrl(img);
+    }
+
+    public String getLabelFromPath(String path) throws Exception {
+        if (path != null) {
+            String suffix = IOUtil.getFileExtension(path.toLowerCase());
+            String label =  getRepository().getProperty("file.label" + suffix);
+            if(label!=null) return label;
+        }
+        return getProperty("file.label", (String) null);
+    }
+
+    public String getUrlFromPath(String path) throws Exception {
+        if (path != null) {
+            String suffix = IOUtil.getFileExtension(path.toLowerCase());
+            String url =  getRepository().getProperty("file.url" + suffix);
+            if(url!=null) return url;
+        }
+        return getProperty("file.url", (String) null);
     }
 
 
@@ -3426,6 +3442,7 @@ public class TypeHandler extends RepositoryManager {
                                        false)) + HtmlUtils.space(1)
                                            + msg("Exclude")
                                : "");
+
             basicSB.append(
                 formEntry(
                     request, msgLabel("Kind"),
@@ -4662,6 +4679,34 @@ public class TypeHandler extends RepositoryManager {
     public void setDescription(String value) {
         description = value;
     }
+
+    public String getFileTypeDescription(Entry entry)  {
+        try {
+            String desc = msg(entry.getTypeHandler().getDescription());
+            if (!Utils.stringDefined(desc)) {
+                desc = entry.getTypeHandler().getType();
+            }
+            String path =  getPathForEntry(entry);
+            String label = getLabelFromPath(path);
+            String url = getUrlFromPath(path);
+
+            if(label == null && url !=null) {
+                desc = HtmlUtils.href(url, desc, HtmlUtils.attr("target","_help"));
+            } else if(label!=null) {
+                if(url!=null) {
+                    //                desc = desc  +" (" + HtmlUtils.href(url, label)+")";
+                    desc = HtmlUtils.href(url, msg(label), HtmlUtils.attr("target","_help"));
+                } else {
+                    //                desc = desc  +" (" +label+")";
+                    desc = msg(label);
+                }
+            }
+            return desc;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
 
     /**
      * Get the Description property.

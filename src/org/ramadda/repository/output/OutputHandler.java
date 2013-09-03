@@ -1585,7 +1585,7 @@ public class OutputHandler extends RepositoryManager {
                 "<td width=\"200\" align=right "
                 + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
                 + "><div style=\"max-width:190px; overflow-x: hidden;\">");
-            sb.append(entry.getTypeHandler().getLabel());
+            sb.append(entry.getTypeHandler().getFileTypeDescription(entry));
             sb.append("</div></td>");
         }
 
@@ -2149,7 +2149,9 @@ public class OutputHandler extends RepositoryManager {
                     fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 }
                 wiki = fileWikiTemplate;
-                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+
+                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+                return wiki;
             }
         }
         if(wiki!=null)  {

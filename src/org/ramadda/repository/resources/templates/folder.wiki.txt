@@ -14,13 +14,9 @@
 {{information details="false"}}
 {{map message="" width="250" height="250" prefix="====Locations====" }}
 <p>
-{{list includeicon="true" details="false" entry="parent" exclude="this" message="" prefix="====Related====" box.maxheight="200" box.style="border: 1px #ccc solid;"}}
-<p>
-{{list includeicon="true" details="false" entries="ancestors" message="" prefix="====Lineage====" box.maxheight="200"  box.style="border: 1px #ccc solid;"}}
-<p>
 {{properties prefix="====Properties====" message="" box.maxheight="300"}}
 <p>
-{{menu menus="file"  prefix="====Links===="}}
+{{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>
 </td>
 </tr>

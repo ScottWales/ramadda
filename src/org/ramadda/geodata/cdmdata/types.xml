@@ -6,6 +6,7 @@
      <property name="form.date.show" value="false"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
+     <property name="file.url" value="http://www.opendap.org"/>
   </type>
 
 

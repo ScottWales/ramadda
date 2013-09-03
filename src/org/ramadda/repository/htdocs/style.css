@@ -54,6 +54,7 @@ form {
 }
 
 
+
 .entry-list-block {
    padding-left:0px;
    padding-right:0px;
@@ -63,6 +64,27 @@ form {
 //    max-height: 250px; 
     overflow-y: auto;
     border: 1px #aaa solid;
+}
+
+.entry-download-box {
+  background-color: #338F33;
+  background-color: #228B22;
+  border: 1px #666 solid;
+  color: white;
+  max-width:200px;
+  font-weight: bold; 
+  padding-left: 8px;
+  padding-bottom: 6px;
+  padding-top: 10px;
+  margin-bottom:5px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  
+}
+
+.entry-download-box  a {
+    color: #000;
+    color: #fff;
 }
 
 .entry-list-settings {
@@ -116,7 +138,10 @@ form {
 }
 
 
-
+.entry-sidebox {
+     border: 1px #ddd solid;
+     padding: 4px;
+}
 
 .ramadda-entry-table {
    max-height: 600px; 
