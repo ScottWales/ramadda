@@ -5437,15 +5437,23 @@ public class EntryManager extends RepositoryManager {
                                        url, label }, true));
         }
         boolean      showLink = request.get(ARG_SHOWLINK, true);
+        boolean      showDetails = request.get(ARG_DETAILS, true);
+
         StringBuffer sb       = new StringBuffer();
         String       entryId  = entry.getId();
 
-        String       uid      = "link_" + HtmlUtils.blockCnt++;
+        String       uid      =  HtmlUtils.getUniqueId("link_");
         String       output   = "inline";
+
         String folderClickUrl =
-            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
-            + HtmlUtils.arg(ARG_OUTPUT, output) + "&"
-            + HtmlUtils.arg(ARG_SHOWLINK, "" + showLink);
+            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + 
+            "&" +
+            HtmlUtils.args(new String[]{
+                    ARG_OUTPUT, output,
+                    ARG_DETAILS, "" + showDetails,
+                    ARG_SHOWLINK, "" + showLink});
+
+
 
         if (forTreeView) {
             folderClickUrl += "&" + ARG_TREEVIEW + "=true";
@@ -5579,7 +5587,6 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.span(linkText, targetEvent.toString()));
         }
 
-
         String link = HtmlUtils.span(sb.toString(),
                                      HtmlUtils.id(targetId) + targetEvent);
 
@@ -5593,8 +5600,6 @@ public class EntryManager extends RepositoryManager {
                                        CSS_CLASS_FOLDER_BLOCK,
                                        HtmlUtils.ATTR_ID, uid)));
 
-        //        link = link + HtmlUtils.br()
-        //        return link;
         return new EntryLink(link, folderBlock, uid);
     }
 
@@ -5625,25 +5630,7 @@ public class EntryManager extends RepositoryManager {
         String qid       = HtmlUtils.squote(elementId);
         String linkId    = "link_" + (HtmlUtils.blockCnt++);
         String qlinkId   = HtmlUtils.squote(linkId);
-        String tooltipEvents = HtmlUtils.onMouseOver(
-                                   HtmlUtils.call(
-                                       "tooltip.onMouseOver",
-                                       HtmlUtils.comma(
-                                           "event", qid,
-                                           qlinkId))) + HtmlUtils.onMouseOut(
-                                               HtmlUtils.call(
-                                                   "tooltip.onMouseOut",
-                                                   HtmlUtils.comma(
-                                                       "event", qid,
-                                                       qlinkId))) + HtmlUtils.onMouseMove(
-                                                           HtmlUtils.call(
-                                                               "tooltip.onMouseMove",
-                                                               HtmlUtils.comma(
-                                                                   "event",
-                                                                   qid,
-                                                                   qlinkId)));
 
-        tooltipEvents = "";
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
                              : null);
@@ -5651,10 +5638,9 @@ public class EntryManager extends RepositoryManager {
                              ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
                              : "");
 
-
         return HtmlUtils.href(url, linkText,
-                              HtmlUtils.id(linkId) + " " + tooltipEvents
-                              + targetAttr);
+                              HtmlUtils.id(linkId) +
+                              targetAttr);
     }
 
 
@@ -7786,10 +7772,8 @@ public class EntryManager extends RepositoryManager {
             boolean changed =
                 getMetadataManager().addInitialMetadata(request, theEntry,
                     extra, shortForm);
-            //            System.err.println("extra:" + extra);
             if ( !theEntry.hasAreaDefined()
                     && (extra.get(ARG_MINLAT) != null)) {
-                //                System.err.println("adding bounds");
                 theEntry.setSouth(Misc.getProperty(extra, ARG_MINLAT, 0.0));
                 theEntry.setNorth(Misc.getProperty(extra, ARG_MAXLAT, 0.0));
                 theEntry.setWest(Misc.getProperty(extra, ARG_MINLON, 0.0));
@@ -8458,7 +8442,6 @@ public class EntryManager extends RepositoryManager {
                                       getDatabaseManager().select(
                                           Tables.ENTRIES.COLUMNS,
                                           Tables.ENTRIES.NAME, clauses));
-            //            System.err.println("   Found: " + entries);
             if (entries.size() > 0) {
                 currentEntry = entries.get(0);
             } else {
@@ -8903,7 +8886,6 @@ public class EntryManager extends RepositoryManager {
         if (iconPath == null) {
             return null;
         }
-        //        System.err.println ("getIconUrl: "+entry.getIsRemoteEntry() + " " + entry);
         if (entry.getIsRemoteEntry()) {
             String iconFile = IOUtil.getFileTail(iconPath);
             String ext      = IOUtil.getFileExtension(iconFile);

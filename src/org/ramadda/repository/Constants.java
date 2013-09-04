@@ -1136,6 +1136,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_NODETYPE = "nodetype";
 
+    public static final String ARG_DETAILS = "details";
+
     /** _more_ */
     public static final String ARG_USER_MESSAGE = "usermessage";
 
@@ -2063,11 +2065,13 @@ public interface Constants {
         "ramadda-harvester-active";
 
     /** _more_ */
-    public static final String CSS_CLASS_ENTRY_ROW = "ramadda-entry-row";
+    public static final String CSS_CLASS_ENTRY_TREE_ROW = "entry-tree-row";
+
+    public static final String CSS_CLASS_ENTRY_LIST_ROW = "entry-list-row";
 
     /** _more_ */
     public static final String CSS_CLASS_ENTRY_ROW_LABEL =
-        "ramadda-entry-row-label";
+        "entry-row-label";
 
     /** _more_ */
     public static final String CSS_CLASS_FOLDER_BLOCK =

@@ -1,20 +1,20 @@
-<table border=0 width=100% cellspacing=10 cellpadding=0>
-<tr valign=top>
-<td width="70%">
+<table border="0" width=100% cellspacing=10 cellpadding=0>
+<tr>
+<td  valign=top width="70%">
 === {{name}} ===
 {{description}}
 <p>
 {{tree details="true" message=""}}
 <p>
 </td>
-<td width=5>&nbsp;</td>
-<td width="30%">
-====Information====
-<div style="max-width: 280px; overflow-x: hidden;">
-{{information details="false"}}
-{{map message="" width="250" height="250" prefix="====Locations====" }}
+<td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
+<td  valign=top width="29%">
+<div class="entry-page-right">
+{{information details="false"  box.maxheight="300" prefix="====Information====" box.class="entry-sidebox"}}
 <p>
-{{properties prefix="====Properties====" message="" box.maxheight="300"}}
+{{map message="" width="250" height="250" prefix="====Locations===="  box.maxheight="300"}}
+<p>
+{{properties prefix="====Properties====" message="" box.maxheight="300" box.class="entry-sidebox"}}
 <p>
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>

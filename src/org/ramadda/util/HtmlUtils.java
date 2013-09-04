@@ -396,6 +396,7 @@ public class HtmlUtils {
     /** _more_ */
     public static final String CLASS_TEXTAREA = "textarea";
 
+    public static final String STYLE_HIDDEN = "display:none;";
 
 
     /** _more_ */

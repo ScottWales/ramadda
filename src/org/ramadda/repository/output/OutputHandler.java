@@ -972,9 +972,9 @@ public class OutputHandler extends RepositoryManager {
 
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.div("", HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-        //"display:none;xxxvisibility:hidden",
-        "display:none;", HtmlUtils.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
-                         HtmlUtils.ATTR_ID, uid)));
+                                                    HtmlUtils.STYLE_HIDDEN, 
+                                                    HtmlUtils.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
+                                                    HtmlUtils.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1281,10 +1281,9 @@ public class OutputHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addEntryCheckbox(Request request, Entry entry,
-                                 StringBuffer htmlSB, StringBuffer jsSB)
+    public void addEntryTableRow(Request request, Entry entry,
+                                 StringBuffer htmlSB, StringBuffer jsSB, boolean showDetails)
             throws Exception {
-        boolean showDetails  = true;
         String  rowId        = "entryrow_" + (HtmlUtils.blockCnt++);
         String  cbxId        = "entry_" + (HtmlUtils.blockCnt++);
         String  cbxArgId     = "entry_" + entry.getId();
@@ -1295,7 +1294,8 @@ public class OutputHandler extends RepositoryManager {
                 HtmlUtils.comma(
                     HtmlUtils.squote(entry.getId()), HtmlUtils.squote(rowId),
                     HtmlUtils.squote(cbxId),
-                    HtmlUtils.squote(cbxWrapperId))));
+                    HtmlUtils.squote(cbxWrapperId),
+                    ""+showDetails)));
 
         String cbx =
             HtmlUtils.checkbox(
@@ -1310,6 +1310,7 @@ public class OutputHandler extends RepositoryManager {
                             "entryRowCheckboxClicked",
                             HtmlUtils.comma(
                                 "event", HtmlUtils.squote(cbxId)))));
+        //xxxx
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
                              entry.getLabel()), rowId, cbx, showDetails);
@@ -1403,7 +1404,8 @@ public class OutputHandler extends RepositoryManager {
                     HtmlUtils.comma(
                         HtmlUtils.squote(entry.getId()),
                         HtmlUtils.squote(rowId), HtmlUtils.squote(cbxId),
-                        HtmlUtils.squote(cbxWrapperId))));
+                        HtmlUtils.squote(cbxWrapperId),
+                                    ""+showDetails)));
             if (doForm) {
                 cbxSB.append(HtmlUtils.hidden("all_" + entry.getId(), "1"));
                 String cbx =
@@ -1509,7 +1511,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV,
-                HtmlUtils.id(rowId) + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW)
+                HtmlUtils.id(rowId) + HtmlUtils.cssClass(showDetails?CSS_CLASS_ENTRY_LIST_ROW:CSS_CLASS_ENTRY_TREE_ROW)
                 + HtmlUtils.onMouseClick(
                     HtmlUtils.call(
                         "entryRowClick",
@@ -2125,7 +2127,9 @@ public class OutputHandler extends RepositoryManager {
     protected String getWikiTemplate(Request request, Entry entry) throws Exception {
         if(entry.isDummy()) return null;
         String type = entry.getTypeHandler().getType();
-        String wiki = typeToWikiTemplate.get(type);
+        String wiki = null;
+
+        wiki = typeToWikiTemplate.get(type);
         if(wiki!=null) {
             return wiki;
         }
@@ -2134,7 +2138,6 @@ public class OutputHandler extends RepositoryManager {
         if(property!=null) {
             wiki = getRepository().getResource(property);
         }
-
 
 
         if(wiki == null) {
@@ -2149,7 +2152,7 @@ public class OutputHandler extends RepositoryManager {
                     fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 }
                 wiki = fileWikiTemplate;
-                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
+                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 return wiki;
             }
         }

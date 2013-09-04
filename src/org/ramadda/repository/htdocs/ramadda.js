@@ -613,7 +613,7 @@ function initEntryListForm(formId) {
 }
 
 
-function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
+function EntryRow (entryId, rowId, cbxId,cbxWrapperId, showDetails) {
     this.entryId = entryId;
 
     this.onColor = "#FFFFCC";
@@ -624,7 +624,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     this.rowId = rowId;
     this.cbxId = cbxId;
     this.cbxWrapperId = cbxWrapperId;
-
+    this.showDetails = showDetails;
     this.getRow = function() {
         return $("#" + this.rowId);
     }
@@ -681,6 +681,11 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
         if(eventX-position.left<150) return;
         this.lastClick = eventX;
         var url = "${urlroot}/entry/show?entryid=" + entryId +"&output=metadataxml";
+        if(this.showDetails) {
+            url+="&details=true";
+        } else {
+            url+="&details=false";
+        }
 	ramaddaUtil.loadXML( url, this.handleTooltip,this);
     }
 
@@ -927,19 +932,18 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.allEntries = allEntries;
     this.selecttype = selecttype;
     this.textComp = ramaddaUtil.getDomObject(this.elementId);
-     if (!this.textComp) {
-//	alert("cannot find text comp " + this.elementId);
-	return false;
-    }
-    this.hiddenComp = ramaddaUtil.getDomObject(this.elementId+"_hidden");
 
-    this.clearInput = function() {
-	if(this.hiddenComp) {
-            this.hiddenComp.obj.value =""
-        }
-	if(this.textComp) {
-            this.textComp.obj.value =""
-        }
+    this.getTextComponent = function() {
+        return $("#" + this.elementId);
+    }
+
+    this.getHiddenComponent = function() {
+        return $("#" + this.elementId+"_hidden");
+    }
+
+    this.clearInput = function() {	
+        this.getHiddenComp().val("");
+        this.getTextComponent().val("");
     }
 
 
@@ -950,12 +954,10 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
         var link = ramaddaUtil.getDomObject(this.id+'.selectlink');
         if(!link) {
-        //Don:  alert('Selector.handleClick can't find link'):
             return false;
         }
         this.div = ramaddaUtil.getDomObject('selectdiv');
         if(!this.div) {
-        //Don:  alert('Selector.handleClick can't find div'):
             return false;
         }
 
@@ -975,7 +977,6 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         if(localeId) {
             url = url+"&localeid=" + localeId;
         }
-        //Don:  alert('loading url '):
         ramaddaUtil.loadXML( url, handleSelect,this.id);
         return false;
     }
@@ -991,32 +992,21 @@ function selectClick(id,entryId,value) {
     if (selector.selecttype=="wikilink") {
         insertAtCursor(selector.textComp.obj,"[[" +entryId+"|"+value+"]]");
     } else if (selector.selecttype=="entryid") {
-        insertTagsInner(selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
+        insertTagsInner(selector.elementId, selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
     } else { 
-        if(selector.hiddenComp) {
-            selector.hiddenComp.obj.value =entryId;
-
-        }
-        selector.textComp.obj.value =value;
-	if(selector.textComp.obj.value) {
-	        selector.textComp.obj.value =value;
-	} else {
-	        selector.textComp.obj.innerHtml =value;
-	}
+        selector.getHiddenComponent().val(entryId);
+        selector.getTextComponent().val(value);
     }
     selectCancel();
 }
 
 function selectCancel() {
-    var div = ramaddaUtil.getDomObject('selectdiv');
-    if(!div)return false;
-    hideObject(div);
+    $("#selectdiv").hide();
 }
 
 
 function selectCreate(event, selectorId,elementId, allEntries,selecttype, localeId) {
     if(!selectors[selectorId]) {
-        //Don:  alert('creating selector'):
         selectors[selectorId] = new Selector(event,selectorId, elementId,allEntries,selecttype,localeId);
     } else {
         //Don:  alert('have selector'):

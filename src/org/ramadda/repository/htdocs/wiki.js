@@ -36,7 +36,7 @@ function insertAtCursor(myField, myValue) {
 function insertTags(id, tagOpen, tagClose, sampleText) {
     var textComp = ramaddaUtil.getDomObject(id);
     if(textComp) {
-	insertTagsInner(textComp.obj, tagOpen,tagClose,sampleText);
+	insertTagsInner(id, textComp.obj, tagOpen,tagClose,sampleText);
     }
 }
 
@@ -44,7 +44,7 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 
 // apply tagOpen/tagClose to selection in textarea,
 // use sampleText instead of selection if there is none
-function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
+function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
     tagOpen = tagOpen.replace(/&quote;/gi,'\"');
     tagClose = tagClose.replace(/&quote;/gi,'\"');
@@ -59,13 +59,9 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
         var endPos = txtarea.selectionEnd;
         selText = txtarea.value.substring(startPos, endPos);
         //insert tags
-        checkSelectedText(selText, isSample, sampleText);
         txtarea.value = txtarea.value.substring(0, startPos)
             + tagOpen + selText + tagClose
             + txtarea.value.substring(endPos, txtarea.value.length);
-        //set new selection
-        //        alert(isSample + "  " +txtarea.selectionStart + " " +txtarea.selectionEnd);
-
         if (isSample) {
             txtarea.selectionStart = startPos + tagOpen.length;
             txtarea.selectionEnd = startPos + tagOpen.length + selText.length;
@@ -90,7 +86,6 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
         var range = document.selection.createRange();
         selText = range.text;
         //insert tags
-        checkSelectedText(selText, isSample, sampleText);
         range.text = tagOpen + selText + tagClose;
         //mark sample text as selected
         if (isSample && range.moveStart) {
@@ -112,15 +107,7 @@ function insertTagsInner(txtarea, tagOpen, tagClose, sampleText) {
    }
 
 
-function checkSelectedText(selText, isSample, sampleText){
-    if (!selText) {
-        selText = sampleText;
-        isSample = true;
-    } else if (selText.charAt(selText.length - 1) == ' ') { //exclude ending space char
-        selText = selText.substring(0, selText.length - 1);
-        tagClose += ' ';
-    } 
-}
+
 
 
 

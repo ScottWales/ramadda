@@ -803,7 +803,6 @@ public class HtmlOutputHandler extends OutputHandler {
         String       cbxId;
         String       cbxWrapperId;
 
-        String       tabs = getInformationTabs(request, parent, true, true);
         if ( !showingAll(request, subGroups, entries)) {
             sb.append(msgLabel("Showing") + " 1.."
                       + (subGroups.size() + entries.size()));
@@ -815,23 +814,26 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.href(url, msg("More...")));
             sb.append(HtmlUtils.br());
         }
+        boolean showDetails = request.get(ARG_DETAILS, true);
+        
 
         for (Entry subGroup : subGroups) {
             cnt++;
-            addEntryCheckbox(request, subGroup, sb, jsSB);
+            addEntryTableRow(request, subGroup, sb, jsSB, showDetails);
         }
 
 
         if ( !onlyGroups) {
             for (Entry entry : entries) {
                 cnt++;
-                addEntryCheckbox(request, entry, sb, jsSB);
+                addEntryTableRow(request, entry, sb, jsSB, showDetails);
             }
         }
 
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
+            String       tabs = getInformationTabs(request, parent, true, true);
             sb.append(tabs);
             //            sb.append(entry.getDescription());
             if (getAccessManager().hasPermissionSet(parent,
@@ -1478,7 +1480,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                        : typeHandler.getLabel();
             List<Column> columns     = typeHandler.getColumns();
             StringBuffer tableSB     = new StringBuffer();
-            tableSB.append("<div class=\"ramadda-entry-table\">");
+            tableSB.append("<div class=\"entry-table\">");
             tableSB.append(
                 "<table width=100% cellspacing=2 cellpadding=2 border=0>");
             tableSB.append("<tr>");

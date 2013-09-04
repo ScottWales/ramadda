@@ -74,11 +74,12 @@ form {
   max-width:200px;
   font-weight: bold; 
   padding-left: 8px;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   padding-top: 10px;
-  margin-bottom:5px;
-  border-radius: 6px;
-  -webkit-border-radius: 6px;
+  margin-top:10px;
+  margin-bottom:10px;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
   
 }
 
@@ -114,6 +115,51 @@ form {
    color: #222;
 }
 
+.entry-list-row {
+  margin-top:2px;
+  padding: 2px;
+  padding-right: 0px;
+  border-bottom:1px #eee dotted;
+}
+
+.entry-tree-row {
+  margin-top:2px;
+  padding: 2px;
+  padding-right: 0px;
+//  border-bottom:1px #eee dotted;
+}
+
+.entry-row-label {
+    white-space:nowrap;
+}
+
+
+.entry-table {
+   max-height: 600px; 
+   overflow-y: auto;
+}
+
+
+.entry-page-right {
+}
+
+.entry-page-divider {
+  height: 100%;
+  width: 1px;
+ // background-color : #aaa;
+  border-left: 1px #e0e0e0 solid; 
+//  border-right: 1px #aaa solid; 
+}
+
+.ramadda-folder-block {
+   margin-right:0px;
+   padding:0px;
+   padding-left:12px;
+}
+
+
+
+
 .entry-arrow {
       margin-right: 5px;
       margin-bottom:2px;
@@ -141,28 +187,6 @@ form {
 .entry-sidebox {
      border: 1px #ddd solid;
      padding: 4px;
-}
-
-.ramadda-entry-table {
-   max-height: 600px; 
-   overflow-y: auto;
-}
-
-.ramadda-entry-row {
-  margin-top:2px;
-  padding: 2px;
-  padding-right: 0px;
-  border-bottom:1px #eee dotted;
-}
-
-.ramadda-entry-row-label {
-    white-space:nowrap;
-}
-
-.ramadda-folder-block {
-   margin-right:0px;
-   padding:0px;
-   padding-left:12px;
 }
 
 
@@ -1246,7 +1270,7 @@ xxxpath.link {
 
 .selectdiv {
    position: absolute; 
-   visibility: hidden; 
+//   visibility: hidden; 
    z-index: 1000;
    border: 1px #666666 solid;   
    background-color : #FFF;
