@@ -1255,7 +1255,7 @@ public class OutputHandler extends RepositoryManager {
         formSB.append(HtmlUtils.div(selectSB.toString(),
                                     HtmlUtils.cssClass("entry-list-form")
                                     + HtmlUtils.id(selectId) + (hideIt
-                ? HtmlUtils.style("display:none; visibility:hidden;")
+                ? HtmlUtils.style("display:none;")
                 : "")));
 
         js.append(HtmlUtils.callln(base + "= new EntryFormList",
@@ -1410,7 +1410,7 @@ public class OutputHandler extends RepositoryManager {
                     HtmlUtils.checkbox(
                         cbxId, "true", false,
                         HtmlUtils.id(cbxId) + " "
-                        + HtmlUtils.style("display:none; visibility:hidden;")
+                        + HtmlUtils.style("display:none;")
                         + HtmlUtils.attr(
                             HtmlUtils.ATTR_TITLE,
                             msg(
@@ -2149,7 +2149,6 @@ public class OutputHandler extends RepositoryManager {
                     fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 }
                 wiki = fileWikiTemplate;
-
                 wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
                 return wiki;
             }

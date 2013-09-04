@@ -3436,65 +3436,6 @@ public class HtmlUtils {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param label _more_
-     * @param content _more_
-     * @param visible _more_
-     *
-     * @return _more_
-     */
-    public static String makeToggleTable(String label, String content,
-                                         boolean visible) {
-
-        String hideImg = inlineHideImageUrl;
-        String showImg = inlineShowImageUrl;
-        if (hideImg == null) {
-            hideImg = blockHideImageUrl;
-        }
-        if (showImg == null) {
-            showImg = blockShowImageUrl;
-        }
-        String id = "block_" + (blockCnt++);
-        StringBuffer sb =
-            new StringBuffer(
-                "<table border=0 width=\"100%\"><tr valign=top>");
-        String img = "";
-        if ((showImg != null) && (showImg.length() > 0)) {
-            img = HtmlUtils.img(visible
-                                ? hideImg
-                                : showImg, "",
-                                           " id='" + id
-                                           + "img' ") + HtmlUtils.space(1);
-        }
-        String link = HtmlUtils.jsLink(
-                          HtmlUtils.onMouseClick(
-                              "toggleInlineVisibility('" + id + "','" + id
-                              + "img','" + hideImg + "','" + showImg
-                              + "')"), img + label,
-                                       HtmlUtils.cssClass(
-                                           "toggleblocklabellink"));
-
-        //        sb.append(RepositoryManager.tableSubHeader(link));
-        sb.append("<td width=1%>");
-        sb.append(link);
-        sb.append("</td><td>");
-        sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
-                  + HtmlUtils.id(id)
-                  + HtmlUtils.style("display:inline;visibility:visible")
-                  + ">");
-        if ( !visible) {
-            sb.append(HtmlUtils.script(HtmlUtils.call("hide",
-                    HtmlUtils.squote(id))));
-        }
-
-        sb.append(content.toString());
-        sb.append(close(TAG_DIV));
-        sb.append("</td></tr></table>");
-
-        return sb.toString();
-    }
 
 
 

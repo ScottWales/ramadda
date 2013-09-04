@@ -1174,10 +1174,11 @@ xxxpath.link {
 }
 
 .tooltip-outer {
-   border: 1px solid #000;
+   border: 1px solid #888;
    margin:0px;
    position: absolute; 
-   visibility: hidden; 
+   display:none;
+//   visibility: hidden; 
    z-index: 1;
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);

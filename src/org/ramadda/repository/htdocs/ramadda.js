@@ -453,11 +453,12 @@ function mouseUpOnEntry(event, entryId, targetId) {
 }
 
 
+function getTooltip() {
+    return $("#tooltipdiv");
+}
+
 function handleKeyPress(event) {
-    c =ramaddaUtil.getKeyChar(event);
-    div = ramaddaUtil.getDomObject("tooltipdiv");
-    if(!div) return;
-    hideObject(div);
+    getTooltip().hide();
 }
 
 
@@ -488,12 +489,11 @@ function EntryFormList(formId,img,selectId, initialOn) {
         this.groupAddEntry(entryRow.cbxWrapperId);
         this.entryRows[this.entryRows.length] = entryRow;
         if(!this.on) {
-            hideObject(entryRow.cbx);
+            entryRow.getCbx().hide();
         } else {
-            showObject(entryRow.cbx,"inline");
+            entryRow.getCbx().show();
 	}
     }
-
 
     this.groupAddEntry(selectId);
     if(!this.on) {
@@ -527,10 +527,10 @@ function EntryFormList(formId,img,selectId, initialOn) {
             }
         }
 
-        if(!entryRow || !entryRow.cbx) return;
+        if(!entryRow) return;
 
 
-        var value = entryRow.getCheckboxValue();
+        var value = entryRow.isSelected();
         if(event.ctrlKey) {
             for (i = 0; i < this.entryRows.length; i++) {
                 this.entryRows[i].setCheckbox(value);
@@ -539,19 +539,19 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
         if(event.shiftKey) {
             if(this.lastEntryRowClicked) {
-                 var pos1 = ramaddaUtil.getTop(this.lastEntryRowClicked.cbx);
-	         var pos2 = ramaddaUtil.getTop(entryRow.cbx);
-		 if(pos1>pos2) {
+                var pos1 = this.lastEntryRowClicked.getCbx().offset().top;
+                var pos2 = entryRow.getCbx().offset().top;
+                if(pos1>pos2) {
 		    var tmp = pos1;
 		    pos1 =pos2;
 		    pos2=tmp;
-                 }
-		 for (i = 0; i < this.entryRows.length; i++) {
-        		var top = ramaddaUtil.getTop(this.entryRows[i].cbx);
-			if(top>=pos1 && top<=pos2) {
-		            this.entryRows[i].setCheckbox(value);
-			}
-        	    }
+                }
+                for (i = 0; i < this.entryRows.length; i++) {
+                    var top = this.entryRows[i].getCbx().offset().top;
+                    if(top>=pos1 && top<=pos2) {
+                        this.entryRows[i].setCheckbox(value);
+                    }
+                }
             }
             return;
         }
@@ -560,14 +560,10 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
     this.setVisibility = function  () {
         if(this.toggleImg) {
-	    var img = ramaddaUtil.getDomObject(this.toggleImg);
-            if(img) {
-		if(this.on) {
-   		    img.obj.src =  icon_downdart;
-		} else {
-	            img.obj.src =  icon_rightdart;
-
-		}
+            if(this.on) {
+                $("#" + this.toggleImg).attr('src',  icon_downdart);
+            } else {
+                $("#" + this.toggleImg).attr('src',  icon_rightdart);
             }
         }
 
@@ -582,7 +578,6 @@ function EntryFormList(formId,img,selectId, initialOn) {
                 }
             }
         }
-
 
         for(i=0;i<this.entries.length;i++) {
             obj = ramaddaUtil.getDomObject(this.entries[i]);
@@ -629,61 +624,62 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     this.rowId = rowId;
     this.cbxId = cbxId;
     this.cbxWrapperId = cbxWrapperId;
-    this.cbx = ramaddaUtil.getDomObject(cbxId);
-    this.row = ramaddaUtil.getDomObject(rowId);
-    if(this.row) {
-        this.row = this.row.obj;
+
+    this.getRow = function() {
+        return $("#" + this.rowId);
     }
 
+    this.getCbx = function() {
+        return $("#" + this.cbxId);
+    }
 
-    if(this.cbx) {
-        this.cbx = this.cbx.obj;
-        var form = this.cbx.form;
-        if(form) {
-            var visibilityGroup = groups[form.id];
-            if(visibilityGroup) {
-                visibilityGroup.addEntryRow(this);
-            }
-        } else {
-            hideObject(this.cbx);
+    var form = this.getCbx().closest('form');
+    if(form.size()) {
+        var visibilityGroup = groups[form.attr('id')];
+        if(visibilityGroup) {
+            visibilityGroup.addEntryRow(this);
         }
+    } else {
+        this.getCbx().hide();
     }
 
 
     this.setCheckbox = function(value) {
-        if(this.cbx) this.cbx.checked = value;
+        this.getCbx().attr('checked', value);
         this.setRowColor();
     }
 
-    this.getCheckboxValue = function() {
-        if(this.cbx) return this.cbx.checked;
-        return 0;		
+    
+    this.isSelected = function() {
+        return this.getCbx().attr('checked');
     }
-        
+
     this.setRowColor = function() {
-        if(this.cbx && this.cbx.checked) {
-            this.row.style.backgroundColor = this.onColor;		
+        if(this.isSelected()) {
+            this.getRow().css("background-color", this.onColor);
         } else {
-            this.row.style.backgroundColor = "#ffffff";
+            this.getRow().css("background-color", "#ffffff");
         }
     }
 
 
     this.mouseOver = function(event) {
-        img = ramaddaUtil.getDomObject("entrymenuarrow_" +rowId);
-        if(img) {
-            img.obj.src =  icon_menuarrow;
-        }
-        
-        this.row.style.backgroundColor = this.overColor;
-        //        this.row.style.border =  "1px #ddd  dotted";
+        $("#" + "entrymenuarrow_" +rowId).attr('src',icon_menuarrow);
+        this.getRow().css('background-color',  this.overColor);
     }
 
+    this.mouseOut = function(event) {
+        $("#entrymenuarrow_" +rowId).attr('src',icon_blank);
+        this.setRowColor();
+    }
+
+
     this.mouseClick = function(event) {
-        left = ramaddaUtil.getLeft(this.row);
         eventX = ramaddaUtil.getEventX(event);
+        var position = this.getRow().offset();
         //Don't pick up clicks on the left side
-        if(eventX-left<150) return;
+        if(eventX-position.left<150) return;
+        this.lastClick = eventX;
         var url = "${urlroot}/entry/show?entryid=" + entryId +"&output=metadataxml";
 	ramaddaUtil.loadXML( url, this.handleTooltip,this);
     }
@@ -691,29 +687,29 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId) {
     this.handleTooltip = function(request,entryRow) {
         var xmlDoc=request.responseXML.documentElement;
         text = getChildText(xmlDoc);
-        div = ramaddaUtil.getDomObject("tooltipdiv");
-        if(!div) return;
-        ramaddaUtil.setPosition(obj, ramaddaUtil.getLeft(entryRow.row), ramaddaUtil.getBottom(entryRow.row));
-
-        div.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>";
-
+        var leftSide  = entryRow.getRow().offset().left;
+        var offset = entryRow.lastClick-leftSide;
+        getTooltip().html("<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>");
         checkTabs(text);
-        showObject(div);
 
+        var pos = entryRow.getRow().offset();    
+        var eWidth = entryRow.getRow().outerWidth();
+        var eHeight = entryRow.getRow().outerHeight();
+        var mWidth = getTooltip().outerWidth();
+        var left =  entryRow.lastClick + "px";
+        var top = (3+pos.top+eHeight) + "px";
+        //show the menu directly over the placeholder  
+        getTooltip().css( { 
+                position: 'absolute',
+                    zIndex: 5000,
+                    left: left, 
+                    top: top
+                    } );
+        getTooltip().show();
     }
 
 
 
-    this.mouseOut = function(event) {
-        img = ramaddaUtil.getDomObject("entrymenuarrow_" +rowId);
-        if(img) {
-            img.obj.src =  icon_blank;
-        }
-        this.setRowColor();
-        //        mouseOutOnEntry(event, "", rowId);
-        //        this.row.style.borderBottom =  "1px #fff  solid";
-        //        this.row.style.border =  "1px #fff  solid";
-    }
 }
 
 
@@ -740,7 +736,7 @@ function checkTabs(html) {
 
 
 function hideEntryPopup() {
-    hideObject(ramaddaUtil.getDomObject("tooltipdiv"));
+    getTooltip().hide();
 }
 
 function findEntryRow(rowId) {
@@ -1089,21 +1085,6 @@ function hideElementById(id) {
     hideObject(ramaddaUtil.getDomObject(id));
 }
 
-function showAjaxPopup(event,srcId,url) {
-    ramaddaUtil.loadXML(url, handleAjaxPopup,srcId);
-}
-
-function handleAjaxPopup(request, srcId) {
-    var xmlDoc=request.responseXML.documentElement;
-    text = getChildText(xmlDoc);
-    var srcObj = ramaddaUtil.getDomObject(srcId);
-    var obj = ramaddaUtil.getDomObject("tooltipdiv");
-    obj.obj.innerHTML = "<div class=tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"tooltip.doHide();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>&nbsp;</td><td>" + text+"</table></div></div>";
-    checkTabs(text);
-    showObject(obj);
-}
-
-
 function checkToHidePopup() {
     if(popupTime) {
         var now = new Date();
@@ -1177,12 +1158,10 @@ function hideObject(obj) {
     if(!obj) {
         return 0;
     }
-
     var style = ramaddaUtil.getStyle(obj);
     if(!style) {
         return 0;
     }
-    style.visibility = "hidden";
     style.display = "none";
     return 1;
 }
@@ -1214,7 +1193,7 @@ function showObject(obj, display) {
         //        alert("no style");
         return 0;
     }
-    style.visibility = "visible";
+    //    style.visibility = "visible";
     style.display = display;
     return 1;
 }

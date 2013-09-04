@@ -169,8 +169,6 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                 sb.append(HtmlUtils.h2(cat));
             }
             sb.append(catQuestionSB.toString());
-            //            sb.append(HtmlUtils.makeToggleTable("",
-            //                                                 catQuestionSB.toString(), true));
         }
 
 
@@ -182,14 +180,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                 sb.append(HtmlUtils.h2(cat));
             }
 
-            sb.append(catAnswerSB.toString());
-
-            /*
-            sb.append(HtmlUtils.makeToggleTable("",
-                                                 catAnswerSB.toString(), true));
-            */
-            //            sb.append(catAnswerSB);
-
+            sb.append(catAnswerSB);
         }
 
         return new Result(msg("FAQ"), sb);
