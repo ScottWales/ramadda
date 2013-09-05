@@ -1065,7 +1065,7 @@ public class HtmlOutputHandler extends OutputHandler {
         basicSB.append(entry.getTypeHandler().getEntryContent(entry, request,
                 false, true));
 
-        tabTitles.add("Basic");
+        tabTitles.add("Information");
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :

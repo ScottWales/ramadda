@@ -3577,7 +3577,7 @@ public class TypeHandler extends RepositoryManager {
         advancedSB.append(HtmlUtils.formTableClose());
 
 
-        formBuffer.append(HtmlUtils.makeShowHideBlock(msg("Basic"),
+        formBuffer.append(HtmlUtils.makeShowHideBlock(msg("Information"),
                 basicSB.toString(), true));
         //        formBuffer.append(HtmlUtils.makeShowHideBlock(msg("Advanced"),
         //                advancedSB.toString(), false));
