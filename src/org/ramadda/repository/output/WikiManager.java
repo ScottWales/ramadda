@@ -1063,7 +1063,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                     attrPrefix + ATTR_BLOCK_OPEN, true);
 
             return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
-                                               blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"), "",iconUrl("ramadda.icon.togglearrowright"),iconUrl("ramadda.icon.togglearrowdown"));
+                                               blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"), "",iconUrl("ramadda.icon.togglearrowdown"),iconUrl("ramadda.icon.togglearrowright"));
 
         }
 
@@ -2607,7 +2607,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 return HtmlUtils.makeShowHideBlock(title, content, open,
                                                    HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "",
-                                                   iconUrl("ramadda.icon.togglearrowright"),iconUrl("ramadda.icon.togglearrowdown"));
+                                                   iconUrl("ramadda.icon.togglearrowdown"),iconUrl("ramadda.icon.togglearrowright"));
             }
 
             return content;

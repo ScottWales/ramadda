@@ -3256,7 +3256,6 @@ public class HtmlUtils {
                                            String headerExtra,
                                            String blockExtra, String hideImg,
                                            String showImg) {
-        System.err.println("img:" + hideImg);
         String       id  = "block_" + (blockCnt++);
         StringBuffer sb  = new StringBuffer();
         String       img = "";
@@ -3269,7 +3268,7 @@ public class HtmlUtils {
         String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
                                                    + "')");
-        String link = img + label;
+        String link = img + space(1) + label;
         sb.append("<div  " + blockExtra + ">");
         sb.append(HtmlUtils.div(link, headerExtra + mouseEvent));
         sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
