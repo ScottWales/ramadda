@@ -836,9 +836,9 @@ function checkboxClicked(event, cbxPrefix, id) {
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
     var img = ramaddaUtil.getDomObject(imgid);
     if(toggleVisibility(id,'block')) {
-        if(img) img.obj.src = showimg;
+        $("#"+imgid).attr('src', showimg);
     } else {
-        if(img) img.obj.src = hideimg;
+        $("#"+imgid).attr('src', hideimg);
     }
     ramaddaUpdateMaps();
 }
@@ -1061,14 +1061,16 @@ function  getChildText(node) {
 
 
 function toggleVisibility(id,style) {
-    if(!style) style='block';
-    var obj = ramaddaUtil.getDomObject(id);
-    return toggleVisibilityOnObject(obj,style);
+    var display  = $("#" + id).css('display');
+    $("#" + id).toggle();
+    return display != 'block';
+
 }
 
 
 function hide(id) {
-    hideElementById(id);
+    $("#" + id).hide();
+    //    hideElementById(id);
 }
 
 function hideElementById(id) {
@@ -1148,11 +1150,7 @@ function hideObject(obj) {
     if(!obj) {
         return 0;
     }
-    var style = ramaddaUtil.getStyle(obj);
-    if(!style) {
-        return 0;
-    }
-    style.display = "none";
+    $("#" + obj.id).hide();
     return 1;
 }
 
@@ -1177,30 +1175,15 @@ function showMore(base) {
 
 function showObject(obj, display) {
     if(!obj) return 0;
-    if(!display) display = "block";
-    var style = ramaddaUtil.getStyle(obj);
-    if(!style) {
-        //        alert("no style");
-        return 0;
-    }
-    //    style.visibility = "visible";
-    style.display = display;
-    return 1;
+    $("#" + obj.id).show();
+    return;
 }
 
 
 
 function toggleVisibilityOnObject(obj, display) {
     if(!obj) return 0;
-    if(obj.style.visibility == "hidden") {
-        obj.style.visibility = "visible";
-        obj.style.display = display;
-        return 1;
-    } else {
-        obj.style.visibility = "hidden";
-        obj.style.display = "none";
-        return 0;
-    }
+    $("#" + obj.id).toggle();
 }
 
 

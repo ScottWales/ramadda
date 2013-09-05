@@ -1451,17 +1451,21 @@ a.toggleblocklabellink:visited {
 .entry-toggleblock-label  {
    color: #666;
    vertical-align:middle;
+  padding-top:2px;
+  padding-bottom:2px;
+  margin-bottom:2px;
 }
 
 .entry-toggleblock-label  img {
    vertical-align:middle;
+   padding-right:2px;
 }
 
 .entry-toggleblock-label:hover {
   background-color : #efefef;
   cursor:pointer;
-  color: #f00;
-  text-decoration: underline;
+//  color: #f00;
+//  text-decoration: underline;
 }
 
 
