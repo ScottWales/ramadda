@@ -3263,20 +3263,14 @@ public class HtmlUtils {
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
                                 ? hideImg
-                                : showImg, "", " id='" + id + "img' ");
+                                : showImg, "", " align=bottom  "+ " id='" + id + "img' ");
         }
-        String link =
-            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
+        String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img + label,
-                         HtmlUtils.cssClass("toggleblocklabellink"));
-
-        //        link = link + " " + label;
-
-
-        //        sb.append(RepositoryManager.tableSubHeader(link));
+                                                   + "')");
+        String link = img + label;
         sb.append("<div  " + blockExtra + ">");
-        sb.append(HtmlUtils.div(link, headerExtra));
+        sb.append(HtmlUtils.div(link, headerExtra + mouseEvent));
         sb.append("<div " + HtmlUtils.cssClass("hideshowblock")
                   + HtmlUtils.id(id)
                   + HtmlUtils.style("display:block;visibility:visible")
@@ -3454,13 +3448,12 @@ public class HtmlUtils {
                                            String content, boolean visible) {
         String       id = "block_" + (blockCnt++);
         StringBuffer sb = new StringBuffer();
-        String link =
-            HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
+        String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + "" + "','" + ""
-                + "')"), clickHtml,
+                                                   + "')");
+        String link =
+            HtmlUtils.jsLink(mouseEvent, clickHtml,
                          HtmlUtils.cssClass("toggleblocklabellink")) + label;
-
-        //        sb.append(RepositoryManager.tableSubHeader(link));
         sb.append(link);
         sb.append(
             open(TAG_SPAN,

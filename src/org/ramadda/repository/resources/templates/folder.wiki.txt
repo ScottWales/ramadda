@@ -12,11 +12,11 @@
 <td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
 <td  valign=top width="29%">
 <div class="entry-page-info">
-{{information details="false"  box.maxheight="300" prefix="====Information====" box.class="entry-sidebox"}}
+{{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox"}}
 <p>
-{{map message="" width="250" height="250" prefix="====Locations===="  box.maxheight="300"}}
+{{map message="" width="250" height="250"  box.maxheight="300" block.show="true" block.title="Map" block.open="true"}}
 <p>
-{{properties prefix="====Properties====" message="" box.maxheight="300" box.class="entry-sidebox"}}
+{{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox"}}
 <p>
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>

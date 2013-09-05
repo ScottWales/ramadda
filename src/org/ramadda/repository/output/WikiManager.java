@@ -1063,7 +1063,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                     attrPrefix + ATTR_BLOCK_OPEN, true);
 
             return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
-                    blockOpen, HtmlUtils.cssClass("toggleblocklabel"), "");
+                    blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"), "");
         }
 
         return sb.toString();

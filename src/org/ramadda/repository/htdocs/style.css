@@ -197,10 +197,6 @@ form {
 }
 
 
-.entry-sidebox {
-     border: 1px #ddd solid;
-     padding: 4px;
-}
 
 
 
@@ -622,6 +618,13 @@ a.ramadda-heading-2-link:visited {
    margin-bottom:1px;
    padding-bottom:2px;
 }
+
+.entry-sidebox {
+     border: 1px #ddd solid;
+     padding: 4px;
+     border-radius: 6px;
+}
+
 
 .entry-list-header-toggle {
     padding-top:1px;
@@ -1439,6 +1442,26 @@ a.toggleblocklabellink:visited {
 
 .toggleblocklabel {
   font-weight: bold;
+}
+
+.toggleblocklabel:hover {
+}
+
+
+.entry-toggleblock-label  {
+   color: #666;
+   vertical-align:middle;
+}
+
+.entry-toggleblock-label  img {
+   vertical-align:middle;
+}
+
+.entry-toggleblock-label:hover {
+  background-color : #efefef;
+  cursor:pointer;
+  color: #f00;
+  text-decoration: underline;
 }
 
 
