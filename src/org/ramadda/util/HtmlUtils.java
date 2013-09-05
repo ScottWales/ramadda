@@ -3256,6 +3256,7 @@ public class HtmlUtils {
                                            String headerExtra,
                                            String blockExtra, String hideImg,
                                            String showImg) {
+        System.err.println("img:" + hideImg);
         String       id  = "block_" + (blockCnt++);
         StringBuffer sb  = new StringBuffer();
         String       img = "";
