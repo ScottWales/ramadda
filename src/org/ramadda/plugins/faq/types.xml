@@ -1,6 +1,6 @@
 <types>
 
-  <type name="faq"  description="Faq" handler="org.ramadda.plugins.faq.FaqTypeHandler" category="Information">
+  <type name="faq"  description="FAQ" handler="org.ramadda.plugins.faq.FaqTypeHandler" category="Information">
      <property name="icon" value="/faq/faq.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -11,7 +11,7 @@
   </type>
 
 
-  <type name="faqentry"  description="Faq Entry" handler="org.ramadda.plugins.faq.FaqEntryTypeHandler" category="Information" foruser="false">
+  <type name="faqentry"  description="FAQ Entry" handler="org.ramadda.plugins.faq.FaqEntryTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/faq/question-mark.jpg"/>
      <property name="form.name.label" value="Question"/>
      <property name="form.description.label" value="Answer"/>
