@@ -6060,8 +6060,7 @@ public class EntryManager extends RepositoryManager {
 
         PageStyle pageStyle   = request.getPageStyle(entry);
 
-        List      breadcrumbs = new ArrayList();
-        List      titleList   = new ArrayList();
+
         Entry       parent = findGroup(request, entry.getParentEntryId());
         OutputType  output          = OutputHandler.OUTPUT_HTML;
         int         length          = 0;
@@ -6094,22 +6093,9 @@ public class EntryManager extends RepositoryManager {
                                                          links, "", true, false, popup);
 
 
-        for (Entry ancestor : parents) {
-            String name = ancestor.getName();
-            String linkLabel;
-            if(breadcrumbs.size()==0) {
-                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
-            } else {
-                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
-                //                linkLabel =   name;
-            }
-            titleList.add(0, name);
 
-            String url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
-            String link =  HtmlUtils.href(url, linkLabel);
-            breadcrumbs.add(0, link);
-        }
-
+        List<String>      titleList   = new ArrayList();
+        List<String>      breadcrumbs = makeBreadcrumbList(request, parents, titleList);
 
         boolean showBreadcrumbs   = pageStyle.getShowBreadcrumbs(entry);
         boolean showToolbar       = pageStyle.getShowToolbar(entry);
@@ -6124,27 +6110,17 @@ public class EntryManager extends RepositoryManager {
 
 
         String  header    = "";
-
         if (showBreadcrumbs) {
-            StringBuffer sb = new StringBuffer("<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
-
-            for(Object crumb: breadcrumbs) {
-                sb.append("<li>\n");
-                sb.append(crumb);
-                sb.append("</li>\n");
-            }
-            sb.append("</ul></div></div>");
-            sb.append(HtmlUtils.script(JQuery.ready("jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
-            header = sb.toString();
-            sb = new StringBuffer("<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
+            header = makeBreadcrumbs(request, breadcrumbs);
+            StringBuffer sb = new StringBuffer("<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
             sb.append("<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
             sb.append(menuLink);
             sb.append("</div></td>");
 
-            sb.append("<td xwidth=88%>");
+            sb.append("<td>");
             sb.append(header);
             sb.append("</td>");
-            sb.append("<td xwidth=10% align=right>");
+            sb.append("<td align=right>");
             sb.append(toolbar);
             sb.append("</td>");
             sb.append("</tr></table></div>");
@@ -6162,8 +6138,45 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public List<String> makeBreadcrumbList(Request request, List<Entry> parents, List<String> titleList) throws Exception {
+        List<String> breadcrumbs = new ArrayList<String>();
+        for (Entry ancestor : parents) {
+            String name = ancestor.getName();
+            String linkLabel;
+            if(breadcrumbs.size()==0) {
+                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+            } else {
+                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+                //                linkLabel =   name;
+            }
+            if(titleList!=null)
+                titleList.add(0, name);
 
-    /**
+            String url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
+            String link =  HtmlUtils.href(url, linkLabel);
+            breadcrumbs.add(0, link);
+        }
+        return breadcrumbs;
+
+    }
+
+
+
+    public String makeBreadcrumbs(Request request, List<String> breadcrumbs) {
+        StringBuffer sb = new StringBuffer("<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
+
+        for(Object crumb: breadcrumbs) {
+            sb.append("<li>\n");
+            sb.append(crumb);
+            sb.append("</li>\n");
+        }
+        sb.append("</ul></div></div>");
+        sb.append(HtmlUtils.script(JQuery.ready("jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
+
+        return sb.toString();
+    }
+
+/**
      * _more_
      *
      * @param request _more_
