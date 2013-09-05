@@ -1,21 +1,21 @@
-<table border=0 width=100% cellspacing=10 cellpadding=0>
+<table border=0 width=100% cellspacing=0 cellpadding=0>
 <tr valign=top>
 <td width=70%>
+<div class="entry-page-main">
 === {{name}} ===
 {{description}}
 <br>
 {{information details="true"}}
-
+</div>
 </td>
 <td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
 <td width=29%>
-<div class="entry-page-right">
+<div class="entry-page-info">
 {{resource message="" includeicon="true" title="Download"}}
 {{map message="" prefix="====Location===="}}
 <br>
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>
-
 </td>
 </tr></table>
 

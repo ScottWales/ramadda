@@ -64,27 +64,33 @@ form {
 //    max-height: 250px; 
     overflow-y: auto;
     border: 1px #aaa solid;
+    border-top: 0px #aaa solid;
 }
 
 .entry-download-box {
   background-color: #338F33;
-  background-color: #228B22;
   border: 1px #666 solid;
+  max-width:120px;
   color: white;
-  max-width:200px;
   font-weight: bold; 
   padding-left: 8px;
-  padding-bottom: 4px;
-  padding-top: 10px;
+  padding-bottom: 3px;
+  padding-top: 8px;
   margin-top:10px;
   margin-bottom:10px;
   border-radius: 8px;
   -webkit-border-radius: 8px;
+  text-align: bottom;
+  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
   
 }
 
+.entry-download-box:hover {
+}
+
 .entry-download-box  a {
-    color: #000;
     color: #fff;
 }
 
@@ -97,22 +103,23 @@ form {
   padding: 5px;
   padding-left: 10px;
   border: 1px #aaa solid;
-  border-bottom: 0px;
+  border-top: 0px #aaa solid;
 }
 
-.entry-list-table {
+.entry-list-header {
   border : 1px #aaa solid;
-  border-bottom : 0px #aaa solid;
-  background-color: #eaeaea;
+  border-bottom : 1px #aaa solid;
+  background-color: #efefef;
+  margin-top: 10px;
 }
 
 .entry-list-header-column {
    font-weight: bold; 
    border-right : 1px #aaa solid;
    text-align: center;
-   padding-bottom:1px;
+   padding-bottom:0px;
    padding-top:4px;
-   color: #222;
+   color: #000;
 }
 
 .entry-list-row {
@@ -140,15 +147,18 @@ form {
 }
 
 
-.entry-page-right {
+.entry-page-main {
+   margin:10px;
+}
+.entry-page-info {
+   margin:10px;
+   margin-top:5px;
 }
 
 .entry-page-divider {
   height: 100%;
   width: 1px;
- // background-color : #aaa;
-  border-left: 1px #e0e0e0 solid; 
-//  border-right: 1px #aaa solid; 
+  border-left: 1px #ccc solid;
 }
 
 .ramadda-folder-block {
@@ -1177,6 +1187,10 @@ xxxpath.link {
      border:1px solid;
 }
 
+.innercontent {
+  margin: 0px;
+}
+
 .tooltip-inner {
    padding:2px;
    padding-bottom:0px;
@@ -1313,7 +1327,7 @@ xxxpath.link {
 }
 
 .ramadda-breadcrumbs {
-   border-bottom : 1px #e0e0e0 solid;
+   border-bottom : 1px #ccc solid;
    padding-left: 4px;
    padding-right: 2px;
    padding-top: 0px;
