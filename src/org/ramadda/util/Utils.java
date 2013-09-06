@@ -26,9 +26,9 @@ import org.apache.commons.lang.text.StrTokenizer;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
 
-import java.lang.reflect.*;
 
-import java.text.DateFormat;
+import java.lang.reflect.Constructor;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -37,15 +37,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
-
-
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 /**
- * A collection of utilities for rss feeds xml.
+ * A collection of utilities 
  *
  * @author Jeff McWhirter
  */
@@ -140,7 +137,7 @@ public class Utils {
     // Gregorian Calendar adopted Oct. 15, 1582 (2299161)
     public static int JGREG = 15 + 31 * (10 + 12 * 1582);
 
-    /** _more_          */
+    /** _more_ */
     public static double HALFSECOND = 0.5;
 
     /**
@@ -529,6 +526,5 @@ public class Utils {
 
         return cal.get(cal.MONTH);
     }
-
 
 }
