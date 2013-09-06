@@ -884,12 +884,15 @@ public class MetadataType extends MetadataTypeBase {
             return null;
         }
         StringBuffer content = new StringBuffer();
-        if (getSearchable()) {
+        boolean smallDisplay = request.getString(ARG_DISPLAY, "").equals(DISPLAY_SMALL);
+        if (!smallDisplay && getSearchable()) {
             content.append(handler.getSearchLink(request, metadata));
         }
 
+
         String nameString   = getTypeLabel(metadata);
-        String lbl          = msgLabel(nameString);
+        String lbl          = smallDisplay?msg(nameString):msgLabel(nameString);
+
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
         if (htmlTemplate != null) {
             String html = htmlTemplate;
@@ -908,14 +911,8 @@ public class MetadataType extends MetadataTypeBase {
         } else {
             int                   cnt      = 1;
             boolean               didOne   = false;
-
             List<MetadataElement> children = getChildren();
-            if (children.size() > 1) {
-                content.append(HtmlUtils.formTable());
-            } else {
-                content.append(HtmlUtils.formTable());
-                //??                    "<table border=0 cellpadding=0 cellspacing=0>");
-            }
+            content.append(HtmlUtils.formTable());
             for (MetadataElement element : children) {
                 MetadataElement.FormInfo formInfo =
                     element.getHtml(metadata.getAttr(cnt), 0);
@@ -927,13 +924,14 @@ public class MetadataType extends MetadataTypeBase {
                                 HtmlUtils.colspan(formInfo.content, 2)));
                     } else {
                         content.append(HtmlUtils.formEntry(formInfo.label,
-                                formInfo.content));
+                                                           formInfo.content));
                     }
                     didOne = true;
                 }
                 cnt++;
+                content.append("\n");
             }
-            content.append("</table>");
+            content.append(HtmlUtils.formTableClose());
             if ( !didOne) {
                 return null;
             }

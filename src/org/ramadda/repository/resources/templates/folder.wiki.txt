@@ -1,4 +1,4 @@
-<table border="0" width=100% cellspacing=0 cellpadding=0>
+<table border="0" width=100% cellspacing=0 cellpadding=0 height="100%">
 <tr>
 <td  valign=top width="70%">
 <div class="entry-page-main">
@@ -10,13 +10,13 @@
 </div>
 </td>
 <td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
-<td  valign=top width="29%">
+<td  valign=top width="28%">
 <div class="entry-page-info">
-{{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox"}}
+{{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
 <p>
 {{map message="" width="250" height="250"  box.maxheight="300" block.show="true" block.title="Map" block.open="true"}}
 <p>
-{{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox"}}
+{{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox" display="small"}}
 <p>
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>

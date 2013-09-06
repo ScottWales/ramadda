@@ -1,4 +1,3 @@
-
 table, tr, th, td {
       font-size: 100%;
       font: inherit;
@@ -153,9 +152,12 @@ form {
 .entry-page-main {
    margin:10px;
 }
+
 .entry-page-info {
    margin:10px;
    margin-top:5px;
+   max-width: 250;
+   overflow-x: auto;
 }
 
 .entry-page-divider {
@@ -197,7 +199,20 @@ form {
 }
 
 
+.metadata-small-label {
+   font-weight: bold; 
+   border-top: 1px #ccc solid;
+   background-color: #efefef;
 
+   padding: 5px;
+   padding-bottom: 2px;
+   margin-top: 5px;
+//   color: #444;
+}
+
+.metadata-small-content {
+   margin-left: 10px;
+}
 
 
 
@@ -1487,6 +1502,7 @@ a.toggleblocklabellink:visited {
 .formlabel, .formlabeltop {
   font-weight: bold;
   text-align:right;
+  color: #444;
 }
 
 

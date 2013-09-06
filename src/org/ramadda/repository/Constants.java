@@ -515,6 +515,10 @@ public interface Constants {
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
 
+    public static final String ARG_DISPLAY = "display";
+    public static final String DISPLAY_FULL = "full";
+    public static final String DISPLAY_SMALL = "small";
+
     /** _more_ */
     public static final String ARG_DECORATE = "decorate";
 

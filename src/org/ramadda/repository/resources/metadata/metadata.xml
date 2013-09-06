@@ -150,6 +150,7 @@
 
     <type name="Sort Order" id="content.sort">
       <element
+        showinhtml="false"
          default="fromdate"
          name="Field"
          datatype="enumeration"

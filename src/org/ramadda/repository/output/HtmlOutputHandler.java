@@ -161,6 +161,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
+
     /**
      * _more_
      *
@@ -651,6 +652,7 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean canEdit = getAccessManager().canDoAction(request, entry,
                               Permission.ACTION_EDIT);
 
+        boolean smallDisplay = request.getString(ARG_DISPLAY, "").equals(DISPLAY_SMALL);
         boolean didone = false;
         for (Metadata metadata : metadataList) {
             if ((onlyTheseTypes != null) && (onlyTheseTypes.size() > 0)) {
@@ -711,24 +713,34 @@ public class HtmlOutputHandler extends OutputHandler {
                     if (decorate) {
                         sb.append("</td></tr>");
                     }
-                }
+                } 
             }
             String theClass = HtmlUtils.cssClass("listrow" + rowNum);
-            if (decorate && !isSimple) {
-                String row =
-                    " <tr  " + theClass
-                    + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
-                    + html[0] + "</nobr></td><td>"
-                //                    + HtmlUtils.makeToggleInline("", html[1], false)
-                + HtmlUtils.makeToggleInline("", html[1],
-                                             true) + "</td></tr>";
-                sb.append(row);
+            if(smallDisplay) {
+                sb.append(HtmlUtils.open("tr", " valign=\"top\" " ));
+                sb.append(HtmlUtils.open("td"));
+                sb.append(HtmlUtils.tag("div", HtmlUtils.cssClass("metadata-small-label"), html[0]));
+                sb.append(HtmlUtils.tag("div", HtmlUtils.cssClass("metadata-small-content"), html[1]));
+                sb.append(HtmlUtils.close("td"));
+                sb.append(HtmlUtils.close("tr"));
             } else {
-                String row =
-                    " <tr  valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
-                    + html[0] + "</nobr></td><td>" + html[1] + "</td></tr>";
-                sb.append(row);
+                if (decorate && !isSimple) {
+                    String row =
+                        " <tr  " + theClass
+                        + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
+                        + html[0] + "</nobr></td><td>"
+                        //                    + HtmlUtils.makeToggleInline("", html[1], false)
+                        + HtmlUtils.makeToggleInline("", html[1],
+                                                     true) + "</td></tr>";
+                    sb.append(row);
+                } else {
+                    String row =
+                        " <tr  valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
+                        + html[0] + "</nobr></td><td>" + html[1] + "</td></tr>";
+                    sb.append(row);
+                }
             }
+            sb.append("\n");
             if (++rowNum > 2) {
                 rowNum = 1;
             }
@@ -742,6 +754,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (decorate) {
                 sb.append("</table>\n");
             }
+            //            System.err.println("-------------------\n" + sb);
             result.add(new TwoFacedObject(cat, sb));
         }
 

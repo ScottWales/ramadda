@@ -51,11 +51,11 @@
       <template type="oai_dc"><![CDATA[<dc:contributor>${Name.cdata}</dc:contributor>]]></template>
     </type>
 
-    <type name="Property - ${attr1}" id="thredds.property"  searchable="true" browsable="true">
+    <type name="Property" id="thredds.property"  searchable="true" browsable="true">
       <element name="Name"  searchable="true"/>
       <element name="Value"  searchable="true"/>
       <template type="thredds"><![CDATA[<property name="${Name.encoded}" value="${Value.encoded}"/>]]></template>
-      <template type="html"><![CDATA[ ${Value}]]></template>
+      <xxxtemplate type="html"><![CDATA[ ${Value}]]></xxxtemplate>
     </type>
 
     <type name="Documentation" id="thredds.documentation"  searchable="true">
