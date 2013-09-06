@@ -84,6 +84,7 @@ clear:left;
 #container {
         border: solid 1px #bbb;
         margin: 5px;
+        overflow-y: hidden;
 }       
 
 /* the top horizontal section of content, containing the minor and  */
