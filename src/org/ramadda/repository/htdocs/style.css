@@ -59,12 +59,6 @@ form {
    padding-right:0px;
 }
 
-.entry-list {
-//    max-height: 250px; 
-    overflow-y: auto;
-    border: 1px #aaa solid;
-    border-top: 0px #aaa solid;
-}
 
 .entry-download-box {
   background-color: #338F33;
@@ -93,6 +87,12 @@ form {
     color: #fff;
 }
 
+.entry-list {
+    overflow-y: auto;
+    border: 1px #aaa solid;
+    border-top: 0px #aaa solid;
+}
+
 .entry-list-settings {
   border-left : 1px #aaa solid;
   border-right : 1px #aaa solid;
@@ -111,16 +111,17 @@ form {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   border : 1px #aaa solid;
-  background-color: #efefef;
+  background-color: #e0ffff;
   margin-top: 10px;
+  padding-top: 0px;
 }
 
 .entry-list-header-column {
    font-weight: bold; 
    border-right : 1px #aaa solid;
    text-align: center;
-   padding-bottom:0px;
-   padding-top:4px;
+   padding-bottom:3px;
+   padding-top:6px;
    color: #000;
 }
 
@@ -128,14 +129,13 @@ form {
   margin-top:2px;
   padding: 2px;
   padding-right: 0px;
-  border-bottom:1px #eee dotted;
+  border-bottom:1px #dadada dotted;
 }
 
 .entry-tree-row {
   margin-top:2px;
   padding: 2px;
   padding-right: 0px;
-//  border-bottom:1px #eee dotted;
 }
 
 .entry-row-label {
@@ -150,12 +150,15 @@ form {
 
 
 .entry-page-main {
-   margin:10px;
+   margin:8px;
+   margin-top:8px;
+   margin-right:4px;
 }
 
 .entry-page-info {
-   margin:10px;
-   margin-top:5px;
+   margin:8px;
+   margin-top:8px;
+   margin-left:4px;
    max-width: 250;
    overflow-x: auto;
 }
@@ -163,7 +166,7 @@ form {
 .entry-page-divider {
   height: 100%;
   width: 1px;
-  border-left: 1px #ccc solid;
+  border-left: 1px #ddd solid;
 }
 
 .ramadda-folder-block {
@@ -200,18 +203,21 @@ form {
 
 
 .metadata-small-label {
+   border-top-left-radius: 8px;
+   border-top-right-radius: 8px;
    font-weight: bold; 
-   border-top: 1px #ccc solid;
-   background-color: #efefef;
-
+   border-bottom: 1px #888 solid;
+//   background-color: #efefef;
    padding: 5px;
-   padding-bottom: 2px;
+   padding-left: 5px;
+   padding-bottom: 0px;
    margin-top: 5px;
-//   color: #444;
+   margin-right: 50px;
 }
 
 .metadata-small-content {
-   margin-left: 10px;
+   margin-left: 0px;
+   padding-left: 0px;
 }
 
 
@@ -1466,9 +1472,9 @@ a.toggleblocklabellink:visited {
 .entry-toggleblock-label  {
    color: #666;
    vertical-align:middle;
-  padding-top:2px;
-  padding-bottom:2px;
-  margin-bottom:2px;
+   padding-top:2px;
+   padding-bottom:2px;
+   margin-bottom:2px;
 }
 
 .entry-toggleblock-label  img {
@@ -1479,8 +1485,6 @@ a.toggleblocklabellink:visited {
 .entry-toggleblock-label:hover {
   background-color : #efefef;
   cursor:pointer;
-//  color: #f00;
-//  text-decoration: underline;
 }
 
 
@@ -1502,7 +1506,7 @@ a.toggleblocklabellink:visited {
 .formlabel, .formlabeltop {
   font-weight: bold;
   text-align:right;
-  color: #444;
+  color: #000;
 }
 
 

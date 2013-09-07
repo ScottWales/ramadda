@@ -27,11 +27,11 @@
      <column name="institution" type="string"  label="Institution"  />
      <column name="other_authors" type="list"  changetype="true" size="5000" label="Other Authors"  rows="5" cansearch="true"/>
      <column name="publication" type="enumerationplus"  label="Publication"  />
-     <column name="volume_number" type="string"  label="Volume"  />
-     <column name="issue_number" type="string"  label="Issue"  />
-     <column name="pages" type="string"  label="Pages"  />
-     <column name="doi" type="string"  label="DOI"  />
-     <column name="link" type="url"  label="Link"  />
+     <column name="volume_number" type="string"  label="Volume"  canlist="false"/>
+     <column name="issue_number" type="string"  label="Issue"   canlist="false"/>
+     <column name="pages" type="string"  label="Pages"   canlist="false"/>
+     <column name="doi" type="string"  label="DOI"   canlist="false"/>
+     <column name="link" type="url"  label="Link"   canlist="false"/>
    </type>
 
 

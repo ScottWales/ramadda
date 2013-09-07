@@ -2038,11 +2038,6 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
 
-            if (showCreated) {
-                sb.append(formEntry(request, msgLabel("Created by"),
-                                    userSearchLink));
-            }
-
             sb.append(formEntry(request, msgLabel("Created"),
                                 formatDate(request,
                                            entry.getCreateDate(), entry)));
@@ -2052,6 +2047,11 @@ public class TypeHandler extends RepositoryManager {
                                     formatDate(request,
                                                entry.getChangeDate(), entry)));
 
+            }
+
+            if (showCreated) {
+                sb.append(formEntry(request, msgLabel("Created by"),
+                                    userSearchLink));
             }
 
             Resource resource      = entry.getResource();
@@ -2151,6 +2151,7 @@ public class TypeHandler extends RepositoryManager {
                                         dateSB.toString()));
                 }
             }
+
 
 
             if ( !showImage) {
@@ -4685,6 +4686,9 @@ public class TypeHandler extends RepositoryManager {
             String desc = msg(entry.getTypeHandler().getDescription());
             if (!Utils.stringDefined(desc)) {
                 desc = entry.getTypeHandler().getType();
+            }
+            if(!entry.getTypeHandler().getType().equals(TypeHandler.TYPE_FILE)) {
+                return desc;
             }
             String path =  getPathForEntry(entry);
             String label = getLabelFromPath(path);
