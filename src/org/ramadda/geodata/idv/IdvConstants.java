@@ -154,10 +154,10 @@ public interface IdvConstants {
     public static final String ARG_POINT_DOANIMATION = "doanimation";
 
     /** display list label arg id */
-    public static final String ARG_DISPLAYLISTLABEL = "dll";
+    public static final String ARG_IDV_DISPLAYLISTLABEL = "dll";
 
     /** display list color arg id */
-    public static final String ARG_DISPLAYCOLOR = "clr";
+    public static final String ARG_IDV_DISPLAYCOLOR = "clr";
 
     /** colortable arg id */
     public static final String ARG_COLORTABLE = "ct";
@@ -175,7 +175,7 @@ public interface IdvConstants {
     public static final String ARG_FLOW_SKIP = "f_sk";
 
     /** display unit arg id */
-    public static final String ARG_DISPLAYUNIT = "unit";
+    public static final String ARG_IDV_DISPLAYUNIT = "unit";
 
     /** isosurface value arg id */
     public static final String ARG_ISOSURFACEVALUE = "iso_value";
@@ -220,7 +220,7 @@ public interface IdvConstants {
     public static final String ARG_ENS = "ens";
 
     /** display arg id */
-    public static final String ARG_DISPLAY = "dsp";
+    public static final String ARG_IDV_DISPLAY = "dsp";
 
     /** idv action arg id */
     public static final String ARG_IDV_ACTION = "idv.action";

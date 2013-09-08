@@ -1017,15 +1017,15 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             tab.append(HtmlUtils.space(1));
             if ((displayIdx == 0) && (displays.size() > 1)) {
                 //Set the default display for the first param
-                if (request.defined(ARG_DISPLAY + displayIdx)) {
-                    tab.append(htmlSelect(request, ARG_DISPLAY + displayIdx,
+                if (request.defined(ARG_IDV_DISPLAY + displayIdx)) {
+                    tab.append(htmlSelect(request, ARG_IDV_DISPLAY + displayIdx,
                                           displays));
                 } else {
-                    tab.append(HtmlUtils.select(ARG_DISPLAY + displayIdx,
+                    tab.append(HtmlUtils.select(ARG_IDV_DISPLAY + displayIdx,
                             displays, displays.get(1).getId().toString()));
                 }
             } else {
-                tab.append(htmlSelect(request, ARG_DISPLAY + displayIdx,
+                tab.append(htmlSelect(request, ARG_IDV_DISPLAY + displayIdx,
                                       displays));
             }
             tab.append(HtmlUtils.p());
@@ -1259,7 +1259,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             misc.append(HtmlUtils.formTable());
             misc.append(HtmlUtils.formEntry(msgLabel("Display List Label"),
                                             htmlInput(request,
-                                                ARG_DISPLAYLISTLABEL
+                                                ARG_IDV_DISPLAYLISTLABEL
                                                     + displayIdx, "", 30)));
             String unitString = "";
             Unit displayUnit =
@@ -1270,16 +1270,16 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             misc.append(HtmlUtils.formEntry(msgLabel("Display Unit"),
                                             htmlInput(request,
-                                                ARG_DISPLAYUNIT + displayIdx,
+                                                ARG_IDV_DISPLAYUNIT + displayIdx,
                                                     unitString, 6)));
 
             misc.append(
                 HtmlUtils.formEntry(
                     msgLabel("Display Color"),
                     HtmlUtils.colorSelect(
-                        ARG_DISPLAYCOLOR + displayIdx,
+                        ARG_IDV_DISPLAYCOLOR + displayIdx,
                         request.getString(
-                            ARG_DISPLAYCOLOR + displayIdx,
+                            ARG_IDV_DISPLAYCOLOR + displayIdx,
                             StringUtil.toHexString(Color.red)))));
 
 
@@ -1989,10 +1989,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             displayIdx++;
 
-            if ( !request.defined(ARG_DISPLAY + displayIdx)) {
+            if ( !request.defined(ARG_IDV_DISPLAY + displayIdx)) {
                 continue;
             }
-            String display = request.getString(ARG_DISPLAY + displayIdx, "");
+            String display = request.getString(ARG_IDV_DISPLAY + displayIdx, "");
 
             StringBuffer propSB = new StringBuffer();
             propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,
@@ -2116,7 +2116,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             StringBuffer attrs = new StringBuffer();
 
             propSB.append(makeProperty("color",
-                                       request.getString(ARG_DISPLAYCOLOR
+                                       request.getString(ARG_IDV_DISPLAYCOLOR
                                            + displayIdx, "")));
 
 
@@ -2183,26 +2183,26 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
 
 
-            if (request.defined(ARG_DISPLAYLISTLABEL + displayIdx)) {
+            if (request.defined(ARG_IDV_DISPLAYLISTLABEL + displayIdx)) {
                 propSB.append(
                     XmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
                         XmlUtil.attrs(
                             "name", "displayListTemplate", "value",
                             request.getString(
-                                ARG_DISPLAYLISTLABEL + displayIdx, ""))));
+                                ARG_IDV_DISPLAYLISTLABEL + displayIdx, ""))));
             }
 
 
 
-            if (request.defined(ARG_DISPLAYUNIT + displayIdx)) {
+            if (request.defined(ARG_IDV_DISPLAYUNIT + displayIdx)) {
                 propSB.append(
                     XmlUtil.tag(
                         ImageGenerator.TAG_PROPERTY,
                         XmlUtil.attrs(
                             "name", "settingsDisplayUnit", "value",
                             request.getString(
-                                ARG_DISPLAYUNIT + displayIdx, ""))));
+                                ARG_IDV_DISPLAYUNIT + displayIdx, ""))));
             }
 
 
