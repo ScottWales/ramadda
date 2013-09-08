@@ -21,7 +21,6 @@
 package org.ramadda.repository;
 
 
-
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -50,21 +49,17 @@ import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
-import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
-
 import org.ramadda.repository.server.JettyServer;
-import org.ramadda.repository.server.RepositoryServlet;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
@@ -84,16 +79,15 @@ import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.StringWriter;
 
 import java.lang.reflect.Constructor;
 
@@ -109,13 +103,13 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -163,148 +157,148 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** Group edit URLs */
     protected List<RequestUrl> groupEditUrls;
 
-    /** _more_ */
+    /** list of initialized URLs */
     List<RequestUrl> initializedUrls = new ArrayList<RequestUrl>();
 
-    /** _more_ */
+    /** page cache limit */
     private static final int PAGE_CACHE_LIMIT = 100;
 
 
-    /** _more_ */
+    /** Deleter output type */
     public static final OutputType OUTPUT_DELETER =
         new OutputType("Delete Entry", "repository.delete",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_DELETE);
 
 
-    /** _more_ */
+    /** Change type output type */
     public static final OutputType OUTPUT_TYPECHANGE =
         new OutputType("Change Type", "repository.typechange",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        null);
 
-    /** _more_ */
+    /** Publish OutputType */
     public static final OutputType OUTPUT_PUBLISH =
         new OutputType("Make Public", "repository.makepublic",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_PUBLISH);
 
 
-    /** _more_ */
+    /** Full Metadata OutputType */
     public static final OutputType OUTPUT_METADATA_FULL =
         new OutputType("Add full metadata", "repository.metadata.full",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_METADATA_ADD);
 
-    /** _more_ */
+    /** short metadata OutputType */
     public static final OutputType OUTPUT_METADATA_SHORT =
         new OutputType("Add short metadata", "repository.metadata.short",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_METADATA_ADD);
 
 
-    /** _more_ */
+    /** Copy OutputType */
     public static final OutputType OUTPUT_COPY =
         new OutputType("Copy/Move/Link", "repository.copymovelink",
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_MOVE);
 
-    /** _more_ */
+    /** File Listing OutputType */
     public static final OutputType OUTPUT_FILELISTING =
         new OutputType("File Listing", "repository.filelisting",
                        OutputType.TYPE_FILE, "", ICON_FILELISTING);
 
 
-    /** _more_ */
+    /** the jetty server */
     private JettyServer jettyServer;
 
 
-    /** _more_ */
+    /** The UserManager */
     private UserManager userManager;
 
-    /** _more_ */
+    /** The MonitorManager */
     private MonitorManager monitorManager;
 
-    /** _more_ */
+    /** The SessionManager */
     private SessionManager sessionManager;
 
-    /** _more_ */
+    /** The WikiManager */
     private WikiManager wikiManager;
 
-    /** _more_ */
+    /** The LogManager */
     private LogManager logManager;
 
-    /** _more_ */
+    /** The EntryManager */
     private EntryManager entryManager;
 
-    /** _more_ */
+    /** The PageHandler */
     private PageHandler pageHandler;
 
-    /** _more_ */
+    /** The AssociationManager */
     private AssociationManager associationManager;
 
-    /** _more_ */
+    /** The SearchManager */
     private SearchManager searchManager;
 
-    /** _more_ */
+    /** The MapManager */
     private MapManager mapManager;
 
-    /** _more_ */
+    /** The HarvesterManager */
     private HarvesterManager harvesterManager;
 
-    /** _more_ */
+    /** The ActionManager */
     private ActionManager actionManager;
 
-    /** _more_ */
+    /** The AccessManager */
     private AccessManager accessManager;
 
-    /** _more_ */
+    /** The Meeta-dataManager */
     private MetadataManager metadataManager;
 
-    /** _more_ */
+    /** The RegistryManager */
     private RegistryManager registryManager;
 
-    /** _more_ */
+    /** The MailManager */
     private MailManager mailManager;
 
-    /** _more_ */
+    /** The LocalRepositoryManager */
     private LocalRepositoryManager localRepositoryManager;
 
-    /** _more_ */
+    /** The StorageManager */
     private StorageManager storageManager;
 
-    /** _more_ */
+    /** The API Manager */
     private ApiManager apiManager;
 
-    /** _more_ */
+    /** The PluginManager */
     private PluginManager pluginManager;
 
-    /** _more_ */
+    /** The DatabaseManager */
     private DatabaseManager databaseManager;
 
-    /** _more_ */
+    /** The FTP Manager */
     private FtpManager ftpManager;
 
-    /** _more_ */
+    /** A global FtpManager */
     private static FtpManager globalFtpManager;
 
-    /** _more_ */
+    /** The Admin */
     private Admin admin;
 
-    /** _more_ */
+    /** The list of RepositoryMangers */
     private List<RepositoryManager> repositoryManagers =
         new ArrayList<RepositoryManager>();
 
-    /** _more_ */
+    /** The Parent Repository */
     private Repository parentRepository;
 
-    /** _more_ */
+    /** The list of children */
     private List<Repository> childRepositories = new ArrayList<Repository>();
 
-    /** _more_ */
+    /** The cookie expiration date */
     private String cookieExpirationDate;
 
-    /** _more_ */
+    /** number of current requests */
     private Counter numberOfCurrentRequests = new Counter();
 
     /** _more_ */
@@ -856,14 +850,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     /**
-     * _more_
+     * Load the properties from the path
      *
-     * @param properties _more_
+     * @param props  current properties
+     * @param path   path to more.
      *
-     * @param props _more_
-     * @param path _more_
-     *
-     * @throws Exception _more_
+     * @throws Exception  problem reading properties
      */
     public void loadProperties(Properties props, String path)
             throws Exception {
@@ -5137,8 +5129,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * Excecute a command
      *
      * @param commands     command parameters
-     * @param workingDir   the working directory
-     * @param dir _more_
+     * @param dir   the working directory
      *
      * @return the input and output streams
      *
@@ -5164,6 +5155,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                    Map<String, String> envVars,
                                    File workingDir)
             throws Exception {
+        return executeCommand(commands, envVars, workingDir, 120);
+    }
+
+    /**
+     * Excecute a command
+     *
+     * @param commands     command parameters
+     * @param envVars      enviroment variables
+     * @param workingDir   the working directory
+     * @param timeOutInSeconds   number of seconds to allow process to finish
+     *                           before killing it.
+     *
+     * @return the input and output streams
+     *
+     * @throws Exception  problem with execution
+     */
+    public String[] executeCommand(List<String> commands,
+                                   Map<String, String> envVars,
+                                   File workingDir, int timeOutInSeconds)
+            throws Exception {
         ProcessBuilder pb = new ProcessBuilder(commands);
         if (envVars != null) {
             Map<String, String> env = pb.environment();
@@ -5171,14 +5182,170 @@ public class Repository extends RepositoryBase implements RequestHandler,
             env.putAll(envVars);
         }
         pb.directory(workingDir);
-        Process process = pb.start();
-        String errorMsg =
-            new String(IOUtil.readBytes(process.getErrorStream()));
-        String outMsg =
-            new String(IOUtil.readBytes(process.getInputStream()));
-        int result = process.waitFor();
+        StringWriter outBuf   = new StringWriter();
+        StringWriter errorBuf = new StringWriter();
+        Process      process  = pb.start();
+        // process the outputs in a thread
+        StreamEater esg = new StreamEater(process.getErrorStream(),
+                                          new PrintWriter(errorBuf));
+        StreamEater isg = new StreamEater(process.getInputStream(),
+                                          new PrintWriter(outBuf));
+        esg.start();
+        isg.start();
+        int result =
+            waitForOrKill(process,
+                          TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+        if (result == ProcessRunner.PROCESS_KILLED) {
+            throw new InterruptedException("Process timed out");
+        }
 
-        return new String[] { outMsg, errorMsg };
+        return new String[] { outBuf.toString(), errorBuf.toString() };
+
+    }
+
+    /**
+     * Class to eat a stream
+     */
+    class StreamEater extends Thread {
+
+        /** the input stream */
+        private InputStream in;
+
+        /** The place to write the lines to */
+        private PrintWriter pw;
+
+        /** The type name (for debugging) */
+        private String type;
+
+        /**
+         * A class for reading lines from an input stream in a thread
+         *
+         * @param in  InputStream
+         * @param pw  the writer for the output
+         */
+        StreamEater(InputStream in, PrintWriter pw) {
+            this(in, pw, "StreamEater");
+        }
+
+        /**
+         * A class for reading lines from an input stream in a thread
+         *
+         * @param in  InputStream
+         * @param pw  the writer for the output
+         * @param type a string for debugging
+         */
+        StreamEater(InputStream in, PrintWriter pw, String type) {
+            this.in   = in;
+            this.pw   = pw;
+            this.type = type;
+        }
+
+        /**
+         * Run the eater
+         */
+        @Override
+        public void run() {
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new InputStreamReader(in));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    pw.println(line);
+                    //System.out.println(line);
+                }
+                //System.out.println("Done reading " + type);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    br.close();
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * A utility for running a process
+     */
+    protected static class ProcessRunner implements Runnable {
+
+        /** the process */
+        Process process;
+
+        /** a flag for whether the process is finished */
+        private boolean finished;
+
+        /** the process return code */
+        private int retCode;
+
+        /** process killed return code */
+        private static final int PROCESS_KILLED = -143;
+
+        /**
+         * Create a new ProcessRunner
+         *
+         * @param process  the process
+         */
+        public ProcessRunner(Process process) {
+            this.process = process;
+        }
+
+        /**
+         * Run this thread
+         */
+        public void run() {
+            try {
+                retCode = process.waitFor();
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+            synchronized (this) {
+                notifyAll();
+                finished = true;
+            }
+        }
+
+        /**
+         * Wait for or kill the process
+         *
+         * @param millis  amount of time to wait before killing process
+         *
+         * @return the process exit code or -143 if process killed
+         */
+        public synchronized int waitForOrKill(long millis) {
+            if ( !finished && (millis > 0)) {
+                try {
+                    wait(millis);
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+                if ( !finished) {
+                    process.destroy();
+                    retCode = PROCESS_KILLED;
+                }
+            }
+
+            return retCode;
+        }
+    }
+
+    /**
+     * Wait for or kill the process
+     *
+     * @param proc  the process
+     * @param numberOfMillis  the time to wait (-1 to wait forever)
+     *
+     * @return  the process return code
+     */
+    private static int waitForOrKill(Process proc, long numberOfMillis) {
+        ProcessRunner runnable = new ProcessRunner(proc);
+        Thread        thread   = new Thread(runnable);
+        thread.start();
+
+        return runnable.waitForOrKill(numberOfMillis);
     }
 
 

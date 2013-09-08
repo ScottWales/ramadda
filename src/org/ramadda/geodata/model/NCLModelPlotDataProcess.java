@@ -71,13 +71,13 @@ public class NCLModelPlotDataProcess extends DataProcess {
     /** output type */
     public final static String ARG_NCL_UNITS = "ncl.units";
 
-    /** _more_          */
+    /** contour interval argument */
     private static final String ARG_NCL_CINT = "ncl.cint";
 
-    /** _more_          */
+    /** contour minimum argument */
     private static final String ARG_NCL_CMIN = "ncl.cmin";
 
-    /** _more_          */
+    /** contour maximum argument */
     private static final String ARG_NCL_CMAX = "ncl.cmax";
 
     /**
@@ -368,7 +368,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
 
         //Use new repository method to execute. This gets back [stdout,stderr]
         String[] results = repository.executeCommand(commands, envMap,
-                               input.getProcessDir());
+                                   input.getProcessDir());
         String errorMsg = results[1];
         String outMsg   = results[0];
         // Check the version
@@ -410,13 +410,13 @@ public class NCLModelPlotDataProcess extends DataProcess {
     }
 
     /**
-     * _more_
+     * Verify the contour values
      *
-     * @param cint _more_
-     * @param cmin _more_
-     * @param cmax _more_
+     * @param cint  the contour interval
+     * @param cmin  the minimum value
+     * @param cmax  the maximum value
      *
-     * @return _more_
+     * @return the adjusted values
      */
     private double[] verifyContourInfo(double cint, double cmin,
                                        double cmax) {
