@@ -1376,11 +1376,21 @@ public class OutputHandler extends RepositoryManager {
 
         sb.append(HtmlUtils.open("div",
                                  HtmlUtils.cssClass(prefix + "-block")));
+        boolean isMobile = request.isMobile();
         if (showDetails) {
+            String cls = isMobile?"entry-list-header-mobile":"entry-list-header";
             sb.append(
-                "<table class=\"entry-list-header\" border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=center valign=center width=20><div class=\"entry-list-header-toggle\">"
-                + link
-                + "</div></td><td class=\"entry-list-header-column\">Name</td><td width=200 class=\"entry-list-header-column\">Date</td><td width=100 class=\"entry-list-header-column\">Size</td><td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" align=center>Kind</td></tr></table>");
+                      "<table class=\"entry-list-header\" border=0 cellpadding=0 cellspacing=0 width=100%><tr>");
+            sb.append("<td align=center valign=center width=20><div class=\"entry-list-header-toggle\">");
+            sb.append(link);
+            sb.append("</div></td>");
+            sb.append("<td class=\"entry-list-header-column\">Name</td>");
+            sb.append("<td width=200 class=\"entry-list-header-column\">Date</td>");
+            if(!isMobile) {
+                sb.append("<td width=100 class=\"entry-list-header-column\">Size</td>");
+                sb.append("<td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" align=center>Kind</td>");
+            }
+            sb.append("</tr></table>");
 
             link = "";
             sb.append(afterHeader);
@@ -1553,24 +1563,19 @@ public class OutputHandler extends RepositoryManager {
             showDate = false;
         }
 
+        boolean isMobile = request.isMobile();
         //TODO: 
         //        showDate = false;
         if (showDate) {
-            if (request.isMobile()) {
-                sb.append("<td width=200 align=right><div "
-                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
-                          + ">");
-            } else {
-                sb.append("<td align=right width=200><div "
-                          + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
-                          + ">");
-            }
+            sb.append("<td width=200 align=right><div "
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
+                      + ">");
             sb.append(entry.getTypeHandler().formatDate(request, entry,
                     new Date(entry.getStartDate()), extraAlt.toString()));
             sb.append("</div></td>");
         }
 
-        if (showDetails) {
+        if (!isMobile && showDetails) {
             sb.append("<td width=\"100\" align=right "
                       + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             if (entry.getResource().isFile()) {
@@ -1582,7 +1587,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append("</td>");
         }
 
-        if (showDetails) {
+        if (!isMobile && showDetails) {
             sb.append(
                 "<td width=\"200\" align=right "
                 + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
@@ -2128,7 +2133,6 @@ public class OutputHandler extends RepositoryManager {
         if(entry.isDummy()) return null;
         String type = entry.getTypeHandler().getType();
         String wiki = null;
-
         wiki = typeToWikiTemplate.get(type);
         if(wiki!=null) {
             return wiki;
@@ -2138,7 +2142,6 @@ public class OutputHandler extends RepositoryManager {
         if(property!=null) {
             wiki = getRepository().getResource(property);
         }
-
 
         if(wiki == null) {
             if(entry.isGroup()) {
