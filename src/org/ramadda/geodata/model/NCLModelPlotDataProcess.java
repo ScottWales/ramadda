@@ -368,7 +368,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
 
         //Use new repository method to execute. This gets back [stdout,stderr]
         String[] results = repository.executeCommand(commands, envMap,
-                                   input.getProcessDir());
+                                   input.getProcessDir(), 60);
         String errorMsg = results[1];
         String outMsg   = results[0];
         // Check the version

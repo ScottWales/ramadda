@@ -399,8 +399,9 @@ public class CDOArealStatisticsProcess extends DataProcess {
     private void runProcess(List<String> commands, File processDir,
                             File outFile)
             throws Exception {
+    		
         String[] results = getRepository().executeCommand(commands, null,
-                               processDir);
+                               processDir, 60);
         String errorMsg = results[1];
         String outMsg   = results[0];
         if ( !outFile.exists()) {

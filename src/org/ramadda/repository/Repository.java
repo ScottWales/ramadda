@@ -59,10 +59,10 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
-
-import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MyTrace;
+
+import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 
@@ -5157,7 +5157,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                    Map<String, String> envVars,
                                    File workingDir)
             throws Exception {
-        return executeCommand(commands, envVars, workingDir, 120);
+        return executeCommand(commands, envVars, workingDir, -1 /* don't timeout*/);
     }
 
     /**
@@ -5167,7 +5167,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param envVars      enviroment variables
      * @param workingDir   the working directory
      * @param timeOutInSeconds   number of seconds to allow process to finish
-     *                           before killing it.
+     *                           before killing it. <= 0 to not time out.
      *
      * @return the input and output streams
      *
@@ -5194,8 +5194,25 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                           new PrintWriter(outBuf));
         esg.start();
         isg.start();
-        ProcessRunner runnable = new ProcessRunner(process, TimeUnit.SECONDS.toMillis(timeOutInSeconds));
-        int result = runnable.runProcess();
+        ProcessRunner runnable =
+            new ProcessRunner(process,
+                              TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+        runnable.start();
+
+        if (timeOutInSeconds > 0)  {
+            try {
+            	runnable.join(TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+            } catch(InterruptedException ex) {
+                esg.interrupt();
+                isg.interrupt();
+                runnable.interrupt();
+                //Thread.currentThread().interrupt();
+                //throw ex;
+            } finally {
+                process.destroy();
+            }
+        }
+        int result = runnable.getExitCode();
         if (result == ProcessRunner.PROCESS_KILLED) {
             throw new InterruptedException("Process timed out");
         }
