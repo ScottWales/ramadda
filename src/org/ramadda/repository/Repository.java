@@ -59,6 +59,8 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
+
+import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.PropertyProvider;
@@ -5192,9 +5194,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                           new PrintWriter(outBuf));
         esg.start();
         isg.start();
-        int result =
-            waitForOrKill(process,
-                          TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+        ProcessRunner runnable = new ProcessRunner(process, TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+        int result = runnable.runProcess();
         if (result == ProcessRunner.PROCESS_KILLED) {
             throw new InterruptedException("Process timed out");
         }
@@ -5265,87 +5266,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
         }
-    }
-
-    /**
-     * A utility for running a process
-     */
-    protected static class ProcessRunner implements Runnable {
-
-        /** the process */
-        Process process;
-
-        /** a flag for whether the process is finished */
-        private boolean finished;
-
-        /** the process return code */
-        private int retCode;
-
-        /** process killed return code */
-        private static final int PROCESS_KILLED = -143;
-
-        /**
-         * Create a new ProcessRunner
-         *
-         * @param process  the process
-         */
-        public ProcessRunner(Process process) {
-            this.process = process;
-        }
-
-        /**
-         * Run this thread
-         */
-        public void run() {
-            try {
-                retCode = process.waitFor();
-            } catch (InterruptedException e) {
-                // Ignore
-            }
-            synchronized (this) {
-                notifyAll();
-                finished = true;
-            }
-        }
-
-        /**
-         * Wait for or kill the process
-         *
-         * @param millis  amount of time to wait before killing process
-         *
-         * @return the process exit code or -143 if process killed
-         */
-        public synchronized int waitForOrKill(long millis) {
-            if ( !finished && (millis > 0)) {
-                try {
-                    wait(millis);
-                } catch (InterruptedException e) {
-                    // Ignore
-                }
-                if ( !finished) {
-                    process.destroy();
-                    retCode = PROCESS_KILLED;
-                }
-            }
-
-            return retCode;
-        }
-    }
-
-    /**
-     * Wait for or kill the process
-     *
-     * @param proc  the process
-     * @param numberOfMillis  the time to wait (-1 to wait forever)
-     *
-     * @return  the process return code
-     */
-    private static int waitForOrKill(Process proc, long numberOfMillis) {
-        ProcessRunner runnable = new ProcessRunner(proc);
-        Thread        thread   = new Thread(runnable);
-        thread.start();
-
-        return runnable.waitForOrKill(numberOfMillis);
     }
 
 
