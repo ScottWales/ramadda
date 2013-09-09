@@ -53,6 +53,7 @@ public class DataRecord extends PointRecord {
     /** _more_          */
     protected     Object[] objectValues;
 
+    protected int numDataFields = 0;
 
     /** _more_          */
     protected     boolean[] hasDefault;
@@ -117,6 +118,7 @@ public class DataRecord extends PointRecord {
      * @param fields _more_
      */
     public void initFields(List<RecordField> fields) {
+        numDataFields = 0;
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
             (String) getRecordFile().getProperty("field.time.format");
@@ -141,7 +143,6 @@ public class DataRecord extends PointRecord {
         };
 
         idxX = idxY = idxZ = idxTime = -1;
-        int     numFields = 0;
         boolean seenLon   = false;
         boolean seenLat   = false;
         for (int i = 0; i < fields.size(); i++) {
@@ -150,7 +151,7 @@ public class DataRecord extends PointRecord {
             skip[i]       = field.getSkip();
             synthetic[i]  = field.getSynthetic();
             if ( !synthetic[i] && !skip[i] && !hasDefault[i]) {
-                numFields++;
+                numDataFields++;
             }
             if (field.isTypeDate() && (idxTime == -1)) {
                 idxTime = i;

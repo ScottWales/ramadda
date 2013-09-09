@@ -98,7 +98,7 @@ public class TextRecord extends DataRecord {
     @Override
     public void initFields(List<RecordField> fields) {
         super.initFields(fields);
-        tokens = new String[this.fields.size()];
+        tokens = new String[numDataFields];
     }
 
     /**
