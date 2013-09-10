@@ -73,8 +73,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
-    public static final String ATTR_DISPLAY = HtmlOutputHandler.ARG_DISPLAY;
-
     /** _more_ */
     public static final String ATTR_BLOCK_SHOW = "block.show";
 
@@ -535,8 +533,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_GRAPH, attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400")),
         WIKI_PROP_COMMENTS,
         prop(WIKI_PROP_TAGCLOUD, attrs("type", "", "threshold", "0")),
-        prop(WIKI_PROP_PROPERTIES, attrs(ATTR_DISPLAY, DISPLAY_FULL)),
-        WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
+        WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
         WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
         WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH, WIKI_PROP_ROOT
     };
@@ -1108,11 +1105,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return entry.getTypeHandler().getEntryContent(entry, request,
                                                               false, true).toString();
             }
-
-            String result =  getRepository().getHtmlOutputHandler().getInformationTabs(
+            return getRepository().getHtmlOutputHandler().getInformationTabs(
                 request, entry, false, true);
-
-            return result;
         } else if (include.equals(WIKI_PROP_TAGCLOUD)) {
             StringBuffer tagCloud  = new StringBuffer();
             int          threshold = Misc.getProperty(props, "threshold", 0);
@@ -2034,8 +2028,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     private String makeEntryTabs(Request request, Entry entry,
                                  Hashtable props)
             throws Exception {
-        String display = Misc.getProperty(props, ATTR_DISPLAY, DISPLAY_FULL);
-        request.put(ARG_DISPLAY, display);
         String metadataTypesAttr = Misc.getProperty(props,
                                        ATTR_METADATA_TYPES, (String) null);
         List<String> metadataTypes = null;
@@ -2058,7 +2050,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
 
-        request.remove(ARG_DISPLAY);
         return tabContents.get(0).toString();
 
     }
@@ -2366,6 +2357,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     parent  = parent.getParentEntry();
                 }
                 entries.addAll(tmp);
+                continue;
+            }
+            if(entryid.equals(ID_THIS)) {
+                entries.add(baseEntry);
                 continue;
             }
             Entry entry = getEntryManager().getEntry(request, entryid);
