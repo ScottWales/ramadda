@@ -2125,42 +2125,31 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
-    private String folderWikiTemplate;
-    private String fileWikiTemplate;
+
     private Hashtable<String,String> typeToWikiTemplate = new Hashtable<String,String>();
 
-    protected String getWikiTemplate(Request request, Entry entry) throws Exception {
+    public static final String TEMPLATE_DEFAULT = "default";
+    public static final String TEMPLATE_CONTENT = "content";
+
+    protected String getWikiTemplate(Request request, Entry entry, String templateType) throws Exception {
         if(entry.isDummy()) return null;
-        String type = entry.getTypeHandler().getType();
-        String wiki = null;
-        wiki = typeToWikiTemplate.get(type);
+        String entryType = entry.getTypeHandler().getType();
+        String key = entryType+"." + templateType;
+        String wiki = typeToWikiTemplate.get(key);
         if(wiki!=null) {
             return wiki;
         }
 
-        String property = getProperty("ramadda.wiki.template." + type, null);
+        String propertyPrefix = "ramadda.wikitemplate." + templateType +"."; 
+        String property = getProperty(propertyPrefix + entryType, null);
         if(property!=null) {
             wiki = getRepository().getResource(property);
         }
-
         if(wiki == null) {
-            if(entry.isGroup()) {
-                if(folderWikiTemplate == null) {
-                    folderWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
-                }
-                wiki = folderWikiTemplate;
-                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.folder", ""));
-            } else {
-                if(fileWikiTemplate == null) {
-                    fileWikiTemplate = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
-                }
-                wiki = fileWikiTemplate;
-                //                wiki = getRepository().getResource(getProperty("ramadda.wiki.template.file",""));
-                return wiki;
-            }
+            wiki = getRepository().getResource(getProperty(propertyPrefix +(entry.isGroup()?"folder":"file"), ""));
         }
         if(wiki!=null)  {
-            typeToWikiTemplate.put(type, wiki);
+            typeToWikiTemplate.put(key, wiki);
         }
         return wiki;
     }

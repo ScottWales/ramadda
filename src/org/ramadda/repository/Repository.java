@@ -361,13 +361,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private Hashtable<String, OutputType> outputTypeMap =
         new Hashtable<String, OutputType>();
 
-
-    /** _more_ */
-    private List<OutputHandler> allOutputHandlers =
-        new ArrayList<OutputHandler>();
-
-
-
     /** _more_ */
     private Hashtable resources = new Hashtable();
 
@@ -3635,6 +3628,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (isSpider && !outputHandler.allowSpiders()) {
                 continue;
             }
+            String c = outputHandler.getClass().getName().toLowerCase();
             outputHandler.getEntryLinks(request, state, links);
         }
         List<Link> okLinks = new ArrayList<Link>();
@@ -3644,8 +3638,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             OutputType outputType = link.getOutputType();
             if (isOutputTypeOK(outputType)) {
                 okLinks.add(link);
-            } else {
-                //                System.err.println ("NOT OK: " + outputType);
             }
         }
 
@@ -3712,6 +3704,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((prop == null) || prop.equals("true")) {
             return true;
         }
+        System.err.println ("NOT OK:" + outputType);
 
         return false;
     }

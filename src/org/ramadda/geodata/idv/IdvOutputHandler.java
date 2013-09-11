@@ -223,14 +223,18 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 addType(OUTPUT_IDV_POINT);
                 addType(OUTPUT_IDV_BUNDLE_IMAGE);
                 addType(OUTPUT_IDV_BUNDLE_MOVIE);
+                getRepository().getLogManager().logWarning(
+                    "IDV visualization is enabled");
             } catch (java.awt.HeadlessException jahe) {
                 idvOk = false;
                 //                jahe.printStackTrace();
                 getRepository().getLogManager().logWarning(
                     "To run the IdvOutputHandler a graphics environment is needed");
+                return;
             } catch (Throwable exc) {
                 idvOk = false;
                 logError("Creating IdvOutputHandler", exc);
+                return;
             }
         }
     }

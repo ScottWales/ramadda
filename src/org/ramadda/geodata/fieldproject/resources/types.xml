@@ -352,6 +352,23 @@ Instrument: {{name}}
 
 
 
+  <type name="project_softwarepackage"  description="Software Tool" category="Science Project">
+     <property name="icon" value="/fieldproject/disk_multiple.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.resource.label" value="Link"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="search.tabs" value="list"/>
+
+     <column name="software_type" label="Software Type"  type="enumerationplus" values="Visualization,Analysis,Server,Other" cansearch="true" />
+     <column name="os" label="Operating System"  type="enumerationplus" values="Windows,Unix,Both,Other" cansearch="true" />
+     <column name="capabilities" label="Capabilities"  size="1024" rows="5" cansearch="true" />
+   </type>
+
+
+
 
   <type name="project_contribution"  description="Research Contribution" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
      <property name="icon" value="/fieldproject/lightbulb.png"/>

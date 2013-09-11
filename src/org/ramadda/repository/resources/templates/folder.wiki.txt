@@ -9,6 +9,7 @@
 <p>
 </div>
 </td>
+<block show="!mobile" decorate="false">
 <td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
 <td  valign=top width="28%">
 <div class="entry-page-info">
@@ -21,6 +22,7 @@
 {{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>
 </td>
+</block>
 </tr>
 </table>
 

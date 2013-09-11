@@ -1151,9 +1151,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return "";
             }
 
-            String url = entry.getTypeHandler().getEntryResourceUrl(request,
-                             entry);
-            String label = Misc.getProperty(props, ATTR_TITLE, "Download");
+            String url;
+            String label;
+
+            if (entry.getResource().isFile()) {
+                url = entry.getTypeHandler().getEntryResourceUrl(request,
+                                                                        entry);
+                label = Misc.getProperty(props, ATTR_TITLE, "Download");
+            } else {
+                url = entry.getResource().getPath();
+                label = url;
+            }
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                                    false);
             if(includeIcon) {

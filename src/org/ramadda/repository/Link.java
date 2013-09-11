@@ -201,13 +201,13 @@ public class Link {
      * @return _more_
      */
     public String toString() {
+        if(true) return url;
         if (hr) {
             return "<hr>";
         }
         if (icon == null) {
             return HtmlUtils.href(url, label);
         }
-
         return HtmlUtils.href(url, HtmlUtils.img(icon, label));
     }
 

@@ -696,11 +696,7 @@ public class EntryManager extends RepositoryManager {
             entry = getTopGroup();
         }
         //If entry is a dummy that means its from search results
-        //            if (result.getShouldDecorate()) {
         if (result.getShouldDecorate() && !entry.isDummy()) {
-            //            if(entry.getDescription().indexOf("<noentryheader>")>=0) return result;
-            //            String output = request.getString(ARG_OUTPUT, (String) "");
-            //            request.put(ARG_OUTPUT, output);
             StringBuffer sb             = new StringBuffer();
             Entry        entryForHeader = entry;
 
@@ -708,7 +704,6 @@ public class EntryManager extends RepositoryManager {
             if (entry.isDummy()) {
                 entryForHeader = getTopGroup();
             }
-            //            if (!entry.isGroup()) {
             String   entryFooter = entryFooter(request, entryForHeader);
 
             StringBuffer titleCrumbs = new StringBuffer();
@@ -719,7 +714,6 @@ public class EntryManager extends RepositoryManager {
             result.putProperty(PROP_ENTRY_HEADER, sb.toString());
             result.putProperty(PROP_ENTRY_BREADCRUMBS, titleCrumbs.toString());
             result.putProperty(PROP_ENTRY_FOOTER, entryFooter);
-            //            }
 
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
@@ -749,9 +743,7 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-
         }
-
         return result;
     }
 
@@ -770,8 +762,6 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryShow(Request request, Entry entry)
             throws Exception {
         Result result = null;
-        //        OutputHandler outputHandler =
-        //            getRepository().getOutputHandler(request, entry);
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
 
@@ -5660,14 +5650,6 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state = new OutputHandler.State(entry);
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
-        OutputHandler outputHandler =
-            getRepository().getOutputHandler(request);
-
-        if ( !entry.isTopEntry()) {
-            //            links.addAll(outputHandler.getNextPrevLinks(request, entry,
-            //                    request.getOutput()));
-        }
-
         return links;
     }
 
@@ -5710,8 +5692,6 @@ public class EntryManager extends RepositoryManager {
                                        int typeMask)
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
-
-
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 
@@ -5752,6 +5732,9 @@ public class EntryManager extends RepositoryManager {
                                        boolean returnNullIfNoneMatch, String header)
             throws Exception {
 
+        
+
+
         StringBuffer
             htmlSB          = null,
             exportSB        = null,
@@ -5764,9 +5747,6 @@ public class EntryManager extends RepositoryManager {
         String  tableHeader = "<table cellspacing=\"0\" cellpadding=\"0\">";
         for (Link link : links) {
             StringBuffer sb;
-            if ( !link.isType(typeMask)) {
-                continue;
-            }
             if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
                     htmlSB = new StringBuffer(tableHeader);
@@ -6074,14 +6054,11 @@ public class EntryManager extends RepositoryManager {
         }
 
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
-
-
         List<Link> linkList = getEntryLinks(request, entry);
-
 
         //OutputType.TYPE_ALL
         String links = getEntryManager().getEntryActionsTable(request, entry,
-                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msg("Here are some links for ") + " " + entry.getName());
+                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msgLabel("Links for") + " " + entry.getName());
         
 
         StringBuffer  popup  = new StringBuffer();

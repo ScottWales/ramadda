@@ -413,7 +413,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         //org.apache.lucene.document.Document doc
         InputStream stream = getStorageManager().getFileInputStream(f);
         try {
-
             org.apache.tika.metadata.Metadata metadata =
                 new org.apache.tika.metadata.Metadata();
             org.apache.tika.parser.AutoDetectParser parser =

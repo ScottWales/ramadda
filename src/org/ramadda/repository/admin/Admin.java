@@ -1315,9 +1315,11 @@ public class Admin extends RepositoryManager {
         String           lastCategoryName = null;
         for (OutputType type : types) {
             if ( !type.getForUser()) {
+                System.out.println("not for user:" + type);
                 continue;
             }
             boolean ok = getRepository().isOutputTypeOK(type);
+            //            System.out.println("type:" + type +" " + ok);
             if ( !Misc.equals(lastCategoryName, type.getGroupName())) {
                 if (lastCategoryName != null) {
                     outputSB.append("</div>\n");
