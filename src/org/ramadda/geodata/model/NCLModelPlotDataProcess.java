@@ -143,7 +143,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
         }
         sb.append(
             HtmlUtils.formEntry(
-                Repository.msgLabel("Output Type"),
+                Repository.msgLabel("Plot Type"),
                 HtmlUtils.radio(
                     NCLOutputHandler.ARG_NCL_PLOTTYPE, "png",
                     true) + Repository.msg("Map")
@@ -167,7 +167,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
         if (units.equals("K") || units.equals("degK")) {
             sb.append(
                 HtmlUtils.formEntry(
-                    Repository.msgLabel("Output Units"),
+                    Repository.msgLabel("Plot Units"),
                     HtmlUtils.radio(ARG_NCL_UNITS, "K", true)
                     + Repository.msg("Kelvin")
                     + HtmlUtils.radio(ARG_NCL_UNITS, "degC", false)
@@ -185,14 +185,16 @@ public class NCLModelPlotDataProcess extends DataProcess {
         StringBuffer contourSB = new StringBuffer();
         contourSB.append(Repository.msg("Interval: "));
         contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CINT, ""));
+        contourSB.append("<br>");
         contourSB.append(Repository.msg("Range: Low"));
         contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMIN, ""));
         contourSB.append(Repository.msg("High"));
         contourSB.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMAX, ""));
         sb.append(
             HtmlUtils.formEntry(
-                Repository.msgLabel("Override Contour Defaults"),
-                contourSB.toString()));
+                "<div style=\"width:9em\">"
+                + Repository.msgLabel("Override Contour Defaults")
+                + "</div>", contourSB.toString()));
         sb.append(HtmlUtils.formTableClose());
     }
 
@@ -368,7 +370,7 @@ public class NCLModelPlotDataProcess extends DataProcess {
 
         //Use new repository method to execute. This gets back [stdout,stderr]
         String[] results = repository.executeCommand(commands, envMap,
-                                   input.getProcessDir(), 60);
+                               input.getProcessDir(), 60);
         String errorMsg = results[1];
         String outMsg   = results[0];
         // Check the version

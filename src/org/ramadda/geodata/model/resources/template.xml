@@ -2,8 +2,8 @@
 <description><![CDATA[<wiki>
 <h2>${description}</h2>
 <p>
-<b>Images</b>
-{{gallery width="500"}}
+${output}
+<p>
 <br>
 <b>All Files</b> <a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download)</a>
 {{tree}}

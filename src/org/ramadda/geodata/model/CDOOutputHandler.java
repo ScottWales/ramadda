@@ -111,27 +111,26 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     public static final String ARG_CDO_ENDYEAR = ARG_CDO_PREFIX + "endyear";
 
     /** variable identifier */
-    private static final String ARG_CDO_PARAM = ARG_CDO_PREFIX + "param";
+    public static final String ARG_CDO_PARAM = ARG_CDO_PREFIX + "param";
 
     /** end month identifier */
-    private static final String ARG_CDO_LEVEL = ARG_CDO_PREFIX + "level";
+    public static final String ARG_CDO_LEVEL = ARG_CDO_PREFIX + "level";
 
     /** statistic identifier */
     public static final String ARG_CDO_STAT = ARG_CDO_PREFIX + "stat";
 
     /** from date arg */
-    private static final String ARG_CDO_FROMDATE = ARG_CDO_PREFIX
-                                                   + "fromdate";
+    public static final String ARG_CDO_FROMDATE = ARG_CDO_PREFIX + "fromdate";
 
     /** to date arg */
-    private static final String ARG_CDO_TODATE = ARG_CDO_PREFIX + "todate";
+    public static final String ARG_CDO_TODATE = ARG_CDO_PREFIX + "todate";
 
 
     /** period identifier */
-    private static final String ARG_CDO_PERIOD = ARG_CDO_PREFIX + "period";
+    public static final String ARG_CDO_PERIOD = ARG_CDO_PREFIX + "period";
 
     /** area argument */
-    private static final String ARG_CDO_AREA = ARG_CDO_PREFIX + "area";
+    public static final String ARG_CDO_AREA = ARG_CDO_PREFIX + "area";
 
     /** area argument - north */
     private static final String ARG_CDO_AREA_NORTH = ARG_CDO_AREA + "_north";
@@ -228,17 +227,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
     /** stat types */
     @SuppressWarnings("unchecked")
-    private List<TwoFacedObject> STAT_TYPES = Misc.toList(new Object[] {
-                                                  new TwoFacedObject("Mean",
-                                                      STAT_MEAN),
-            new TwoFacedObject("Std Deviation", STAT_STD),
-            new TwoFacedObject("Maximum", STAT_MAX),
-            new TwoFacedObject("Minimum", STAT_MIN),
-            new TwoFacedObject("Anomaly", STAT_ANOM) });
+    public static final List<TwoFacedObject> STAT_TYPES =
+        Misc.toList(new Object[] { new TwoFacedObject("Mean", STAT_MEAN),
+                                   new TwoFacedObject(
+                                       "Std Deviation",
+                                       STAT_STD), new TwoFacedObject(
+                                           "Maximum", STAT_MAX),
+                                   new TwoFacedObject("Minimum", STAT_MIN),
+                                   new TwoFacedObject("Anomaly",
+                                       STAT_ANOM) });
 
     /** period types */
     @SuppressWarnings("unchecked")
-    private List<TwoFacedObject> PERIOD_TYPES =
+    public static final List<TwoFacedObject> PERIOD_TYPES =
         Misc.toList(new Object[] {
             new TwoFacedObject("All Times", PERIOD_TIM),
             new TwoFacedObject("Annual", PERIOD_YEAR),
@@ -256,7 +257,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     };
 
     /** month list */
-    private List<TwoFacedObject> MONTHS =
+    public static final List<TwoFacedObject> MONTHS =
         TwoFacedObject.createList(MONTH_NUMBERS, MONTH_NAMES);
 
     /** spatial arguments */
@@ -719,15 +720,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
      * @param sb       the StringBuffer to add to
      * @param dates    the list of dates (just in case)
      */
-    private void makeMonthsWidget(Request request, StringBuffer sb,
-                                  List<CalendarDate> dates) {
+    public static void makeMonthsWidget(Request request, StringBuffer sb,
+                                        List<CalendarDate> dates) {
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Months"),
                 msgLabel("Start")
-                + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)
-                + HtmlUtils.space(3) + msgLabel("End")
-                + HtmlUtils.select(ARG_CDO_ENDMONTH, MONTHS)));
+                + HtmlUtils.select(
+                    ARG_CDO_STARTMONTH, MONTHS,
+                    MONTHS.get(0).toString()) + HtmlUtils.space(3)
+                        + msgLabel("End")
+                        + HtmlUtils.select(
+                            ARG_CDO_ENDMONTH, MONTHS,
+                            MONTHS.get(11).toString())));
     }
 
     /**
@@ -1106,22 +1111,43 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     public void addDateSelectCommands(Request request, Entry entry,
                                       List<String> commands)
             throws Exception {
+        addDateSelectCommands(request, entry, commands, 0);
+    }
 
+    /**
+     * Create the list of date/time select commands
+     * @param request the Request
+     * @param entry   the associated Entry
+     * @param commands list of commands
+     * @param dateCounter _more_
+     *
+     * @throws Exception  on badness
+     */
+    public void addDateSelectCommands(Request request, Entry entry,
+                                      List<String> commands, int dateCounter)
+            throws Exception {
+
+        String dateCounterString = "";
+        if (dateCounter > 0) {
+            dateCounterString = String.valueOf(dateCounter + 1);
+        }
         addMonthSelectCommands(request, entry, commands);
 
         String dateSelect = null;
-        if (request.defined(ARG_CDO_FROMDATE)
-                || request.defined(ARG_CDO_TODATE)) {
+        if (request.defined(ARG_CDO_FROMDATE + dateCounterString)
+                || request.defined(ARG_CDO_TODATE + dateCounterString)) {
             CalendarDate[] dates = new CalendarDate[2];
             String calString =
                 request.getString(CdmDataOutputHandler.ARG_CALENDAR, null);
-            if (request.defined(ARG_FROMDATE)) {
-                String fromDateString = request.getString(ARG_FROMDATE, null);
+            if (request.defined(ARG_FROMDATE + dateCounterString)) {
+                String fromDateString = request.getString(ARG_FROMDATE
+                                            + dateCounterString, null);
                 dates[0] = CalendarDate.parseISOformat(calString,
                         fromDateString);
             }
-            if (request.defined(ARG_TODATE)) {
-                String toDateString = request.getString(ARG_TODATE, null);
+            if (request.defined(ARG_TODATE + dateCounterString)) {
+                String toDateString = request.getString(ARG_TODATE
+                                          + dateCounterString, null);
                 dates[1] = CalendarDate.parseISOformat(calString,
                         toDateString);
             }
@@ -1145,16 +1171,19 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         + CalendarDateFormatter.toDateTimeStringISO(dates[1]);
                 }
             }
-        } else if (request.defined(ARG_CDO_STARTYEAR)
-                   || request.defined(ARG_CDO_ENDYEAR)) {
-            String[] years = new String[] { request.defined(ARG_CDO_STARTYEAR)
-                                            ? request.getString(
-                                                ARG_CDO_STARTYEAR, null)
-                                            : null,
-                                            request.defined(ARG_CDO_ENDYEAR)
-                                            ? request.getString(
-                                                ARG_CDO_ENDYEAR, null)
-                                            : null };
+        } else if (request.defined(ARG_CDO_STARTYEAR + dateCounterString)
+                   || request.defined(ARG_CDO_ENDYEAR + dateCounterString)) {
+            String[] years = new String[] {
+                                 request.defined(ARG_CDO_STARTYEAR
+                                     + dateCounterString)
+                                 ? request.getString(ARG_CDO_STARTYEAR
+                                     + dateCounterString, null)
+                                 : null,
+                                 request.defined(ARG_CDO_ENDYEAR
+                                     + dateCounterString)
+                                 ? request.getString(ARG_CDO_ENDYEAR
+                                     + dateCounterString, null)
+                                 : null };
             //have to have both dates
             if ((years[0] != null) && (years[1] == null)) {
                 years[0] = null;

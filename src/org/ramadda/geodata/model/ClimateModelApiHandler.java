@@ -32,6 +32,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.RequestHandler;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.CollectionTypeHandler;
 import org.ramadda.repository.type.Column;
 import org.ramadda.sql.Clause;
@@ -68,7 +69,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** compare action */
     public static final String ARG_ACTION_COMPARE = "action.compare";
 
-    /** _more_ */
+    /** fixed collection id  */
     public static final String ARG_COLLECTION = "collection";
 
     /** collection 1 id */
@@ -149,14 +150,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (processDir == null) {
             processDir = getStorageManager().createProcessDir();
         }
-        //Don: the template has a name macro in it and gets written out to the file .this.ramadda.xml 
-        //under the process directory.
+        /*
         String template =
             getStorageManager().readSystemResource(
                 "/org/ramadda/geodata/model/resources/template.xml");
         template = template.replace("${name}",
                                     "Climate model comparison output");
-        StringBuffer dpiDesc = new StringBuffer("Comparison of ");
+        StringBuffer dpiDesc = new StringBuffer();
+        if (dpi.getOperands().size() > 1) {
+                dpiDesc.append("Comparison of ");
+        } else {
+                dpiDesc.append("Analysis of ");
+        }
         int          cntr    = 0;
         for (DataProcessOperand dpo : dpi.getOperands()) {
             if (cntr > 0) {
@@ -168,6 +173,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         template = template.replace("${description}", dpiDesc.toString());
         IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
                 ".this.ramadda.xml")), template);
+        */
 
 
 
@@ -190,6 +196,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             //}
         }
 
+        boolean    anyKMZ    = false;
         List<File> files     = new ArrayList<File>();
         File       lastFile  = null;
         Entry      lastEntry = null;
@@ -198,12 +205,47 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 for (Entry granule : op.getEntries()) {
                     if (granule.isFile()) {
                         lastFile = granule.getFile();
+                        if (IOUtil.hasSuffix(lastFile.toString(), "kmz")) {
+                            anyKMZ = true;
+                        }
                         files.add(lastFile);
                     }
                     lastEntry = granule;
                 }
             }
         }
+
+        String template =
+            getStorageManager().readSystemResource(
+                "/org/ramadda/geodata/model/resources/template.xml");
+        template = template.replace("${name}",
+                                    "Climate model comparison output");
+        StringBuffer dpiDesc = new StringBuffer();
+        if (dpi.getOperands().size() > 1) {
+            dpiDesc.append("Comparison of ");
+        } else {
+            dpiDesc.append("Analysis of ");
+        }
+        int cntr = 0;
+        for (DataProcessOperand dpo : dpi.getOperands()) {
+            if (cntr > 0) {
+                dpiDesc.append(" and ");
+            }
+            dpiDesc.append(dpo.getDescription());
+            cntr++;
+        }
+        template = template.replace("${description}", dpiDesc.toString());
+        if (anyKMZ) {
+            template =
+                template.replace("${output}",
+                                 "{{earth width=\"500\" name=\"*.kmz\"}}");
+        } else {
+            template = template.replace(
+                "${output}",
+                "{{gallery prefix=\"'''Images'''\" message=\"\" width=\"500\"}}");
+        }
+        IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
+                ".this.ramadda.xml")), template);
 
 
 
@@ -393,24 +435,31 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                        fixedCollection.getId()));
         }
 
+        sb.append(
+            "<table width=\"810px\"><tr valign=\"top\" align=\"left\">\n");
+        sb.append(HtmlUtils.open("td", "width=\"400px\"") + "\n");
         sb.append(header(msg("Select Data")));
 
-        sb.append("<table><tr valign=top>\n");
-        int collectionNumber = 0;
+        int          collectionNumber = 0;
 
 
 
+        List<String> datasets         = new ArrayList<String>(2);
+        List<String> datasetTitles    = new ArrayList<String>(2);
         for (String collection : new String[] { ARG_COLLECTION1,
                 ARG_COLLECTION2 }) {
+            StringBuffer dsb = new StringBuffer();
 
 
-            sb.append(HtmlUtils.open("td", "width=50%"));
-            sb.append(HtmlUtils.formTable());
+            //dsb.append("<table><tr valign=top>\n");
+            //dsb.append(HtmlUtils.open("td"));
+            dsb.append(HtmlUtils.formTable());
             if (collectionNumber == 0) {
-                sb.append("<tr><td colspan=\"2\">Dataset 1</td></tr>\n");
+                datasetTitles.add("Dataset 1");
+                //sb.append("<tr><td colspan=\"2\">Dataset 1</td></tr>\n");
             } else {
-                sb.append(
-                    "<tr><td colspan=\"2\">Dataset 2 (Optional)</td></tr>\n");
+                datasetTitles.add("Dataset 2 (Optional)");
+                //sb.append("<tr><td colspan=\"2\">Dataset 2 (Optional)</td></tr>\n");
             }
             collectionNumber++;
             String arg = getCollectionSelectArg(collection);
@@ -419,15 +468,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
             if (fixedCollection != null) {
-                sb.append("\n");
-                sb.append(HtmlUtils.hidden(arg, fixedCollection.getId(),
-                                           HtmlUtils.id(id)));
-                sb.append(HtmlUtils.comment("test test"));
+                dsb.append("\n");
+                dsb.append(HtmlUtils.hidden(arg, fixedCollection.getId(),
+                                            HtmlUtils.id(id)));
+                dsb.append(HtmlUtils.comment("test test"));
             } else {
                 String collectionWidget = HtmlUtils.select(arg, tfos,
                                               request.getString(arg, ""),
                                               HtmlUtils.id(id));
-                sb.append(HtmlUtils.formEntry(msgLabel("Collection"),
+                dsb.append(HtmlUtils.formEntry(msgLabel("Collection"),
                         collectionWidget));
             }
 
@@ -443,12 +492,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (Utils.stringDefined(selectedValue)) {
                     values.add(selectedValue);
                 }
-                sb.append("\n");
+                dsb.append("\n");
                 // don't show variable selector for subsequent collections when we have a fixed
                 // collection
                 if (request.defined(ARG_COLLECTION) && (collectionNumber > 1)
                         && column.getName().equals("variable")) {
-                    sb.append(HtmlUtils.formEntry(msg(""),
+                    dsb.append(HtmlUtils.formEntry(msg(""),
                             "<span style=\"max-width:250px;min-width:250px;\">&nbsp;</span>"));
                 } else {
 
@@ -460,25 +509,26 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                 "id",
                                 getFieldSelectId(
                                     formId, collection, fieldIdx)));
-                    sb.append(
+                    dsb.append(
                         HtmlUtils.formEntry(
                             msgLabel(column.getLabel()), selectBox));
-                    sb.append("\n");
+                    dsb.append("\n");
                 }
             }
-            sb.append(HtmlUtils.formTableClose());
+            dsb.append(HtmlUtils.formTableClose());
 
             StringBuffer results = extra.get(collection);
             if (results != null) {
-                //sb.append(HtmlUtils.formEntry("", results.toString()));
-                sb.append(results.toString());
+                //dsb.append(HtmlUtils.formEntry("", results.toString()));
+                dsb.append(results.toString());
             }
 
 
-            sb.append("</td>\n");
+            datasets.add(dsb.toString());
         }
 
-        sb.append("</tr></table>");
+        sb.append(OutputHandler.makeTabs(datasetTitles, datasets, true,
+                                         true));
         //sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
 
@@ -486,9 +536,16 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
         if ( !hasOperands) {
-            sb.append(HtmlUtils.submit("Search for Data", ARG_ACTION_SEARCH,
+            sb.append(HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
                                        HtmlUtils.id(formId + ".submit")));
+            sb.append("</td>\n");
+            // add an empty cell to keep the other in line
+            sb.append("<td width=\"400px\">&nbsp;</td>");
         } else {
+            sb.append(HtmlUtils.submit("Select Again", ARG_ACTION_SEARCH,
+                                       HtmlUtils.id(formId + ".submit")));
+            sb.append("</td>\n");
+            sb.append("<td width=\"400px\">\n");
             List<String> processTabs   = new ArrayList<String>();
             List<String> processTitles = new ArrayList<String>();
 
@@ -515,27 +572,27 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 if (process.canHandle(dpi)) {
                     process.addToForm(request, dpi, tmpSB);
-                    processTabs.add(HtmlUtils.div(tmpSB.toString(),
-                            HtmlUtils.style("min-height:200px;")));
+                    //processTabs.add(HtmlUtils.div(tmpSB.toString(),
+                    //        HtmlUtils.style("min-height:200px;")));
+                    processTabs.add(tmpSB.toString());
                     processTitles.add(process.getDataProcessLabel());
                     first = false;
                 }
             }
 
-            sb.append(HtmlUtils.submit("Search Again", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")));
 
+            /*
             if (processTitles.size() == 1) {
                 sb.append(header(msg(processTitles.get(0))));
                 sb.append(processTabs.get(0));
             } else {
                 sb.append(header(msg("Process Data")));
                 StringBuffer processTable = new StringBuffer();
-                processTable.append("<table><tr><td width=\"50%\">");
+                processTable.append("<table><tr><td>");
                 HtmlUtils.makeAccordian(processTable, processTitles,
                                         processTabs);
                 processTable.append("</td>");
-                processTable.append("<td width=\"50%\">");
+                processTable.append("<td>");
                 processTable.append(HtmlUtils.div("",
                         HtmlUtils.cssClass("entryoutput")
                         + HtmlUtils.id(formId + "_output_image")));
@@ -543,9 +600,30 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 processTable.append("</td></tr></table>");
                 sb.append(processTable);
             }
+            */
+            sb.append(header(msg("Process Data")));
+            for (int i = 0; i < processTitles.size(); i++) {
+                //sb.append("<div class=\"shadow-box\">\n");
+                sb.append(
+                    "<div style=\"border:1px #ccc solid;margin: 0 0 .5em 0;\">");
+                //sb.append("<div style=\"border: none; padding: 0.2em; "+
+                //                "background: #CCFFFF; font-weight: bold; margin: 1em 0.5em 0 0;\">\n");
+                sb.append(
+                    "<div style=\"border: none; padding: 0.3em; "
+                    + "background: #88FFFF; font-weight: bold; margin: 0 0 0 0;\">\n");
+                sb.append(processTitles.get(i));
+                sb.append("</div>\n");
+                sb.append("<div style=\"padding:0.2em;\">\n");
+                sb.append(processTabs.get(i));
+                sb.append("</div>\n");
+                sb.append("</div> <!-- shadow-box -->");
+            }
+            sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.submit("Make Plot", ARG_ACTION_COMPARE,
                                        HtmlUtils.id(formId + ".submit")));
+            sb.append("</td>");
         }
+        sb.append("\n</tr></table>");
 
 
         sb.append("\n");
@@ -569,7 +647,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * @param request   the Request
      * @param collection  the collection
      * @param entry  the entry
-     * @param collectionCnt _more_
+     * @param collectionCnt  the collection count
      *
      * @return the list of entries (may be empty)
      *

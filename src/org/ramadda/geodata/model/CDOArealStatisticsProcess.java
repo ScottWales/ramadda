@@ -39,17 +39,24 @@ import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 
+import ucar.visad.data.CalendarDateTime;
+
 
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 /**
@@ -124,9 +131,9 @@ public class CDOArealStatisticsProcess extends DataProcess {
                                           CdmDataOutputHandler.ARG_LEVEL);
         }
 
-        typeHandler.addStatsWidget(request, sb);
+        addStatsWidget(request, sb);
 
-        typeHandler.addTimeWidget(request, sb, dataset, true);
+        addTimeWidget(request, sb, input);
 
         LatLonRect llr = null;
         if (dataset != null) {
@@ -158,6 +165,7 @@ public class CDOArealStatisticsProcess extends DataProcess {
 
         List<DataProcessOperand> outputEntries =
             new ArrayList<DataProcessOperand>();
+        int opNum = 0;
         for (DataProcessOperand op : input.getOperands()) {
             Entry oneOfThem = op.getEntries().get(0);
             Entry collection = GranuleTypeHandler.getCollectionEntry(request,
@@ -167,8 +175,10 @@ public class CDOArealStatisticsProcess extends DataProcess {
                 frequency = collection.getValues()[0].toString();
             }
             if (frequency.toLowerCase().indexOf("mon") >= 0) {
-                outputEntries.add(processMonthlyRequest(request, input, op));
+                outputEntries.add(processMonthlyRequest(request, input, op,
+                        opNum));
             }
+            opNum++;
         }
 
         return new DataProcessOutput(outputEntries);
@@ -195,13 +205,14 @@ public class CDOArealStatisticsProcess extends DataProcess {
      * @param request  the request
      * @param dpi      the DataProcessInput
      * @param op       the operand
+     * @param opNum    the operand number
      *
      * @return  some output
      *
      * @throws Exception Problem processing the monthly request
      */
     private DataProcessOperand processMonthlyRequest(Request request,
-            DataProcessInput dpi, DataProcessOperand op)
+            DataProcessInput dpi, DataProcessOperand op, int opNum)
             throws Exception {
 
         Entry        oneOfThem = op.getEntries().get(0);
@@ -237,7 +248,8 @@ public class CDOArealStatisticsProcess extends DataProcess {
         typeHandler.addLevelSelectCommands(request, oneOfThem, commands,
                                            CdmDataOutputHandler.ARG_LEVEL);
         typeHandler.addAreaSelectCommands(request, oneOfThem, commands);
-        typeHandler.addDateSelectCommands(request, oneOfThem, commands);
+        typeHandler.addDateSelectCommands(request, oneOfThem, commands,
+                                          opNum);
 
         //System.err.println("cmds:" + commands);
 
@@ -305,6 +317,10 @@ public class CDOArealStatisticsProcess extends DataProcess {
         outputName.append(stat);
         outputName.append(" ");
 
+        String yearNum = (opNum == 0)
+                         ? ""
+                         : String.valueOf(opNum + 1);
+
         int startMonth = request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
                          ? request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1)
                          : 1;
@@ -320,14 +336,17 @@ public class CDOArealStatisticsProcess extends DataProcess {
             outputName.append(MONTHS[endMonth - 1]);
         }
         outputName.append(" ");
-        int startYear = request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
-                        ? request.get(CDOOutputHandler.ARG_CDO_STARTYEAR, 1)
+        int startYear = request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                        + yearNum)
+                        ? request.get(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                      + yearNum, 1)
                         : 1979;
-        int endYear   = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR)
-                        ? request.get(CDOOutputHandler.ARG_CDO_ENDYEAR,
-                                      startMonth)
-                        : startMonth;
-        if (startMonth == endMonth) {
+        int endYear = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                      + yearNum)
+                      ? request.get(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                    + yearNum, startMonth)
+                      : startMonth;
+        if (startYear == endYear) {
             outputName.append(startYear);
         } else {
             outputName.append(startYear);
@@ -399,7 +418,7 @@ public class CDOArealStatisticsProcess extends DataProcess {
     private void runProcess(List<String> commands, File processDir,
                             File outFile)
             throws Exception {
-    		
+
         String[] results = getRepository().executeCommand(commands, null,
                                processDir, 60);
         String errorMsg = results[1];
@@ -477,5 +496,121 @@ public class CDOArealStatisticsProcess extends DataProcess {
      */
     private Repository getRepository() {
         return repository;
+    }
+
+
+    /**
+     * Add the statitics widget
+     *
+     * @param request  the Request
+     * @param sb       the HTML
+     */
+    public void addStatsWidget(Request request, StringBuffer sb) {
+        sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
+                                   CDOOutputHandler.PERIOD_TIM));
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msgLabel("Statistic"),
+                HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_STAT,
+                    CDOOutputHandler.STAT_TYPES)));
+    }
+
+    /**
+     * Add a time widget
+     *
+     * @param request  the Request
+     * @param sb       the HTML page
+     * @param input    the input
+     *
+     * @throws Exception  problem making datasets
+     */
+    public void addTimeWidget(Request request, StringBuffer sb,
+                              DataProcessInput input)
+            throws Exception {
+
+        List<GridDataset> grids = new ArrayList<GridDataset>();
+        for (DataProcessOperand op : input.getOperands()) {
+            Entry first = op.getEntries().get(0);
+            CdmDataOutputHandler dataOutputHandler =
+                typeHandler.getDataOutputHandler();
+            GridDataset dataset =
+                dataOutputHandler.getCdmManager().getGridDataset(first,
+                    first.getResource().getPath());
+            if (dataset != null) {
+                grids.add(dataset);
+            }
+
+        }
+        CDOOutputHandler.makeMonthsWidget(request, sb, null);
+        makeYearsWidget(request, sb, grids);
+    }
+
+
+    /**
+     * Add the year selection widget
+     *
+     * @param request  the Request
+     * @param sb       the StringBuffer to add to
+     * @param grids    list of grids to use
+     */
+    private void makeYearsWidget(Request request, StringBuffer sb,
+                                 List<GridDataset> grids) {
+        int grid = 0;
+        for (GridDataset dataset : grids) {
+            List<CalendarDate> dates =
+                CdmDataOutputHandler.getGridDates(dataset);
+            if ( !dates.isEmpty()) {
+                CalendarDate cd  = dates.get(0);
+                Calendar     cal = cd.getCalendar();
+                if (cal != null) {
+                    sb.append(
+                        HtmlUtils.hidden(
+                            CdmDataOutputHandler.ARG_CALENDAR,
+                            cal.toString()));
+                }
+            }
+            SortedSet<String> uniqueYears =
+                Collections.synchronizedSortedSet(new TreeSet<String>());
+            if ((dates != null) && !dates.isEmpty()) {
+                for (CalendarDate d : dates) {
+                    try {  // shouldn't get an exception
+                        String year =
+                            new CalendarDateTime(d).formattedString("yyyy",
+                                CalendarDateTime.DEFAULT_TIMEZONE);
+                        uniqueYears.add(year);
+                    } catch (Exception e) {}
+                }
+            }
+            List<String> years = new ArrayList<String>(uniqueYears);
+            // TODO:  make a better list of years
+            if (years.isEmpty()) {
+                for (int i = 1979; i <= 2012; i++) {
+                    years.add(String.valueOf(i));
+                }
+            }
+            String yearNum = (grid == 0)
+                             ? ""
+                             : String.valueOf(grid + 1);
+
+            sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
+                                          ((grids.size() == 1)
+                                           ? Repository.msgLabel("Start")
+                                           : (grid == 0)
+                                             ? Repository.msgLabel(
+                                             "First Dataset:<br>Start")
+                                             : Repository.msgLabel(
+                                             "Second Dataset:<br>Start")) + HtmlUtils.select(
+                                                 CDOOutputHandler.ARG_CDO_STARTYEAR
+                                                     + yearNum, years, years.get(
+                                                         0)) + HtmlUtils.space(
+                                                             3) + Repository.msgLabel(
+                                                                 "End") + HtmlUtils.select(
+                                                                     CDOOutputHandler.ARG_CDO_ENDYEAR
+                                                                         + yearNum, years, years.get(
+                                                                             years.size()
+                                                                                 - 1))));
+            grid++;
+        }
     }
 }
