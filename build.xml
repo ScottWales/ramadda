@@ -251,6 +251,8 @@
             compress="true"
             jarfile="${dist_dir}/ramaddadata.jar">
           <include name="org/ramadda/data/point/**/*.class"/>
+          <include name="org/ramadda/data/point/**/*.txt"/>
+          <include name="org/ramadda/data/point/**/*.properties"/>
           <include name="org/ramadda/data/record/**/*.class"/>
           <include name="org/ramadda/data/**/*.class"/>
           <include name="org/ramadda/util/**/*.class"/>

@@ -64,7 +64,8 @@
             compress="true"
             jarfile="${point_lib_dir}/pointtools.jar">
             <include name="org/**/*.class"/>
-            <include name="org/unavco/data/point/pointfiles.txt"/>
+            <include name="org/ramadda/data/point/**/*.txt"/>
+            <include name="org/ramadda/data/point/**/*.properties"/>
         </jar>
 
 
