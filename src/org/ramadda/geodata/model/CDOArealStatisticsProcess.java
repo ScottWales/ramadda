@@ -251,14 +251,13 @@ public class CDOArealStatisticsProcess extends DataProcess {
         typeHandler.addDateSelectCommands(request, oneOfThem, commands,
                                           opNum);
 
-        //System.err.println("cmds:" + commands);
+        System.err.println("cmds:" + commands);
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());
         runProcess(commands, dpi.getProcessDir(), outFile);
 
         if (climEntry != null) {
-            //TODO:  do stuff
             String climName = IOUtil.stripExtension(tail) + "_" + id
                               + "_clim.nc";
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
@@ -336,17 +335,19 @@ public class CDOArealStatisticsProcess extends DataProcess {
             outputName.append(MONTHS[endMonth - 1]);
         }
         outputName.append(" ");
-        int startYear = request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR
-                                        + yearNum)
-                        ? request.get(CDOOutputHandler.ARG_CDO_STARTYEAR
-                                      + yearNum, 1)
-                        : 1979;
-        int endYear = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR
-                                      + yearNum)
-                      ? request.get(CDOOutputHandler.ARG_CDO_ENDYEAR
-                                    + yearNum, startMonth)
-                      : startMonth;
-        if (startYear == endYear) {
+        String startYear = 
+        	request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
+        	 ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
+        	 : request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
+        	    ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR,"")
+        	    : "";
+        String endYear = 
+        	request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum)
+        	 ? request.getString(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum)
+        	 : request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR)
+        	    ? request.getString(CDOOutputHandler.ARG_CDO_ENDYEAR,startYear)
+        	    : startYear;
+        if (startYear.equals(endYear)) {
             outputName.append(startYear);
         } else {
             outputName.append(startYear);
@@ -592,15 +593,19 @@ public class CDOArealStatisticsProcess extends DataProcess {
             String yearNum = (grid == 0)
                              ? ""
                              : String.valueOf(grid + 1);
+            String yrLabel = (grids.size() == 1)
+                               ? "Start"
+                               : (grid == 0)
+                                   ? "First Dataset:<br>Start"
+                                   : "Second Dataset:<br>Start";
+            yrLabel = Repository.msgLabel(yrLabel);
+            if (grid > 0) {
+                years.add(0,"");
+            }
+            int endIndex = (grid == 0) ? years.size()-1 : 0;
 
             sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
-                                          ((grids.size() == 1)
-                                           ? Repository.msgLabel("Start")
-                                           : (grid == 0)
-                                             ? Repository.msgLabel(
-                                             "First Dataset:<br>Start")
-                                             : Repository.msgLabel(
-                                             "Second Dataset:<br>Start")) + HtmlUtils.select(
+            		                      yrLabel+ HtmlUtils.select(
                                                  CDOOutputHandler.ARG_CDO_STARTYEAR
                                                      + yearNum, years, years.get(
                                                          0)) + HtmlUtils.space(
@@ -608,9 +613,9 @@ public class CDOArealStatisticsProcess extends DataProcess {
                                                                  "End") + HtmlUtils.select(
                                                                      CDOOutputHandler.ARG_CDO_ENDYEAR
                                                                          + yearNum, years, years.get(
-                                                                             years.size()
-                                                                                 - 1))));
+                                                                             endIndex))));
             grid++;
         }
     }
+    
 }

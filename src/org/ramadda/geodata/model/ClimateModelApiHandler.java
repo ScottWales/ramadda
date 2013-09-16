@@ -69,7 +69,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** compare action */
     public static final String ARG_ACTION_COMPARE = "action.compare";
 
-    /** fixed collection id  */
+    /** fixed collection id */
     public static final String ARG_COLLECTION = "collection";
 
     /** collection 1 id */
@@ -384,7 +384,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 } catch (Exception exc) {
                     sb.append(
                         getPageHandler().showDialogError(
-                            "An error occurred:<br>" + exc));
+                            "An error occurred:<br>" + exc.getMessage()));
                 }
             } else {
                 sb.append(

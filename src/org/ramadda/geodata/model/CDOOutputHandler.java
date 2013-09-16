@@ -212,7 +212,7 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
     public static final String PERIOD_DAY = "day";
 
     /** start year */
-    private int startYear = 1979;
+    int startYear = 1979;
 
     /** end year */
     private int endYear = 2011;
@@ -726,13 +726,11 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
             HtmlUtils.formEntry(
                 msgLabel("Months"),
                 msgLabel("Start")
+                + HtmlUtils.select(ARG_CDO_STARTMONTH, MONTHS)
+                + HtmlUtils.space(3) + msgLabel("End")
                 + HtmlUtils.select(
-                    ARG_CDO_STARTMONTH, MONTHS,
-                    MONTHS.get(0).toString()) + HtmlUtils.space(3)
-                        + msgLabel("End")
-                        + HtmlUtils.select(
-                            ARG_CDO_ENDMONTH, MONTHS,
-                            MONTHS.get(11).toString())));
+                    ARG_CDO_ENDMONTH, MONTHS,
+                    MONTHS.get(MONTHS.size() - 1).getId().toString())));
     }
 
     /**
@@ -1066,18 +1064,13 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
 
         if (request.defined(ARG_CDO_STARTMONTH)
                 || request.defined(ARG_CDO_ENDMONTH)) {
-            int startMonth = request.defined(ARG_CDO_STARTMONTH)
-                             ? request.get(ARG_CDO_STARTMONTH, 1)
-                             : 1;
-            int endMonth   = request.defined(ARG_CDO_ENDMONTH)
-                             ? request.get(ARG_CDO_ENDMONTH, startMonth)
-                             : startMonth;
-            /*
-            if (endMonth < startMonth) {
-                getPageHandler().showDialogWarning(
-                    "Start month is after end month");
-            }
-            */
+            int          startMonth = request.defined(ARG_CDO_STARTMONTH)
+                                      ? request.get(ARG_CDO_STARTMONTH, 1)
+                                      : 1;
+            int          endMonth   = request.defined(ARG_CDO_ENDMONTH)
+                                      ? request.get(ARG_CDO_ENDMONTH,
+                                          startMonth)
+                                      : startMonth;
             StringBuffer buf = new StringBuffer(OP_SELMON + "," + startMonth);
             if (endMonth > startMonth) {
                 buf.append("/");
@@ -1131,7 +1124,6 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
         if (dateCounter > 0) {
             dateCounterString = String.valueOf(dateCounter + 1);
         }
-        addMonthSelectCommands(request, entry, commands);
 
         String dateSelect = null;
         if (request.defined(ARG_CDO_FROMDATE + dateCounterString)
@@ -1171,43 +1163,58 @@ public class CDOOutputHandler extends OutputHandler implements DataProcessProvid
                         + CalendarDateFormatter.toDateTimeStringISO(dates[1]);
                 }
             }
-        } else if (request.defined(ARG_CDO_STARTYEAR + dateCounterString)
-                   || request.defined(ARG_CDO_ENDYEAR + dateCounterString)) {
-            String[] years = new String[] {
-                                 request.defined(ARG_CDO_STARTYEAR
-                                     + dateCounterString)
-                                 ? request.getString(ARG_CDO_STARTYEAR
-                                     + dateCounterString, null)
-                                 : null,
-                                 request.defined(ARG_CDO_ENDYEAR
-                                     + dateCounterString)
-                                 ? request.getString(ARG_CDO_ENDYEAR
-                                     + dateCounterString, null)
-                                 : null };
+        } else {  // month and year
+            addMonthSelectCommands(request, entry, commands);
+            String startYear =
+                request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                + dateCounterString)
+                ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                    + dateCounterString)
+                : request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
+                  ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR,
+                                      null)
+                  : null;
+            String endYear = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                             + dateCounterString)
+                             ? request.getString(
+                                 CDOOutputHandler.ARG_CDO_ENDYEAR
+                                 + dateCounterString)
+                             : request.defined(
+                                 CDOOutputHandler.ARG_CDO_ENDYEAR)
+                               ? request.getString(
+                                   CDOOutputHandler.ARG_CDO_ENDYEAR,
+                                   startYear)
+                               : startYear;
             //have to have both dates
-            if ((years[0] != null) && (years[1] == null)) {
-                years[0] = null;
+            if ((startYear != null) && (endYear == null)) {
+                startYear = null;
             }
-            if ((years[1] != null) && (years[0] == null)) {
-                years[1] = null;
+            if ((endYear != null) && (startYear == null)) {
+                endYear = null;
             }
-            if ((years[0] != null) && (years[1] != null)) {
-                if (years[0].compareTo(years[1]) > 0) {
-                    getPageHandler().showDialogWarning(
+            if ((startYear != null) && (endYear != null)) {
+                if (startYear.compareTo(endYear) > 0) {
+                    throw new IllegalArgumentException(
                         "Start year is after end year");
+                    /*
+                getPageHandler().showDialogWarning(
+                    "Start year is after end year");
+                */
                 } else {
-                    dateSelect = OP_SELYEAR + "," + years[0] + "/" + years[1];
+                    dateSelect = CDOOutputHandler.OP_SELYEAR + ","
+                                 + startYear + "/" + endYear;
                 }
             }
-
-        } else {
-            dateSelect = OP_SELYEAR + "," + startYear;
-
         }
+        // set some sort of default ?
+        /*
+        if (dateSelect == null) {
+            dateSelect = OP_SELYEAR + "," + startYear;
+        }
+        */
         if (dateSelect != null) {
             commands.add(dateSelect);
         }
-
     }
 
     /**
