@@ -677,7 +677,7 @@ begin
   end if
   
   convertcmd = "%convert% "+cropbox(4)+" -crop "+cropbox(0)+"x"+cropbox(1)+"+"+cropbox(2)+"+"+cropbox(3)+" "+AlphaColor+" +repage -depth 8 "+cropbox(5)
-  print(convertcmd)
+  ;;print(convertcmd)
   system(convertcmd)
   
   icon = cropbox(5)

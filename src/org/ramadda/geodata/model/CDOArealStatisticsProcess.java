@@ -251,7 +251,7 @@ public class CDOArealStatisticsProcess extends DataProcess {
         typeHandler.addDateSelectCommands(request, oneOfThem, commands,
                                           opNum);
 
-        System.err.println("cmds:" + commands);
+        //System.err.println("cmds:" + commands);
 
         commands.add(oneOfThem.getResource().getPath());
         commands.add(outFile.toString());

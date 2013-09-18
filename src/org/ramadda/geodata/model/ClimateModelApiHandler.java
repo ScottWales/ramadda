@@ -236,9 +236,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
         template = template.replace("${description}", dpiDesc.toString());
         if (anyKMZ) {
-            template =
-                template.replace("${output}",
-                                 "{{earth width=\"500\" name=\"*.kmz\"}}");
+            template = template.replace(
+                "${output}",
+                "{{earth width=\"500\" name=\"*.kmz\" listentries=\"true\"}}");
         } else {
             template = template.replace(
                 "${output}",
@@ -409,7 +409,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         sb.append(HtmlUtils.importJS(fileUrl("/model/compare.js")));
 
-        sb.append(HtmlUtils.form(getCompareUrlPath()));
+        sb.append(HtmlUtils.form(getCompareUrlPath(),
+                                 makeFormSubmitDialog(sb,
+                                     msg("Making Plot..."))));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("Select Climate Collection", ""));
@@ -425,7 +427,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                    HtmlUtils.squote(formId)));
         sb.append(HtmlUtils.h2("Climate Model Comparison"));
         sb.append(
-            "Plot monthly maps from different climate model datasets as well as differences between datasets. Means, anomalies and climatologies are available.");
+            "Plot monthly maps from different climate model datasets as well as differences between datasets.");
 
         if (fixedCollection != null) {
             sb.append(HtmlUtils.p());

@@ -441,6 +441,20 @@ begin
   gsn_text_ndc(wksname,plottext,0.5,0.025,txres)
 end
 
+;*************************************************
+; Procedure:  addOverlayToKml
+;
+; Purpose:    add an overlay to the kml
+;
+; Params:     kml - the resource
+;             plot - the plot to use
+;             addLB - true to add the label bar
+;*************************************************
+undef ("addOverlayToKml")
+procedure addOverlayToKml(kml:logical, plot:graphic, addLB:logical)
+begin
+end
+
 
 
 ;************************************************
@@ -455,7 +469,7 @@ end
 ;***********************************************
 undef("plotmap")
 procedure plotmap(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
-local data, numfiles, plots, dodiff, dopanel, isanom
+local data, numfiles, plots, dodiff, doPanel, isanom
 
 begin
 
@@ -464,9 +478,10 @@ begin
   plots = new(numfiles,graphic)
   dodiff = opts@outtype .eq. "diff" .and. numfiles .gt. 1
   isanom = opts@isanom
-  dopanel = (.not. dodiff) .and. numfiles .gt. 1
+  doGoogle = (opts@plottype .eq. "kmz")
+  doPanel = (.not. dodiff) .and. (.not. doGoogle) .and. numfiles .gt. 1 
   plottitles = opts@titles
-  print(plottitles)
+  ;print(plottitles)
   numtitles = dimsizes(plottitles)
 
   rescf = True;
@@ -480,7 +495,6 @@ begin
   centerLatF         = (opts@maxLat + opts@minLat)/2
   rescf@mpCenterLonF         = centerLonF
 
-  doGoogle = (opts@plottype .eq. "kmz")
 
   rescf@gsnDraw           = False         ; Don't draw plots (for overlay)
   rescf@gsnFrame          = False         ; don't advance frame yet
@@ -498,7 +512,7 @@ begin
   rescf@cnFillMode= "AreaFill"  
 
   ; labelbar
-  if (dopanel) then
+  if (doPanel) then
     rescf@lbLabelBarOn = False         ; turn off label bar
   end if
 
@@ -581,107 +595,256 @@ begin
       res2 = remove_middle_contours(plots(0), rescf, 1)
       plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
     end if
-    addAnnotation(wks,opts@annotation)
-  else
-    mydata = data(0,:,:)
-    if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
-      rescf@tiMainString        = plottitles(0)
+    if (.not. doGoogle) then
+        addAnnotation(wks,opts@annotation)
     end if
-    if (isanom .and. cint .eq. 0) then
-      symMinMaxPlt(mydata,20,False,rescf)
-    end if
-    plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
-    if (isanom .and. cint .eq. 0) then
-      res2 = remove_middle_contours(plots(0), rescf, 1)
-      plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
-    end if
-    if (.not. dopanel) then
-      addAnnotation(wks,opts@annotation)
-    end if
-    delete(mydata)
-    do i = 1,numfiles-1
-      nextdata = readdata(files(i),opts)
-      mydata = nextdata(0,:,:)
-      if ((.not. ismissing(plottitles(i))) .and. (plottitles(i) .ne. "")) then
-        rescf@tiMainString        = plottitles(i)
+  else 
+    if (.not. doGoogle) then
+      mydata = data(0,:,:)
+      if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
+        rescf@tiMainString        = plottitles(0)
       end if
-      plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
       if (isanom .and. cint .eq. 0) then
-        res2 = remove_middle_contours(plots(i), rescf, 1)
-        plots(i) = gsn_csm_contour_map_ce(wks,mydata,res2)
+        symMinMaxPlt(mydata,20,False,rescf)
       end if
-      if (.not. dopanel) then
+      plots(0) = gsn_csm_contour_map_ce(wks,mydata,rescf)
+      if (isanom .and. cint .eq. 0) then
+        res2 = remove_middle_contours(plots(0), rescf, 1)
+        plots(0) = gsn_csm_contour_map_ce(wks,mydata,res2)
+      end if
+      if (.not. doPanel) then
         addAnnotation(wks,opts@annotation)
       end if
       delete(mydata)
-      delete(nextdata)
-    end do
+      do i = 1,numfiles-1
+        nextdata = readdata(files(i),opts)
+        mydata = nextdata(0,:,:)
+        if ((.not. ismissing(plottitles(i))) .and. (plottitles(i) .ne. "")) then
+          rescf@tiMainString        = plottitles(i)
+        end if
+        plots(i) = gsn_csm_contour_map_ce(wks,mydata,rescf)
+        if (isanom .and. cint .eq. 0) then
+          res2 = remove_middle_contours(plots(i), rescf, 1)
+          plots(i) = gsn_csm_contour_map_ce(wks,mydata,res2)
+        end if
+        if (.not. doPanel) then
+          addAnnotation(wks,opts@annotation)
+        end if
+        delete(mydata)
+        delete(nextdata)
+      end do
+    else
+      
+      ;; Make the first plot to get the labelbar
+      mydata = data(0,:,:)
+      if (isanom .and. cint .eq. 0) then
+        symMinMaxPlt(mydata,20,False,rescf)
+      end if
+      gplot = gsn_csm_contour_map_ce(wks,mydata,rescf)
+      if (isanom .and. cint .eq. 0) then
+        res2 = remove_middle_contours(gplot, rescf, 1)
+        gplot = gsn_csm_contour_map_ce(wks,mydata,res2)
+      end if
+
+      kres = True
+      kres@product_dir=opts@product_dir
+  
+      ; open a new KML document
+      kml = kml_open_document(wks_name, wks_name, kres) ; open new kml document
+      kml = kml_add_lookat( kml, doubletofloat(centerLonF), doubletofloat(centerLatF), 0.0, 4616152, kres)
+  
+      ; position resources for ScreenOverlay element
+      kres@kmlOverlayXY = True
+      kres@kmlOverlayXYx = 0
+      kres@kmlOverlayXYy = 1
+      kres@kmlOverlayXYxunits = "fraction" ;
+      kres@kmlOverlayXYyunits = "fraction" ; pixels, or insetPixels
+      kres@kmlScreenXY = True
+      kres@kmlScreenXYx = 0
+      kres@kmlScreenXYy = 1
+      kres@kmlScreenXYxunits = "fraction"
+      kres@kmlScreenXYyunits = "fraction"
+       
+      ; crops the labelbar from the plot and converts it to a png
+      lbicon = kml_crop_labelbar(kml, "label bar", wks, gplot, kres)
+        
+      ; add labelbar to KML document as a ScreenOverlay element
+      kml = kml_add_screenoverlay ( kml, "Legend", lbicon, kres )
+
+      ; add cropped labelbar filename to list of files to 
+      ; be compressed in KMZ archive
+      kml_add_kmzfile(kml,lbicon)
+         
+
+      ; add a folder for the ground overlay(s)
+      kml_folder = kml_open_folder(kml, "GroundOverlay Folder",False)
+
+      ; get the latlon coordinates describing the corners of the groundoverlay plot
+      LatLonBox = kml_get_vp_latlonbox(gplot)
+      
+      ; get the page coordinates of the actual map from the plot
+      cropbox = kml_get_vp_cropbox(wks,gplot)
+      
+      draw(gplot)
+      frame(wks)
+      ; "delete(wks)" can not be called within a function, 
+      ;need to find a work around for this
+      delete(wks)
+        
+      kres@kmlCropAlphaColor = "white"
+      ; crops the groundoverlay map and converts it to png
+      ; must "delete(wks)" before this command
+      icon = kml_crop_plot(cropbox, kres)
+      
+      name="Plot 1"
+      if ((.not. ismissing(plottitles(0))) .and. (plottitles(0) .ne. "")) then
+        name        = plottitles(0)
+      else
+        name = "Plot 1"
+      end if 
+      
+      ; add cropped map to KML document as a GroundOverlay element
+      kml = kml_add_groundoverlay(kml, name, icon, LatLonBox, 0, kres)
+        
+      ; add cropped map filename to list of files to be 
+      ; compressed in KMZ archive
+      kml_add_kmzfile(kml,icon)
+
+      if (numfiles .gt. 1) then
+        do i = 1,numfiles-1
+          wks = gsn_open_wks(wks_type,wks_name+i) 
+          ;drawNDCGrid(wks)
+          gsn_define_colormap(wks, opts@colormap)
+        
+          ;; handle precip
+          if (data@units .eq. "mm/day") then
+            if (.not. isanom) then
+              rescf@gsnSpreadColorEnd = -2
+              newindex = NhlNewColor(wks,1.0,1.0,1.0)
+              rescf@gsnCnMissingColor = newindex
+            end if
+            gsn_reverse_colormap(wks)
+          end if
+          nextdata = readdata(files(i),opts)
+          mydata = nextdata(0,:,:)
+          gplot = gsn_csm_contour_map_ce(wks,mydata,rescf)
+          if (isanom .and. cint .eq. 0) then
+            res2 = remove_middle_contours(gplot, rescf, 1)
+            gplot = gsn_csm_contour_map_ce(wks,mydata,res2)
+          end if
+          delete(mydata)
+          delete(nextdata)
+          ; get the latlon coordinates describing the corners of the groundoverlay plot
+          LatLonBox = kml_get_vp_latlonbox(gplot)
+      
+          ; get the page coordinates of the actual map from the plot
+          cropbox = kml_get_vp_cropbox(wks,gplot)
+      
+          draw(gplot)
+          frame(wks)
+          ; "delete(wks)" can not be called within a function, 
+          ;need to find a work around for this
+          delete(wks)
+        
+          ; crops the groundoverlay map and converts it to png
+          ; must "delete(wks)" before this command
+          icon = kml_crop_plot(cropbox, kres)
+      
+          if ((.not. ismissing(plottitles(i))) .and. (plottitles(i) .ne. "")) then
+            name        = plottitles(i)
+          else
+            name = "Plot "+i
+          end if 
+      
+          ; add cropped map to KML document as a GroundOverlay element
+          kml = kml_add_groundoverlay(kml, name, icon, LatLonBox, 0, kres)
+        
+          ; add cropped map filename to list of files to be 
+          ; compressed in KMZ archive
+          kml_add_kmzfile(kml,icon)
+        end do
+      end if
+  
+      kml_folder=kml_close_folder(kml) ; close the folder
+        
+      ; close kml document
+      kml = kml_close_document(kml)
+  
+      ; write kml document to file 
+      kml_write(kml)
+  
+      ; zip kml file and overlay images together in to "example05.kmz"
+      kml_make_kmz(kml)
+    end if
   end if
   
   if (doGoogle) then
 
-    kres = True
-      
-    kres@product_dir=opts@product_dir
-
-    ; open a new KML document
-    kml = kml_open_document(wks_name, wks_name, kres) ; open new kml document
-
-    ; position resources for ScreenOverlay element
-    kres@kmlOverlayXY = True
-    kres@kmlOverlayXYx = 0
-    kres@kmlOverlayXYy = 0
-    kres@kmlOverlayXYxunits = "fraction" ;
-    kres@kmlOverlayXYyunits = "fraction" ; pixels, or insetPixels
-    kres@kmlScreenXY = True
-    kres@kmlScreenXYx = 0
-    kres@kmlScreenXYy = 0
-    kres@kmlScreenXYxunits = "fraction"
-    kres@kmlScreenXYyunits = "fraction"
-     
-    ; crops the labelbar from the plot and converts it to a png
-    lbicon = kml_crop_labelbar(kml, "label bar", wks, plots(0), kres)
-      
-    ; add labelbar to KML document as a ScreenOverlay element
-    kml = kml_add_screenoverlay ( kml, "Label Bar", lbicon, kres )
+    if (dodiff) then
+      kres = True
+        
+      kres@product_dir=opts@product_dir
+  
+      ; open a new KML document
+      kml = kml_open_document(wks_name, wks_name, kres) ; open new kml document
+  
+      ; position resources for ScreenOverlay element
+      kres@kmlOverlayXY = True
+      kres@kmlOverlayXYx = 0
+      kres@kmlOverlayXYy = 1
+      kres@kmlOverlayXYxunits = "fraction" ;
+      kres@kmlOverlayXYyunits = "fraction" ; pixels, or insetPixels
+      kres@kmlScreenXY = True
+      kres@kmlScreenXYx = 0
+      kres@kmlScreenXYy = 1
+      kres@kmlScreenXYxunits = "fraction"
+      kres@kmlScreenXYyunits = "fraction"
        
-    ; add cropped labelbar filename to list of files to be compressed in KMZ archive
-    kml_add_kmzfile(kml,lbicon)
-       
-    ; get the latlon coordinates describing the corners of the groundoverlay plot
-    LatLonBox = kml_get_vp_latlonbox(plots(0))
-    
-    ; get the page coordinates of the actual map from the plot
-    cropbox = kml_get_vp_cropbox(wks,plots(0))
-    
-    draw(plots(0))
-    frame(wks)
-    ; "delete(wks)" can not be called within a function, need to find a work around for this
-    delete(wks)
+      ; crops the labelbar from the plot and converts it to a png
+      lbicon = kml_crop_labelbar(kml, "label bar", wks, plots(0), kres)
+        
+      ; add labelbar to KML document as a ScreenOverlay element
+      kml = kml_add_screenoverlay ( kml, "Label Bar", lbicon, kres )
+         
+      ; add cropped labelbar filename to list of files to be compressed in KMZ archive
+      kml_add_kmzfile(kml,lbicon)
+         
+      ; get the latlon coordinates describing the corners of the groundoverlay plot
+      LatLonBox = kml_get_vp_latlonbox(plots(0))
       
-    ; crops the groundoverlay map and converts it to png
-    ; must "delete(wks)" before this command
-    icon = kml_crop_plot(cropbox, kres)
-    
-    ; add cropped map to KML document as a GroundOverlay element
-    kml = kml_add_groundoverlay(kml, "GroundOverlay", icon, LatLonBox, 0, kres)
+      ; get the page coordinates of the actual map from the plot
+      cropbox = kml_get_vp_cropbox(wks,plots(0))
       
-    ; add cropped map filename to list of files to be compressed in KMZ archive
-    kml_add_kmzfile(kml,icon)
-
-    ;kml = kml_add_lookat( kml, centerLonF, centerLatF, 0.0, 4616152, kres)
+      draw(plots(0))
+      frame(wks)
+      ; "delete(wks)" can not be called within a function, need to find a work around for this
+      delete(wks)
+        
+      ; crops the groundoverlay map and converts it to png
+      ; must "delete(wks)" before this command
+      icon = kml_crop_plot(cropbox, kres)
       
-    ; close kml document
-    kml = kml_close_document(kml)
-
-    ; write kml document to file 
-    kml_write(kml)
-
-    ; zip kml file and overlay images together in to "example05.kmz"
-    kml_make_kmz(kml)
+      ; add cropped map to KML document as a GroundOverlay element
+      kml = kml_add_groundoverlay(kml, "GroundOverlay", icon, LatLonBox, 0, kres)
+        
+      ; add cropped map filename to list of files to be compressed in KMZ archive
+      kml_add_kmzfile(kml,icon)
+  
+      ;kml = kml_add_lookat( kml, centerLonF, centerLatF, 0.0, 4616152, kres)
+        kml = kml_add_lookat( kml, doubletofloat(centerLonF), doubletofloat(centerLatF), 0.0, 4616152, kres)
+        
+      ; close kml document
+      kml = kml_close_document(kml)
+  
+      ; write kml document to file 
+      kml_write(kml)
+  
+      ; zip kml file and overlay images together in to "example05.kmz"
+      kml_make_kmz(kml)
+    end if
       
   else
-    if (dopanel) then
+    if (doPanel) then
 
       ;---Create resources for paneling
       resP                            = True
@@ -950,17 +1113,22 @@ begin
   if (ismissing(outType)) then
     outType = "diff"
   end if
-  
-  colormap=getenv("colormap")
-  if (ismissing(colormap)) then
-    colormap = "rainbow"
-  end if
-  
+
   anom=getenv("anom")
   if (.not. ismissing(anom)) then
     isanom = anom .eq. "true"
   else
     isanom = False
+  end if
+  
+  
+  colormap=getenv("colormap")
+  if (ismissing(colormap)) then
+    if (isanom) then
+      colormap = "testcmap"
+    else
+      colormap = "rainbow"
+    end if
   end if
   
   ;

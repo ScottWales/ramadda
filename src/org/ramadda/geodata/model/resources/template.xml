@@ -5,7 +5,8 @@
 ${output}
 <p>
 <br>
-<b>All Files</b> <a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download)</a>
+<b>Files Generated During Processing</b> 
+<a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download All)</a>
 {{tree}}
 </wiki>
 ]]></description>
