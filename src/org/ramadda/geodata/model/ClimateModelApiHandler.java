@@ -238,7 +238,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (anyKMZ) {
             template = template.replace(
                 "${output}",
-                "{{earth width=\"500\" name=\"*.kmz\" listentries=\"true\"}}");
+                "{{earth width=\"500\" name=\"*.kmz\" listentries=\"true\" listwidth=\"500\"}}");
         } else {
             template = template.replace(
                 "${output}",
