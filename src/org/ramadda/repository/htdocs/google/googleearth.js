@@ -184,6 +184,9 @@ function  RamaddaEarth(id, url) {
             return;
         }
         this.googleEarth.getFeatures().appendChild(object);
+        if (object.getAbstractView()) {
+            this.googleEarth.getView().setAbstractView(object.getAbstractView());
+        }
         object.setVisibility(true);
         /*
         if(object.getFeatures) {
