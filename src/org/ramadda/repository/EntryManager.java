@@ -7807,6 +7807,33 @@ public class EntryManager extends RepositoryManager {
                     new Hashtable(), false, internal);
     }
 
+
+
+
+    /**
+       This writes 
+     */
+    public void writeEntryXmlFile(Request request, Entry entry, File file) throws Exception {
+        IOUtil.writeFile(file, getRepository().getXmlOutputHandler().getEntryXml(request, entry));
+    }
+
+
+    public void writeEntryXmlFile(Request request, Entry entry) throws Exception {
+        writeEntryXmlFile(request, entry, getEntryXmlFile(entry));
+    }
+
+    public File  getEntryXmlFile(Entry entry) throws Exception {
+        return getEntryXmlFile(entry.getFile());
+    }
+
+
+    public File  getEntryXmlFile(File file) throws Exception {
+        File parent = file.getParentFile();
+        String name = file.getName();
+        String newName = "." + name +".ramadda.xml";
+        return new File(IOUtil.joinDir(parent, newName));
+    }
+
     /**
      * _more_
      *

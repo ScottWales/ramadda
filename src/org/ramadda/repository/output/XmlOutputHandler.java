@@ -112,9 +112,18 @@ public class XmlOutputHandler extends OutputHandler {
         Document doc = XmlUtil.makeDocument();
         Element root = getEntryTag(request, entry, null, doc, null, false,
                                    true);
-        StringBuffer sb = new StringBuffer(XmlUtil.toString(root));
-
+        StringBuffer sb = new StringBuffer(getEntryXml(request, entry));
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
+    }
+
+
+    public String  getEntryXml(Request request, 
+                              Entry entry)
+            throws Exception {
+        Document doc = XmlUtil.makeDocument();
+        Element root = getEntryTag(request, entry, null, doc, null, false,
+                                   true);
+        return XmlUtil.toString(root);
     }
 
 
