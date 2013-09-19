@@ -58,7 +58,7 @@ import java.util.List;
 
 
 /**
- * Provides a top-level API
+ * An API for doing climate model comparisons
  *
  */
 public class ClimateModelApiHandler extends RepositoryManager implements RequestHandler {
@@ -150,32 +150,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (processDir == null) {
             processDir = getStorageManager().createProcessDir();
         }
-        /*
-        String template =
-            getStorageManager().readSystemResource(
-                "/org/ramadda/geodata/model/resources/template.xml");
-        template = template.replace("${name}",
-                                    "Climate model comparison output");
-        StringBuffer dpiDesc = new StringBuffer();
-        if (dpi.getOperands().size() > 1) {
-                dpiDesc.append("Comparison of ");
-        } else {
-                dpiDesc.append("Analysis of ");
-        }
-        int          cntr    = 0;
-        for (DataProcessOperand dpo : dpi.getOperands()) {
-            if (cntr > 0) {
-                dpiDesc.append(" and ");
-            }
-            dpiDesc.append(dpo.getDescription());
-            cntr++;
-        }
-        template = template.replace("${description}", dpiDesc.toString());
-        IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
-                ".this.ramadda.xml")), template);
-        */
-
-
 
         List<DataProcessOutput> outputs   =
             new ArrayList<DataProcessOutput>();
@@ -335,9 +309,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 List<Entry> entries = findEntries(request, collection,
                                           collectionEntry, collectionCnt);
                 if (entries.isEmpty()) {
+                    if (operands.isEmpty()) {
+                        tmp.append(
+                            getPageHandler().showDialogError("You need to select all fields"));
+                    }
                     continue;
                 }
-                //TODO: fix this later 
                 operands.add(new DataProcessOperand(entries.get(0).getName(),
                         entries));
 
@@ -408,10 +385,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.comment("collection form"));
 
         sb.append(HtmlUtils.importJS(fileUrl("/model/compare.js")));
-
-        sb.append(HtmlUtils.form(getCompareUrlPath(),
-                                 makeFormSubmitDialog(sb,
-                                     msg("Making Plot..."))));
+        
+        sb.append(HtmlUtils.form(getCompareUrlPath()));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("Select Climate Collection", ""));
@@ -453,15 +428,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             StringBuffer dsb = new StringBuffer();
 
 
-            //dsb.append("<table><tr valign=top>\n");
-            //dsb.append(HtmlUtils.open("td"));
             dsb.append(HtmlUtils.formTable());
             if (collectionNumber == 0) {
                 datasetTitles.add("Dataset 1");
-                //sb.append("<tr><td colspan=\"2\">Dataset 1</td></tr>\n");
             } else {
                 datasetTitles.add("Dataset 2 (Optional)");
-                //sb.append("<tr><td colspan=\"2\">Dataset 2 (Optional)</td></tr>\n");
             }
             collectionNumber++;
             String arg = getCollectionSelectArg(collection);
@@ -521,7 +492,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
             StringBuffer results = extra.get(collection);
             if (results != null) {
-                //dsb.append(HtmlUtils.formEntry("", results.toString()));
                 dsb.append(results.toString());
             }
 
@@ -530,29 +500,25 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         sb.append(OutputHandler.makeTabs(datasetTitles, datasets, true,
-                                         true));
-        //sb.append(HtmlUtils.formTableClose());
+                                         false));
         sb.append(HtmlUtils.p());
-
-
 
 
         if ( !hasOperands) {
             sb.append(HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")));
+                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Searching for data")+"...")));
             sb.append("</td>\n");
             // add an empty cell to keep the other in line
             sb.append("<td width=\"400px\">&nbsp;</td>");
         } else {
             sb.append(HtmlUtils.submit("Select Again", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")));
+                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Searching for new data")+"...")));
             sb.append("</td>\n");
             sb.append("<td width=\"400px\">\n");
             List<String> processTabs   = new ArrayList<String>();
             List<String> processTitles = new ArrayList<String>();
 
             boolean      first         = true;
-            //List<DataProcess> processes     = typeHandler.getDataProcesses();
             List<DataProcess> processes = getDataProcesses(request);
             for (DataProcess process : processes) {
                 StringBuffer tmpSB = new StringBuffer();
@@ -574,8 +540,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 if (process.canHandle(dpi)) {
                     process.addToForm(request, dpi, tmpSB);
-                    //processTabs.add(HtmlUtils.div(tmpSB.toString(),
-                    //        HtmlUtils.style("min-height:200px;")));
                     processTabs.add(tmpSB.toString());
                     processTitles.add(process.getDataProcessLabel());
                     first = false;
@@ -583,33 +547,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
 
 
-            /*
-            if (processTitles.size() == 1) {
-                sb.append(header(msg(processTitles.get(0))));
-                sb.append(processTabs.get(0));
-            } else {
-                sb.append(header(msg("Process Data")));
-                StringBuffer processTable = new StringBuffer();
-                processTable.append("<table><tr><td>");
-                HtmlUtils.makeAccordian(processTable, processTitles,
-                                        processTabs);
-                processTable.append("</td>");
-                processTable.append("<td>");
-                processTable.append(HtmlUtils.div("",
-                        HtmlUtils.cssClass("entryoutput")
-                        + HtmlUtils.id(formId + "_output_image")));
-
-                processTable.append("</td></tr></table>");
-                sb.append(processTable);
-            }
-            */
             sb.append(header(msg("Process Data")));
             for (int i = 0; i < processTitles.size(); i++) {
-                //sb.append("<div class=\"shadow-box\">\n");
                 sb.append(
                     "<div style=\"border:1px #ccc solid;margin: 0 0 .5em 0;\">");
-                //sb.append("<div style=\"border: none; padding: 0.2em; "+
-                //                "background: #CCFFFF; font-weight: bold; margin: 1em 0.5em 0 0;\">\n");
                 sb.append(
                     "<div style=\"border: none; padding: 0.3em; "
                     + "background: #88FFFF; font-weight: bold; margin: 0 0 0 0;\">\n");
@@ -622,7 +563,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
             sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.submit("Make Plot", ARG_ACTION_COMPARE,
-                                       HtmlUtils.id(formId + ".submit")));
+                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Making Plot, Please Wait")+"...")));
+                                       
             sb.append("</td>");
         }
         sb.append("\n</tr></table>");
