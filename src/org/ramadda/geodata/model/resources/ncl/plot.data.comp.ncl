@@ -534,7 +534,7 @@ begin
     wks_type="ps"
     kml_map_defaults(rescf) ; turn off many options
     rescf@cnLinesOn = False ; turn off contour lines
-    rescf@lbLabelFontColor="White"
+    rescf@lbLabelFontColor="SlateGray"
       
   else
 
@@ -691,7 +691,7 @@ begin
       ;need to find a work around for this
       delete(wks)
         
-      kres@kmlCropAlphaColor = "white"
+      ;kres@kmlCropAlphaColor = "white"
       ; crops the groundoverlay map and converts it to png
       ; must "delete(wks)" before this command
       icon = kml_crop_plot(cropbox, kres)

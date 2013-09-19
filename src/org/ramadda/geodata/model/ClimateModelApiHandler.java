@@ -212,7 +212,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (anyKMZ) {
             template = template.replace(
                 "${output}",
-                "{{earth width=\"500\" name=\"*.kmz\" listentries=\"true\" listwidth=\"500\"}}");
+                "{{earth width=\"500\" name=\"*.kmz\" listentries=\"true\" listwidth=\"450\"}}");
         } else {
             template = template.replace(
                 "${output}",
@@ -311,8 +311,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (entries.isEmpty()) {
                     if (operands.isEmpty()) {
                         tmp.append(
-                            getPageHandler().showDialogError("You need to select all fields"));
+                            getPageHandler().showDialogError(
+                                "You need to select all fields"));
                     }
+
                     continue;
                 }
                 operands.add(new DataProcessOperand(entries.get(0).getName(),
@@ -385,7 +387,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.comment("collection form"));
 
         sb.append(HtmlUtils.importJS(fileUrl("/model/compare.js")));
-        
+
         sb.append(HtmlUtils.form(getCompareUrlPath()));
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
@@ -506,20 +508,26 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         if ( !hasOperands) {
             sb.append(HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Searching for data")+"...")));
+                                       HtmlUtils.id(formId + ".submit")
+                                       + makeButtonSubmitDialog(sb,
+                                           msg("Searching for data")
+                                           + "...")));
             sb.append("</td>\n");
             // add an empty cell to keep the other in line
             sb.append("<td width=\"400px\">&nbsp;</td>");
         } else {
             sb.append(HtmlUtils.submit("Select Again", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Searching for new data")+"...")));
+                                       HtmlUtils.id(formId + ".submit")
+                                       + makeButtonSubmitDialog(sb,
+                                           msg("Searching for new data")
+                                           + "...")));
             sb.append("</td>\n");
             sb.append("<td width=\"400px\">\n");
-            List<String> processTabs   = new ArrayList<String>();
-            List<String> processTitles = new ArrayList<String>();
+            List<String>      processTabs   = new ArrayList<String>();
+            List<String>      processTitles = new ArrayList<String>();
 
-            boolean      first         = true;
-            List<DataProcess> processes = getDataProcesses(request);
+            boolean           first         = true;
+            List<DataProcess> processes     = getDataProcesses(request);
             for (DataProcess process : processes) {
                 StringBuffer tmpSB = new StringBuffer();
                 if (processes.size() > 1) {
@@ -563,8 +571,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
             sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.submit("Make Plot", ARG_ACTION_COMPARE,
-                                       HtmlUtils.id(formId + ".submit")+makeButtonSubmitDialog(sb,msg("Making Plot, Please Wait")+"...")));
-                                       
+                                       HtmlUtils.id(formId + ".submit")
+                                       + makeButtonSubmitDialog(sb,
+                                           msg("Making Plot, Please Wait")
+                                           + "...")));
+
             sb.append("</td>");
         }
         sb.append("\n</tr></table>");
