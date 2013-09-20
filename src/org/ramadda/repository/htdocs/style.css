@@ -63,7 +63,7 @@ form {
 .entry-download-box {
   background-color: #338F33;
   border: 1px #666 solid;
-//  max-width:120px;
+  max-width:8em;
   color: white;
   font-weight: bold; 
   padding-left: 8px;
