@@ -201,7 +201,6 @@ public class Link {
      * @return _more_
      */
     public String toString() {
-        if(true) return url;
         if (hr) {
             return "<hr>";
         }
