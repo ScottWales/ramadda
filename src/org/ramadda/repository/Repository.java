@@ -4307,6 +4307,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result(BLANK, sb);
     }
 
+
+    public Result processTest(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("HttpServletRequest.getServerName: ");
+        sb.append(request.getHttpServletRequest().getServerName());
+        sb.append("<br>");
+
+
+        sb.append("HttpServletRequest.getServerPort: ");
+        sb.append(request.getHttpServletRequest().getServerPort());
+        sb.append("<br>");
+
+
+        return new Result(BLANK, sb);
+    }
+
     /**
      * _more_
      *
