@@ -21,81 +21,79 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.*;
-
-import org.ramadda.repository.database.*;
-import org.ramadda.repository.harvester.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-
-import org.ramadda.repository.type.*;
-
-
+import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.AuthorizationMethod;
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.auth.User;
+import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.harvester.Harvester;
+import org.ramadda.repository.metadata.AdminMetadataHandler;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataHandler;
+import org.ramadda.repository.metadata.MetadataType;
+import org.ramadda.repository.output.HtmlOutputHandler;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.output.PageStyle;
+import org.ramadda.repository.output.XmlOutputHandler;
+import org.ramadda.repository.type.Column;
+import org.ramadda.repository.type.ProcessFileTypeHandler;
+import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlTemplate;
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.JobManager;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlNodeList;
 import ucar.unidata.xml.XmlUtil;
 
-import java.awt.*;
+
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-
-import java.io.*;
-
 import java.io.File;
+import java.io.FileFilter;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
-
-
-import java.net.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import java.text.SimpleDateFormat;
-
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import java.util.regex.*;
-
-import java.util.zip.*;
-
-import javax.swing.ImageIcon;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 
@@ -704,15 +702,17 @@ public class EntryManager extends RepositoryManager {
             if (entry.isDummy()) {
                 entryForHeader = getTopGroup();
             }
-            String   entryFooter = entryFooter(request, entryForHeader);
+            String       entryFooter = entryFooter(request, entryForHeader);
 
             StringBuffer titleCrumbs = new StringBuffer();
-            String crumbs = getEntryHeader(request, entryForHeader, titleCrumbs);
+            String crumbs = getEntryHeader(request, entryForHeader,
+                                           titleCrumbs);
             sb.append(crumbs);
             //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
             //                result.setTitle(result.getTitle());
             result.putProperty(PROP_ENTRY_HEADER, sb.toString());
-            result.putProperty(PROP_ENTRY_BREADCRUMBS, titleCrumbs.toString());
+            result.putProperty(PROP_ENTRY_BREADCRUMBS,
+                               titleCrumbs.toString());
             result.putProperty(PROP_ENTRY_FOOTER, entryFooter);
 
             List<Metadata> metadataList =
@@ -744,6 +744,7 @@ public class EntryManager extends RepositoryManager {
             }
 
         }
+
         return result;
     }
 
@@ -983,8 +984,8 @@ public class EntryManager extends RepositoryManager {
                             }
                             if (changed) {
                                 incrementProcessedCnt(1);
-                                append(getPageHandler().getConfirmBreadCrumbs(getRequest(),
-                                        entry));
+                                append(getPageHandler().getConfirmBreadCrumbs(
+                                    getRequest(), entry));
                                 append(HtmlUtils.br());
                                 updateEntry(getRequest(), entry);
                             }
@@ -1579,8 +1580,8 @@ public class EntryManager extends RepositoryManager {
         String share =
             "<script type=\"text/javascript\">"
             + "var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script>"
-            + "<a href=\"http://www.addthis.com/bookmark.php?v=20\" " +
-        "onclick=\"return addthis_open(this, '', '" + entryUrl + "', '"
+            + "<a href=\"http://www.addthis.com/bookmark.php?v=20\" "
+            + "onclick=\"return addthis_open(this, '', '" + entryUrl + "', '"
             + title
             + "')\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
 
@@ -2623,22 +2624,24 @@ public class EntryManager extends RepositoryManager {
             boolean hasEast  = request.defined(ARG_AREA + "_east");
 
             if (hasNorth && hasWest && !hasSouth && !hasEast) {
-                entry.setLatitude(request.get(ARG_AREA + "_north",
-                        Entry.NONGEO));
-                entry.setLongitude(request.get(ARG_AREA + "_west",
-                        Entry.NONGEO));
+                entry.setLatitude(request.getLatOrLonValue(ARG_AREA
+                        + "_north", Entry.NONGEO));
+                entry.setLongitude(request.getLatOrLonValue(ARG_AREA
+                        + "_west", Entry.NONGEO));
             } else if (hasSouth && hasEast && !hasNorth && !hasWest) {
-                entry.setLatitude(request.get(ARG_AREA + "_south",
-                        Entry.NONGEO));
-                entry.setLongitude(request.get(ARG_AREA + "_east",
-                        Entry.NONGEO));
+                entry.setLatitude(request.getLatOrLonValue(ARG_AREA
+                        + "_south", Entry.NONGEO));
+                entry.setLongitude(request.getLatOrLonValue(ARG_AREA
+                        + "_east", Entry.NONGEO));
             } else {
-                entry.setSouth(request.get(ARG_AREA + "_south",
-                                           Entry.NONGEO));
-                entry.setNorth(request.get(ARG_AREA + "_north",
-                                           Entry.NONGEO));
-                entry.setWest(request.get(ARG_AREA + "_west", Entry.NONGEO));
-                entry.setEast(request.get(ARG_AREA + "_east", Entry.NONGEO));
+                entry.setSouth(request.getLatOrLonValue(ARG_AREA + "_south",
+                        Entry.NONGEO));
+                entry.setNorth(request.getLatOrLonValue(ARG_AREA + "_north",
+                        Entry.NONGEO));
+                entry.setWest(request.getLatOrLonValue(ARG_AREA + "_west",
+                        Entry.NONGEO));
+                entry.setEast(request.getLatOrLonValue(ARG_AREA + "_east",
+                        Entry.NONGEO));
             }
             getSessionManager().putSessionProperty(request, ARG_AREA,
                     entry.getNorth() + ";" + entry.getWest() + ";"
@@ -2780,8 +2783,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        String       breadcrumbs = getPageHandler().getConfirmBreadCrumbs(request, entry);
-        StringBuffer inner       = new StringBuffer();
+        String breadcrumbs = getPageHandler().getConfirmBreadCrumbs(request,
+                                 entry);
+        StringBuffer inner = new StringBuffer();
         if (entry.isGroup()) {
             inner.append(
                 msg("Are you sure you want to delete the following folder?"));
@@ -2905,8 +2909,9 @@ public class EntryManager extends RepositoryManager {
         boolean      anyFolders  = false;
         StringBuffer entryListSB = new StringBuffer();
         for (Entry toBeDeletedEntry : entries) {
-            entryListSB.append(getPageHandler().getConfirmBreadCrumbs(request,
-                    toBeDeletedEntry));
+            entryListSB.append(
+                getPageHandler().getConfirmBreadCrumbs(
+                    request, toBeDeletedEntry));
             entryListSB.append(HtmlUtils.br());
             if (toBeDeletedEntry.isGroup()) {
                 anyFolders = true;
@@ -3518,6 +3523,15 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processEntryLinks(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -3525,15 +3539,15 @@ public class EntryManager extends RepositoryManager {
                     + request);
         }
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append(header("Entry Links"));
 
 
-        sb.append(getEntryActionsTable(request, entry,
-                                       OutputType.TYPE_ALL));
+        sb.append(getEntryActionsTable(request, entry, OutputType.TYPE_ALL));
+
         //                                       OutputType.TYPE_FEEDS));
         return addEntryHeader(request, entry,
-                                  new Result(msg("Entry Links"), sb));
+                              new Result(msg("Entry Links"), sb));
     }
 
     /**
@@ -3930,7 +3944,7 @@ public class EntryManager extends RepositoryManager {
         for (Entry fromEntry : entries) {
             fromList.append(HtmlUtils.space(3));
             fromList.append(getPageHandler().getBreadCrumbs(request,
-                                                            fromEntry));
+                    fromEntry));
             fromList.append(HtmlUtils.br());
         }
 
@@ -4554,7 +4568,8 @@ public class EntryManager extends RepositoryManager {
 
         for (Entry entry : newEntries) {
             sb.append("<li> ");
-            sb.append(getPageHandler().getBreadCrumbs(request, entry, parent));
+            sb.append(getPageHandler().getBreadCrumbs(request, entry,
+                    parent));
         }
         sb.append("</ul>");
         if (parent != null) {
@@ -5426,22 +5441,21 @@ public class EntryManager extends RepositoryManager {
                                        entry.getId(),
                                        url, label }, true));
         }
-        boolean      showLink = request.get(ARG_SHOWLINK, true);
+        boolean      showLink    = request.get(ARG_SHOWLINK, true);
         boolean      showDetails = request.get(ARG_DETAILS, true);
 
-        StringBuffer sb       = new StringBuffer();
-        String       entryId  = entry.getId();
+        StringBuffer sb          = new StringBuffer();
+        String       entryId     = entry.getId();
 
-        String       uid      =  HtmlUtils.getUniqueId("link_");
-        String       output   = "inline";
+        String       uid         = HtmlUtils.getUniqueId("link_");
+        String       output      = "inline";
 
         String folderClickUrl =
-            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + 
-            "&" +
-            HtmlUtils.args(new String[]{
-                    ARG_OUTPUT, output,
-                    ARG_DETAILS, "" + showDetails,
-                    ARG_SHOWLINK, "" + showLink});
+            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry) + "&"
+            + HtmlUtils.args(new String[] {
+            ARG_OUTPUT, output, ARG_DETAILS, "" + showDetails, ARG_SHOWLINK,
+            "" + showLink
+        });
 
 
 
@@ -5483,7 +5497,8 @@ public class EntryManager extends RepositoryManager {
                                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                            "10"));
             }
-            prefix = HtmlUtils.span(prefix, HtmlUtils.cssClass("entry-arrow"));
+            prefix = HtmlUtils.span(prefix,
+                                    HtmlUtils.cssClass("entry-arrow"));
 
         }
 
@@ -5585,8 +5600,7 @@ public class EntryManager extends RepositoryManager {
                                ? ""
                                : HtmlUtils.div("",
                                    HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                       "display:none;",
-                                       HtmlUtils.ATTR_CLASS,
+                                       "display:none;", HtmlUtils.ATTR_CLASS,
                                        CSS_CLASS_FOLDER_BLOCK,
                                        HtmlUtils.ATTR_ID, uid)));
 
@@ -5616,10 +5630,10 @@ public class EntryManager extends RepositoryManager {
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
 
-        String elementId = entry.getId();
-        String qid       = HtmlUtils.squote(elementId);
-        String linkId    = "link_" + (HtmlUtils.blockCnt++);
-        String qlinkId   = HtmlUtils.squote(linkId);
+        String elementId  = entry.getId();
+        String qid        = HtmlUtils.squote(elementId);
+        String linkId     = "link_" + (HtmlUtils.blockCnt++);
+        String qlinkId    = HtmlUtils.squote(linkId);
 
         String target     = (request.defined(ARG_TARGET)
                              ? request.getString(ARG_TARGET, "")
@@ -5629,8 +5643,7 @@ public class EntryManager extends RepositoryManager {
                              : "");
 
         return HtmlUtils.href(url, linkText,
-                              HtmlUtils.id(linkId) +
-                              targetAttr);
+                              HtmlUtils.id(linkId) + targetAttr);
     }
 
 
@@ -5650,6 +5663,7 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state = new OutputHandler.State(entry);
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
+
         return links;
     }
 
@@ -5692,6 +5706,7 @@ public class EntryManager extends RepositoryManager {
                                        int typeMask)
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
+
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 
@@ -5711,7 +5726,8 @@ public class EntryManager extends RepositoryManager {
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links)
             throws Exception {
-        return getEntryActionsTable(request, entry, typeMask, links, false,null);
+        return getEntryActionsTable(request, entry, typeMask, links, false,
+                                    null);
     }
 
     /**
@@ -5722,6 +5738,7 @@ public class EntryManager extends RepositoryManager {
      * @param typeMask _more_
      * @param links _more_
      * @param returnNullIfNoneMatch _more_
+     * @param header _more_
      *
      * @return _more_
      *
@@ -5729,10 +5746,11 @@ public class EntryManager extends RepositoryManager {
      */
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links,
-                                       boolean returnNullIfNoneMatch, String header)
+                                       boolean returnNullIfNoneMatch,
+                                       String header)
             throws Exception {
 
-        
+
 
 
         StringBuffer
@@ -5821,8 +5839,10 @@ public class EntryManager extends RepositoryManager {
 
 
         StringBuffer menu = new StringBuffer();
-        if(header!=null) {
-            menu.append(HtmlUtils.div(header, HtmlUtils.cssClass("ramadda-entry-menu-title")));
+        if (header != null) {
+            menu.append(
+                HtmlUtils.div(
+                    header, HtmlUtils.cssClass("ramadda-entry-menu-title")));
         }
         menu.append("<table cellspacing=\"0\" cellpadding=\"4\">");
         menu.append(HtmlUtils.open(HtmlUtils.TAG_TR,
@@ -5831,31 +5851,36 @@ public class EntryManager extends RepositoryManager {
         if (fileSB != null) {
             fileSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("File")) + "<br>" + fileSB.toString()));
+                                      HtmlUtils.b(msg("File")) + "<br>"
+                                      + fileSB.toString()));
         }
         if (actionSB != null) {
             actionSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Edit")) + "<br>" +                                      actionSB.toString()));
+                                      HtmlUtils.b(msg("Edit")) + "<br>"
+                                      + actionSB.toString()));
         }
 
         if (htmlSB != null) {
             htmlSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("View")) + "<br>" + htmlSB.toString()));
+                                      HtmlUtils.b(msg("View")) + "<br>"
+                                      + htmlSB.toString()));
         }
 
 
         if (exportSB != null) {
             exportSB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Links")) + "<br>" +                                      exportSB.toString()));
+                                      HtmlUtils.b(msg("Links")) + "<br>"
+                                      + exportSB.toString()));
         }
 
         if (categorySB != null) {
             categorySB.append("</table>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
-                                      HtmlUtils.b(msg("Data")) + "<br>" +categorySB.toString()));
+                                      HtmlUtils.b(msg("Data")) + "<br>"
+                                      + categorySB.toString()));
         }
 
         menu.append(HtmlUtils.close(HtmlUtils.TAG_TR));
@@ -5879,18 +5904,18 @@ public class EntryManager extends RepositoryManager {
      */
     public String getEntryToolbar(Request request, Entry entry)
             throws Exception {
-        List<Link>   links = getEntryLinks(request, entry);
-        StringBuffer sb    = new StringBuffer();
+        List<Link>   links  = getEntryLinks(request, entry);
+        StringBuffer sb     = new StringBuffer();
 
-        OutputType output = HtmlOutputHandler.OUTPUT_TREE;
+        OutputType   output = HtmlOutputHandler.OUTPUT_TREE;
         String treeLink = HtmlUtils.href(
-                                     request.entryUrl(
-                                                      getRepository().URL_ENTRY_SHOW, entry,
-                                                      ARG_OUTPUT, output), HtmlUtils.img(
-                                                                                         iconUrl(output.getIcon()),
-                                                                                         output.getLabel()));
+                              request.entryUrl(
+                                  getRepository().URL_ENTRY_SHOW, entry,
+                                  ARG_OUTPUT, output), HtmlUtils.img(
+                                      iconUrl(output.getIcon()),
+                                      output.getLabel()));
 
-        
+
         sb.append(treeLink);
         for (Link link : links) {
 
@@ -5922,13 +5947,13 @@ public class EntryManager extends RepositoryManager {
         List<Link> links = getEntryLinks(request, entry);
 
         String entryMenu = getEntryActionsTable(request, entry,
-                                                OutputType.TYPE_FILE, links, true,null);
+                               OutputType.TYPE_FILE, links, true, null);
         String editMenu = getEntryActionsTable(request, entry,
-                                               OutputType.TYPE_EDIT, links, true, null);
+                              OutputType.TYPE_EDIT, links, true, null);
         String exportMenu = getEntryActionsTable(request, entry,
-                                                 OutputType.TYPE_FEEDS, links, true, null);
+                                OutputType.TYPE_FEEDS, links, true, null);
         String viewMenu = getEntryActionsTable(request, entry,
-                                               OutputType.TYPE_VIEW, links, true, null);
+                              OutputType.TYPE_VIEW, links, true, null);
 
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
@@ -6029,8 +6054,20 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    private String getEntryHeader(Request request, Entry entry, StringBuffer title)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param title _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String getEntryHeader(Request request, Entry entry,
+                                  StringBuffer title)
+            throws Exception {
         if (entry == null) {
             return BLANK;
         }
@@ -6038,59 +6075,66 @@ public class EntryManager extends RepositoryManager {
             request = getRepository().getTmpRequest(entry);
         }
 
-        PageStyle pageStyle   = request.getPageStyle(entry);
+        PageStyle   pageStyle = request.getPageStyle(entry);
 
 
-        Entry       parent = findGroup(request, entry.getParentEntryId());
-        OutputType  output          = OutputHandler.OUTPUT_HTML;
-        int         length          = 0;
+        Entry       parent    = findGroup(request, entry.getParentEntryId());
+        OutputType  output    = OutputHandler.OUTPUT_HTML;
+        int         length    = 0;
 
-        List<Entry> parents         = new ArrayList<Entry>();
+        List<Entry> parents   = new ArrayList<Entry>();
         parents.add(entry);
 
         while (parent != null) {
             parents.add(parent);
-            parent          = findGroup(request, parent.getParentEntryId());
+            parent = findGroup(request, parent.getParentEntryId());
         }
 
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
-        List<Link> linkList = getEntryLinks(request, entry);
+        List<Link>   linkList     = getEntryLinks(request, entry);
 
         //OutputType.TYPE_ALL
-        String links = getEntryManager().getEntryActionsTable(request, entry,
-                                                              OutputType.TYPE_FILE|OutputType.TYPE_EDIT|OutputType.TYPE_VIEW|OutputType.TYPE_OTHER,linkList,false,msgLabel("Links for") + " " + entry.getName());
-        
-
-        StringBuffer  popup  = new StringBuffer();
-        String menuLinkImg = HtmlUtils.img(getRepository().iconUrl("/icons/menu_arrow.gif"),
-                                           msg("Click to show menu"),
-                                           HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
-        String menuLink = getPageHandler().makePopupLink(
-                                                         menuLinkImg,
-                                                         links, "", true, false, popup);
+        String links =
+            getEntryManager().getEntryActionsTable(request, entry,
+                OutputType.TYPE_FILE | OutputType.TYPE_EDIT
+                | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER, linkList,
+                    false, msgLabel("Links for") + " " + entry.getName());
 
 
-
-        List<String>      titleList   = new ArrayList();
-        List<String>      breadcrumbs = makeBreadcrumbList(request, parents, titleList);
-
-        boolean showBreadcrumbs   = pageStyle.getShowBreadcrumbs(entry);
-        boolean showToolbar       = pageStyle.getShowToolbar(entry);
-        boolean showMenubar       = pageStyle.getShowMenubar(entry);
-
-        String toolbar = showToolbar
-            ? getEntryToolbar(request, entry)
-            : "";
-        String menubar = showMenubar
-            ? getEntryMenubar(request, entry)
-            : "";
+        StringBuffer popup = new StringBuffer();
+        String menuLinkImg =
+            HtmlUtils.img(getRepository().iconUrl("/icons/menu_arrow.gif"),
+                          msg("Click to show menu"),
+                          HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
+        String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
+                              "", true, false, popup);
 
 
-        String  header    = "";
+
+        List<String> titleList = new ArrayList();
+        List<String> breadcrumbs = makeBreadcrumbList(request, parents,
+                                       titleList);
+
+        boolean showBreadcrumbs = pageStyle.getShowBreadcrumbs(entry);
+        boolean showToolbar     = pageStyle.getShowToolbar(entry);
+        boolean showMenubar     = pageStyle.getShowMenubar(entry);
+
+        String  toolbar         = showToolbar
+                                  ? getEntryToolbar(request, entry)
+                                  : "";
+        String  menubar         = showMenubar
+                                  ? getEntryMenubar(request, entry)
+                                  : "";
+
+
+        String  header          = "";
         if (showBreadcrumbs) {
             header = makeBreadcrumbs(request, breadcrumbs);
-            StringBuffer sb = new StringBuffer("<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
-            sb.append("<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
+            StringBuffer sb =
+                new StringBuffer(
+                    "<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
+            sb.append(
+                "<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
             sb.append(menuLink);
             sb.append("</div></td>");
 
@@ -6104,64 +6148,98 @@ public class EntryManager extends RepositoryManager {
             sb.append(popup);
             header = sb.toString();
         } else {
-            if(!request.isAnonymous()) {
+            if ( !request.isAnonymous()) {
                 header = menuLink + popup;
             }
         }
-        title.append(StringUtil.join(HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR),
-                                     titleList));
+        title.append(
+            StringUtil.join(
+                HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR), titleList));
+
         return header;
 
     }
 
 
-    public List<String> makeBreadcrumbList(Request request, List<Entry> parents, List<String> titleList) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parents _more_
+     * @param titleList _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<String> makeBreadcrumbList(Request request,
+                                           List<Entry> parents,
+                                           List<String> titleList)
+            throws Exception {
         List<String> breadcrumbs = new ArrayList<String>();
         for (Entry ancestor : parents) {
             String name = ancestor.getName();
             String linkLabel;
-            if(breadcrumbs.size()==0) {
-                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+            if (breadcrumbs.size() == 0) {
+                linkLabel = HtmlUtils.img(getIconUrl(request, ancestor))
+                            + " " + name;
             } else {
-                linkLabel =   HtmlUtils.img(getIconUrl(request, ancestor))+" " + name;
+                linkLabel = HtmlUtils.img(getIconUrl(request, ancestor))
+                            + " " + name;
                 //                linkLabel =   name;
             }
-            if(titleList!=null)
+            if (titleList != null) {
                 titleList.add(0, name);
+            }
 
-            String url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
-            String link =  HtmlUtils.href(url, linkLabel);
+            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                          ancestor);
+            String link = HtmlUtils.href(url, linkLabel);
             breadcrumbs.add(0, link);
         }
+
         return breadcrumbs;
 
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param breadcrumbs _more_
+     *
+     * @return _more_
+     */
     public String makeBreadcrumbs(Request request, List<String> breadcrumbs) {
-        StringBuffer sb = new StringBuffer("<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
+        StringBuffer sb =
+            new StringBuffer(
+                "<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
 
-        for(Object crumb: breadcrumbs) {
+        for (Object crumb : breadcrumbs) {
             sb.append("<li>\n");
             sb.append(crumb);
             sb.append("</li>\n");
         }
         sb.append("</ul></div></div>");
-        sb.append(HtmlUtils.script(JQuery.ready("jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
+        sb.append(
+            HtmlUtils.script(
+                JQuery.ready(
+                    "jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
 
         return sb.toString();
     }
 
-/**
-     * _more_
+    /**
+     *     _more_
      *
-     * @param request _more_
-     * @param entry _more_
+     *     @param request _more_
+     *     @param entry _more_
      *
-     * @return _more_
+     *     @return _more_
      *
-     * @throws Exception _more_
+     *     @throws Exception _more_
      */
     public Entry getParent(Request request, Entry entry) throws Exception {
         return getEntry(request, entry.getParentEntryId());
@@ -7811,26 +7889,64 @@ public class EntryManager extends RepositoryManager {
 
 
     /**
-       This writes 
+     *  This writes
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param file _more_
+     *
+     * @throws Exception _more_
      */
-    public void writeEntryXmlFile(Request request, Entry entry, File file) throws Exception {
-        IOUtil.writeFile(file, getRepository().getXmlOutputHandler().getEntryXml(request, entry));
+    public void writeEntryXmlFile(Request request, Entry entry, File file)
+            throws Exception {
+        IOUtil.writeFile(
+            file,
+            getRepository().getXmlOutputHandler().getEntryXml(
+                request, entry));
     }
 
 
-    public void writeEntryXmlFile(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void writeEntryXmlFile(Request request, Entry entry)
+            throws Exception {
         writeEntryXmlFile(request, entry, getEntryXmlFile(entry));
     }
 
-    public File  getEntryXmlFile(Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File getEntryXmlFile(Entry entry) throws Exception {
         return getEntryXmlFile(entry.getFile());
     }
 
 
-    public File  getEntryXmlFile(File file) throws Exception {
-        File parent = file.getParentFile();
-        String name = file.getName();
-        String newName = "." + name +".ramadda.xml";
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File getEntryXmlFile(File file) throws Exception {
+        File   parent  = file.getParentFile();
+        String name    = file.getName();
+        String newName = "." + name + ".ramadda.xml";
+
         return new File(IOUtil.joinDir(parent, newName));
     }
 
@@ -7844,12 +7960,12 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getTemplateEntry(File file) throws Exception {
-        File   parent   = file.getParentFile();
+        File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
-        String type     = (isDirectory
-                           ? "dir"
-                           : "file");
-        String filename = file.getName();
+        String  type        = (isDirectory
+                               ? "dir"
+                               : "file");
+        String  filename    = file.getName();
         String[] names = { "." + filename + ".ramadda.xml",
                            "." + type + ".ramadda.xml", ".ramadda.xml", };
 
@@ -7861,12 +7977,12 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        if(isDirectory) {
+        if (isDirectory) {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
                 return parseEntryXml(f, true);
             }
-            
+
         }
 
         return null;
@@ -9109,11 +9225,11 @@ public class EntryManager extends RepositoryManager {
     public ProcessFileTypeHandler getProcessFileTypeHandler()
             throws Exception {
         if (processFileTypeHandler == null) {
-            ProcessFileTypeHandler tmp = 
+            ProcessFileTypeHandler tmp =
                 new ProcessFileTypeHandler(getRepository(), null);
             tmp.setType("type_process");
             processFileTypeHandler = tmp;
-    }
+        }
 
         return processFileTypeHandler;
     }
@@ -9129,14 +9245,14 @@ public class EntryManager extends RepositoryManager {
         if (processEntry == null) {
             TypeHandler typeHandler = getProcessFileTypeHandler();
             //parentEntry = topGroup;
-            Entry parentEntry  = new Entry(typeHandler, true);
+            Entry parentEntry = new Entry(typeHandler, true);
             parentEntry.setUser(getUserManager().getLocalFileUser());
-            parentEntry.addMetadata(
-                                    new Metadata(
-                                                 getRepository().getGUID(), parentEntry.getId(),
-                                                 ContentMetadataHandler.TYPE_PAGESTYLE, true,  "","false","","",""));
+            parentEntry.addMetadata(new Metadata(getRepository().getGUID(),
+                    parentEntry.getId(),
+                    ContentMetadataHandler.TYPE_PAGESTYLE, true, "", "false",
+                    "", "", ""));
 
-            Entry topGroup    = getTopGroup();
+            Entry topGroup = getTopGroup();
             parentEntry.setName("Process Entries");
             parentEntry.setId(ID_PREFIX_SYNTH + ENTRYID_PROCESS);
             parentEntry.setParentEntry(topGroup);
