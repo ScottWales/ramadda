@@ -147,15 +147,13 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
         }
         StringBuffer divs = new StringBuffer();
         int          col  = 1;
+        sb.append("\n");
         sb.append(
             HtmlUtils.importJS(
                 getRepository().getUrlBase()
                 + "/beforeandafter/jquery.beforeafter.js"));
-        String template =
-            getRepository().getResource(
-                "/org/ramadda/plugins/beforeafter/template.html");
-        //      sb.append(template);
 
+        StringBuffer jq = new StringBuffer();
         List<Entry> entriesToUse = new ArrayList<Entry>();
         for (Entry child : entries) {
             if ( !child.getResource().isImage()) {
@@ -226,12 +224,15 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             String path = getRepository().getUrlBase() + "/beforeandafter/";
             String args = "{imagePath:'" + path + "'}";
             sb.append("\n");
-            sb.append(HtmlUtils.script("\n$(function(){$('#" + id
+            jq.append(HtmlUtils.script("\n$(function(){$('#" + id
                                        + "').beforeAfter(" + args
                                        + ");});\n"));
         }
         sb.append("\n");
         sb.append(divs);
+        sb.append("\n");
+        sb.append(jq);
+        sb.append("\n");
 
         return new Result(msg("Before/After Image"), sb);
     }
