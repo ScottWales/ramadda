@@ -335,6 +335,15 @@ public class PhoneHarvester extends Harvester {
             }
         }
 
+
+        return handleMessageInner(request, info, msg);
+    }
+
+
+    public boolean handleMessageInner(Request request, PhoneInfo info,
+                                      StringBuffer msg)
+            throws Exception {
+
         System.err.println("PhoneHarvester: handleMessage: from:"
                            + info.getFromPhone() + " to:" + info.getToPhone()
                            + " " + info.getMessage());
