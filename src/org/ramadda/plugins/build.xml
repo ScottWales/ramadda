@@ -71,9 +71,15 @@
 
 
     <target name="otherplugins" depends="init">
+<!--
       <ant antfile="${src_dir}/org/ramadda/plugins/aap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/slideshow/build.xml" inheritAll="false"/>
+-->
+
       <ant antfile="${src_dir}/org/ramadda/plugins/trip/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/phone/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/plugins/mail/build.xml" inheritAll="false"/>
+
 
 <!--
       <ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>

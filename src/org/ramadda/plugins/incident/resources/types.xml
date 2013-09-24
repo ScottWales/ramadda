@@ -12,6 +12,15 @@
   </type>
 
 
+  <type name="incident_location"  description="Incident Location" handler="org.ramadda.plugins.incident.LocationTypeHandler" category="Events">
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.show" value="false"/>
+     <column name="address" label="Street Address"  showinhtml="true" />
+     <column name="city" label="City"  showinhtml="true" />
+     <column name="state" type="enumeration" label="State"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/states.txt" cansearch="true" canlist="true" />
+  </type>
+
 
 
 </types>
