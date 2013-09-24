@@ -1284,10 +1284,10 @@ public class OutputHandler extends RepositoryManager {
     public void addEntryTableRow(Request request, Entry entry,
                                  StringBuffer htmlSB, StringBuffer jsSB, boolean showDetails)
             throws Exception {
-        String  rowId        = "entryrow_" + (HtmlUtils.blockCnt++);
-        String  cbxId        = "entry_" + (HtmlUtils.blockCnt++);
+        String  rowId        = HtmlUtils.getUniqueId("entryrow_");
+        String  cbxId        = HtmlUtils.getUniqueId("entry_");
         String  cbxArgId     = "entry_" + entry.getId();
-        String  cbxWrapperId = "cbx_" + (HtmlUtils.blockCnt++);
+        String  cbxWrapperId = HtmlUtils.getUniqueId("cbx_");
         jsSB.append(
             HtmlUtils.callln(
                 "new EntryRow",
@@ -1297,7 +1297,7 @@ public class OutputHandler extends RepositoryManager {
                     HtmlUtils.squote(cbxWrapperId),
                     ""+showDetails)));
 
-        String cbx =
+        String cbx =  
             HtmlUtils.checkbox(
                 cbxArgId, "true", false,
                 HtmlUtils.id(cbxId) + " "
@@ -1406,7 +1406,8 @@ public class OutputHandler extends RepositoryManager {
         for (Entry entry : (List<Entry>) entries) {
             StringBuffer cbxSB        = new StringBuffer();
             String       rowId        = base + (cnt++);
-            String       cbxId        = "entry_" + entry.getId();
+            String       cbxArgId        = "entry_" + entry.getId();
+            String       cbxId        = HtmlUtils.getUniqueId("entry_");
             String       cbxWrapperId = "checkboxwrapper_" + (cnt++);
             jsSB.append(
                 HtmlUtils.callln(
@@ -1420,7 +1421,7 @@ public class OutputHandler extends RepositoryManager {
                 cbxSB.append(HtmlUtils.hidden("all_" + entry.getId(), "1"));
                 String cbx =
                     HtmlUtils.checkbox(
-                        cbxId, "true", false,
+                        cbxArgId, "true", false,
                         HtmlUtils.id(cbxId) + " "
                         + HtmlUtils.style("display:none;")
                         + HtmlUtils.attr(
