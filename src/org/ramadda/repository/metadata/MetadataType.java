@@ -460,7 +460,7 @@ public class MetadataType extends MetadataTypeBase {
             if (internal) {
                 fileName = fileArg;
             } else {
-                String tmpFile = (String) fileMap.get(fileArg);
+                Object tmpFile = fileMap.get(fileArg);
                 if (tmpFile == null) {
                     try {
                         //See if its a URL
@@ -476,7 +476,7 @@ public class MetadataType extends MetadataTypeBase {
                         return false;
                     }
                 }
-                File file = new File(tmpFile);
+                File file = new File(tmpFile.toString());
                 fileName = getStorageManager().copyToEntryDir(entry, file,
                         metadata.getAttr(element.getIndex())).getName();
             }
