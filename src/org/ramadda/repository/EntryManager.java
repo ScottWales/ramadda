@@ -114,6 +114,8 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     public static boolean debug = false;
 
+    //In sql
+    public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
     /**
      * _more_
@@ -6969,7 +6971,13 @@ public class EntryManager extends RepositoryManager {
         statement.setString(col++, entry.getId());
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
-        statement.setString(col++, entry.getDescription());
+        String description = entry.getDescription();
+        if(description.length()>MAX_DESCRIPTION_LENGTH) {
+            System.err.println("Too big a desc:" + description);
+            description = description.substring(0,14999);
+        }
+
+        statement.setString(col++, description);
         statement.setString(col++, entry.getParentEntryId());
         //        statement.setString(col++, entry.getCollectionGroupId());
         statement.setString(col++, entry.getUser().getId());
