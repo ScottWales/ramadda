@@ -58,10 +58,8 @@
 
 
     <target name="otherplugins" depends="init">
-<!--
-        <ant antfile="${srcdir}/org/ramadda/geodata/echo/build.xml" inheritAll="false"/>
-        <ant antfile="${srcdir}/org/ramadda/geodata/iso/build.xml" inheritAll="false"/>
--->
+        <ant antfile="${srcdir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
+        <ant antfile="${srcdir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
     </target>
 
 </project>
