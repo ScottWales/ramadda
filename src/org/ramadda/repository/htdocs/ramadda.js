@@ -507,6 +507,7 @@ function EntryFormList(formId,img,selectId, initialOn) {
 
 
     this.findEntryRow =function(rowId) {
+        var i;
         for (i = 0; i < this.entryRows.length; i++) {
             if(this.entryRows[i].rowId == rowId) {
                 return  this.entryRows[i];
@@ -745,8 +746,9 @@ function hideEntryPopup() {
 }
 
 function findEntryRow(rowId) {
-    for(i=0;i<groupList.length;i++) {
-        var entryRow = groupList[i].findEntryRow(rowId);
+    var idx;
+    for(idx=0;idx<groupList.length;idx++) {
+        var entryRow = groupList[idx].findEntryRow(rowId);
         if(entryRow) return entryRow;
     }
     return null;
