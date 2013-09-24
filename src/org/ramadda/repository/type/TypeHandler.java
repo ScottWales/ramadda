@@ -2092,8 +2092,10 @@ public class TypeHandler extends RepositoryManager {
                                                        entry, ARG_NEXT,
                                                        "true"), iconUrl(ICON_LEFT),
                                                        msg("View Next"));*/
+                	/* remove the nextPrev buttons - who uses them? 
                     resourceLink = nextPrev + HtmlUtils.space(1)
                                    + resourceLink;
+                    */
 
                 }
 
