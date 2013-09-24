@@ -187,7 +187,7 @@ form {
 .entry-inline {
    max-height: 300px; 
    overflow-y: auto;
-//   background-color : #efefef;
+   /*background-color : #efefef;*/
    border: 1px #888 solid; 
    padding: 5px;
    margin-top: 5px;
@@ -208,7 +208,7 @@ form {
    border-top-right-radius: 8px;
    font-weight: bold; 
    border-bottom: 1px #888 solid;
-//   background-color: #efefef;
+   /*background-color: #efefef;*/
    padding: 5px;
    padding-left: 5px;
    padding-bottom: 0px;
@@ -237,7 +237,7 @@ form {
 .ramadda-system-message {
    margin:4px;
    padding:4px;
-//   background-color: #ff0000;
+   /* background-color: #ff0000; */
    border: 1px solid #666;
    font-weight: bold; 
 }
@@ -289,11 +289,15 @@ form {
 
 .ramadda-entry-menu-title {
   font-style:italic;
-//   font-size: 110%;
-//   font-weight:bold;
-   width: 100%;
-  // text-align:center;
-//   text-decoration: underline;
+  /*
+  font-size: 110%;
+  font-weight:bold;
+  */
+  width: 100%;
+  /*
+  text-align:center;
+  text-decoration: underline;
+   */
    border-bottom : 1px #888 solid;
 }
 
@@ -332,7 +336,7 @@ form {
    padding:1px;
    border : 1px #888 solid;
    background-color : #FFFFFF;
-//Shadow effect
+  /* Shadow effect */
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -385,7 +389,7 @@ label {
 
 .ramadda-harvester-active {
   background: #FFFFCC;
-//  background-color: #ddd;
+  /* background-color: #ddd; */
 }
 
 .ramadda-comment-block {
@@ -412,8 +416,8 @@ label {
 
 .ramadda-separator {
    font-size: 9pt;
-//   font-weight: bold;
-//   color:#666666;
+   /*font-weight: bold;*/
+   /*color:#666666;*/
 }
 
 
@@ -423,7 +427,7 @@ label {
 
 .ramadda-earth-entries {
    min-width: 150px;
-//   max-width: 250px;
+   /*max-width: 250px;*/
    min-height:200px;
    overflow-x: auto;
   white-space:nowrap; 
@@ -442,7 +446,7 @@ label {
 }
 
 .ramadda-earth-link:hover {
-//    color: #ff0000;
+    /*color: #ff0000;*/
 }
 
 .ramadda-user-field {
@@ -487,7 +491,7 @@ a.ramadda-heading-2-link:visited {
 
 
 .ramadda-datetime {
-//   color:#666;
+   /*color:#666;*/
    font-style:italic;
    margin:0px;
    white-space:nowrap;
@@ -550,7 +554,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entryname {
-//   font-size: 130%;
+   /*font-size: 130%;*/
    margin-top:3px;
    padding-left:15px;
    font-weight: bold;
@@ -586,7 +590,7 @@ a.ramadda-heading-2-link:visited {
 
 .ramadda-menubar {
    background-repeat: repeat-x;
-//   background-image:url(${urlroot}/images/gradient.jpg);
+   /*background-image:url(${urlroot}/images/gradient.jpg);*/
    padding-left:10px;
    padding-top:2px;
    padding-bottom:2px;
@@ -601,7 +605,7 @@ a.ramadda-heading-2-link:visited {
     padding-left:3px;
     padding-right:3px;
     color: #000000;
-//    font-weight: bold;
+    /*font-weight: bold;*/
     text-decoration: none;
 }
 
@@ -1229,9 +1233,11 @@ xxxpath.link {
    padding-right:0px;
    border : 1px dotted #ccc;
    background-color : #fff;
-//   border-top : 0px dotted #ccc;
-//   background-color : #f6f6f6;
-//   background-color : #edf5ff;
+   /*
+   border-top : 0px dotted #ccc;
+   background-color : #f6f6f6;
+   background-color : #edf5ff;
+   */
 
    margin:0px;
 }
@@ -1248,7 +1254,7 @@ xxxpath.link {
    margin:0px;
    position: absolute; 
    display:none;
-//   visibility: hidden; 
+   /*visibility: hidden; */
    z-index: 1;
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -1268,9 +1274,11 @@ xxxpath.link {
 
 .image_edit_box {
    border : 3px red solid;
-   #padding:10px;
-   #margin:10px;
-   #background-color : black;
+   /*
+   padding:10px;
+   margin:10px;
+   background-color : black;
+   */
    position: absolute; 
    visibility: hidden; 
    z-index: 1;
@@ -1281,10 +1289,10 @@ xxxpath.link {
    border : 3px red solid;
    padding:0px;
    margin:0px;
-   #background-color : black;
+   /*background-color : black;*/
    position: absolute; 
    visibility: hidden; 
-   #z-index: 1;
+   /*z-index: 1;*/
 }
 
 
@@ -1316,11 +1324,11 @@ xxxpath.link {
 
 .selectdiv {
    position: absolute; 
-//   visibility: hidden; 
+   /*visibility: hidden; */
    z-index: 1000;
    border: 1px #666666 solid;   
    background-color : #FFF;
-//Shadow effect
+  /*Shadow effect*/
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
@@ -1388,8 +1396,10 @@ xxxpath.link {
 
 
 .breadcrumbs {
-//   font-weight: bold;
-//   font-size: 12pt;
+   /*
+   font-weight: bold;
+   font-size: 12pt;
+   */
    margin-top:5px;
    text-decoration: none;
    vertical-align: bottom;
@@ -1522,7 +1532,7 @@ a.toggleblocklabellink:visited {
   padding-left:5px;
   border : 1px black solid;
   background-color : #ffffcc;
-//Shadow effect
+  /* Shadow effect */
   /* offset left, top, thickness, color with alpha */
   -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
