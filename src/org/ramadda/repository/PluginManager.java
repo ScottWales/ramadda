@@ -226,7 +226,8 @@ public class PluginManager extends RepositoryManager {
         File   allPlugins      = new File(IOUtil.joinDir(getStorageManager().getPluginsDir(), 
                                                          IOUtil.getFileTail(PLUGIN_ALL)));
         if(allPlugins.exists()) {
-            //            System.err.println("Updating plugin");
+            getRepository().println("RAMADDA: updating plugin file: " +
+                                    IOUtil.getFileTail(PluginManager.PLUGIN_ALL));
             copyPlugin(PluginManager.PLUGIN_ALL);
         }
 
