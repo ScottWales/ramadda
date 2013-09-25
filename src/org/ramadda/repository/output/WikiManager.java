@@ -1816,6 +1816,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (include.equals(WIKI_PROP_GALLERY)) {
             List<Entry> children = getEntries(request, wikiUtil, originalEntry, entry,
                                        props, true);
+            if (children.size() == 0) {
+                String message = Misc.getProperty(props, ATTR_MESSAGE,
+                                     (String) null);
+                if (message != null) {
+                    return message;
+                }
+            }
             makeGallery(request, children, props, sb);
 
             return sb.toString();
