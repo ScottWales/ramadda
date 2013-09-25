@@ -222,6 +222,14 @@ public class PluginManager extends RepositoryManager {
             Misc.addClassLoader(classLoader);
         }
 
+        //If the allplugins was installed then copy the new one over
+        File   allPlugins      = new File(IOUtil.joinDir(getStorageManager().getPluginsDir(), 
+                                                         IOUtil.getFileTail(PLUGIN_ALL)));
+        if(allPlugins.exists()) {
+            //            System.err.println("Updating plugin");
+            copyPlugin(PluginManager.PLUGIN_ALL);
+        }
+
         MyTrace.call1("PluginManager.loadPlugins");
         loadPlugins();
         MyTrace.call2("PluginManager.loadPlugins");
@@ -454,16 +462,7 @@ public class PluginManager extends RepositoryManager {
      */
     public boolean installPlugin(String pluginPath) throws Exception {
         try {
-            //Remove any ..._file_ prefix
-            String tail = RepositoryUtil.getFileTail(pluginPath);
-            String newPluginFile =
-                IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
-            InputStream      inputStream = IOUtil.getInputStream(pluginPath);
-            FileOutputStream fos         =
-                new FileOutputStream(newPluginFile);
-            IOUtil.writeTo(inputStream, fos);
-            IOUtil.close(inputStream);
-            IOUtil.close(fos);
+            String newPluginFile = copyPlugin(pluginPath);
             boolean haveLoadedBefore =
                 getPluginManager().reloadFile(newPluginFile);
             loadPlugins();
@@ -477,6 +476,21 @@ public class PluginManager extends RepositoryManager {
         return false;
     }
 
+
+
+    private String copyPlugin(String pluginPath) throws Exception {
+        //Remove any ..._file_ prefix
+        String tail = RepositoryUtil.getFileTail(pluginPath);
+        String newPluginFile =
+            IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
+        InputStream      inputStream = IOUtil.getInputStream(pluginPath);
+        FileOutputStream fos         =
+            new FileOutputStream(newPluginFile);
+        IOUtil.writeTo(inputStream, fos);
+        IOUtil.close(inputStream);
+        IOUtil.close(fos);
+        return newPluginFile;
+    }
 
 
     /**
