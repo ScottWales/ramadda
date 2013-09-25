@@ -6,6 +6,8 @@
     </target>
 
     <target name="plugin" depends="init,docs">
+      <property file="${basedir}/build.properties"/>
+      <property name="plugindestdir" value="${dist_dir}/otherplugins"/>
       <property name="plugin" value="point"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="${plugin}plugin.jar"/>

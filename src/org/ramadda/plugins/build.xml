@@ -55,22 +55,7 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/media/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/gadgets/build.xml" inheritAll="false"/>
-<!--
-      <ant antfile="${src_dir}/org/ramadda/plugins/mail/build.xml" inheritAll="false"/>
--->
-      <copy overwrite="true"  todir="${plugindest_dir}">
-          <fileset file="${src_dir}/org/ramadda/plugins/README"/>
-     </copy>
-    </target>
 
-
-    <target name="allplugins" depends="init">
-      <antcall target="plugins"/>
-      <antcall target="otherplugins"/>
-  </target>
-
-
-    <target name="otherplugins" depends="init">
 <!--
       <ant antfile="${src_dir}/org/ramadda/plugins/aap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/slideshow/build.xml" inheritAll="false"/>
@@ -87,12 +72,23 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/personfinder/build.xml" inheritAll="false"/>
 -->
 
+      <copy overwrite="true"  todir="${plugindest_dir}">
+          <fileset file="${src_dir}/org/ramadda/plugins/README"/>
+     </copy>
+    </target>
+
+
+    <target name="allplugins" depends="init">
+      <antcall target="plugins"/>
       <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
           <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
       </copy>
      <copy overwrite="true"  todir="${plugindest_dir}">
           <fileset file="${src_dir}/org/ramadda/plugins/misc/*"/>
      </copy>
+
   </target>
+
+
     
 </project>

@@ -48,18 +48,16 @@
       <ant antfile="${srcdir}/org/ramadda/geodata/fieldproject/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/gps/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
+
       <ant antfile="${srcdir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
     </target>
 
     <target name="allplugins" depends="init">
         <antcall target="plugins"/>
-        <antcall target="otherplugins"/>
     </target>
 
 
-    <target name="otherplugins" depends="init">
-        <ant antfile="${srcdir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
-        <ant antfile="${srcdir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
-    </target>
+
 
 </project>
