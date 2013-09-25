@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="plugins" name="Ramadda Plugins">
+
+    <target name="init">
+        <property name="src_dir" value="${basedir}/src"/>
+    </target>
+
+
+
+    <target name="plugins" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/projects/above/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/cma/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/aap/build.xml" inheritAll="false"/>
+    </target>
+
+
+
+    
+</project>

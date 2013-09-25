@@ -51,6 +51,7 @@
 
       <ant antfile="${srcdir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
       <ant antfile="${srcdir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
+      <ant antfile="${srcdir}/org/ramadda/geodata/astro/build.xml" inheritAll="false"/>
     </target>
 
     <target name="allplugins" depends="init">

@@ -3,6 +3,7 @@
     <target name="plugin">
       <property name="plugin" value="above"/>
       <property file="${basedir}/build.properties"/>
+      <property name="plugindestdir" value="${dist_dir}/otherplugins"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="${plugin}.last.plugin.jar"/>
       <property name="plugin_dir" value="org/ramadda/projects/${plugin}"/>
