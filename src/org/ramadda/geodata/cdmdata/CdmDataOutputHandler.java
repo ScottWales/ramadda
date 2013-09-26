@@ -614,7 +614,7 @@ public class CdmDataOutputHandler extends OutputHandler {
                     getPageHandler().showDialogNote("Properties added"));
                 sb.append(
                     getRepository().getHtmlOutputHandler().getInformationTabs(
-                        request, entry, false, false));
+                        request, entry, false));
 
             } else {
                 sb.append("You cannot add properties");

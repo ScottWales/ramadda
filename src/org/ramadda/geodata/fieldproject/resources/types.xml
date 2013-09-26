@@ -171,6 +171,71 @@
    </type>
 
 
+  <type name="project_research_facility"  description="Research Facility" handler="org.ramadda.geodata.fieldproject.ResearchFacilityTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/balloon-buzz.png"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="false"/>
+
+     <property name="search.label" value="Research Facility"/>
+     <property name="search.tabs" value="map,list"/>
+<!--
+     <property name="search.metadatatypes" value="project_person"/>
+-->
+
+     <property name="search.form.date.show" value="false"/>
+
+     <column name="facility_level" type="enumeration" values="0:low,1:medium,2:high"  label="Facility Status"    cansearch="true"/>
+     <column name="facility_note" label="Facility Note"  size="1000" rows="5" />
+
+     <column name="access_level" type="enumeration" values="0:low,1:medium,2:high"  label="Access Status"    cansearch="true"/>
+     <column name="access_note" label="Access Note"  size="1000" rows="5" />
+
+     <column name="research_level" type="enumeration" values="0:low,1:medium,2:high"  label="Research Status"    cansearch="true"/>
+     <column name="research_note" label="Research Note"  size="1000" rows="5" />
+
+
+     <column name="data_level" type="enumeration" values="0:low,1:medium,2:high"  label="Data Status"    cansearch="true"/>
+     <column name="data_note" label="Data Note" size="1000" rows="5"/>
+
+
+     <wiki><![CDATA[
+{{noheading}}
+=={{name}}==
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+{{information}}
+
+{{tree  showtoggle="false" message="" prefix="==Data=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350" message=""}}
+</td></tr>
+</table>
+
+==Properties==
+<block open="false" title="Click to view Properties">
+{{properties message="No properties"}}
+</block>
+
+<p>
+]]>
+</wiki>
+   </type>
+
+
+
+
   <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
      <column name="results" label="Results" rows="5"/>
      <column name="weather_conditions" label="Weather Conditions" rows="2"/>
