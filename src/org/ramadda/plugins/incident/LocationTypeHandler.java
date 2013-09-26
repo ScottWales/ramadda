@@ -59,24 +59,53 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+
+@Override
+    public String getEntryName(Entry entry) {
+        String  name = super.getEntryName(entry);
+        if(!Utils.stringDefined(name)) {
+            name = entry.getValue(0, "");
+        }
+        //        System.err.println("NAME:" + name);
+        return name;
+    }
+
+
+    @Override
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+        throws Exception {
+        super.initializeEntryFromForm(request, entry,
+                                      parent, newEntry);
+        georeferenceEntry(request, entry);
+    }
+
+    public void initializeEntryFromXml(Request request, Entry entry,
+                                       Element node)
+            throws Exception {
+        initializeEntryFromXml(request, entry, node);
+        georeferenceEntry(request, entry);
+    }
+
+
     /**
      */
-    @Override
-    public void doFinalEntryInitialization(Request request, Entry entry) {
-        super.doFinalEntryInitialization(request,  entry);
+    private   void georeferenceEntry(Request request, Entry entry) {
+        if(entry.isGeoreferenced()) return;
+        //TODO: if the entry has a location then don't do this?
         String address = entry.getValue(0, (String) null);
         String city = entry.getValue(1, (String) null);
         String state = entry.getValue(2, (String) null);
         if(!Utils.stringDefined(address)) return;
         String fullAddress = address +"," + city +"," + state;
         double[] loc = GeoUtils.getLocationFromAddress(fullAddress);
-        System.err.println("address:" + fullAddress);
         if(loc == null) {
-            System.err.println("no geo");
+            System.err.println("no geo for address:" + fullAddress);
         } else {
-            System.err.println("loc:" + loc[0] +" " + loc[1]);
+            System.err.println("got geo for address:" + fullAddress);
+            entry.setLatitude(loc[0]);
+            entry.setLongitude(loc[1]);
         } 
-        
     }
 
 
@@ -90,18 +119,14 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String xxxxgetIconUrl(Request request, Entry entry) throws Exception {
-        String disaster = entry.getValue(0, (String) null);
-        if (disaster == null) {
-            return super.getIconUrl(request, entry);
-        }
-        String icon = getRepository().getProperty("icon." + disaster.trim(),
-                          (String) null);
-        if ((icon == null) || (icon.trim().length() == 0)) {
-            return super.getIconUrl(request, entry);
-        }
-
-        return iconUrl(icon);
+    @Override
+    public String getIconUrl(Request request, Entry entry) throws Exception {
+        double depth =   entry.getValue(4, 0.0);
+        if(depth == 0) 
+            return iconUrl("/incident/flag_green.png");
+        if(depth<=2) 
+            return iconUrl("/incident/flag_blue.png");
+        return iconUrl("/incident/flag_red.png");
     }
 
 
