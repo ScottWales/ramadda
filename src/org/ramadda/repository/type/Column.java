@@ -382,23 +382,23 @@ public class Column implements DataTypes, Constants {
                         if (tok.startsWith("#")) {
                             continue;
                         }
+                        String label = tok;
+                        String value = tok;
                         if (tok.indexOf(":") >= 0) {
                             List<String> toks = StringUtil.splitUpTo(tok,
                                                     ":", 2);
 
-                            enumValues.add(new TwoFacedObject(toks.get(1),
-                                    toks.get(0)));
-                            enumMap.put(toks.get(0), toks.get(1));
+                            value = toks.get(0);
+                            label = toks.get(1);
                         } else if (tok.indexOf("=") >= 0) {
                             List<String> toks = StringUtil.splitUpTo(tok,
                                                     "=", 2);
 
-                            enumValues.add(new TwoFacedObject(toks.get(1),
-                                    toks.get(0)));
-                            enumMap.put(toks.get(0), toks.get(1));
-                        } else {
-                            enumValues.add(new TwoFacedObject(tok, tok));
+                            value = toks.get(0);
+                            label = toks.get(1);
                         }
+                        enumValues.add(new TwoFacedObject(label, value));
+                        enumMap.put(value,label);
                     }
 
                 } else {
@@ -406,14 +406,14 @@ public class Column implements DataTypes, Constants {
                     for (String tok :
                             StringUtil.split(valueString, ",", true, true)) {
                         int index = tok.indexOf(":");
+                        String value = tok;
+                        String label =tok;
                         if (index > 0) {
-                            enumValues.add(
-                                new TwoFacedObject(
-                                    tok.substring(index + 1),
-                                    tok.substring(0, index)));
-                        } else {
-                            enumValues.add(new TwoFacedObject(tok, tok));
+                            label = tok.substring(index + 1);
+                            value = tok.substring(0, index);
                         }
+                        enumMap.put(value,label);
+                        enumValues.add(new TwoFacedObject(label,value));
                     }
                 }
             }

@@ -1068,7 +1068,7 @@ public class EntryManager extends RepositoryManager {
                                              child);
                         if (child.isFile()) {
                             append("<tr><td>");
-                            append(HtmlUtils.href(url, child.getName()));
+                            append(HtmlUtils.href(url, getEntryDisplayName(child)));
                             append("</td><td align=right>");
                             File file = child.getFile();
                             size[0] += file.length();
@@ -1577,7 +1577,7 @@ public class EntryManager extends RepositoryManager {
             sb.append("</td><td>");
         }
 
-        String title = getEntryName(entry);
+        String title = getEntryDisplayName(entry);
 
         String share =
             "<script type=\"text/javascript\">"
@@ -1679,17 +1679,6 @@ public class EntryManager extends RepositoryManager {
         return entry.getTypeHandler().getEntryListName(request, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getEntryName(Entry entry) {
-        return entry.getTypeHandler().getEntryName(entry);
-    }
 
 
 
@@ -2486,7 +2475,7 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "fileextension",
             IOUtil.getFileExtension(entry.getResource().getPath()), "name",
-            getEntryName(entry), "fullname", entry.getFullName(), "user",
+            getEntryDisplayName(entry), "fullname", entry.getFullName(), "user",
             entry.getUser().getLabel(), "url", url
         };
 
@@ -3276,7 +3265,7 @@ public class EntryManager extends RepositoryManager {
         String oldType = entry.getCategory();
         entry.setCategory(CATEGORY_UPLOAD);
         //Note: the name and description have already been encoded to prevent xss attacks
-        //        entry.setName(RepositoryUtil.encodeUntrustedText(getEntryName(entry)));
+        //        entry.setName(RepositoryUtil.encodeUntrustedText(getEntryDisplayName(entry)));
         //        entry.setDescription(
         //            RepositoryUtil.encodeUntrustedText(entry.getDescription()));
 
@@ -3965,7 +3954,7 @@ public class EntryManager extends RepositoryManager {
             }
             sb.append(HtmlUtils.br());
             sb.append(msgLabel("Destination"));
-            sb.append(toEntry.getName());
+            sb.append(getEntryDisplayName(toEntry));
             sb.append(HtmlUtils.br());
             StringBuffer fb = new StringBuffer();
             request.formPostWithAuthToken(fb, getRepository().URL_ENTRY_COPY);
@@ -4953,7 +4942,7 @@ public class EntryManager extends RepositoryManager {
         request.appendMessage(sb);
         String entryUrl = HtmlUtils.url(getFullEntryShowUrl(request),
                                         ARG_ENTRYID, entry.getId());
-        String title = getEntryName(entry);
+        String title = getEntryDisplayName(entry);
         String share =
             "<script type=\"text/javascript\">var addthis_disable_flash=\"true\" addthis_pub=\"jeffmc\";</script><a href=\"http://www.addthis.com/bookmark.php?v=20\" onmouseover=\"return addthis_open(this, '', '" + entryUrl + "', '" + title + "')\" onmouseout=\"addthis_close()\" onclick=\"return addthis_sendto()\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
 
@@ -6100,7 +6089,7 @@ public class EntryManager extends RepositoryManager {
             getEntryManager().getEntryActionsTable(request, entry,
                 OutputType.TYPE_FILE | OutputType.TYPE_EDIT
                 | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER, linkList,
-                    false, msgLabel("Links for") + " " + entry.getName());
+                                                   false, msgLabel("Links for") + " " + getEntryDisplayName(entry));
 
 
         StringBuffer popup = new StringBuffer();
@@ -6180,7 +6169,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         List<String> breadcrumbs = new ArrayList<String>();
         for (Entry ancestor : parents) {
-            String name = ancestor.getName();
+            String name = getEntryDisplayName(ancestor);
             String linkLabel;
             if (breadcrumbs.size() == 0) {
                 linkLabel = HtmlUtils.img(getIconUrl(request, ancestor))
@@ -7764,7 +7753,7 @@ public class EntryManager extends RepositoryManager {
             sb.append(
                 HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                    getEntryName(entry)));
+                    getEntryDisplayName(entry)));
             sb.append(HtmlUtils.br());
         }
         if ( !didone) {

@@ -320,7 +320,12 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getWikiTemplate(Request request, Entry entry) {
-        return wikiTemplate;
+        if(wikiTemplate!=null)
+            return wikiTemplate;
+        if (getParent() != null) {
+            return getParent().getWikiTemplate(request, entry);
+        }
+        return null;
     }
 
 
@@ -1026,7 +1031,6 @@ public class TypeHandler extends RepositoryManager {
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
         String key   = "form." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
-
         return value.equals("true");
     }
 
@@ -1959,6 +1963,8 @@ public class TypeHandler extends RepositoryManager {
                     showDescription, showResource, linkToDownload);
         }
 
+        boolean showDate = okToShowInHtml(entry, ARG_DATE, true);
+
         boolean showImage = false;
         if (showResource && entry.getResource().isImage()) {
             if (entry.getResource().isFile()
@@ -2005,7 +2011,7 @@ public class TypeHandler extends RepositoryManager {
 
             String createdDisplayMode =
                 getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
-                                            "all").trim();
+                                            "none").trim();
             boolean showCreated = true;
             if (createdDisplayMode.equals("none")) {
                 showCreated = false;
@@ -2038,15 +2044,17 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
 
-            sb.append(formEntry(request, msgLabel("Created"),
-                                formatDate(request,
-                                           entry.getCreateDate(), entry)));
-
-            if(entry.getCreateDate()!= entry.getChangeDate()) {
-                sb.append(formEntry(request, msgLabel("Modified"),
+            if(showDate) {
+                sb.append(formEntry(request, msgLabel("Created"),
                                     formatDate(request,
-                                               entry.getChangeDate(), entry)));
+                                               entry.getCreateDate(), entry)));
 
+                if(entry.getCreateDate()!= entry.getChangeDate()) {
+                    sb.append(formEntry(request, msgLabel("Modified"),
+                                        formatDate(request,
+                                                   entry.getChangeDate(), entry)));
+                    
+                }
             }
 
             if (showCreated) {
@@ -2116,7 +2124,8 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-            if (hasDataDate) {
+
+            if (showDate && hasDataDate) {
                 if (entry.getEndDate() != entry.getStartDate()) {
                     String startDate = formatDate(request,
                                            entry.getStartDate(), entry);
@@ -2159,7 +2168,7 @@ public class TypeHandler extends RepositoryManager {
             if ( !showImage) {
                 //Only show the created by and type when the user is logged in
                 //                if ( !request.isAnonymous()) {
-                if (okToShowInHtml(entry, "type", true)) {
+                if (okToShowInHtml(entry, ARG_TYPE, true)) {
                     sb.append(formEntry(request, msgLabel("Kind"),
                                         getFileTypeDescription(entry)));
                 }
@@ -4842,17 +4851,6 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getEntryName(Entry entry) {
-        return entry.getName();
-    }
-
-    /**
-     * _more_
-     *
      * @param column _more_
      * @param entry _more_
      * @param theValue _more_
@@ -5101,6 +5099,10 @@ public class TypeHandler extends RepositoryManager {
         }
 
         return specialSearch;
+    }
+
+    public String getEntryName(Entry entry) {
+        return entry.getName();
     }
 
 

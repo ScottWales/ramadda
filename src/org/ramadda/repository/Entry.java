@@ -855,6 +855,10 @@ public class Entry implements Cloneable {
                               east + (west - east) / 2 };
     }
 
+    public boolean isGeoreferenced() {
+        return hasAreaDefined() || hasLocationDefined();
+    }
+
     /**
      * Does this entry have an area defined?
      *
@@ -908,7 +912,6 @@ public class Entry implements Cloneable {
         if (label.length() > 0) {
             return label;
         }
-
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 

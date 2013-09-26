@@ -90,6 +90,9 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     Hashtable nameMap = new Hashtable();
 
+    private boolean meFirst  = false;
+
+
     /**
      * _more_
      */
@@ -162,6 +165,7 @@ public class GenericTypeHandler extends TypeHandler {
             //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
         }
 
+        meFirst = XmlUtil.getAttribute(entryNode, "mefirst", meFirst);
         setDefaultCategory(XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                 (String) null));
 
@@ -172,6 +176,14 @@ public class GenericTypeHandler extends TypeHandler {
         init((List<Element>) columnNodes);
     }
 
+
+    private boolean getMeFirst() {
+        if(meFirst) return true;
+        if (getParent() != null && getParent() instanceof GenericTypeHandler) {
+            return ((GenericTypeHandler)getParent()).getMeFirst();
+        }
+        return false;
+    }
 
     /**
      * _more_
@@ -1023,10 +1035,10 @@ public class GenericTypeHandler extends TypeHandler {
                                              boolean showResource,
                                              boolean linkToDownload)
             throws Exception {
-        StringBuffer sb = super.getInnerEntryContent(entry, request, output,
-                              showDescription, showResource, linkToDownload);
-        if (true) {
-            //        if (shouldShowInHtml(request, entry, output)) {
+        StringBuffer parentBuff = super.getInnerEntryContent(entry, request, output,
+                                        showDescription, showResource, linkToDownload);
+        if (shouldShowInHtml(request, entry, output)) {
+            StringBuffer myBuff = new StringBuffer();
             Object[] values = entry.getValues();
             if (values != null) {
                 for (Column column : getMyColumns()) {
@@ -1036,14 +1048,21 @@ public class GenericTypeHandler extends TypeHandler {
                     StringBuffer tmpSb = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSb,
                                           values);
-                    sb.append(formEntry(request, column.getLabel() + ":",
+                    myBuff.append(formEntry(request, column.getLabel() + ":",
                                         tmpSb.toString()));
                 }
-
+            }
+            
+            if(getMeFirst()) {
+                myBuff.append(parentBuff);
+                return myBuff;
+            } else {
+                parentBuff.append(myBuff);
+                return parentBuff;
             }
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
 
-        return sb;
+        return parentBuff;
     }
 
     /**

@@ -434,7 +434,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtils.img(
                         iconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
-            catSB.append(HtmlUtils.href(navUrl, entry.getName()));
+            catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
             catSB.append("</td><td align=right>");
             catSB.append(HtmlUtils.space(2));
             catSB.append(
@@ -495,7 +495,7 @@ public class MapManager extends RepositoryManager {
                                + "," + entry.getWest() + ")";
             }
 
-            String name = entry.getName();
+            String name = getEntryDisplayName(entry);
 
             name = name.replace("\r", " ");
             name = name.replace("\n", " ");
@@ -642,7 +642,7 @@ public class MapManager extends RepositoryManager {
         if (entry.getResource().isImage()) {
             int    width      = request.get(ATTR_WIDTH, 400);
             int    height     = request.get(ATTR_HEIGHT, 270);
-            String alt        = request.getString(ATTR_ALT, entry.getName());
+            String alt        = request.getString(ATTR_ALT, getEntryDisplayName(entry));
             int    imageWidth = request.get(ATTR_IMAGEWIDTH, width);
             String imageClass = request.getString("imageclass",
                                     (String) null);
@@ -809,7 +809,7 @@ public class MapManager extends RepositoryManager {
 
             String category;
             if (Misc.equals(categoryType, "parent")) {
-                category = entry.getParentEntry().getName();
+                category = getEntryDisplayName(entry.getParentEntry());
             } else {
                 category = entry.getTypeHandler().getCategory(
                     entry).getLabel().toString();
@@ -834,7 +834,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtils.img(
                         iconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
-            catSB.append(HtmlUtils.href(navUrl, entry.getName()));
+            catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
             catSB.append("</td><td align=right>");
             catSB.append(
                 HtmlUtils.href(

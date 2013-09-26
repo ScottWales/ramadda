@@ -33,6 +33,7 @@ import org.ramadda.repository.search.*;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 
@@ -818,6 +819,17 @@ public class RepositoryManager implements RepositorySource, Constants,
 
         return onSubmit;
 
+    }
+
+    public String getEntryDisplayName(Entry entry) {
+        String name =  entry.getTypeHandler().getEntryName(entry);
+        if(!Utils.stringDefined(name)) {
+            name = entry.getBaseLabel();
+            if(!Utils.stringDefined(name)) {
+                name =  entry.getTypeHandler().getLabel() + ": " + new Date(entry.getStartDate());
+            }
+        }
+        return name;
     }
 
 

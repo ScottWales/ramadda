@@ -606,18 +606,6 @@ public class OutputHandler extends RepositoryManager {
 
 
     /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String getEntryName(Entry entry) {
-        return entry.getTypeHandler().getEntryName(entry);
-    }
-
-
-    /**
      * Make a link for the OutputType
      *
      * @param request   The request
@@ -913,7 +901,7 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSelectLink(Request request, Entry entry, String target)
             throws Exception {
-        String       linkText = entry.getLabel();
+        String       linkText = getEntryDisplayName(entry);
         StringBuffer sb       = new StringBuffer();
         String       entryId  = entry.getId();
         String       icon     = getEntryManager().getIconUrl(request, entry);
@@ -960,7 +948,7 @@ public class OutputHandler extends RepositoryManager {
         String elementId = entry.getId();
         String value     = (entry.isGroup()
                             ? ((Entry) entry).getFullName()
-                            : entry.getName());
+                            : getEntryDisplayName(entry));
         value = value.replace("'", "\\'");
 
 
@@ -1313,7 +1301,7 @@ public class OutputHandler extends RepositoryManager {
         //xxxx
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
-                             entry.getLabel()), rowId, cbx, showDetails);
+                                                       getEntryDisplayName(entry)), rowId, cbx, showDetails);
     }
 
 
@@ -1449,7 +1437,7 @@ public class OutputHandler extends RepositoryManager {
             }
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                      entry, entry.getLabel(), null, true,
+                                                                entry, getEntryDisplayName(entry), null, true,
                                       crumbs);
             //entryLink.setLink(cbxSB + entryLink.getLink());
 
@@ -1635,7 +1623,7 @@ public class OutputHandler extends RepositoryManager {
     public String getEntryLink(Request request, Entry entry)
             throws Exception {
         return getEntryManager().getTooltipLink(request, entry,
-                entry.getLabel(), null);
+                                                getEntryDisplayName(entry), null);
     }
 
 

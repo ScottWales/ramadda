@@ -366,7 +366,7 @@ public class HtmlOutputHandler extends OutputHandler {
             contents = getEntryManager().getEntryActionsTable(request, entry,
                     menuType);
         } else {
-            contents = getInformationTabs(request, entry, true, true);
+            contents = getInformationTabs(request, entry, true);
         }
         StringBuffer xml = new StringBuffer("<content>\n");
         XmlUtil.appendCdata(xml,
@@ -527,8 +527,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                                    wikiTemplate));
         } else {
             addDescription(request, entry, sb, true);
-            String informationBlock = getInformationTabs(request, entry,
-                                          false, false);
+            String informationBlock = getInformationTabs(request, entry, false);
             sb.append(informationBlock);
         }
 
@@ -846,7 +845,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
-            String       tabs = getInformationTabs(request, parent, true, true);
+            String       tabs = getInformationTabs(request, parent, true);
             sb.append(tabs);
             //            sb.append(entry.getDescription());
             if (getAccessManager().hasPermissionSet(parent,
@@ -1063,8 +1062,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeDescription,
-                                     boolean fixedHeight)
+                                     boolean includeDescription)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
@@ -1385,14 +1383,14 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
-                    getEntryName(entry), url));
+                    getEntryDisplayName(entry), url));
             sb.append(HtmlUtils.br());
             sb.append(entry.getTypeHandler().formatDate(request, entry,
                     new Date(entry.getStartDate()), ""));
 
 
             //            sb.append (getEntryManager().getAjaxLink( request,  entry,
-            //                                                      "<br>"+getEntryName(entry),null, false));
+            //                                                      "<br>"+getEntryDisplayName(entry),null, false));
 
             sb.append("</td>");
         }
@@ -1539,7 +1537,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
 
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel());
+                                                                    entry, getEntryDisplayName(entry));
                 tableSB.append(HtmlUtils.col(entryLink.getLink(),
                                              " xxxwidth=50%  "));
                 tableSB.append(
@@ -1769,8 +1767,7 @@ public class HtmlOutputHandler extends OutputHandler {
             addDescription(request, group, sb, !hasChildren);
             //If its the default view of an entry then just show the children listing
             if ( !doSimpleListing) {
-                String informationBlock = getInformationTabs(request, group,
-                                              false, false);
+                String informationBlock = getInformationTabs(request, group, false);
 
                 if (hasChildren) {
                     sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
@@ -1902,7 +1899,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List labels = new ArrayList();
         List ids    = new ArrayList();
         for (Entry entry : entries) {
-            String label = entry.getLabel();
+            String label = getEntryDisplayName(entry);
             label = label.replaceAll(",", " ");
             times.add(SqlUtil.format(new Date(entry.getStartDate())));
             labels.add(label);

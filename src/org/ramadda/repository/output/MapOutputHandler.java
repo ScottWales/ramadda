@@ -123,10 +123,13 @@ public class MapOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         boolean ok = false;
-        for (Entry entry : state.getAllEntries()) {
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+        List<Entry> allEntries = state.getAllEntries();
+        if(allEntries.size() == 0) {
+            allEntries.add(state.getEntry());
+        }
+        for (Entry entry : allEntries) {
+            if (entry.isGeoreferenced()) {
                 ok = true;
-
                 break;
             }
         }

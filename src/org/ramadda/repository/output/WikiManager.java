@@ -757,7 +757,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
         if (alt == null) {
-            String name = entry.getName();
+            String name = getEntryDisplayName(entry);
             if ((name != null) && !name.isEmpty()) {
                 alt = name;
             }
@@ -798,7 +798,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String  img  = HtmlUtils.img(url, entry.getName(), extra);
+        String  img  = HtmlUtils.img(url, getEntryDisplayName(entry), extra);
         boolean link = Misc.equals("true", props.get(ATTR_LINK));
         boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                    false);
@@ -1106,7 +1106,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                                               false, true).toString();
             }
             return getRepository().getHtmlOutputHandler().getInformationTabs(
-                request, entry, false, true);
+                request, entry, false);
         } else if (include.equals(WIKI_PROP_TAGCLOUD)) {
             StringBuffer tagCloud  = new StringBuffer();
             int          threshold = Misc.getProperty(props, "threshold", 0);
@@ -1128,7 +1128,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
             String title = Misc.getProperty(props, ATTR_TITLE,
-                                            entry.getName());
+                                            getEntryDisplayName(entry));
             String url;
             if (linkResource
                     && (entry.getTypeHandler().isType("link")
@@ -1182,7 +1182,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
                     Misc.getProperty(props, ATTR_TITLE, "Layout"));
         } else if (include.equals(WIKI_PROP_NAME)) {
-            return entry.getName();
+            return getEntryDisplayName(entry);
         } else if (include.equals(WIKI_PROP_FIELD)) {
             String name = Misc.getProperty(props, ATTR_FIELDNAME,
                                            (String) null);
@@ -1452,15 +1452,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String childUrl = HtmlUtils.href(
                                       request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
-                                          child), child.getName());
+                                          child), getEntryDisplayName(child));
                 prefix =
                     prefix.replace("${name}",
-                                   child.getName()).replace("${description}",
-                                       child.getDescription());
+                                   getEntryDisplayName(child).replace("${description}",
+                                                               child.getDescription()));
                 suffix =
                     suffix.replace("${name}",
-                                   child.getName()).replace("${description}",
-                                       child.getDescription());
+                                   getEntryDisplayName(child).replace("${description}",
+                                                               child.getDescription()));
                 prefix = prefix.replace("${url}", childUrl);
                 suffix = suffix.replace("${url}", childUrl);
                 String icon =
@@ -1490,7 +1490,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                 } else {
                     contents.add(content.toString());
-                    titles.add(child.getName());
+                    titles.add(getEntryDisplayName(child));
                 }
             }
             if (layout.equals("table")) {
@@ -1532,7 +1532,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                        false);
 
             for (Entry child : children) {
-                String title = child.getName();
+                String title = getEntryDisplayName(child);
                 if (includeIcon) {
                     title =
                         HtmlUtils.img(getEntryManager().getIconUrl(request,
@@ -1594,7 +1594,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             getRepository().URL_ENTRY_SHOW, child);
                     }
                     String href = HtmlUtils.href(url, linklabel.isEmpty()
-                            ? child.getName()
+                            ? getEntryDisplayName(child)
                             : linklabel);
 
                     content = content + HtmlUtils.br()
@@ -1921,7 +1921,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                            child);
                 }
 
-                String linkLabel = child.getName();
+                String linkLabel = getEntryDisplayName(child);
                 if(includeIcon) {
                     linkLabel = HtmlUtils.img(getEntryManager().getIconUrl(request,
                                                                            child)) +" " + linkLabel;
@@ -2467,7 +2467,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 extra = extra
                         + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             }
-            String name = child.getName();
+            String name = getEntryDisplayName(child);
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
             }
@@ -2990,7 +2990,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (theEntry != null) {
                 addWikiLink(wikiUtil, theEntry);
                 if (label.trim().length() == 0) {
-                    label = theEntry.getName();
+                    label = getEntryDisplayName(theEntry);
                 }
                 if (theEntry.getType().equals(TYPE_WIKIPAGE)) {
                     String url =
