@@ -125,7 +125,10 @@ public class MapOutputHandler extends OutputHandler {
         boolean ok = false;
         List<Entry> allEntries = state.getAllEntries();
         if(allEntries.size() == 0) {
-            allEntries.add(state.getEntry());
+            Entry singleEntry = state.getEntry();
+            if(singleEntry!=null) {
+                allEntries.add(state.getEntry());
+            }
         }
         for (Entry entry : allEntries) {
             if (entry.isGeoreferenced()) {
