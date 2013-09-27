@@ -251,26 +251,28 @@
      <property name="search.form.date.show" value="false"/>
 
 
+     <column label="Description" group="Facilities" name="facilities_description"  size="1000" rows="5"   canexport="false"  showlabel="false"/>
      <column label="Status" group="Facilities" name="facilities_status" type="enumeration" values="0:na,1,2,3,4,5"/>
-     <column label="Description" group="Facilities" name="facilities_description"  size="1000" rows="5"   canexport="false"  />
+
      <column label="Lodging" group="Facilities" name="lodging" rows="3"    canexport="false"  />
      <column label="Communications" group="Facilities" name="communications" rows="3"    canexport="false"  />
+     <column label="Vehicles" group="Facilities" name="vehicles" rows="3"    canexport="false"  />
      <column label="Food" group="Facilities" name="food" rows="3"    canexport="false"  />
      <column label="Equipment" group="Facilities" name="equipment" rows="3"    canexport="false"  />
      <column label="Usable Space" group="Facilities" name="usable_space" rows="3"    canexport="false"  />
      <column label="URLs" group="Facilities" name="facilities_url" rows="3" size="500" type="url"   canexport="false"  />
 
 
+     <column group="Accessibility/Cost"  name="access_description" label="Description" size="1000"  rows="5"   canexport="false"   showlabel="false"/>
      <column label="Status" group="Accessibility/Cost" name="access_status" type="enumeration" values="0:na,1,2,3,4,5"/>
-     <column group="Accessibility/Cost"  name="access_description" label="Description" size="1000"  rows="5"   canexport="false"  />
      <column label="URLs" group="Accessibility/Cost" name="access_url" rows="3" size="500"  type="url"   canexport="false"  />
 
+     <column group="Research Record"  name="research_description" label="Description" size="1000"  rows="5"   canexport="false"   showlabel="false"/>
      <column label="Status" group="Research Record" name="research_status" type="enumeration" values="0:na,1,2,3,4,5"/>
-     <column group="Research Record"  name="research_description" label="Description" size="1000"  rows="5"   canexport="false"  />
      <column label="URLs" group="Research Record" name="research_url" rows="3" size="500"  type="url"   canexport="false"  />
 
+     <column group="Data Availability"  name="data_description" label="Description" size="1000" rows="5"   canexport="false"   showlabel="false"/>
      <column label="Status" group="Data Availability" name="data_status" type="enumeration" values="0:na,1,2,3,4,5"/>
-     <column group="Data Availability"  name="data_description" label="Description" size="1000" rows="5"   canexport="false"  />
      <column label="URLs" group="Data Availability" name="data_url" rows="3" size="500"  type="url"   canexport="false"  />
 
 
