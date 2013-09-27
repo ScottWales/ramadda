@@ -1041,9 +1041,15 @@ public class GenericTypeHandler extends TypeHandler {
             StringBuffer myBuff = new StringBuffer();
             Object[] values = entry.getValues();
             if (values != null) {
+                String lastGroup = "";
                 for (Column column : getMyColumns()) {
                     if ( !column.getCanShow()) {
                         continue;
+                    }
+                    if(column.getGroup()!=null && !Misc.equals(lastGroup, column.getGroup())) {
+                        lastGroup = column.getGroup();
+
+                        myBuff.append(HtmlUtils.row(HtmlUtils.col(HtmlUtils.div(lastGroup, " class=\"formgroupheader\" "), " colspan=2 ")));
                     }
                     StringBuffer tmpSb = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSb,

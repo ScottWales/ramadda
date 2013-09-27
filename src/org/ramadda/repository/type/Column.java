@@ -755,10 +755,16 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isType(DATATYPE_URL)) {
             String s = toString(values, offset);
+            List<String> urls  = StringUtil.split(s,"\n");
             if (Misc.equals(output, OUTPUT_CSV)) {
                 sb.append(s);
             } else {
-                sb.append("<a href=\"" + s + "\">" + s + "</a>");
+                int cnt =0 ;
+                for(String url: urls) {
+                    if(cnt > 0) sb.append("<br>");
+                    cnt++;
+                    sb.append("<a href=\"" + url + "\">" + url + "</a>");
+                }
             }
         } else {
             String s = toString(values, offset);
@@ -2334,6 +2340,11 @@ public class Column implements DataTypes, Constants {
     public String getName() {
         return name;
     }
+
+    public String getGroup() {
+        return group;
+    }
+
 
     /**
      * _more_
