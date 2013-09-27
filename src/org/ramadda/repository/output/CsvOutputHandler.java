@@ -142,7 +142,7 @@ public class CsvOutputHandler extends OutputHandler {
         String delimiter = request.getString(ARG_DELIMITER, ",");
         String fieldsArg =
             request.getString(
-                ARG_FIELDS, "name,id,type,north,south,east,west,url,fields");
+                ARG_FIELDS, "name,id,type,entry_url,north,south,east,west,url,fields");
         StringBuffer sb     = new StringBuffer();
         List<String> fields = StringUtil.split(fieldsArg, ",", true, true);
         for (Entry entry : entries) {
@@ -153,6 +153,7 @@ public class CsvOutputHandler extends OutputHandler {
                     if (columns != null) {
                         String tmp = null;
                         for (Column column : columns) {
+                            if(!column.getCanExport()) continue;
                             if (tmp == null) {
                                 tmp = ",";
                             } else {
@@ -182,6 +183,13 @@ public class CsvOutputHandler extends OutputHandler {
                     sb.append(entry.getTypeHandler().getType());
                 } else if (field.equals("id")) {
                     sb.append(entry.getId());
+                } else if (field.equals("entry_url")) {
+                    String url = request.url(repository.URL_ENTRY_SHOW,
+                                             ARG_ENTRYID, entry.getId());
+
+
+                    url = request.getAbsoluteUrl(url);
+                    sb.append(url);
                 } else if (field.equals("url")) {
                     if (entry.getResource().isUrl()) {
                         sb.append(
@@ -214,11 +222,13 @@ public class CsvOutputHandler extends OutputHandler {
                             entry.getTypeHandler().getValues(entry);
                         int cnt = 0;
                         for (Column column : columns) {
+                            if(!column.getCanExport()) continue;
                             if (cnt > 0) {
                                 sb.append(delimiter);
                             }
                             cnt++;
-                            sb.append(sanitize(column.getString(values)));
+                            String s = sanitize(column.getString(values));
+                            sb.append(s);                        
                         }
                     }
                 } else {
@@ -242,6 +252,8 @@ public class CsvOutputHandler extends OutputHandler {
         if (s == null) {
             return "";
         }
+        s = s.replaceAll("\r\n", " ");
+        s = s.replaceAll("\r", " ");
         s = s.replaceAll("\n", " ");
         s = s.replaceAll(",", "%2C");
 
