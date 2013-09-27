@@ -198,6 +198,9 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
+    public static final String ATTR_CANEXPORT = "canexport";
+
+
 
 
     /** Lat/Lon format */
@@ -245,6 +248,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canSearch;
 
+
+
     /** _more_ */
     private boolean advancedSearch;
 
@@ -283,6 +288,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canShow = true;
+
+    private boolean canExport = true;
 
 
     /** _more_ */
@@ -355,6 +362,7 @@ public class Column implements DataTypes, Constants {
         editable       = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
         addToForm = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
         canShow = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
+        canExport = XmlUtil.getAttribute(element, ATTR_CANEXPORT, canExport);
         canList        = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
         size           = XmlUtil.getAttribute(element, ATTR_SIZE, size);
         rows           = XmlUtil.getAttribute(element, ATTR_ROWS, rows);
@@ -679,9 +687,10 @@ public class Column implements DataTypes, Constants {
                             Object[] values, SimpleDateFormat sdf)
             throws Exception {
 
-        String delimiter = (Misc.equals(OUTPUT_CSV, output)
+        boolean csv = Misc.equals(output, OUTPUT_CSV);
+        String delimiter = csv
                             ? "|"
-                            : ",");
+                            : ",";
         if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset));
             sb.append(delimiter);
@@ -695,7 +704,7 @@ public class Column implements DataTypes, Constants {
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 3));
         } else if (isType(DATATYPE_PERCENTAGE)) {
-            if (Misc.equals(output, OUTPUT_CSV)) {
+            if (csv) {
                 sb.append(toString(values, offset));
             } else {
                 //                System.err.println("offset:" + offset +" values:");
@@ -727,7 +736,7 @@ public class Column implements DataTypes, Constants {
                     throw new RuntimeException(exc);
                 }
             }
-            if (Misc.equals(output, OUTPUT_CSV)) {
+            if (csv) {
                 sb.append(entryId);
             } else {
                 if (theEntry != null) {
@@ -748,7 +757,7 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isType(DATATYPE_EMAIL)) {
             String s = toString(values, offset);
-            if (Misc.equals(output, OUTPUT_CSV)) {
+            if (csv) {
                 sb.append(s);
             } else {
                 sb.append("<a href=\"mailto:" + s + "\">" + s + "</a>");
@@ -756,7 +765,8 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_URL)) {
             String s = toString(values, offset);
             List<String> urls  = StringUtil.split(s,"\n");
-            if (Misc.equals(output, OUTPUT_CSV)) {
+            if (csv) {
+                s = StringUtil.join(delimiter,urls);
                 sb.append(s);
             } else {
                 int cnt =0 ;
@@ -768,15 +778,20 @@ public class Column implements DataTypes, Constants {
             }
         } else {
             String s = toString(values, offset);
+            if (csv) { 
+                s = s.replaceAll(",","_COMMA_");
+                s = s.replaceAll("\n"," ");
+            }
+
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(
                     getRepository().getTmpRequest(), entry, s, false, null,
                     null);
             } else if (isEnumeration()) {
-                String label = enumMap.get(s);
-                if (label != null) {
-                    s = label;
-                }
+                //                String label = enumMap.get(s);
+                //                if (label != null) {
+                //                    s = label;
+                //                }
             }
             sb.append(s);
         }
@@ -2481,6 +2496,9 @@ public class Column implements DataTypes, Constants {
         return canShow;
     }
 
+    public boolean getCanExport() {
+        return canExport;
+    }
 
 
     /**
@@ -2575,7 +2593,7 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String toString() {
-        return name + ":" + offset;
+        return name;
     }
 
     /**
