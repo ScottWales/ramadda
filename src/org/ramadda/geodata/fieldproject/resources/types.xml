@@ -237,6 +237,54 @@
    </type>
 
 
+  <type name="project_site_assessment"  description="Site Assessment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/map_magnify.png"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+     <property name="search.tabs" value="list"/>
+     <property name="search.form.date.show" value="false"/>
+
+     <column label="Description" group="Facilities" name="facilities_description"  size="1000" rows="5"/>
+     <column label="Lodging" group="Facilities" name="lodging" rows="3" />
+     <column label="Communications" group="Facilities" name="communications" rows="3" />
+     <column label="Food" group="Facilities" name="food" rows="3" />
+     <column label="Equipment" group="Facilities" name="equipment" rows="3" />
+     <column label="Usable Space" group="Facilities" name="usable_space" rows="3" />
+     <column label="URLs" group="Facilities" name="facilities_url" rows="3" size="500" type="url"/>
+
+
+     <column group="Accessibility/Cost"  name="access_description" label="Description" size="1000"  rows="5"/>
+     <column label="URLs" group="Accessibility/Cost" name="access_url" rows="3" size="500"  type="url"/>
+
+     <column group="Research Record"  name="research_description" label="Description" size="1000"  rows="5"/>
+     <column label="URLs" group="Research Record" name="research_url" rows="3" size="500"  type="url"/>
+
+     <column group="Data Availability"  name="data_description" label="Description" size="1000" rows="5"/>
+     <column label="URLs" group="Data Availability" name="data_url" rows="3" size="500"  type="url"/>
+
+
+     <wiki><![CDATA[
+{{noheading}}
+=={{name}}==
+
+{{description wikify="true"}}
+
+{{information}}
+
+{{tree  showtoggle="false" message="" prefix="==Data=="}}
+]]>
+</wiki>
+   </type>
+
 
 
     <type name="project_fieldnote" description="Field Note" category="Science Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
