@@ -198,6 +198,7 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
+    public static final String ATTR_SHOWLABEL = "showlabel";
     public static final String ATTR_CANEXPORT = "canexport";
 
 
@@ -289,6 +290,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canShow = true;
 
+    private boolean showLabel= true;
+
     private boolean canExport = true;
 
 
@@ -362,6 +365,7 @@ public class Column implements DataTypes, Constants {
         editable       = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
         addToForm = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
         canShow = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
+        showLabel = XmlUtil.getAttribute(element, ATTR_SHOWLABEL, showLabel);
         canExport = XmlUtil.getAttribute(element, ATTR_CANEXPORT, canExport);
         canList        = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
         size           = XmlUtil.getAttribute(element, ATTR_SIZE, size);
@@ -2498,6 +2502,10 @@ public class Column implements DataTypes, Constants {
 
     public boolean getCanExport() {
         return canExport;
+    }
+
+    public boolean getShowLabel() {
+        return showLabel;
     }
 
 
