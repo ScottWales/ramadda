@@ -730,12 +730,18 @@ public class MetadataType extends MetadataTypeBase {
             File thumb = getStorageManager().getTmpFile(request,
                              IOUtil.getFileTail(f.toString()));
             if ( !thumb.exists()) {
-                Image image = ImageUtils.readImage(f.toString());
-                image = ImageUtils.resize(image, 100, -1);
-                ImageUtils.waitOnImage(image);
-                ImageUtils.writeImageToFile(image, thumb.toString());
+                try {
+                    Image image = ImageUtils.readImage(f.toString());
+                    image = ImageUtils.resize(image, 100, -1);
+                    ImageUtils.waitOnImage(image);
+                    ImageUtils.writeImageToFile(image, thumb.toString());
+                    f = thumb;
+                } catch(Exception exc) {
+                    getStorageManager().logError("Error creating thumbnail from file:" + f +" error:" + exc, exc);
+                }
+            } else {
+                f = thumb;
             }
-            f = thumb;
         }
 
 
