@@ -247,7 +247,7 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
 
-     <property name="search.tabs" value="list"/>
+     <property name="search.tabs" value="list,map"/>
      <property name="search.form.date.show" value="false"/>
 
 
