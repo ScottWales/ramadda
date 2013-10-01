@@ -373,6 +373,7 @@ public class KmlOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer(XmlUtil.XML_HEADER);
         sb.append(XmlUtil.toString(root));
 
+        System.out.println(sb);
         return new Result(title, sb, MIME_KML);
 
     }

@@ -4334,8 +4334,8 @@ public class TypeHandler extends RepositoryManager {
             if (entry == null) {
                 continue;
             }
-            if (entry.isGroup()) {
-                subGroups.add((Entry) entry);
+            if(getEntryManager().handleEntryAsGroup(entry)) {
+                subGroups.add(entry);
             } else {
                 entries.add(entry);
             }

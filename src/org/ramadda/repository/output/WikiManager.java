@@ -1118,7 +1118,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return entry.getTypeHandler().getEntryContent(entry, request,
                         false, true).toString();
             }
-
             return getRepository().getHtmlOutputHandler().getInformationTabs(
                 request, entry, false);
         } else if (include.equals(WIKI_PROP_TAGCLOUD)) {

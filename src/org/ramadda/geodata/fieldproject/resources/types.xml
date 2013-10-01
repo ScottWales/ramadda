@@ -278,11 +278,11 @@
 
      <wiki><![CDATA[
 {{noheading}}
-=={{name}}==
+==Assessment: {{name}}==
 
 {{description wikify="true"}}
 
-{{information}}
+{{information details="true"}}
 
 {{tree  showtoggle="false" message="" prefix="==Data=="}}
 ]]>

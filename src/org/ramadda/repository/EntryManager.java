@@ -634,8 +634,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        Result result = processEntryShow(request, entry);
         return addEntryHeader(request, entry,
-                              processEntryShow(request, entry));
+                              result);
     }
 
 
@@ -778,8 +779,10 @@ public class EntryManager extends RepositoryManager {
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
         outputType.incrNumberOfCalls();
+        boolean handleAsGroup = handleEntryAsGroup(entry);
+
         try {
-            if (entry.isGroup()) {
+            if (handleAsGroup) {
                 result = processGroupShow(request, outputHandler, outputType,
                                           entry);
             } else {
@@ -848,7 +851,7 @@ public class EntryManager extends RepositoryManager {
         group.setSubGroups(subGroups);
 
         OutputType dfltOutputType = getDefaultOutputType(request, group,
-                                        subGroups, entries);
+                                                         subGroups, entries);
         if (dfltOutputType != null) {
             outputType    = dfltOutputType;
             outputHandler = getRepository().getOutputHandler(outputType);
@@ -876,6 +879,7 @@ public class EntryManager extends RepositoryManager {
                                             List<Entry> subEntries) {
         if ( !request.defined(ARG_OUTPUT)) {
             for (PageDecorator pageDecorator :
+
                     repository.getPluginManager().getPageDecorators()) {
                 String defaultOutput =
                     pageDecorator.getDefaultOutputType(getRepository(),
@@ -2196,7 +2200,6 @@ public class EntryManager extends RepositoryManager {
                         Pattern.compile(pattern).matcher(origName);
                     if (matcher.find()) {
                         String dateString = matcher.group(1);
-                        //                        System.err.println("date:" + dateString);
                         Date dttm = RepositoryUtil.makeDateFormat(
                                         format).parse(dateString);
                         theDateRange[0] = dttm;
@@ -2249,8 +2252,7 @@ public class EntryManager extends RepositoryManager {
                         Utils.extractDate(theResource);
                 }
 
-                System.err.println("date:" + theDateRange[0] + " "
-                                   + theResource);
+                //                System.err.println("date:" + theDateRange[0] + " " + theResource);
 
                 if (theDateRange[0] == null) {
                     theDateRange[0] = ((theDateRange[1] == null)
@@ -9259,6 +9261,14 @@ public class EntryManager extends RepositoryManager {
         return processEntry;
     }
 
+
+    public boolean handleEntryAsGroup(Entry entry) {
+        if(!entry.isGroup()) return false;
+        String  type = entry.getType();
+        if(type.equals(TYPE_GROUP)) return true;
+        //TODO: look at type handler properties
+        return true;
+    }
 
 
 }

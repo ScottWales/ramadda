@@ -439,6 +439,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         if (outputType.equals(OUTPUT_INLINE)) {
             String inline = typeHandler.getInlineHtml(request, entry);
+          
             if (inline != null) {
                 inline = getRepository().translate(request, inline);
                 StringBuffer xml = new StringBuffer("<content>\n");
@@ -464,7 +465,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 return new Result("", xml, "text/xml");
             }
-
             return getMetadataXml(request, entry, false);
         }
 

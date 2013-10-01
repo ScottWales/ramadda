@@ -981,7 +981,7 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public boolean shouldShowInHtml(Request requst, Entry entry,
                                     OutputType output) {
-        return output.equals(OutputHandler.OUTPUT_HTML);
+        return output.equals(OutputHandler.OUTPUT_HTML) || output.equals(HtmlOutputHandler.OUTPUT_INLINE);
     }
 
 

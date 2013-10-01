@@ -77,7 +77,7 @@ public class CmaPageDecorator extends PageDecorator {
             return null;
         }
 
-        if (entry.isGroup()) {
+        if (entry.isGroup() && subEntries!=null) {
             //Look at each child entry 
             for (Entry child : subEntries) {
                 //If there are any images then use the image player

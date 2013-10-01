@@ -3915,6 +3915,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
         typeHandlersMap.put(typeName, typeHandler);
         allTypeHandlers.add(typeHandler);
+        //        if(typeHandler.isGroup()) {
+        //            System.err.println("Group:" + typeHandler);
+        //        }
     }
 
 
