@@ -1202,7 +1202,7 @@ public interface Constants {
     public static final String ARG_SUBMIT_PUBLISH = "submit.publish";
 
     /** _more_ */
-    public static final String ARG_PUBLISH_ENTRY = "publish.entry";
+    public static final String ARG_PUBLISH_ENTRY = "publish_entry";
 
     /** _more_ */
     public static final String ARG_PUBLISH_NAME = "publish.name";

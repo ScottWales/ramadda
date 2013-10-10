@@ -865,13 +865,14 @@ public class OutputHandler extends RepositoryManager {
                                    String type, Entry entry, boolean addClear)
             throws Exception {
 
+
         String selectorId = elementId + "_" + type;
         String event = HtmlUtils.call("selectInitialClick",
                                       HtmlUtils.comma("event",
                                           HtmlUtils.squote(selectorId),
                                           HtmlUtils.squote(elementId),
                                           HtmlUtils.squote("" + allEntries),
-                                          HtmlUtils.squote(type)) + ","
+                                                      type==null?"null":HtmlUtils.squote(type)) + ","
                                               + ((entry != null)
                 ? HtmlUtils.squote(entry.getId())
                 : "null"));

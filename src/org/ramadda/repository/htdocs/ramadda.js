@@ -936,15 +936,18 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.textComp = ramaddaUtil.getDomObject(this.elementId);
 
     this.getTextComponent = function() {
-        return $("#" + this.elementId);
+        var id = "#" + this.elementId;
+        alert('get text comp:' + id + ":" + $(id).size());
+        return $(id);
     }
 
     this.getHiddenComponent = function() {
-        return $("#" + this.elementId+"_hidden");
+        var id = "#" + this.elementId+"_hidden";
+        return $(id);
     }
 
     this.clearInput = function() {	
-        this.getHiddenComp().val("");
+        this.getHiddenComponent().val("");
         this.getTextComponent().val("");
     }
 
@@ -996,6 +999,8 @@ function selectClick(id,entryId,value) {
     } else if (selector.selecttype=="entryid") {
         insertTagsInner(selector.elementId, selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
     } else { 
+        alert('comp:' + selector.getHiddenComponent().size() + " " +
+              selector.getTextComponent().size());
         selector.getHiddenComponent().val(entryId);
         selector.getTextComponent().val(value);
     }
