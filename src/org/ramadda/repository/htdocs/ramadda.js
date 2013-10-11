@@ -937,7 +937,6 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
     this.getTextComponent = function() {
         var id = "#" + this.elementId;
-        alert('get text comp:' + id + ":" + $(id).size());
         return $(id);
     }
 
@@ -999,8 +998,6 @@ function selectClick(id,entryId,value) {
     } else if (selector.selecttype=="entryid") {
         insertTagsInner(selector.elementId, selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
     } else { 
-        alert('comp:' + selector.getHiddenComponent().size() + " " +
-              selector.getTextComponent().size());
         selector.getHiddenComponent().val(entryId);
         selector.getTextComponent().val(value);
     }
