@@ -621,7 +621,8 @@ public class TypeHandler extends RepositoryManager {
      */
     public void handleNoEntriesHtml(Request request, Entry entry,
                                     StringBuffer sb) {
-        if ( !Utils.stringDefined(entry.getDescription())) {
+        if ( !Utils.stringDefined(entry.getDescription()) &&
+             getType().equals(TYPE_GROUP)) {
             sb.append(HtmlUtils.tag(HtmlUtils.TAG_I, "",
                                     msg(LABEL_EMPTY_FOLDER)));
         }
