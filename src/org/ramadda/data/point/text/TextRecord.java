@@ -69,8 +69,6 @@ public class TextRecord extends DataRecord {
     /** _more_          */
     private int badCnt = 0;
 
-    /** _more_          */
-    private int goodCnt = 0;
 
     /**
      * _more_
@@ -459,16 +457,20 @@ public class TextRecord extends DataRecord {
             }
         }
         if (bePickyAboutTokens && (numTokensRead != tokens.length)) {
-            System.err.println("bad token cnt: expected:" + tokens.length
-                               + " read:" + numTokensRead + " delimiter:"
-                               + delimiter + " is space:" + delimiterIsSpace
-                               + "\nLine:" + line);
+            badCnt++;
+            //Handle the goofy point cloud text file that occasionally has a single number
+            if(badCnt>5 || numTokensRead!=1) {
+                System.err.println("bad token cnt: expected:" + tokens.length
+                                   + " read:" + numTokensRead + " delimiter:"
+                                   + delimiter + " is space:" + delimiterIsSpace
+                                   + "\nLine:" + line);
 
-            throw new IllegalArgumentException("Could not tokenize line:\n"
-                    + line + "\n");
+                throw new IllegalArgumentException("Could not tokenize line:\n"
+                                                   + line + "\n");
+            }
+            return false;
         }
         badCnt = 0;
-        goodCnt++;
 
         return true;
 
