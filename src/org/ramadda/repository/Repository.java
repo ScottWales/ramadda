@@ -3062,26 +3062,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             path = urlBase + path;
         }
 
-        //        if(path.indexOf(".js")>=0) 
-        //            System.err.println("path:" + path);
-        /*
-       if ((path.indexOf("/gantt") >= 0) && path.endsWith(".jar")) {
-            path = "/repository/applets/gantt/gantt.jar";
-        }
-        */
-
-        //Some hackery so we can reload applets when developing
-        if ((path.indexOf("/graph") >= 0) && path.endsWith(".jar")) {
-            path = "/repository/applets/graph.jar";
-        }
-
-        if ((path.indexOf("/chat") >= 0) && path.endsWith(".jar")) {
-            path = "/repository/collab/chat.jar";
-            //            System.err.println ("new path:" + path);
-        }
-
-
-
 
         path = path.replaceAll("//", "/");
         //        System.err.println("path:" + path);
@@ -3103,6 +3083,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         int length = urlBase.length();
         //        path = StringUtil.replace(path, urlBase, BLANK);
         path = path.substring(length);
+
+        //Check for the version in the path and strip it off, e.g.
+        // /repository/htdocs_v1/style.css
+        //We do this so we can cleanly update new css and js
+        if(path.startsWith(PageHandler.HTDOCS_VERSION_SLASH)) {
+            path = path.substring(PageHandler.HTDOCS_VERSION_SLASH.length());
+            //            System.err.println("path:" + path);
+        }
+
+
+
         String  type = getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
         boolean decorate = true;
         if (path.startsWith("/raw")) {

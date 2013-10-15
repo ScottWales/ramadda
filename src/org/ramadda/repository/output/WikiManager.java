@@ -1704,7 +1704,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 sb.append("</style>\n\n");
                 sb.append("<link rel=\"stylesheet\" href=\"");
                 sb.append(
-                    getRepository().fileUrl("/lib/slides/paginate.css"));
+                    getRepository().htdocsUrl("/lib/slides/paginate.css"));
                 sb.append("\" type=\"text/css\" media=\"screen\" />");
                 sb.append("\n");
 
@@ -1716,7 +1716,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtils.squote(
-                        getRepository().fileUrl(
+                        getRepository().htdocsUrl(
                             "/lib/slides/img/loading.gif")) + ", play: "
                                 + startSpeed
                                 + ", pause: 2500, hoverPause: true"
@@ -1737,7 +1737,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     HtmlUtils.href(
                         "#",
                         HtmlUtils.img(
-                            getRepository().fileUrl(
+                            getRepository().htdocsUrl(
                                 "/lib/slides/img/arrow-prev.png"), "Prev",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "prev"));
@@ -1746,7 +1746,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     HtmlUtils.href(
                         "#",
                         HtmlUtils.img(
-                            getRepository().fileUrl(
+                            getRepository().htdocsUrl(
                                 "/lib/slides/img/arrow-next.png"), "Next",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "next"));
@@ -1781,7 +1781,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 sb.append(
                     HtmlUtils.importJS(
-                        getRepository().fileUrl(
+                        getRepository().htdocsUrl(
                             "/lib/slides/slides.min.jquery.js")));
 
                 sb.append(HtmlUtils.script(js.toString()));
@@ -2048,12 +2048,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             buf.append(
                 HtmlUtils.importJS(
-                    getRepository().fileUrl(
+                    getRepository().htdocsUrl(
                         "/lib/fancybox/jquery.fancybox-1.3.4.pack.js")));
             buf.append("\n");
             buf.append("<link rel=\"stylesheet\" href=\"");
             buf.append(
-                getRepository().fileUrl(
+                getRepository().htdocsUrl(
                     "/lib/fancybox/jquery.fancybox-1.3.4.css"));
             buf.append("\" type=\"text/css\" media=\"screen\" />");
             buf.append("\n");

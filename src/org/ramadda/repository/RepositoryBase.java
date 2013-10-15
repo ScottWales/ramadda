@@ -618,6 +618,10 @@ public class RepositoryBase implements Constants, RepositorySource {
         return urlBase + f;
     }
 
+    public String htdocsUrl(String f) {
+        return fileUrl(PageHandler.HTDOCS_VERSION_SLASH + f);
+    }
+
     /**
      * _more_
      *

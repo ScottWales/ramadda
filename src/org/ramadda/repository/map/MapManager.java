@@ -155,20 +155,20 @@ public class MapManager extends RepositoryManager {
      */
     public String getHtmlImports() {
         StringBuffer sb = new StringBuffer();
-        sb.append(HtmlUtils.cssLink(fileUrl(OPENLAYERS_BASE
+        sb.append(HtmlUtils.cssLink(getRepository().htdocsUrl(OPENLAYERS_BASE
                                             + "/theme/default/style.css")));
         sb.append("\n");
         sb.append("\n");
-        sb.append(HtmlUtils.importJS(fileUrl(OPENLAYERS_BASE
+        sb.append(HtmlUtils.importJS(getRepository().htdocsUrl(OPENLAYERS_BASE
                                              + "/OpenLayers.js")));
         sb.append("\n");
         sb.append(
             HtmlUtils.importJS(
                 "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
         sb.append("\n");
-        sb.append(HtmlUtils.importJS(fileUrl("/ramaddamap.js")));
+        sb.append(HtmlUtils.importJS(getRepository().htdocsUrl("/ramaddamap.js")));
         sb.append("\n");
-        sb.append(HtmlUtils.cssLink(fileUrl("/ramaddamap.css")));
+        sb.append(HtmlUtils.cssLink(getRepository().htdocsUrl("/ramaddamap.css")));
         sb.append("\n");
 
         return sb.toString();
@@ -300,10 +300,10 @@ public class MapManager extends RepositoryManager {
         if (request.getExtraProperty("ge.inited") == null) {
             sb.append(HtmlUtils.importJS("http://www.google.com/jsapi"
                                          + mapsKey));
-            sb.append(HtmlUtils.importJS(fileUrl("/google/googleearth.js")));
+            sb.append(HtmlUtils.importJS(getRepository().htdocsUrl("/google/googleearth.js")));
             sb.append(
                 HtmlUtils.importJS(
-                    fileUrl("/google/extensions-0.2.1.pack.js")));
+                    getRepository().htdocsUrl("/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtils.script("google.load(\"earth\", \"1\""
                                        + otherOpts + ");"));
             request.putExtraProperty("ge.inited", "true");

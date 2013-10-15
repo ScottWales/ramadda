@@ -67,6 +67,15 @@ import java.util.TimeZone;
  */
 public class PageHandler extends RepositoryManager {
 
+
+    //When we make any real change to the css or javascript change this version
+    //so the browsers will pick up the new resource
+    //The imports.html header has a ${htdocs_version} macro in it
+    //that gets replaced with  this. Repository checks incoming paths and strips this off
+    public static final String HTDOCS_VERSION = "htdocs_v1";
+
+    public static final String HTDOCS_VERSION_SLASH  = "/" + HTDOCS_VERSION;
+
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "aodnStyle";
 
@@ -754,8 +763,11 @@ public class PageHandler extends RepositoryManager {
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
+
             imports = imports.replace("${root}",
                                       getRepository().getUrlBase());
+            imports = imports.replace("${htdocs_version}", HTDOCS_VERSION);
+
             theTemplates = new ArrayList<HtmlTemplate>();
 
             String defaultId = getProperty(PROP_HTML_TEMPLATE_DEFAULT,
