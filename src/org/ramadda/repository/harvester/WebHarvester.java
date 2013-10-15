@@ -565,7 +565,8 @@ public class WebHarvester extends Harvester {
             if (statusMessages.size() > 100) {
                 statusMessages = new ArrayList<String>();
             }
-            String crumbs = getPageHandler().getBreadCrumbs(null, entry);
+
+            String crumbs = getPageHandler().getBreadCrumbs(getRequest(), entry);
             crumbs = crumbs.replace("class=", "xclass=");
             statusMessages.add(crumbs);
             entryCnt++;
