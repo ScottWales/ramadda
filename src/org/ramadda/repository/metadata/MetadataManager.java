@@ -269,9 +269,14 @@ public class MetadataManager extends RepositoryManager {
     public void decorateEntry(Request request, Entry entry, StringBuffer sb,
                               boolean forLink)
             throws Exception {
+        int currentLength = sb.length();
         for (Metadata metadata : getMetadata(entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.decorateEntry(request, entry, sb, metadata, forLink);
+            //Only do the first one so we don't get multiple thumbnails
+            if(currentLength != sb.length()) {
+                break;
+            }
         }
     }
 

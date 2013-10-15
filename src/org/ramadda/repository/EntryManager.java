@@ -5757,6 +5757,7 @@ public class EntryManager extends RepositoryManager {
         boolean needToAddHr = false;
         String  tableHeader = "<table cellspacing=\"0\" cellpadding=\"0\">";
         for (Link link : links) {
+            if(!link.isType(typeMask)) continue;
             StringBuffer sb;
             if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
@@ -6086,7 +6087,6 @@ public class EntryManager extends RepositoryManager {
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
         List<Link>   linkList     = getEntryLinks(request, entry);
 
-        //OutputType.TYPE_ALL
         String links =
             getEntryManager().getEntryActionsTable(request, entry,
                 OutputType.TYPE_FILE | OutputType.TYPE_EDIT

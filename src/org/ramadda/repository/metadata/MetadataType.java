@@ -605,7 +605,7 @@ public class MetadataType extends MetadataTypeBase {
                               Metadata metadata, boolean forLink,
                               boolean isThumbnail)
             throws Exception {
-        for (MetadataElement element : getChildren()) {
+         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
