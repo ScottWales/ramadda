@@ -55,7 +55,6 @@
       <element name="Name"  searchable="true"/>
       <element name="Value"  searchable="true"/>
       <template type="thredds"><![CDATA[<property name="${Name.encoded}" value="${Value.encoded}"/>]]></template>
-      <xxxtemplate type="html"><![CDATA[ ${Value}]]></xxxtemplate>
     </type>
 
     <type name="Documentation" id="thredds.documentation"  searchable="true">
