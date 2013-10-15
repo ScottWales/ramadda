@@ -1679,6 +1679,9 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_DOWNLOAD_OK = "ramadda.download.ok";
 
+    public static final String PROP_ENTRY_TOP = "ramadda.entry.top";
+
+
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 

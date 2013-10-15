@@ -212,12 +212,18 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     protected Entry initTopEntry() throws Exception {
+        String fixedTopId = getProperty(PROP_ENTRY_TOP, (String)null);
+        Clause clause;
+        if(fixedTopId!=null) {
+            clause = Clause.eq(Tables.ENTRIES.COL_ID, fixedTopId);
+        } else {
+            clause = Clause.isNull(Tables.ENTRIES.COL_PARENT_GROUP_ID);
+        }
+
         Statement statement = getDatabaseManager().select(
                                   Tables.ENTRIES.COLUMNS,
                                   Tables.ENTRIES.NAME,
-                                  Clause.isNull(
-                                      Tables.ENTRIES.COL_PARENT_GROUP_ID));
-
+                                  clause);
         List<Entry> entries  = readEntries(statement);
 
         Entry       topEntry = null;
@@ -696,6 +702,11 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             entry = getTopGroup();
         }
+        
+
+
+
+
         //If entry is a dummy that means its from search results
         if (result.getShouldDecorate() && !entry.isDummy()) {
             StringBuffer sb             = new StringBuffer();
