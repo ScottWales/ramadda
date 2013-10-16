@@ -811,7 +811,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 entry.getName() });
 
         String iconUrl =
-            request.getAbsoluteUrl(getEntryManager().getIconUrl(request,
+            request.getAbsoluteUrl(getPageHandler().getIconUrl(request,
                 entry));
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
