@@ -53,6 +53,11 @@ public class JQuery {
     }
 
 
+    public static String selectId(String id) {
+        return select(id(id));
+    }
+
+
 
     /**
      * _more_
