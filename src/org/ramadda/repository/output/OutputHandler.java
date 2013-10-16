@@ -905,7 +905,7 @@ public class OutputHandler extends RepositoryManager {
         String       linkText = getEntryDisplayName(entry);
         StringBuffer sb       = new StringBuffer();
         String       entryId  = entry.getId();
-        String       icon     = getEntryManager().getIconUrl(request, entry);
+        String       icon     = getPageHandler().getIconUrl(request, entry);
         String       event;
         String       uid = "link_" + HtmlUtils.blockCnt++;
         String folderClickUrl =

@@ -284,7 +284,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
 
         for (Entry entry : allEntries) {
-            String icon = getEntryManager().getIconUrl(request, entry);
+            String icon = getPageHandler().getIconUrl(request, entry);
             StringBuffer attrs = new StringBuffer(XmlUtil.attrs(ATTR_TITLE,
                                      " " + entry.getName(), ATTR_ICON, icon));
 

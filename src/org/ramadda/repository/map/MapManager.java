@@ -427,7 +427,7 @@ public class MapManager extends RepositoryManager {
                         + HtmlUtils.squote(entry.getId()) + ")")));
 
             String navUrl  = "javascript:" + call;
-            String iconUrl = getEntryManager().getIconUrl(request, entry);
+            String iconUrl = getPageHandler().getIconUrl(request, entry);
             catSB.append(
                 HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
@@ -825,7 +825,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             catSB.append(
                 "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-            String iconUrl = getEntryManager().getIconUrl(request, entry);
+            String iconUrl =  getPageHandler().getIconUrl(request, entry);
             String navUrl = "javascript:" + map.getVariableName()
                             + ".hiliteMarker(" + sqt(entry.getId()) + ");";
             catSB.append(
@@ -942,7 +942,7 @@ public class MapManager extends RepositoryManager {
                 infoHtml = infoHtml.replace("\"", "\\\"");
                 infoHtml = infoHtml.replace("'", "\\'");
                 infoHtml = getRepository().translate(request, infoHtml);
-                String icon = getEntryManager().getIconUrl(request, entry);
+                String icon =  getPageHandler().getIconUrl(request, entry);
                 map.addMarker(entry.getId(),
                               new LatLonPointImpl(Math.max(-80,
                                   Math.min(80,

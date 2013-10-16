@@ -1379,7 +1379,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.space(1));
                 sb.append(HtmlUtils.br());
             }
-            String icon = getEntryManager().getIconUrl(request, entry);
+            String icon =getPageHandler().getIconUrl(request, entry);
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,

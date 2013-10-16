@@ -1894,7 +1894,7 @@ public class UserManager extends RepositoryManager {
                 if (haveFrom) {
                     colSB.append(
                         HtmlUtils.img(
-                            getEntryManager().getIconUrl(request, entry)));
+                             getPageHandler().getIconUrl(request, entry)));
                     colSB.append(
                         HtmlUtils.href(
                             request.url(
@@ -1931,7 +1931,7 @@ public class UserManager extends RepositoryManager {
                     colSB.append(links);
                     colSB.append(
                         HtmlUtils.img(
-                            getEntryManager().getIconUrl(request, entry)));
+                             getPageHandler().getIconUrl(request, entry)));
                     colSB.append(
                         HtmlUtils.href(
                             request.url(

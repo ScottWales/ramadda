@@ -817,12 +817,12 @@ public class AssociationManager extends RepositoryManager {
 
             lastFromIsMe = fromIsMe;
             lastToIsMe   = toIsMe;
-            cols.add(HtmlUtils.img(getEntryManager().getIconUrl(request,
+            cols.add(HtmlUtils.img( getPageHandler().getIconUrl(request,
                     fromEntry)) + HtmlUtils.pad(fromLabel));
             cols.add(association.getType());
             //            cols.add(association.getLabel());
             cols.add(HtmlUtils.img(getRepository().iconUrl(ICON_ARROW)));
-            cols.add(HtmlUtils.img(getEntryManager().getIconUrl(request,
+            cols.add(HtmlUtils.img( getPageHandler().getIconUrl(request,
                     toEntry)) + HtmlUtils.pad(toLabel));
         }
 

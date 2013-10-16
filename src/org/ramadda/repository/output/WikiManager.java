@@ -1132,14 +1132,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getHtmlOutputHandler().getCommentBlock(request, entry,
                     false).toString();
         } else if (include.equals(WIKI_PROP_TOOLBAR)) {
-            return getEntryManager().getEntryToolbar(request, entry);
+            return getPageHandler().getEntryToolbar(request, entry);
         } else if (include.equals(WIKI_PROP_BREADCRUMBS)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
             List<String> breadcrumbs =
-                getEntryManager().makeBreadcrumbList(request, children, null);
+                getPageHandler().makeBreadcrumbList(request, children, null);
 
-            return getEntryManager().makeBreadcrumbs(request, breadcrumbs);
+            return getPageHandler().makeBreadcrumbs(request, breadcrumbs);
         } else if (include.equals(WIKI_PROP_LINK)) {
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
@@ -1530,7 +1530,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 prefix = prefix.replace("${url}", childUrl);
                 suffix = suffix.replace("${url}", childUrl);
                 String icon =
-                    HtmlUtils.img(getEntryManager().getIconUrl(request,
+                    HtmlUtils.img(getPageHandler().getIconUrl(request,
                         child));
                 prefix = prefix.replace("${icon}", icon);
                 suffix = suffix.replace("${icon}", icon);
@@ -1601,7 +1601,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String title = getEntryDisplayName(child);
                 if (includeIcon) {
                     title =
-                        HtmlUtils.img(getEntryManager().getIconUrl(request,
+                        HtmlUtils.img(getPageHandler().getIconUrl(request,
                             child)) + " " + title;
                 }
                 titles.add(title);
@@ -1996,7 +1996,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String linkLabel = getEntryDisplayName(child);
                 if (includeIcon) {
                     linkLabel =
-                        HtmlUtils.img(getEntryManager().getIconUrl(request,
+                        HtmlUtils.img(getPageHandler().getIconUrl(request,
                             child)) + " " + linkLabel;
                 }
                 String href = HtmlUtils.href(url, linkLabel,

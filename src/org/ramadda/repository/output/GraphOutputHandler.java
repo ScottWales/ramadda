@@ -184,7 +184,7 @@ public class GraphOutputHandler extends OutputHandler {
             return;
         }
         seen.add(entry.getId());
-        String iconUrl = getEntryManager().getIconUrl(request, entry);
+        String iconUrl = getPageHandler().getIconUrl(request, entry);
         String url = getRepository().getUrlBase() + "/graph/get?entryid="
                      + entry.getId();
         String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
@@ -405,7 +405,7 @@ public class GraphOutputHandler extends OutputHandler {
 
             if (other != null) {
                 String imageAttr = XmlUtil.attrs("imagepath",
-                                       getEntryManager().getIconUrl(request,
+                                       getPageHandler().getIconUrl(request,
                                            other));
 
                 sb.append(
@@ -467,7 +467,7 @@ public class GraphOutputHandler extends OutputHandler {
 
         String imageAttr =
             XmlUtil.attrs("imagepath",
-                          getEntryManager().getIconUrl(request, entry));
+                          getPageHandler().getIconUrl(request, entry));
 
         String nodeType = entry.getTypeHandler().getNodeType();
         if (imageUrl != null) {

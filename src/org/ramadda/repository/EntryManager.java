@@ -67,7 +67,8 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+
+
 
 import java.io.File;
 import java.io.FileFilter;
@@ -115,6 +116,8 @@ public class EntryManager extends RepositoryManager {
     public static boolean debug = false;
 
     //In sql
+
+    /** _more_ */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
     /**
@@ -212,18 +215,17 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     protected Entry initTopEntry() throws Exception {
-        String fixedTopId = getProperty(PROP_ENTRY_TOP, (String)null);
+        String fixedTopId = getProperty(PROP_ENTRY_TOP, (String) null);
         Clause clause;
-        if(fixedTopId!=null) {
+        if (fixedTopId != null) {
             clause = Clause.eq(Tables.ENTRIES.COL_ID, fixedTopId);
         } else {
             clause = Clause.isNull(Tables.ENTRIES.COL_PARENT_GROUP_ID);
         }
 
-        Statement statement = getDatabaseManager().select(
-                                  Tables.ENTRIES.COLUMNS,
-                                  Tables.ENTRIES.NAME,
-                                  clause);
+        Statement statement =
+            getDatabaseManager().select(Tables.ENTRIES.COLUMNS,
+                                        Tables.ENTRIES.NAME, clause);
         List<Entry> entries  = readEntries(statement);
 
         Entry       topEntry = null;
@@ -243,9 +245,6 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        if (topEntry != null) {
-            //            System.err.println ("TOP ENTRY:" + topEntry.getType() + " - " + topEntry.getName() + " " + topEntry.getId() +" - " + new Date(topEntry.getCreateDate()));
-        }
 
         if ((topEntry == null) && (entries.size() > 0)) {
             topEntry = (Entry) entries.get(0);
@@ -263,7 +262,6 @@ public class EntryManager extends RepositoryManager {
             int cacheTimeMinutes =
                 getRepository().getProperty(PROP_CACHE_TTL, 60);
             //Convert to milliseconds
-
             rootCache = new TTLObject<Entry>(cacheTimeMinutes * 60 * 1000);
         }
         rootCache.put(topEntry);
@@ -641,8 +639,8 @@ public class EntryManager extends RepositoryManager {
         }
 
         Result result = processEntryShow(request, entry);
-        return addEntryHeader(request, entry,
-                              result);
+
+        return addEntryHeader(request, entry, result);
     }
 
 
@@ -702,7 +700,7 @@ public class EntryManager extends RepositoryManager {
         if (entry == null) {
             entry = getTopGroup();
         }
-        
+
 
 
 
@@ -719,8 +717,8 @@ public class EntryManager extends RepositoryManager {
             String       entryFooter = entryFooter(request, entryForHeader);
 
             StringBuffer titleCrumbs = new StringBuffer();
-            String crumbs = getEntryHeader(request, entryForHeader,
-                                           titleCrumbs);
+            String crumbs = getPageHandler().getEntryHeader(request,
+                                entryForHeader, titleCrumbs);
             sb.append(crumbs);
             //                result.setTitle(result.getTitle() + ": " + crumbs[0]);
             //                result.setTitle(result.getTitle());
@@ -862,7 +860,7 @@ public class EntryManager extends RepositoryManager {
         group.setSubGroups(subGroups);
 
         OutputType dfltOutputType = getDefaultOutputType(request, group,
-                                                         subGroups, entries);
+                                        subGroups, entries);
         if (dfltOutputType != null) {
             outputType    = dfltOutputType;
             outputHandler = getRepository().getOutputHandler(outputType);
@@ -890,7 +888,6 @@ public class EntryManager extends RepositoryManager {
                                             List<Entry> subEntries) {
         if ( !request.defined(ARG_OUTPUT)) {
             for (PageDecorator pageDecorator :
-
                     repository.getPluginManager().getPageDecorators()) {
                 String defaultOutput =
                     pageDecorator.getDefaultOutputType(getRepository(),
@@ -1083,7 +1080,8 @@ public class EntryManager extends RepositoryManager {
                                              child);
                         if (child.isFile()) {
                             append("<tr><td>");
-                            append(HtmlUtils.href(url, getEntryDisplayName(child)));
+                            append(HtmlUtils.href(url,
+                                    getEntryDisplayName(child)));
                             append("</td><td align=right>");
                             File file = child.getFile();
                             size[0] += file.length();
@@ -2488,8 +2486,8 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().getFileTail(entry.getResource().getPath()),
             "fileextension",
             IOUtil.getFileExtension(entry.getResource().getPath()), "name",
-            getEntryDisplayName(entry), "fullname", entry.getFullName(), "user",
-            entry.getUser().getLabel(), "url", url
+            getEntryDisplayName(entry), "fullname", entry.getFullName(),
+            "user", entry.getUser().getLabel(), "url", url
         };
 
         //j+
@@ -3823,7 +3821,7 @@ public class EntryManager extends RepositoryManager {
                         header("Please select a destination folder from the following list:"));
                     sb.append("<ul>");
                 }
-                sb.append(HtmlUtils.img(getIconUrl(request, group)));
+                sb.append(HtmlUtils.img(getPageHandler().getIconUrl(request, group)));
                 sb.append(HtmlUtils.space(1));
                 String label =group.getLabel();
                 if(group.getParentEntry()!=null) {
@@ -4592,7 +4590,6 @@ public class EntryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param root _more_
-     * @param entries _more_
      * @param parent _more_
      * @param origFileToStorage _more_
      *
@@ -5509,7 +5506,8 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer sourceEvent = new StringBuffer();
         StringBuffer targetEvent = new StringBuffer();
-        String       entryIcon   = getIconUrl(request, entry);
+        String       entryIcon   = getPageHandler().getIconUrl(request,
+                                       entry);
         String       iconId      = "img_" + uid;
         if (okToMove) {
             if (forTreeNavigation) {
@@ -5768,7 +5766,9 @@ public class EntryManager extends RepositoryManager {
         boolean needToAddHr = false;
         String  tableHeader = "<table cellspacing=\"0\" cellpadding=\"0\">";
         for (Link link : links) {
-            if(!link.isType(typeMask)) continue;
+            if ( !link.isType(typeMask)) {
+                continue;
+            }
             StringBuffer sb;
             if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
@@ -5897,343 +5897,10 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getEntryToolbar(Request request, Entry entry)
-            throws Exception {
-        List<Link>   links  = getEntryLinks(request, entry);
-        StringBuffer sb     = new StringBuffer();
-
-        OutputType   output = HtmlOutputHandler.OUTPUT_TREE;
-        String treeLink = HtmlUtils.href(
-                              request.entryUrl(
-                                  getRepository().URL_ENTRY_SHOW, entry,
-                                  ARG_OUTPUT, output), HtmlUtils.img(
-                                      iconUrl(output.getIcon()),
-                                      output.getLabel()));
-
-
-        sb.append(treeLink);
-        for (Link link : links) {
-
-            if (link.isType(OutputType.TYPE_TOOLBAR)) {
-                String href = HtmlUtils.href(link.getUrl(),
-                                             HtmlUtils.img(link.getIcon(),
-                                                 link.getLabel(),
-                                                 link.getLabel()));
-                sb.append(HtmlUtils.inset(href, 0, 3, 0, 0));
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getEntryMenubar(Request request, Entry entry)
-            throws Exception {
-
-        List<Link> links = getEntryLinks(request, entry);
-
-        String entryMenu = getEntryActionsTable(request, entry,
-                               OutputType.TYPE_FILE, links, true, null);
-        String editMenu = getEntryActionsTable(request, entry,
-                              OutputType.TYPE_EDIT, links, true, null);
-        String exportMenu = getEntryActionsTable(request, entry,
-                                OutputType.TYPE_FEEDS, links, true, null);
-        String viewMenu = getEntryActionsTable(request, entry,
-                              OutputType.TYPE_VIEW, links, true, null);
-
-        String       categoryMenu = null;
-        List<String> menuItems    = new ArrayList<String>();
-        String sep =
-            HtmlUtils.div("",
-                          HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
-
-
-        String menuClass = HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON);
-        for (Link link : links) {
-            if (link.isType(OutputType.TYPE_OTHER)) {
-                categoryMenu = getEntryActionsTable(request, entry,
-                        OutputType.TYPE_OTHER, links);
-                String categoryName = link.getOutputType().getCategory();
-                //HtmlUtils.span(msg(categoryName), menuClass),
-                categoryMenu =
-                    getPageHandler().makePopupLink(msg(categoryName),
-                        categoryMenu.toString(), menuClass, false, true);
-
-                break;
-            }
-        }
-
-
-
-        PageStyle pageStyle = request.getPageStyle(entry);
-
-        /*
-          puts these here so we can extract the file names for the .pack files
-          msg("File")
-          msg("Edit")
-          msg("View")
-          msg("Connect")
-          msg("Data")
-         */
-
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FILE)
-                && (entryMenu != null)) {
-            if (menuItems.size() > 0) {
-                menuItems.add(sep);
-            }
-            String menuName = "File";
-            //Do we really want to change the name of the menu based on the entry type?
-            if (entry.isGroup()) {
-                //                menuName="Folder";
-            }
-            //HtmlUtils.span(msg(menuName), menuClass), 
-            menuItems.add(getPageHandler().makePopupLink(msg(menuName),
-                    entryMenu, menuClass, false, true));
-
-        }
-
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_EDIT)
-                && (editMenu != null)) {
-            if (menuItems.size() > 0) {
-                menuItems.add(sep);
-            }
-            menuItems.add(getPageHandler().makePopupLink(msg("Edit"),
-                    editMenu, menuClass, false, true));
-        }
-
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_FEEDS)
-                && (exportMenu != null)) {
-            if (menuItems.size() > 0) {
-                menuItems.add(sep);
-            }
-            menuItems.add(getPageHandler().makePopupLink(msg("Links"),
-                    exportMenu, menuClass, false, true));
-        }
-
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_VIEW)
-                && (viewMenu != null)) {
-            if (menuItems.size() > 0) {
-                menuItems.add(sep);
-            }
-            menuItems.add(getPageHandler().makePopupLink(msg("View"),
-                    viewMenu, menuClass, false, true));
-        }
-
-        if (pageStyle.okToShowMenu(entry, PageStyle.MENU_OTHER)
-                && (categoryMenu != null)) {
-            if (menuItems.size() > 0) {
-                menuItems.add(sep);
-            }
-            menuItems.add(categoryMenu);
-        }
-
-        String leftTable;
-        leftTable = HtmlUtils.table(
-            HtmlUtils.row(
-                HtmlUtils.cols(Misc.listToStringArray(menuItems)),
-                " cellpadding=0 cellspacing=0 border=0 "));
-
-        return leftTable;
-    }
 
 
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private String getEntryHeader(Request request, Entry entry,
-                                  StringBuffer title)
-            throws Exception {
-        if (entry == null) {
-            return BLANK;
-        }
-        if (request == null) {
-            request = getRepository().getTmpRequest(entry);
-        }
-
-        PageStyle   pageStyle = request.getPageStyle(entry);
-
-
-        Entry       parent    = findGroup(request, entry.getParentEntryId());
-        OutputType  output    = OutputHandler.OUTPUT_HTML;
-        int         length    = 0;
-
-        List<Entry> parents   = new ArrayList<Entry>();
-        parents.add(entry);
-
-        while (parent != null) {
-            parents.add(parent);
-            parent = findGroup(request, parent.getParentEntryId());
-        }
-
-        HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
-        List<Link>   linkList     = getEntryLinks(request, entry);
-
-        String links =
-            getEntryManager().getEntryActionsTable(request, entry,
-                OutputType.TYPE_FILE | OutputType.TYPE_EDIT
-                | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER, linkList,
-                                                   false, msgLabel("Links for") + " " + getEntryDisplayName(entry));
-
-
-        StringBuffer popup = new StringBuffer();
-        String menuLinkImg =
-            HtmlUtils.img(getRepository().iconUrl("/icons/menu_arrow.gif"),
-                          msg("Click to show menu"),
-                          HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
-        String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
-                              "", true, false, popup);
-
-
-
-        List<String> titleList = new ArrayList();
-        List<String> breadcrumbs = makeBreadcrumbList(request, parents,
-                                       titleList);
-
-        boolean showBreadcrumbs = pageStyle.getShowBreadcrumbs(entry);
-        boolean showToolbar     = pageStyle.getShowToolbar(entry);
-        boolean showMenubar     = pageStyle.getShowMenubar(entry);
-
-        String  toolbar         = showToolbar
-                                  ? getEntryToolbar(request, entry)
-                                  : "";
-        String  menubar         = showMenubar
-                                  ? getEntryMenubar(request, entry)
-                                  : "";
-
-
-        String  header          = "";
-        if (showBreadcrumbs) {
-            header = makeBreadcrumbs(request, breadcrumbs);
-            StringBuffer sb =
-                new StringBuffer(
-                    "<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
-            sb.append(
-                "<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
-            sb.append(menuLink);
-            sb.append("</div></td>");
-
-            sb.append("<td>");
-            sb.append(header);
-            sb.append("</td>");
-            sb.append("<td align=right>");
-            sb.append(toolbar);
-            sb.append("</td>");
-            sb.append("</tr></table></div>");
-            sb.append(popup);
-            header = sb.toString();
-        } else {
-            if ( !request.isAnonymous()) {
-                header = menuLink + popup;
-            }
-        }
-        title.append(
-            StringUtil.join(
-                HtmlUtils.pad(Repository.BREADCRUMB_SEPARATOR), titleList));
-
-        return header;
-
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parents _more_
-     * @param titleList _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<String> makeBreadcrumbList(Request request,
-                                           List<Entry> parents,
-                                           List<String> titleList)
-            throws Exception {
-        List<String> breadcrumbs = new ArrayList<String>();
-        for (Entry ancestor : parents) {
-            String name = getEntryDisplayName(ancestor);
-            String linkLabel;
-            if (breadcrumbs.size() == 0) {
-                linkLabel = HtmlUtils.img(getIconUrl(request, ancestor))
-                            + " " + name;
-            } else {
-                linkLabel = HtmlUtils.img(getIconUrl(request, ancestor))
-                            + " " + name;
-                //                linkLabel =   name;
-            }
-            if (titleList != null) {
-                titleList.add(0, name);
-            }
-
-            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                          ancestor);
-            String link = HtmlUtils.href(url, linkLabel);
-            breadcrumbs.add(0, link);
-        }
-
-        return breadcrumbs;
-
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param breadcrumbs _more_
-     *
-     * @return _more_
-     */
-    public String makeBreadcrumbs(Request request, List<String> breadcrumbs) {
-        StringBuffer sb =
-            new StringBuffer(
-                "<div class=\"breadCrumbHolder module\"><div id=\"breadCrumb0\" class=\"breadCrumb module\"><ul>");
-
-        for (Object crumb : breadcrumbs) {
-            sb.append("<li>\n");
-            sb.append(crumb);
-            sb.append("</li>\n");
-        }
-        sb.append("</ul></div></div>");
-        sb.append(
-            HtmlUtils.script(
-                JQuery.ready(
-                    "jQuery(\"#breadCrumb0\").jBreadCrumb({previewWidth: 5, easing:'swing',endElementsToLeaveOpen: 1});")));
-
-        return sb.toString();
-    }
 
     /**
      *     _more_
@@ -6974,9 +6641,9 @@ public class EntryManager extends RepositoryManager {
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
         String description = entry.getDescription();
-        if(description.length()>MAX_DESCRIPTION_LENGTH) {
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
             System.err.println("Too big a desc:" + description);
-            description = description.substring(0,14999);
+            description = description.substring(0, 14999);
         }
 
         statement.setString(col++, description);
@@ -9009,71 +8676,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /** _more_ */
-    private Image remoteImage;
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
-        String iconPath = getIconUrlInner(request, entry);
-
-        if (iconPath == null) {
-            return null;
-        }
-        if (entry.getIsRemoteEntry()) {
-            String iconFile = IOUtil.getFileTail(iconPath);
-            String ext      = IOUtil.getFileExtension(iconFile);
-            String newIcon = IOUtil.stripExtension(iconFile) + "_remote"
-                             + ext;
-            File newIconFile = getStorageManager().getIconsDirFile(newIcon);
-            try {
-                if ( !newIconFile.exists()) {
-                    if (remoteImage == null) {
-                        remoteImage = ImageUtils.readImage(
-                            "/org/ramadda/repository/htdocs/icons/arrow.png");
-                    }
-                    //                    System.err.println("    icon path:" + iconFile);
-                    Image originalImage =
-                        ImageUtils.readImage(
-                            "/org/ramadda/repository/htdocs/icons/"
-                            + iconFile);
-                    if (originalImage != null) {
-                        int w = originalImage.getWidth(null);
-                        int h = originalImage.getHeight(null);
-                        BufferedImage newImage =
-                            new BufferedImage(w, h,
-                                BufferedImage.TYPE_INT_ARGB);
-                        Graphics newG = newImage.getGraphics();
-                        newG.drawImage(originalImage, 0, 0, null);
-                        newG.drawImage(remoteImage,
-                                       w - remoteImage.getWidth(null) - 0,
-                                       h - remoteImage.getHeight(null) - 0,
-                                       null);
-                        ImageUtils.writeImageToFile(newImage,
-                                newIconFile.toString());
-                        //                        System.err.println("    /repository/icons/" + newIconFile.getName());
-                    }
-                }
-
-                return "/repository/icons/" + newIconFile.getName();
-            } catch (Exception exc) {
-                logError("Error reading icon:" + iconPath, exc);
-
-                return iconPath;
-            }
-        }
-
-        return iconPath;
-    }
 
 
     /** _more_ */
@@ -9091,32 +8693,6 @@ public class EntryManager extends RepositoryManager {
             logInfo("File for entry: " + entry.getId() + " does not exist:"
                     + path);
         }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private String getIconUrlInner(Request request, Entry entry)
-            throws Exception {
-        if (entry.getIcon() != null) {
-            return iconUrl(entry.getIcon());
-        }
-        if (isAnonymousUpload(entry)) {
-            return iconUrl(ICON_ENTRY_UPLOAD);
-        }
-        if (request.defined(ARG_ICON)) {
-            return iconUrl(request.getString(ARG_ICON, ""));
-        }
-
-        return entry.getTypeHandler().getIconUrl(request, entry);
     }
 
 
@@ -9273,10 +8849,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public boolean handleEntryAsGroup(Entry entry) {
-        if(!entry.isGroup()) return false;
-        String  type = entry.getType();
-        if(type.equals(TYPE_GROUP)) return true;
+        if ( !entry.isGroup()) {
+            return false;
+        }
+        String type = entry.getType();
+        if (type.equals(TYPE_GROUP)) {
+            return true;
+        }
+
         //TODO: look at type handler properties
         return true;
     }
