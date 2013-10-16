@@ -32,7 +32,7 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.FormInfo;
 
 import org.w3c.dom.*;
 
@@ -1162,10 +1162,10 @@ public class GenericTypeHandler extends TypeHandler {
     @Override
     public void addSpecialToEntryForm(Request request,
                                       StringBuffer formBuffer,
-                                      Entry parentEntry, Entry entry)
+                                      Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
-        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry);
-        addColumnsToEntryForm(request, formBuffer, entry);
+        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
+        addColumnsToEntryForm(request, formBuffer, entry, formInfo);
     }
 
 
@@ -1179,11 +1179,11 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception _more_
      */
     public void addColumnsToEntryForm(Request request,
-                                      StringBuffer formBuffer, Entry entry)
+                                      StringBuffer formBuffer, Entry entry, FormInfo formInfo)
             throws Exception {
         addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
                 ? null
-                : entry.getValues()));
+                                                           : entry.getValues()), formInfo);
     }
 
 
@@ -1201,12 +1201,12 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public void addColumnsToEntryForm(Request request,
                                       StringBuffer formBuffer, Entry entry,
-                                      Object[] values)
+                                      Object[] values, FormInfo formInfo)
             throws Exception {
         Hashtable state = new Hashtable();
         for (Column column : columns) {
             addColumnToEntryForm(request, column, formBuffer, entry, values,
-                                 state);
+                                 state, formInfo);
 
         }
     }
@@ -1226,7 +1226,7 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public void addColumnToEntryForm(Request request, Column column,
                                      StringBuffer formBuffer, Entry entry,
-                                     Object[] values, Hashtable state)
+                                     Object[] values, Hashtable state, FormInfo formInfo)
             throws Exception {
         boolean hasValue = column.getString(values) != null;
 
@@ -1236,7 +1236,7 @@ public class GenericTypeHandler extends TypeHandler {
             formBuffer.append(HtmlUtils.formEntry(column.getLabel() + ":",
                     tmpSb.toString()));
         } else {
-            column.addToEntryForm(request, entry, formBuffer, values, state);
+            column.addToEntryForm(request, entry, formBuffer, values, state, formInfo);
         }
     }
 

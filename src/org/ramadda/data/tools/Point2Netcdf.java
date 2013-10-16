@@ -189,9 +189,10 @@ public class Point2Netcdf extends RecordTool {
 
             RecordFile file = doMakeRecordFile(inFile);
 
+            File tmpFile   = new File(IOUtil.stripExtension(inFile) + ".nc.tmp");
             File destFile   = new File(IOUtil.stripExtension(inFile) + ".nc");
             System.err.println("writing:" + destFile);
-            RecordVisitor visitor = new NetcdfVisitor(destFile);
+            RecordVisitor visitor = new NetcdfVisitor(tmpFile, destFile);
             RecordFilter  filter  = null;
             if (filters.size() == 1) {
                 filter = filters.get(0);
@@ -199,7 +200,9 @@ public class Point2Netcdf extends RecordTool {
                 filter = new CollectionRecordFilter(filters);
             }
             file.visit(visitor, visitInfo, filter);
+            visitor.close(visitInfo);
             outputWriter.close();
+            tmpFile.delete();
         }
 
     }

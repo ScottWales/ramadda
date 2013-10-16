@@ -38,6 +38,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.grid.LatLonGrid;
 
 
@@ -237,12 +238,13 @@ public class PointTypeHandler extends RecordTypeHandler {
      *
      * @throws Exception _more_
      */
+@Override
     public void addColumnToEntryForm(Request request, Column column,
                                      StringBuffer formBuffer, Entry entry,
-                                     Object[] values, Hashtable state)
+                                     Object[] values, Hashtable state, FormInfo formInfo)
             throws Exception {
         super.addColumnToEntryForm(request, column, formBuffer, entry,
-                                   values, state);
+                                   values, state, formInfo);
 
 
 

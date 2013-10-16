@@ -289,8 +289,6 @@ public class Entry implements Cloneable {
 
 
 
-
-
     /**
      * Clone this Entry
      *
@@ -1512,6 +1510,9 @@ public class Entry implements Cloneable {
      */
     public void setChangeDate(long value) {
         changeDate = value;
+        //        if(getName().endsWith("ass")) {
+        //            ucar.unidata.util.Misc.printStack("setChangeDate:" + getName() + " " + value,7);
+        //        }
     }
 
     /**

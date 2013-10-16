@@ -1210,7 +1210,16 @@ function ramaddaUpdateMaps() {
 
 
 
+var formDialogId;
+
+function closeFormLoadingDialog () { 
+    var dialog =   $(formDialogId);
+    dialog.dialog('close');
+}
+
+
 function popupFormLoadingDialog (dialogId) { 
+    formDialogId = dialogId;
     var dialog =   $(dialogId);
     dialog.dialog({
             resizable: false,
@@ -1282,5 +1291,15 @@ function size_format (filesize) {
     return filesize;
 };
 
+
+function inputLengthOk(domId, length) {
+    var value = $("#"+ domId).val();
+    if(value == null) return true;
+    if(value.length>length) {
+        closeFormLoadingDialog ();
+        return false;
+    }
+    return true;
+}
 
 

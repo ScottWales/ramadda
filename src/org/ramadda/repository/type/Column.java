@@ -33,6 +33,7 @@ import org.ramadda.sql.SqlUtil;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 
 
@@ -926,7 +927,12 @@ public class Column implements DataTypes, Constants {
             //            System.err.println("\tset statement:" + offset + " " + values[offset]);
 
             if (values[offset] != null) {
-                statement.setString(statementIdx, toString(values, offset));
+                String value = toString(values, offset);
+                //Check the value
+                if(size>0) {
+                    getRepository().getEntryManager().checkColumnSize(getName(),value, size);
+                }
+                statement.setString(statementIdx, value);
             } else {
                 statement.setString(statementIdx, null);
             }
@@ -1494,12 +1500,12 @@ public class Column implements DataTypes, Constants {
      */
     public void addToEntryForm(Request request, Entry entry,
                                StringBuffer formBuffer, Object[] values,
-                               Hashtable state)
+                               Hashtable state, FormInfo formInfo)
             throws Exception {
         if ( !addToForm) {
             return;
         }
-        String widget = getFormWidget(request, entry, values);
+        String widget = getFormWidget(request, entry, values, formInfo);
         //        formBuffer.append(HtmlUtils.formEntry(getLabel() + ":",
         //                                             HtmlUtils.hbox(widget, suffix)));
         if ((group != null) && (state.get(group) == null)) {
@@ -1532,7 +1538,7 @@ public class Column implements DataTypes, Constants {
      *
      * @throws Exception _more_
      */
-    public String getFormWidget(Request request, Entry entry, Object[] values)
+    public String getFormWidget(Request request, Entry entry, Object[] values,  FormInfo formInfo)
             throws Exception {
 
         String widget = "";
@@ -1722,16 +1728,24 @@ public class Column implements DataTypes, Constants {
                 } else {
                     widget = HtmlUtils.select(id, tfos, value);
                 }
-            } else if (rows > 1) {
-                if (isType(DATATYPE_LIST)) {
-                    value = StringUtil.join("\n",
-                                            StringUtil.split(value, ",",
-                                                true, true));
-                }
-                widget = HtmlUtils.textArea(id, value, rows, columns);
             } else {
-                widget = HtmlUtils.input(id, value,
-                                         "size=\"" + columns + "\"");
+                String domId = HtmlUtils.getUniqueId("input_");
+                if (rows > 1) {
+                    if (isType(DATATYPE_LIST)) {
+                        value = StringUtil.join("\n",
+                                                StringUtil.split(value, ",",
+                                                                 true, true));
+                    }
+                    widget = HtmlUtils.textArea(id, value, rows, columns,
+                                                HtmlUtils.id(domId));
+                } else {
+                    widget = HtmlUtils.input(id, value,
+                                             HtmlUtils.id(domId) +
+                                             " size=\"" + columns + "\"");
+                }
+                if(size>0) {
+                    formInfo.addSizeValidation(getLabel(), domId, size);
+                }
             }
         }
 

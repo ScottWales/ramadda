@@ -32,6 +32,7 @@ import org.ramadda.util.Utils;
 import ucar.ma2.DataType;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
 import ucar.nc2.dt.point.CFPointObWriter;
@@ -64,11 +65,13 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
     /** _more_          */
     private File tmpFile;
 
+    private File outputNetcdfFile;
+
     /** _more_          */
     private RecordIO tmpFileIO;
 
     /** _more_          */
-    private CFPointObWriter writer;
+    private WriterCFPointCollection writer;
 
     /** _more_          */
     private CsvVisitor csvVisitor = null;
@@ -110,8 +113,9 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      *
      * @param tmpFile _more_
      */
-    public NetcdfVisitor(File tmpFile) {
+    public NetcdfVisitor(File tmpFile, File outputNetcdfFile) {
         this.tmpFile = tmpFile;
+        this.outputNetcdfFile = outputNetcdfFile;
     }
 
 
@@ -138,6 +142,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             }
             //Having a field called time breaks the cfwriter
             if (field.getName().equals("time")) {
+                System.err.println ("****SKIPPING TIME FIELD ********");
                 continue;
             }
 
@@ -252,11 +257,20 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
             }
             tmpFileIO.close();
             List<Attribute>  globalAttributes = new ArrayList<Attribute>();
-            DataOutputStream dos              = getTheDataOutputStream();
-            writer = new CFPointObWriter(dos, globalAttributes, "m",
-                                         dataVars, recordCnt);
+            DataOutputStream dos;
+            if(outputNetcdfFile!=null) {
+                //                dos = new DataOutputStream(new FileOutputStream(outputNetcdfFile));
+            } else {
+                //TODO: 
+                dos = getTheDataOutputStream();
+            }
+            System.err.println ("data var:" + dataVars.size());
+            writer = new WriterCFPointCollection(outputNetcdfFile.toString(), "point data");
+            //            writer = new CFPointObWriter(dos, globalAttributes, "m", dataVars, recordCnt);
             tmpFileIO = new RecordIO(new FileInputStream(tmpFile));
-            System.err.println("writing " + recordCnt);
+            System.err.println("Point.NetcdfVisitor:writing # records:" + recordCnt + "\n\t #dvals:"  + cacheRecord.getDvals().length + "\n\t #svals:"  + cacheRecord.getSvals().length +" \n\t dataVars:" +  dataVars.size());
+
+            /*
             for (int i = 0; i < recordCnt; i++) {
                 cacheRecord.read(tmpFileIO);
                 writer.addPoint(cacheRecord.getLatitude(),
@@ -267,6 +281,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
                                 cacheRecord.getSvals());
             }
             writer.finish();
+            */
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

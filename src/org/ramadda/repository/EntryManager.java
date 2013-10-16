@@ -43,6 +43,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -117,7 +118,10 @@ public class EntryManager extends RepositoryManager {
 
     //In sql
 
-    /** _more_ */
+    /** _more_          */
+    public static final int MAX_NAME_LENGTH = 200;
+
+    /** _more_          */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
     /**
@@ -500,6 +504,16 @@ public class EntryManager extends RepositoryManager {
         synchronized (MUTEX_ENTRY) {
             getEntryCache().remove(id);
         }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     */
+    protected void removeFromCache(Entry entry) {
+        removeFromCache(entry.getId());
     }
 
 
@@ -1287,7 +1301,7 @@ public class EntryManager extends RepositoryManager {
                                         newTypeHandler.getType() });
 
         entry.setTypeHandler(newTypeHandler);
-        getEntryCache().remove(entry.getId());
+        removeFromCache(entry);
 
         return getEntry(request, entry.getId());
     }
@@ -1353,18 +1367,18 @@ public class EntryManager extends RepositoryManager {
             return makeEntryEditResult(request, entry, "Entry Edit", sb);
         }
 
+
+        String formId = HtmlUtils.getUniqueId("entryform_");
         if (type == null) {
             sb.append(request.form(getRepository().URL_ENTRY_FORM,
-                                   HtmlUtils.attr("name", "entryform")));
+                                   HtmlUtils.attr("name", "entryform")
+                                   + HtmlUtils.id(formId)));
         } else {
-            String loadingMessage = ((entry == null)
-                                     ? msg("Creating entry...")
-                                     : msg("Changing entry..."));
-            request.uploadFormWithAuthToken(sb,
-                                            getRepository().URL_ENTRY_CHANGE,
-                                            HtmlUtils.attr("name",
-                                                "entryform"));
+            request.uploadFormWithAuthToken(
+                sb, getRepository().URL_ENTRY_CHANGE,
+                HtmlUtils.attr("name", "entryform") + HtmlUtils.id(formId));
         }
+
 
         sb.append(HtmlUtils.formTable());
         String title = BLANK;
@@ -1452,7 +1466,17 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HtmlUtils.hidden(ARG_TYPE, type));
                 sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
             }
-            typeHandler.addToEntryForm(request, sb, group, entry);
+
+            FormInfo formInfo = new FormInfo();
+            typeHandler.addToEntryForm(request, sb, group, entry, formInfo);
+
+            StringBuffer validateJavascript = new StringBuffer("");
+            formInfo.addJavascriptValidation(validateJavascript);
+            String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
+                                validateJavascript.toString()));
+            sb.append(HtmlUtils.script(script));
+
+
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
 
         }
@@ -1779,8 +1803,15 @@ public class EntryManager extends RepositoryManager {
 
             }
 
+
+            //Remove this entry from the memory cache 
+            //so edits don't show up for others
+            removeFromCache(entry);
+
             typeHandler = entry.getTypeHandler();
             newEntry    = false;
+
+
 
             if (request.exists(ARG_CANCEL)) {
                 return new Result(
@@ -1800,19 +1831,26 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-            //If we have a timestampd then check if the user was editing an up to date entry
-            if (request.defined(ARG_ENTRY_TIMESTAMP)
-                    && !Misc.equals(request.getString(ARG_ENTRY_TIMESTAMP,
-                        ""), getEntryTimestamp(entry))) {
-                StringBuffer sb = new StringBuffer();
-                sb.append(
-                    getPageHandler().showDialogError(
-                        msg(
-                        "Error: The entry you are editing has been edited since the time you began the edit")));
 
-                return addEntryHeader(request, entry,
-                                      new Result(msg("Entry Edit Error"),
-                                          sb));
+
+            //If we have a timestamp then check if the user 
+            //was editing an up to date entry
+            if (request.defined(ARG_ENTRY_TIMESTAMP)) {
+                String formTimestamp = request.getString(ARG_ENTRY_TIMESTAMP,
+                                           "");
+                String currentTimestamp = getEntryTimestamp(entry);
+                if ( !Misc.equals(formTimestamp, currentTimestamp)) {
+                    StringBuffer sb = new StringBuffer();
+                    sb.append(
+                        getPageHandler().showDialogError(
+                            msg(
+                            "Error: The entry you are editing has been edited since the time you began the edit:"
+                            + formTimestamp + ":" + currentTimestamp)));
+
+                    return addEntryHeader(request, entry,
+                                          new Result(msg("Entry Edit Error"),
+                                              sb));
+                }
             }
 
             if (request.exists(ARG_DELETE_CONFIRM)) {
@@ -3076,6 +3114,7 @@ public class EntryManager extends RepositoryManager {
         }
         entries = okEntries;
 
+
         List<String[]> found = getDescendents(request, entries, connection,
                                    true, true);
         String query;
@@ -3357,7 +3396,8 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Upload")));
             sb.append(HtmlUtils.formTable());
             sb.append(HtmlUtils.hidden(ARG_GROUP, group.getId()));
-            typeHandler.addToEntryForm(request, sb, group, null);
+            typeHandler.addToEntryForm(request, sb, group, null,
+                                       new FormInfo());
             sb.append(HtmlUtils.formTableClose());
             sb.append(HtmlUtils.submit(msg("Upload")));
             sb.append(HtmlUtils.formClose());
@@ -6625,6 +6665,25 @@ public class EntryManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param name _more_
+     * @param value _more_
+     * @param columnSize _more_
+     *
+     * @throws IllegalArgumentException _more_
+     */
+    public void checkColumnSize(String name, String value, int columnSize)
+            throws IllegalArgumentException {
+        if (value.length() > columnSize) {
+            throw new IllegalArgumentException(name + " size:"
+                    + value.length() + " is greater than column size:"
+                    + columnSize);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
      * @param entry _more_
      * @param statement _more_
      * @param isNew _more_
@@ -6635,16 +6694,19 @@ public class EntryManager extends RepositoryManager {
     private void setStatement(Entry entry, PreparedStatement statement,
                               boolean isNew, TypeHandler typeHandler)
             throws Exception {
+        String description = entry.getDescription();
+        checkColumnSize("name", entry.getName(), MAX_NAME_LENGTH);
+        checkColumnSize("description", description, MAX_DESCRIPTION_LENGTH);
+
+
         int col = 1;
         //id,type,name,desc,group,user,file,createdata,fromdate,todate
         statement.setString(col++, entry.getId());
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
-        String description = entry.getDescription();
-        if (description.length() > MAX_DESCRIPTION_LENGTH) {
-            System.err.println("Too big a desc:" + description);
-            description = description.substring(0, 14999);
-        }
+
+
+
 
         statement.setString(col++, description);
         statement.setString(col++, entry.getParentEntryId());
@@ -6663,10 +6725,8 @@ public class EntryManager extends RepositoryManager {
         //create date
         getDatabaseManager().setDate(statement, col++, entry.getCreateDate());
 
-        //We always set the change date here. Make sure we set it on the entry as well
-        //because the entry object sticks around in memory
-        entry.setChangeDate(getRepository().currentTime());
-        getDatabaseManager().setDate(statement, col++, entry.getChangeDate());
+        long updateTime = entry.getChangeDate();
+        getDatabaseManager().setDate(statement, col++, updateTime);
         try {
             getDatabaseManager().setDate(statement, col,
                                          entry.getStartDate());
@@ -6815,10 +6875,16 @@ public class EntryManager extends RepositoryManager {
 
 
         Hashtable typeStatements = new Hashtable();
-
         int       batchCnt       = 0;
         connection.setAutoCommit(false);
+        long updateTime = getRepository().currentTime();
         for (Entry entry : entries) {
+            //Do we want to clear it from the cache???
+            removeFromCache(entry);
+            if ( !isNew) {
+                entry.setChangeDate(updateTime);
+            }
+
             TypeHandler          typeHandler = entry.getTypeHandler();
             List<TypeInsertInfo> typeInserts =
                 new ArrayList<TypeInsertInfo>();

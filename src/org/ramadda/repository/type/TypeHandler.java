@@ -37,6 +37,7 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 
@@ -2547,10 +2548,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addToEntryForm(Request request, StringBuffer sb,
-                               Entry parentEntry, Entry entry)
+                               Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
-        addBasicToEntryForm(request, sb, parentEntry, entry);
-        addSpecialToEntryForm(request, sb, parentEntry, entry);
+        addBasicToEntryForm(request, sb, parentEntry, entry, formInfo);
+        addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo);
 
         if (request.getUser().getAdmin()
                 && okToShowInForm(entry, "owner", true)) {
@@ -2575,10 +2576,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addSpecialToEntryForm(Request request, StringBuffer sb,
-                                      Entry parentEntry, Entry entry)
+                                      Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
         if (parent != null) {
-            parent.addSpecialToEntryForm(request, sb, parentEntry, entry);
+            parent.addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo);
 
             return;
         }
@@ -2819,7 +2820,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addBasicToEntryForm(Request request, StringBuffer sb,
-                                    Entry parentEntry, Entry entry)
+                                    Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
 
         String size = HtmlUtils.SIZE_70;

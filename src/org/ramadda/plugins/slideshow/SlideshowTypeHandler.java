@@ -35,6 +35,7 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.WikiUtil;
 
@@ -269,9 +270,9 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
      */
     @Override
     public void addToEntryForm(Request request, StringBuffer sb,
-                               Entry parentEntry, Entry entry)
+                               Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
-        super.addToEntryForm(request, sb, parentEntry, entry);
+        super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
         Element root = getRoot(entry);
         int     cnt  = 1;
 

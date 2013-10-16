@@ -80,7 +80,7 @@ public class PageHandler extends RepositoryManager {
     //that gets replaced with  this. Repository checks incoming paths and strips this off
 
     /** _more_ */
-    public static final String HTDOCS_VERSION = "htdocs_v1";
+    public static final String HTDOCS_VERSION = "htdocs_v2";
 
     /** _more_ */
     public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;

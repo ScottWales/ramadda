@@ -35,6 +35,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
@@ -1362,7 +1363,7 @@ public class DbTypeHandler extends BlobTypeHandler {
      */
     @Override
     public void addToEntryForm(Request request, StringBuffer formBuffer,
-                               Entry parentEntry, Entry entry)
+                               Entry parentEntry, Entry entry, FormInfo formInfo)
             throws Exception {
         if ((urlColumn != null) && (entry != null)) {
             String baseUrl =
@@ -1398,7 +1399,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + href, 2)));
         }
 
-        super.addToEntryForm(request, formBuffer, parentEntry, entry);
+        super.addToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
         Hashtable props = getProperties(entry);
         if (entry != null) {
             addToEditForm(request, entry, formBuffer);
@@ -4312,8 +4313,9 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         formBuffer.append(buttons);
         formBuffer.append(HtmlUtils.formTable());
+        FormInfo formInfo = new FormInfo();
         tableHandler.addColumnsToEntryForm(request, formBuffer, entry,
-                                           values);
+                                           values, formInfo);
 
         formBuffer.append(HtmlUtils.formTableClose());
         formBuffer.append(buttons);

@@ -809,9 +809,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @return _more_
      */
     public String makeButtonSubmitDialog(StringBuffer sb, String message) {
-        String id = "dialog-message" + (dialogCnt++);
-        String onSubmit = " onclick=\"return submitEntryForm('#" + id
-                          + "');\" ";
+        String id = HtmlUtils.getUniqueId("dialog-message");
+        String onSubmit = " onclick=\"return submitEntryForm('#" + id + "');\" ";
         String loadingImage =
             HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
         sb.append("<div style=\"display:none;\" id=\"" + id + "\">"
