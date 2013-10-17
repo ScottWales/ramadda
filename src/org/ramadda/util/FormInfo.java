@@ -83,7 +83,7 @@ public class FormInfo {
         public void addJavascriptValidation(StringBuffer js) {
             js.append("if(!inputLengthOk("  +
                       HtmlUtils.squote(id) +"," +length +")) {\n");
-            String message = "Error: length of input value for " + label+" is too long. Max length=" +length;
+            String message = "Error: " + label +" is too long. Max length is " +length;
             error(js, message);
             js.append("}\n");
         }
