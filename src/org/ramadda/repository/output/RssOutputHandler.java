@@ -140,7 +140,7 @@ public class RssOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(
                 makeLink(
-                    request, state.getEntry(), OUTPUT_RSS_SUMMARY,
+                    request, state.getEntry(), OUTPUT_RSS_FULL,
                     "/" + IOUtil.stripExtension(state.getEntry().getName())
                     + ".rss"));
         }
@@ -268,15 +268,17 @@ public class RssOutputHandler extends OutputHandler {
             sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "", url));
 
             sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
+            String content;
             if (output.equals(OUTPUT_RSS_FULL)) {
-                XmlUtil.appendCdata(
-                    sb,
-                    entry.getTypeHandler().getEntryContent(
-                        entry, request, true, false).toString());
+                content = entry.getTypeHandler().getEntryContent(
+                                                                 entry, request, true, false).toString();
+                content = content.replace("class=\"formlabel\"",
+                                          "style=\" font-weight: bold; \"");
+                content  = getRepository().translate(request, content);
             } else {
-                XmlUtil.appendCdata(
-                    sb, entry.getTypeHandler().getEntryText(entry) + extra);
+                content =  entry.getTypeHandler().getEntryText(entry) + extra;
             }
+            XmlUtil.appendCdata(sb,content);
 
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (entry.hasLocationDefined()) {
