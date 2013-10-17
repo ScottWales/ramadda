@@ -97,15 +97,14 @@ public class RssOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_FULL =
-        new OutputType("Full RSS Feed", "rss.full",
-                       OutputType.TYPE_FEEDS , "",
-                       ICON_RSS);
+        new OutputType("Full RSS Feed", "rss.full", OutputType.TYPE_FEEDS,
+                       "", ICON_RSS);
 
     /** _more_ */
     public static final OutputType OUTPUT_RSS_SUMMARY =
         new OutputType("RSS Feed", "rss.summary",
-                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH
-                       , "", ICON_RSS);
+                       OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
+                       ICON_RSS);
 
 
     /**
@@ -231,12 +230,13 @@ public class RssOutputHandler extends OutputHandler {
         sb.append(XmlUtil.XML_HEADER + "\n");
         sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
                                   XmlUtil.attrs(RssUtil.ATTR_VERSION, "2.0",
-                                                RssUtil.ATTR_XMLNS_GEORSS,
-                                                RssUtil.VALUE_XMLNS_GEORSS)));
+                                      RssUtil.ATTR_XMLNS_GEORSS,
+                                      RssUtil.VALUE_XMLNS_GEORSS)));
         sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
         sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", parentEntry.getName()));
         StringBufferCollection sbc    = new StringBufferCollection();
         OutputType             output = request.getOutput();
+        request.setMakeAbsoluteUrls(true);
         request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
         for (Entry entry : entries) {
             StringBuffer extra    = new StringBuffer();
@@ -261,24 +261,24 @@ public class RssOutputHandler extends OutputHandler {
                     RssUtil.TAG_PUBDATE, "",
                     rssSdf.format(new Date(entry.getStartDate()))));
             sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
-            String url =
-                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
-                    ARG_ENTRYID, entry.getId()));
+            String url = request.url(repository.URL_ENTRY_SHOW, ARG_ENTRYID,
+                                     entry.getId());
             sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "", url));
             sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "", url));
 
             sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
             String content;
+
             if (output.equals(OUTPUT_RSS_FULL)) {
-                content = entry.getTypeHandler().getEntryContent(
-                                                                 entry, request, true, false).toString();
+                content = entry.getTypeHandler().getEntryContent(request,
+                        entry, true, false).toString();
                 content = content.replace("class=\"formlabel\"",
                                           "style=\" font-weight: bold; \"");
-                content  = getRepository().translate(request, content);
+                content = getRepository().translate(request, content);
             } else {
-                content =  entry.getTypeHandler().getEntryText(entry) + extra;
+                content = entry.getTypeHandler().getEntryText(entry) + extra;
             }
-            XmlUtil.appendCdata(sb,content);
+            XmlUtil.appendCdata(sb, content);
 
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (entry.hasLocationDefined()) {

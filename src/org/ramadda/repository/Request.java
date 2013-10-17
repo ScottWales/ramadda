@@ -141,6 +141,9 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private boolean isMobile = false;
 
+    /** _more_          */
+    private boolean makeAbsoluteUrls = false;
+
     /** _more_ */
     private String htmlTemplateId;
 
@@ -575,6 +578,10 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public String url(RequestUrl theUrl) {
+        if (makeAbsoluteUrls) {
+            return getAbsoluteUrl(theUrl);
+        }
+
         return getRepository().getUrlPath(this, theUrl);
     }
 
@@ -2232,8 +2239,7 @@ public class Request implements Constants, Cloneable {
             if (httpServletRequest != null) {
                 serverName = httpServletRequest.getServerName();
             }
-        } catch(Exception ignoreThis) {
-        }
+        } catch (Exception ignoreThis) {}
         if ((serverName == null) || (serverName.trim().length() == 0)) {
             serverName = repository.getHostname();
         }
@@ -2248,10 +2254,11 @@ public class Request implements Constants, Cloneable {
      */
     public int getServerPort() {
         try {
-        if (httpServletRequest != null) {
-            httpServletRequest.getServerPort();
-        }
-        } catch(Exception ignoreThis) {}
+            if (httpServletRequest != null) {
+                httpServletRequest.getServerPort();
+            }
+        } catch (Exception ignoreThis) {}
+
         return repository.getPort();
     }
 
@@ -2516,6 +2523,24 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
+
+    /**
+     * Set the MakeAbsoluteUrls property.
+     *
+     * @param value The new value for MakeAbsoluteUrls
+     */
+    public void setMakeAbsoluteUrls(boolean value) {
+        makeAbsoluteUrls = value;
+    }
+
+    /**
+     * Get the MakeAbsoluteUrls property.
+     *
+     * @return The MakeAbsoluteUrls
+     */
+    public boolean getMakeAbsoluteUrls() {
+        return makeAbsoluteUrls;
+    }
 
 
 

@@ -118,10 +118,10 @@ public class EntryManager extends RepositoryManager {
 
     //In sql
 
-    /** _more_          */
+    /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
 
-    /** _more_          */
+    /** _more_ */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
     /**
@@ -7172,7 +7172,7 @@ public class EntryManager extends RepositoryManager {
         if (addPath && fileTail.equals(entry.getName())) {
             fileTail = entry.getFullName(true);
         }
-        if (full) {
+        if (request.getMakeAbsoluteUrls() || full) {
             return HtmlUtils.url(getFullEntryGetUrl(request) + "/"
                                  + fileTail, ARG_ENTRYID, entry.getId());
         } else {

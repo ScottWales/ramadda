@@ -439,7 +439,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         if (outputType.equals(OUTPUT_INLINE)) {
             String inline = typeHandler.getInlineHtml(request, entry);
-          
+
             if (inline != null) {
                 inline = getRepository().translate(request, inline);
                 StringBuffer xml = new StringBuffer("<content>\n");
@@ -450,8 +450,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 return new Result("", xml, "text/xml");
             }
             String wikiTemplate = getWikiText(request, entry);
-            if(wikiTemplate == null) {
-                wikiTemplate =  getWikiTemplate(request, entry, TEMPLATE_DEFAULT);
+            if (wikiTemplate == null) {
+                wikiTemplate = getWikiTemplate(request, entry,
+                        TEMPLATE_DEFAULT);
             }
 
             if (wikiTemplate != null) {
@@ -460,11 +461,13 @@ public class HtmlOutputHandler extends OutputHandler {
                 wiki = getRepository().translate(request, wiki);
                 StringBuffer xml = new StringBuffer("<content>\n");
                 XmlUtil.appendCdata(xml,
-                                    "<div class=entry-inline>" + wiki + "</div>");
+                                    "<div class=entry-inline>" + wiki
+                                    + "</div>");
                 xml.append("\n</content>");
 
                 return new Result("", xml, "text/xml");
             }
+
             return getMetadataXml(request, entry, false);
         }
 
@@ -518,16 +521,17 @@ public class HtmlOutputHandler extends OutputHandler {
 
         StringBuffer sb           = new StringBuffer();
         String       wikiTemplate = getWikiText(request, entry);
-        if(wikiTemplate == null) {
-            wikiTemplate =  getWikiTemplate(request, entry, TEMPLATE_DEFAULT);
+        if (wikiTemplate == null) {
+            wikiTemplate = getWikiTemplate(request, entry, TEMPLATE_DEFAULT);
         }
 
         if (wikiTemplate != null) {
             sb.append(getWikiManager().wikifyEntry(request, entry,
-                                                   wikiTemplate));
+                    wikiTemplate));
         } else {
             addDescription(request, entry, sb, true);
-            String informationBlock = getInformationTabs(request, entry, false);
+            String informationBlock = getInformationTabs(request, entry,
+                                          false);
             sb.append(informationBlock);
         }
 
@@ -651,7 +655,8 @@ public class HtmlOutputHandler extends OutputHandler {
         boolean canEdit = getAccessManager().canDoAction(request, entry,
                               Permission.ACTION_EDIT);
 
-        boolean smallDisplay = request.getString(ARG_DISPLAY, "").equals(DISPLAY_SMALL);
+        boolean smallDisplay = request.getString(ARG_DISPLAY,
+                                   "").equals(DISPLAY_SMALL);
         boolean didone = false;
         for (Metadata metadata : metadataList) {
             if ((onlyTheseTypes != null) && (onlyTheseTypes.size() > 0)) {
@@ -712,14 +717,20 @@ public class HtmlOutputHandler extends OutputHandler {
                     if (decorate) {
                         sb.append("</td></tr>");
                     }
-                } 
+                }
             }
             String theClass = HtmlUtils.cssClass("listrow" + rowNum);
-            if(smallDisplay) {
-                sb.append(HtmlUtils.open("tr", " valign=\"top\" " ));
+            if (smallDisplay) {
+                sb.append(HtmlUtils.open("tr", " valign=\"top\" "));
                 sb.append(HtmlUtils.open("td"));
-                sb.append(HtmlUtils.tag("div", HtmlUtils.cssClass("metadata-small-label"), html[0]));
-                sb.append(HtmlUtils.tag("div", HtmlUtils.cssClass("metadata-small-content"), html[1]));
+                sb.append(
+                    HtmlUtils.tag(
+                        "div", HtmlUtils.cssClass("metadata-small-label"),
+                        html[0]));
+                sb.append(
+                    HtmlUtils.tag(
+                        "div", HtmlUtils.cssClass("metadata-small-content"),
+                        html[1]));
                 sb.append(HtmlUtils.close("td"));
                 sb.append(HtmlUtils.close("tr"));
             } else {
@@ -728,14 +739,15 @@ public class HtmlOutputHandler extends OutputHandler {
                         " <tr  " + theClass
                         + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
                         + html[0] + "</nobr></td><td>"
-                        //                    + HtmlUtils.makeToggleInline("", html[1], false)
-                        + HtmlUtils.makeToggleInline("", html[1],
-                                                     true) + "</td></tr>";
+                    //                    + HtmlUtils.makeToggleInline("", html[1], false)
+                    + HtmlUtils.makeToggleInline("", html[1],
+                        true) + "</td></tr>";
                     sb.append(row);
                 } else {
                     String row =
                         " <tr  valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
-                        + html[0] + "</nobr></td><td>" + html[1] + "</td></tr>";
+                        + html[0] + "</nobr></td><td>" + html[1]
+                        + "</td></tr>";
                     sb.append(row);
                 }
             }
@@ -827,7 +839,7 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.br());
         }
         boolean showDetails = request.get(ARG_DETAILS, true);
-        
+
 
         for (Entry subGroup : subGroups) {
             cnt++;
@@ -845,7 +857,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (cnt == 0) {
             parent.getTypeHandler().handleNoEntriesHtml(request, parent, sb);
-            String       tabs = getInformationTabs(request, parent, true);
+            String tabs = getInformationTabs(request, parent, true);
             sb.append(tabs);
             //            sb.append(entry.getDescription());
             if (getAccessManager().hasPermissionSet(parent,
@@ -1055,7 +1067,6 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param includeDescription _more_
-     * @param fixedHeight _more_
      *
      * @return _more_
      *
@@ -1073,7 +1084,7 @@ public class HtmlOutputHandler extends OutputHandler {
             basicSB.append(desc);
             basicSB.append("<br>");
         }
-        basicSB.append(entry.getTypeHandler().getEntryContent(entry, request,
+        basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
                 false, true));
 
         tabTitles.add("Information");
@@ -1379,7 +1390,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.space(1));
                 sb.append(HtmlUtils.br());
             }
-            String icon =getPageHandler().getIconUrl(request, entry);
+            String icon = getPageHandler().getIconUrl(request, entry);
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));
             sb.append(getEntryManager().getTooltipLink(request, entry,
@@ -1418,7 +1429,8 @@ public class HtmlOutputHandler extends OutputHandler {
         request.put(ARG_TREEVIEW, "true");
         StringBuffer listSB = new StringBuffer();
         sb.append("<table width=\"100%\"><tr valign=\"top\">");
-        String link = getEntriesList(request, listSB, children, true, false, false);
+        String link = getEntriesList(request, listSB, children, true, false,
+                                     false);
         sb.append(HtmlUtils.col(link,
                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "350")));
         String gotoHtml = HtmlUtils.mouseClickHref("treeViewGoTo();",
@@ -1537,7 +1549,7 @@ public class HtmlOutputHandler extends OutputHandler {
                     "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
 
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                                                    entry, getEntryDisplayName(entry));
+                                          entry, getEntryDisplayName(entry));
                 tableSB.append(HtmlUtils.col(entryLink.getLink(),
                                              " xxxwidth=50%  "));
                 tableSB.append(
@@ -1752,8 +1764,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 || Misc.equals(request.getString(ARG_OUTPUT, ""),
                                OUTPUT_HTML.getId())) {
             wikiTemplate = getWikiText(request, group);
-            if(wikiTemplate == null) {
-                wikiTemplate = getWikiTemplate(request, group, TEMPLATE_DEFAULT);
+            if (wikiTemplate == null) {
+                wikiTemplate = getWikiTemplate(request, group,
+                        TEMPLATE_DEFAULT);
             }
         }
 
@@ -1767,7 +1780,8 @@ public class HtmlOutputHandler extends OutputHandler {
             addDescription(request, group, sb, !hasChildren);
             //If its the default view of an entry then just show the children listing
             if ( !doSimpleListing) {
-                String informationBlock = getInformationTabs(request, group, false);
+                String informationBlock = getInformationTabs(request, group,
+                                              false);
 
                 if (hasChildren) {
                     sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
@@ -1801,9 +1815,10 @@ public class HtmlOutputHandler extends OutputHandler {
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
             if (allEntries.size() > 0) {
-                getEntriesList(request, sb, allEntries, true, group.isDummy(), true);
+                getEntriesList(request, sb, allEntries, true,
+                               group.isDummy(), true);
             } else {
-                if (!Utils.stringDefined(group.getDescription())) {
+                if ( !Utils.stringDefined(group.getDescription())) {
                     sb.append(
                         getPageHandler().showDialogNote(
                             msg(LABEL_EMPTY_FOLDER)));
