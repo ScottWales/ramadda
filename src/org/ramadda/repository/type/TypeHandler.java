@@ -2843,16 +2843,19 @@ public class TypeHandler extends RepositoryManager {
             ARG_LOCATION
         };
 
+        String domId;
         for (String what : whatList) {
             if (what.equals(ARG_NAME)) {
                 if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
-                    sb.append(
+                    domId = HtmlUtils.getUniqueId("entryinput");
+                    formInfo.addSizeValidation("Name", domId, EntryManager.MAX_NAME_LENGTH);
+                     sb.append(
                         formEntry(
                             request,
                             msgLabel(getFormLabel(entry, ARG_NAME, "Name")),
                             HtmlUtils.input(ARG_NAME, ((entry != null)
                             ? entry.getName()
-                            : getFormDefault(entry, ARG_NAME, "")), size)));
+                                                       : getFormDefault(entry, ARG_NAME, "")), size+HtmlUtils.id(domId))));
                 } else {
                     String nameDefault = getFormDefault(entry, ARG_NAME,
                                              null);
@@ -2895,6 +2898,8 @@ public class TypeHandler extends RepositoryManager {
                             sb.append("<tr><td colspan=2>");
                             sb.append(buttons);
                             //                    sb.append(HtmlUtils.br());
+                            domId = ARG_DESCRIPTION;
+                            formInfo.addSizeValidation("Description", domId, EntryManager.MAX_DESCRIPTION_LENGTH);
                             sb.append(HtmlUtils.textArea(ARG_DESCRIPTION,
                                     desc, rows,
                                     getProperty(entry,
