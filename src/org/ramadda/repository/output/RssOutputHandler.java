@@ -81,41 +81,7 @@ import java.util.zip.*;
  */
 public class RssOutputHandler extends OutputHandler {
 
-    /** _more_ */
-    public static final String ATTR_RSS_VERSION = "version";
 
-    /** _more_ */
-    public static final String TAG_RSS_RSS = "rss";
-
-    /** _more_ */
-    public static final String TAG_RSS_GEOLAT = "georss:lat";
-
-    /** _more_ */
-    public static final String TAG_RSS_GEOLON = "georss:lon";
-
-    /** _more_ */
-    public static final String TAG_RSS_GEOBOX = "georss:box";
-
-    /** _more_ */
-    public static final String TAG_RSS_LINK = "link";
-
-    /** _more_ */
-    public static final String TAG_RSS_GUID = "guid";
-
-    /** _more_ */
-    public static final String TAG_RSS_CHANNEL = "channel";
-
-    /** _more_ */
-    public static final String TAG_RSS_ITEM = "item";
-
-    /** _more_ */
-    public static final String TAG_RSS_TITLE = "title";
-
-    /** _more_ */
-    public static final String TAG_RSS_PUBDATE = "pubDate";
-
-    /** _more_ */
-    public static final String TAG_RSS_DESCRIPTION = "description";
 
 
     /** _more_ */
@@ -264,7 +230,9 @@ public class RssOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(XmlUtil.XML_HEADER + "\n");
         sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
-                                  XmlUtil.attrs(ATTR_RSS_VERSION, "2.0")));
+                                  XmlUtil.attrs(RssUtil.ATTR_VERSION, "2.0",
+                                                RssUtil.ATTR_XMLNS_GEORSS,
+                                                RssUtil.VALUE_XMLNS_GEORSS)));
         sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
         sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", parentEntry.getName()));
         StringBufferCollection sbc    = new StringBufferCollection();
@@ -319,9 +287,9 @@ public class RssOutputHandler extends OutputHandler {
             } else if (entry.hasAreaDefined()) {
                 //For now just include the southeast point
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOBOX, "",
-                                      entry.getSouth() + ","
-                                      + entry.getWest() + ","
-                                      + entry.getNorth() + ","
+                                      entry.getSouth() + " "
+                                      + entry.getWest() + " "
+                                      + entry.getNorth() + " "
                                       + entry.getEast()));
             }
 
