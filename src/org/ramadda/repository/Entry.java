@@ -121,6 +121,8 @@ public class Entry implements Cloneable {
     /** the type handler for this entry */
     private TypeHandler typeHandler;
 
+    private TypeHandler masterTypeHandler;
+
     /** the start date */
     private long startDate = 0L;
 
@@ -670,6 +672,16 @@ public class Entry implements Cloneable {
     public void setTypeHandler(TypeHandler value) {
         typeHandler = value;
     }
+
+    public void setMasterTypeHandler(TypeHandler value) {
+        masterTypeHandler = value;
+    }
+
+    public TypeHandler getMasterTypeHandler() {
+        if(masterTypeHandler!=null) return masterTypeHandler;
+        return getTypeHandler();
+    }
+
 
     /**
      * Get the type
