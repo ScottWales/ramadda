@@ -239,14 +239,27 @@ Show the menu actions in a popup:
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
-[wiki::text {{{property entry="some other entry" folders="true" files="true" 
-               type="entries of a specific type" level="1 or 2" 
-               associations="true|false" 
+[wiki::text {{{property entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
+               folders="true" files="true" 
+               type="entries of a specific type" 
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
                images="true" count="number of entries to use" }}}]
+
+The entries is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of:
+<ul>
+<li> <i>this</i> - the current entry
+<li> <i>children</i> - the children entry
+<li> <i><grandchildren</i> - the grandchildren entries
+<li> <i>parent</i>  - the parent entry
+<li> <i>grandparent</i> - the grandparent entry
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<li> <i>siblings</i> - the sibling entries
+<li> <i>links</i>  - the associated or linked entries
+</ul>
+
 </ul>
 <ul>
 <ul>

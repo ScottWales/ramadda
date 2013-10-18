@@ -555,6 +555,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** the id for this */
     public static final String ID_THIS = "this";
+    public static final String ID_CHILDREN = "children";
+    public static final String ID_SIBLINGS = "siblings";
 
     /** the id for my parent */
     public static final String ID_PARENT = "parent";
@@ -564,7 +566,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** the id for my grandparent */
     public static final String ID_GRANDPARENT = "grandparent";
+    public static final String ID_GRANDCHILDREN = "grandchildren";
 
+    public static final String ID_LINKS = "links";
 
     /** default label */
     public static final String LABEL_LINKS = "Actions";
@@ -657,6 +661,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (entryId != null) {
                 theEntry = null;
                 int barIndex = entryId.indexOf("|");
+
                 if (barIndex >= 0) {
                     entryId = entryId.substring(0, barIndex);
                 }
@@ -680,8 +685,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                     }
                 }
-
-
                 if (theEntry == null) {
                     theEntry = getEntryManager().getEntry(request, entryId);
                 }
@@ -1366,7 +1369,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 children.add(entry);
             } else {
                 children = getEntries(request, wikiUtil, originalEntry,
-                                      entry, props, false, true, "");
+                                      entry, props, false, "");
+                if(children.isEmpty()) {
+                    children.add(entry);
+                }
             }
 
 
@@ -1498,7 +1504,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props, false,
-                                       false, APPLY_PREFIX);
+                                              APPLY_PREFIX);
             if (children.size() == 0) {
                 return null;
             }
@@ -2217,7 +2223,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                   Hashtable props, boolean onlyImages)
             throws Exception {
         return getEntries(request, wikiUtil, originalEntry, entry, props,
-                          onlyImages, false, "");
+                          onlyImages,  "");
     }
 
 
@@ -2240,45 +2246,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props, boolean onlyImages,
-                                  boolean includeEntry, String attrPrefix)
+                                  String attrPrefix)
             throws Exception {
 
 
-        if ( !onlyImages) {
+        if (!onlyImages) {
             onlyImages = Misc.getProperty(props, attrPrefix + ATTR_IMAGES,
                                           onlyImages);
-        }
-
-        boolean folders = Misc.getProperty(props, attrPrefix + ATTR_FOLDERS,
-                                           false);
-        boolean files = Misc.getProperty(props, attrPrefix + ATTR_FILES,
-                                         false);
-        boolean doAssociations = Misc.getProperty(props,
-                                     attrPrefix + ATTR_ASSOCIATIONS, false);
-
-
-
-        if (doAssociations) {
-            List<Association> associations =
-                getRepository().getAssociationManager().getAssociations(
-                    request, entry.getId());
-            List<Entry> linkedEntries = new ArrayList<Entry>();
-            for (Association association : associations) {
-                String id = null;
-                if ( !association.getFromId().equals(entry.getId())) {
-                    id = association.getFromId();
-                } else if ( !association.getToId().equals(entry.getId())) {
-                    id = association.getToId();
-                } else {
-                    continue;
-                }
-                linkedEntries.add(getEntryManager().getEntry(request, id));
-            }
-            if (onlyImages) {
-                return getImageEntries(linkedEntries);
-            }
-
-            return linkedEntries;
         }
 
         //If there is a max property then clone the request and set the max
@@ -2288,39 +2262,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             request.put(ARG_MAX, "" + max);
         }
 
-        String      type     = (String) props.get(attrPrefix + ATTR_TYPE);
-        int level = Misc.getProperty(props, attrPrefix + ATTR_LEVEL, 1);
-        List<Entry> children = getEntryManager().getChildren(request, entry);
-        if (children.isEmpty() && !entry.isGroup() && includeEntry) {
-            children.add(entry);
-        }
-
         String userDefinedEntries = Misc.getProperty(props,
                                         attrPrefix + ATTR_ENTRIES,
-                                        (String) null);
-        if (userDefinedEntries != null) {
-            children = getEntries(request, entry, userDefinedEntries);
-        }
+                                                     ID_CHILDREN);
 
+        List<Entry> children = getEntries(request, entry, userDefinedEntries, props);
 
-        if (level == 2) {
-            List<Entry> grandChildren = new ArrayList<Entry>();
-            for (Entry child : children) {
-                if ( !child.isGroup()) {
-                    grandChildren.add(child);
-                }
-            }
-            for (Entry child : children) {
-                if (child.isGroup()) {
-                    grandChildren.addAll(
-                        getEntryManager().getChildren(request, child));
-                }
-            }
-            grandChildren = getEntryUtil().sortEntriesOnDate(grandChildren,
-                    true);
-            children = grandChildren;
-        }
-
+        boolean folders = Misc.getProperty(props, attrPrefix + ATTR_FOLDERS,
+                                           false);
         if (folders) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
@@ -2329,7 +2278,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
             }
             children = tmp;
-        } else if (files) {
+        } 
+        boolean files = Misc.getProperty(props, attrPrefix + ATTR_FILES,
+                                       false);
+
+        if (files) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
                 if ( !child.isGroup()) {
@@ -2338,6 +2291,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             children = tmp;
         }
+
+
+        String      type     = (String) props.get(attrPrefix + ATTR_TYPE);
         if (type != null) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : children) {
@@ -2457,8 +2413,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      *
      * @throws Exception problem getting entries
      */
-    private List<Entry> getEntries(Request request, Entry baseEntry,
-                                   String ids)
+    private List<Entry> getEntries(Request request, 
+                                   Entry baseEntry,
+                                   String ids,Hashtable props)
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
@@ -2473,11 +2430,90 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 continue;
             }
-            if (entryid.equals(ID_THIS)) {
-                entries.add(baseEntry);
 
+            if (entryid.equals(ID_LINKS)) {
+                
+                List<Association> associations =
+                    getRepository().getAssociationManager().getAssociations(
+                                                                            request, baseEntry.getId());
+                for (Association association : associations) {
+                    String id = null;
+                    if ( !association.getFromId().equals(baseEntry.getId())) {
+                        id = association.getFromId();
+                    } else if ( !association.getToId().equals(baseEntry.getId())) {
+                        id = association.getToId();
+                    } else {
+                        continue;
+                    }
+                    entries.add(getEntryManager().getEntry(request, id));
+                }
                 continue;
             }
+
+
+            if (entryid.equals(ID_THIS)) {
+                entries.add(baseEntry);
+                continue;
+            }
+
+            if (entryid.equals(ID_PARENT)) {
+                entries.add(getEntryManager().getEntry(request,
+                                                       baseEntry.getParentEntryId()));
+                continue;
+            }
+
+            if (entryid.equals(ID_SIBLINGS)) {
+                Entry parent = getEntryManager().getEntry(request,
+                                                          baseEntry.getParentEntryId());
+                for(Entry sibling: getEntryManager().getChildren(request, parent)) {
+                    if(!sibling.getId().equals(baseEntry.getId())) {
+                        entries.add(sibling);
+                    }
+                }
+                continue;
+            }
+
+
+            if (entryid.equals(ID_GRANDPARENT)) {
+                Entry parent = getEntryManager().getEntry(request,
+                                                          baseEntry.getParentEntryId());
+                if(parent!=null) {
+                    Entry grandparent = getEntryManager().getEntry(request,
+                                                                   parent.getParentEntryId());
+                    if(grandparent!=null) {
+                        entries.add(grandparent);
+                    }
+                }
+                continue;
+            }
+
+            if (entryid.equals(ID_CHILDREN)) {
+                List<Entry> children = getEntryManager().getChildren(request, baseEntry);
+                entries.addAll(children);
+                continue;
+            }
+
+
+            if (entryid.equals(ID_GRANDCHILDREN)) {
+                List<Entry> children = getEntryManager().getChildren(request, baseEntry);
+                List<Entry> grandChildren = new ArrayList<Entry>();
+                for (Entry child : children) {
+                    if ( !child.isGroup()) {
+                        grandChildren.add(child);
+                    }
+                }
+
+                for (Entry child : children) {
+                    if (child.isGroup()) {
+                        grandChildren.addAll(
+                                             getEntryManager().getChildren(request, child));
+                    }
+                }
+                entries.addAll(getEntryUtil().sortEntriesOnDate(grandChildren,
+                                                                true));
+                continue;
+            }
+
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
                 entries.add(entry);

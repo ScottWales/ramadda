@@ -18,7 +18,7 @@
 {{resource message="" includeicon="true" title="Download"}}
 {{map message="" prefix="====Location===="}}
 <br>
-{{list includeicon="true" details="false" entry="parent" exclude="this" message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
 </div>
 </td>
 </block>
