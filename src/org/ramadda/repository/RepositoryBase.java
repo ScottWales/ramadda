@@ -114,8 +114,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
+    /** _more_          */
     public final RequestUrl URL_ENTRY_LINKS = new RequestUrl(this,
-                                                   "/entry/links");
+                                                  "/entry/links");
 
 
     /** _more_ */
@@ -618,6 +619,13 @@ public class RepositoryBase implements Constants, RepositorySource {
         return urlBase + f;
     }
 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     *
+     * @return _more_
+     */
     public String htdocsUrl(String f) {
         return fileUrl(PageHandler.HTDOCS_VERSION_SLASH + f);
     }

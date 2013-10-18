@@ -207,6 +207,7 @@ public class Link {
         if (icon == null) {
             return HtmlUtils.href(url, label);
         }
+
         return HtmlUtils.href(url, HtmlUtils.img(icon, label));
     }
 

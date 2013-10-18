@@ -872,7 +872,9 @@ public class OutputHandler extends RepositoryManager {
                                           HtmlUtils.squote(selectorId),
                                           HtmlUtils.squote(elementId),
                                           HtmlUtils.squote("" + allEntries),
-                                                      type==null?"null":HtmlUtils.squote(type)) + ","
+                                          (type == null)
+                                          ? "null"
+                                          : HtmlUtils.squote(type)) + ","
                                               + ((entry != null)
                 ? HtmlUtils.squote(entry.getId())
                 : "null"));
@@ -960,10 +962,12 @@ public class OutputHandler extends RepositoryManager {
                                 HtmlUtils.squote(type))), linkText));
 
         sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.div("", HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
-                                                    HtmlUtils.STYLE_HIDDEN, 
-                                                    HtmlUtils.ATTR_CLASS, CSS_CLASS_FOLDER_BLOCK,
-                                                    HtmlUtils.ATTR_ID, uid)));
+        sb.append(HtmlUtils.div("",
+                                HtmlUtils.attrs(HtmlUtils.ATTR_STYLE,
+                                    HtmlUtils.STYLE_HIDDEN,
+                                    HtmlUtils.ATTR_CLASS,
+                                    CSS_CLASS_FOLDER_BLOCK,
+                                    HtmlUtils.ATTR_ID, uid)));
 
         return sb.toString();
     }
@@ -1267,26 +1271,27 @@ public class OutputHandler extends RepositoryManager {
      * @param entry _more_
      * @param htmlSB _more_
      * @param jsSB _more_
+     * @param showDetails _more_
      *
      * @throws Exception _more_
      */
     public void addEntryTableRow(Request request, Entry entry,
-                                 StringBuffer htmlSB, StringBuffer jsSB, boolean showDetails)
+                                 StringBuffer htmlSB, StringBuffer jsSB,
+                                 boolean showDetails)
             throws Exception {
-        String  rowId        = HtmlUtils.getUniqueId("entryrow_");
-        String  cbxId        = HtmlUtils.getUniqueId("entry_");
-        String  cbxArgId     = "entry_" + entry.getId();
-        String  cbxWrapperId = HtmlUtils.getUniqueId("cbx_");
+        String rowId        = HtmlUtils.getUniqueId("entryrow_");
+        String cbxId        = HtmlUtils.getUniqueId("entry_");
+        String cbxArgId     = "entry_" + entry.getId();
+        String cbxWrapperId = HtmlUtils.getUniqueId("cbx_");
         jsSB.append(
             HtmlUtils.callln(
                 "new EntryRow",
                 HtmlUtils.comma(
                     HtmlUtils.squote(entry.getId()), HtmlUtils.squote(rowId),
-                    HtmlUtils.squote(cbxId),
-                    HtmlUtils.squote(cbxWrapperId),
-                    ""+showDetails)));
+                    HtmlUtils.squote(cbxId), HtmlUtils.squote(cbxWrapperId),
+                    "" + showDetails)));
 
-        String cbx =  
+        String cbx =
             HtmlUtils.checkbox(
                 cbxArgId, "true", false,
                 HtmlUtils.id(cbxId) + " "
@@ -1302,7 +1307,8 @@ public class OutputHandler extends RepositoryManager {
         //xxxx
         decorateEntryRow(request, entry, htmlSB,
                          getEntryManager().getAjaxLink(request, entry,
-                                                       getEntryDisplayName(entry)), rowId, cbx, showDetails);
+                             getEntryDisplayName(entry)), rowId, cbx,
+                                 showDetails);
     }
 
 
@@ -1367,17 +1373,23 @@ public class OutputHandler extends RepositoryManager {
                                  HtmlUtils.cssClass(prefix + "-block")));
         boolean isMobile = request.isMobile();
         if (showDetails) {
-            String cls = isMobile?"entry-list-header-mobile":"entry-list-header";
+            String cls = isMobile
+                         ? "entry-list-header-mobile"
+                         : "entry-list-header";
             sb.append(
-                      "<table class=\"entry-list-header\" border=0 cellpadding=0 cellspacing=0 width=100%><tr>");
-            sb.append("<td align=center valign=center width=20><div class=\"entry-list-header-toggle\">");
+                "<table class=\"entry-list-header\" border=0 cellpadding=0 cellspacing=0 width=100%><tr>");
+            sb.append(
+                "<td align=center valign=center width=20><div class=\"entry-list-header-toggle\">");
             sb.append(link);
             sb.append("</div></td>");
             sb.append("<td class=\"entry-list-header-column\">Name</td>");
-            sb.append("<td width=200 class=\"entry-list-header-column\">Date</td>");
-            if(!isMobile) {
-                sb.append("<td width=100 class=\"entry-list-header-column\">Size</td>");
-                sb.append("<td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" align=center>Kind</td>");
+            sb.append(
+                "<td width=200 class=\"entry-list-header-column\">Date</td>");
+            if ( !isMobile) {
+                sb.append(
+                    "<td width=100 class=\"entry-list-header-column\">Size</td>");
+                sb.append(
+                    "<td width=200 class=\"entry-list-header-column\" style=\"border-right:0px;\" align=center>Kind</td>");
             }
             sb.append("</tr></table>");
 
@@ -1395,7 +1407,7 @@ public class OutputHandler extends RepositoryManager {
         for (Entry entry : (List<Entry>) entries) {
             StringBuffer cbxSB        = new StringBuffer();
             String       rowId        = base + (cnt++);
-            String       cbxArgId        = "entry_" + entry.getId();
+            String       cbxArgId     = "entry_" + entry.getId();
             String       cbxId        = HtmlUtils.getUniqueId("entry_");
             String       cbxWrapperId = "checkboxwrapper_" + (cnt++);
             jsSB.append(
@@ -1404,8 +1416,7 @@ public class OutputHandler extends RepositoryManager {
                     HtmlUtils.comma(
                         HtmlUtils.squote(entry.getId()),
                         HtmlUtils.squote(rowId), HtmlUtils.squote(cbxId),
-                        HtmlUtils.squote(cbxWrapperId),
-                                    ""+showDetails)));
+                        HtmlUtils.squote(cbxWrapperId), "" + showDetails)));
             if (doForm) {
                 cbxSB.append(HtmlUtils.hidden("all_" + entry.getId(), "1"));
                 String cbx =
@@ -1438,8 +1449,8 @@ public class OutputHandler extends RepositoryManager {
             }
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                                                entry, getEntryDisplayName(entry), null, true,
-                                      crumbs);
+                                      entry, getEntryDisplayName(entry),
+                                      null, true, crumbs);
             //entryLink.setLink(cbxSB + entryLink.getLink());
 
             StringBuffer buffer = cb.get(doCategories
@@ -1508,11 +1519,11 @@ public class OutputHandler extends RepositoryManager {
         }
 
 
-        sb.append(
-            HtmlUtils.open(
-                HtmlUtils.TAG_DIV,
-                HtmlUtils.id(rowId) + HtmlUtils.cssClass(showDetails?CSS_CLASS_ENTRY_LIST_ROW:CSS_CLASS_ENTRY_TREE_ROW)
-                + HtmlUtils.onMouseClick(
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                 HtmlUtils.id(rowId)
+                                 + HtmlUtils.cssClass(showDetails
+                ? CSS_CLASS_ENTRY_LIST_ROW
+                : CSS_CLASS_ENTRY_TREE_ROW) + HtmlUtils.onMouseClick(
                     HtmlUtils.call(
                         "entryRowClick",
                         "event, "
@@ -1558,14 +1569,13 @@ public class OutputHandler extends RepositoryManager {
         //        showDate = false;
         if (showDate) {
             sb.append("<td width=200 align=right><div "
-                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
-                      + ">");
+                      + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             sb.append(entry.getTypeHandler().formatDate(request, entry,
                     new Date(entry.getStartDate()), extraAlt.toString()));
             sb.append("</div></td>");
         }
 
-        if (!isMobile && showDetails) {
+        if ( !isMobile && showDetails) {
             sb.append("<td width=\"100\" align=right "
                       + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL) + ">");
             if (entry.getResource().isFile()) {
@@ -1577,7 +1587,7 @@ public class OutputHandler extends RepositoryManager {
             sb.append("</td>");
         }
 
-        if (!isMobile && showDetails) {
+        if ( !isMobile && showDetails) {
             sb.append(
                 "<td width=\"200\" align=right "
                 + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
@@ -1624,7 +1634,7 @@ public class OutputHandler extends RepositoryManager {
     public String getEntryLink(Request request, Entry entry)
             throws Exception {
         return getEntryManager().getTooltipLink(request, entry,
-                                                getEntryDisplayName(entry), null);
+                getEntryDisplayName(entry), null);
     }
 
 
@@ -2116,31 +2126,55 @@ public class OutputHandler extends RepositoryManager {
 
 
 
-    private Hashtable<String,String> typeToWikiTemplate = new Hashtable<String,String>();
+    /** _more_          */
+    private Hashtable<String, String> typeToWikiTemplate =
+        new Hashtable<String, String>();
 
+    /** _more_          */
     public static final String TEMPLATE_DEFAULT = "default";
+
+    /** _more_          */
     public static final String TEMPLATE_CONTENT = "content";
 
-    protected String getWikiTemplate(Request request, Entry entry, String templateType) throws Exception {
-        if(entry.isDummy()) return null;
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param templateType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    protected String getWikiTemplate(Request request, Entry entry,
+                                     String templateType)
+            throws Exception {
+        if (entry.isDummy()) {
+            return null;
+        }
         String entryType = entry.getTypeHandler().getType();
-        String key = entryType+"." + templateType;
-        String wiki = typeToWikiTemplate.get(key);
-        if(wiki!=null) {
+        String key       = entryType + "." + templateType;
+        String wiki      = typeToWikiTemplate.get(key);
+        if (wiki != null) {
             return wiki;
         }
 
-        String propertyPrefix = "ramadda.wikitemplate." + templateType +"."; 
-        String property = getProperty(propertyPrefix + entryType, null);
-        if(property!=null) {
+        String propertyPrefix = "ramadda.wikitemplate." + templateType + ".";
+        String property       = getProperty(propertyPrefix + entryType, null);
+        if (property != null) {
             wiki = getRepository().getResource(property);
         }
-        if(wiki == null) {
-            wiki = getRepository().getResource(getProperty(propertyPrefix +(entry.isGroup()?"folder":"file"), ""));
+        if (wiki == null) {
+            wiki = getRepository().getResource(getProperty(propertyPrefix
+                    + (entry.isGroup()
+                       ? "folder"
+                       : "file"), ""));
         }
-        if(wiki!=null)  {
+        if (wiki != null) {
             typeToWikiTemplate.put(key, wiki);
         }
+
         return wiki;
     }
 

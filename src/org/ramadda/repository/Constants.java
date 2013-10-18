@@ -515,8 +515,13 @@ public interface Constants {
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
 
+    /** _more_          */
     public static final String ARG_DISPLAY = "display";
+
+    /** _more_          */
     public static final String DISPLAY_FULL = "full";
+
+    /** _more_          */
     public static final String DISPLAY_SMALL = "small";
 
     /** _more_ */
@@ -1140,6 +1145,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_NODETYPE = "nodetype";
 
+    /** _more_          */
     public static final String ARG_DETAILS = "details";
 
     /** _more_ */
@@ -1679,6 +1685,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_DOWNLOAD_OK = "ramadda.download.ok";
 
+    /** _more_          */
     public static final String PROP_ENTRY_TOP = "ramadda.entry.top";
 
 
@@ -2074,11 +2081,11 @@ public interface Constants {
     /** _more_ */
     public static final String CSS_CLASS_ENTRY_TREE_ROW = "entry-tree-row";
 
+    /** _more_          */
     public static final String CSS_CLASS_ENTRY_LIST_ROW = "entry-list-row";
 
     /** _more_ */
-    public static final String CSS_CLASS_ENTRY_ROW_LABEL =
-        "entry-row-label";
+    public static final String CSS_CLASS_ENTRY_ROW_LABEL = "entry-row-label";
 
     /** _more_ */
     public static final String CSS_CLASS_FOLDER_BLOCK =

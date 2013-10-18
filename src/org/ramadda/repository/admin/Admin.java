@@ -1316,6 +1316,7 @@ public class Admin extends RepositoryManager {
         for (OutputType type : types) {
             if ( !type.getForUser()) {
                 System.out.println("not for user:" + type);
+
                 continue;
             }
             boolean ok = getRepository().isOutputTypeOK(type);
@@ -1644,8 +1645,8 @@ public class Admin extends RepositoryManager {
                 HtmlUtils.row(
                     HtmlUtils.colspan(
                         getPageHandler().getBreadCrumbs(
-                                                        request, entry, null, 
-                                                        getRepository().URL_ACCESS_FORM, 80), 3)));
+                            request, entry, null,
+                            getRepository().URL_ACCESS_FORM, 80), 3)));
             List<Permission> permissions =
                 (List<Permission>) idToPermissions.get(id);
             for (Permission permission : permissions) {

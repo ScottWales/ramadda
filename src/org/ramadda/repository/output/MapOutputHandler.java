@@ -122,17 +122,18 @@ public class MapOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-        boolean ok = false;
+        boolean     ok         = false;
         List<Entry> allEntries = state.getAllEntries();
-        if(allEntries.size() == 0) {
+        if (allEntries.size() == 0) {
             Entry singleEntry = state.getEntry();
-            if(singleEntry!=null) {
+            if (singleEntry != null) {
                 allEntries.add(state.getEntry());
             }
         }
         for (Entry entry : allEntries) {
             if (entry.isGeoreferenced()) {
                 ok = true;
+
                 break;
             }
         }

@@ -223,11 +223,13 @@ public class PluginManager extends RepositoryManager {
         }
 
         //If the allplugins was installed then copy the new one over
-        File   allPlugins      = new File(IOUtil.joinDir(getStorageManager().getPluginsDir(), 
-                                                         IOUtil.getFileTail(PLUGIN_ALL)));
-        if(allPlugins.exists()) {
-            getRepository().println("RAMADDA: updating plugin file: " +
-                                    IOUtil.getFileTail(PluginManager.PLUGIN_ALL));
+        File allPlugins =
+            new File(IOUtil.joinDir(getStorageManager().getPluginsDir(),
+                                    IOUtil.getFileTail(PLUGIN_ALL)));
+        if (allPlugins.exists()) {
+            getRepository().println(
+                "RAMADDA: updating plugin file: "
+                + IOUtil.getFileTail(PluginManager.PLUGIN_ALL));
             copyPlugin(PluginManager.PLUGIN_ALL);
         }
 
@@ -479,17 +481,26 @@ public class PluginManager extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param pluginPath _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private String copyPlugin(String pluginPath) throws Exception {
         //Remove any ..._file_ prefix
         String tail = RepositoryUtil.getFileTail(pluginPath);
         String newPluginFile =
             IOUtil.joinDir(getStorageManager().getPluginsDir(), tail);
         InputStream      inputStream = IOUtil.getInputStream(pluginPath);
-        FileOutputStream fos         =
-            new FileOutputStream(newPluginFile);
+        FileOutputStream fos         = new FileOutputStream(newPluginFile);
         IOUtil.writeTo(inputStream, fos);
         IOUtil.close(inputStream);
         IOUtil.close(fos);
+
         return newPluginFile;
     }
 

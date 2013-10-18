@@ -30,10 +30,10 @@ import org.ramadda.repository.output.OutputType;
 
 import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.FormInfo;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 
 
@@ -199,7 +199,11 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
+
+    /** _more_          */
     public static final String ATTR_SHOWLABEL = "showlabel";
+
+    /** _more_          */
     public static final String ATTR_CANEXPORT = "canexport";
 
 
@@ -291,8 +295,10 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canShow = true;
 
-    private boolean showLabel= true;
+    /** _more_          */
+    private boolean showLabel = true;
 
+    /** _more_          */
     private boolean canExport = true;
 
 
@@ -334,6 +340,7 @@ public class Column implements DataTypes, Constants {
      */
     public Column(TypeHandler typeHandler, Element element, int offset)
             throws Exception {
+
         this.typeHandler = typeHandler;
         this.offset      = offset;
 
@@ -411,22 +418,22 @@ public class Column implements DataTypes, Constants {
                             label = toks.get(1);
                         }
                         enumValues.add(new TwoFacedObject(label, value));
-                        enumMap.put(value,label);
+                        enumMap.put(value, label);
                     }
 
                 } else {
                     enumValues = new ArrayList<TwoFacedObject>();
                     for (String tok :
                             StringUtil.split(valueString, ",", true, true)) {
-                        int index = tok.indexOf(":");
+                        int    index = tok.indexOf(":");
                         String value = tok;
-                        String label =tok;
+                        String label = tok;
                         if (index > 0) {
                             label = tok.substring(index + 1);
                             value = tok.substring(0, index);
                         }
-                        enumMap.put(value,label);
-                        enumValues.add(new TwoFacedObject(label,value));
+                        enumMap.put(value, label);
+                        enumValues.add(new TwoFacedObject(label, value));
                     }
                 }
             }
@@ -434,6 +441,7 @@ public class Column implements DataTypes, Constants {
                 enumValues = new ArrayList<TwoFacedObject>();
             }
         }
+
     }
 
     /**
@@ -692,8 +700,8 @@ public class Column implements DataTypes, Constants {
                             Object[] values, SimpleDateFormat sdf)
             throws Exception {
 
-        boolean csv = Misc.equals(output, OUTPUT_CSV);
-        String delimiter = csv
+        boolean csv       = Misc.equals(output, OUTPUT_CSV);
+        String  delimiter = csv
                             ? "|"
                             : ",";
         if (isType(DATATYPE_LATLON)) {
@@ -768,24 +776,26 @@ public class Column implements DataTypes, Constants {
                 sb.append("<a href=\"mailto:" + s + "\">" + s + "</a>");
             }
         } else if (isType(DATATYPE_URL)) {
-            String s = toString(values, offset);
-            List<String> urls  = StringUtil.split(s,"\n");
+            String       s    = toString(values, offset);
+            List<String> urls = StringUtil.split(s, "\n");
             if (csv) {
-                s = StringUtil.join(delimiter,urls);
+                s = StringUtil.join(delimiter, urls);
                 sb.append(s);
             } else {
-                int cnt =0 ;
-                for(String url: urls) {
-                    if(cnt > 0) sb.append("<br>");
+                int cnt = 0;
+                for (String url : urls) {
+                    if (cnt > 0) {
+                        sb.append("<br>");
+                    }
                     cnt++;
                     sb.append("<a href=\"" + url + "\">" + url + "</a>");
                 }
             }
         } else {
             String s = toString(values, offset);
-            if (csv) { 
-                s = s.replaceAll(",","_COMMA_");
-                s = s.replaceAll("\n"," ");
+            if (csv) {
+                s = s.replaceAll(",", "_COMMA_");
+                s = s.replaceAll("\n", " ");
             }
 
             if (rows > 1) {
@@ -929,8 +939,9 @@ public class Column implements DataTypes, Constants {
             if (values[offset] != null) {
                 String value = toString(values, offset);
                 //Check the value
-                if(size>0) {
-                    getRepository().getEntryManager().checkColumnSize(getName(),value, size);
+                if (size > 0) {
+                    getRepository().getEntryManager().checkColumnSize(
+                        getName(), value, size);
                 }
                 statement.setString(statementIdx, value);
             } else {
@@ -1495,6 +1506,7 @@ public class Column implements DataTypes, Constants {
      * @param entry _more_
      * @param values _more_
      * @param state _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
@@ -1533,12 +1545,14 @@ public class Column implements DataTypes, Constants {
      * @param request _more_
      * @param entry _more_
      * @param values _more_
+     * @param formInfo _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public String getFormWidget(Request request, Entry entry, Object[] values,  FormInfo formInfo)
+    public String getFormWidget(Request request, Entry entry,
+                                Object[] values, FormInfo formInfo)
             throws Exception {
 
         String widget = "";
@@ -1733,17 +1747,16 @@ public class Column implements DataTypes, Constants {
                 if (rows > 1) {
                     if (isType(DATATYPE_LIST)) {
                         value = StringUtil.join("\n",
-                                                StringUtil.split(value, ",",
-                                                                 true, true));
+                                StringUtil.split(value, ",", true, true));
                     }
                     widget = HtmlUtils.textArea(id, value, rows, columns,
-                                                HtmlUtils.id(domId));
+                            HtmlUtils.id(domId));
                 } else {
                     widget = HtmlUtils.input(id, value,
-                                             HtmlUtils.id(domId) +
-                                             " size=\"" + columns + "\"");
+                                             HtmlUtils.id(domId) + " size=\""
+                                             + columns + "\"");
                 }
-                if(size>0) {
+                if (size > 0) {
                     formInfo.addSizeValidation(getLabel(), domId, size);
                 }
             }
@@ -2374,6 +2387,11 @@ public class Column implements DataTypes, Constants {
         return name;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getGroup() {
         return group;
     }
@@ -2514,10 +2532,20 @@ public class Column implements DataTypes, Constants {
         return canShow;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getCanExport() {
         return canExport;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getShowLabel() {
         return showLabel;
     }

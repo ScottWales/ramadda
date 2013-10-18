@@ -156,19 +156,23 @@ public class MapManager extends RepositoryManager {
     public String getHtmlImports() {
         StringBuffer sb = new StringBuffer();
         sb.append(HtmlUtils.cssLink(getRepository().htdocsUrl(OPENLAYERS_BASE
-                                            + "/theme/default/style.css")));
+                + "/theme/default/style.css")));
         sb.append("\n");
         sb.append("\n");
-        sb.append(HtmlUtils.importJS(getRepository().htdocsUrl(OPENLAYERS_BASE
-                                             + "/OpenLayers.js")));
+        sb.append(
+            HtmlUtils.importJS(
+                getRepository().htdocsUrl(
+                    OPENLAYERS_BASE + "/OpenLayers.js")));
         sb.append("\n");
         sb.append(
             HtmlUtils.importJS(
                 "http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"));
         sb.append("\n");
-        sb.append(HtmlUtils.importJS(getRepository().htdocsUrl("/ramaddamap.js")));
+        sb.append(
+            HtmlUtils.importJS(getRepository().htdocsUrl("/ramaddamap.js")));
         sb.append("\n");
-        sb.append(HtmlUtils.cssLink(getRepository().htdocsUrl("/ramaddamap.css")));
+        sb.append(
+            HtmlUtils.cssLink(getRepository().htdocsUrl("/ramaddamap.css")));
         sb.append("\n");
 
         return sb.toString();
@@ -300,10 +304,13 @@ public class MapManager extends RepositoryManager {
         if (request.getExtraProperty("ge.inited") == null) {
             sb.append(HtmlUtils.importJS("http://www.google.com/jsapi"
                                          + mapsKey));
-            sb.append(HtmlUtils.importJS(getRepository().htdocsUrl("/google/googleearth.js")));
             sb.append(
                 HtmlUtils.importJS(
-                    getRepository().htdocsUrl("/google/extensions-0.2.1.pack.js")));
+                    getRepository().htdocsUrl("/google/googleearth.js")));
+            sb.append(
+                HtmlUtils.importJS(
+                    getRepository().htdocsUrl(
+                        "/google/extensions-0.2.1.pack.js")));
             sb.append(HtmlUtils.script("google.load(\"earth\", \"1\""
                                        + otherOpts + ");"));
             request.putExtraProperty("ge.inited", "true");
@@ -640,9 +647,10 @@ public class MapManager extends RepositoryManager {
             return fromEntry;
         }
         if (entry.getResource().isImage()) {
-            int    width      = request.get(ATTR_WIDTH, 400);
-            int    height     = request.get(ATTR_HEIGHT, 270);
-            String alt        = request.getString(ATTR_ALT, getEntryDisplayName(entry));
+            int width  = request.get(ATTR_WIDTH, 400);
+            int height = request.get(ATTR_HEIGHT, 270);
+            String alt = request.getString(ATTR_ALT,
+                                           getEntryDisplayName(entry));
             int    imageWidth = request.get(ATTR_IMAGEWIDTH, width);
             String imageClass = request.getString("imageclass",
                                     (String) null);
@@ -825,7 +833,7 @@ public class MapManager extends RepositoryManager {
                     HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             catSB.append(
                 "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
-            String iconUrl =  getPageHandler().getIconUrl(request, entry);
+            String iconUrl = getPageHandler().getIconUrl(request, entry);
             String navUrl = "javascript:" + map.getVariableName()
                             + ".hiliteMarker(" + sqt(entry.getId()) + ");";
             catSB.append(
@@ -942,7 +950,7 @@ public class MapManager extends RepositoryManager {
                 infoHtml = infoHtml.replace("\"", "\\\"");
                 infoHtml = infoHtml.replace("'", "\\'");
                 infoHtml = getRepository().translate(request, infoHtml);
-                String icon =  getPageHandler().getIconUrl(request, entry);
+                String icon = getPageHandler().getIconUrl(request, entry);
                 map.addMarker(entry.getId(),
                               new LatLonPointImpl(Math.max(-80,
                                   Math.min(80,

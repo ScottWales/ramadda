@@ -141,7 +141,7 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private boolean isMobile = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean makeAbsoluteUrls = false;
 
     /** _more_ */
@@ -182,9 +182,6 @@ public class Request implements Constants, Cloneable {
 
     /**
      * _more_
-     *
-     * @param repository _more_
-     * @param user _more_
      *
      * @param that _more_
      * @param path _more_

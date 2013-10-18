@@ -3087,7 +3087,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Check for the version in the path and strip it off, e.g.
         // /repository/htdocs_v1/style.css
         //We do this so we can cleanly update new css and js
-        if(path.startsWith(PageHandler.HTDOCS_VERSION_SLASH)) {
+        if (path.startsWith(PageHandler.HTDOCS_VERSION_SLASH)) {
             path = path.substring(PageHandler.HTDOCS_VERSION_SLASH.length());
             //            System.err.println("path:" + path);
         }
@@ -3695,7 +3695,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ((prop == null) || prop.equals("true")) {
             return true;
         }
-        System.err.println ("NOT OK:" + outputType);
+        System.err.println("NOT OK:" + outputType);
 
         return false;
     }
@@ -4302,6 +4302,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processTest(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("HttpServletRequest.getServerName: ");
@@ -5160,7 +5169,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                    Map<String, String> envVars,
                                    File workingDir)
             throws Exception {
-        return executeCommand(commands, envVars, workingDir, -1 /* don't timeout*/);
+        return executeCommand(commands, envVars, workingDir,
+                              -1 /* don't timeout*/);
     }
 
     /**
@@ -5202,10 +5212,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               TimeUnit.SECONDS.toMillis(timeOutInSeconds));
         runnable.start();
 
-        if (timeOutInSeconds > 0)  {
+        if (timeOutInSeconds > 0) {
             try {
-            	runnable.join(TimeUnit.SECONDS.toMillis(timeOutInSeconds));
-            } catch(InterruptedException ex) {
+                runnable.join(TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+            } catch (InterruptedException ex) {
                 esg.interrupt();
                 isg.interrupt();
                 runnable.interrupt();

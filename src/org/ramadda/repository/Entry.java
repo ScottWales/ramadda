@@ -121,6 +121,7 @@ public class Entry implements Cloneable {
     /** the type handler for this entry */
     private TypeHandler typeHandler;
 
+    /** _more_          */
     private TypeHandler masterTypeHandler;
 
     /** the start date */
@@ -673,12 +674,25 @@ public class Entry implements Cloneable {
         typeHandler = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setMasterTypeHandler(TypeHandler value) {
         masterTypeHandler = value;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public TypeHandler getMasterTypeHandler() {
-        if(masterTypeHandler!=null) return masterTypeHandler;
+        if (masterTypeHandler != null) {
+            return masterTypeHandler;
+        }
+
         return getTypeHandler();
     }
 
@@ -865,6 +879,11 @@ public class Entry implements Cloneable {
                               east + (west - east) / 2 };
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isGeoreferenced() {
         return hasAreaDefined() || hasLocationDefined();
     }
@@ -922,6 +941,7 @@ public class Entry implements Cloneable {
         if (label.length() > 0) {
             return label;
         }
+
         return getTypeHandler().getLabel() + ": " + new Date(startDate);
     }
 

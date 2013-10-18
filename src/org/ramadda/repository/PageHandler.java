@@ -2729,5 +2729,202 @@ public class PageHandler extends RepositoryManager {
         return iconPath;
     }
 
+    /**
+     * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry);
+     * This will only be painted if there is a menubar.
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return String with the HTML
+     *
+     * @throws Exception _more_
+     */
+
+    public String entryFooter(Request request, Entry entry) throws Exception {
+
+        if (entry == null) {
+            entry = getEntryManager().getTopGroup();
+        }
+        StringBuffer sb = new StringBuffer();
+
+        String entryUrl =
+            HtmlUtils.url(
+                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
+                ARG_ENTRYID, entry.getId());
+
+
+
+        //Table to englobe this toolbar
+        sb.append("<table width=\"100%\"><tr><td>");
+
+        // Comments
+        List<Comment> comments = entry.getComments();
+        if (comments != null) {
+            Link link = new Link(
+                            request.entryUrl(
+                                getRepository().URL_COMMENTS_SHOW,
+                                entry), getRepository().iconUrl(
+                                    ICON_COMMENTS), "Add/View Comments",
+                                        OutputType.TYPE_TOOLBAR);
+
+            String href = HtmlUtils.href(link.getUrl(),
+                                         "Comments:(" + comments.size() + ")"
+                                         + HtmlUtils.img(link.getIcon(),
+                                             link.getLabel(),
+                                             link.getLabel()));
+
+
+            sb.append(href);
+
+            sb.append("</td><td>");
+        }
+
+        String title = getEntryManager().getEntryDisplayName(entry);
+
+        String share =
+            "<script type=\"text/javascript\">"
+            + "var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script>"
+            + "<a href=\"http://www.addthis.com/bookmark.php?v=20\" "
+            + "onclick=\"return addthis_open(this, '', '" + entryUrl + "', '"
+            + title
+            + "')\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
+
+
+        sb.append(share);
+        sb.append("</td><td>");
+
+
+        // Ratings 
+        boolean doRatings = getRepository().getProperty(PROP_RATINGS_ENABLE,
+                                true);
+        if (doRatings) {
+            String link = request.url(getRepository().URL_COMMENTS_SHOW,
+                                      ARG_ENTRYID, entry.getId());
+            String ratings = HtmlUtils.div(
+                                 "",
+                                 HtmlUtils.cssClass("js-kit-rating")
+                                 + HtmlUtils.attr(
+                                     HtmlUtils.ATTR_TITLE,
+                                     entry.getFullName()) + HtmlUtils.attr(
+                                         "permalink",
+                                         link)) + HtmlUtils.importJS(
+                                             "http://js-kit.com/ratings.js");
+
+            sb.append(
+                HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.col(
+                            ratings,
+                            HtmlUtils.attr(
+                                HtmlUtils.ATTR_ALIGN,
+                                HtmlUtils.VALUE_RIGHT)), HtmlUtils.attr(
+                                    HtmlUtils.ATTR_VALIGN,
+                                    HtmlUtils.VALUE_TOP)), HtmlUtils.attr(
+                                        HtmlUtils.ATTR_WIDTH, "100%")));
+        } else {
+            sb.append(HtmlUtils.p());
+        }
+
+
+        sb.append("</td></tr></table>");
+
+        return sb.toString();
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getCommentHtml(Request request, Entry entry)
+            throws Exception {
+        boolean canEdit = getAccessManager().canDoAction(request, entry,
+                              Permission.ACTION_EDIT);
+        boolean canComment = getAccessManager().canDoAction(request, entry,
+                                 Permission.ACTION_COMMENT);
+
+        StringBuffer  sb       = new StringBuffer();
+        List<Comment> comments = getEntryManager().getComments(request,
+                                     entry);
+
+        if (canComment) {
+            sb.append(
+                HtmlUtils.href(
+                    request.entryUrl(
+                        getRepository().URL_COMMENTS_ADD,
+                        entry), "Add Comment"));
+        }
+
+
+        if (comments.size() == 0) {
+            sb.append("<br>");
+            sb.append(msg("No comments"));
+        }
+        //        sb.append("<table>");
+        int rowNum = 1;
+        for (Comment comment : comments) {
+            //            sb.append(HtmlUtils.formEntry(BLANK, HtmlUtils.hr()));
+            //TODO: Check for access
+            String deleteLink = ( !canEdit
+                                  ? ""
+                                  : HtmlUtils.href(request.url(getRepository().URL_COMMENTS_EDIT,
+                                      ARG_DELETE, "true", ARG_ENTRYID,
+                                      entry.getId(), ARG_AUTHTOKEN,
+                                      getRepository().getAuthToken(request.getSessionId()),
+                                      ARG_COMMENT_ID,
+                                      comment.getId()), HtmlUtils.img(iconUrl(ICON_DELETE),
+                                          msg("Delete comment"))));
+            if (canEdit) {
+                //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
+            }
+            //            sb.append(HtmlUtils.formEntry("Subject:", comment.getSubject()));
+
+
+            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
+            theClass = HtmlUtils.cssClass(CSS_CLASS_COMMENT_BLOCK);
+            rowNum++;
+            if (rowNum > 2) {
+                rowNum = 1;
+            }
+            StringBuffer content = new StringBuffer();
+            String byLine = HtmlUtils.span(
+                                "Posted by " + comment.getUser().getLabel(),
+                                HtmlUtils.cssClass(
+                                    CSS_CLASS_COMMENT_COMMENTER)) + " @ "
+                                        + HtmlUtils.span(
+                                            getPageHandler().formatDate(
+                                                request,
+                                                comment.getDate()), HtmlUtils.cssClass(
+                                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtils.space(
+                                                        1) + deleteLink;
+            content.append(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_DIV,
+                    HtmlUtils.cssClass(CSS_CLASS_COMMENT_INNER)));
+            content.append(comment.getComment());
+            content.append(HtmlUtils.br());
+            content.append(byLine);
+            content.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HtmlUtils
+                .div(HtmlUtils
+                    .makeShowHideBlock(HtmlUtils
+                        .span(comment.getSubject(), HtmlUtils
+                            .cssClass(CSS_CLASS_COMMENT_SUBJECT)), content
+                                .toString(), true, ""), theClass));
+        }
+
+        return sb.toString();
+    }
+
+
 
 }

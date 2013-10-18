@@ -236,8 +236,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
         Json.quoteAttr(items, "icon",
-                       getPageHandler().getIconUrl(request,
-                           entry));
+                       getPageHandler().getIconUrl(request, entry));
 
         Json.quoteAttr(items, "parent", entry.getParentEntryId());
         Json.quoteAttr(items, "user", entry.getUser().getId());

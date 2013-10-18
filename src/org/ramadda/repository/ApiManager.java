@@ -125,11 +125,9 @@ public class ApiManager extends RepositoryManager {
 
 
     /**
-     * _more_
-     *
+     * ctor
      *
      * @param repository _more_
-     * @throws Exception _more_
      */
     public ApiManager(Repository repository) {
         super(repository);
@@ -460,10 +458,12 @@ public class ApiManager extends RepositoryManager {
             for (ApiMethod tmp : wildCardApiMethods) {
                 if (incoming.startsWith(tmp.getWildcardPath1())) {
                     apiMethod = tmp;
+
                     break;
                 }
                 if (incoming.equals(tmp.getWildcardPath2())) {
                     apiMethod = tmp;
+
                     break;
                 }
             }

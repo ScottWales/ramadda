@@ -605,7 +605,7 @@ public class MetadataType extends MetadataTypeBase {
                               Metadata metadata, boolean forLink,
                               boolean isThumbnail)
             throws Exception {
-         for (MetadataElement element : getChildren()) {
+        for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
@@ -736,8 +736,10 @@ public class MetadataType extends MetadataTypeBase {
                     ImageUtils.waitOnImage(image);
                     ImageUtils.writeImageToFile(image, thumb.toString());
                     f = thumb;
-                } catch(Exception exc) {
-                    getStorageManager().logError("Error creating thumbnail from file:" + f +" error:" + exc, exc);
+                } catch (Exception exc) {
+                    getStorageManager().logError(
+                        "Error creating thumbnail from file:" + f + " error:"
+                        + exc, exc);
                 }
             } else {
                 f = thumb;
@@ -890,14 +892,17 @@ public class MetadataType extends MetadataTypeBase {
             return null;
         }
         StringBuffer content = new StringBuffer();
-        boolean smallDisplay = request.getString(ARG_DISPLAY, "").equals(DISPLAY_SMALL);
-        if (!smallDisplay && getSearchable()) {
+        boolean smallDisplay = request.getString(ARG_DISPLAY,
+                                   "").equals(DISPLAY_SMALL);
+        if ( !smallDisplay && getSearchable()) {
             content.append(handler.getSearchLink(request, metadata));
         }
 
 
         String nameString   = getTypeLabel(metadata);
-        String lbl          = smallDisplay?msg(nameString):msgLabel(nameString);
+        String lbl          = smallDisplay
+                              ? msg(nameString)
+                              : msgLabel(nameString);
 
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
         if (htmlTemplate != null) {
@@ -930,7 +935,7 @@ public class MetadataType extends MetadataTypeBase {
                                 HtmlUtils.colspan(formInfo.content, 2)));
                     } else {
                         content.append(HtmlUtils.formEntry(formInfo.label,
-                                                           formInfo.content));
+                                formInfo.content));
                     }
                     didOne = true;
                 }

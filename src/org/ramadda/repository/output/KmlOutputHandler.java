@@ -374,6 +374,7 @@ public class KmlOutputHandler extends OutputHandler {
         sb.append(XmlUtil.toString(root));
 
         System.out.println(sb);
+
         return new Result(title, sb, MIME_KML);
 
     }

@@ -274,7 +274,7 @@ public class MetadataManager extends RepositoryManager {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.decorateEntry(request, entry, sb, metadata, forLink);
             //Only do the first one so we don't get multiple thumbnails
-            if(currentLength != sb.length()) {
+            if (currentLength != sb.length()) {
                 break;
             }
         }
@@ -541,8 +541,9 @@ public class MetadataManager extends RepositoryManager {
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
         if (entry.isDummy()) {
-            return entry.getMetadata()==null?
-                new ArrayList<Metadata>(): entry.getMetadata();
+            return (entry.getMetadata() == null)
+                   ? new ArrayList<Metadata>()
+                   : entry.getMetadata();
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {

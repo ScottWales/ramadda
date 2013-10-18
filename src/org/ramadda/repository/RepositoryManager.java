@@ -810,7 +810,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String makeButtonSubmitDialog(StringBuffer sb, String message) {
         String id = HtmlUtils.getUniqueId("dialog-message");
-        String onSubmit = " onclick=\"return submitEntryForm('#" + id + "');\" ";
+        String onSubmit = " onclick=\"return submitEntryForm('#" + id
+                          + "');\" ";
         String loadingImage =
             HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
         sb.append("<div style=\"display:none;\" id=\"" + id + "\">"
@@ -820,14 +821,23 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     public String getEntryDisplayName(Entry entry) {
-        String name =  entry.getTypeHandler().getEntryName(entry);
-        if(!Utils.stringDefined(name)) {
+        String name = entry.getTypeHandler().getEntryName(entry);
+        if ( !Utils.stringDefined(name)) {
             name = entry.getBaseLabel();
-            if(!Utils.stringDefined(name)) {
-                name =  entry.getTypeHandler().getLabel() + ": " + new Date(entry.getStartDate());
+            if ( !Utils.stringDefined(name)) {
+                name = entry.getTypeHandler().getLabel() + ": "
+                       + new Date(entry.getStartDate());
             }
         }
+
         return name;
     }
 

@@ -31,8 +31,8 @@ import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
@@ -90,7 +90,8 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     Hashtable nameMap = new Hashtable();
 
-    private boolean meFirst  = false;
+    /** _more_          */
+    private boolean meFirst = false;
 
 
     /**
@@ -177,11 +178,20 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     private boolean getMeFirst() {
-        if(meFirst) return true;
-        if (getParent() != null && getParent() instanceof GenericTypeHandler) {
-            return ((GenericTypeHandler)getParent()).getMeFirst();
+        if (meFirst) {
+            return true;
         }
+        if ((getParent() != null)
+                && (getParent() instanceof GenericTypeHandler)) {
+            return ((GenericTypeHandler) getParent()).getMeFirst();
+        }
+
         return false;
     }
 
@@ -981,7 +991,8 @@ public class GenericTypeHandler extends TypeHandler {
      */
     public boolean shouldShowInHtml(Request requst, Entry entry,
                                     OutputType output) {
-        return output.equals(OutputHandler.OUTPUT_HTML) || output.equals(HtmlOutputHandler.OUTPUT_INLINE);
+        return output.equals(OutputHandler.OUTPUT_HTML)
+               || output.equals(HtmlOutputHandler.OUTPUT_INLINE);
     }
 
 
@@ -1035,40 +1046,52 @@ public class GenericTypeHandler extends TypeHandler {
                                              boolean showResource,
                                              boolean linkToDownload)
             throws Exception {
-        StringBuffer parentBuff = super.getInnerEntryContent(entry, request, output,
-                                        showDescription, showResource, linkToDownload);
+        StringBuffer parentBuff = super.getInnerEntryContent(entry, request,
+                                      output, showDescription, showResource,
+                                      linkToDownload);
         if (shouldShowInHtml(request, entry, output)) {
             StringBuffer myBuff = new StringBuffer();
-            Object[] values = entry.getValues();
+            Object[]     values = entry.getValues();
             if (values != null) {
                 String lastGroup = "";
                 for (Column column : getMyColumns()) {
                     if ( !column.getCanShow()) {
                         continue;
                     }
-                    if(column.getGroup()!=null && !Misc.equals(lastGroup, column.getGroup())) {
+                    if ((column.getGroup() != null)
+                            && !Misc.equals(lastGroup, column.getGroup())) {
                         lastGroup = column.getGroup();
 
-                        myBuff.append(HtmlUtils.row(HtmlUtils.col(HtmlUtils.div(lastGroup, " class=\"formgroupheader\" "), " colspan=2 ")));
+                        myBuff.append(
+                            HtmlUtils.row(
+                                HtmlUtils.col(
+                                    HtmlUtils.div(
+                                        lastGroup,
+                                        " class=\"formgroupheader\" "), " colspan=2 ")));
                     }
                     StringBuffer tmpSb = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSb,
                                           values);
 
-                    if(column.getShowLabel()) {
-                        myBuff.append(formEntry(request, column.getLabel() + ":",
-                                                tmpSb.toString()));
+                    if (column.getShowLabel()) {
+                        myBuff.append(formEntry(request,
+                                column.getLabel() + ":", tmpSb.toString()));
                     } else {
-                        myBuff.append(HtmlUtils.row(HtmlUtils.col(tmpSb.toString(), " colspan=2 ")));
+                        myBuff.append(
+                            HtmlUtils.row(
+                                HtmlUtils.col(
+                                    tmpSb.toString(), " colspan=2 ")));
                     }
                 }
             }
-            
-            if(getMeFirst()) {
+
+            if (getMeFirst()) {
                 myBuff.append(parentBuff);
+
                 return myBuff;
             } else {
                 parentBuff.append(myBuff);
+
                 return parentBuff;
             }
         } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
@@ -1156,15 +1179,18 @@ public class GenericTypeHandler extends TypeHandler {
      * @param formBuffer _more_
      * @param parentEntry _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     @Override
     public void addSpecialToEntryForm(Request request,
                                       StringBuffer formBuffer,
-                                      Entry parentEntry, Entry entry, FormInfo formInfo)
+                                      Entry parentEntry, Entry entry,
+                                      FormInfo formInfo)
             throws Exception {
-        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
+        super.addSpecialToEntryForm(request, formBuffer, parentEntry, entry,
+                                    formInfo);
         addColumnsToEntryForm(request, formBuffer, entry, formInfo);
     }
 
@@ -1175,15 +1201,17 @@ public class GenericTypeHandler extends TypeHandler {
      * @param request _more_
      * @param formBuffer _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     public void addColumnsToEntryForm(Request request,
-                                      StringBuffer formBuffer, Entry entry, FormInfo formInfo)
+                                      StringBuffer formBuffer, Entry entry,
+                                      FormInfo formInfo)
             throws Exception {
         addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
                 ? null
-                                                           : entry.getValues()), formInfo);
+                : entry.getValues()), formInfo);
     }
 
 
@@ -1196,6 +1224,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @param formBuffer _more_
      * @param entry _more_
      * @param values _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
@@ -1221,12 +1250,14 @@ public class GenericTypeHandler extends TypeHandler {
      * @param entry _more_
      * @param values _more_
      * @param state _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     public void addColumnToEntryForm(Request request, Column column,
                                      StringBuffer formBuffer, Entry entry,
-                                     Object[] values, Hashtable state, FormInfo formInfo)
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo)
             throws Exception {
         boolean hasValue = column.getString(values) != null;
 
@@ -1236,7 +1267,8 @@ public class GenericTypeHandler extends TypeHandler {
             formBuffer.append(HtmlUtils.formEntry(column.getLabel() + ":",
                     tmpSb.toString()));
         } else {
-            column.addToEntryForm(request, entry, formBuffer, values, state, formInfo);
+            column.addToEntryForm(request, entry, formBuffer, values, state,
+                                  formInfo);
         }
     }
 

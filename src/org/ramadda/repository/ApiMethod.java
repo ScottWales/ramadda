@@ -315,22 +315,37 @@ public class ApiMethod {
         return request;
     }
 
+    /** _more_          */
     private String wildcardPath1;
+
+    /** _more_          */
     private String wildcardPath2;
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getWildcardPath1() {
-        if(wildcardPath1==null) {
-            wildcardPath1  = request.substring(0, request.length() - 1);
+        if (wildcardPath1 == null) {
+            wildcardPath1 = request.substring(0, request.length() - 1);
         }
-        return  wildcardPath1;
+
+        return wildcardPath1;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getWildcardPath2() {
-        if(wildcardPath2==null) {
-            wildcardPath2  = request.substring(0, request.length() - 2);
+        if (wildcardPath2 == null) {
+            wildcardPath2 = request.substring(0, request.length() - 2);
         }
-        return  wildcardPath2;
+
+        return wildcardPath2;
     }
 
 

@@ -465,9 +465,9 @@ public class GraphOutputHandler extends OutputHandler {
             }
         }
 
-        String imageAttr =
-            XmlUtil.attrs("imagepath",
-                          getPageHandler().getIconUrl(request, entry));
+        String imageAttr = XmlUtil.attrs("imagepath",
+                                         getPageHandler().getIconUrl(request,
+                                             entry));
 
         String nodeType = entry.getTypeHandler().getNodeType();
         if (imageUrl != null) {

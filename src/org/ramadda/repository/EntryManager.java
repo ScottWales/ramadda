@@ -124,16 +124,6 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     public static final int MAX_DESCRIPTION_LENGTH = 15000;
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
-    public void debug(String msg) {
-        if (debug) {
-            logInfo(msg);
-        }
-    }
 
     /** How many entries to we keep in the cache */
     public static final int ENTRY_CACHE_LIMIT = 5000;
@@ -166,8 +156,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-
-
     /**
      * _more_
      *
@@ -176,6 +164,19 @@ public class EntryManager extends RepositoryManager {
     public EntryManager(Repository repository) {
         super(repository);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debug(String msg) {
+        if (debug) {
+            logInfo(msg);
+        }
+    }
+
 
     /**
      * _more_
@@ -189,6 +190,7 @@ public class EntryManager extends RepositoryManager {
 
         return entryUtil;
     }
+
 
     /**
      * _more_
@@ -303,22 +305,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param alias _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Entry getEntryFromAlias(Request request, String alias)
-            throws Exception {
-        return getEntryFromMetadata(request,
-                                    ContentMetadataHandler.TYPE_ALIAS, alias,
-                                    1);
-    }
 
 
     /**
@@ -342,6 +328,25 @@ public class EntryManager extends RepositoryManager {
     public String getFullEntryGetUrl(Request request) {
         return request.getAbsoluteUrl(getRepository().URL_ENTRY_GET);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param alias _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry getEntryFromAlias(Request request, String alias)
+            throws Exception {
+        return getEntryFromMetadata(request,
+                                    ContentMetadataHandler.TYPE_ALIAS, alias,
+                                    1);
+    }
+
 
 
     /**
@@ -715,10 +720,6 @@ public class EntryManager extends RepositoryManager {
             entry = getTopGroup();
         }
 
-
-
-
-
         //If entry is a dummy that means its from search results
         if (result.getShouldDecorate() && !entry.isDummy()) {
             StringBuffer sb             = new StringBuffer();
@@ -728,7 +729,8 @@ public class EntryManager extends RepositoryManager {
             if (entry.isDummy()) {
                 entryForHeader = getTopGroup();
             }
-            String       entryFooter = entryFooter(request, entryForHeader);
+            String entryFooter = getPageHandler().entryFooter(request,
+                                     entryForHeader);
 
             StringBuffer titleCrumbs = new StringBuffer();
             String crumbs = getPageHandler().getEntryHeader(request,
@@ -1563,110 +1565,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry);
-     * This will only be painted if there is a menubar.
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return String with the HTML
-     *
-     * @throws Exception _more_
-     */
-
-    public String entryFooter(Request request, Entry entry) throws Exception {
-
-        if (entry == null) {
-            entry = getTopGroup();
-        }
-        StringBuffer sb = new StringBuffer();
-
-        String entryUrl =
-            HtmlUtils.url(
-                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                ARG_ENTRYID, entry.getId());
-
-
-
-        //Table to englobe this toolbar
-        sb.append("<table width=\"100%\"><tr><td>");
-
-        // Comments
-        List<Comment> comments = entry.getComments();
-        if (comments != null) {
-            Link link = new Link(
-                            request.entryUrl(
-                                getRepository().URL_COMMENTS_SHOW,
-                                entry), getRepository().iconUrl(
-                                    ICON_COMMENTS), "Add/View Comments",
-                                        OutputType.TYPE_TOOLBAR);
-
-            String href = HtmlUtils.href(link.getUrl(),
-                                         "Comments:(" + comments.size() + ")"
-                                         + HtmlUtils.img(link.getIcon(),
-                                             link.getLabel(),
-                                             link.getLabel()));
-
-
-            sb.append(href);
-
-            sb.append("</td><td>");
-        }
-
-        String title = getEntryDisplayName(entry);
-
-        String share =
-            "<script type=\"text/javascript\">"
-            + "var addthis_disable_flash=\"true\"; addthis_pub=\"jeffmc\";</script>"
-            + "<a href=\"http://www.addthis.com/bookmark.php?v=20\" "
-            + "onclick=\"return addthis_open(this, '', '" + entryUrl + "', '"
-            + title
-            + "')\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
-
-
-        sb.append(share);
-        sb.append("</td><td>");
-
-
-        // Ratings 
-        boolean doRatings = getRepository().getProperty(PROP_RATINGS_ENABLE,
-                                true);
-        if (doRatings) {
-            String link = request.url(getRepository().URL_COMMENTS_SHOW,
-                                      ARG_ENTRYID, entry.getId());
-            String ratings = HtmlUtils.div(
-                                 "",
-                                 HtmlUtils.cssClass("js-kit-rating")
-                                 + HtmlUtils.attr(
-                                     HtmlUtils.ATTR_TITLE,
-                                     entry.getFullName()) + HtmlUtils.attr(
-                                         "permalink",
-                                         link)) + HtmlUtils.importJS(
-                                             "http://js-kit.com/ratings.js");
-
-            sb.append(
-                HtmlUtils.table(
-                    HtmlUtils.row(
-                        HtmlUtils.col(
-                            ratings,
-                            HtmlUtils.attr(
-                                HtmlUtils.ATTR_ALIGN,
-                                HtmlUtils.VALUE_RIGHT)), HtmlUtils.attr(
-                                    HtmlUtils.ATTR_VALIGN,
-                                    HtmlUtils.VALUE_TOP)), HtmlUtils.attr(
-                                        HtmlUtils.ATTR_WIDTH, "100%")));
-        } else {
-            sb.append(HtmlUtils.p());
-        }
-
-
-        sb.append("</td></tr></table>");
-
-        return sb.toString();
-    }
-
-
 
 
 
@@ -1716,6 +1614,23 @@ public class EntryManager extends RepositoryManager {
         return entry.getTypeHandler().getEntryListName(request, entry);
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param parent _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean canAddTo(Request request, Entry parent) throws Exception {
+        return getRepository().getAccessManager().canDoAction(request,
+                parent, Permission.ACTION_NEW);
+
+    }
 
 
 
@@ -4076,21 +3991,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public boolean canAddTo(Request request, Entry parent) throws Exception {
-        return getRepository().getAccessManager().canDoAction(request,
-                parent, Permission.ACTION_NEW);
-
-    }
 
 
 
@@ -5043,7 +4943,7 @@ public class EntryManager extends RepositoryManager {
         if ( !doRatings) {
             sb.append(HtmlUtils.p());
         }
-        sb.append(getCommentHtml(request, entry));
+        sb.append(getPageHandler().getCommentHtml(request, entry));
         if (haveKey) {
             sb.append("</td><td  width=\"50%\">");
             String fb =
@@ -5222,99 +5122,6 @@ public class EntryManager extends RepositoryManager {
                                       msg("Entry Comments"), sb,
                                       new OutputHandler.State(entry)));
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getCommentHtml(Request request, Entry entry)
-            throws Exception {
-        boolean canEdit = getAccessManager().canDoAction(request, entry,
-                              Permission.ACTION_EDIT);
-        boolean canComment = getAccessManager().canDoAction(request, entry,
-                                 Permission.ACTION_COMMENT);
-
-        StringBuffer  sb       = new StringBuffer();
-        List<Comment> comments = getComments(request, entry);
-
-        if (canComment) {
-            sb.append(
-                HtmlUtils.href(
-                    request.entryUrl(
-                        getRepository().URL_COMMENTS_ADD,
-                        entry), "Add Comment"));
-        }
-
-
-        if (comments.size() == 0) {
-            sb.append("<br>");
-            sb.append(msg("No comments"));
-        }
-        //        sb.append("<table>");
-        int rowNum = 1;
-        for (Comment comment : comments) {
-            //            sb.append(HtmlUtils.formEntry(BLANK, HtmlUtils.hr()));
-            //TODO: Check for access
-            String deleteLink = ( !canEdit
-                                  ? ""
-                                  : HtmlUtils.href(request.url(getRepository().URL_COMMENTS_EDIT,
-                                      ARG_DELETE, "true", ARG_ENTRYID,
-                                      entry.getId(), ARG_AUTHTOKEN,
-                                      getRepository().getAuthToken(request.getSessionId()),
-                                      ARG_COMMENT_ID,
-                                      comment.getId()), HtmlUtils.img(iconUrl(ICON_DELETE),
-                                          msg("Delete comment"))));
-            if (canEdit) {
-                //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
-            }
-            //            sb.append(HtmlUtils.formEntry("Subject:", comment.getSubject()));
-
-
-            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
-            theClass = HtmlUtils.cssClass(CSS_CLASS_COMMENT_BLOCK);
-            rowNum++;
-            if (rowNum > 2) {
-                rowNum = 1;
-            }
-            StringBuffer content = new StringBuffer();
-            String byLine = HtmlUtils.span(
-                                "Posted by " + comment.getUser().getLabel(),
-                                HtmlUtils.cssClass(
-                                    CSS_CLASS_COMMENT_COMMENTER)) + " @ "
-                                        + HtmlUtils.span(
-                                            getPageHandler().formatDate(
-                                                request,
-                                                comment.getDate()), HtmlUtils.cssClass(
-                                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtils.space(
-                                                        1) + deleteLink;
-            content.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass(CSS_CLASS_COMMENT_INNER)));
-            content.append(comment.getComment());
-            content.append(HtmlUtils.br());
-            content.append(byLine);
-            content.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            sb.append(HtmlUtils
-                .div(HtmlUtils
-                    .makeShowHideBlock(HtmlUtils
-                        .span(comment.getSubject(), HtmlUtils
-                            .cssClass(CSS_CLASS_COMMENT_SUBJECT)), content
-                                .toString(), true, ""), theClass));
-        }
-
-        return sb.toString();
-    }
-
-
 
 
 
