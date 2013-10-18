@@ -821,10 +821,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         boolean popup = Misc.getProperty(props, ATTR_POPUP, false);
         if (link) {
-            return HtmlUtils.href(
+            img = HtmlUtils.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
         } else if (linkResource) {
-            return HtmlUtils.href(
+            img = HtmlUtils.href(
                 entry.getTypeHandler().getEntryResourceUrl(request, entry),
                 img);
         } else if (popup) {
@@ -841,18 +841,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             buf.append(HtmlUtils.href(hrefUrl, img,
                                       HtmlUtils.cssClass("popup_image")));
 
-            return buf.toString();
+            img = buf.toString();
         }
-
-
-
-
 
         if (align != null) {
             img = HtmlUtils.div(img,
                                 HtmlUtils.style("text-align:" + align + ";"));
-        }
-
+        } 
+            
         return img;
     }
 
