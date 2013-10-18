@@ -73,6 +73,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_ENTRY = "entry";
 
+    public static final String ATTR_ALIGN = "align";
+
+
     /** _more_ */
     public static final String ATTR_BLOCK_SHOW = "block.show";
 
@@ -525,7 +528,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
                    "false")),
         WIKI_PROP_GROUP + "Images",
-        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "")),
+        prop(WIKI_PROP_IMAGE, attrs(ATTR_SRC, "", ATTR_ALIGN,"left|center|right")),
         prop(WIKI_PROP_GALLERY,
              attrs(ATTR_WIDTH, "200", ATTR_COLUMNS, "3", ATTR_POPUP, "true",
                    ATTR_THUMBNAIL, "true", ATTR_CAPTION,
@@ -749,6 +752,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
             throws Exception {
+        String align = (String) props.get(ATTR_ALIGN);
         String width = (String) props.get(ATTR_WIDTH);
         String alt   = (String) props.get(HtmlUtils.ATTR_ALT);
         String extra = "";
@@ -835,6 +839,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return buf.toString();
         }
 
+
+
+
+
+        if(align!=null) {
+            img = HtmlUtils.div(img,HtmlUtils.style("text-align:" + align+";"));
+        }
         return img;
     }
 
