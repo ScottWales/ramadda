@@ -241,12 +241,10 @@ are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
 [wiki::text {{{property entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
-               folders="true" files="true" 
-               type="entries of a specific type" 
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
-               images="true" count="number of entries to use" }}}]
+               count="number of entries to use" }}}]
 
 The entries is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of:
 <ul>
@@ -259,6 +257,24 @@ The entries is a comma separated list of entry identifiers. They can be specific
 <li> <i>siblings</i> - the sibling entries
 <li> <i>links</i>  - the associated or linked entries
 </ul>
+
+You can filter what entries to use with <i>entries.filter</i>, e.g.:
+<pre>
+entries.filter=file|folder|image|type:some type|geo
+</pre>
+
+Or negate them with "!":
+
+<pre>
+entries.filter=!file|!folder|!image|!type:some type|!geo
+</pre>
+So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
+
+<pre>
+{{map  message="" prefix="==Map=="}}
+
+{{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+</pre>
 
 </ul>
 <ul>
