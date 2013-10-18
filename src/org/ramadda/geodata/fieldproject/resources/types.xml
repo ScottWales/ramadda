@@ -263,9 +263,9 @@
      <column label="URLs" group="Facilities" name="facilities_url" rows="3" size="500" changetype="true"  type="url"   canexport="false"   />
 
 
-     <column group="Accessibility/Cost"  name="access_description" label="Description" size="1000"  rows="5"   canexport="false"   showlabel="false"/>
-     <column label="Accessibility Subjective Score" group="Accessibility/Cost" name="access_score" type="enumeration" values="0:na,1,2,3,4,5"/>
-     <column label="URLs" group="Accessibility/Cost" name="access_url" rows="3" size="500" changetype="true"   type="url"   canexport="false" />
+     <column group="Accessibility"  name="access_description" label="Description" size="1000"  rows="5"   canexport="false"   showlabel="false"/>
+     <column label="Accessibility Subjective Score" group="Accessibility" name="access_score" type="enumeration" values="0:na,1,2,3,4,5"/>
+     <column label="URLs" group="Accessibility" name="access_url" rows="3" size="500" changetype="true"   type="url"   canexport="false" />
 
      <column group="Research Record"  name="research_description" label="Description" size="1000"  rows="5"   canexport="false"   showlabel="false"/>
      <column label="Research Subjective Score" group="Research Record" name="research_score" type="enumeration" values="0:na,1,2,3,4,5"/>
