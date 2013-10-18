@@ -1830,7 +1830,7 @@ public class OutputHandler extends RepositoryManager {
         List<Comment> comments = getEntryManager().getComments(request,
                                      entry);
         if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
-            sb.append(getEntryManager().getCommentHtml(request, entry));
+            sb.append(getPageHandler().getCommentHtml(request, entry));
         }
 
         return sb;

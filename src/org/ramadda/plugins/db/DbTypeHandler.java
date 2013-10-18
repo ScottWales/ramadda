@@ -35,6 +35,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.RssUtil;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -2297,10 +2298,10 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
 
         sb.append(XmlUtil.XML_HEADER + "\n");
-        sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_RSS,
+        sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
                                   XmlUtil.attrs(ATTR_RSS_VERSION, "2.0")));
-        sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_CHANNEL));
-        sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_TITLE, "",
+        sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
+        sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "",
                               entry.getName()));
         SimpleDateFormat sdf = getDateFormat(entry);
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
@@ -2315,35 +2316,35 @@ public class DbTypeHandler extends BlobTypeHandler {
             String dbid = (String) values[IDX_DBID];
 
             String info = getHtml(request, entry, dbid, columns, values, sdf);
-            sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_ITEM));
-            sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_PUBDATE, "",
+            sb.append(XmlUtil.openTag(RssUtil.TAG_ITEM));
+            sb.append(XmlUtil.tag(RssUtil.TAG_PUBDATE, "",
                                   rssSdf.format(date)));
-            sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_TITLE, "", label));
+            sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", label));
 
 
             String url = getViewUrl(request, entry, "" + values[IDX_DBID]);
             url = request.getAbsoluteUrl(url);
-            sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_LINK, "",
+            sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "",
                                   XmlUtil.getCdata(url)));
 
 
-            sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_GUID, "",
+            sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "",
                                   XmlUtil.getCdata(url)));
-            sb.append(XmlUtil.openTag(RssOutputHandler.TAG_RSS_DESCRIPTION,
+            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION,
                                       ""));
             XmlUtil.appendCdata(sb, info);
-            sb.append(XmlUtil.closeTag(RssOutputHandler.TAG_RSS_DESCRIPTION));
+            sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (hasLocation) {
                 double[] ll = latLonColumn.getLatLon(values);
-                sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_GEOLAT, "",
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "",
                                       "" + ll[0]));
-                sb.append(XmlUtil.tag(RssOutputHandler.TAG_RSS_GEOLON, "",
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "",
                                       "" + ll[1]));
             }
-            sb.append(XmlUtil.closeTag(RssOutputHandler.TAG_RSS_ITEM));
+            sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
-        sb.append(XmlUtil.closeTag(RssOutputHandler.TAG_RSS_CHANNEL));
-        sb.append(XmlUtil.closeTag(RssOutputHandler.TAG_RSS_RSS));
+        sb.append(XmlUtil.closeTag(RssUtil.TAG_CHANNEL));
+        sb.append(XmlUtil.closeTag(RssUtil.TAG_RSS));
 
         return new Result("", sb, "application/rss+xml");
     }
