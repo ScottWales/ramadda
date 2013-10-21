@@ -69,7 +69,7 @@ public class RepositoryUtil implements Constants {
      * @return  the buttons as one
      */
     public static String buttons(String b1, String b2) {
-        return b1 + HtmlUtils.space(3) + b2;
+        return b1 + HtmlUtils.buttonSpace() + b2;
     }
 
     /**
@@ -82,7 +82,7 @@ public class RepositoryUtil implements Constants {
      * @return the buttons as one
      */
     public static String buttons(String b1, String b2, String b3) {
-        return b1 + HtmlUtils.space(3) + b2 + HtmlUtils.space(3) + b3;
+        return b1 + HtmlUtils.buttonSpace() + b2 + HtmlUtils.buttonSpace() + b3;
     }
 
 

@@ -786,6 +786,10 @@ public class HtmlUtils {
     }
 
 
+    public static String buttonSpace() {
+        return space(2);
+    }
+
     /**
      * _more_
      *

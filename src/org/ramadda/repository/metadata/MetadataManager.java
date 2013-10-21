@@ -33,6 +33,7 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 
 
 
@@ -1236,7 +1237,7 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.space(2));
             sb.append(HtmlUtils.submit(msg("Delete selected"),
                                        ARG_METADATA_DELETE));
-            sb.append(HtmlUtils.space(2));
+            sb.append(HtmlUtils.buttonSpace());
             sb.append(HtmlUtils.submit(msg("Copy selected to clipboard"),
                                        ARG_METADATA_CLIPBOARD_COPY));
             //            sb.append(HtmlUtils.formTable());
@@ -1284,12 +1285,14 @@ public class MetadataManager extends RepositoryManager {
             }
             sb.append(HtmlUtils.p());
             sb.append(HtmlUtils.submit(msg("Change")));
-            sb.append(HtmlUtils.space(2));
+            sb.append(HtmlUtils.buttonSpace());
             sb.append(HtmlUtils.submit(msg("Delete Selected"),
                                        ARG_METADATA_DELETE));
+            sb.append(HtmlUtils.buttonSpace());
             sb.append(HtmlUtils.submit(msg("Copy selected to clipboard"),
                                        ARG_METADATA_CLIPBOARD_COPY));
             sb.append(HtmlUtils.formClose());
+            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         }
 
         return getEntryManager().makeEntryEditResult(request, entry,
@@ -1414,9 +1417,9 @@ public class MetadataManager extends RepositoryManager {
             request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
             groupSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HtmlUtils.submit(msg("Add")));
-            groupSB.append(HtmlUtils.space(1)
-                           + HtmlUtils.bold(type.getLabel()));
+            groupSB.append(HtmlUtils.submit(msg("Add")+
+                                            HtmlUtils.space(1) +
+                                            type.getLabel()));
             groupSB.append(HtmlUtils.formClose());
             groupSB.append(HtmlUtils.p());
             groupSB.append(NEWLINE);
@@ -1432,6 +1435,7 @@ public class MetadataManager extends RepositoryManager {
                     false));
 
         }
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
     }
 

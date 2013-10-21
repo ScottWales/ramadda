@@ -1224,8 +1224,8 @@ public class OutputHandler extends RepositoryManager {
         selectSB.append(HtmlUtils.space(1));
         selectSB.append(HtmlUtils.submit(msg("Selected"), "getselected",
                                          HtmlUtils.id(selectedButtonId)));
-        js.append(JQuery.buttonize(allButtonId));
-        js.append(JQuery.buttonize(selectedButtonId));
+        js.append(JQuery.buttonize(JQuery.id(allButtonId)));
+        js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
         selectSB.append(HtmlUtils.space(4));
         selectSB.append(getSortLinks(request));
 

@@ -64,6 +64,7 @@ import org.ramadda.sql.SqlUtil;
 
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.OpenSearchUtil;
 
 import org.ramadda.util.TTLObject;
@@ -790,6 +791,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                              HtmlUtils.SIZE_50
                                              + " autofocus ") + " " + extra
                                                  + " " + buttons);
+
             /*            sb.append(
                 "<table width=\"100%\" border=\"0\"><tr><td width=\"60\">");
             typeHandler.addTextSearch(request, sb);
@@ -918,6 +920,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         }
         sb.append(HtmlUtils.formClose());
 
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
 
     }

@@ -141,8 +141,8 @@ public class JQuery {
         return html;
     }
 
-    public static String buttonize(String id) {
-        return  JQuery.select(JQuery.id(id))
+    public static String buttonize(String selector) {
+        return  JQuery.select(selector)
             + ".button().click(function(event){});\n";
     }
 

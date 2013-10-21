@@ -1206,10 +1206,7 @@ public class EntryManager extends RepositoryManager {
 
         //        sb.append(HtmlUtils.submit(msg("Set Parent ID"),ARG_EXTEDIT_SETPARENTID));
         sb.append(HtmlUtils.formClose());
-
-
-
-
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         return makeEntryEditResult(request, entry, "Entry Walk", sb);
 
     }
@@ -1477,12 +1474,12 @@ public class EntryManager extends RepositoryManager {
             String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
                                 validateJavascript.toString()));
             sb.append(HtmlUtils.script(script));
-
-
             sb.append(HtmlUtils.row(HtmlUtils.colspan(buttons, 2)));
 
         }
         sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
+
         if (entry == null) {
             return addEntryHeader(request, group, new Result(title, sb));
         }
@@ -2772,6 +2769,8 @@ public class EntryManager extends RepositoryManager {
                     ARG_CANCEL)));
         fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         fb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
+
         sb.append(getPageHandler().showDialogQuestion(inner.toString(),
                 fb.toString()));
 
@@ -3819,6 +3818,7 @@ public class EntryManager extends RepositoryManager {
                     HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
             sb.append(HtmlUtils.submit(msg("Go")));
             sb.append(HtmlUtils.formClose());
+            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
             /*
             if(didOne) {
@@ -3949,6 +3949,7 @@ public class EntryManager extends RepositoryManager {
 
             fb.append(HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
             fb.append(HtmlUtils.formClose());
+            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
             StringBuffer contents = new StringBuffer(
                                         getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
@@ -4337,6 +4338,7 @@ public class EntryManager extends RepositoryManager {
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
         return makeEntryEditResult(request, group, "Entry Import", sb);
     }
@@ -5115,6 +5117,7 @@ public class EntryManager extends RepositoryManager {
                     HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
         return addEntryHeader(request, entry,
                               new OutputHandler(getRepository(),

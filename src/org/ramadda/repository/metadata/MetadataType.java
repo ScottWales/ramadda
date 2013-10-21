@@ -24,6 +24,7 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 
 
 import org.w3c.dom.*;
@@ -1048,8 +1049,10 @@ public class MetadataType extends MetadataTypeBase {
                   + HtmlUtils.hidden(argid, metadata.getId()));
 
         if ( !forEdit && (entry != null)) {
-            sb.append(HtmlUtils.formEntry("", submit + cancel));
+            sb.append(HtmlUtils.formEntry("", submit + HtmlUtils.buttonSpace() + cancel));
         }
+
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
 
         return new String[] { lbl, sb.toString() };

@@ -34,6 +34,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.sql.Clause;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 
 
 import org.w3c.dom.*;
@@ -185,10 +186,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (tabsToUse != null) {
             tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
         } else {
+            //The default is just the list
             tabs.add(TAB_LIST);
-            tabs.add(TAB_MAP);
-            tabs.add(TAB_EARTH);
-            tabs.add(TAB_TIMELINE);
+            //            tabs.add(TAB_MAP);
+            //            tabs.add(TAB_EARTH);
+            //            tabs.add(TAB_TIMELINE);
         }
 
         searchOpen = typeHandler.getProperty("search.searchopen",
@@ -512,9 +514,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT)
-                       + "  "
-                       + HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE));
+        buttons.append(RepositoryUtil.buttons(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT), HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE)));
 
         //        if(georeferencedResults) {
         //        }
@@ -552,7 +552,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         formSB.append(HtmlUtils.formEntry("", buttons.toString()));
-
+        js.append(JQuery.buttonize(":submit"));
 
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
