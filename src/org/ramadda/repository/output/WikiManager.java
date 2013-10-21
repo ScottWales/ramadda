@@ -76,6 +76,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_          */
     public static final String ATTR_ALIGN = "align";
 
+    public static final String ATTR_ID = "id";
+
 
     /** _more_ */
     public static final String ATTR_BLOCK_SHOW = "block.show";
@@ -326,6 +328,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_MENU = "menu";
 
+
     /** _more_ */
     public static final String WIKI_PROP_SEARCH = "search";
 
@@ -441,7 +444,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String WIKI_PROP_URL = "url";
 
     /** _more_ */
+
     public static final String WIKI_PROP_RESOURCE = "resource";
+
+    public static final String WIKI_PROP_TOOLS = "tools";
 
     /** Upload property */
     public static final String WIKI_PROP_UPLOAD = "upload";
@@ -554,6 +560,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_COMMENTS,
         prop(WIKI_PROP_TAGCLOUD, attrs("type", "", "threshold", "0")),
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
+        WIKI_PROP_TOOLS,
         WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
         WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH, WIKI_PROP_ROOT
     };
@@ -1188,7 +1195,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 if (message != null) {
                     return message;
                 }
-
                 return "";
             }
 
@@ -1213,8 +1219,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     HtmlUtils.href(url, label),
                     HtmlUtils.cssClass("entry-download-box"));
             }
-
             return HtmlUtils.href(url, label);
+
         } else if (include.equals(WIKI_PROP_UPLOAD)) {
             Entry group = getEntryManager().findGroup(request);
             if ( !getEntryManager().canAddTo(request, group)) {
@@ -1446,21 +1452,43 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
             return sb.toString();
+        } else if (include.equals(WIKI_PROP_TOOLS)) {
+            StringBuffer links = new StringBuffer();
+            int cnt =0 ;
+            for(Link link: getEntryManager().getEntryLinks(request, entry)) {
+                if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
+                    continue;
+                }
+                String label  = HtmlUtils.img(link.getIcon()) 
+                    +HtmlUtils.space(1) +
+                    link.getLabel();
+                links.append(HtmlUtils.href(link.getUrl(), label));
+                links.append(HtmlUtils.br());
+                cnt++;            
+            }
+            if(cnt == 0) {
+                return "";
+            }
+            String title = Misc.getProperty(props, ATTR_TITLE,
+                                            "Links");
+            sb.append(HtmlUtils.div(title,HtmlUtils.cssClass("wiki-h4")));
+            sb.append(HtmlUtils.div(
+                                    links.toString(),
+                                    HtmlUtils.cssClass("entry-tools-box")));
+            return sb.toString();
         } else if (include.equals(WIKI_PROP_MENU)) {
             String menus = Misc.getProperty(props, ATTR_MENUS, "");
             int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
-                           true, true));
-
+                                                               true, true));
             return getEntryManager().getEntryActionsTable(request, entry,
                     type);
         } else if (include.equals(WIKI_PROP_SEARCH)) {
-            String id = Misc.getProperty(props, "id", "");
+            String id = Misc.getProperty(props, ATTR_ID, "");
             SpecialSearch ss =
                 (SpecialSearch) getRepository().getApiManager().getApiHandler(
                     id);
             Request clonedRequest = request.cloneMe();
             ss.processSearchRequest(clonedRequest, sb);
-
             return sb.toString();
         } else if (include.equals(WIKI_PROP_APPLY)) {
             StringBuffer style = new StringBuffer(Misc.getProperty(props,

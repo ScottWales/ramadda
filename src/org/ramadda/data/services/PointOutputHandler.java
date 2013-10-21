@@ -237,6 +237,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                           OutputType.TYPE_OTHER, "kml",
                                           ICON_KML, category);
 
+
         OUTPUT_SUBSET = new OutputType("Native format", base + ".subset",
                                        OutputType.TYPE_OTHER, "", ICON_DATA,
                                        category);
@@ -271,11 +272,11 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
-                                      OutputType.TYPE_OTHER, "",
+                                      OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT, "",
                                       "/icons/chart.png", category);
 
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
-                                     OutputType.TYPE_OTHER, "", ICON_TOOLS,
+                                     OutputType.TYPE_OTHER| OutputType.TYPE_IMPORTANT, "", ICON_TOOLS,
                                      category);
 
         OUTPUT_TIMESERIES_IMAGE = new OutputType("",

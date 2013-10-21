@@ -5512,7 +5512,6 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state = new OutputHandler.State(entry);
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
-
         return links;
     }
 
@@ -5555,7 +5554,6 @@ public class EntryManager extends RepositoryManager {
                                        int typeMask)
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
-
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 

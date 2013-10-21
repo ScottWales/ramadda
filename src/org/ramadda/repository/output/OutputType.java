@@ -107,10 +107,12 @@ public class OutputType {
     /** Shows up in the search result format list */
     public static final int TYPE_FORSEARCH = 1 << 8;
 
+    public static final int TYPE_IMPORTANT = 1 << 9;
+
     /** All types */
     public static final int TYPE_ALL = TYPE_VIEW | TYPE_ACTION | TYPE_FEEDS
                                        | TYPE_FILE | TYPE_EDIT | TYPE_TOOLBAR
-                                       | TYPE_OTHER;
+                                       | TYPE_OTHER | TYPE_IMPORTANT;
 
 
     /** _more_ */
@@ -251,6 +253,8 @@ public class OutputType {
                 type |= TYPE_FILE;
             } else if (menu.equals(PageStyle.MENU_EDIT)) {
                 type |= TYPE_EDIT;
+            } else if (menu.equals(PageStyle.MENU_IMPORTANT)) {
+                type |= TYPE_IMPORTANT;
             } else if (menu.equals(PageStyle.MENU_VIEW)) {
                 type |= TYPE_VIEW;
             } else if (menu.equals(PageStyle.MENU_FEEDS)) {

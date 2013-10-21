@@ -1,6 +1,6 @@
 <table border=0 width=100% cellspacing=0 cellpadding=0>
 <tr valign=top>
-<td width=70%>
+<td width=75%>
 <div class="entry-page-main">
 === {{name}} ===
 {{description}}
@@ -12,13 +12,16 @@
 </div>
 </td>
 <block show="!mobile" decorate="false">
-<td valign="center" align="center" height="100%" width="6"><div class="entry-page-divider"> </div></td>
-<td width=29%>
+<td valign="center" align="center" height="100%" width="10"><div class="entry-page-divider"> </div></td>
+<td width=25%>
 <div class="entry-page-info">
-{{resource message="" includeicon="true" title="Download"}}
-{{map message="" prefix="====Location===="}}
+
+{{tools includeicon="true" title="Links" message=""}}
+
+
+{{map width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
 <br>
-{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
 </div>
 </td>
 </block>

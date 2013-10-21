@@ -62,7 +62,8 @@ form {
 
 .entry-download-box {
   background-color: #338F33;
-  border: 1px #666 solid;
+  background-color: #48be48;
+//  border: 1px #666 solid;
   max-width:8em;
   color: white;
   font-weight: bold; 
@@ -74,9 +75,9 @@ form {
   border-radius: 8px;
   -webkit-border-radius: 8px;
   text-align: bottom;
-  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+//  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+//  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+//  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
   
 }
 
@@ -85,6 +86,35 @@ form {
 
 .entry-download-box  a {
     color: #fff;
+}
+
+
+.entry-tools-box {
+//  background-color: #efefef;
+  border: 1px #ccc solid;
+//  max-width:8em;
+//  color: white;
+//  font-weight: bold; 
+  padding-left: 8px;
+  padding-bottom: 3px;
+  padding-top: 8px;
+//  margin-top:10px;
+  margin-bottom:10px;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  text-align: bottom;
+//  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+//  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+//  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  
+}
+
+.entry-tools-box a:hover {
+    color: #00f;
+}
+
+.entry-tools-box  a {
+    color: #000;
 }
 
 .entry-list {
@@ -108,10 +138,10 @@ form {
 .entry-list-header {
   padding-left: 5px;
   padding-right: 5px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+//  border-top-left-radius: 6px;
+//  border-top-right-radius: 6px;
   border : 1px #aaa solid;
-  background-color: #e0ffff;
+  background-color: #efefef;
   margin-top: 10px;
   padding-top: 0px;
 }
@@ -120,8 +150,8 @@ form {
    font-weight: bold; 
    border-right : 1px #aaa solid;
    text-align: center;
-   padding-bottom:3px;
-   padding-top:6px;
+   padding-bottom:1px;
+   padding-top:4px;
    color: #000;
 }
 
@@ -167,7 +197,9 @@ form {
 .entry-page-divider {
   height: 100%;
   width: 1px;
-  border-left: 1px #ddd solid;
+  border-left: 1px #ddd dotted;
+  margin-left:5px;
+  margin-right:5px;
 }
 
 .ramadda-folder-block {

@@ -73,11 +73,17 @@ public class TwitterSearchTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
+
         if ( !isDefaultHtmlOutput(request)) {
             return null;
         }
 
         StringBuffer sb = new StringBuffer();
+
+        sb.append("Sorry, the embedded Twitter search service is no longer available");
+        if(true)
+            return new Result(msg("Twitter Search"), sb);
+
         String template =
             getRepository().getResource(
                 "/org/ramadda/plugins/twittersearch/template.html");

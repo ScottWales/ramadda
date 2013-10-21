@@ -1,6 +1,7 @@
 <types>
 
-  <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.twittersearch.TwitterSearchTypeHandler" category="Events">
+
+  <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.twittersearch.TwitterSearchTypeHandler" category="Events" foruser="false">
      <property name="icon" value="/twittersearch/twitter_icon.gif"/>
      <property name="form.description.rows" value="1"/>
      <property name="form.area.show" value="false"/>
