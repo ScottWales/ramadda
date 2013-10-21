@@ -42,9 +42,15 @@
 
 
   <type name="type_document"  foruser="false" category="Documents"></type>
-  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf"></type>
-  <type name="type_document_doc"  description="Microsoft Word File" pattern="(.*\.doc|.*\.docx)"></type>
-  <type name="type_document_ppt"  description="Microsoft Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"></type>
+  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document">
+     <property name="icon" value="/icons/pdf.png"/>
+</type>
+  <type name="type_document_doc"  description="Microsoft Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document">
+     <property name="icon" value="/icons/doc.png"/>
+</type>
+  <type name="type_document_ppt"  description="Microsoft Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document">
+     <property name="icon" value="/icons/ppt.png"/>
+</type>
 
 
 

@@ -257,6 +257,35 @@
     </target>
 
 
+    <target name="ramaddautil" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}">
+        <include name="org/ramadda/util/**"/>
+        <include name="org/ramadda/sql/**"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddadutil.jar">
+          <include name="org/ramadda/util/**/*.class"/>
+          <include name="org/ramadda/sql/**/*.class"/>
+       </jar>
+    </target>
+
+
     <target name="allallplugins" depends="init">
 <ant antfile="${src_dir}/org/ramadda/plugins/beforeafter/build.xml" inheritAll="false"/>
 <ant antfile="${src_dir}/org/ramadda/plugins/biblio/build.xml" inheritAll="false"/>
