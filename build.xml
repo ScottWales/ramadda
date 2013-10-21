@@ -279,7 +279,7 @@
             basedir="${src_dir}"
             update="false"
             compress="true"
-            jarfile="${dist_dir}/ramaddadutil.jar">
+            jarfile="${dist_dir}/ramaddautil.jar">
           <include name="org/ramadda/util/**/*.class"/>
           <include name="org/ramadda/sql/**/*.class"/>
        </jar>
