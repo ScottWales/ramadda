@@ -273,7 +273,9 @@ public class RssOutputHandler extends OutputHandler {
                 content = entry.getTypeHandler().getEntryContent(request,
                         entry, true, false).toString();
                 content = content.replace("class=\"formlabel\"",
-                                          "style=\" font-weight: bold; \"");
+                                          "style=\" font-weight: bold;\"");
+                content = content.replace("cellpadding=\"0\""," cellpadding=\"5\" ");
+                content = content.replace("class=\"formgroupheader\"", "style=\"   background-color : #eee; border-bottom: 1px #ccc solid;    padding-left: 8px;   padding-top: 4px;   font-weight: bold;\"");
                 content = getRepository().translate(request, content);
             } else {
                 content = entry.getTypeHandler().getEntryText(entry) + extra;

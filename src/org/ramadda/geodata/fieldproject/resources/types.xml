@@ -234,7 +234,7 @@
    </type>
 
 
-  <type name="project_site_assessment"  description="Site Assessment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+  <type name="project_site_assessment"  description="Site Assessment"  category="Science Project">
      <property name="icon" value="/fieldproject/map_magnify.png"/>
      <property name="html.type.show" value="false"/>
      <property name="html.date.show" value="false"/>

@@ -181,6 +181,7 @@ public class KmlOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+        request.setMakeAbsoluteUrls(true);
         if (group.isDummy()) {
             request.setReturnFilename("Search_Results.kml");
         }
@@ -213,19 +214,23 @@ public class KmlOutputHandler extends OutputHandler {
         int cnt  = subGroups.size() + entries.size();
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
-        for (Entry childGroup : subGroups) {
-            String url =
-                request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
-                    ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
-            Element link = KmlUtil.networkLink(defaultFolder,
-                               childGroup.getName(), url);
-            if (childGroup.getDescription().length() > 0) {
-                KmlUtil.description(link, childGroup.getDescription());
-            }
+        if(true) {
+            entries.addAll(subGroups);
+        } else {
+            for (Entry childGroup : subGroups) {
+                String url =
+                    request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
+                                                       ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
+                Element link = KmlUtil.networkLink(defaultFolder,
+                                                   childGroup.getName(), url);
+                if (childGroup.getDescription().length() > 0) {
+                    KmlUtil.description(link, childGroup.getDescription());
+                }
 
-            KmlUtil.visible(link, request.get(ARG_VISIBLE, false));
-            KmlUtil.open(link, false);
-            link.setAttribute(KmlUtil.ATTR_ID, childGroup.getId());
+                KmlUtil.visible(link, request.get(ARG_VISIBLE, false));
+                KmlUtil.open(link, false);
+                link.setAttribute(KmlUtil.ATTR_ID, childGroup.getId());
+            }
         }
 
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
@@ -317,6 +322,21 @@ public class KmlOutputHandler extends OutputHandler {
                                           getRepository().URL_ENTRY_SHOW,
                                           entry)), entry.getName());
                 String  desc    = link + entry.getDescription();
+
+
+                String content = entry.getTypeHandler().getEntryContent(request,
+                                                                        entry, true, false).toString();
+                content = content.replace("class=\"formlabel\"",
+                                          "style=\" font-weight: bold;\"");
+                content = content.replace("cellpadding=\"0\""," cellpadding=\"5\" ");
+
+
+
+                content = content.replace("class=\"formgroupheader\"", "style=\"   background-color : #eee; border-bottom: 1px #ccc solid;    padding-left: 8px;   padding-top: 4px;   font-weight: bold;\"");
+                content = getRepository().translate(request, content);
+
+
+
                 boolean isImage = entry.getResource().isImage();
                 if (isImage) {
                     String thumbUrl =
@@ -328,8 +348,9 @@ public class KmlOutputHandler extends OutputHandler {
                                             ARG_IMAGEWIDTH, "500"));
                     desc = desc + "<br>" + HtmlUtils.img(thumbUrl, "", "");
                 }
+
                 Element placemark = KmlUtil.placemark(parentFolder,
-                                        getName(entry, cnt), desc, lonlat[0],
+                                        getName(entry, cnt), content, lonlat[0],
                                         lonlat[1], entry.hasAltitudeTop()
                         ? entry.getAltitudeTop()
                         : (entry.hasAltitudeBottom()

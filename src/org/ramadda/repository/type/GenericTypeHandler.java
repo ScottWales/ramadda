@@ -1049,7 +1049,8 @@ public class GenericTypeHandler extends TypeHandler {
         StringBuffer parentBuff = super.getInnerEntryContent(entry, request,
                                       output, showDescription, showResource,
                                       linkToDownload);
-        if (shouldShowInHtml(request, entry, output)) {
+        //        if (shouldShowInHtml(request, entry, output)) {
+        if (true) {
             StringBuffer myBuff = new StringBuffer();
             Object[]     values = entry.getValues();
             if (values != null) {

@@ -54,6 +54,15 @@ form {
 
 
 
+.entry-action-list {
+   background: transparent;
+   padding: 0px;
+   border: 1;
+   max-width:100px;
+ }
+
+
+
 .entry-list-block {
    padding-left:0px;
    padding-right:0px;
@@ -785,8 +794,9 @@ a.image-link {
 
 
 
+
 .sortlinkon  {
-  font-size: 10pt;
+//  font-size: 10pt;
   background-color : #eee;
   font-weight: bold;
   padding-left:2px;
@@ -794,17 +804,21 @@ a.image-link {
 }
 
 .sortlinkoff  {
-  font-size: 10pt;
+//  font-size: 10pt;
   padding-left:2px;
   padding-right:2px;
 }
 
 .sortlinkoff a {
-   font-size: 10pt;
+//   font-size: 10pt;
    color:black;
-   text-decoration: none;
+//   text-decoration: none;
 }
 
+
+.sortlinkon a:hover {
+  text-decoration: underline;
+}
 
 .subheader-container {
    margin-top:10px;
