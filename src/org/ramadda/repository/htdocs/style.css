@@ -98,33 +98,6 @@ form {
 }
 
 
-.entry-tools-box {
-//  background-color: #efefef;
-  border: 1px #ccc solid;
-//  max-width:8em;
-//  color: white;
-//  font-weight: bold; 
-  padding-left: 8px;
-  padding-bottom: 3px;
-  padding-top: 8px;
-//  margin-top:10px;
-  margin-bottom:10px;
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  text-align: bottom;
-//  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-//  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-//  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-  
-}
-
-.entry-tools-box a:hover {
-    color: #00f;
-}
-
-.entry-tools-box  a {
-    color: #000;
-}
 
 .entry-list {
     overflow-y: auto;
@@ -206,9 +179,9 @@ form {
 .entry-page-divider {
   height: 100%;
   width: 1px;
-  border-left: 1px #ddd dotted;
-  margin-left:5px;
-  margin-right:5px;
+  border-left: 1px #efefef dotted;
+  margin-left:4px;
+  margin-right:4px;
 }
 
 .ramadda-folder-block {
@@ -690,6 +663,25 @@ a.ramadda-heading-2-link:visited {
      border: 1px #ddd solid;
      padding: 4px;
      border-radius: 6px;
+}
+
+.entry-tools-box {
+  border: 1px #ddd solid;
+  padding-left: 8px;
+  padding-bottom: 2px;
+  padding-top: 6px;
+  margin-bottom:10px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  text-align: bottom;
+}
+
+.entry-tools-box a:hover {
+    color: #00f;
+}
+
+.entry-tools-box  a {
+    color: #000;
 }
 
 

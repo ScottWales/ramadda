@@ -441,7 +441,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                         sb.append("...");
                     } else {
                         ValueGetter getter = field.getValueGetter();
-                        System.err.println("field:" + field);
+                        //                        System.err.println("field:" + field);
                         if (getter == null) {
                             double value =
                                 record.getValue(field.getParamId());
