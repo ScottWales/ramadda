@@ -167,7 +167,7 @@ public class CsvOutputHandler extends OutputHandler {
                         fieldsArg = fieldsArg.replace(",fields", tmp);
                     }
                 }
-                sb.append("#fields=");
+                //                sb.append("#fields=");
                 sb.append(fieldsArg);
                 sb.append("\n");
             }
