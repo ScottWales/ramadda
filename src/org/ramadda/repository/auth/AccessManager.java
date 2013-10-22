@@ -32,6 +32,7 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
 
 
@@ -905,6 +906,7 @@ public class AccessManager extends RepositoryManager {
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
 
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append("<p>");
         sb.append(HtmlUtils.submit("Change Access"));
         sb.append("<p>");
         //        sb.append("<table><tr valign=\"top\"><td>");
@@ -969,6 +971,7 @@ public class AccessManager extends RepositoryManager {
         //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
         //        sb.append("</td></tr></table>");
         sb.append(HtmlUtils.submit(msg("Change Access")));
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         sb.append(HtmlUtils.formClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,

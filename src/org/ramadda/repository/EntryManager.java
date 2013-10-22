@@ -2769,11 +2769,10 @@ public class EntryManager extends RepositoryManager {
                     ARG_CANCEL)));
         fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         fb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
-
         sb.append(getPageHandler().showDialogQuestion(inner.toString(),
                 fb.toString()));
 
+        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         return makeEntryEditResult(request, entry,
                                    msg("Entry delete confirm"), sb);
     }
@@ -3932,28 +3931,29 @@ public class EntryManager extends RepositoryManager {
                                             ? msg("Copy them to the folder")
                                             : msg(
                                             "Copy it to the folder")), ARG_ACTION_COPY));
-                fb.append(HtmlUtils.space(1));
+                fb.append(HtmlUtils.buttonSpace());
                 fb.append(HtmlUtils.submit(((entries.size() > 1)
                                             ? msg("Move them to the folder")
                                             : msg(
                                             "Move it to the folder")), ARG_ACTION_MOVE));
-                fb.append(HtmlUtils.space(1));
+
             }
 
             if (entries.size() == 1) {
+                fb.append(HtmlUtils.buttonSpace());
                 fb.append(HtmlUtils.submit(msg("Link it"),
                                            ARG_ACTION_ASSOCIATE));
-                fb.append(HtmlUtils.space(1));
             }
 
 
+            fb.append(HtmlUtils.buttonSpace());
             fb.append(HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
             fb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
             StringBuffer contents = new StringBuffer(
                                         getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
             contents.append(fromList);
+            contents.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
             return new Result(msg("Move confirm"), contents);
         }
