@@ -10,7 +10,7 @@
 * The above copyright notice and this permission notice shall be included in all copies 
 * or substantial portions of the Software.
 * 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* the SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
 * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
 * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
 * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
@@ -2262,6 +2262,12 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_IMPORT_TYPE = "import.type";
+
+
+    public static final String SORTBY_FROMDATE = "fromdate";
+    public static final String SORTBY_TODATE = "todate";
+    public static final String SORTBY_CREATEDATE = "createdate";
+    public static final String SORTBY_NAME = "name";
 
 
 

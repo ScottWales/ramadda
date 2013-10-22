@@ -4930,14 +4930,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //!!CAREFUL HERE!! - sql injection with the ARG_ORDERBY
         //Don't just use the by.
         if (by != null) {
-            if (by.equals("fromdate")) {
+            if (by.equals(SORTBY_FROMDATE)) {
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_FROMDATE + order;
-            } else if (by.equals("todate")) {
+            } else if (by.equals(SORTBY_TODATE)) {
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_TODATE + order;
-            } else if (by.equals("createdate")) {
+            } else if (by.equals(SORTBY_CREATEDATE)) {
                 orderBy = " ORDER BY " + Tables.ENTRIES.COL_CREATEDATE
                           + order;
-            } else if (by.equals("name")) {
+            } else if (by.equals(SORTBY_NAME)) {
                 if ( !haveOrder) {
                     order = " ASC ";
                 }

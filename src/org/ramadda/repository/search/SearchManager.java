@@ -835,11 +835,11 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
             List orderByList = new ArrayList();
             orderByList.add(new TwoFacedObject(msg("None"), "none"));
-            orderByList.add(new TwoFacedObject(msg("From Date"), "fromdate"));
-            orderByList.add(new TwoFacedObject(msg("To Date"), "todate"));
+            orderByList.add(new TwoFacedObject(msg("From Date"), SORTBY_FROMDATE));
+            orderByList.add(new TwoFacedObject(msg("To Date"), SORTBY_TODATE));
             orderByList.add(new TwoFacedObject(msg("Create Date"),
-                    "createdate"));
-            orderByList.add(new TwoFacedObject(msg("Name"), "name"));
+                    SORTBY_CREATEDATE));
+            orderByList.add(new TwoFacedObject(msg("Name"), SORTBY_NAME));
 
             String orderBy = HtmlUtils.select(
                                  ARG_ORDERBY, orderByList,
