@@ -263,8 +263,8 @@ public class KmlOutputHandler extends OutputHandler {
                 parentFolder = catToFolder.get(category);
                 if (parentFolder == null) {
                     parentFolder = KmlUtil.folder(document, category,
-                            request.get(ARG_VISIBLE, false));
-                    KmlUtil.open(parentFolder, false);
+                            request.get(ARG_VISIBLE, true));
+                    KmlUtil.open(parentFolder, true);
                     catToFolder.put(category, parentFolder);
                 }
             }
