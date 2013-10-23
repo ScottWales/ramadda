@@ -1216,11 +1216,11 @@ public class OutputHandler extends RepositoryManager {
 
         String       allButtonId      = HtmlUtils.getUniqueId("getall");
         String       selectedButtonId = HtmlUtils.getUniqueId("getselected");
-        actionsSB.append(HtmlUtils.submit(msg("All"), "getall",
-                                         HtmlUtils.id(allButtonId)));
-        actionsSB.append(HtmlUtils.space(1));
         actionsSB.append(HtmlUtils.submit(msg("Selected"), "getselected",
                                          HtmlUtils.id(selectedButtonId)));
+        actionsSB.append(HtmlUtils.space(1));
+        actionsSB.append(HtmlUtils.submit(msg("All"), "getall",
+                                         HtmlUtils.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
 
