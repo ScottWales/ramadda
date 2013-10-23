@@ -268,7 +268,7 @@ public class GpsOutputHandler extends OutputHandler {
      */
     private File getWorkDir(Object jobId) throws Exception {
         File theProductDir = new File(IOUtil.joinDir(getProductDir(),
-                                 jobId.toString()));
+                                                     jobId.toString()));
         IOUtil.makeDir(theProductDir);
 
         return theProductDir;
@@ -797,8 +797,8 @@ public class GpsOutputHandler extends OutputHandler {
             args.add("+out");
             args.add(rinexFile.toString());
             args.add(inputFile);
-            //            System.err.println("work dir:" + workDir +" rinex file:" + rinexFile);
-            //            System.err.println("args:" + args);
+            System.err.println("work dir:" + workDir +" rinex file:" + rinexFile);
+            System.err.println("args:" + args);
             String[] results  = getRepository().executeCommand(args, workDir);
             String   errorMsg = results[1];
             String   outMsg   = results[0];

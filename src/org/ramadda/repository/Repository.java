@@ -5207,28 +5207,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                           new PrintWriter(outBuf));
         esg.start();
         isg.start();
-        ProcessRunner runnable =
-            new ProcessRunner(process,
-                              TimeUnit.SECONDS.toMillis(timeOutInSeconds));
-        runnable.start();
-
-        if (timeOutInSeconds > 0) {
+        if (timeOutInSeconds <= 0) {
+            //TODO: check exit code and throw error?
+            int exitCode = process.waitFor();
+        } else {
+            ProcessRunner runnable =
+                new ProcessRunner(process,
+                                  TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+            runnable.start();
             try {
                 runnable.join(TimeUnit.SECONDS.toMillis(timeOutInSeconds));
             } catch (InterruptedException ex) {
                 esg.interrupt();
                 isg.interrupt();
                 runnable.interrupt();
-                //Thread.currentThread().interrupt();
-                //throw ex;
             } finally {
                 process.destroy();
             }
-        }
-        int result = runnable.getExitCode();
-        if (result == ProcessRunner.PROCESS_KILLED) {
-            throw new InterruptedException("Process timed out");
-        }
+            int result = runnable.getExitCode();
+            if (result == ProcessRunner.PROCESS_KILLED) {
+                throw new InterruptedException("Process timed out");
+            }
+        } 
+
 
         return new String[] { outBuf.toString(), errorBuf.toString() };
 
