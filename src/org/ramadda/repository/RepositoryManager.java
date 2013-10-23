@@ -841,5 +841,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         return name;
     }
 
+    public void clearCache() {
+    }
 
 }

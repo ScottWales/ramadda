@@ -452,6 +452,7 @@ public class PageHandler extends RepositoryManager {
         };
 
 
+        //TODO: This is really inefficient 
         for (int i = 0; i < macros.length; i += 2) {
             html = html.replace("${" + macros[i] + "}", macros[i + 1]);
         }
@@ -471,16 +472,10 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     */
-    public void clearTemplates() {
-        htmlTemplates   = null;
-        defaultTemplate = null;
-    }
 
 
 
+    private String templateJavascriptContent;
 
     /**
      * _more_
@@ -488,15 +483,17 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String getTemplateJavascriptContent() {
-        return HtmlUtils.div(
-            "",
-            " id=\"tooltipdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
-                "",
-                " id=\"popupdiv\" class=\"tooltip-outer\" ") + HtmlUtils.div(
-                    "", " id=\"output\"") + HtmlUtils.div(
-                    "",
-                    " id=\"selectdiv\" class=\"selectdiv\" ") + HtmlUtils.div(
-                        "", " id=\"floatdiv\" class=\"floatdiv\" ");
+        if(templateJavascriptContent==null) {
+            //TODO: add a property to not buttonize
+            String buttonizeJS = HtmlUtils.script(JQuery.buttonize(":submit"));
+            templateJavascriptContent= HtmlUtils.div("", HtmlUtils.id("tooltipdiv") + HtmlUtils.cssClass("tooltip-outer")) + 
+                HtmlUtils.div("", HtmlUtils.id("popupdiv") + HtmlUtils.cssClass("tooltip-outer")) + 
+                HtmlUtils.div("", HtmlUtils.id("output")) + 
+                HtmlUtils.div("", HtmlUtils.id("selectdiv") + HtmlUtils.cssClass("selectdiv")) + 
+                HtmlUtils.div("", HtmlUtils.id("floatdiv") + HtmlUtils.cssClass("floatdiv")) +
+                buttonizeJS;
+        } 
+        return templateJavascriptContent;
     }
 
 
@@ -1593,6 +1590,9 @@ public class PageHandler extends RepositoryManager {
 
     /** _more_ */
     protected List<SimpleDateFormat> formats;
+
+
+
 
 
     /**
@@ -2925,6 +2925,71 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
+
+    /** _more_          */
+    private Hashtable<String, String> typeToWikiTemplate =
+        new Hashtable<String, String>();
+
+    /** _more_          */
+    public static final String TEMPLATE_DEFAULT = "default";
+
+    /** _more_          */
+    public static final String TEMPLATE_CONTENT = "content";
+
+
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        templateJavascriptContent = null;
+        htmlTemplates   = null;
+        defaultTemplate = null;
+        typeToWikiTemplate =
+            new Hashtable<String, String>();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param templateType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiTemplate(Request request, Entry entry,
+                                     String templateType)
+            throws Exception {
+        if (entry.isDummy()) {
+            return null;
+        }
+        String entryType = entry.getTypeHandler().getType();
+        String key       = entryType + "." + templateType;
+        String wiki      = typeToWikiTemplate.get(key);
+        if (wiki != null) {
+            return wiki;
+        }
+
+        String propertyPrefix = "ramadda.wikitemplate." + templateType + ".";
+        String property       = getProperty(propertyPrefix + entryType, null);
+        if (property != null) {
+            wiki = getRepository().getResource(property);
+        }
+        if (wiki == null) {
+            wiki = getRepository().getResource(getProperty(propertyPrefix
+                    + (entry.isGroup()
+                       ? "folder"
+                       : "file"), ""));
+        }
+        if (wiki != null) {
+            typeToWikiTemplate.put(key, wiki);
+        }
+
+        return wiki;
+    }
 
 
 }

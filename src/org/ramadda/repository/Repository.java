@@ -1221,7 +1221,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private void loadResources() throws Exception {
         getPluginManager().loadPlugins();
-        getPageHandler().clearTemplates();
+        getPageHandler().clearCache();
 
         MyTrace.call1("Repository.loadTypehandlers");
         loadTypeHandlers();
@@ -2167,8 +2167,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (TypeHandler typeHandler : allTypeHandlers) {
             typeHandler.clearCache();
         }
-        clearCache();
+        for(RepositoryManager manager: repositoryManagers) {
+            manager.clearCache();
+        }
+        resources = new Hashtable();
     }
+
 
     /**
      * _more_
@@ -3593,7 +3597,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         if (name.equals(PROP_PROPERTIES)) {
             dbProperties.load(new ByteArrayInputStream(value.getBytes()));
-            getPageHandler().clearTemplates();
+            getPageHandler().clearCache();
         }
         dbProperties.put(name, value);
     }
