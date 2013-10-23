@@ -423,7 +423,9 @@ public class EntryManager extends RepositoryManager {
     /**
      * _more_
      */
-    protected void clearCache() {
+    @Override
+    public void clearCache() {
+        super.clearCache();
         entryCache = null;
         getEntryUtil().clearCache();
     }
@@ -1206,7 +1208,6 @@ public class EntryManager extends RepositoryManager {
 
         //        sb.append(HtmlUtils.submit(msg("Set Parent ID"),ARG_EXTEDIT_SETPARENTID));
         sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         return makeEntryEditResult(request, entry, "Entry Walk", sb);
 
     }
@@ -1478,7 +1479,6 @@ public class EntryManager extends RepositoryManager {
 
         }
         sb.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
         if (entry == null) {
             return addEntryHeader(request, group, new Result(title, sb));
@@ -2772,7 +2772,6 @@ public class EntryManager extends RepositoryManager {
         sb.append(getPageHandler().showDialogQuestion(inner.toString(),
                 fb.toString()));
 
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         return makeEntryEditResult(request, entry,
                                    msg("Entry delete confirm"), sb);
     }
@@ -3817,7 +3816,6 @@ public class EntryManager extends RepositoryManager {
                     HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
             sb.append(HtmlUtils.submit(msg("Go")));
             sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
             /*
             if(didOne) {
@@ -3953,7 +3951,6 @@ public class EntryManager extends RepositoryManager {
                                         getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
             contents.append(fromList);
-            contents.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
             return new Result(msg("Move confirm"), contents);
         }
@@ -4338,7 +4335,6 @@ public class EntryManager extends RepositoryManager {
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
         return makeEntryEditResult(request, group, "Entry Import", sb);
     }
@@ -5117,7 +5113,6 @@ public class EntryManager extends RepositoryManager {
                     HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
         return addEntryHeader(request, entry,
                               new OutputHandler(getRepository(),

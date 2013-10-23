@@ -971,7 +971,6 @@ public class AccessManager extends RepositoryManager {
         //        sb.append(StringUtil.join("<br>",getUserManager().getRoles()));
         //        sb.append("</td></tr></table>");
         sb.append(HtmlUtils.submit(msg("Change Access")));
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         sb.append(HtmlUtils.formClose());
 
         return getEntryManager().makeEntryEditResult(request, entry,

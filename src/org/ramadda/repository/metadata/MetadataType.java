@@ -1052,7 +1052,6 @@ public class MetadataType extends MetadataTypeBase {
             sb.append(HtmlUtils.formEntry("", submit + HtmlUtils.buttonSpace() + cancel));
         }
 
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
 
 
         return new String[] { lbl, sb.toString() };

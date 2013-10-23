@@ -35,6 +35,7 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 
 
@@ -2136,21 +2137,17 @@ public class Admin extends RepositoryManager {
 
 
             sb.append("<p>");
-            sb.append(msg("Clear the entry cache"));
-            sb.append("<br>");
-            sb.append(HtmlUtils.submit(msg("Clear cache"),
+            sb.append(HtmlUtils.submit(msg("Clear all caches"),
                                        ACTION_CLEARCACHE));
 
 
-            sb.append("<p>");
+            sb.append("<p><br>");
             sb.append(
                 HtmlUtils.submit(
                     msg("Reinitialize Database Connection"), ACTION_NEWDB));
 
             if (getRepository().getShutdownEnabled()) {
-                sb.append("<p>");
-                sb.append(msg("Shutdown the server"));
-                sb.append("<br>");
+                sb.append("<p><br>");
                 sb.append(HtmlUtils.submit(msg("Shutdown server"),
                                            ACTION_SHUTDOWN));
                 sb.append(HtmlUtils.space(2));
@@ -2159,6 +2156,8 @@ public class Admin extends RepositoryManager {
                 sb.append(HtmlUtils.space(1));
                 sb.append(msg("Yes, I really want to shutdown the server"));
             }
+
+
 
             /*
             sb.append("<p>");

@@ -1292,7 +1292,6 @@ public class MetadataManager extends RepositoryManager {
             sb.append(HtmlUtils.submit(msg("Copy selected to clipboard"),
                                        ARG_METADATA_CLIPBOARD_COPY));
             sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
         }
 
         return getEntryManager().makeEntryEditResult(request, entry,
@@ -1435,8 +1434,6 @@ public class MetadataManager extends RepositoryManager {
                     false));
 
         }
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
-
     }
 
 

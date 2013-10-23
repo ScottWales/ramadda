@@ -919,10 +919,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             sb.append(HtmlUtils.p());
         }
         sb.append(HtmlUtils.formClose());
-
-        sb.append(HtmlUtils.script(JQuery.buttonize(":submit")));
-
-
     }
 
 

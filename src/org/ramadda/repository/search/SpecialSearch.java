@@ -552,7 +552,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         formSB.append(HtmlUtils.formEntry("", buttons.toString()));
-        js.append(JQuery.buttonize(":submit"));
+
 
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());

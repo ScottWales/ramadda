@@ -2126,58 +2126,6 @@ public class OutputHandler extends RepositoryManager {
 
 
 
-    /** _more_          */
-    private Hashtable<String, String> typeToWikiTemplate =
-        new Hashtable<String, String>();
-
-    /** _more_          */
-    public static final String TEMPLATE_DEFAULT = "default";
-
-    /** _more_          */
-    public static final String TEMPLATE_CONTENT = "content";
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param templateType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    protected String getWikiTemplate(Request request, Entry entry,
-                                     String templateType)
-            throws Exception {
-        if (entry.isDummy()) {
-            return null;
-        }
-        String entryType = entry.getTypeHandler().getType();
-        String key       = entryType + "." + templateType;
-        String wiki      = typeToWikiTemplate.get(key);
-        if (wiki != null) {
-            return wiki;
-        }
-
-        String propertyPrefix = "ramadda.wikitemplate." + templateType + ".";
-        String property       = getProperty(propertyPrefix + entryType, null);
-        if (property != null) {
-            wiki = getRepository().getResource(property);
-        }
-        if (wiki == null) {
-            wiki = getRepository().getResource(getProperty(propertyPrefix
-                    + (entry.isGroup()
-                       ? "folder"
-                       : "file"), ""));
-        }
-        if (wiki != null) {
-            typeToWikiTemplate.put(key, wiki);
-        }
-
-        return wiki;
-    }
-
 
 
 
