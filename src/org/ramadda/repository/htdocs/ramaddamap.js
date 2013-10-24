@@ -23,8 +23,9 @@ var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG
 
 var map_ol_openstreetmap = "ol.openstreetmap";
 
-var defaultLocation = new OpenLayers.LonLat(-104, 40);
-var defaultZoomLevel = 3;
+var defaultLocation = new OpenLayers.LonLat(-0, 0);
+var defaultZoomLevel = 1;
+var sphericalMercatorDefault = true;
 
 var maxExtent = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508);
 
@@ -43,12 +44,13 @@ var latlonReadoutID = "ramadda-map-latlonreadout";
 //Global list of all maps on this page
 var ramaddaMaps = new Array();
 
+var wrapDatelineDefault = true;
+var zoomLevelsDefault = 30;
+
+
 function ramaddaAddMap(map) {
     ramaddaMaps.push(map);
 }
-
-
-
 
 function RepositoryMap(mapId, params) {
     var map;
@@ -124,7 +126,7 @@ function RepositoryMap(mapId, params) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
             layers : layer
         }, {
-            wrapDateLine : true
+            wrapDateLine : wrapDatelineDefault
         });
         if(isBaseLayer) 
             layer.isBaseLayer = true;
@@ -171,61 +173,65 @@ function RepositoryMap(mapId, params) {
             if (mapLayer == map_google_terrain) {
                 this.map.addLayer(new OpenLayers.Layer.Google("Google Terrain",
                         {
+                	 		numZoomLevels : zoomLevelsDefault,
                             'type' : google.maps.MapTypeId.TERRAIN,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            sphericalMercator : sphericalMercatorDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             } else if (mapLayer == map_google_streets) {
                 this.map.addLayer(new OpenLayers.Layer.Google("Google Streets",
                         {
-                            numZoomLevels : 20,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            numZoomLevels :zoomLevelsDefault,
+                            sphericalMercator : sphericalMercatorDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             } else if (mapLayer == map_google_hybrid) {
                 this.map.addLayer(new OpenLayers.Layer.Google("Google Hybrid",
                         {
                             'type' : google.maps.MapTypeId.HYBRID,
-                            // numZoomLevels: 20,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            numZoomLevels : zoomLevelsDefault,
+                            sphericalMercator : sphericalMercatorDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             } else if (mapLayer == map_google_satellite) {
                 this.map.addLayer(new OpenLayers.Layer.Google(
                         "Google Satellite", {
                             'type' : google.maps.MapTypeId.SATELLITE,
-                            // numZoomLevels: 22,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            numZoomLevels : zoomLevelsDefault,
+                            sphericalMercator : sphericalMercatorDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             } else if (mapLayer == map_ms_shaded) {
                 this.map.addLayer(new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Shaded", {
                             'type' : VEMapStyle.Shaded,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            sphericalMercator : sphericalMercatorDefault,
+                            wrapDateLine : wrapDatelineDefault,
+                            numZoomLevels : zoomLevelsDefault
                         }));
             } else if (mapLayer == map_ms_hybrid) {
                 this.map.addLayer(new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Hybrid", {
                             'type' : VEMapStyle.Hybrid,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            sphericalMercator : sphericalMercatorDefault,
+                            numZoomLevels : zoomLevelsDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             } else if (mapLayer == map_ms_aerial) {
                 this.map.addLayer(new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Aerial", {
                             'type' : VEMapStyle.Aerial,
-                            sphericalMercator : true,
-                            wrapDateLine : false
+                            sphericalMercator : sphericalMercatorDefault,
+                            numZoomLevels : zoomLevelsDefault,
+                            wrapDateLine : wrapDatelineDefault
                         }));
             /* needs OpenLayers 2.12
             } else if (mapLayer == map_ol_openstreetmap) {
                 this.map.addLayer(new OpenLayers.Layer.OSM("OpenStreetMap", null, {
                       transitionEffect: "resize",
                       attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
-                      sphericalMercator : true,
-                      wrapDateLine : false
+                      sphericalMercator : sphericalMercatorDefault,
+                      wrapDateLine : wrapDatelineDefault
                   }));
             */
             } else {
@@ -264,7 +270,8 @@ function RepositoryMap(mapId, params) {
         this.name = "map";
         var theMap = this;
         var options = {
-            projection : this.sourceProjection,
+            
+        	projection : this.sourceProjection,
             displayProjection : this.displayProjection,
             units : "m",
             controls: [],
@@ -272,7 +279,8 @@ function RepositoryMap(mapId, params) {
             maxExtent : maxExtent
             
         };
-
+        
+        
         this.map = new OpenLayers.Map(this.mapDivId,options);
         this.addBaseLayers();
 
@@ -286,6 +294,14 @@ function RepositoryMap(mapId, params) {
                         enableKinetic: true
                             }
         }));
+        
+        
+        /*this.map.addControl(new OpenLayers.Control.TouchNavigation({
+            dragPanOptions: {
+                enableKinetic: true
+            }
+        }));*/
+        
 
         if (this.showZoomPanControl && !this.ZoomOnlyControl) {
             this.map.addControl(new OpenLayers.Control.PanZoom());
