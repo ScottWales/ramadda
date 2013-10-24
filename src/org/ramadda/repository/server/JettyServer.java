@@ -102,7 +102,7 @@ public class JettyServer implements Constants {
         try {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
-            baseServlet.getRepository().getLogManager().logErrorAndPrint(
+            baseServlet.getRepository().getLogManager().logError(
                 "SSL: error opening ssl connection", exc);
         }
         baseRepository = baseServlet.getRepository();
@@ -279,6 +279,7 @@ public class JettyServer implements Constants {
 
         repository.setHttpsPort(sslPort);
     }
+
 
 
 

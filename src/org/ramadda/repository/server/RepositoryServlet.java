@@ -84,6 +84,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     /** Repository object that will be instantiated */
     private Repository repository;
 
+    private JettyServer jettyServer;
+
 
     /**
      * _more_
@@ -105,6 +107,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     public RepositoryServlet(JettyServer jettyServer, String[] args,
                              int port, Properties properties)
             throws Exception {
+        this.jettyServer = jettyServer;
         this.args = args;
         createRepository(port, properties, false);
     }
@@ -299,16 +302,21 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                                                 request.getRequestURI(),
                                                 handler.formArgs, request,
                                                 response, this);
-                //                System.err.println ("request:" +   request.getRequestURI() + " secure:" + request.isSecure());
+
                 repositoryRequest.setIp(request.getRemoteAddr());
                 repositoryRequest.setOutputStream(response.getOutputStream());
                 repositoryRequest.setFileUploads(handler.fileUploads);
                 repositoryRequest.setHttpHeaderArgs(handler.httpArgs);
 
 
+
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
+                if(jettyServer != null) {
+                    //We are running stand-alone so nothing is doing logging
+
+                }
             } catch (Throwable e) {
                 e = LogUtil.getInnerException(e);
                 logException(e, request);

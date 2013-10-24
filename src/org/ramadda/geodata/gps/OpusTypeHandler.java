@@ -137,7 +137,7 @@ public class OpusTypeHandler extends SolutionTypeHandler {
         long time     = System.currentTimeMillis();
         while (monitoringOpus) {
             if (errorCnt > 5) {
-                getLogManager().logErrorAndPrint(
+                getLogManager().logError(
                     "OPUS: Opus email monitoring failed", null);
 
                 return;

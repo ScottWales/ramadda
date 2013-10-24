@@ -62,6 +62,7 @@ import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MyTrace;
 
+
 import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
@@ -670,8 +671,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throws Exception {
         childRepositories.add(childRepository);
         childRepository.setParentRepository(this);
-        //        RepositoryServlet servlet = new RepositoryServlet(new String[]{}, childRepository);
-        //        jettyServer.addServlet(servlet);
         int sslPort = getHttpsPort();
         if (sslPort > 0) {
             childRepository.setHttpsPort(sslPort);
@@ -734,6 +733,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean getShutdownEnabled() {
+        return jettyServer != null;
+    }
+
+    public boolean isRunningStandAlone() {
         return jettyServer != null;
     }
 
@@ -2811,6 +2814,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+        
+        getLogManager().logRequest(request, result==null?Result.RESPONSE_INTERNALERROR:result.getResponseCode());
+
         boolean okToAddCookie = false;
 
 
@@ -2893,64 +2899,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (userAgent == null) {
             userAgent = "Unknown";
         }
-        //        System.err.println(request + " user-agent:" + userAgent +" ip:" + request.getIp());
 
         if ( !getAdmin().getInstallationComplete()) {
             return getAdmin().doInitialization(request);
         }
 
         if ( !getUserManager().isRequestOk(request)) {
-            System.err.println("Access error:  user=" + request.getUser()
-                               + " request=" + request);
-            System.err.println("Admin Info  admin only= "
-                               + getProperty(PROP_ACCESS_ADMINONLY, false)
-                               + " user is admin="
-                               + request.getUser().getAdmin()
-                               + " require login="
-                               + getProperty(PROP_ACCESS_REQUIRELOGIN,
-                                             false));
-
             throw new AccessException(
                 msg("You do not have permission to access this page"),
                 request);
         }
 
         if ( !apiMethod.isRequestOk(request, this)) {
-            System.err.println("Access error 2:  user=" + request.getUser()
-                               + " request=" + request);
-            System.err.println("Admin Info  admin only= "
-                               + getProperty(PROP_ACCESS_ADMINONLY, false)
-                               + " user is admin="
-                               + request.getUser().getAdmin()
-                               + " require login="
-                               + getProperty(PROP_ACCESS_REQUIRELOGIN,
-                                             false));
-            apiMethod.printDebug(request);
-
             throw new AccessException(msg("Incorrect access"), request);
         }
 
-
-        Result result = null;
-
-        //TODO: how to handle when the DB is shutdown
-        boolean hasConnection = true;
-        //        hasConnection = getDatabaseManager().hasConnection();
-        if ( !hasConnection) {
-            //                && !incoming.startsWith(getUrlBase() + "/admin")) {
-            result = new Result("No Database",
-                                new StringBuffer("Database is shutdown"));
-        } else {
-            result = (Result) apiMethod.invoke(request);
-        }
+        Result result =  (Result) apiMethod.invoke(request);
         if (result == null) {
             return null;
         }
-
-
-        getLogManager().logRequest(request);
-
-
+        getLogManager().logRequest(request,  result.getResponseCode());
         return result;
 
     }

@@ -61,6 +61,54 @@ import java.util.List;
  */
 public class LogManager extends RepositoryManager {
 
+    /** apache style log macro */
+    public static final String LOG_MACRO_IP = "%h";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_REQUEST = "%r";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_USERAGENT = "%{User-agent}i";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_REFERER = "%{Referer}i";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_USER = "%u";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_TIME = "%t";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_RESPONSE = "%>s";
+
+    public static final String LOG_MACRO_SIZE = "%b";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_METHOD = "%m";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_PATH = "%U";
+
+    /** apache style log macro */
+    public static final String LOG_MACRO_PROTOCOL = "%H";
+
+    /** quote */
+    public static final String QUOTE = "\"";
+
+
+    public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
+                                              + LOG_MACRO_TIME + "] " + QUOTE
+                                              + LOG_MACRO_REQUEST + QUOTE
+                                              + " " + QUOTE
+                                              + LOG_MACRO_REFERER + QUOTE
+                                              + " " + QUOTE
+                                              + LOG_MACRO_USERAGENT + QUOTE
+                                              + " " 
+                                              + LOG_MACRO_RESPONSE  
+                                              + " " 
+        + LOG_MACRO_SIZE;  
+
 
     /** _more_ */
     public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
@@ -69,12 +117,16 @@ public class LogManager extends RepositoryManager {
     private boolean LOGGER_OK = true;
 
     /** _more_ */
-    private final LogManager.LogId LOGID =
-        new LogManager.LogId("org.ramadda.repository.LogManager");
+    private final LogManager.LogId REPOSITORY_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.log");
+
+    /** _more_ */
+    private final LogManager.LogId REPOSITORY_ACCESS_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.access");
 
     /** _more_ */
     private Hashtable<String, Logger> loggers = new Hashtable<String,
-                                                    Logger>();
+        Logger>();
 
     /** _more_ */
     public static boolean debug = true;
@@ -108,7 +160,8 @@ public class LogManager extends RepositoryManager {
      *
      * @param request _more_
      */
-    public void logRequest(Request request) {
+    public void logRequest(Request request, int response) {
+        int count = 0;
         requestCount++;
         //Keep the size of the log at 200
         synchronized (log) {
@@ -117,7 +170,38 @@ public class LogManager extends RepositoryManager {
             }
             log.add(new LogEntry(request));
         }
+
+
+        String ip        = request.getIp();
+        String uri       = request.getRequestPath();
+        String method    = request.getHttpServletRequest().getMethod();
+        String userAgent = request.getUserAgent("none");
+        String time      = getPageHandler().formatDate(new Date());
+        String requestPath = method + " " + uri + " "
+                             + request.getHttpServletRequest().getProtocol();
+        String referer = request.getHttpServletRequest().getHeader("referer");
+        if (referer == null) {
+            referer = "-";
+        }
+        String message = LOG_TEMPLATE;
+
+        message = message.replace(LOG_MACRO_IP, ip);
+        message = message.replace(LOG_MACRO_TIME, time);
+        message = message.replace(LOG_MACRO_METHOD, method);
+        message = message.replace(LOG_MACRO_PATH, uri);
+        message = message.replace(LOG_MACRO_RESPONSE, ""+response);
+        message =
+            message.replace(LOG_MACRO_PROTOCOL,
+                            request.getHttpServletRequest().getProtocol());
+        message = message.replace(LOG_MACRO_REQUEST, requestPath);
+        message = message.replace(LOG_MACRO_USERAGENT, userAgent);
+        message = message.replace(LOG_MACRO_REFERER, referer);
+        message = message.replace(LOG_MACRO_USER, "-");
+        message = message.replace(LOG_MACRO_SIZE, "" + count);
+        getAccessLogger().info(message);
     }
+
+
 
     /**
      * Create if needed and return the logger
@@ -125,7 +209,12 @@ public class LogManager extends RepositoryManager {
      * @return _more_
      */
     public Logger getLogger() {
-        return getLogger(LOGID);
+        return getLogger(REPOSITORY_LOG_ID);
+    }
+
+
+    public Logger getAccessLogger() {
+        return getLogger(REPOSITORY_ACCESS_LOG_ID);
     }
 
 
@@ -156,7 +245,6 @@ public class LogManager extends RepositoryManager {
             LOGGER_OK = false;
             System.err.println("Error getting logger: " + exc);
             exc.printStackTrace();
-
             return null;
         }
         loggers.put(logId.getId(), logger);
@@ -297,9 +385,8 @@ public class LogManager extends RepositoryManager {
     public void logError(Logger logger, String message) {
         if (logger != null) {
             logger.error(message);
-        } else {
-            System.err.println("RAMADDA ERROR:" + message);
         }
+        System.err.println("RAMADDA ERROR:" + message);
     }
 
 
@@ -324,19 +411,6 @@ public class LogManager extends RepositoryManager {
         } else {
             System.err.println("RAMADDA WARNING:" + message);
         }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
-    public void logErrorAndPrint(String message, Throwable exc) {
-        logError(message, exc);
-        System.err.println(message);
-        exc.printStackTrace();
     }
 
     /**
@@ -374,18 +448,19 @@ public class LogManager extends RepositoryManager {
             thr = LogUtil.getInnerException(exc);
         }
 
+        String stackTrace = (thr!=null?LogUtil.getStackTrace(thr):"");
         if (log == null) {
             System.err.println("RAMADDA ERROR:" + message + " " + thr);
+            System.err.println(stackTrace);
         } else if (thr != null) {
             if ((thr instanceof RepositoryUtil.MissingEntryException)
                     || (thr instanceof AccessException)) {
                 log.error(message + " " + thr);
             } else {
                 log.error(message + "\n<stack>\n" + thr + "\n"
-                          + LogUtil.getStackTrace(thr) + "\n</stack>");
-
+                          + stackTrace + "\n</stack>");
                 System.err.println("RAMADDA ERROR:" + message);
-                thr.printStackTrace();
+                System.err.println(stackTrace);
             }
         } else {
             System.err.println("RAMADDA ERROR:" + message);
@@ -592,10 +667,9 @@ public class LogManager extends RepositoryManager {
             header.add(HtmlUtils.bold("Recent Access"));
         } else {
             header.add(
-                HtmlUtils.href(
-                    HtmlUtils.url(
-                        getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
-                        "access"), "Recent Access"));
+                       HtmlUtils.href(
+                                      HtmlUtils.url(request.url(getAdmin().URL_ADMIN_LOG), ARG_LOG,
+                                             "access"), "Recent Access"));
         }
 
         for (File logFile : logFiles) {
@@ -613,10 +687,9 @@ public class LogManager extends RepositoryManager {
                 theFile = logFile;
             } else {
                 header.add(
-                    HtmlUtils.href(
-                        HtmlUtils.url(
-                            getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
-                            name), label));
+                           HtmlUtils.href(HtmlUtils.url(request.url(getAdmin().URL_ADMIN_LOG),
+                                          ARG_LOG,
+                                                        name), label));
             }
         }
 
