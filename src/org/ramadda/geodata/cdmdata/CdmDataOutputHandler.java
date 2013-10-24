@@ -294,7 +294,7 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",
-                       OutputType.TYPE_OTHER, OutputType.SUFFIX_NONE,
+                       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT, OutputType.SUFFIX_NONE,
                        "/cdmdata/subsetgrid.png", GROUP_DATA);
 
     /** Grid subset Output Type */
