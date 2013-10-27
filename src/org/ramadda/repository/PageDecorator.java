@@ -23,8 +23,10 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.map.MapInfo;
 
+import org.ramadda.util.WikiUtil;
 
 import java.util.List;
+import java.util.Hashtable;
 
 
 
@@ -97,6 +99,12 @@ public class PageDecorator extends RepositoryManager {
      */
     public void addToMap(Request request, MapInfo mapInfo) {}
 
+
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                  Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props) {
+        return null;
+    }
 
 
 }
