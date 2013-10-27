@@ -2066,6 +2066,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return StringUtil.join(separator, links);
         } else {
+            for (PageDecorator pageDecorator :
+                     repository.getPluginManager().getPageDecorators()) {
+                String fromPageDecorator  = 
+                    pageDecorator.getWikiInclude(wikiUtil, request,
+                                                 originalEntry, entry,
+                                                 include, props);
+                if(fromPageDecorator!=null) {
+                    return fromPageDecorator;
+                }
+
+            }
+
             return null;
         }
 
