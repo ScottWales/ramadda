@@ -35,6 +35,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
@@ -4251,10 +4252,12 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param entry _more_
      * @param sb _more_
      */
-    public void makeForm(Request request, Entry entry, StringBuffer sb) {
+    public String makeForm(Request request, Entry entry, StringBuffer sb) {
+        String formId = HtmlUtils.getUniqueId("entryform_");
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtils.uploadForm(formUrl, ""));
+        sb.append(HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        return formId;
     }
 
 
@@ -4284,7 +4287,7 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         StringBuffer formBuffer = new StringBuffer();
 
-        makeForm(request, entry, formBuffer);
+        String formId = makeForm(request, entry, formBuffer);
 
 
         Object[] values = null;
@@ -4300,16 +4303,21 @@ public class DbTypeHandler extends BlobTypeHandler {
             if (dbid == null) {
                 buttons.append(HtmlUtils.submit(msg("Create entry"),
                         ARG_DB_CREATE));
+                buttons.append(HtmlUtils.buttonSpace());
             } else {
                 buttons.append(HtmlUtils.submit(msg("Edit entry"),
                         ARG_DB_EDIT));
+                buttons.append(HtmlUtils.buttonSpace());
                 buttons.append(HtmlUtils.submit(msg("Copy entry"),
                         ARG_DB_COPY));
+                buttons.append(HtmlUtils.buttonSpace());
                 buttons.append(HtmlUtils.submit(msg("Delete entry"),
                         ARG_DB_DELETE));
+                buttons.append(HtmlUtils.buttonSpace());
             }
         }
         buttons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
+        buttons.append(HtmlUtils.buttonSpace());
 
 
         formBuffer.append(buttons);
@@ -4321,6 +4329,12 @@ public class DbTypeHandler extends BlobTypeHandler {
         formBuffer.append(HtmlUtils.formTableClose());
         formBuffer.append(buttons);
         formBuffer.append(HtmlUtils.formClose());
+
+        StringBuffer validateJavascript = new StringBuffer("");
+        formInfo.addJavascriptValidation(validateJavascript);
+        String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
+                                                   validateJavascript.toString()));
+        formBuffer.append(HtmlUtils.script(script));
 
         if (forEdit && (dbid == null)) {
             createBulkForm(request, entry, sb, formBuffer);
