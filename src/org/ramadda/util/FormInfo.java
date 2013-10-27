@@ -52,6 +52,15 @@ public class FormInfo {
         constraints.add(new MaxLength(label, id, length));
     }
 
+
+    public void addMinValidation(String label, String id, double min) {
+        constraints.add(new Value(label, id, min, true));
+    }
+
+    public void addMaxValidation(String label, String id, double max) {
+        constraints.add(new Value(label, id, max, false));
+    }
+
     public static class Constraint {
         public String label;
         public String id;
@@ -71,6 +80,33 @@ public class FormInfo {
 
     }
 
+
+
+    public static class Value extends Constraint {
+        double value;
+        boolean min  =true;
+
+        public Value(String label, String id,double value, boolean min) {
+            super(label, id);
+            this.value = value;
+            this.min = min;
+        }
+
+        public void addJavascriptValidation(StringBuffer js) {
+            js.append("if(!inputValueOk("  +
+                      HtmlUtils.squote(id) +"," +value + "," + (min?"true":"false")+")) {\n");
+            String message;
+            if(min)
+                message = "Error: " + label +" is < " + value;
+            else 
+                message = "Error: " + label +" is > " + value;
+            error(js, message);
+            js.append("}\n");
+        }
+
+
+
+    }
 
 
     public static class MaxLength extends Constraint {
