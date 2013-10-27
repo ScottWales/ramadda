@@ -10,6 +10,7 @@
 
 
     <target name="plugins" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/projects/wetcc/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/above/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/cma/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/aap/build.xml" inheritAll="false"/>
