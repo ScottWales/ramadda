@@ -33,6 +33,7 @@ import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.PropertyProvider;
+import org.ramadda.util.WikiUtil;
 
 import ucar.unidata.ui.ImageUtils;
 
@@ -738,12 +739,7 @@ public class PageHandler extends RepositoryManager {
         if (mobileTemplate == null) {
             for (HtmlTemplate htmlTemplate : getTemplates()) {
                 if (htmlTemplate.getId().equals("mobile")) {
-                    //xxx
-                    if (true) {
-                        return htmlTemplate;
-                    }
                     mobileTemplate = htmlTemplate;
-
                     break;
                 }
             }
@@ -816,6 +812,7 @@ public class PageHandler extends RepositoryManager {
                                                 path, resource);
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
+                        System.err.println ("template: no id");
                         continue;
                     }
                     theTemplates.add(template);
@@ -830,6 +827,7 @@ public class PageHandler extends RepositoryManager {
                         }
                     }
                 } catch (Exception exc) {
+                    getLogManager().logError("loading template" + path, exc);
                     //noop
                 }
             }
@@ -981,6 +979,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+
     /**
      * _more_
      *
@@ -1010,6 +1009,8 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
+    //    static int tcnt = 0;
+
     public HtmlTemplate getTemplate(Request request, Entry entry) {
         if (request.isMobile()) {
             return getMobileTemplate();
@@ -1017,6 +1018,17 @@ public class PageHandler extends RepositoryManager {
 
 
         List<HtmlTemplate> theTemplates = getTemplates();
+
+        /*
+          code to run through all of the templates
+        if(request.template == null) {
+            request.template =  theTemplates.get(tcnt++);
+            return request.template;
+        } 
+        if(true)return request.template;
+        */
+
+
         if ((request == null) && (defaultTemplate != null)) {
             return defaultTemplate;
         }
@@ -2990,6 +3002,8 @@ public class PageHandler extends RepositoryManager {
 
         return wiki;
     }
+
+
 
 
 }

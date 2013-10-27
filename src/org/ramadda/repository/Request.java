@@ -74,6 +74,8 @@ import javax.servlet.http.*;
  */
 public class Request implements Constants, Cloneable {
 
+    //    public org.ramadda.util.HtmlTemplate template = null;
+
 
     /** _more_ */
     private static int COUNTER = 0;
