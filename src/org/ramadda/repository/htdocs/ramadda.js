@@ -1303,3 +1303,18 @@ function inputLengthOk(domId, length) {
 }
 
 
+function inputValueOk(domId, rangeValue, min) {
+    var value = $("#"+ domId).val();
+    if(value == null) return true;
+    if(min && value<rangeValue) {
+        closeFormLoadingDialog ();
+        return false;
+    }
+    if(!min && value>rangeValue) {
+        closeFormLoadingDialog ();
+        return false;
+    }
+    return true;
+}
+
+
