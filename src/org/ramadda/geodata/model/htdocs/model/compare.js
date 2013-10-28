@@ -61,20 +61,20 @@ function CollectionForm(formId) {
         //Assemble the other field values up to the currently selected field
         for(var i=0;i<fieldIdx;i++) {
             var val = this.getFieldSelect(collection, i).val();
-            
             if(val!="") {
                 url = url +"&field" + i + "=" + encodeURIComponent(val);
             }
         }
         var collectionForm = this;
         $.getJSON(url, function(data) {
-                var hadValue = collectionForm.setFieldValues(collection, data, fieldIdx);
-                if(!fromInit) {
-                    collectionForm.clearFields(collection, fieldIdx+1);
-                } else if(collectionForm.hasField(collection, fieldIdx+1)) {
-                    //If we're initializing then repopulate the selects
-                    if(hadValue) {
-                        collectionForm.updateFields(collection, collectionId, fieldIdx+1, true);
+                var currentValueIsInNewList = collectionForm.setFieldValues(collection, data, fieldIdx);
+                var hasNextField =  collectionForm.hasField(collection, fieldIdx+1);
+                var nextFieldIndex = fieldIdx+1;
+                if(hasNextField) {
+                    if(currentValueIsInNewList)  {
+                        collectionForm.updateFields(collection, collectionId, nextFieldIndex, true); 
+                    } else {
+                        collectionForm.clearFields(collection, nextFieldIndex);
                     }
                 }
             });
@@ -126,6 +126,7 @@ function CollectionForm(formId) {
 
     this.setFieldValues = function(collection, data, fieldIdx) {
         var currentValue =    this.getFieldSelect(collection, fieldIdx).val();
+        var currentValueIsInNewList = false;
         var html = "<select>\n";
         for(var i=0;i<data.length;i++)  {
             var objIQ = data[i];
@@ -145,12 +146,13 @@ function CollectionForm(formId) {
             var extra = "";
             if(currentValue == value) {
                 extra = " selected ";
+                currentValueIsInNewList = true;
             }
             html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>\n";
         }
         html+="</select>\n";
         this.getFieldSelect(collection, fieldIdx).html(html);
-        return currentValue !="";
+        return currentValueIsInNewList;
     }
 
     this.fieldChanged = function (collection, fieldIdx) {
