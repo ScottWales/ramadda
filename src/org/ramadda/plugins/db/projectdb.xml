@@ -51,7 +51,7 @@
 
 
 <table id="tasks" name="Tasks" icon="/db/tasks.gif">
-   <column name="title" type="string" label="Title" cansearch="true"   canlist="true"/>
+   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
    <column name="priority" type="enumeration" label="Priority" values="High,Medium,Low" cansearch="true"   canlist="true"/>
    <column name="status" type="enumeration" label="Status" values="Not Started,In Progress,Completed,Deferred,Waiting" cansearch="true"   canlist="true">
        <property name="iscategory" value="true"/>

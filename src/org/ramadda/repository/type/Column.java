@@ -190,6 +190,7 @@ public class Column implements DataTypes, Constants {
 
     public static final String ATTR_MIN = "min";
     public static final String ATTR_MAX = "max";
+    public static final String ATTR_REQUIRED = "required";
 
     /** _more_ */
     public static final String ATTR_ROWS = "rows";
@@ -286,6 +287,7 @@ public class Column implements DataTypes, Constants {
     private double min = Double.NaN;
 
     private double max = Double.NaN;
+    private boolean required = false;
 
     /** _more_ */
     private int rows = 1;
@@ -386,6 +388,7 @@ public class Column implements DataTypes, Constants {
         size           = XmlUtil.getAttribute(element, ATTR_SIZE, size);
         min           = XmlUtil.getAttribute(element, ATTR_MIN, min);
         max           = XmlUtil.getAttribute(element, ATTR_MAX, max);
+        required       = XmlUtil.getAttribute(element, ATTR_REQUIRED, required);
         rows           = XmlUtil.getAttribute(element, ATTR_ROWS, rows);
         columns        = XmlUtil.getAttribute(element, ATTR_COLUMNS, columns);
 
@@ -964,6 +967,11 @@ public class Column implements DataTypes, Constants {
                 if (size > 0) {
                     getRepository().getEntryManager().checkColumnSize(
                         getName(), value, size);
+                }
+                if(required) {
+                    if(value.trim().length()==0) {
+                        throw new IllegalArgumentException("Value " + getLabel()+" is required");
+                    }
                 }
                 statement.setString(statementIdx, value);
             } else {
@@ -1788,6 +1796,9 @@ public class Column implements DataTypes, Constants {
                 }
                 if (size > 0) {
                     formInfo.addSizeValidation(getLabel(), domId, size);
+                }
+                if(required) {
+                    formInfo.addRequiredValidation(getLabel(), domId);
                 }
             }
         }

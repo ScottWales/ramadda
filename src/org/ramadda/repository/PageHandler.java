@@ -812,7 +812,7 @@ public class PageHandler extends RepositoryManager {
                                                 path, resource);
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
-                        System.err.println ("template: no id");
+                        System.err.println ("template: no id in " + path);
                         continue;
                     }
                     theTemplates.add(template);

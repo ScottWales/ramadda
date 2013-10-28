@@ -6,6 +6,7 @@
    <column name="site" type="enumerationplus"   label="Sample Site"  cansearch="true" canlist="true">
        <property name="iscategory" value="true"/>
    </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
    <column name="nitrates" label="Nitrates"   cansearch="true" canlist="true" type="double" />
    <column name="potassium" label="Potassium"   cansearch="true" canlist="true" type="double" />
    <column name="phosphates" label="Phosphates"   cansearch="true" canlist="true" type="double" />

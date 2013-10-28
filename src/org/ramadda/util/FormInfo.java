@@ -53,6 +53,11 @@ public class FormInfo {
     }
 
 
+    public void addRequiredValidation(String label, String id) {
+        constraints.add(new Required(label, id));
+    }
+
+
     public void addMinValidation(String label, String id, double min) {
         constraints.add(new Value(label, id, min, true));
     }
@@ -120,6 +125,24 @@ public class FormInfo {
             js.append("if(!inputLengthOk("  +
                       HtmlUtils.squote(id) +"," +length +")) {\n");
             String message = "Error: " + label +" is too long. Max length is " +length;
+            error(js, message);
+            js.append("}\n");
+        }
+
+
+    }
+
+
+
+    public static class Required extends Constraint {
+        public Required(String label, String id) {
+            super(label, id);
+        }
+
+        public void addJavascriptValidation(StringBuffer js) {
+            js.append("if(!inputIsRequired("  +
+                      HtmlUtils.squote(id)+")) {\n");
+            String message = "Error: " + label +" is required";
             error(js, message);
             js.append("}\n");
         }

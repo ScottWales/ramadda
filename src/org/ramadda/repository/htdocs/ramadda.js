@@ -1318,3 +1318,14 @@ function inputValueOk(domId, rangeValue, min) {
 }
 
 
+
+function inputIsRequired(domId) {
+    var value = $("#"+ domId).val();
+    if(value == null) return false;
+    value = value.trim();
+    if(value.length==0) {
+        closeFormLoadingDialog ();
+        return false;
+    }
+    return true;
+}
