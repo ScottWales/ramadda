@@ -2,7 +2,9 @@
 <project basedir="../../../../../" default="plugin" name="ramadda plugin">
     <target name="plugin">
       <property file="${basedir}/build.properties"/>
+      <!--
       <property name="plugindestdir" value="${dist_dir}/otherplugins"/>
+      -->
       <property name="plugin" value="model"/>
       <ant antfile="${basedir}/build.xml" target="commoninit" />
       <property name="jarfile" value="${plugin}.last.plugin.jar"/>
