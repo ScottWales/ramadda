@@ -262,7 +262,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             json = new StringBuffer();
             json.append(Json.map(new String[] { "values",
                     Json.list(uniqueValues) }, false));
-            //            System.err.println(json);
+            //System.err.println(json);
             cache.put(key, json);
         }
 
@@ -425,28 +425,13 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                              List values, Column column)
             throws Exception {
         Hashtable map = getColumnEnumTable(column);
-        /*
-        Hashtable map  = column.getEnumTable();
-        String key  = column.getName()+".values";
-        String vocabFile = getProperty(key,(String) null);
-        if(vocabFile!=null) {
-            Properties properties = labelCache.get(vocabFile);
-            if(properties == null) {
-                properties = new Properties();
-                getRepository().loadProperties(properties, vocabFile);
-                labelCache.put(vocabFile, properties);
-            }
-            map  = new Hashtable();
-            map.putAll(properties);
-        }
-        */
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         for (String value : (List<String>) values) {
             String label = (String) map.get(value);
             if (label == null) {
                 label = value;
             }
-            tfos.add(new TwoFacedObject(label, value));
+            tfos.add(new TwoFacedObject(label.trim(), value));
         }
         TwoFacedObject.sort(tfos);
 
