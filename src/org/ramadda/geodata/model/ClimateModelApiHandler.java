@@ -754,14 +754,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                             values, myColumn);
             tfos.add(0, new TwoFacedObject(""));
             String json = Json.tfoList(tfos);
-            //            System.out.println("json:" + json);
             sb.append(json);
         } else {
             values.add(0, "");
             String json = Json.list(values, true);
-            //            System.out.println("json:" + json);
             sb.append(json);
         }
+        //System.out.println("json:" + sb);
 
         return new Result("", sb, Json.MIMETYPE);
     }
