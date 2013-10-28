@@ -21,9 +21,7 @@
 package org.ramadda.util;
 
 
-import org.ramadda.repository.*;
 
-import org.ramadda.repository.monitor.*;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -203,28 +201,6 @@ public class HtmlTemplate {
      */
     public String toString() {
         return name;
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
-    public boolean isTemplateFor(Request request) {
-        if (request.getUser() == null) {
-            return false;
-        }
-        String templateId = request.getUser().getTemplate();
-        if (templateId == null) {
-            return false;
-        }
-        if (Misc.equals(id, templateId)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -186,13 +186,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
     /** _more_ */
     public final List<RequestUrl> searchUrls =
-        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
+        RequestUrl.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
             URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
             URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
-        RepositoryUtil.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
+        RequestUrl.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
             URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
             URL_SEARCH_ASSOCIATIONS_FORM });
 
@@ -762,7 +762,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         if (servers.size() > 0) {
             buttons =
-                RepositoryUtil.buttons(
+                HtmlUtils.buttons(
                     HtmlUtils.submit(
                         msg("Search this Repository"),
                         ARG_SEARCH_SUBMIT), HtmlUtils.submit(
@@ -1345,7 +1345,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         String form = HtmlUtils.makeShowHideBlock(
                           searchLink + msg("Search Again"),
-                          RepositoryUtil.inset(
+                          HtmlUtils.inset(
                               searchForm.toString(), 0, 20, 0, 0), false);
         StringBuffer header = new StringBuffer();
         header.append(getPageHandler().makeHeader(request, getSearchUrls(),

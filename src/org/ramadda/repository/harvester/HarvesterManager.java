@@ -515,7 +515,7 @@ public class HarvesterManager extends RepositoryManager {
             sb.append(
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the harvester"),
-                    RepositoryUtil.buttons(
+                    HtmlUtils.buttons(
                         HtmlUtils.submit(msg("Yes"), ARG_DELETE_CONFIRM),
                         HtmlUtils.submit(msg("Cancel"), ARG_CANCEL_DELETE))));
             sb.append(HtmlUtils.formClose());

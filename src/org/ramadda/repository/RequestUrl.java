@@ -20,6 +20,8 @@
 
 package org.ramadda.repository;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -76,6 +78,24 @@ public class RequestUrl {
                       String label) {
         this(repositorySource, path);
         this.label = label;
+    }
+
+
+
+    /**
+     * Create a list of RequestUrl's from the array
+     *
+     * @param urls  the array of RequestUrls
+     *
+     * @return  the array as a list
+     */
+    public static List<RequestUrl> toList(RequestUrl[] urls) {
+        List<RequestUrl> l = new ArrayList<RequestUrl>();
+        for (RequestUrl r : urls) {
+            l.add(r);
+        }
+
+        return l;
     }
 
 

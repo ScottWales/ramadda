@@ -22,8 +22,8 @@ package org.ramadda.util;
 
 
 
-import org.ramadda.repository.*;
 
+import java.util.TimeZone;
 
 import ucar.unidata.util.DateUtil;
 
@@ -55,6 +55,11 @@ import java.util.regex.*;
  * @version $Revision: 1.3 $
  */
 public class LdmListener {
+
+    /** timezone */
+    public static final TimeZone TIMEZONE_DEFAULT =
+        TimeZone.getTimeZone("UTC");
+
 
     /** _more_ */
     private boolean debug = false;
@@ -142,11 +147,11 @@ public class LdmListener {
         InputStreamReader sr = new InputStreamReader(System.in);
         br      = new BufferedReader(sr);
         yearSdf = new SimpleDateFormat();
-        yearSdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+        yearSdf.setTimeZone(TIMEZONE_DEFAULT);
         yearSdf.applyPattern("yyyy");
 
         monthSdf = new SimpleDateFormat();
-        monthSdf.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+        monthSdf.setTimeZone(TIMEZONE_DEFAULT);
         monthSdf.applyPattern("MM");
         startTime = System.currentTimeMillis();
         Misc.run(new Runnable() {

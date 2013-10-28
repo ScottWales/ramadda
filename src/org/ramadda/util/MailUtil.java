@@ -21,12 +21,6 @@
 package org.ramadda.util;
 
 
-import org.ramadda.repository.*;
-import org.ramadda.repository.auth.User;
-import org.ramadda.repository.type.*;
-
-import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;

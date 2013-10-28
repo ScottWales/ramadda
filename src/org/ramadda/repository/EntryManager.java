@@ -1426,9 +1426,9 @@ public class EntryManager extends RepositoryManager {
 
             String cancelButton = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
             String buttons      = ((entry != null)
-                                   ? RepositoryUtil.buttons(submitButton,
+                                   ? HtmlUtils.buttons(submitButton,
                                        deleteButton, cancelButton)
-                                   : RepositoryUtil.buttons(submitButton,
+                                   : HtmlUtils.buttons(submitButton,
                                        cancelButton));
 
 
@@ -2764,7 +2764,7 @@ public class EntryManager extends RepositoryManager {
         fb.append(request.form(getRepository().URL_ENTRY_DELETE, BLANK));
 
         getRepository().addAuthToken(request, fb);
-        fb.append(RepositoryUtil.buttons(HtmlUtils.submit(msg("OK"),
+        fb.append(HtmlUtils.buttons(HtmlUtils.submit(msg("OK"),
                 ARG_DELETE_CONFIRM), HtmlUtils.submit(msg("Cancel"),
                     ARG_CANCEL)));
         fb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -5108,7 +5108,7 @@ public class EntryManager extends RepositoryManager {
         sb.append(
             HtmlUtils.formEntry(
                 BLANK,
-                RepositoryUtil.buttons(
+                HtmlUtils.buttons(
                     HtmlUtils.submit(msg("Add Comment")),
                     HtmlUtils.submit(msg("Cancel"), ARG_CANCEL))));
         sb.append(HtmlUtils.formTableClose());

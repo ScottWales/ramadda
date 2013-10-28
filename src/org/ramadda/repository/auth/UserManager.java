@@ -154,7 +154,7 @@ public class UserManager extends RepositoryManager {
 
     /** urls to use when the user is logged in */
     protected List<RequestUrl> userUrls =
-        RepositoryUtil.toList(new RequestUrl[] {
+        RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_HOME,
             getRepositoryBase().URL_USER_FORM,
             getRepositoryBase().URL_USER_CART,
@@ -162,7 +162,7 @@ public class UserManager extends RepositoryManager {
 
     /** _more_ */
     protected List<RequestUrl> remoteUserUrls =
-        RepositoryUtil.toList(new RequestUrl[] {
+        RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_HOME,
             getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
@@ -170,7 +170,7 @@ public class UserManager extends RepositoryManager {
 
     /** urls to use with no user */
     protected List<RequestUrl> anonUserUrls =
-        RepositoryUtil.toList(new RequestUrl[] {
+        RequestUrl.toList(new RequestUrl[] {
             getRepositoryBase().URL_USER_CART });
 
 
@@ -1038,7 +1038,7 @@ public class UserManager extends RepositoryManager {
             sb.append(
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the user?"),
-                    RepositoryUtil.buttons(
+                    HtmlUtils.buttons(
                         HtmlUtils.submit(
                             msg("Yes"),
                             ARG_USER_DELETE_CONFIRM), HtmlUtils.submit(

@@ -75,17 +75,6 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
-    //When we make any real change to the css or javascript change this version
-    //so the browsers will pick up the new resource
-    //The imports.html header has a ${htdocs_version} macro in it
-    //that gets replaced with  this. Repository checks incoming paths and strips this off
-
-    /** _more_ */
-    public static final String HTDOCS_VERSION = "htdocs_v2";
-
-    /** _more_ */
-    public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
-
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "aodnStyle";
 
@@ -768,7 +757,7 @@ public class PageHandler extends RepositoryManager {
 
             imports = imports.replace("${root}",
                                       getRepository().getUrlBase());
-            imports = imports.replace("${htdocs_version}", HTDOCS_VERSION);
+            imports = imports.replace("${htdocs_version}", RepositoryUtil.HTDOCS_VERSION);
 
             theTemplates = new ArrayList<HtmlTemplate>();
 
@@ -1080,7 +1069,7 @@ public class PageHandler extends RepositoryManager {
             if (request == null) {
                 return template;
             }
-            if (template.isTemplateFor(request)) {
+            if (isTemplateFor(request, template)) {
                 return template;
             }
         }
@@ -1090,6 +1079,32 @@ public class PageHandler extends RepositoryManager {
 
         return theTemplates.get(0);
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
+    public boolean isTemplateFor(Request request, HtmlTemplate template) {
+        if (request.getUser() == null) {
+            return false;
+        }
+        String templateId = request.getUser().getTemplate();
+        if (templateId == null) {
+            return false;
+        }
+        if (Misc.equals(template.getId(), templateId)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
 
     /**
@@ -1584,7 +1599,7 @@ public class PageHandler extends RepositoryManager {
         String okButton     = HtmlUtils.submit("OK", okArg);
         String cancelButton = HtmlUtils.submit("Cancel",
                                   Constants.ARG_CANCEL);
-        String buttons = RepositoryUtil.buttons(okButton, cancelButton);
+        String buttons = HtmlUtils.buttons(okButton, cancelButton);
         fb.append(buttons);
         fb.append(HtmlUtils.formClose());
 

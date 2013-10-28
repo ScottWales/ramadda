@@ -480,7 +480,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         this.args     = args;
 
-        entryEditUrls = RepositoryUtil.toList(new RequestUrl[] {
+        entryEditUrls = RequestUrl.toList(new RequestUrl[] {
             URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
@@ -489,7 +489,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //        URL_ENTRY_SHOW
         });
 
-        groupEditUrls = RepositoryUtil.toList(new RequestUrl[] {
+        groupEditUrls = RequestUrl.toList(new RequestUrl[] {
             URL_ENTRY_NEW, URL_ENTRY_FORM, URL_ENTRY_EXTEDIT,
             getMetadataManager().URL_METADATA_FORM,
             getMetadataManager().URL_METADATA_ADDFORM,
@@ -3059,8 +3059,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Check for the version in the path and strip it off, e.g.
         // /repository/htdocs_v1/style.css
         //We do this so we can cleanly update new css and js
-        if (path.startsWith(PageHandler.HTDOCS_VERSION_SLASH)) {
-            path = path.substring(PageHandler.HTDOCS_VERSION_SLASH.length());
+        if (path.startsWith(RepositoryUtil.HTDOCS_VERSION_SLASH)) {
+            path = path.substring(RepositoryUtil.HTDOCS_VERSION_SLASH.length());
             //            System.err.println("path:" + path);
         }
 

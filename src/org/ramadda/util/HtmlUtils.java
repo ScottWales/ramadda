@@ -786,6 +786,16 @@ public class HtmlUtils {
     }
 
 
+    public static String buttons(String...args) {
+        StringBuffer sb = new StringBuffer();
+        for(int i=0;i<args.length;i++) {
+            if(i>0) sb.append(buttonSpace());
+            sb.append(args[i]);
+        }
+        return sb.toString();
+    }
+
+
     public static String buttonSpace() {
         return space(2);
     }

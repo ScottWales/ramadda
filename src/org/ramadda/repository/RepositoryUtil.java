@@ -47,7 +47,20 @@ import java.util.TimeZone;
  *
  * @author RAMADDA Development Team
  */
-public class RepositoryUtil implements Constants {
+public class RepositoryUtil  {
+
+
+    //When we make any real change to the css or javascript change this version
+    //so the browsers will pick up the new resource
+    //The imports.html header has a ${htdocs_version} macro in it
+    //that gets replaced with  this. Repository checks incoming paths and strips this off
+
+    /** _more_ */
+    public static final String HTDOCS_VERSION = "htdocs_v2";
+
+    /** _more_ */
+    public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
@@ -59,33 +72,6 @@ public class RepositoryUtil implements Constants {
     /** The regular expression that matches the entry id */
     public static final String ENTRY_ID_REGEX =
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
-
-    /**
-     * Make some buttons (should probably be in HTML util);
-     *
-     * @param b1  button 1 html
-     * @param b2  button 2 html
-     *
-     * @return  the buttons as one
-     */
-    public static String buttons(String b1, String b2) {
-        return b1 + HtmlUtils.buttonSpace() + b2;
-    }
-
-    /**
-     * Make some buttons (should probably be in HTML util);
-     *
-     * @param b1  button 1 html
-     * @param b2  button 2 html
-     * @param b3  button 3 html
-     *
-     * @return the buttons as one
-     */
-    public static String buttons(String b1, String b2, String b3) {
-        return b1 + HtmlUtils.buttonSpace() + b2 + HtmlUtils.buttonSpace() + b3;
-    }
-
-
 
 
 
@@ -215,7 +201,7 @@ public class RepositoryUtil implements Constants {
      * @return  the header
      */
     public static String header(String h) {
-        return HtmlUtils.div(h, HtmlUtils.cssClass(CSS_CLASS_HEADING_1));
+        return HtmlUtils.div(h, HtmlUtils.cssClass( "ramadda-heading-1"));
     }
 
 
@@ -244,57 +230,8 @@ public class RepositoryUtil implements Constants {
 
 
 
-    /**
-     * Create a list of RequestUrl's from the array
-     *
-     * @param urls  the array of RequestUrls
-     *
-     * @return  the array as a list
-     */
-    public static List<RequestUrl> toList(RequestUrl[] urls) {
-        List<RequestUrl> l = new ArrayList<RequestUrl>();
-        for (RequestUrl r : urls) {
-            l.add(r);
-        }
 
-        return l;
-    }
 
-    /**
-     * Indent/inset the html
-     *
-     * @param html  the html
-     * @param left  how much to indent
-     *
-     * @return  the indented html
-     */
-    public static String leftIndset(String html, int left) {
-        return inset(html, 0, left, 0, 0);
-    }
-
-    /**
-     * Inset the html
-     *
-     * @param html  the html to inset
-     * @param top   the top inset
-     * @param left  the left inset
-     * @param bottom  the bottom inset
-     * @param right   the right inset
-     *
-     * @return  the html insetted
-     */
-    public static String inset(String html, int top, int left, int bottom,
-                               int right) {
-        return HtmlUtils.div(html, HtmlUtils.style(((top == 0)
-                ? ""
-                : "margin-top:" + top + "px;") + ((left == 0)
-                ? ""
-                : "margin-left:" + left + "px;") + ((bottom == 0)
-                ? ""
-                : "margin-bottom:" + bottom + "px;") + ((right == 0)
-                ? ""
-                : "margin-right:" + top + "px;")));
-    }
 
 
     /**
