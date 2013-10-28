@@ -84,7 +84,8 @@ function CollectionForm(formId) {
     //Clear the field selects starting at start idx
     this.clearFields = function(collection, startIdx) {
         for(var idx=startIdx;idx<10;idx++) {
-            this.getFieldSelect(collection, idx).html("<select><option value=''>--</option></select>");
+            //this.getFieldSelect(collection, idx).html("<select><option value=''>--</option></select>");
+            this.getFieldSelect(collection, idx).html("<option value=''>--</option>");
         }
     }
 
@@ -127,7 +128,8 @@ function CollectionForm(formId) {
     this.setFieldValues = function(collection, data, fieldIdx) {
         var currentValue =    this.getFieldSelect(collection, fieldIdx).val();
         var currentValueIsInNewList = false;
-        var html = "<select>\n";
+        //var html = "<select>";
+        var html = "";
         for(var i=0;i<data.length;i++)  {
             var objIQ = data[i];
             var value,label;
@@ -148,9 +150,9 @@ function CollectionForm(formId) {
                 extra = " selected ";
                 currentValueIsInNewList = true;
             }
-            html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>\n";
+            html += "<option value=\'"+value+"\'   " + extra +" >" + label +"</option>";
         }
-        html+="</select>\n";
+        //html+="</select>";
         this.getFieldSelect(collection, fieldIdx).html(html);
         return currentValueIsInNewList;
     }
