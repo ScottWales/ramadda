@@ -35,6 +35,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.GoogleChart;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.FormInfo;
@@ -2490,6 +2491,9 @@ public class DbTypeHandler extends BlobTypeHandler {
         SimpleDateFormat sdf        = getDateFormat(entry);
         Hashtable        entryProps = getProperties(entry);
 
+        StringBuffer chartJS = new StringBuffer();
+        //        GoogleChart.addChartImport(sb);
+
         if (doForm) {
             String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
             sb.append(HtmlUtils.form(formUrl));
@@ -2519,6 +2523,9 @@ public class DbTypeHandler extends BlobTypeHandler {
                         ACTION_DELETE));
             }
 
+
+
+
             if ( !request.get(ARG_EMBEDDED, false) && (actions.size() > 0)) {
                 if (doForm) {
                     sb.append(HtmlUtils.submit(msgLabel("Do"), ARG_DB_DO));
@@ -2536,6 +2543,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                 if ( !column.getCanList()) {
                     continue;
                 }
+                String type;
+                if(column.isNumeric()) type = "number";
+                else if(column.isBoolean()) type = "boolean";
+                else type =  "string";
+                //                GoogleChart.DataTable.addColumn(chartJS, type, column.getLabel());
+
                 String label = column.getLabel();
                 if ( !showHeaderLinks) {
                     sb.append(

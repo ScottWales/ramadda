@@ -25,7 +25,26 @@ package org.ramadda.util;
  */
 public class GoogleChart {
 
-    public static void addChart
+    public static void addChartImport(StringBuffer sb) {
+        sb.append(HtmlUtils.importJS("https://www.google.com/jsapi"));
+        sb.append(HtmlUtils.script("if (!(typeof ramaddaLoadedGoodleCharts === 'undefined')) {ramaddaLoadedGoodleCharts=true;google.load('visualization', '1.0', {'packages':['corechart']});\n"));
+        //        // Set a callback to run when the Google Visualization API is loaded.
+        //        google.setOnLoadCallback(drawChart);
+    }
+
+    public static class DataTable {
+        public static void init(StringBuffer sb) {
+            sb.append("var data = new google.visualization.DataTable();\n");
+        }
+
+        public static void addColumn(StringBuffer sb, String type, String name) {
+            //data.addColumn('string', 'Name');
+            sb.append(HtmlUtils.call("data.addColumn", HtmlUtils.squote(type), HtmlUtils.squote(name)));
+        }
+
+
+    }
+
 
 
 }

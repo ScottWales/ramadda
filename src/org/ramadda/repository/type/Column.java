@@ -518,6 +518,10 @@ public class Column implements DataTypes, Constants {
         return isType(DATATYPE_INT) || isDouble();
     }
 
+    public boolean isBoolean() {
+        return isType(DATATYPE_BOOLEAN);
+    }
+
     /**
      * _more_
      *
