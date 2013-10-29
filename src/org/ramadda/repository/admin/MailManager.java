@@ -108,8 +108,14 @@ public class MailManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
+    @Override
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {
+        sb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Email"), 2)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Administrator Email"),
+                                       HtmlUtils.input(PROP_ADMIN_EMAIL,
+                                           getProperty(PROP_ADMIN_EMAIL, ""),
+                                           HtmlUtils.SIZE_40)));
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Mail Server"), HtmlUtils.input(
@@ -125,8 +131,10 @@ public class MailManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void applyAdminConfig(Request request) throws Exception {
+    @Override
+    public void applyAdminSettings(Request request) throws Exception {
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
+        getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
     }
 
 

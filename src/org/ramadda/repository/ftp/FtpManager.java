@@ -33,6 +33,7 @@ import org.apache.ftpserver.usermanager.impl.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.HtmlUtils;
 
 
 
@@ -97,6 +98,51 @@ public class FtpManager extends RepositoryManager {
             logError("Creating FTP server", exc);
         }
     }
+
+    @Override
+
+    public void addAdminSettings(Request request, StringBuffer sb) throws Exception {
+        sb.append(
+            HtmlUtils.row(
+                HtmlUtils.colspan(msgHeader("FTP Settings"), 2)));
+
+
+
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("FTP Port"),
+                HtmlUtils.input(
+                    PROP_FTP_PORT,
+                    getRepository().getProperty(PROP_FTP_PORT, "-1"),
+                    HtmlUtils.SIZE_10)));
+
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("FTP Passive Ports"),
+                HtmlUtils.input(
+                    PROP_FTP_PASSIVEPORTS,
+                    getRepository().getProperty(
+                        PROP_FTP_PASSIVEPORTS,
+                        FtpManager.DFLT_PASSIVE_PORTS), HtmlUtils.SIZE_15)));
+
+    }
+
+    @Override
+   public void applyAdminSettings(Request request) throws Exception {
+         getRepository().writeGlobal(PROP_FTP_PASSIVEPORTS,
+                                    request.getString(PROP_FTP_PASSIVEPORTS,
+                                        "").trim());
+
+        if (request.defined(PROP_FTP_PORT)) {
+            getRepository().writeGlobal(PROP_FTP_PORT,
+                                        request.getString(PROP_FTP_PORT,
+                                            "").trim());
+            if (getRepository().getFtpManager() != null) {
+                getRepository().getFtpManager().checkServer();
+            }
+        }
+
+   }
 
 
     /**

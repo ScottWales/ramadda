@@ -3,10 +3,8 @@ Welcome to your RAMADDA server.
 
 ===Next steps===
 * Join the <a href="https://lists.sourceforge.net/lists/listinfo/ramadda-users" target=_other>RAMADDA mailing list</a>.
-* <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page
-* Use the RAMADDA <a href="https://sourceforge.net/projects/ramadda/support">SourceForge support form</a> for support requests.
-* Or send any questions or requests to <a href="mailto:support@ramadda.org">support@ramadda.org</a>
-
+* Use the RAMADDA <a href="https://sourceforge.net/projects/ramadda/support">SourceForge support form</a> or send questions to <a href="mailto:support@ramadda.org">support@ramadda.org</a>
+* <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page,  create new <a href="${root}/entry/form?group=${topid}&type=group">folders</a> or upload <a href="${root}/entry/form?group=${topid}&type=file">files</a>. More actions under the <img src="${root}/icons/menu_arrow.gif"> button above.
 <p>
 
 ===Content===

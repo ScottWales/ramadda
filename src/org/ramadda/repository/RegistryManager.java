@@ -442,7 +442,8 @@ public class RegistryManager extends RepositoryManager {
      * @param request _more_
      * @param csb _more_
      */
-    public void addAdminConfig(Request request, StringBuffer csb) {
+    @Override
+    public void addAdminSettings(Request request, StringBuffer csb) throws Exception {
         String helpLink =
             HtmlUtils.href(getRepository().getUrlBase()
                            + "/userguide/remoteservers.html", msg("Help"),
@@ -483,7 +484,8 @@ public class RegistryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void applyAdminConfig(Request request) throws Exception {
+    @Override
+    public void applyAdminSettings(Request request) throws Exception {
         List<String> oldList = getServersToRegisterWith();
         List<String> newList =
             StringUtil.split(request.getUnsafeString(PROP_REGISTRY_SERVERS,

@@ -184,7 +184,8 @@ public class MapManager extends RepositoryManager {
      *
      * @param request the Request
      */
-    public void applyAdminConfig(Request request) {
+     @Override
+    public void applyAdminSettings(Request request)  throws Exception {
         geKeys = null;
     }
 

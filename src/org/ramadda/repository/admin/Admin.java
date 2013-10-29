@@ -25,7 +25,6 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-import org.ramadda.repository.ftp.FtpManager;
 
 import org.ramadda.repository.harvester.*;
 
@@ -372,7 +371,7 @@ public class Admin extends RepositoryManager {
             title = "Installation";
             sb.append(HtmlUtils.formTable());
             sb.append(
-                "<p>Thank you for installing the RAMADDA Repository. <p>Listed below is the RAMADDA home directory and database information. If you want to change these settings please consult the <a target=\"other\" href=\"" + HELP_ROOT + "/userguide/installing.html\">documentation</a> before continuing with the installation process.");
+                "<p>Thank you for installing the RAMADDA Repository. <p>Listed below is the RAMADDA home directory and database information. If you want to change these settings please consult the <a target=\"other\" href=\"" + HELP_ROOT + "/userguide/installing.html#home\">documentation</a> before continuing with the installation process.");
             getStorageManager().addInfo(sb);
             getDatabaseManager().addInfo(sb);
             sb.append(HtmlUtils.formEntry("", HtmlUtils.submit(msg("Next"))));
@@ -560,7 +559,7 @@ public class Admin extends RepositoryManager {
 
             sb.append(
                 HtmlUtils.formEntry(
-                    msgLabel("Repository Title"),
+                    msgLabel("Repository Name"),
                     HtmlUtils.input(
                         PROP_REPOSITORY_NAME,
                         request.getString(
@@ -576,6 +575,7 @@ public class Admin extends RepositoryManager {
                         getProperty(PROP_REPOSITORY_DESCRIPTION, ""), 5,
                         60)));
 
+            /*
             sb.append(HtmlUtils
                 .formEntry(msgLabel("Hostname"), HtmlUtils
                     .input(PROP_HOSTNAME, hostname, HtmlUtils
@@ -583,7 +583,7 @@ public class Admin extends RepositoryManager {
             sb.append(HtmlUtils.formEntry(msgLabel("HTTP Port"),
                                           HtmlUtils.input(PROP_PORT, port,
                                               HtmlUtils.SIZE_10)));
-
+            */
             sb.append(HtmlUtils.colspan(msgHeader("Plugins"), 2));
 
             sb.append(
@@ -1071,22 +1071,6 @@ public class Admin extends RepositoryManager {
                                            HtmlUtils.SIZE_5)));
 
 
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("FTP Port"),
-                HtmlUtils.input(
-                    PROP_FTP_PORT,
-                    getRepository().getProperty(PROP_FTP_PORT, "-1"),
-                    HtmlUtils.SIZE_10)));
-
-        csb.append(
-            HtmlUtils.formEntry(
-                msgLabel("FTP Passive Ports"),
-                HtmlUtils.input(
-                    PROP_FTP_PASSIVEPORTS,
-                    getRepository().getProperty(
-                        PROP_FTP_PASSIVEPORTS,
-                        FtpManager.DFLT_PASSIVE_PORTS), HtmlUtils.SIZE_15)));
 
 
 
@@ -1110,13 +1094,15 @@ public class Admin extends RepositoryManager {
 
 
 
-        csb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Email"), 2)));
-        csb.append(HtmlUtils.formEntry(msgLabel("Administrator Email"),
-                                       HtmlUtils.input(PROP_ADMIN_EMAIL,
-                                           getProperty(PROP_ADMIN_EMAIL, ""),
-                                           HtmlUtils.SIZE_40)));
+        //Force the creation of some of the managers
+        getRepository().getMailManager();
+        getRepository().getFtpManager();
+        getRepository().getMapManager();
 
-        getRepository().getMailManager().addAdminSettings(request, csb);
+
+        for(RepositoryManager manager: getRepository().getRepositoryManagers()) {
+            manager.addAdminSettings(request, csb);
+        }
 
 
         csb.append(
@@ -1129,9 +1115,11 @@ public class Admin extends RepositoryManager {
                     PROP_PROPERTIES,
                     getProperty(
                         PROP_PROPERTIES,
-                        "#add extra properties\n#name=value\n"), 5, 60)));
+                        "#add extra properties\n#name=value\n#ramadda.html.template.default=mapheader\n\n"), 5, 60)));
 
-        getRepository().getRegistryManager().addAdminConfig(request, csb);
+
+
+
 
 
         StringBuffer dsb = new StringBuffer();
@@ -1474,12 +1462,11 @@ public class Admin extends RepositoryManager {
 
         request.ensureAuthToken();
 
-        getRepository().getRegistryManager().applyAdminConfig(request);
-
-        getRepository().getMailManager().applyAdminConfig(request);
+        for(RepositoryManager manager: getRepository().getRepositoryManagers()) {
+            manager.applyAdminSettings(request);
+        }
 
         getRepository().writeGlobal(request, PROP_PROPERTIES, true);
-        getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
         getRepository().writeGlobal(request, PROP_LOGO_URL, true);
         getRepository().writeGlobal(request, PROP_LOGO_IMAGE, true);
         getRepository().writeGlobal(request, PROP_REPOSITORY_NAME, true);
@@ -1505,18 +1492,6 @@ public class Admin extends RepositoryManager {
                                     "" + request.get(PROP_ACCESS_ALLSSL,
                                         false));
 
-        getRepository().writeGlobal(PROP_FTP_PASSIVEPORTS,
-                                    request.getString(PROP_FTP_PASSIVEPORTS,
-                                        "").trim());
-
-        if (request.defined(PROP_FTP_PORT)) {
-            getRepository().writeGlobal(PROP_FTP_PORT,
-                                        request.getString(PROP_FTP_PORT,
-                                            "").trim());
-            if (getRepository().getFtpManager() != null) {
-                getRepository().getFtpManager().checkServer();
-            }
-        }
 
 
 
@@ -1543,7 +1518,7 @@ public class Admin extends RepositoryManager {
 
         getRepository().setLocalFilePaths();
         getRepository().clearCache();
-        getMapManager().applyAdminConfig(request);
+
 
         List<OutputHandler> outputHandlers =
             getRepository().getOutputHandlers();

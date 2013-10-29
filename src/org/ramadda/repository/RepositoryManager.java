@@ -117,6 +117,12 @@ public class RepositoryManager implements RepositorySource, Constants,
     public void shutdown() throws Exception {}
 
 
+    public void addAdminSettings(Request request, StringBuffer sb) throws Exception {
+    }
+
+    public void applyAdminSettings(Request request) throws Exception {
+    }
+
     /**
      * _more_
      *
