@@ -366,6 +366,15 @@ public class CDOArealStatisticsProcess extends DataProcess {
     }
 
     /**
+     * Is this enabled?
+     *
+     * @return true if it is
+     */
+    public boolean isEnabled() {
+        return typeHandler.isEnabled();
+    }
+        
+    /**
      * Can we handle this input
      *
      * @param input  the input

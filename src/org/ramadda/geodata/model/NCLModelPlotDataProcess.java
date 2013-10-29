@@ -486,4 +486,13 @@ public class NCLModelPlotDataProcess extends DataProcess {
         return true;
     }
 
+    /**
+     * Is this enabled?
+     *
+     * @return true if it is
+     */
+    public boolean isEnabled() {
+        return nclOutputHandler.isEnabled();
+    }
+        
 }
