@@ -90,7 +90,7 @@ public class GenericTypeHandler extends TypeHandler {
     /** _more_ */
     Hashtable nameMap = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private boolean meFirst = false;
 
 

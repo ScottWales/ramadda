@@ -1056,15 +1056,23 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSortLinks(Request request) {
         StringBuffer sb           = new StringBuffer();
-        String       oldOrderBy   = request.getString(ARG_ORDERBY,
-                                        SORTBY_FROMDATE);
+        String oldOrderBy = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
         String       oldAscending = request.getString(ARG_ASCENDING, "false");
 
         String[]     order        = {
-            SORTBY_FROMDATE, "true", msg("Date")+ HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),"Sort by date ascending", 
-            SORTBY_FROMDATE, "false", msg("Date")+ HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),"Sort by date descending",
-            SORTBY_NAME, "true", msg("Name") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)), "Sort by name ascending", 
-            SORTBY_NAME, "false", msg("Name") + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),"Sort by name descending", 
+            SORTBY_FROMDATE, "true",
+            msg("Date")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
+            "Sort by date ascending", SORTBY_FROMDATE, "false",
+            msg("Date")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
+            "Sort by date descending", SORTBY_NAME, "true",
+            msg("Name")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),
+            "Sort by name ascending", SORTBY_NAME, "false",
+            msg("Name")
+            + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),
+            "Sort by name descending",
         };
 
         if (request.isMobile()) {
@@ -1203,12 +1211,15 @@ public class OutputHandler extends RepositoryManager {
             tfos.addAll(linksForCategory);
         }
 
-        StringBuffer selectSB = new StringBuffer();
+        StringBuffer selectSB  = new StringBuffer();
 
         StringBuffer actionsSB = new StringBuffer();
 
 
-        actionsSB.append(HtmlUtils.select(ARG_OUTPUT, tfos,(List<String>)null, HtmlUtils.cssClass("entry-action-list")));
+        actionsSB.append(
+            HtmlUtils.select(
+                ARG_OUTPUT, tfos, (List<String>) null,
+                HtmlUtils.cssClass("entry-action-list")));
         actionsSB.append(HtmlUtils.space(2));
         actionsSB.append(msgLabel("to"));
 
@@ -1217,16 +1228,17 @@ public class OutputHandler extends RepositoryManager {
         String       allButtonId      = HtmlUtils.getUniqueId("getall");
         String       selectedButtonId = HtmlUtils.getUniqueId("getselected");
         actionsSB.append(HtmlUtils.submit(msg("Selected"), "getselected",
-                                         HtmlUtils.id(selectedButtonId)));
+                                          HtmlUtils.id(selectedButtonId)));
         actionsSB.append(HtmlUtils.space(1));
         actionsSB.append(HtmlUtils.submit(msg("All"), "getall",
-                                         HtmlUtils.id(allButtonId)));
+                                          HtmlUtils.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(allButtonId)));
         js.append(JQuery.buttonize(JQuery.id(selectedButtonId)));
 
-        String sortLinks  = getSortLinks(request);
+        String sortLinks = getSortLinks(request);
 
-        selectSB.append(HtmlUtils.leftRightBottom(sortLinks, actionsSB.toString(),""));
+        selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
+                actionsSB.toString(), ""));
         //        selectSB.append(HtmlUtils.space(4));
 
 

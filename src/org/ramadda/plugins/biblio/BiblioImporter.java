@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_BIBLIO = "biblio";
 
 
@@ -156,7 +156,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                 }
                 sb.append("<li> ");
                 sb.append(getPageHandler().getBreadCrumbs(request, entry,
-                                                          parentEntry));
+                        parentEntry));
             }
         }
 
@@ -172,7 +172,8 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     didone = true;
                 }
                 sb.append("<li> ");
-                sb.append(getPageHandler().getBreadCrumbs(request, entry, parentEntry));
+                sb.append(getPageHandler().getBreadCrumbs(request, entry,
+                        parentEntry));
             }
         }
         if (didone) {
@@ -202,17 +203,17 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class EntryInfo {
 
-        /** _more_          */
+        /** _more_ */
         Entry entry;
 
-        /** _more_          */
+        /** _more_ */
         String author;
 
-        /** _more_          */
+        /** _more_ */
         String file;
 
         /**

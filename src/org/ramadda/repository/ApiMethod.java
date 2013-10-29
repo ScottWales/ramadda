@@ -315,10 +315,10 @@ public class ApiMethod {
         return request;
     }
 
-    /** _more_          */
+    /** _more_ */
     private String wildcardPath1;
 
-    /** _more_          */
+    /** _more_ */
     private String wildcardPath2;
 
     /**

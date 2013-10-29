@@ -97,10 +97,10 @@ public class GpxUtil {
     /** _more_ */
     public static final String TAG_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RTE = "rte";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_RTEPT = "rtept";
 
     /** _more_ */

@@ -736,6 +736,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return jettyServer != null;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isRunningStandAlone() {
         return jettyServer != null;
     }
@@ -2170,7 +2175,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (TypeHandler typeHandler : allTypeHandlers) {
             typeHandler.clearCache();
         }
-        for(RepositoryManager manager: repositoryManagers) {
+        for (RepositoryManager manager : repositoryManagers) {
             manager.clearCache();
         }
         resources = new Hashtable();
@@ -2814,8 +2819,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        
-        getLogManager().logRequest(request, result==null?Result.RESPONSE_INTERNALERROR:result.getResponseCode());
+
+        getLogManager().logRequest(request, (result == null)
+                                            ? Result.RESPONSE_INTERNALERROR
+                                            : result.getResponseCode());
 
         boolean okToAddCookie = false;
 
@@ -2914,11 +2921,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw new AccessException(msg("Incorrect access"), request);
         }
 
-        Result result =  (Result) apiMethod.invoke(request);
+        Result result = (Result) apiMethod.invoke(request);
         if (result == null) {
             return null;
         }
-        getLogManager().logRequest(request,  result.getResponseCode());
+        getLogManager().logRequest(request, result.getResponseCode());
+
         return result;
 
     }
@@ -3060,7 +3068,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         // /repository/htdocs_v1/style.css
         //We do this so we can cleanly update new css and js
         if (path.startsWith(RepositoryUtil.HTDOCS_VERSION_SLASH)) {
-            path = path.substring(RepositoryUtil.HTDOCS_VERSION_SLASH.length());
+            path = path.substring(
+                RepositoryUtil.HTDOCS_VERSION_SLASH.length());
             //            System.err.println("path:" + path);
         }
 
@@ -5183,9 +5192,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             //TODO: check exit code and throw error?
             int exitCode = process.waitFor();
         } else {
-            ProcessRunner runnable =
-                new ProcessRunner(process,
-                                  TimeUnit.SECONDS.toMillis(timeOutInSeconds));
+            ProcessRunner runnable = new ProcessRunner(
+                                         process,
+                                         TimeUnit.SECONDS.toMillis(
+                                             timeOutInSeconds));
             runnable.start();
             try {
                 runnable.join(TimeUnit.SECONDS.toMillis(timeOutInSeconds));
@@ -5200,7 +5210,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (result == ProcessRunner.PROCESS_KILLED) {
                 throw new InterruptedException("Process timed out");
             }
-        } 
+        }
 
 
         return new String[] { outBuf.toString(), errorBuf.toString() };

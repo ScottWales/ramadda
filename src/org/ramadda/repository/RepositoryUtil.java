@@ -47,7 +47,7 @@ import java.util.TimeZone;
  *
  * @author RAMADDA Development Team
  */
-public class RepositoryUtil  {
+public class RepositoryUtil {
 
 
     //When we make any real change to the css or javascript change this version
@@ -201,7 +201,7 @@ public class RepositoryUtil  {
      * @return  the header
      */
     public static String header(String h) {
-        return HtmlUtils.div(h, HtmlUtils.cssClass( "ramadda-heading-1"));
+        return HtmlUtils.div(h, HtmlUtils.cssClass("ramadda-heading-1"));
     }
 
 

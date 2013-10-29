@@ -23,10 +23,10 @@ package org.ramadda.plugins.incident;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.GeoUtils;
 
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.GeoUtils;
 import org.ramadda.util.Utils;
 
 
@@ -60,26 +60,52 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-@Override
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    @Override
     public String getEntryName(Entry entry) {
-        String  name = super.getEntryName(entry);
-        if(!Utils.stringDefined(name)) {
+        String name = super.getEntryName(entry);
+        if ( !Utils.stringDefined(name)) {
             name = entry.getValue(0, "");
         }
+
         //        System.err.println("NAME:" + name);
         return name;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
-        throws Exception {
-        super.initializeEntryFromForm(request, entry,
-                                      parent, newEntry);
+            throws Exception {
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
         georeferenceEntry(request, entry);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param node _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node)
             throws Exception {
@@ -89,23 +115,30 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
+     *
+     * @param request _more_
+     * @param entry _more_
      */
-    private   void georeferenceEntry(Request request, Entry entry) {
-        if(entry.isGeoreferenced()) return;
+    private void georeferenceEntry(Request request, Entry entry) {
+        if (entry.isGeoreferenced()) {
+            return;
+        }
         //TODO: if the entry has a location then don't do this?
         String address = entry.getValue(0, (String) null);
-        String city = entry.getValue(1, (String) null);
-        String state = entry.getValue(2, (String) null);
-        if(!Utils.stringDefined(address)) return;
-        String fullAddress = address +"," + city +"," + state;
-        double[] loc = GeoUtils.getLocationFromAddress(fullAddress);
-        if(loc == null) {
+        String city    = entry.getValue(1, (String) null);
+        String state   = entry.getValue(2, (String) null);
+        if ( !Utils.stringDefined(address)) {
+            return;
+        }
+        String   fullAddress = address + "," + city + "," + state;
+        double[] loc         = GeoUtils.getLocationFromAddress(fullAddress);
+        if (loc == null) {
             System.err.println("no geo for address:" + fullAddress);
         } else {
             System.err.println("got geo for address:" + fullAddress);
             entry.setLatitude(loc[0]);
             entry.setLongitude(loc[1]);
-        } 
+        }
     }
 
 
@@ -121,11 +154,14 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
      */
     @Override
     public String getIconUrl(Request request, Entry entry) throws Exception {
-        double depth =   entry.getValue(4, 0.0);
-        if(depth == 0) 
+        double depth = entry.getValue(4, 0.0);
+        if (depth == 0) {
             return iconUrl("/incident/flag_green.png");
-        if(depth<=2) 
+        }
+        if (depth <= 2) {
             return iconUrl("/incident/flag_blue.png");
+        }
+
         return iconUrl("/incident/flag_red.png");
     }
 

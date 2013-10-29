@@ -424,7 +424,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public List<TwoFacedObject> getValueList(Entry collectionEntry,
                                              List values, Column column)
             throws Exception {
-        Hashtable map = getColumnEnumTable(column);
+        Hashtable            map  = getColumnEnumTable(column);
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         for (String value : (List<String>) values) {
             String label = (String) map.get(value);

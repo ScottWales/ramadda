@@ -84,6 +84,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     /** Repository object that will be instantiated */
     private Repository repository;
 
+    /** _more_          */
     private JettyServer jettyServer;
 
 
@@ -108,7 +109,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                              int port, Properties properties)
             throws Exception {
         this.jettyServer = jettyServer;
-        this.args = args;
+        this.args        = args;
         createRepository(port, properties, false);
     }
 
@@ -313,7 +314,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 // create a org.ramadda.repository.Result object and transpose the relevant info into a HttpServletResponse object
                 repositoryResult =
                     repository.handleRequest(repositoryRequest);
-                if(jettyServer != null) {
+                if (jettyServer != null) {
                     //We are running stand-alone so nothing is doing logging
 
                 }

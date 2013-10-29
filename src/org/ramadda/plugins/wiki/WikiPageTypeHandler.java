@@ -33,9 +33,9 @@ import org.ramadda.sql.Clause;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.WikiUtil;
 
@@ -314,12 +314,14 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     @Override
     public void addToEntryForm(Request request, StringBuffer sb,
-                               Entry parentEntry, Entry entry, FormInfo formInfo)
+                               Entry parentEntry, Entry entry,
+                               FormInfo formInfo)
             throws Exception {
 
         String size = HtmlUtils.SIZE_70;

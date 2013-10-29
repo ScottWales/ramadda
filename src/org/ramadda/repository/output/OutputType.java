@@ -107,6 +107,7 @@ public class OutputType {
     /** Shows up in the search result format list */
     public static final int TYPE_FORSEARCH = 1 << 8;
 
+    /** _more_          */
     public static final int TYPE_IMPORTANT = 1 << 9;
 
     /** All types */

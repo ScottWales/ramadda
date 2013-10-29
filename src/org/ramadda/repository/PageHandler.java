@@ -465,6 +465,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
+    /** _more_          */
     private String templateJavascriptContent;
 
     /**
@@ -473,16 +474,26 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String getTemplateJavascriptContent() {
-        if(templateJavascriptContent==null) {
+        if (templateJavascriptContent == null) {
             //TODO: add a property to not buttonize
-            String buttonizeJS = HtmlUtils.script(JQuery.buttonize(":submit"));
-            templateJavascriptContent= HtmlUtils.div("", HtmlUtils.id("tooltipdiv") + HtmlUtils.cssClass("tooltip-outer")) + 
-                HtmlUtils.div("", HtmlUtils.id("popupdiv") + HtmlUtils.cssClass("tooltip-outer")) + 
-                HtmlUtils.div("", HtmlUtils.id("output")) + 
-                HtmlUtils.div("", HtmlUtils.id("selectdiv") + HtmlUtils.cssClass("selectdiv")) + 
-                HtmlUtils.div("", HtmlUtils.id("floatdiv") + HtmlUtils.cssClass("floatdiv")) +
-                buttonizeJS;
-        } 
+            String buttonizeJS =
+                HtmlUtils.script(JQuery.buttonize(":submit"));
+            templateJavascriptContent = HtmlUtils.div(
+                "",
+                HtmlUtils.id("tooltipdiv")
+                + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
+                    "",
+                    HtmlUtils.id("popupdiv")
+                    + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
+                        "", HtmlUtils.id("output")) + HtmlUtils.div(
+                        "",
+                        HtmlUtils.id("selectdiv")
+                        + HtmlUtils.cssClass("selectdiv")) + HtmlUtils.div(
+                            "",
+                            HtmlUtils.id("floatdiv")
+                            + HtmlUtils.cssClass("floatdiv")) + buttonizeJS;
+        }
+
         return templateJavascriptContent;
     }
 
@@ -729,6 +740,7 @@ public class PageHandler extends RepositoryManager {
             for (HtmlTemplate htmlTemplate : getTemplates()) {
                 if (htmlTemplate.getId().equals("mobile")) {
                     mobileTemplate = htmlTemplate;
+
                     break;
                 }
             }
@@ -757,7 +769,8 @@ public class PageHandler extends RepositoryManager {
 
             imports = imports.replace("${root}",
                                       getRepository().getUrlBase());
-            imports = imports.replace("${htdocs_version}", RepositoryUtil.HTDOCS_VERSION);
+            imports = imports.replace("${htdocs_version}",
+                                      RepositoryUtil.HTDOCS_VERSION);
 
             theTemplates = new ArrayList<HtmlTemplate>();
 
@@ -801,7 +814,8 @@ public class PageHandler extends RepositoryManager {
                                                 path, resource);
                     //Check if we got some other ...template.html file from a plugin
                     if (template.getId() == null) {
-                        System.err.println ("template: no id in " + path);
+                        System.err.println("template: no id in " + path);
+
                         continue;
                     }
                     theTemplates.add(template);
@@ -1013,7 +1027,7 @@ public class PageHandler extends RepositoryManager {
         if(request.template == null) {
             request.template =  theTemplates.get(tcnt++);
             return request.template;
-        } 
+        }
         if(true)return request.template;
         */
 
@@ -1086,6 +1100,7 @@ public class PageHandler extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param template _more_
      *
      * @return _more_
      */
@@ -2953,26 +2968,28 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, String> typeToWikiTemplate =
         new Hashtable<String, String>();
 
-    /** _more_          */
+    /** _more_ */
     public static final String TEMPLATE_DEFAULT = "default";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TEMPLATE_CONTENT = "content";
 
 
 
+    /**
+     * _more_
+     */
     @Override
     public void clearCache() {
         super.clearCache();
         templateJavascriptContent = null;
-        htmlTemplates   = null;
-        defaultTemplate = null;
-        typeToWikiTemplate =
-            new Hashtable<String, String>();
+        htmlTemplates             = null;
+        defaultTemplate           = null;
+        typeToWikiTemplate        = new Hashtable<String, String>();
     }
 
 
@@ -2988,7 +3005,7 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getWikiTemplate(Request request, Entry entry,
-                                     String templateType)
+                                  String templateType)
             throws Exception {
         if (entry.isDummy()) {
             return null;

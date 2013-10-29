@@ -20,6 +20,7 @@
 
 package org.ramadda.repository;
 
+
 import org.ramadda.util.HtmlUtils;
 
 import java.text.SimpleDateFormat;
@@ -113,7 +114,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_ENTRY_LINKS = new RequestUrl(this,
                                                   "/entry/links");
 

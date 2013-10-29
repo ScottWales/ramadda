@@ -121,7 +121,7 @@ public class Entry implements Cloneable {
     /** the type handler for this entry */
     private TypeHandler typeHandler;
 
-    /** _more_          */
+    /** _more_ */
     private TypeHandler masterTypeHandler;
 
     /** the start date */

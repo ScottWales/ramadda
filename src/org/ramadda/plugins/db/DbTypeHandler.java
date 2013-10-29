@@ -33,12 +33,12 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
+import org.ramadda.util.FormInfo;
+import org.ramadda.util.GoogleChart;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.GoogleChart;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.RssUtil;
-import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
@@ -85,7 +85,7 @@ import java.util.TimeZone;
 
 public class DbTypeHandler extends BlobTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final int DEFAULT_MAX = DB_VIEW_ROWS;
 
     /** _more_ */
@@ -149,10 +149,10 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_VIEW = "view";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_ALL = "db.all";
 
 
@@ -167,7 +167,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     public static final String ARG_DB_BULKCOL = "db.bulkcol";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_OR = "db.search.or";
 
     /** _more_ */
@@ -370,13 +370,13 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private List<Column> dateColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private Column dateColumn;
 
     /** _more_ */
     private List<Column> categoryColumns = new ArrayList<Column>();
 
-    /** _more_          */
+    /** _more_ */
     private Column mapCategoryColumn = null;
 
     /** _more_ */
@@ -1361,12 +1361,14 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param formBuffer _more_
      * @param parentEntry _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     @Override
     public void addToEntryForm(Request request, StringBuffer formBuffer,
-                               Entry parentEntry, Entry entry, FormInfo formInfo)
+                               Entry parentEntry, Entry entry,
+                               FormInfo formInfo)
             throws Exception {
         if ((urlColumn != null) && (entry != null)) {
             String baseUrl =
@@ -1402,7 +1404,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + href, 2)));
         }
 
-        super.addToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
+        super.addToEntryForm(request, formBuffer, parentEntry, entry,
+                             formInfo);
         Hashtable props = getProperties(entry);
         if (entry != null) {
             addToEditForm(request, entry, formBuffer);
@@ -2303,8 +2306,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(XmlUtil.openTag(RssUtil.TAG_RSS,
                                   XmlUtil.attrs(ATTR_RSS_VERSION, "2.0")));
         sb.append(XmlUtil.openTag(RssUtil.TAG_CHANNEL));
-        sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "",
-                              entry.getName()));
+        sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
         SimpleDateFormat sdf = getDateFormat(entry);
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
@@ -2332,16 +2334,13 @@ public class DbTypeHandler extends BlobTypeHandler {
 
             sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "",
                                   XmlUtil.getCdata(url)));
-            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION,
-                                      ""));
+            sb.append(XmlUtil.openTag(RssUtil.TAG_DESCRIPTION, ""));
             XmlUtil.appendCdata(sb, info);
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (hasLocation) {
                 double[] ll = latLonColumn.getLatLon(values);
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "",
-                                      "" + ll[0]));
-                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "",
-                                      "" + ll[1]));
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "", "" + ll[0]));
+                sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "", "" + ll[1]));
             }
             sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
@@ -2491,7 +2490,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         SimpleDateFormat sdf        = getDateFormat(entry);
         Hashtable        entryProps = getProperties(entry);
 
-        StringBuffer chartJS = new StringBuffer();
+        StringBuffer     chartJS    = new StringBuffer();
         //        GoogleChart.addChartImport(sb);
 
         if (doForm) {
@@ -2544,9 +2543,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                     continue;
                 }
                 String type;
-                if(column.isNumeric()) type = "number";
-                else if(column.isBoolean()) type = "boolean";
-                else type =  "string";
+                if (column.isNumeric()) {
+                    type = "number";
+                } else if (column.isBoolean()) {
+                    type = "boolean";
+                } else {
+                    type = "string";
+                }
                 //                GoogleChart.DataTable.addColumn(chartJS, type, column.getLabel());
 
                 String label = column.getLabel();
@@ -4264,12 +4267,15 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @param request _more_
      * @param entry _more_
      * @param sb _more_
+     *
+     * @return _more_
      */
     public String makeForm(Request request, Entry entry, StringBuffer sb) {
-        String formId = HtmlUtils.getUniqueId("entryform_");
+        String formId  = HtmlUtils.getUniqueId("entryform_");
         String formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         sb.append(HtmlUtils.uploadForm(formUrl, HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+
         return formId;
     }
 
@@ -4300,10 +4306,10 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         StringBuffer formBuffer = new StringBuffer();
 
-        String formId = makeForm(request, entry, formBuffer);
+        String       formId     = makeForm(request, entry, formBuffer);
 
 
-        Object[] values = null;
+        Object[]     values     = null;
         if (dbid != null) {
             values = tableHandler.getValues(makeClause(entry, dbid));
             formBuffer.append(HtmlUtils.hidden(ARG_DBID, dbid));
@@ -4346,7 +4352,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuffer validateJavascript = new StringBuffer("");
         formInfo.addJavascriptValidation(validateJavascript);
         String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
-                                                   validateJavascript.toString()));
+                            validateJavascript.toString()));
         formBuffer.append(HtmlUtils.script(script));
 
         if (forEdit && (dbid == null)) {

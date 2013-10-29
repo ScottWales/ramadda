@@ -55,7 +55,7 @@ import java.util.regex.*;
 public class DoiApiHandler extends RepositoryManager implements RequestHandler {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DOI = "doi";
 
     /**

@@ -49,7 +49,7 @@ import javax.mail.internet.*;
  */
 public class MailTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_MESSAGE = "mail_message";
 
     /**

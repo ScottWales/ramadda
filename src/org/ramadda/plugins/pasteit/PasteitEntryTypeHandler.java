@@ -26,9 +26,9 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.FormInfo;
 
 import org.w3c.dom.*;
 
@@ -66,14 +66,17 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     @Override
     public void addSpecialToEntryForm(Request request, StringBuffer sb,
-                                      Entry parentEntry, Entry entry, FormInfo formInfo)
+                                      Entry parentEntry, Entry entry,
+                                      FormInfo formInfo)
             throws Exception {
-        super.addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo);
+        super.addSpecialToEntryForm(request, sb, parentEntry, entry,
+                                    formInfo);
         //Only on a new entry
         if (entry != null) {
             return;

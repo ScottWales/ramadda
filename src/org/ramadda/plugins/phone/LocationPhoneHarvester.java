@@ -67,7 +67,8 @@ public class LocationPhoneHarvester extends PhoneHarvester {
      *
      * @throws Exception _more_
      */
-    public LocationPhoneHarvester(Repository repository, String id) throws Exception {
+    public LocationPhoneHarvester(Repository repository, String id)
+            throws Exception {
         super(repository, id);
     }
 
@@ -88,6 +89,17 @@ public class LocationPhoneHarvester extends PhoneHarvester {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param info _more_
+     * @param msg _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean handleMessageInner(Request request, PhoneInfo info,
                                       StringBuffer msg)
             throws Exception {
@@ -96,18 +108,21 @@ public class LocationPhoneHarvester extends PhoneHarvester {
                            + info.getFromPhone() + " to:" + info.getToPhone()
                            + " " + info.getMessage());
 
-        Entry  parent    = getBaseGroup();
-        String message     = info.getMessage().trim();
-        List<String> lines = StringUtil.split(message, "\n", true,true);
+        Entry        parent  = getBaseGroup();
+        String       message = info.getMessage().trim();
+        List<String> lines   = StringUtil.split(message, "\n", true, true);
 
-        if (message.equals("help") || message.equals("?") || lines.size()==0) {
+        if (message.equals("help") || message.equals("?")
+                || (lines.size() == 0)) {
 
-            msg.append("usage:\n<address>\ninches of water (0 for none)\nhow many days\nany other tags, e.g.\nsewage, etc");
+            msg.append(
+                "usage:\n<address>\ninches of water (0 for none)\nhow many days\nany other tags, e.g.\nsewage, etc");
+
             return true;
         }
 
 
-        String type  = "notes_note";
+        String      type        = "notes_note";
 
 
         TypeHandler typeHandler = getRepository().getTypeHandler(type);
@@ -115,13 +130,13 @@ public class LocationPhoneHarvester extends PhoneHarvester {
             typeHandler.createEntry(getRepository().getGUID());
         Date        date        = new Date();
         Object[]    values      = typeHandler.makeValues(new Hashtable());
-        String desc = "";
-        String name = "";
+        String      desc        = "";
+        String      name        = "";
         values[0] = info.getFromPhone();
         values[1] = info.getToPhone();
-        entry.initEntry(name, desc, parent, getUser(),
-                        new Resource(), "", date.getTime(), date.getTime(),
-                        date.getTime(), date.getTime(), values);
+        entry.initEntry(name, desc, parent, getUser(), new Resource(), "",
+                        date.getTime(), date.getTime(), date.getTime(),
+                        date.getTime(), values);
 
 
         double[] location = org.ramadda.util.GeoUtils.getLocationFromAddress(

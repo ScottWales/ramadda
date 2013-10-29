@@ -1208,6 +1208,7 @@ public class EntryManager extends RepositoryManager {
 
         //        sb.append(HtmlUtils.submit(msg("Set Parent ID"),ARG_EXTEDIT_SETPARENTID));
         sb.append(HtmlUtils.formClose());
+
         return makeEntryEditResult(request, entry, "Entry Walk", sb);
 
     }
@@ -5510,6 +5511,7 @@ public class EntryManager extends RepositoryManager {
         OutputHandler.State state = new OutputHandler.State(entry);
         entry.getTypeHandler().getEntryLinks(request, entry, links);
         links.addAll(getRepository().getOutputLinks(request, state));
+
         return links;
     }
 
@@ -5552,6 +5554,7 @@ public class EntryManager extends RepositoryManager {
                                        int typeMask)
             throws Exception {
         List<Link> links = getEntryLinks(request, entry);
+
         return getEntryActionsTable(request, entry, typeMask, links);
     }
 

@@ -82,6 +82,7 @@ public class LogManager extends RepositoryManager {
     /** apache style log macro */
     public static final String LOG_MACRO_RESPONSE = "%>s";
 
+    /** _more_          */
     public static final String LOG_MACRO_SIZE = "%b";
 
     /** apache style log macro */
@@ -97,6 +98,7 @@ public class LogManager extends RepositoryManager {
     public static final String QUOTE = "\"";
 
 
+    /** _more_          */
     public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
                                               + LOG_MACRO_TIME + "] " + QUOTE
                                               + LOG_MACRO_REQUEST + QUOTE
@@ -104,10 +106,8 @@ public class LogManager extends RepositoryManager {
                                               + LOG_MACRO_REFERER + QUOTE
                                               + " " + QUOTE
                                               + LOG_MACRO_USERAGENT + QUOTE
-                                              + " " 
-                                              + LOG_MACRO_RESPONSE  
-                                              + " " 
-        + LOG_MACRO_SIZE;  
+                                              + " " + LOG_MACRO_RESPONSE
+                                              + " " + LOG_MACRO_SIZE;
 
 
     /** _more_ */
@@ -126,7 +126,7 @@ public class LogManager extends RepositoryManager {
 
     /** _more_ */
     private Hashtable<String, Logger> loggers = new Hashtable<String,
-        Logger>();
+                                                    Logger>();
 
     /** _more_ */
     public static boolean debug = true;
@@ -159,6 +159,7 @@ public class LogManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param response _more_
      */
     public void logRequest(Request request, int response) {
         int count = 0;
@@ -189,7 +190,7 @@ public class LogManager extends RepositoryManager {
         message = message.replace(LOG_MACRO_TIME, time);
         message = message.replace(LOG_MACRO_METHOD, method);
         message = message.replace(LOG_MACRO_PATH, uri);
-        message = message.replace(LOG_MACRO_RESPONSE, ""+response);
+        message = message.replace(LOG_MACRO_RESPONSE, "" + response);
         message =
             message.replace(LOG_MACRO_PROTOCOL,
                             request.getHttpServletRequest().getProtocol());
@@ -213,6 +214,11 @@ public class LogManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Logger getAccessLogger() {
         return getLogger(REPOSITORY_ACCESS_LOG_ID);
     }
@@ -245,6 +251,7 @@ public class LogManager extends RepositoryManager {
             LOGGER_OK = false;
             System.err.println("Error getting logger: " + exc);
             exc.printStackTrace();
+
             return null;
         }
         loggers.put(logId.getId(), logger);
@@ -448,7 +455,9 @@ public class LogManager extends RepositoryManager {
             thr = LogUtil.getInnerException(exc);
         }
 
-        String stackTrace = (thr!=null?LogUtil.getStackTrace(thr):"");
+        String stackTrace = ((thr != null)
+                             ? LogUtil.getStackTrace(thr)
+                             : "");
         if (log == null) {
             System.err.println("RAMADDA ERROR:" + message + " " + thr);
             System.err.println(stackTrace);
@@ -457,8 +466,8 @@ public class LogManager extends RepositoryManager {
                     || (thr instanceof AccessException)) {
                 log.error(message + " " + thr);
             } else {
-                log.error(message + "\n<stack>\n" + thr + "\n"
-                          + stackTrace + "\n</stack>");
+                log.error(message + "\n<stack>\n" + thr + "\n" + stackTrace
+                          + "\n</stack>");
                 System.err.println("RAMADDA ERROR:" + message);
                 System.err.println(stackTrace);
             }
@@ -667,9 +676,10 @@ public class LogManager extends RepositoryManager {
             header.add(HtmlUtils.bold("Recent Access"));
         } else {
             header.add(
-                       HtmlUtils.href(
-                                      HtmlUtils.url(request.url(getAdmin().URL_ADMIN_LOG), ARG_LOG,
-                                             "access"), "Recent Access"));
+                HtmlUtils.href(
+                    HtmlUtils.url(
+                        request.url(getAdmin().URL_ADMIN_LOG), ARG_LOG,
+                        "access"), "Recent Access"));
         }
 
         for (File logFile : logFiles) {
@@ -687,9 +697,10 @@ public class LogManager extends RepositoryManager {
                 theFile = logFile;
             } else {
                 header.add(
-                           HtmlUtils.href(HtmlUtils.url(request.url(getAdmin().URL_ADMIN_LOG),
-                                          ARG_LOG,
-                                                        name), label));
+                    HtmlUtils.href(
+                        HtmlUtils.url(
+                            request.url(getAdmin().URL_ADMIN_LOG), ARG_LOG,
+                            name), label));
             }
         }
 

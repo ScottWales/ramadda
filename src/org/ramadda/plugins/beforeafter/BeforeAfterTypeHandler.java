@@ -153,8 +153,8 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
                 getRepository().getUrlBase()
                 + "/beforeandafter/jquery.beforeafter.js"));
 
-        StringBuffer jq = new StringBuffer();
-        List<Entry> entriesToUse = new ArrayList<Entry>();
+        StringBuffer jq           = new StringBuffer();
+        List<Entry>  entriesToUse = new ArrayList<Entry>();
         for (Entry child : entries) {
             if ( !child.getResource().isImage()) {
                 continue;

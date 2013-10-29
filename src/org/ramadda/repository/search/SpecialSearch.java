@@ -514,7 +514,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.buttons(HtmlUtils.submit(msg("Search"), ARG_SEARCH_SUBMIT), HtmlUtils.submit(msg("Refine"), ARG_SEARCH_REFINE)));
+        buttons.append(HtmlUtils.buttons(HtmlUtils.submit(msg("Search"),
+                ARG_SEARCH_SUBMIT), HtmlUtils.submit(msg("Refine"),
+                    ARG_SEARCH_REFINE)));
 
         //        if(georeferencedResults) {
         //        }

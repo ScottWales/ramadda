@@ -10,7 +10,7 @@
 * The above copyright notice and this permission notice shall be included in all copies 
 * or substantial portions of the Software.
 * 
-* the SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
 * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
 * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
 * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
@@ -515,13 +515,13 @@ public interface Constants {
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DISPLAY = "display";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DISPLAY_FULL = "full";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DISPLAY_SMALL = "small";
 
     /** _more_ */
@@ -1145,7 +1145,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_NODETYPE = "nodetype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DETAILS = "details";
 
     /** _more_ */
@@ -1685,7 +1685,7 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_DOWNLOAD_OK = "ramadda.download.ok";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_ENTRY_TOP = "ramadda.entry.top";
 
 
@@ -2081,7 +2081,7 @@ public interface Constants {
     /** _more_ */
     public static final String CSS_CLASS_ENTRY_TREE_ROW = "entry-tree-row";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CSS_CLASS_ENTRY_LIST_ROW = "entry-list-row";
 
     /** _more_ */
@@ -2264,9 +2264,16 @@ public interface Constants {
     public static final String ARG_IMPORT_TYPE = "import.type";
 
 
+    /** _more_          */
     public static final String SORTBY_FROMDATE = "fromdate";
+
+    /** _more_          */
     public static final String SORTBY_TODATE = "todate";
+
+    /** _more_          */
     public static final String SORTBY_CREATEDATE = "createdate";
+
+    /** _more_          */
     public static final String SORTBY_NAME = "name";
 
 

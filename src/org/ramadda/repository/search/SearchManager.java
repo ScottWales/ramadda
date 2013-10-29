@@ -187,14 +187,18 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     /** _more_ */
     public final List<RequestUrl> searchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
-            URL_SEARCH_ASSOCIATIONS_FORM });
+                                             URL_SEARCH_TYPE,
+                                             URL_SEARCH_FORM,
+                                             URL_SEARCH_BROWSE,
+                                             URL_SEARCH_ASSOCIATIONS_FORM });
 
     /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_TEXTFORM,
-            URL_SEARCH_TYPE, URL_SEARCH_FORM, URL_SEARCH_BROWSE,
-            URL_SEARCH_ASSOCIATIONS_FORM });
+                                             URL_SEARCH_TYPE,
+                                             URL_SEARCH_FORM,
+                                             URL_SEARCH_BROWSE,
+                                             URL_SEARCH_ASSOCIATIONS_FORM });
 
 
     /** _more_ */
@@ -835,8 +839,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
             List orderByList = new ArrayList();
             orderByList.add(new TwoFacedObject(msg("None"), "none"));
-            orderByList.add(new TwoFacedObject(msg("From Date"), SORTBY_FROMDATE));
-            orderByList.add(new TwoFacedObject(msg("To Date"), SORTBY_TODATE));
+            orderByList.add(new TwoFacedObject(msg("From Date"),
+                    SORTBY_FROMDATE));
+            orderByList.add(new TwoFacedObject(msg("To Date"),
+                    SORTBY_TODATE));
             orderByList.add(new TwoFacedObject(msg("Create Date"),
                     SORTBY_CREATEDATE));
             orderByList.add(new TwoFacedObject(msg("Name"), SORTBY_NAME));

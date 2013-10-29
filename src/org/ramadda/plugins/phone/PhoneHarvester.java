@@ -60,38 +60,38 @@ import java.util.List;
 public class PhoneHarvester extends Harvester {
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String CMD_LOGOUT = "logout";
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_LOGIN = { "pass", "password", "login" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_CD = { "cd", "go" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_CLEAR = { "clear" };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_LS = { "ls", "list", "dir" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_URL = { "url", "link" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_GET = { "get" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_COMMENTS = { "comments" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_APPEND = { "+", "append", "add",
                                                  "cat" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_PWD = { "pwd", "where", "ur" };
 
     //TODO:
@@ -111,13 +111,13 @@ public class PhoneHarvester extends Harvester {
     //hello
     //there
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_COPY = { "copy", "cp" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_TAG = { "tag" };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] CMDS_DELETE = { "delete", "rm" };
 
 
@@ -133,16 +133,16 @@ public class PhoneHarvester extends Harvester {
     /** _more_ */
     public static final String ATTR_PASSWORD_VIEW = "password_view";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PASSWORD_ADD = "password_add";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_PASSWORD_EDIT = "password_edit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RESPONSE = "response";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VOICEMESSAGE = "voicemessage";
 
     /** _more_ */
@@ -161,10 +161,10 @@ public class PhoneHarvester extends Harvester {
     /** _more_ */
     private String passwordAdd;
 
-    /** _more_          */
+    /** _more_ */
     private String passwordView;
 
-    /** _more_          */
+    /** _more_ */
     private String passwordEdit;
 
     /** _more_ */
@@ -174,11 +174,11 @@ public class PhoneHarvester extends Harvester {
     /** _more_ */
     private String voiceMessage;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, String> phoneToEntry = new Hashtable<String,
                                                          String>();
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, PhoneSession> sessions = new TTLCache<String,
                                                           PhoneSession>(24
                                                               * 60 * 60
@@ -340,6 +340,17 @@ public class PhoneHarvester extends Harvester {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param info _more_
+     * @param msg _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean handleMessageInner(Request request, PhoneInfo info,
                                       StringBuffer msg)
             throws Exception {
@@ -1328,29 +1339,29 @@ public class PhoneHarvester extends Harvester {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class PhoneSession {
 
-        /** _more_          */
+        /** _more_ */
         boolean passwordOK = true;
 
-        /** _more_          */
+        /** _more_ */
         String fromPhone;
 
-        /** _more_          */
+        /** _more_ */
         String password;
 
-        /** _more_          */
+        /** _more_ */
         boolean canView = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean canAdd = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean canEdit = false;
 
-        /** _more_          */
+        /** _more_ */
         String lastMessage = "";
 
         /**

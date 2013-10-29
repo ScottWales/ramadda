@@ -66,52 +66,52 @@ import javax.mail.internet.*;
  */
 public class MailHarvester extends Harvester {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_ATTACHMENTS = "attachments";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_EML = "eml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String MODE_UNREAD = "unread";
 
-    /** _more_          */
+    /** _more_ */
     public static final String MODE_DELETE = "delete";
 
 
     /** _more_ */
     public static final String ATTR_IMAP_URL = "imapurl";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FOLDER = "folder";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FROM = "from";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUBJECT = "subject";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_BODY = "body";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ACTION = "action";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DELETEEMAIL = "delete_email";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MODE = "mode";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RESPONSE = "response";
 
 
-    /** _more_          */
+    /** _more_ */
     private String imapUrl;
 
-    /** _more_          */
+    /** _more_ */
     private String folder = "Inbox";
 
     /** _more_ */
@@ -128,10 +128,10 @@ public class MailHarvester extends Harvester {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private String action = ACTION_ATTACHMENTS;
 
-    /** _more_          */
+    /** _more_ */
     private boolean delete = false;
 
 
@@ -845,7 +845,7 @@ public class MailHarvester extends Harvester {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class EntryInfo {
 
@@ -860,13 +860,13 @@ public class MailHarvester extends Harvester {
             this.name        = name;
         }
 
-        /** _more_          */
+        /** _more_ */
         Entry parentEntry;
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-        /** _more_          */
+        /** _more_ */
         StringBuffer text = new StringBuffer();
     }
 

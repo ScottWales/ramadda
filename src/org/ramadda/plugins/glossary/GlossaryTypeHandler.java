@@ -59,7 +59,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static String TYPE_GLOSSARY = "glossary";
 
-    /** _more_          */
+    /** _more_ */
     public static String ALL = "all";
 
     /**

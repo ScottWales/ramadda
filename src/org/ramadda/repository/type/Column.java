@@ -188,8 +188,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SIZE = "size";
 
+    /** _more_          */
     public static final String ATTR_MIN = "min";
+
+    /** _more_          */
     public static final String ATTR_MAX = "max";
+
+    /** _more_          */
     public static final String ATTR_REQUIRED = "required";
 
     /** _more_ */
@@ -204,10 +209,10 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SHOWLABEL = "showlabel";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CANEXPORT = "canexport";
 
 
@@ -284,9 +289,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private int size = 200;
 
+    /** _more_          */
     private double min = Double.NaN;
 
+    /** _more_          */
     private double max = Double.NaN;
+
+    /** _more_          */
     private boolean required = false;
 
     /** _more_ */
@@ -304,10 +313,10 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canShow = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showLabel = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean canExport = true;
 
 
@@ -386,9 +395,9 @@ public class Column implements DataTypes, Constants {
         canExport = XmlUtil.getAttribute(element, ATTR_CANEXPORT, canExport);
         canList        = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
         size           = XmlUtil.getAttribute(element, ATTR_SIZE, size);
-        min           = XmlUtil.getAttribute(element, ATTR_MIN, min);
-        max           = XmlUtil.getAttribute(element, ATTR_MAX, max);
-        required       = XmlUtil.getAttribute(element, ATTR_REQUIRED, required);
+        min            = XmlUtil.getAttribute(element, ATTR_MIN, min);
+        max            = XmlUtil.getAttribute(element, ATTR_MAX, max);
+        required = XmlUtil.getAttribute(element, ATTR_REQUIRED, required);
         rows           = XmlUtil.getAttribute(element, ATTR_ROWS, rows);
         columns        = XmlUtil.getAttribute(element, ATTR_COLUMNS, columns);
 
@@ -518,6 +527,11 @@ public class Column implements DataTypes, Constants {
         return isType(DATATYPE_INT) || isDouble();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isBoolean() {
         return isType(DATATYPE_BOOLEAN);
     }
@@ -878,6 +892,7 @@ public class Column implements DataTypes, Constants {
     protected int setValues(PreparedStatement statement, Object[] values,
                             int statementIdx)
             throws Exception {
+
         if (offset >= values.length) {
             return 0;
         }
@@ -892,20 +907,23 @@ public class Column implements DataTypes, Constants {
         } else if (isDouble()) {
             if (values[offset] != null) {
                 double value = ((Double) values[offset]).doubleValue();
-                if(!Double.isNaN(value)) {
-                    if(!Double.isNaN(min)) {
-                        if(value<min) {
-                            throw new IllegalArgumentException("Invalid value for " + getLabel()+" " + value +" < " + min);
+                if ( !Double.isNaN(value)) {
+                    if ( !Double.isNaN(min)) {
+                        if (value < min) {
+                            throw new IllegalArgumentException(
+                                "Invalid value for " + getLabel() + " "
+                                + value + " < " + min);
                         }
                     }
-                    if(!Double.isNaN(max)) {
-                        if(value>max) {
-                            throw new IllegalArgumentException("Invalid value for " + getLabel()+" " + value +" > " + max);
+                    if ( !Double.isNaN(max)) {
+                        if (value > max) {
+                            throw new IllegalArgumentException(
+                                "Invalid value for " + getLabel() + " "
+                                + value + " > " + max);
                         }
                     }
                 }
-                statement.setDouble(statementIdx,
-                                    value);
+                statement.setDouble(statementIdx, value);
             } else {
                 statement.setDouble(statementIdx, Double.NaN);
             }
@@ -972,9 +990,10 @@ public class Column implements DataTypes, Constants {
                     getRepository().getEntryManager().checkColumnSize(
                         getName(), value, size);
                 }
-                if(required) {
-                    if(value.trim().length()==0) {
-                        throw new IllegalArgumentException("Value " + getLabel()+" is required");
+                if (required) {
+                    if (value.trim().length() == 0) {
+                        throw new IllegalArgumentException("Value "
+                                + getLabel() + " is required");
                     }
                 }
                 statement.setString(statementIdx, value);
@@ -985,6 +1004,7 @@ public class Column implements DataTypes, Constants {
         }
 
         return statementIdx;
+
     }
 
 
@@ -1685,10 +1705,10 @@ public class Column implements DataTypes, Constants {
             widget = HtmlUtils.input(id, value, HtmlUtils.SIZE_10);
         } else if (isType(DATATYPE_DOUBLE)) {
             String domId = HtmlUtils.getUniqueId("input_");
-            if(!Double.isNaN(max)) {
+            if ( !Double.isNaN(max)) {
                 formInfo.addMaxValidation(getLabel(), domId, max);
             }
-            if(!Double.isNaN(min)) {
+            if ( !Double.isNaN(min)) {
                 formInfo.addMinValidation(getLabel(), domId, min);
             }
 
@@ -1698,7 +1718,8 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = "" + toString(values, offset);
             }
-            widget = HtmlUtils.input(id, value, HtmlUtils.SIZE_10 + HtmlUtils.id(domId));
+            widget = HtmlUtils.input(id, value,
+                                     HtmlUtils.SIZE_10 + HtmlUtils.id(domId));
         } else if (isType(DATATYPE_PERCENTAGE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1792,7 +1813,7 @@ public class Column implements DataTypes, Constants {
                                 StringUtil.split(value, ",", true, true));
                     }
                     widget = HtmlUtils.textArea(id, value, rows, columns,
-                                                HtmlUtils.id(domId));
+                            HtmlUtils.id(domId));
                 } else {
                     widget = HtmlUtils.input(id, value,
                                              HtmlUtils.id(domId) + " size=\""
@@ -1801,7 +1822,7 @@ public class Column implements DataTypes, Constants {
                 if (size > 0) {
                     formInfo.addSizeValidation(getLabel(), domId, size);
                 }
-                if(required) {
+                if (required) {
                     formInfo.addRequiredValidation(getLabel(), domId);
                 }
             }

@@ -46,7 +46,7 @@ import java.util.Properties;
  */
 public class BiblioTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat dateFormat;
 
     /**

@@ -83,7 +83,7 @@ public class PhoneInfo {
     /** _more_ */
     private String fromZip;
 
-    /** _more_          */
+    /** _more_ */
     private String transcription = "";
 
 

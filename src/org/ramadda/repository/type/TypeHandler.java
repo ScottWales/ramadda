@@ -1634,7 +1634,7 @@ public class TypeHandler extends RepositoryManager {
                         entry.getId(), ARG_TYPE,
                         TYPE_GROUP), getRepository().iconUrl(
                             ICON_FOLDER_ADD), "New Folder",
-                    OutputType.TYPE_FILE));
+                                OutputType.TYPE_FILE));
             links.add(
                 new Link(
                     request.url(
@@ -1935,7 +1935,8 @@ public class TypeHandler extends RepositoryManager {
 
         return new Link(getEntryManager().getEntryResourceUrl(request,
                 entry), getRepository().iconUrl(ICON_FETCH),
-                        msg("Download File") + size, OutputType.TYPE_FILE|OutputType.TYPE_IMPORTANT);
+                        msg("Download File") + size,
+                        OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
     }
 
 

@@ -56,25 +56,25 @@ import java.util.regex.*;
  */
 public class Scheduler extends RepositoryManager implements RequestHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_WEEKS = "weeks";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NUMPLAYERS = "numplayers";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_PLAYERSPERGAME = "playerspergame";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_NAMES = "names";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_SEED = "seed";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_MAXWITHOUT = "maxwithout";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ASCSV = "ascsv";
 
     /**
@@ -335,29 +335,29 @@ public class Scheduler extends RepositoryManager implements RequestHandler {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Player {
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-        /** _more_          */
+        /** _more_ */
         boolean playing = false;
 
-        /** _more_          */
+        /** _more_ */
         int lastPlayed = -1;
 
-        /** _more_          */
+        /** _more_ */
         HashSet<Player> playedWith = new HashSet<Player>();
 
-        /** _more_          */
+        /** _more_ */
         int numGamesPlayed = 0;
 
-        /** _more_          */
+        /** _more_ */
         List<Integer> games = new ArrayList<Integer>();
 
-        /** _more_          */
+        /** _more_ */
         HashSet<Integer> gamesPlayed = new HashSet<Integer>();
 
         /**

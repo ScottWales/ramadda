@@ -59,124 +59,124 @@ public class DoiOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_EZID_USERNAME = "ezid.username";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_EZID_PASSWORD = "ezid.password";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DOI_ADMINONLY = "doi.adminonly";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DOI_PREFIXES = "doi.prefixes";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_EZID_PROFILE = "ezid.profile";
 
-    /** _more_          */
+    /** _more_ */
     public static final String METADATA_TARGET = "_target";
 
-    /** _more_          */
+    /** _more_ */
     public static final String METADATA_PROFILE = "_profile";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROFILE_ERC = "erc";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROFILE_DATACITE = "datacite";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROFILE_DC = "dc";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] PROFILES = { PROFILE_ERC, PROFILE_DATACITE,
             PROFILE_DC };
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_CREATE = "doi.create";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_PREFIX = "prefix";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATACITE_CREATOR = "datacite.creator";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATACITE_TITLE = "datacite.title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATACITE_PUBLISHER = "datacite.publisher";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATACITE_PUBLICATIONYEAR =
         "datacite.publicationyear";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DATACITE_RESOURCETYPE =
         "datacite.resourcetype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_DATACITE_ARGS = { ARG_DATACITE_CREATOR,
             ARG_DATACITE_TITLE, ARG_DATACITE_PUBLISHER,
             ARG_DATACITE_PUBLICATIONYEAR,
             ARG_DATACITE_RESOURCETYPE, };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_DATACITE_LABELS = { "Creator",
             "Title", "Publisher", "Publication Year", "Resource Type", };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ERC_WHO = "erc.who";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ERC_WHAT = "erc.what";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_ERC_WHEN = "erc.when";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_ERC_ARGS = { ARG_ERC_WHO,
             ARG_ERC_WHAT, ARG_ERC_WHEN, };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_ERC_LABELS = { "Who", "What",
             "When", };
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DC_CREATOR = "dc.creator";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DC_TITLE = "dc.title";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DC_PUBLISHER = "dc.publisher";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DC_DATE = "dc.date";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_DC_ARGS = { ARG_DC_CREATOR,
             ARG_DC_TITLE, ARG_DC_PUBLISHER, ARG_DC_DATE, };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] METADATA_DC_LABELS = { "Creator", "Title",
             "Publisher", "Date", };
 
-    /** _more_          */
+    /** _more_ */
     private boolean enabled = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean adminOnly = true;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> dataciteResources;
 
     /** Map output type */

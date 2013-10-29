@@ -451,8 +451,8 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             String wikiTemplate = getWikiText(request, entry);
             if (wikiTemplate == null) {
-                wikiTemplate = getPageHandler().getWikiTemplate(request, entry,
-                        PageHandler.TEMPLATE_DEFAULT);
+                wikiTemplate = getPageHandler().getWikiTemplate(request,
+                        entry, PageHandler.TEMPLATE_DEFAULT);
             }
 
             if (wikiTemplate != null) {
@@ -522,7 +522,8 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer sb           = new StringBuffer();
         String       wikiTemplate = getWikiText(request, entry);
         if (wikiTemplate == null) {
-            wikiTemplate = getPageHandler().getWikiTemplate(request, entry, PageHandler.TEMPLATE_DEFAULT);
+            wikiTemplate = getPageHandler().getWikiTemplate(request, entry,
+                    PageHandler.TEMPLATE_DEFAULT);
         }
 
         if (wikiTemplate != null) {
@@ -1765,8 +1766,8 @@ public class HtmlOutputHandler extends OutputHandler {
                                OUTPUT_HTML.getId())) {
             wikiTemplate = getWikiText(request, group);
             if (wikiTemplate == null) {
-                wikiTemplate = getPageHandler().getWikiTemplate(request, group,
-                        PageHandler.TEMPLATE_DEFAULT);
+                wikiTemplate = getPageHandler().getWikiTemplate(request,
+                        group, PageHandler.TEMPLATE_DEFAULT);
             }
         }
 

@@ -333,10 +333,12 @@ public class FeedTypeHandler extends GenericTypeHandler {
             root = XmlUtil.getRoot(url, getClass());
         } catch (Exception exc) {
             logError("Error reading feed:" + url, exc);
+
             return items;
         }
-        if(root == null) {
+        if (root == null) {
             logError("Error reading feed:" + url, null);
+
             return items;
         }
         if (root.getTagName().equals(RssUtil.TAG_RSS)) {

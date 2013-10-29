@@ -1416,9 +1416,8 @@ public class MetadataManager extends RepositoryManager {
             request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
             groupSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
-            groupSB.append(HtmlUtils.submit(msg("Add")+
-                                            HtmlUtils.space(1) +
-                                            type.getLabel()));
+            groupSB.append(HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
+                                            + type.getLabel()));
             groupSB.append(HtmlUtils.formClose());
             groupSB.append(HtmlUtils.p());
             groupSB.append(NEWLINE);

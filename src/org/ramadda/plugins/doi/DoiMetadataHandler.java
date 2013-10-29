@@ -79,10 +79,10 @@ import java.util.List;
  */
 public class DoiMetadataHandler extends MetadataHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_TYPE_DOI = "doi";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_TYPE_ARK = "ark";
 
     /** _more_ */

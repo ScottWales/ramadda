@@ -1049,7 +1049,9 @@ public class MetadataType extends MetadataTypeBase {
                   + HtmlUtils.hidden(argid, metadata.getId()));
 
         if ( !forEdit && (entry != null)) {
-            sb.append(HtmlUtils.formEntry("", submit + HtmlUtils.buttonSpace() + cancel));
+            sb.append(HtmlUtils.formEntry("",
+                                          submit + HtmlUtils.buttonSpace()
+                                          + cancel));
         }
 
 

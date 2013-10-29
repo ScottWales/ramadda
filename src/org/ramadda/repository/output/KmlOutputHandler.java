@@ -214,15 +214,17 @@ public class KmlOutputHandler extends OutputHandler {
         int cnt  = subGroups.size() + entries.size();
         int max  = request.get(ARG_MAX, DB_MAX_ROWS);
         int skip = Math.max(0, request.get(ARG_SKIP, 0));
-        if(true) {
+        if (true) {
             entries.addAll(subGroups);
         } else {
             for (Entry childGroup : subGroups) {
-                String url =
-                    request.getAbsoluteUrl(request.url(repository.URL_ENTRY_SHOW,
-                                                       ARG_ENTRYID, childGroup.getId(), ARG_OUTPUT, OUTPUT_KML));
+                String url = request.getAbsoluteUrl(
+                                 request.url(
+                                     repository.URL_ENTRY_SHOW, ARG_ENTRYID,
+                                     childGroup.getId(), ARG_OUTPUT,
+                                     OUTPUT_KML));
                 Element link = KmlUtil.networkLink(defaultFolder,
-                                                   childGroup.getName(), url);
+                                   childGroup.getName(), url);
                 if (childGroup.getDescription().length() > 0) {
                     KmlUtil.description(link, childGroup.getDescription());
                 }
@@ -321,18 +323,22 @@ public class KmlOutputHandler extends OutputHandler {
                                       request.entryUrl(
                                           getRepository().URL_ENTRY_SHOW,
                                           entry)), entry.getName());
-                String  desc    = link + entry.getDescription();
+                String desc = link + entry.getDescription();
 
 
-                String content = entry.getTypeHandler().getEntryContent(request,
-                                                                        entry, true, false).toString();
+                String content =
+                    entry.getTypeHandler().getEntryContent(request, entry,
+                        true, false).toString();
                 content = content.replace("class=\"formlabel\"",
                                           "style=\" font-weight: bold;\"");
-                content = content.replace("cellpadding=\"0\""," cellpadding=\"5\" ");
+                content = content.replace("cellpadding=\"0\"",
+                                          " cellpadding=\"5\" ");
 
 
 
-                content = content.replace("class=\"formgroupheader\"", "style=\"   background-color : #eee; border-bottom: 1px #ccc solid;    padding-left: 8px;   padding-top: 4px;   font-weight: bold;\"");
+                content = content.replace(
+                    "class=\"formgroupheader\"",
+                    "style=\"   background-color : #eee; border-bottom: 1px #ccc solid;    padding-left: 8px;   padding-top: 4px;   font-weight: bold;\"");
                 content = getRepository().translate(request, content);
 
 
@@ -350,12 +356,13 @@ public class KmlOutputHandler extends OutputHandler {
                 }
 
                 Element placemark = KmlUtil.placemark(parentFolder,
-                                        getName(entry, cnt), content, lonlat[0],
-                                        lonlat[1], entry.hasAltitudeTop()
-                        ? entry.getAltitudeTop()
-                        : (entry.hasAltitudeBottom()
-                           ? entry.getAltitudeBottom()
-                           : 0), null);
+                                        getName(entry, cnt), content,
+                                        lonlat[0], lonlat[1],
+                                        entry.hasAltitudeTop()
+                                        ? entry.getAltitudeTop()
+                                        : (entry.hasAltitudeBottom()
+                                           ? entry.getAltitudeBottom()
+                                           : 0), null);
 
                 KmlUtil.visible(placemark, true);
 

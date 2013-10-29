@@ -183,8 +183,7 @@ public class Admin extends RepositoryManager {
 
 
     /** _more_ */
-    private List<RequestUrl> adminUrls =
-        RequestUrl.toList(new RequestUrl[] {
+    private List<RequestUrl> adminUrls = RequestUrl.toList(new RequestUrl[] {
         URL_ADMIN_SETTINGS, getRepositoryBase().URL_USER_LIST,
         URL_ADMIN_STATS, URL_ADMIN_ACCESS,
         getHarvesterManager().URL_HARVESTERS_LIST,
