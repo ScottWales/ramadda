@@ -1005,7 +1005,7 @@ function selectClick(id,entryId,value) {
 }
 
 function selectCancel() {
-    $("#selectdiv").hide();
+    $("#ramadda-selectdiv").hide();
 }
 
 
