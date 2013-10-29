@@ -79,7 +79,7 @@ public class WeatherTypeHandler extends GenericTypeHandler {
 
         String template =
             getRepository().getResource(
-                "/org/ramadda/plugins/gadgets/weathertemplate.html");
+                "/org/ramadda/plugins/gadgets/weather.html");
 
         if (orientation.equals("horizontal")) {
             sb.append("<table><tr valign=top>");
