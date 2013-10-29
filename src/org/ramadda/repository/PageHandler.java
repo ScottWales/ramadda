@@ -480,15 +480,15 @@ public class PageHandler extends RepositoryManager {
                 HtmlUtils.script(JQuery.buttonize(":submit"));
             templateJavascriptContent = HtmlUtils.div(
                 "",
-                HtmlUtils.id("tooltipdiv")
+                HtmlUtils.id("ramadda-tooltipdiv")
                 + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
                     "",
                     HtmlUtils.id("popupdiv")
                     + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
                         "", HtmlUtils.id("output")) + HtmlUtils.div(
                         "",
-                        HtmlUtils.id("selectdiv")
-                        + HtmlUtils.cssClass("selectdiv")) + HtmlUtils.div(
+                        HtmlUtils.id("ramadda-selectdiv")
+                        + HtmlUtils.cssClass("ramadda-selectdiv")) + HtmlUtils.div(
                             "",
                             HtmlUtils.id("floatdiv")
                             + HtmlUtils.cssClass("floatdiv")) + buttonizeJS;

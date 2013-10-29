@@ -454,7 +454,7 @@ function mouseUpOnEntry(event, entryId, targetId) {
 
 
 function getTooltip() {
-    return $("#tooltipdiv");
+    return $("#ramadda-tooltipdiv");
 }
 
 function handleKeyPress(event) {
@@ -960,7 +960,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         if(!link) {
             return false;
         }
-        this.div = ramaddaUtil.getDomObject('selectdiv');
+        this.div = ramaddaUtil.getDomObject('ramadda-selectdiv');
         if(!this.div) {
             return false;
         }
