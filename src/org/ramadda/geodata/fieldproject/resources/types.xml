@@ -71,6 +71,7 @@
 ==Information==
 <table class="formtable">
 {{resource row.label="URL:"  message=""}}
+{{field name="project_id" row.label="Project ID:"}}
 {{field name="project_type" row.label="Type:"}}
 {{field name="location" row.label="Location:"}}
 </table>
