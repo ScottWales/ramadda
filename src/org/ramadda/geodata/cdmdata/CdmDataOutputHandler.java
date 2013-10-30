@@ -1129,6 +1129,20 @@ public class CdmDataOutputHandler extends OutputHandler {
      */
     protected StringBuffer getVariableForm(GridDataset dataset,
                                            boolean withLevelSelector) {
+        return getVariableForm(dataset, withLevelSelector, true);
+    }
+    
+    /**
+     * Get the variable selector form
+     *
+     * @param dataset  the dataset
+     * @param withLevelSelector  if true, include a level selector widget
+     *
+     * @return  the form
+     */
+    protected StringBuffer getVariableForm(GridDataset dataset,
+                                           boolean withLevelSelector,
+                                           boolean useLevelValue) {
         int                varCnt  = 0;
         StringBuffer       varSB   = new StringBuffer();
         StringBuffer       varSB2D = new StringBuffer();
@@ -1175,8 +1189,26 @@ public class CdmDataOutputHandler extends OutputHandler {
                 String header = " 3D Grids";
                 if (withLevelSelector) {
                     header += HtmlUtils.space(3) + "Level:"
-                              + HtmlUtils.space(1)
-                              + HtmlUtils.input(ARG_LEVEL, "");
+                              + HtmlUtils.space(1);
+                    if (grids.size() > 1) {
+                       header += HtmlUtils.input(ARG_LEVEL, "");
+                    } else {
+                       GridDatatype grid = grids.get(0);
+                       GridCoordSystem gcs = grid.getCoordinateSystem();
+                       CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+                       double[] zVals = zAxis.getCoordValues();
+                       List<TwoFacedObject> selObjs = new ArrayList<TwoFacedObject>(zVals.length);
+                       selObjs.add(new TwoFacedObject("All", -1));
+                       for (int i = 0; i < zVals.length; i++) {
+                           if (useLevelValue) {
+                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), zVals[i] ));
+                           } else {
+                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), i ));
+                           }
+                       }
+                       header += HtmlUtils.select(ARG_LEVEL, selObjs) + HtmlUtils.space(2) 
+                                  + "(" + zAxis.getUnitsString() + ")";
+                    }
                 }
                 varSB.append(
                     HtmlUtils.row(
@@ -1309,6 +1341,12 @@ public class CdmDataOutputHandler extends OutputHandler {
             }
             int                hStride    = request.get(ARG_HSTRIDE, 1);
             Range              zStride    = null;
+            if (request.defined(ARG_LEVEL)) {
+                int index = request.get(ARG_LEVEL, -1);
+                if (index >= 0) {
+                    zStride = new Range(index, index);
+                }
+            }
             boolean includeLatLon         = request.get(ARG_ADDLATLON, false);
             int                timeStride = 1;
             GridDataset gds = getCdmManager().getGridDataset(entry, path);
@@ -1407,7 +1445,8 @@ public class CdmDataOutputHandler extends OutputHandler {
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
         List<CalendarDate> dates = getGridDates(dataset);
-        StringBuffer       varSB = getVariableForm(dataset, false);
+        StringBuffer       varSB = 
+            getVariableForm(dataset, (dataset.getGrids().size()==1), false);
         LatLonRect         llr   = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
