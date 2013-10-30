@@ -75,7 +75,7 @@ public class PointTiler extends RecordTool {
     private List<File> inputFiles = new ArrayList<File>();
 
     /** output filename prefix */
-    private String prefix = "lidar";
+    private String prefix = "point";
 
     /** output filename suffix */
     private String suffix = null;
@@ -407,6 +407,15 @@ public class PointTiler extends RecordTool {
             if (arg.equals("-help")) {
                 usage("");
             }
+            if (arg.equals("-class")) {
+                if (i == args.length - 1) {
+                    usage("Need " + arg + " argument");
+                }
+                setRecordFileClass(args[++i]);
+
+                continue;
+            }
+
             if (arg.equals("-bounds")) {
                 if (i + 4 >= args.length) {
                     usage("Need " + arg + " argument");
