@@ -13,6 +13,24 @@ You need to have JDK 1.6 installed.
 To make the scripts executable do:
     source install.sh
 
+
+
+
+##############################################################################
+Installing other libraries
+##############################################################################
+
+To process some of the lidar formats (GLAS, LVIS, LAS) you will need to install the nlasplugin.jar 
+file (from RAMADDA) into the lib directory as one of the predefined libraries:
+
+libext1.jar
+libext2.jar
+
+
+
+
+
+
 ##############################################################################
 Supported Data Formats
 ##############################################################################
