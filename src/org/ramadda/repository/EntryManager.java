@@ -1099,8 +1099,8 @@ public class EntryManager extends RepositoryManager {
                         if (child.isFileType()) {
                             boolean exists = child.getResource().fileExists();
                             append("<tr><td>");
-                            append(HtmlUtils.href(url,
-                                    getEntryDisplayName(child)));
+                            append(getPageHandler().getBreadCrumbs(request,
+                                    child, entry));
                             append("</td><td align=right>");
                             if (exists) {
                                 File file = child.getFile();
