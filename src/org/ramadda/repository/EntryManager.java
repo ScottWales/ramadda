@@ -1096,15 +1096,20 @@ public class EntryManager extends RepositoryManager {
                         String url =
                             request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                              child);
-                        if (child.isFile()) {
+                        if (child.isFileType()) {
+                            boolean exists = child.getResource().fileExists();
                             append("<tr><td>");
                             append(HtmlUtils.href(url,
                                     getEntryDisplayName(child)));
                             append("</td><td align=right>");
-                            File file = child.getFile();
-                            size[0] += file.length();
-                            numFiles[0]++;
-                            append("" + file.length());
+                            if (exists) {
+                                File file = child.getFile();
+                                size[0] += file.length();
+                                numFiles[0]++;
+                                append("" + file.length());
+                            } else {
+                                append("Missing:" + child.getResource());
+                            }
                             append("</td>");
                             append("<td>");
                             if (child.getResource().isStoredFile()) {

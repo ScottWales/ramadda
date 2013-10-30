@@ -540,6 +540,15 @@ public class Entry implements Cloneable {
         return (resource != null) && resource.isFile();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isFileType() {
+        return (resource != null) && resource.isFileType();
+    }
+
 
     /**
      * _more_
