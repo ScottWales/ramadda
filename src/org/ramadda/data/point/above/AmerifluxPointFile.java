@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class AmerifluxPointFile extends SingleSiteTextFile {
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf = makeDateFormat("yyyy-D HHmm");
 
 

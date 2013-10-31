@@ -49,24 +49,24 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private String delimiter = ",";
 
-    /** _more_          */
+    /** _more_ */
     private boolean delimiterIsSpace = false;
 
-    /** _more_          */
+    /** _more_ */
     protected String firstDataLine = null;
 
 
-    /** _more_          */
+    /** _more_ */
     private String[] tokens;
 
-    /** _more_          */
+    /** _more_ */
     private String line = "";
 
-    /** _more_          */
+    /** _more_ */
     private boolean bePickyAboutTokens = true;
 
 
-    /** _more_          */
+    /** _more_ */
     private int badCnt = 0;
 
 
@@ -77,7 +77,7 @@ public class TextRecord extends DataRecord {
      */
     public TextRecord(TextRecord that) {
         super(that);
-        tokens       = null;
+        tokens = null;
     }
 
 
@@ -93,6 +93,11 @@ public class TextRecord extends DataRecord {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param fields _more_
+     */
     @Override
     public void initFields(List<RecordField> fields) {
         super.initFields(fields);
@@ -177,6 +182,7 @@ public class TextRecord extends DataRecord {
         if (idxTime >= 0) {
             return ((Date) objectValues[idxTime]).getTime();
         }
+
         return super.getRecordTime();
     }
 
@@ -459,15 +465,16 @@ public class TextRecord extends DataRecord {
         if (bePickyAboutTokens && (numTokensRead != tokens.length)) {
             badCnt++;
             //Handle the goofy point cloud text file that occasionally has a single number
-            if(badCnt>5 || numTokensRead!=1) {
+            if ((badCnt > 5) || (numTokensRead != 1)) {
                 System.err.println("bad token cnt: expected:" + tokens.length
                                    + " read:" + numTokensRead + " delimiter:"
-                                   + delimiter + " is space:" + delimiterIsSpace
-                                   + "\nLine:" + line);
+                                   + delimiter + " is space:"
+                                   + delimiterIsSpace + "\nLine:" + line);
 
-                throw new IllegalArgumentException("Could not tokenize line:\n"
-                                                   + line + "\n");
+                throw new IllegalArgumentException(
+                    "Could not tokenize line:\n" + line + "\n");
             }
+
             return false;
         }
         badCnt = 0;

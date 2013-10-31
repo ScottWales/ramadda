@@ -43,17 +43,17 @@ import java.util.List;
 
 public class NoaaPointFile extends CsvFile {
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_NUMBER_OF_MEASUREMENTS =
         "number_of_measurements";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_QC_FLAG = "qc_flag";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_INTAKE_HEIGHT = "intake_height";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_INSTRUMENT = "instrument";
 
     /**

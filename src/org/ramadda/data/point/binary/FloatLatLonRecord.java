@@ -36,27 +36,27 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class FloatLatLonRecord extends org.ramadda.data.point.PointRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     public static final List<RecordField> FIELDS =
         new ArrayList<RecordField>();
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAT = ATTR_FIRST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LAT;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LON = ATTR_FIRST + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LON;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAST = ATTR_FIRST + 3;
 
 
@@ -91,10 +91,10 @@ public class FloatLatLonRecord extends org.ramadda.data.point.PointRecord {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     float lat;
 
-    /** _more_          */
+    /** _more_ */
     float lon;
 
 

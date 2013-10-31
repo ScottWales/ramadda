@@ -54,10 +54,10 @@ import javax.swing.*;
  */
 public abstract class TextFile extends PointFile implements Fields {
 
-    /** _more_          */
+    /** _more_ */
     static int cnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     int mycnt = cnt++;
 
     /** _more_ */
@@ -65,44 +65,44 @@ public abstract class TextFile extends PointFile implements Fields {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MISSING = "missing";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VALUE = "value";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FORMAT = "format";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_UNIT = "unit";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CHARTABLE = "chartable";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_STRING = "string";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_DATE = "date";
 
     /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DELIMITER = "delimiter";
 
-    /** _more_          */
+    /** _more_ */
     protected String firstDataLine = null;
 
 
@@ -165,7 +165,7 @@ public abstract class TextFile extends PointFile implements Fields {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable<String, String> fieldsMap =
         new Hashtable<String, String>();
 

@@ -36,39 +36,39 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.record.GeoRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     public static final List<RecordField> FIELDS =
         new ArrayList<RecordField>();
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LATITUDE = ATTR_FIRST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LATITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LONGITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_ALTITUDE = ATTR_FIRST + 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_ALTITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_VALUES = ATTR_FIRST + 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_VALUES;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAST = ATTR_FIRST + 5;
 
 
@@ -119,16 +119,16 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     double latitude;
 
-    /** _more_          */
+    /** _more_ */
     double longitude;
 
-    /** _more_          */
+    /** _more_ */
     double altitude;
 
-    /** _more_          */
+    /** _more_ */
     double[] values = null;
 
 
@@ -228,7 +228,7 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private int numberOfValues;
 
     //    public LatLonPointRecord(int numberOfValues) {

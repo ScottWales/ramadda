@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class RandomizedFilter implements RecordFilter {
 
-    /** _more_          */
+    /** _more_ */
     private double probability = 0.5;
 
     /**

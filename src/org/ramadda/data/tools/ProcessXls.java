@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.tools;
 
 
@@ -37,18 +38,18 @@ import java.util.*;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class ProcessXls {
 
-    /** _more_          */
+    /** _more_ */
     int nextId = 0;
 
 
-    /** _more_          */
+    /** _more_ */
     StringBuffer sb = new StringBuffer();
 
-    /** _more_          */
+    /** _more_ */
     StringBuffer end = new StringBuffer();
 
     /**

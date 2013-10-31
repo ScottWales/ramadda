@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.tools;
 
 
@@ -189,8 +190,9 @@ public class Point2Netcdf extends RecordTool {
 
             RecordFile file = doMakeRecordFile(inFile);
 
-            File tmpFile   = new File(IOUtil.stripExtension(inFile) + ".nc.tmp");
-            File destFile   = new File(IOUtil.stripExtension(inFile) + ".nc");
+            File tmpFile = new File(IOUtil.stripExtension(inFile)
+                                    + ".nc.tmp");
+            File destFile = new File(IOUtil.stripExtension(inFile) + ".nc");
             System.err.println("writing:" + destFile);
             RecordVisitor visitor = new NetcdfVisitor(tmpFile, destFile);
             RecordFilter  filter  = null;

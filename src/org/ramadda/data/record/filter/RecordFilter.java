@@ -39,22 +39,22 @@ import java.util.List;
  */
 public interface RecordFilter {
 
-    /** _more_          */
+    /** _more_ */
     public static final AltitudeFilter dummy1 = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final BitmaskRecordFilter dummy2 = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final CollectionRecordFilter dummy3 = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final LatLonBoundsFilter dummy4 = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final NumericRecordFilter dummy5 = null;
 
-    /** _more_          */
+    /** _more_ */
     public static final RandomizedFilter dummy6 = null;
 
 

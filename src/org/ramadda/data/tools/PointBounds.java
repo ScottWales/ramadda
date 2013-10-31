@@ -55,25 +55,25 @@ public class PointBounds extends RecordTool {
     /** _more_ */
     private static boolean debug = false;
 
-    /** _more_          */
+    /** _more_ */
     private int skip = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int max = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int width = 40;
 
-    /** _more_          */
+    /** _more_ */
     private int height = 40;
 
-    /** _more_          */
+    /** _more_ */
     private String kmlFile = null;
 
-    /** _more_          */
+    /** _more_ */
     private String name = null;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doPolygon = false;
 
 

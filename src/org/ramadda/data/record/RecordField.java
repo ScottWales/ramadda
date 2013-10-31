@@ -55,31 +55,31 @@ public class RecordField {
     public static final String PROP_BITFIELDS = "bitfields";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_NUMERIC = "numeric";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_STRING = "string";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_DATE = "date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_INTEGER = "integer";
 
-    /** _more_          */
+    /** _more_ */
     private boolean isTypeNumeric = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isTypeString = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isTypeDate = false;
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat dateFormat;
 
-    /** _more_          */
+    /** _more_ */
     private double roundingFactor = 0;
 
     /** _more_ */
@@ -121,19 +121,19 @@ public class RecordField {
     /** _more_ */
     private boolean synthetic = false;
 
-    /** _more_          */
+    /** _more_ */
     private double defaultDoubleValue = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private String defaultStringValue = null;
 
-    /** _more_          */
+    /** _more_ */
     private String headerPattern = null;
 
-    /** _more_          */
+    /** _more_ */
     private String type = TYPE_NUMERIC;
 
-    /** _more_          */
+    /** _more_ */
     private double missingValue = Double.NaN;
 
 
@@ -206,7 +206,7 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return name +":" + label;
+        return name + ":" + label;
     }
 
 

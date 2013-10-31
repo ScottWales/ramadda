@@ -18,7 +18,6 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-
 package org.ramadda.data.tools;
 
 

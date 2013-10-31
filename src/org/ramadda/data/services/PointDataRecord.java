@@ -36,50 +36,50 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class PointDataRecord extends Record {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST = Record.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     public static final List<RecordField> FIELDS =
         new ArrayList<RecordField>();
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LATITUDE = ATTR_FIRST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LATITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LONGITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_ALTITUDE = ATTR_FIRST + 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_ALTITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_TIME = ATTR_FIRST + 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_TIME;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_DVALS = ATTR_FIRST + 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_DVALS;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_SVALS = ATTR_FIRST + 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_SVALS;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAST = ATTR_FIRST + 7;
 
 
@@ -146,22 +146,22 @@ public class PointDataRecord extends Record {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     double Latitude;
 
-    /** _more_          */
+    /** _more_ */
     double Longitude;
 
-    /** _more_          */
+    /** _more_ */
     double Altitude;
 
-    /** _more_          */
+    /** _more_ */
     long Time;
 
-    /** _more_          */
+    /** _more_ */
     double[] Dvals = null;
 
-    /** _more_          */
+    /** _more_ */
     String[] Svals = null;
 
 
@@ -272,10 +272,10 @@ public class PointDataRecord extends Record {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public int dvalsSize;
 
-    /** _more_          */
+    /** _more_ */
     public int svalsSize;
 
     /**

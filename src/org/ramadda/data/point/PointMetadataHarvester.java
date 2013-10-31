@@ -43,13 +43,13 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     private int cnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     private int badCnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     private double minElevation = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double maxElevation = Double.NaN;
 
     /** _more_ */
@@ -73,13 +73,13 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     private LatLonGrid llg;
 
-    /** _more_          */
+    /** _more_ */
     private Properties properties;
 
-    /** _more_          */
+    /** _more_ */
     private double[][] ranges;
 
-    /** _more_          */
+    /** _more_ */
     List<RecordField> fields;
 
     /**

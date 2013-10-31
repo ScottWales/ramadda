@@ -36,19 +36,19 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class QfitRecord extends org.ramadda.data.point.PointRecord {
 
-    /** _more_          */
+    /** _more_ */
     long baseDate = 0;
 
-    /** _more_          */
+    /** _more_ */
     int relativeTime;
 
-    /** _more_          */
+    /** _more_ */
     int laserLatitude;
 
-    /** _more_          */
+    /** _more_ */
     int laserLongitude;
 
-    /** _more_          */
+    /** _more_ */
     int elevation;
 
 

@@ -84,50 +84,50 @@ public class Igbgm2GravityV09File extends org.ramadda.data.point.text
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Igbgm2GravityV09Record extends org.ramadda.data.point
         .PointRecord {
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FIRST =
             org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-        /** _more_          */
+        /** _more_ */
         public static final List<RecordField> FIELDS =
             new ArrayList<RecordField>();
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_TIME = ATTR_FIRST + 1;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_TIME;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_LONGITUDE;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LATITUDE = ATTR_FIRST + 3;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_LATITUDE;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_AIRCRAFTHEIGHT = ATTR_FIRST + 4;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_AIRCRAFTHEIGHT;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FREEAIRANOMALIES = ATTR_FIRST + 5;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FREEAIRANOMALIES;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LAST = ATTR_FIRST + 6;
 
 
@@ -214,19 +214,19 @@ public class Igbgm2GravityV09File extends org.ramadda.data.point.text
         }
 
 
-        /** _more_          */
+        /** _more_ */
         double time;
 
-        /** _more_          */
+        /** _more_ */
         double longitude;
 
-        /** _more_          */
+        /** _more_ */
         double latitude;
 
-        /** _more_          */
+        /** _more_ */
         double aircraftHeight;
 
-        /** _more_          */
+        /** _more_ */
         double freeAirAnomalies;
 
 

@@ -52,7 +52,7 @@ public abstract class Record implements Cloneable {
     /** _more_ */
     public static final String PROP_INCLUDEVECTOR = "includevector";
 
-    /** _more_          */
+    /** _more_ */
     public static final long UNDEFINED_TIME = -9999;
 
 
@@ -85,7 +85,7 @@ public abstract class Record implements Cloneable {
     /** Are we in quick scan mode */
     private boolean quickScan = false;
 
-    /** _more_          */
+    /** _more_ */
     private long recordTime = UNDEFINED_TIME;
 
     /**

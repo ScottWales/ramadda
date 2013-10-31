@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.geomag;
 
 
@@ -42,101 +43,101 @@ import java.util.List;
 public class M88PointFile extends CsvFile {
 
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdfShort = makeDateFormat("yyyyMMdd");
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdfLong = makeDateFormat("yyyyMMdd HHmmss S");
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_SURVEY_ID = "SURVEY_ID";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_DATE = "DATE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_TIME = "TIME";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_LAT = "LAT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_LON = "LON";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_ALT_BAROM = "ALT_BAROM";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_ALT_GPS = "ALT_GPS";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_ALT_RADAR = "ALT_RADAR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_POS_TYPE = "POS_TYPE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_LINEID = "LINEID";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_FIDUCIAL = "FIDUCIAL";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_TRK_DIR = "TRK_DIR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_NAV_QUALCO = "NAV_QUALCO";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_TOTOBS = "MAG_TOTOBS";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_TOTCOR = "MAG_TOTCOR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_RES = "MAG_RES";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_DECLIN = "MAG_DECLIN";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_HORIZ = "MAG_HORIZ";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_X_NRTH = "MAG_X_NRTH";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_Y_EAST = "MAG_Y_EAST";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_Z_VERT = "MAG_Z_VERT";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_INCLIN = "MAG_INCLIN";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_DICORR = "MAG_DICORR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_IGRF_CORR = "IGRF_CORR";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_MAG_QUALCO = "MAG_QUALCO";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] STRING_FIELDS = { FIELD_SURVEY_ID,
             FIELD_LINEID, FIELD_FIDUCIAL };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] NOT_CHARTABLE_FIELDS = {
         FIELD_DATE, FIELD_TIME, FIELD_LAT, FIELD_LON, FIELD_ALT_BAROM,
         FIELD_ALT_GPS, FIELD_ALT_RADAR
     };
 
-    /** _more_          */
+    /** _more_ */
     private int dateIdx = -1;
 
-    /** _more_          */
+    /** _more_ */
     private int timeIdx = -1;
 
     /**

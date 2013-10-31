@@ -37,99 +37,99 @@ import java.util.List;
 public class QFit14WordRecord extends org.ramadda.data.point.icebridge
     .QfitRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.icebridge.QfitRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     public static final List<RecordField> FIELDS =
         new ArrayList<RecordField>();
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_RELATIVETIME = ATTR_FIRST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_RELATIVETIME;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LASERLATITUDE = ATTR_FIRST + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LASERLATITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LASERLONGITUDE = ATTR_FIRST + 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LASERLONGITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_ELEVATION = ATTR_FIRST + 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_ELEVATION;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_STARTSIGNALSTRENGTH = ATTR_FIRST + 5;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_STARTSIGNALSTRENGTH;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_REFLECTEDSIGNALSTRENGTH = ATTR_FIRST + 6;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_REFLECTEDSIGNALSTRENGTH;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_AZIMUTH = ATTR_FIRST + 7;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_AZIMUTH;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_PITCH = ATTR_FIRST + 8;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_PITCH;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_ROLL = ATTR_FIRST + 9;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_ROLL;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_PASSIVESIGNAL = ATTR_FIRST + 10;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_PASSIVESIGNAL;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_PASSIVELATITUDE = ATTR_FIRST + 11;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_PASSIVELATITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_PASSIVELONGITUDE = ATTR_FIRST + 12;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_PASSIVELONGITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_PASSIVEELEVATION = ATTR_FIRST + 13;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_PASSIVEELEVATION;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_GPSTIME = ATTR_FIRST + 14;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_GPSTIME;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAST = ATTR_FIRST + 15;
 
 
@@ -332,34 +332,34 @@ public class QFit14WordRecord extends org.ramadda.data.point.icebridge
     }
 
 
-    /** _more_          */
+    /** _more_ */
     int startSignalStrength;
 
-    /** _more_          */
+    /** _more_ */
     int reflectedSignalStrength;
 
-    /** _more_          */
+    /** _more_ */
     int azimuth;
 
-    /** _more_          */
+    /** _more_ */
     int pitch;
 
-    /** _more_          */
+    /** _more_ */
     int roll;
 
-    /** _more_          */
+    /** _more_ */
     int passiveSignal;
 
-    /** _more_          */
+    /** _more_ */
     int passiveLatitude;
 
-    /** _more_          */
+    /** _more_ */
     int passiveLongitude;
 
-    /** _more_          */
+    /** _more_ */
     int passiveElevation;
 
-    /** _more_          */
+    /** _more_ */
     int gpsTime;
 
 

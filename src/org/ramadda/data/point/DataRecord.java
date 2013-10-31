@@ -38,6 +38,13 @@ import java.util.List;
 
 
 
+/**
+ * Class description
+ *
+ *
+ * @version        $version$, Thu, Oct 31, '13
+ * @author         Enter your name here...    
+ */
 public class DataRecord extends PointRecord {
 
     /** _more_ */
@@ -48,33 +55,34 @@ public class DataRecord extends PointRecord {
     protected List<RecordField> fields;
 
     /** _more_ */
-    protected     double[] values;
+    protected double[] values;
+
+    /** _more_ */
+    protected Object[] objectValues;
 
     /** _more_          */
-    protected     Object[] objectValues;
-
     protected int numDataFields = 0;
 
-    /** _more_          */
-    protected     boolean[] hasDefault;
-
-    /** _more_          */
-    protected     boolean[] skip;
-
-    /** _more_          */
-    protected     boolean[] synthetic;
+    /** _more_ */
+    protected boolean[] hasDefault;
 
     /** _more_ */
-    protected      int idxX;
+    protected boolean[] skip;
 
     /** _more_ */
-    protected      int idxY;
+    protected boolean[] synthetic;
 
     /** _more_ */
-    protected      int idxZ;
+    protected int idxX;
 
-    /** _more_          */
-    protected      int idxTime;
+    /** _more_ */
+    protected int idxY;
+
+    /** _more_ */
+    protected int idxZ;
+
+    /** _more_ */
+    protected int idxTime;
 
     /**
      * _more_
@@ -84,7 +92,7 @@ public class DataRecord extends PointRecord {
     public DataRecord(DataRecord that) {
         super(that);
         this.fields  = that.fields;
-        values      = null;
+        values       = null;
         objectValues = null;
     }
 
@@ -118,6 +126,7 @@ public class DataRecord extends PointRecord {
      * @param fields _more_
      */
     public void initFields(List<RecordField> fields) {
+
         numDataFields = 0;
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
@@ -143,8 +152,8 @@ public class DataRecord extends PointRecord {
         };
 
         idxX = idxY = idxZ = idxTime = -1;
-        boolean seenLon   = false;
-        boolean seenLat   = false;
+        boolean seenLon = false;
+        boolean seenLat = false;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
             hasDefault[i] = field.hasDefaultValue();
@@ -182,6 +191,7 @@ public class DataRecord extends PointRecord {
             }
             if ((lonField != null) && lonField.equalsIgnoreCase(name)) {
                 idxX = i;
+
                 continue;
             }
             if (name.equals("x")) {
@@ -221,12 +231,16 @@ public class DataRecord extends PointRecord {
 
 
         checkIndices();
-        
+
+
 
     }
 
 
-    public void  checkIndices()   {
+    /**
+     * _more_
+     */
+    public void checkIndices() {
         if (idxX == -1) {
             throw new IllegalArgumentException(
                 "Could not find x index, e.g., longitude, lon, x, etc.");
@@ -237,7 +251,7 @@ public class DataRecord extends PointRecord {
         }
 
     }
-    
+
     /**
      * _more_
      *
@@ -303,7 +317,9 @@ public class DataRecord extends PointRecord {
             return values[idx];
         }
 
-        System.err.println ("attrId:" + attrId +"  " + values.length + " idx=" + idx);
+        System.err.println("attrId:" + attrId + "  " + values.length
+                           + " idx=" + idx);
+
         return super.getValue(attrId);
     }
 

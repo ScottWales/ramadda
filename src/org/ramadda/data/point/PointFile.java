@@ -55,37 +55,37 @@ import java.util.Properties;
  */
 public abstract class PointFile extends RecordFile implements Cloneable {
 
-    /** _more_          */
+    /** _more_ */
     public static final String DFLT_PROPERTIES_FILE = "point.properties";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_TIME = "action.time";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_GRID = "action.grid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_DECIMATE = "action.decimate";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_TRACKS = "action.tracks";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_WAVEFORM = "action.waveform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_BOUNDINGPOLYGON =
         "action.bounding_polygon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_MAPINCHART = "action.map_in_chart";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_AREAL_COVERAGE =
         "action.areal_coverage";
 
 
-    /** _more_          */
+    /** _more_ */
     private static final org.ramadda.data.point.LatLonPointRecord dummyField1 =
         null;
 
@@ -97,13 +97,13 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /** _more_ */
     public static final String CRS_UTM = "utm";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CRS_EPSG = "epsg:";
 
     /** _more_ */
     public static final String CRS_WGS84 = "wgs84";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CRS_ECEF = "ecef";
 
     /** _more_ */
@@ -145,20 +145,20 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /** _more_ */
     private Projection projection;
 
-    /** _more_          */
+    /** _more_ */
     private com.jhlabs.map.proj.Projection jhProjection;
 
 
     /** _more_ */
     private String description = "";
 
-    /** _more_          */
+    /** _more_ */
     private double lat = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double lon = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double elevation = Double.NaN;
 
 
@@ -267,7 +267,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         initProperties();
     }
 
-    /** _more_          */
+    /** _more_ */
     static int printCnt = 0;
 
 
@@ -617,7 +617,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
 
     //Cough, cough
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable<String, Hashtable<String, Station>> stationsMapMap =
         new Hashtable<String, Hashtable<String, Station>>();
 

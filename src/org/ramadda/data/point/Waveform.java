@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point;
 
 
@@ -30,31 +31,31 @@ import java.io.*;
  */
 public class Waveform {
 
-    /** _more_          */
+    /** _more_ */
     private float[] waveform;
 
-    /** _more_          */
+    /** _more_ */
     private float threshold = 0.0f;
 
-    /** _more_          */
+    /** _more_ */
     private float[] range;
 
-    /** _more_          */
+    /** _more_ */
     private double altitude0 = Float.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double altitudeN;
 
-    /** _more_          */
+    /** _more_ */
     private double latitude0;
 
-    /** _more_          */
+    /** _more_ */
     private double longitude0;
 
-    /** _more_          */
+    /** _more_ */
     private double latitudeN;
 
-    /** _more_          */
+    /** _more_ */
     private double longitudeN;
 
     /**

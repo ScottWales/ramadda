@@ -47,21 +47,21 @@ import java.util.concurrent.*;
  */
 public class PointEntry extends RecordEntry {
 
-    /** _more_          */
+    /** _more_ */
     public static final String SUFFIX_BINARY_DOUBLE = ".dllb";
 
-    /** _more_          */
+    /** _more_ */
     public static final String SUFFIX_BINARY_FLOAT = ".fllb";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILE_BINARY_DOUBLE = "lightweight"
                                                     + SUFFIX_BINARY_DOUBLE;
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILE_BINARY_FLOAT = "lightweight"
                                                    + SUFFIX_BINARY_FLOAT;
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILE_BINARY_DEFAULT = FILE_BINARY_FLOAT;
 
 

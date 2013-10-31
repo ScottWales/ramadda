@@ -216,7 +216,7 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_POINTINDEX = "pointindex";
 
-    /** _more_          */
+    /** _more_ */
     public static final String JOB_TYPE_POINT = "point";
 
 
@@ -266,7 +266,7 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_POINT_PRODUCT = "point.product";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_RECORD_PRODUCT = "record.product";
 
     /** property key for an icon */

@@ -51,13 +51,13 @@ import java.util.zip.*;
  */
 public abstract class RecordFile {
 
-    /** _more_          */
+    /** _more_ */
     private static final RecordVisitorGroup dummy1 = null;
 
-    /** _more_          */
+    /** _more_ */
     private static final RecordCountVisitor dummy2 = null;
 
-    /** _more_          */
+    /** _more_ */
     private static final GeoRecord dummy3 = null;
 
 
@@ -77,7 +77,7 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
-    /** _more_          */
+    /** _more_ */
     private Object[] fileMetadata;
 
 
@@ -141,7 +141,7 @@ public abstract class RecordFile {
      * _more_
      */
     public void initAfterClone() {
-        fields    = null;
+        fields = null;
     }
 
     /**
@@ -544,6 +544,7 @@ public abstract class RecordFile {
     public abstract Record doMakeRecord(VisitInfo visitInfo);
 
 
+    /** _more_          */
     private List<RecordField> fields;
 
 
@@ -557,12 +558,19 @@ public abstract class RecordFile {
         if (fields == null) {
             fields = doMakeFields();
         }
+
         return fields;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<RecordField> doMakeFields() {
         Record            record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
+
         return new ArrayList<RecordField>(fields);
     }
 
@@ -1185,7 +1193,7 @@ public abstract class RecordFile {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILE_SEPARATOR = "_file_";
 
     /**
@@ -1207,10 +1215,10 @@ public abstract class RecordFile {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     protected int[] dateIndices;
 
-    /** _more_          */
+    /** _more_ */
     private static SimpleDateFormat[] sdfs = new SimpleDateFormat[] {
         makeDateFormat("yyyy"), makeDateFormat("yyyy-MM"),
         makeDateFormat("yyyy-MM-dd"), makeDateFormat("yyyy-MM-dd-HH"),

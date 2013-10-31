@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.tools;
 
 
@@ -41,10 +42,10 @@ import java.util.List;
  */
 public class RecordTool {
 
-    /** _more_          */
+    /** _more_ */
     private RecordFileFactory recordFileFactory;
 
-    /** _more_          */
+    /** _more_ */
     private String recordFileClass;
 
     /**

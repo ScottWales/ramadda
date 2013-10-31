@@ -67,34 +67,34 @@ public class CsvVisitor extends RecordVisitor {
         this.fields = fields;
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_FIELDS = "fields";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_GENERATOR = "generator";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CREATE_DATE = "create_date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_CRS = "crs";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DELIMITER = "delimiter";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_MISSING = "missing";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SOURCE = "source";
 
-    /** _more_          */
+    /** _more_ */
     private static final String LINE_DELIMITER = "\n";
 
-    /** _more_          */
+    /** _more_ */
     private static final String COLUMN_DELIMITER = ",";
 
-    /** _more_          */
+    /** _more_ */
     private static final String MISSING = "NaN";
 
     /**

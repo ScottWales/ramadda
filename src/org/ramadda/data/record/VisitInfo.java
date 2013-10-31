@@ -37,10 +37,10 @@ import java.util.List;
  */
 public class VisitInfo {
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean QUICKSCAN_YES = true;
 
-    /** _more_          */
+    /** _more_ */
     public static final boolean QUICKSCAN_NO = false;
 
 

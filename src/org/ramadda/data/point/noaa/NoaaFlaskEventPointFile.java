@@ -45,28 +45,28 @@ import java.util.List;
 public class NoaaFlaskEventPointFile extends NoaaPointFile {
 
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SITE_CODE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MONTH = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_HOUR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MINUTE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SECOND = IDX++;
 
     /**

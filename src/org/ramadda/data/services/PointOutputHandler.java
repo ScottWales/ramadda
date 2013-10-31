@@ -272,12 +272,14 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
         OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
-                                      OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT, "",
-                                      "/icons/chart.png", category);
+                                      OutputType.TYPE_OTHER
+                                      | OutputType.TYPE_IMPORTANT, "",
+                                          "/icons/chart.png", category);
 
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
-                                     OutputType.TYPE_OTHER| OutputType.TYPE_IMPORTANT, "", ICON_TOOLS,
-                                     category);
+                                     OutputType.TYPE_OTHER
+                                     | OutputType.TYPE_IMPORTANT, "",
+                                         ICON_TOOLS, category);
 
         OUTPUT_TIMESERIES_IMAGE = new OutputType("",
                 base + ".timeseriesimage", OutputType.TYPE_OTHER, "",

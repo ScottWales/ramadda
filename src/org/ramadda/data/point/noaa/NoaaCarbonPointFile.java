@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.noaa;
 
 
@@ -37,42 +38,42 @@ import java.util.List;
  */
 public class NoaaCarbonPointFile extends NoaaPointFile {
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SITE_CODE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LATITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LONGITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MONTH = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_HOUR = IDX++;
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_HOURLY = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_DAILY = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_MONTHLY = 3;
 
-    /** _more_          */
+    /** _more_ */
     int type = TYPE_HOURLY;
 
 

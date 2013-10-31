@@ -38,33 +38,33 @@ import java.util.Date;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class QfitFile extends PointFile {
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_UNDEFINED = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_10WORD = 10;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_12WORD = 12;
 
-    /** _more_          */
+    /** _more_ */
     public static final int TYPE_14WORD = 14;
 
     //Some files are little endian, some are big
 
-    /** _more_          */
+    /** _more_ */
     private boolean bigEndian = true;
 
-    /** _more_          */
+    /** _more_ */
     private int type = TYPE_UNDEFINED;
 
     //We extract this from the file name if possible
 
-    /** _more_          */
+    /** _more_ */
     private long baseDate = 0L;
 
     /**

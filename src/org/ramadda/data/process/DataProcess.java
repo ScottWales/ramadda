@@ -33,7 +33,7 @@ import org.ramadda.repository.Result;
  */
 public abstract class DataProcess {
 
-    /** the data process id*/
+    /** the data process id */
     private String dataProcessId;
 
     /** the data process label */
@@ -110,16 +110,16 @@ public abstract class DataProcess {
      * @return true if we can handle
      */
     public abstract boolean canHandle(DataProcessInput dpi);
-    
+
     /**
      * Is this process enabled?
-     * 
+     *
      * subclasses can override
-     * 
+     *
      * @return true
      */
     public boolean isEnabled() {
         return true;
     }
-    
+
 }

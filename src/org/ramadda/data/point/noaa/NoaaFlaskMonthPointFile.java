@@ -41,25 +41,25 @@ import java.util.List;
  */
 public class NoaaFlaskMonthPointFile extends NoaaPointFile {
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SITE_CODE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LATITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LONGITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ELEVATION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MONTH = IDX++;
 
 

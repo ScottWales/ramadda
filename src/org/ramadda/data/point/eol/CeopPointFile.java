@@ -17,15 +17,20 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.eol;
 
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
+
 import java.io.*;
+
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
+
 
 /**
  */
@@ -55,14 +60,23 @@ public class CeopPointFile extends CsvFile {
         //Set the fields. the method reads the file CeopPointFile.fields.txt
         putProperty(PROP_FIELDS, getFieldsFileContents());
         super.prepareToVisit(visitInfo);
+
         return visitInfo;
     }
 
 
+    /** _more_          */
     private SimpleDateFormat sdf = makeDateFormat("yyyy/MM/dd HH:mm");
 
     /**
-     * This gets called after a record has been read. 
+     * This gets called after a record has been read.
+     *
+     * @param visitInfo _more_
+     * @param record _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record)
             throws Exception {
@@ -71,9 +85,11 @@ public class CeopPointFile extends CsvFile {
         }
         TextRecord textRecord = (TextRecord) record;
         //concatenate the year and hour fields and set the date
-        String dttm = textRecord.getStringValue(1) + " " +  textRecord.getStringValue(2);
+        String dttm = textRecord.getStringValue(1) + " "
+                      + textRecord.getStringValue(2);
         Date date = sdf.parse(dttm);
         record.setRecordTime(date.getTime());
+
         return true;
     }
 

@@ -77,16 +77,16 @@ import java.util.Properties;
  */
 public abstract class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_RECORD_COUNT = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_PROPERTIES = 1;
 
     /** _more_ */
     private RecordFileFactory recordFileFactory;
 
-    /** _more_          */
+    /** _more_ */
     private RecordOutputHandler recordOutputHandler;
 
 

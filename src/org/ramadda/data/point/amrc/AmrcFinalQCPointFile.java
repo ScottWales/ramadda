@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.amrc;
 
 
@@ -70,58 +71,58 @@ public class AmrcFinalQCPointFile extends CsvFile {
     //Corresponds to the fields in the data
     //We use the date field indidces to get the obs date
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SITE_ID = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LATITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LONGITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ELEVATION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_JULIAN_DAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MONTH = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_TIME = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_TEMPERATURE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_PRESSURE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_WIND_SPEED = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_WIND_DIRECTION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_RELATIVE_HUMIDITY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DELTA_T = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
-    /** _more_          */
+    /** _more_ */
     public static final double MISSING = 444.0;
 
     /**

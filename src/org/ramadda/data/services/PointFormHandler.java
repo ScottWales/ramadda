@@ -92,7 +92,7 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static IdwGrid dummyField1 = null;
 
-    /** _more_          */
+    /** _more_ */
     private static org.ramadda.data.process.DataProcessProvider dummyDataProcessProvider =
         null;
 
@@ -108,31 +108,31 @@ public class PointFormHandler extends RecordFormHandler {
     /** _more_ */
     private static GridVisitor dummyField5 = null;
 
-    /** _more_          */
+    /** _more_ */
     private RecordFileFactory dummyField6 = null;
 
-    /** _more_          */
+    /** _more_ */
     private PointTypeHandler dummyField7 = null;
 
-    /** _more_          */
+    /** _more_ */
     private RecordCollectionTypeHandler dummyField8 = null;
 
-    /** _more_          */
+    /** _more_ */
     private RecordApiHandler dummyField9 = null;
 
-    /** _more_          */
+    /** _more_ */
     private PointJobManager dummyField10 = null;
 
-    /** _more_          */
+    /** _more_ */
     private RecordCollectionHarvester dummyField11 = null;
 
-    /** _more_          */
+    /** _more_ */
     private PointCollectionTypeHandler dummyField12 = null;
 
     /** _more_ */
     public static final String LABEL_ALTITUDE = "Altitude";
 
-    /** _more_          */
+    /** _more_ */
     public static List<Integer> xindices = new ArrayList<Integer>();
 
     /** _more_ */

@@ -17,15 +17,20 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.eol;
 
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
+
 import java.io.*;
+
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
+
 
 /**
  */
@@ -55,6 +60,7 @@ public class ShebaPointFile extends CsvFile {
         //Set the fields. the method reads the file ShebaPointFile.fields.txt
         putProperty(PROP_FIELDS, getFieldsFileContents());
         super.prepareToVisit(visitInfo);
+
         return visitInfo;
     }
 

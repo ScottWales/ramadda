@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.unavco;
 
 
@@ -40,14 +41,14 @@ import java.util.List;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class PositionTimeSeriesPointFile extends CsvFile {
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf = makeDateFormat("yyyyMMdd-HHmmss");
 
-    /** _more_          */
+    /** _more_ */
     boolean isPos = false;
 
     /**

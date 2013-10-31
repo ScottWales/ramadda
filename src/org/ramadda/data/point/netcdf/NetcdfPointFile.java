@@ -27,13 +27,8 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
 
-import ucar.unidata.util.IOUtil;
-
-
-import ucar.unidata.util.StringUtil;
-
-import java.io.*;
 import ucar.ma2.DataType;
+
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
@@ -42,13 +37,21 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 
+import ucar.unidata.util.IOUtil;
+
+
+import ucar.unidata.util.StringUtil;
+
+import java.io.*;
+
+import java.util.ArrayList;
+
 
 
 
 
 
 import java.util.Formatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,7 +61,7 @@ import java.util.List;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class NetcdfPointFile extends PointFile {
 
@@ -98,24 +101,24 @@ public class NetcdfPointFile extends PointFile {
     public List<RecordField> doMakeFields() {
         List<RecordField> fields = new ArrayList<RecordField>();
         try {
-            int cnt =1;
-            fields.add(new RecordField("latitude","Latitude","Latitude",
-                                       cnt++,"degrees"));
-            fields.add(new RecordField("longitude","Longitude","Longitude",
-                                       cnt++,"degrees"));
+            int cnt = 1;
+            fields.add(new RecordField("latitude", "Latitude", "Latitude",
+                                       cnt++, "degrees"));
+            fields.add(new RecordField("longitude", "Longitude", "Longitude",
+                                       cnt++, "degrees"));
 
-            FeatureDatasetPoint pod = getDataset(getFilename());
-            List                 vars         = pod.getDataVariables();
+            FeatureDatasetPoint pod  = getDataset(getFilename());
+            List                vars = pod.getDataVariables();
             for (VariableSimpleIF var : (List<VariableSimpleIF>) vars) {
                 String label = var.getDescription();
-                if(!Utils.stringDefined(label)) label = var.getShortName();
+                if ( !Utils.stringDefined(label)) {
+                    label = var.getShortName();
+                }
                 String unit = var.getUnitsString();
                 RecordField field = new RecordField(var.getShortName(),
-                                                    label,
-                                                    label,
-                                                    cnt++,unit);
+                                        label, label, cnt++, unit);
                 if ((var.getDataType() == DataType.STRING)
-                    || (var.getDataType() == DataType.CHAR)) {
+                        || (var.getDataType() == DataType.CHAR)) {
                     field.setType(field.TYPE_STRING);
                 } else {
                     field.setChartable(true);
@@ -124,12 +127,22 @@ public class NetcdfPointFile extends PointFile {
                 fields.add(field);
             }
             //            System.err.println ("fields: " + fields);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+
         return fields;
     }
 
+    /**
+     * _more_
+     *
+     * @param input _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static PointFeatureIterator getPointIterator(
             FeatureDatasetPoint input)
             throws Exception {
@@ -169,7 +182,10 @@ public class NetcdfPointFile extends PointFile {
         if (action.equals(ACTION_TRACKS)) {
             return false;
         }
-        if(action.equals(ACTION_MAPINCHART)) return true;
+        if (action.equals(ACTION_MAPINCHART)) {
+            return true;
+        }
+
         //        if(action.equals(ACTION_BOUNDINGPOLYGON)) return false;
         return super.isCapable(action);
     }
@@ -205,11 +221,13 @@ public class NetcdfPointFile extends PointFile {
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
         try {
-        FeatureDatasetPoint pod = getDataset(getFilename());
-        PointFeatureIterator dataIterator = getPointIterator(pod);
-        NetcdfRecord record = new NetcdfRecord(this,  getFields(), dataIterator);
-        return record;
-        } catch(Exception exc) {
+            FeatureDatasetPoint  pod          = getDataset(getFilename());
+            PointFeatureIterator dataIterator = getPointIterator(pod);
+            NetcdfRecord record = new NetcdfRecord(this, getFields(),
+                                      dataIterator);
+
+            return record;
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -307,19 +325,26 @@ public class NetcdfPointFile extends PointFile {
     }
 
 
-    
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private FeatureDatasetPoint getDataset(String path) throws Exception {
         Formatter buf = new Formatter();
         FeatureDatasetPoint pods =
             (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                                                                    ucar.nc2.constants.FeatureType.POINT, path, null,
-                                                                    buf);
+                ucar.nc2.constants.FeatureType.POINT, path, null, buf);
         if (pods == null) {  // try as ANY_POINT
-            pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
-                .open(ucar.nc2.constants.FeatureType.ANY_POINT, path,
-                      null, buf);
+            pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                ucar.nc2.constants.FeatureType.ANY_POINT, path, null, buf);
         }
-        
+
         return pods;
     }
 

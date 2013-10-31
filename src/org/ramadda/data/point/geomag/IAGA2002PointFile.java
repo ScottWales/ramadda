@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.geomag;
 
 
@@ -42,16 +43,16 @@ import java.util.List;
 public class IAGA2002PointFile extends CsvFile {
 
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_DATE = "DATE";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_TIME = "TIME";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_DOY = "DOY";
 
 

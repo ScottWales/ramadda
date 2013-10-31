@@ -37,39 +37,39 @@ import java.util.List;
 public class DoubleLatLonAltIntensityRecord extends org.ramadda.data.point
     .PointRecord {
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-    /** _more_          */
+    /** _more_ */
     public static final List<RecordField> FIELDS =
         new ArrayList<RecordField>();
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LATITUDE = ATTR_FIRST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LATITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_LONGITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_ALTITUDE = ATTR_FIRST + 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_ALTITUDE;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_INTENSITY = ATTR_FIRST + 4;
 
-    /** _more_          */
+    /** _more_ */
     public static final RecordField RECORDATTR_INTENSITY;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ATTR_LAST = ATTR_FIRST + 5;
 
 
@@ -138,16 +138,16 @@ public class DoubleLatLonAltIntensityRecord extends org.ramadda.data.point
     }
 
 
-    /** _more_          */
+    /** _more_ */
     double latitude;
 
-    /** _more_          */
+    /** _more_ */
     double longitude;
 
-    /** _more_          */
+    /** _more_ */
     double altitude;
 
-    /** _more_          */
+    /** _more_ */
     double intensity;
 
 

@@ -98,140 +98,140 @@ public class Iggrv1bAirGravityFile extends org.ramadda.data.point.text
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Iggrv1bAirGravityRecord extends org.ramadda.data.point
         .PointRecord {
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FIRST =
             org.ramadda.data.point.PointRecord.ATTR_LAST;
 
-        /** _more_          */
+        /** _more_ */
         public static final List<RecordField> FIELDS =
             new ArrayList<RecordField>();
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LATITUDE = ATTR_FIRST + 1;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_LATITUDE;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LONGITUDE = ATTR_FIRST + 2;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_LONGITUDE;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_DATE = ATTR_FIRST + 3;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_DATE;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_DAY = ATTR_FIRST + 4;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_DAY;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FLIGHT = ATTR_FIRST + 5;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FLIGHT;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_TIME = ATTR_FIRST + 6;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_TIME;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FIDUCIAL = ATTR_FIRST + 7;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FIDUCIAL;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_UPSX = ATTR_FIRST + 8;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_UPSX;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_UPSY = ATTR_FIRST + 9;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_UPSY;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_WGSHGT = ATTR_FIRST + 10;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_WGSHGT;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FX = ATTR_FIRST + 11;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FX;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FY = ATTR_FIRST + 12;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FY;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FZ = ATTR_FIRST + 13;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FZ;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_EOTGRAV = ATTR_FIRST + 14;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_EOTGRAV;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FACOR = ATTR_FIRST + 15;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FACOR;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_INTCOR = ATTR_FIRST + 16;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_INTCOR;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FAG070 = ATTR_FIRST + 17;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FAG070;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FAG100 = ATTR_FIRST + 18;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FAG100;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FAG140 = ATTR_FIRST + 19;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FAG140;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_FLTENVIRO = ATTR_FIRST + 20;
 
-        /** _more_          */
+        /** _more_ */
         public static final RecordField RECORDATTR_FLTENVIRO;
 
-        /** _more_          */
+        /** _more_ */
         public static final int ATTR_LAST = ATTR_FIRST + 21;
 
 
@@ -525,64 +525,64 @@ public class Iggrv1bAirGravityFile extends org.ramadda.data.point.text
         }
 
 
-        /** _more_          */
+        /** _more_ */
         double latitude;
 
-        /** _more_          */
+        /** _more_ */
         double longitude;
 
-        /** _more_          */
+        /** _more_ */
         int date;
 
-        /** _more_          */
+        /** _more_ */
         int day;
 
-        /** _more_          */
+        /** _more_ */
         int flight;
 
-        /** _more_          */
+        /** _more_ */
         double time;
 
-        /** _more_          */
+        /** _more_ */
         double fiducial;
 
-        /** _more_          */
+        /** _more_ */
         double upsx;
 
-        /** _more_          */
+        /** _more_ */
         double upsy;
 
-        /** _more_          */
+        /** _more_ */
         double wgshgt;
 
-        /** _more_          */
+        /** _more_ */
         double fx;
 
-        /** _more_          */
+        /** _more_ */
         double fy;
 
-        /** _more_          */
+        /** _more_ */
         double fz;
 
-        /** _more_          */
+        /** _more_ */
         double eotgrav;
 
-        /** _more_          */
+        /** _more_ */
         double facor;
 
-        /** _more_          */
+        /** _more_ */
         double intcor;
 
-        /** _more_          */
+        /** _more_ */
         double fag070;
 
-        /** _more_          */
+        /** _more_ */
         double fag100;
 
-        /** _more_          */
+        /** _more_ */
         double fag140;
 
-        /** _more_          */
+        /** _more_ */
         double fltenviro;
 
 

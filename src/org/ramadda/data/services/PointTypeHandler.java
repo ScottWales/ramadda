@@ -37,8 +37,8 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.grid.LatLonGrid;
 
 
@@ -72,7 +72,7 @@ import java.util.Properties;
  */
 public class PointTypeHandler extends RecordTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_PROPERTIES_FILE = "properties.file";
 
     /**
@@ -235,13 +235,15 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @param entry _more_
      * @param values _more_
      * @param state _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
-@Override
+    @Override
     public void addColumnToEntryForm(Request request, Column column,
                                      StringBuffer formBuffer, Entry entry,
-                                     Object[] values, Hashtable state, FormInfo formInfo)
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo)
             throws Exception {
         super.addColumnToEntryForm(request, column, formBuffer, entry,
                                    values, state, formInfo);

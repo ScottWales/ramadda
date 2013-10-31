@@ -47,7 +47,7 @@ import java.util.Properties;
  */
 public class RecordFileFactory {
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordFile> prototypes = new ArrayList<RecordFile>();
 
     /**

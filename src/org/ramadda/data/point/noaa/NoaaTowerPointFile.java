@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 package org.ramadda.data.point.noaa;
 
 
@@ -34,64 +35,64 @@ import java.io.*;
  */
 public class NoaaTowerPointFile extends NoaaPointFile {
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SITE_CODE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MONTH = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_HOUR = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MINUTE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SECOND = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LATITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LONGITUDE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ELEVATION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_INTAKE_HEIGHT = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MEASURED_VALUE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_TOTAL_UNCERTAINTY_ESTIMATE = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ATMOSPHERIC_VARIABILTY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MEASUREMENT_UNCERTAINTY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SCALE_UNCERTAINTY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_QC_FLAG = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final double MISSING1 = -999.0;
 
-    /** _more_          */
+    /** _more_ */
     public static final double MISSING2 = -999.99;
 
 
