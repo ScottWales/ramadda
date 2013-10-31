@@ -30,6 +30,7 @@ import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ObjectPool;
+import org.ramadda.util.TTLCache;
 import org.ramadda.util.TempDir;
 
 import thredds.servlet.ThreddsConfig;
@@ -55,6 +56,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -236,8 +238,8 @@ public class CdmManager extends RepositoryManager {
 
 
     /** nc dataset pool */
-    private ObjectPool<String, NetcdfDataset> ncDatasetPool =
-        new ObjectPool<String, NetcdfDataset>(10) {
+    private DatedObjectPool<String, NetcdfDataset> ncDatasetPool =
+        new DatedObjectPool<String, NetcdfDataset>(10) {
         protected void removeValue(String key, NetcdfDataset dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -284,8 +286,8 @@ public class CdmManager extends RepositoryManager {
 
 
     /** nc file pool */
-    private ObjectPool<String, NetcdfFile> ncFilePool =
-        new ObjectPool<String, NetcdfFile>(10) {
+    private DatedObjectPool<String, NetcdfFile> ncFilePool =
+        new DatedObjectPool<String, NetcdfFile>(10) {
         protected void removeValue(String key, NetcdfFile ncFile) {
             try {
                 super.removeValue(key, ncFile);
@@ -322,7 +324,7 @@ public class CdmManager extends RepositoryManager {
                 long       t1     = System.currentTimeMillis();
                 NetcdfFile ncFile = NetcdfDataset.openFile(path, null);
                 long       t2     = System.currentTimeMillis();
-                System.err.println("NetcdfDataset.openFile: time:"
+                System.err.println("CDM: NetcdfDataset.openFile: time:"
                                    + (t2 - t1));
 
 
@@ -337,12 +339,15 @@ public class CdmManager extends RepositoryManager {
         }
     };
 
+
+
+
     /** grid pool flag */
     private boolean doGridPool = true;
 
     /** grid pool */
-    private ObjectPool<String, GridDataset> gridPool = new ObjectPool<String,
-                                                           GridDataset>(10) {
+    private DatedObjectPool<String, GridDataset> gridPool =
+        new DatedObjectPool<String, GridDataset>(10) {
         protected void removeValue(String key, GridDataset dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -370,6 +375,9 @@ public class CdmManager extends RepositoryManager {
                 gridOpenCounter.incr();
                 long        t1  = System.currentTimeMillis();
                 GridDataset gds = GridDataset.open(path);
+
+
+
                 long        t2  = System.currentTimeMillis();
                 System.err.println("GridDataset.open  time:" + (t2 - t1));
                 if (gds.getGrids().iterator().hasNext()) {
@@ -442,8 +450,8 @@ public class CdmManager extends RepositoryManager {
 
 
     /** point pool */
-    private ObjectPool<String, FeatureDatasetPoint> pointPool =
-        new ObjectPool<String, FeatureDatasetPoint>(10) {
+    private DatedObjectPool<String, FeatureDatasetPoint> pointPool =
+        new DatedObjectPool<String, FeatureDatasetPoint>(10) {
         protected void removeValue(String key, FeatureDatasetPoint dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -484,8 +492,8 @@ public class CdmManager extends RepositoryManager {
 
 
     /** radar pool */
-    private ObjectPool<String, RadialDatasetSweep> radarPool =
-        new ObjectPool<String, RadialDatasetSweep>(10) {
+    private DatedObjectPool<String, RadialDatasetSweep> radarPool =
+        new DatedObjectPool<String, RadialDatasetSweep>(10) {
         protected void removeValue(String key, RadialDatasetSweep dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -515,8 +523,8 @@ public class CdmManager extends RepositoryManager {
     };
 
     /** trajectory pool */
-    private ObjectPool<String, TrajectoryObsDataset> trajectoryPool =
-        new ObjectPool<String, TrajectoryObsDataset>(10) {
+    private DatedObjectPool<String, TrajectoryObsDataset> trajectoryPool =
+        new DatedObjectPool<String, TrajectoryObsDataset>(10) {
         protected void removeValue(String key, TrajectoryObsDataset dataset) {
             try {
                 super.removeValue(key, dataset);
@@ -588,6 +596,7 @@ public class CdmManager extends RepositoryManager {
     /**
      * clear the cache
      */
+    @Override
     public void clearCache() {
         ncFilePool.clear();
         ncDatasetPool.clear();
@@ -1152,7 +1161,10 @@ public class CdmManager extends RepositoryManager {
         //            return GridDataset.open(path);
         //        }
         if (doGridPool) {
-            return gridPool.get(path);
+            GridDataset dataset = gridPool.get(path);
+
+            return dataset;
+            //            String location = dataset
         } else {
             return createGrid(path);
         }
@@ -1390,6 +1402,76 @@ public class CdmManager extends RepositoryManager {
     }
 
 
+
+
+    /**
+     * Class description
+     *
+     *
+     * @param <KeyType>
+     * @param <ValueType>
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
+    public static class DatedObjectPool<KeyType,
+            ValueType> extends ObjectPool<KeyType, ValueType> {
+
+        /** _more_          */
+        private Hashtable<String, Date> fileDate = new Hashtable<String,
+                                                       Date>();
+
+        /**
+         * _more_
+         *
+         * @param size _more_
+         */
+        public DatedObjectPool(int size) {
+            super(10);
+        }
+
+        /**
+         * _more_
+         *
+         * @param key _more_
+         *
+         * @return _more_
+         */
+        public ValueType get(KeyType key) {
+            Date      lastOpenTime = fileDate.get(key.toString());
+            ValueType object       = super.get(key);
+            if (object == null) {
+                return null;
+            }
+
+            if (lastOpenTime != null) {
+                if (new File(key.toString()).lastModified()
+                        != lastOpenTime.getTime()) {
+                    System.err.println("CDM: Cache is out of date for file: "
+                                       + key);
+                    removeValue(key, object);
+                    object = super.get(key);
+                }
+            }
+
+            return object;
+        }
+
+        /**
+         * _more_
+         *
+         * @param key _more_
+         * @param value _more_
+         */
+        public void put(KeyType key, ValueType value) {
+            super.put(key, value);
+            File file = new File(key.toString());
+            if (file.exists()) {
+                Date dttm = new Date(file.lastModified());
+                fileDate.put(key.toString(), dttm);
+            }
+        }
+    }
 
 
 }
