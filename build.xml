@@ -23,17 +23,10 @@
     <target name="release" depends="init">
       <antcall target="purge"/>
       <antcall target="plugins"/>
-<!--
-      <copy overwrite="true" file="${allpluginszip}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
--->
-
+      <antcall target="pointtools"/>
       <copy overwrite="true" file="${allpluginsjar}"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
     </target>
-
-    <target name="sourceforge" depends="init">
-      <antcall target="release"/>
-   </target>
 
 
     <target name="client" depends="init">
@@ -286,69 +279,9 @@
     </target>
 
 
-    <target name="allallplugins" depends="init">
-<ant antfile="${src_dir}/org/ramadda/plugins/beforeafter/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/biblio/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/blog/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/calendar/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/chat/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/climbing/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/community/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/db/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/doi/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/faq/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/feed/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/forum/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/frames/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/gadgets/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/gdata/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/glossary/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/incident/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/ldap/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/mail/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/map/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/media/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/multisearch/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/notes/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/ontology/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/pasteit/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/personfinder/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/phone/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/poll/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/scheduler/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/slideshow/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/spreadsheet/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/trip/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/twittersearch/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/userguide/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/weather/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/wiki/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/wms/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/plugins/workshop/build.xml" inheritAll="false"/>
-
-<ant antfile="${src_dir}/org/ramadda/geodata/astro/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/cdmdata/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/dif/build.xml" inheritAll="false"/>
-
-<!--
-<ant antfile="${src_dir}/org/ramadda/plugins/zipcontent/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/disaster/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/earthgauge/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/echo/build.xml" inheritAll="false"/>
--->
-
-<ant antfile="${src_dir}/org/ramadda/geodata/fieldproject/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/gps/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/idv/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/iso/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
-<ant antfile="${src_dir}/org/ramadda/geodata/thredds/build.xml" inheritAll="false"/>
-
-
-
-    </target>
+    <target name="pointtools" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/data/tools/build.xml" inheritAll="false"/>
+   </target>
 
 
 
