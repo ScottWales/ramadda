@@ -2368,7 +2368,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                 boolean forCollection) {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_CSV));
-        outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
+        //        outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
     }
 
