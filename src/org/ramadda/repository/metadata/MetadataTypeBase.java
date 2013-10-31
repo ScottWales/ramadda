@@ -228,7 +228,8 @@ public class MetadataTypeBase extends RepositoryManager {
                 XmlUtil.create(parent.getOwnerDocument(), "property", parent,
                                new String[] { "name", (element.getThumbnail()
                         ? "thumbnail"
-                        : "attachment"), "value", url });
+                        : "attachment"), "value", 
+                        handler.getRepository().getAbsoluteUrl(url) });
             }
 
         }
