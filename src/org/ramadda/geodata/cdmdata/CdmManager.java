@@ -1412,12 +1412,12 @@ public class CdmManager extends RepositoryManager {
      * @param <ValueType>
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DatedObjectPool<KeyType,
             ValueType> extends ObjectPool<KeyType, ValueType> {
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, Date> fileDate = new Hashtable<String,
                                                        Date>();
 

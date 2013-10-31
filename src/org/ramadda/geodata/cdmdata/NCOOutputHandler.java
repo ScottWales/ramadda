@@ -606,7 +606,7 @@ public class NCOOutputHandler extends OutputHandler implements DataProcessProvid
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     protected class NCODataProcess extends DataProcess {
 

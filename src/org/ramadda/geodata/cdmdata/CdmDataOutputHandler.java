@@ -294,8 +294,9 @@ public class CdmDataOutputHandler extends OutputHandler {
     /** Grid subset form Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET_FORM =
         new OutputType("Subset Grid", "data.gridsubset.form",
-                       OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT, OutputType.SUFFIX_NONE,
-                       "/cdmdata/subsetgrid.png", GROUP_DATA);
+                       OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT,
+                       OutputType.SUFFIX_NONE, "/cdmdata/subsetgrid.png",
+                       GROUP_DATA);
 
     /** Grid subset Output Type */
     public static final OutputType OUTPUT_GRIDSUBSET =
@@ -1131,12 +1132,13 @@ public class CdmDataOutputHandler extends OutputHandler {
                                            boolean withLevelSelector) {
         return getVariableForm(dataset, withLevelSelector, true);
     }
-    
+
     /**
      * Get the variable selector form
      *
      * @param dataset  the dataset
      * @param withLevelSelector  if true, include a level selector widget
+     * @param useLevelValue _more_
      *
      * @return  the form
      */
@@ -1191,23 +1193,29 @@ public class CdmDataOutputHandler extends OutputHandler {
                     header += HtmlUtils.space(3) + "Level:"
                               + HtmlUtils.space(1);
                     if (grids.size() > 1) {
-                       header += HtmlUtils.input(ARG_LEVEL, "");
+                        header += HtmlUtils.input(ARG_LEVEL, "");
                     } else {
-                       GridDatatype grid = grids.get(0);
-                       GridCoordSystem gcs = grid.getCoordinateSystem();
-                       CoordinateAxis1D zAxis = gcs.getVerticalAxis();
-                       double[] zVals = zAxis.getCoordValues();
-                       List<TwoFacedObject> selObjs = new ArrayList<TwoFacedObject>(zVals.length);
-                       selObjs.add(new TwoFacedObject("All", -1));
-                       for (int i = 0; i < zVals.length; i++) {
-                           if (useLevelValue) {
-                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), zVals[i] ));
-                           } else {
-                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), i ));
-                           }
-                       }
-                       header += HtmlUtils.select(ARG_LEVEL, selObjs) + HtmlUtils.space(2) 
-                                  + "(" + zAxis.getUnitsString() + ")";
+                        GridDatatype     grid  = grids.get(0);
+                        GridCoordSystem  gcs = grid.getCoordinateSystem();
+                        CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+                        double[]         zVals = zAxis.getCoordValues();
+                        List<TwoFacedObject> selObjs =
+                            new ArrayList<TwoFacedObject>(zVals.length);
+                        selObjs.add(new TwoFacedObject("All", -1));
+                        for (int i = 0; i < zVals.length; i++) {
+                            if (useLevelValue) {
+                                selObjs.add(
+                                    new TwoFacedObject(
+                                        String.valueOf(zVals[i]), zVals[i]));
+                            } else {
+                                selObjs.add(
+                                    new TwoFacedObject(
+                                        String.valueOf(zVals[i]), i));
+                            }
+                        }
+                        header += HtmlUtils.select(ARG_LEVEL, selObjs)
+                                  + HtmlUtils.space(2) + "("
+                                  + zAxis.getUnitsString() + ")";
                     }
                 }
                 varSB.append(
@@ -1339,8 +1347,8 @@ public class CdmDataOutputHandler extends OutputHandler {
                                 .getLatOrLonValue(ARG_AREA_EAST, 180.0)));
                 //                System.err.println("llr:" + llr);
             }
-            int                hStride    = request.get(ARG_HSTRIDE, 1);
-            Range              zStride    = null;
+            int   hStride = request.get(ARG_HSTRIDE, 1);
+            Range zStride = null;
             if (request.defined(ARG_LEVEL)) {
                 int index = request.get(ARG_LEVEL, -1);
                 if (index >= 0) {
@@ -1445,9 +1453,10 @@ public class CdmDataOutputHandler extends OutputHandler {
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
         List<CalendarDate> dates = getGridDates(dataset);
-        StringBuffer       varSB = 
-            getVariableForm(dataset, (dataset.getGrids().size()==1), false);
-        LatLonRect         llr   = dataset.getBoundingBox();
+        StringBuffer varSB = getVariableForm(dataset,
+                                             (dataset.getGrids().size()
+                                              == 1), false);
+        LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true);

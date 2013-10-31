@@ -554,7 +554,7 @@ public class CatalogHarvester extends Harvester {
                     catalogUrlPath));
             insertMetadata(group, metadataList);
             String crumbs = getPageHandler().getBreadCrumbs(null, group,
-                                                            getBaseGroup());
+                                getBaseGroup());
             crumbs = crumbs.replace("class=", "xclass=");
             groups.add(crumbs);
             groupCnt++;

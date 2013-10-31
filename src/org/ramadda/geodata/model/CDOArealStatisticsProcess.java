@@ -335,18 +335,23 @@ public class CDOArealStatisticsProcess extends DataProcess {
             outputName.append(MONTHS[endMonth - 1]);
         }
         outputName.append(" ");
-        String startYear = 
-        	request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
-        	 ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
-        	 : request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR)
-        	    ? request.getString(CDOOutputHandler.ARG_CDO_STARTYEAR,"")
-        	    : "";
-        String endYear = 
-        	request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum)
-        	 ? request.getString(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum)
-        	 : request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR)
-        	    ? request.getString(CDOOutputHandler.ARG_CDO_ENDYEAR,startYear)
-        	    : startYear;
+        String startYear = request.defined(CDOOutputHandler.ARG_CDO_STARTYEAR
+                                           + yearNum)
+                           ? request.getString(
+                               CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum)
+                           : request.defined(
+                               CDOOutputHandler.ARG_CDO_STARTYEAR)
+                             ? request.getString(
+                                 CDOOutputHandler.ARG_CDO_STARTYEAR, "")
+                             : "";
+        String endYear = request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                         + yearNum)
+                         ? request.getString(CDOOutputHandler.ARG_CDO_ENDYEAR
+                                             + yearNum)
+                         : request.defined(CDOOutputHandler.ARG_CDO_ENDYEAR)
+                           ? request.getString(
+                               CDOOutputHandler.ARG_CDO_ENDYEAR, startYear)
+                           : startYear;
         if (startYear.equals(endYear)) {
             outputName.append(startYear);
         } else {
@@ -373,7 +378,7 @@ public class CDOArealStatisticsProcess extends DataProcess {
     public boolean isEnabled() {
         return typeHandler.isEnabled();
     }
-        
+
     /**
      * Can we handle this input
      *
@@ -603,28 +608,32 @@ public class CDOArealStatisticsProcess extends DataProcess {
                              ? ""
                              : String.valueOf(grid + 1);
             String yrLabel = (grids.size() == 1)
-                               ? "Start"
-                               : (grid == 0)
-                                   ? "First Dataset:<br>Start"
-                                   : "Second Dataset:<br>Start";
+                             ? "Start"
+                             : (grid == 0)
+                               ? "First Dataset:<br>Start"
+                               : "Second Dataset:<br>Start";
             yrLabel = Repository.msgLabel(yrLabel);
             if (grid > 0) {
-                years.add(0,"");
+                years.add(0, "");
             }
-            int endIndex = (grid == 0) ? years.size()-1 : 0;
+            int endIndex = (grid == 0)
+                           ? years.size() - 1
+                           : 0;
 
-            sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
-            		                      yrLabel+ HtmlUtils.select(
-                                                 CDOOutputHandler.ARG_CDO_STARTYEAR
-                                                     + yearNum, years, years.get(
-                                                         0)) + HtmlUtils.space(
-                                                             3) + Repository.msgLabel(
-                                                                 "End") + HtmlUtils.select(
-                                                                     CDOOutputHandler.ARG_CDO_ENDYEAR
-                                                                         + yearNum, years, years.get(
-                                                                             endIndex))));
+            sb.append(
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Years"),
+                    yrLabel
+                    + HtmlUtils.select(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum, years,
+                        years.get(0)) + HtmlUtils.space(3)
+                                      + Repository.msgLabel("End")
+                                      + HtmlUtils.select(
+                                          CDOOutputHandler.ARG_CDO_ENDYEAR
+                                          + yearNum, years,
+                                              years.get(endIndex))));
             grid++;
         }
     }
-    
+
 }

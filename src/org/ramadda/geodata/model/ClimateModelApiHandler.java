@@ -121,7 +121,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             throws Exception {
         //return getTypeHandler().getDataProcessesToRun(request);
         List<DataProcess> processes = new ArrayList<DataProcess>();
-        DataProcess process = new CDOArealStatisticsProcess(repository);
+        DataProcess       process = new CDOArealStatisticsProcess(repository);
         if (process.isEnabled()) {
             processes.add(process);
         }
@@ -266,9 +266,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     public Result processCompareRequest(Request request) throws Exception {
 
         if (getDataProcesses(request).isEmpty()) {
-            throw new RuntimeException("Data processes for model comparison are not configured.");
+            throw new RuntimeException(
+                "Data processes for model comparison are not configured.");
         }
-        
+
         String fixedCollectionId = request.getString(ARG_COLLECTION,
                                        (String) null);
         Entry fixedCollection = null;

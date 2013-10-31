@@ -88,7 +88,7 @@ public class DifMetadataHandler extends MetadataHandler {
     /** _more_ */
     public static final String TYPE_LOCATION = "dif.location";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_PROJECT = "dif.project";
 
     /** _more_ */
@@ -98,10 +98,10 @@ public class DifMetadataHandler extends MetadataHandler {
     public static final String TYPE_DATA_SET_LANGUAGE =
         "dif.data_set_language";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_INSTRUMENT = "dif.instrument";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_PLATFORM = "dif.platform";
 
     /** _more_ */

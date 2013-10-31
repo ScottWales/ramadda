@@ -52,28 +52,28 @@ import java.util.List;
  */
 public class RadarTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_RADAR = "cdm_radar";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_RADAR_LEVEL2 = "cdm_radar_level2";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_RADAR_LEVEL3 = "cdm_radar_level3";
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_STATION_ID = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_STATION_NAME = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_STATION_LAT = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_STATION_LON = 3;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_STATION_PRODUCT = 4;
 
     /**

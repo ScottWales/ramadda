@@ -59,10 +59,10 @@ import java.util.List;
  */
 public class DifImporter extends ImportHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_DIF = "DIF";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DIF_TYPE = "dif.type";
 
     /**
@@ -138,7 +138,8 @@ public class DifImporter extends ImportHandler {
         sb.append("<ul>");
         for (Entry entry : entries) {
             sb.append("<li> ");
-            sb.append(getPageHandler().getBreadCrumbs(request, entry, parentEntry));
+            sb.append(getPageHandler().getBreadCrumbs(request, entry,
+                    parentEntry));
         }
 
         return getEntryManager().addEntryHeader(request, parentEntry,

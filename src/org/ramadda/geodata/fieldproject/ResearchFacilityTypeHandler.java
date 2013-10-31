@@ -46,7 +46,7 @@ public class ResearchFacilityTypeHandler extends ExtensibleGroupTypeHandler {
      * @param node _more_
      * @throws Exception On badness
      */
-    public  ResearchFacilityTypeHandler(Repository repository, Element node)
+    public ResearchFacilityTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }

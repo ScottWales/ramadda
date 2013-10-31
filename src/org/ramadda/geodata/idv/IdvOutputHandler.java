@@ -108,7 +108,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
     /** grid output id */
     public static final OutputType OUTPUT_IDV_GRID =
-        new OutputType("Grid Displays", "idv.grid", OutputType.TYPE_OTHER|OutputType.TYPE_IMPORTANT,
+        new OutputType("Grid Displays", "idv.grid",
+                       OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT,
                        OutputType.SUFFIX_NONE, "/idv/grid.gif", GROUP_DATA);
 
 
@@ -230,10 +231,12 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 //                jahe.printStackTrace();
                 getRepository().getLogManager().logWarning(
                     "To run the IdvOutputHandler a graphics environment is needed");
+
                 return;
             } catch (Throwable exc) {
                 idvOk = false;
                 logError("Creating IdvOutputHandler", exc);
+
                 return;
             }
         }
@@ -1022,7 +1025,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if ((displayIdx == 0) && (displays.size() > 1)) {
                 //Set the default display for the first param
                 if (request.defined(ARG_IDV_DISPLAY + displayIdx)) {
-                    tab.append(htmlSelect(request, ARG_IDV_DISPLAY + displayIdx,
+                    tab.append(htmlSelect(request,
+                                          ARG_IDV_DISPLAY + displayIdx,
                                           displays));
                 } else {
                     tab.append(HtmlUtils.select(ARG_IDV_DISPLAY + displayIdx,
@@ -1274,8 +1278,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             }
             misc.append(HtmlUtils.formEntry(msgLabel("Display Unit"),
                                             htmlInput(request,
-                                                ARG_IDV_DISPLAYUNIT + displayIdx,
-                                                    unitString, 6)));
+                                                ARG_IDV_DISPLAYUNIT
+                                                    + displayIdx, unitString,
+                                                        6)));
 
             misc.append(
                 HtmlUtils.formEntry(
@@ -1996,7 +2001,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             if ( !request.defined(ARG_IDV_DISPLAY + displayIdx)) {
                 continue;
             }
-            String display = request.getString(ARG_IDV_DISPLAY + displayIdx, "");
+            String display = request.getString(ARG_IDV_DISPLAY + displayIdx,
+                                 "");
 
             StringBuffer propSB = new StringBuffer();
             propSB.append(XmlUtil.tag(ImageGenerator.TAG_PROPERTY,

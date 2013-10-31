@@ -86,48 +86,48 @@ public class CdmUtil {
     /** _more_ */
     public static final String ATTR_ABSTRACT = "abstract";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUMMARY = "summary";
 
     //level3
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RADAR_STATIONID = "ProductStation";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RADAR_STATIONNAME = "ProductStationName";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RADAR_LATITUDE = "RadarLatitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RADAR_LONGITUDE = "RadarLongitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_RADAR_ALTITUDE = "RadarAltitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_KEYWORDS_VOCABULARY =
         "keywords_vocabulary";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TIME_START = "time_coverage_start";
 
     //level2
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATIONID = "Station";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATIONNAME = "StationName";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATION_LATITUDE = "StationLatitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATION_LONGITUDE = "StationLongitude";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_STATION_ALTITUDE =
         "StationElevationInMeters";
 }
