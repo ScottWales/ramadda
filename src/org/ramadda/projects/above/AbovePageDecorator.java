@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class AbovePageDecorator extends PageDecorator {
 
-    /** _more_          */
+    /** _more_ */
     private List<WmsMapLayer> mapLayers = null;
 
     /**

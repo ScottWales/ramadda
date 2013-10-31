@@ -123,10 +123,10 @@ public class Clause {
     /** database column name we are a clause for */
     private String column;
 
-    /** _more_          */
+    /** _more_ */
     private String columnPrefix = null;
 
-    /** _more_          */
+    /** _more_ */
     private String columnSuffix = null;
 
     /** the operand value */

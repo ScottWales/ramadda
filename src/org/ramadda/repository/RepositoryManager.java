@@ -117,11 +117,25 @@ public class RepositoryManager implements RepositorySource, Constants,
     public void shutdown() throws Exception {}
 
 
-    public void addAdminSettings(Request request, StringBuffer sb) throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addAdminSettings(Request request, StringBuffer sb)
+            throws Exception {}
 
-    public void applyAdminSettings(Request request) throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
+    public void applyAdminSettings(Request request) throws Exception {}
 
     /**
      * _more_

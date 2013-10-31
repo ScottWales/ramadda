@@ -65,7 +65,7 @@ public class CeopSfcPointFile extends CsvFile {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf = makeDateFormat("yyyy/MM/dd HH:mm");
 
     /**

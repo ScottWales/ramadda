@@ -188,13 +188,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SIZE = "size";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MIN = "min";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MAX = "max";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_REQUIRED = "required";
 
     /** _more_ */
@@ -289,13 +289,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private int size = 200;
 
-    /** _more_          */
+    /** _more_ */
     private double min = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private double max = Double.NaN;
 
-    /** _more_          */
+    /** _more_ */
     private boolean required = false;
 
     /** _more_ */

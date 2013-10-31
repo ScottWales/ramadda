@@ -55,13 +55,13 @@ public class Grid {
     /** degrees height */
     private double gridHeight;
 
-    /** _more_          */
+    /** _more_ */
     private double cellWidth;
 
     /** degrees height */
     private double cellHeight;
 
-    /** _more_          */
+    /** _more_ */
     private double cellWidth2;
 
     /** degrees height */

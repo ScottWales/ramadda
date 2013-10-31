@@ -36,10 +36,10 @@ import java.util.Date;
 
 public class RssUtil {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_XMLNS_GEORSS = "xmlns:georss";
 
-    /** _more_          */
+    /** _more_ */
     public static final String VALUE_XMLNS_GEORSS =
         "http://www.georss.org/georss";
 

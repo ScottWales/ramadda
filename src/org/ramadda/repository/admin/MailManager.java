@@ -113,9 +113,9 @@ public class MailManager extends RepositoryManager {
             throws Exception {
         sb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Email"), 2)));
         sb.append(HtmlUtils.formEntry(msgLabel("Administrator Email"),
-                                       HtmlUtils.input(PROP_ADMIN_EMAIL,
-                                           getProperty(PROP_ADMIN_EMAIL, ""),
-                                           HtmlUtils.SIZE_40)));
+                                      HtmlUtils.input(PROP_ADMIN_EMAIL,
+                                          getProperty(PROP_ADMIN_EMAIL, ""),
+                                          HtmlUtils.SIZE_40)));
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Mail Server"), HtmlUtils.input(

@@ -42,7 +42,7 @@ public class PageStyle {
     /** _more_ */
     public static final String MENU_VIEW = "view";
 
-    /** _more_          */
+    /** _more_ */
     public static final String MENU_IMPORTANT = "important";
 
     /** _more_ */

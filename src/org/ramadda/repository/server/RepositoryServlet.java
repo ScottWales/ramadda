@@ -84,7 +84,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     /** Repository object that will be instantiated */
     private Repository repository;
 
-    /** _more_          */
+    /** _more_ */
     private JettyServer jettyServer;
 
 

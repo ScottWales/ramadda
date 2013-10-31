@@ -33,7 +33,7 @@ import java.util.List;
 
 public class FormInfo {
 
-    /** _more_          */
+    /** _more_ */
     List<Constraint> constraints = new ArrayList<Constraint>();
 
     /**
@@ -113,14 +113,14 @@ public class FormInfo {
      *
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Constraint {
 
-        /** _more_          */
+        /** _more_ */
         public String label;
 
-        /** _more_          */
+        /** _more_ */
         public String id;
 
         /**
@@ -162,14 +162,14 @@ public class FormInfo {
      *
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Value extends Constraint {
 
-        /** _more_          */
+        /** _more_ */
         double value;
 
-        /** _more_          */
+        /** _more_ */
         boolean min = true;
 
         /**
@@ -216,11 +216,11 @@ public class FormInfo {
      *
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MaxLength extends Constraint {
 
-        /** _more_          */
+        /** _more_ */
         public int length;
 
         /**
@@ -259,7 +259,7 @@ public class FormInfo {
      *
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Required extends Constraint {
 

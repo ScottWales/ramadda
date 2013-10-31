@@ -1013,7 +1013,7 @@ public class LatLonGrid extends Grid {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class FastConvexHull {
 
@@ -1103,7 +1103,7 @@ public class LatLonGrid extends Grid {
          *
          *
          * @version        $version$, Fri, Aug 23, '13
-         * @author         Enter your name here...    
+         * @author         Enter your name here...
          */
         private static class XCompare implements Comparator<Point> {
 

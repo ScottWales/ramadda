@@ -544,7 +544,7 @@ public abstract class RecordFile {
     public abstract Record doMakeRecord(VisitInfo visitInfo);
 
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordField> fields;
 
 

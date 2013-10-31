@@ -70,7 +70,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private File tmpFile;
 
-    /** _more_          */
+    /** _more_ */
     private File outputNetcdfFile;
 
     /** _more_ */

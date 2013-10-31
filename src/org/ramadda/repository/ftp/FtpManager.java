@@ -99,12 +99,20 @@ public class FtpManager extends RepositoryManager {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
 
-    public void addAdminSettings(Request request, StringBuffer sb) throws Exception {
-        sb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(msgHeader("FTP Settings"), 2)));
+    public void addAdminSettings(Request request, StringBuffer sb)
+            throws Exception {
+        sb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("FTP Settings"),
+                2)));
 
 
 
@@ -127,9 +135,16 @@ public class FtpManager extends RepositoryManager {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-   public void applyAdminSettings(Request request) throws Exception {
-         getRepository().writeGlobal(PROP_FTP_PASSIVEPORTS,
+    public void applyAdminSettings(Request request) throws Exception {
+        getRepository().writeGlobal(PROP_FTP_PASSIVEPORTS,
                                     request.getString(PROP_FTP_PASSIVEPORTS,
                                         "").trim());
 
@@ -142,7 +157,7 @@ public class FtpManager extends RepositoryManager {
             }
         }
 
-   }
+    }
 
 
     /**

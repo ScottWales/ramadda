@@ -43,7 +43,7 @@ import java.util.List;
  *
  *
  * @version        $version$, Thu, Oct 31, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class DataRecord extends PointRecord {
 
@@ -60,7 +60,7 @@ public class DataRecord extends PointRecord {
     /** _more_ */
     protected Object[] objectValues;
 
-    /** _more_          */
+    /** _more_ */
     protected int numDataFields = 0;
 
     /** _more_ */

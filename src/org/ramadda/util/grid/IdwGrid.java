@@ -35,16 +35,16 @@ import java.util.List;
  */
 public class IdwGrid extends LatLonGrid {
 
-    /** _more_          */
+    /** _more_ */
     private double[][] weightedValueGrid;
 
-    /** _more_          */
+    /** _more_ */
     private double[][] weightsGrid;
 
-    /** _more_          */
+    /** _more_ */
     private double radius = 0.0;
 
-    /** _more_          */
+    /** _more_ */
     private int numCells = 0;
 
     /*
@@ -143,23 +143,23 @@ public class IdwGrid extends LatLonGrid {
      *
      *
      * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private class Index {
 
-        /** _more_          */
+        /** _more_ */
         boolean valid = true;
 
-        /** _more_          */
+        /** _more_ */
         int x;
 
-        /** _more_          */
+        /** _more_ */
         int y;
 
-        /** _more_          */
+        /** _more_ */
         double longitude;
 
-        /** _more_          */
+        /** _more_ */
         double latitude;
 
         /**
@@ -220,10 +220,10 @@ public class IdwGrid extends LatLonGrid {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     private List<Index> regionIndices = new ArrayList<Index>();
 
-    /** _more_          */
+    /** _more_ */
     int cnt = 0;
 
     /**

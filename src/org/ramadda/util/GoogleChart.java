@@ -44,7 +44,7 @@ public class GoogleChart {
      *
      *
      * @version        $version$, Thu, Oct 31, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DataTable {
 

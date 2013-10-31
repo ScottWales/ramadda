@@ -82,7 +82,7 @@ public class LogManager extends RepositoryManager {
     /** apache style log macro */
     public static final String LOG_MACRO_RESPONSE = "%>s";
 
-    /** _more_          */
+    /** _more_ */
     public static final String LOG_MACRO_SIZE = "%b";
 
     /** apache style log macro */
@@ -98,7 +98,7 @@ public class LogManager extends RepositoryManager {
     public static final String QUOTE = "\"";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
                                               + LOG_MACRO_TIME + "] " + QUOTE
                                               + LOG_MACRO_REQUEST + QUOTE

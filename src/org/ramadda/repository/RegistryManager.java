@@ -441,9 +441,12 @@ public class RegistryManager extends RepositoryManager {
      *
      * @param request _more_
      * @param csb _more_
+     *
+     * @throws Exception _more_
      */
     @Override
-    public void addAdminSettings(Request request, StringBuffer csb) throws Exception {
+    public void addAdminSettings(Request request, StringBuffer csb)
+            throws Exception {
         String helpLink =
             HtmlUtils.href(getRepository().getUrlBase()
                            + "/userguide/remoteservers.html", msg("Help"),

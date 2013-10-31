@@ -53,14 +53,14 @@ import java.util.List;
  *
  *
  * @version        $version$, Thu, Oct 31, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class NetcdfRecord extends DataRecord {
 
-    /** _more_          */
+    /** _more_ */
     private PointFeatureIterator iterator;
 
-    /** _more_          */
+    /** _more_ */
     private List<RecordField> dataFields = new ArrayList<RecordField>();
 
 

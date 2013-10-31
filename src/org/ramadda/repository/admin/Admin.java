@@ -1100,7 +1100,8 @@ public class Admin extends RepositoryManager {
         getRepository().getMapManager();
 
 
-        for(RepositoryManager manager: getRepository().getRepositoryManagers()) {
+        for (RepositoryManager manager :
+                getRepository().getRepositoryManagers()) {
             manager.addAdminSettings(request, csb);
         }
 
@@ -1462,7 +1463,8 @@ public class Admin extends RepositoryManager {
 
         request.ensureAuthToken();
 
-        for(RepositoryManager manager: getRepository().getRepositoryManagers()) {
+        for (RepositoryManager manager :
+                getRepository().getRepositoryManagers()) {
             manager.applyAdminSettings(request);
         }
 

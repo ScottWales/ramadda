@@ -465,7 +465,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private String templateJavascriptContent;
 
     /**
@@ -488,10 +488,12 @@ public class PageHandler extends RepositoryManager {
                         "", HtmlUtils.id("output")) + HtmlUtils.div(
                         "",
                         HtmlUtils.id("ramadda-selectdiv")
-                        + HtmlUtils.cssClass("ramadda-selectdiv")) + HtmlUtils.div(
-                            "",
-                            HtmlUtils.id("floatdiv")
-                            + HtmlUtils.cssClass("floatdiv")) + buttonizeJS;
+                        + HtmlUtils.cssClass(
+                            "ramadda-selectdiv")) + HtmlUtils.div(
+                                "",
+                                HtmlUtils.id("floatdiv")
+                                + HtmlUtils.cssClass(
+                                    "floatdiv")) + buttonizeJS;
         }
 
         return templateJavascriptContent;

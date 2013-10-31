@@ -76,7 +76,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ATTR_ALIGN = "align";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_ID = "id";
 
 
@@ -448,26 +448,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     public static final String WIKI_PROP_RESOURCE = "resource";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_PROP_TOOLS = "tools";
 
     /** Upload property */
     public static final String WIKI_PROP_UPLOAD = "upload";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILTER_IMAGE = "image";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILTER_FILE = "file";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILTER_GEO = "geo";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILTER_FOLDER = "folder";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FILTER_TYPE = "type:";
 
 
@@ -582,10 +582,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the id for this */
     public static final String ID_THIS = "this";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_CHILDREN = "children";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_SIBLINGS = "siblings";
 
     /** the id for my parent */
@@ -597,10 +597,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the id for my grandparent */
     public static final String ID_GRANDPARENT = "grandparent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_GRANDCHILDREN = "grandchildren";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_LINKS = "links";
 
     /** default label */
