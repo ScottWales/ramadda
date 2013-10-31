@@ -1015,7 +1015,7 @@ public class CdmDataOutputHandler extends OutputHandler {
 
         List<CalendarDate> dates = getGridDates(dataset);
 
-        StringBuffer       varSB = getVariableForm(dataset, true);
+        StringBuffer       varSB = getVariableForm(dataset, true, false, true);
 
         LatLonRect         llr   = dataset.getBoundingBox();
         String             lat   = "";
@@ -1130,7 +1130,7 @@ public class CdmDataOutputHandler extends OutputHandler {
      */
     protected StringBuffer getVariableForm(GridDataset dataset,
                                            boolean withLevelSelector) {
-        return getVariableForm(dataset, withLevelSelector, true);
+        return getVariableForm(dataset, withLevelSelector, false, true);
     }
 
     /**
@@ -1138,18 +1138,23 @@ public class CdmDataOutputHandler extends OutputHandler {
      *
      * @param dataset  the dataset
      * @param withLevelSelector  if true, include a level selector widget
-     * @param useLevelValue _more_
+     * @param onlyIfAllLevelsEqual  only display the level selector
+     *                              there is only one type of level
+     * @param useLevelValue true to use the level value, otherwise the index
      *
      * @return  the form
      */
     protected StringBuffer getVariableForm(GridDataset dataset,
                                            boolean withLevelSelector,
+                                           boolean onlyIfAllLevelsEqual,
                                            boolean useLevelValue) {
         int                varCnt  = 0;
         StringBuffer       varSB   = new StringBuffer();
         StringBuffer       varSB2D = new StringBuffer();
         StringBuffer       varSB3D = new StringBuffer();
         List<GridDatatype> grids   = sortGrids(dataset);
+        boolean haveOneVerticalCS = true;
+        CoordinateAxis1D compAxis = null;
 
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
@@ -1160,9 +1165,21 @@ public class CdmDataOutputHandler extends OutputHandler {
                                        HtmlUtils.squote(ARG_VARIABLE),
                                        HtmlUtils.squote(cbxId))));
             VariableEnhanced var     = grid.getVariable();
-            StringBuffer     sbToUse = (grid.getZDimension() == null)
-                                       ? varSB2D
-                                       : varSB3D;
+            StringBuffer sbToUse = null;
+            if (grid.getZDimension() == null) {
+                sbToUse = varSB2D;
+            } else {
+                sbToUse = varSB3D;
+                CoordinateAxis1D myZAxis = 
+                    grid.getCoordinateSystem().getVerticalAxis();
+                if (myZAxis != null) {
+                    if (compAxis == null) {
+                        compAxis = myZAxis;
+                    } else if (haveOneVerticalCS) {
+                        haveOneVerticalCS = compAxis.equals(myZAxis);
+                    }
+                }
+            }
 
             sbToUse.append(
                 HtmlUtils.row(
@@ -1190,32 +1207,25 @@ public class CdmDataOutputHandler extends OutputHandler {
             if ((varSB2D.length() > 0) || withLevelSelector) {
                 String header = " 3D Grids";
                 if (withLevelSelector) {
-                    header += HtmlUtils.space(3) + "Level:"
+                    if (!haveOneVerticalCS && !onlyIfAllLevelsEqual) {
+                        header += HtmlUtils.space(3) + "Level:"
+                              + HtmlUtils.space(1) 
+                              + HtmlUtils.input(ARG_LEVEL, "");
+                    } else if (haveOneVerticalCS) {
+                        header += HtmlUtils.space(3) + "Level:"
                               + HtmlUtils.space(1);
-                    if (grids.size() > 1) {
-                        header += HtmlUtils.input(ARG_LEVEL, "");
-                    } else {
-                        GridDatatype     grid  = grids.get(0);
-                        GridCoordSystem  gcs = grid.getCoordinateSystem();
-                        CoordinateAxis1D zAxis = gcs.getVerticalAxis();
-                        double[]         zVals = zAxis.getCoordValues();
-                        List<TwoFacedObject> selObjs =
-                            new ArrayList<TwoFacedObject>(zVals.length);
-                        selObjs.add(new TwoFacedObject("All", -1));
-                        for (int i = 0; i < zVals.length; i++) {
-                            if (useLevelValue) {
-                                selObjs.add(
-                                    new TwoFacedObject(
-                                        String.valueOf(zVals[i]), zVals[i]));
-                            } else {
-                                selObjs.add(
-                                    new TwoFacedObject(
-                                        String.valueOf(zVals[i]), i));
-                            }
-                        }
-                        header += HtmlUtils.select(ARG_LEVEL, selObjs)
-                                  + HtmlUtils.space(2) + "("
-                                  + zAxis.getUnitsString() + ")";
+                       double[] zVals = compAxis.getCoordValues();
+                       List<TwoFacedObject> selObjs = new ArrayList<TwoFacedObject>(zVals.length);
+                       selObjs.add(new TwoFacedObject("All", -1));
+                       for (int i = 0; i < zVals.length; i++) {
+                           if (useLevelValue) {
+                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), zVals[i] ));
+                           } else {
+                              selObjs.add(new TwoFacedObject(String.valueOf(zVals[i]), i ));
+                           }
+                       }
+                       header += HtmlUtils.select(ARG_LEVEL, selObjs) + HtmlUtils.space(2) 
+                                  + "(" + compAxis.getUnitsString() + ")";
                     }
                 }
                 varSB.append(
@@ -1453,9 +1463,7 @@ public class CdmDataOutputHandler extends OutputHandler {
         GridDataset dataset      = getCdmManager().getGridDataset(entry,
                                        path);
         List<CalendarDate> dates = getGridDates(dataset);
-        StringBuffer varSB = getVariableForm(dataset,
-                                             (dataset.getGrids().size()
-                                              == 1), false);
+        StringBuffer varSB = getVariableForm(dataset, true, true, false);
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
