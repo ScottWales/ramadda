@@ -53,6 +53,13 @@ public class JQuery {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     *
+     * @return _more_
+     */
     public static String selectId(String id) {
         return select(id(id));
     }
@@ -130,25 +137,47 @@ public class JQuery {
         return html;
     }
 
-    public static String makeButton(String label, String id, StringBuffer js, 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param js _more_
+     * @param code _more_
+     *
+     * @return _more_
+     */
+    public static String makeButton(String label, String id, StringBuffer js,
                                     String code) {
         String html = HtmlUtils.tag("button", HtmlUtils.id(id), label);
-        js.append(
-            JQuery.select(JQuery.id(id))
-            + ".button().click(function(event){\n"
-            + code + "\n});\n");
+        js.append(JQuery.select(JQuery.id(id))
+                  + ".button().click(function(event){\n" + code + "\n});\n");
 
         return html;
     }
 
+    /**
+     * _more_
+     *
+     * @param selector _more_
+     *
+     * @return _more_
+     */
     public static String buttonize(String selector) {
-        return  JQuery.select(selector)
-            + ".button().click(function(event){});\n";
+        return JQuery.select(selector)
+               + ".button().click(function(event){});\n";
     }
 
 
+    /**
+     * _more_
+     *
+     * @param js _more_
+     *
+     * @return _more_
+     */
     public static String ready(String js) {
-        return "$(document).ready(function(){\n" + js +"\n});\n";
+        return "$(document).ready(function(){\n" + js + "\n});\n";
 
     }
 

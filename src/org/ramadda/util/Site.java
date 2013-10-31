@@ -40,29 +40,29 @@ import java.util.List;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class Site {
 
-    /** _more_          */
+    /** _more_ */
     private String id;
 
-    /** _more_          */
+    /** _more_ */
     private double latitude;
 
-    /** _more_          */
+    /** _more_ */
     private double longitude;
 
-    /** _more_          */
+    /** _more_ */
     private String address;
 
-    /** _more_          */
+    /** _more_ */
     private String city;
 
-    /** _more_          */
+    /** _more_ */
     private String state;
 
-    /** _more_          */
+    /** _more_ */
     private String zipCode;
 
 

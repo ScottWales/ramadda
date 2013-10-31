@@ -35,10 +35,10 @@ import java.util.List;
 
 public class CategoryBuffer {
 
-    /** _more_          */
+    /** _more_ */
     List<String> categories = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     Hashtable<String, StringBuffer> buffers = new Hashtable<String,
                                                   StringBuffer>();
 

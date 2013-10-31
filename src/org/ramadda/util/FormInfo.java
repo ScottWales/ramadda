@@ -27,56 +27,126 @@ package org.ramadda.util;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  */
 
 public class FormInfo {
 
+    /** _more_          */
     List<Constraint> constraints = new ArrayList<Constraint>();
 
+    /**
+     * _more_
+     */
     public FormInfo() {}
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<Constraint> getConstraints() {
         return constraints;
     }
 
+    /**
+     * _more_
+     *
+     * @param js _more_
+     */
     public void addJavascriptValidation(StringBuffer js) {
-        for(Constraint constraint: constraints) {
+        for (Constraint constraint : constraints) {
             constraint.addJavascriptValidation(js);
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param length _more_
+     */
     public void addSizeValidation(String label, String id, int length) {
         constraints.add(new MaxLength(label, id, length));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     */
     public void addRequiredValidation(String label, String id) {
         constraints.add(new Required(label, id));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param min _more_
+     */
     public void addMinValidation(String label, String id, double min) {
         constraints.add(new Value(label, id, min, true));
     }
 
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param id _more_
+     * @param max _more_
+     */
     public void addMaxValidation(String label, String id, double max) {
         constraints.add(new Value(label, id, max, false));
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
     public static class Constraint {
+
+        /** _more_          */
         public String label;
+
+        /** _more_          */
         public String id;
+
+        /**
+         * _more_
+         *
+         * @param label _more_
+         * @param id _more_
+         */
         public Constraint(String label, String id) {
             this.label = label;
-            this.id = id;
+            this.id    = id;
         }
 
-        public void addJavascriptValidation(StringBuffer js) {
-        }
+        /**
+         * _more_
+         *
+         * @param js _more_
+         */
+        public void addJavascriptValidation(StringBuffer js) {}
 
+        /**
+         * _more_
+         *
+         * @param js _more_
+         * @param message _more_
+         */
         public void error(StringBuffer js, String message) {
             js.append(HtmlUtils.call("alert", HtmlUtils.squote(message)));
             js.append("event.preventDefault();\n");
@@ -87,24 +157,51 @@ public class FormInfo {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
     public static class Value extends Constraint {
-        double value;
-        boolean min  =true;
 
-        public Value(String label, String id,double value, boolean min) {
+        /** _more_          */
+        double value;
+
+        /** _more_          */
+        boolean min = true;
+
+        /**
+         * _more_
+         *
+         * @param label _more_
+         * @param id _more_
+         * @param value _more_
+         * @param min _more_
+         */
+        public Value(String label, String id, double value, boolean min) {
             super(label, id);
             this.value = value;
-            this.min = min;
+            this.min   = min;
         }
 
+        /**
+         * _more_
+         *
+         * @param js _more_
+         */
         public void addJavascriptValidation(StringBuffer js) {
-            js.append("if(!inputValueOk("  +
-                      HtmlUtils.squote(id) +"," +value + "," + (min?"true":"false")+")) {\n");
+            js.append("if(!inputValueOk(" + HtmlUtils.squote(id) + ","
+                      + value + "," + (min
+                                       ? "true"
+                                       : "false") + ")) {\n");
             String message;
-            if(min)
-                message = "Error: " + label +" is < " + value;
-            else 
-                message = "Error: " + label +" is > " + value;
+            if (min) {
+                message = "Error: " + label + " is < " + value;
+            } else {
+                message = "Error: " + label + " is > " + value;
+            }
             error(js, message);
             js.append("}\n");
         }
@@ -114,17 +211,40 @@ public class FormInfo {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
     public static class MaxLength extends Constraint {
+
+        /** _more_          */
         public int length;
+
+        /**
+         * _more_
+         *
+         * @param label _more_
+         * @param id _more_
+         * @param length _more_
+         */
         public MaxLength(String label, String id, int length) {
             super(label, id);
             this.length = length;
         }
 
+        /**
+         * _more_
+         *
+         * @param js _more_
+         */
         public void addJavascriptValidation(StringBuffer js) {
-            js.append("if(!inputLengthOk("  +
-                      HtmlUtils.squote(id) +"," +length +")) {\n");
-            String message = "Error: " + label +" is too long. Max length is " +length;
+            js.append("if(!inputLengthOk(" + HtmlUtils.squote(id) + ","
+                      + length + ")) {\n");
+            String message = "Error: " + label
+                             + " is too long. Max length is " + length;
             error(js, message);
             js.append("}\n");
         }
@@ -134,15 +254,34 @@ public class FormInfo {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
     public static class Required extends Constraint {
+
+        /**
+         * _more_
+         *
+         * @param label _more_
+         * @param id _more_
+         */
         public Required(String label, String id) {
             super(label, id);
         }
 
+        /**
+         * _more_
+         *
+         * @param js _more_
+         */
         public void addJavascriptValidation(StringBuffer js) {
-            js.append("if(!inputIsRequired("  +
-                      HtmlUtils.squote(id)+")) {\n");
-            String message = "Error: " + label +" is required";
+            js.append("if(!inputIsRequired(" + HtmlUtils.squote(id)
+                      + ")) {\n");
+            String message = "Error: " + label + " is required";
             error(js, message);
             js.append("}\n");
         }

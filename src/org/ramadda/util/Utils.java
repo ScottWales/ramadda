@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 
 /**
- * A collection of utilities 
+ * A collection of utilities
  *
  * @author Jeff McWhirter
  */

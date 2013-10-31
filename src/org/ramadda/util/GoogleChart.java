@@ -25,21 +25,51 @@ package org.ramadda.util;
  */
 public class GoogleChart {
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     */
     public static void addChartImport(StringBuffer sb) {
         sb.append(HtmlUtils.importJS("https://www.google.com/jsapi"));
-        sb.append(HtmlUtils.script("if (!(typeof ramaddaLoadedGoodleCharts === 'undefined')) {ramaddaLoadedGoodleCharts=true;google.load('visualization', '1.0', {'packages':['corechart']});\n"));
+        sb.append(
+            HtmlUtils.script(
+                "if (!(typeof ramaddaLoadedGoodleCharts === 'undefined')) {ramaddaLoadedGoodleCharts=true;google.load('visualization', '1.0', {'packages':['corechart']});\n"));
         //        // Set a callback to run when the Google Visualization API is loaded.
         //        google.setOnLoadCallback(drawChart);
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Oct 31, '13
+     * @author         Enter your name here...    
+     */
     public static class DataTable {
+
+        /**
+         * _more_
+         *
+         * @param sb _more_
+         */
         public static void init(StringBuffer sb) {
             sb.append("var data = new google.visualization.DataTable();\n");
         }
 
-        public static void addColumn(StringBuffer sb, String type, String name) {
+        /**
+         * _more_
+         *
+         * @param sb _more_
+         * @param type _more_
+         * @param name _more_
+         */
+        public static void addColumn(StringBuffer sb, String type,
+                                     String name) {
             //data.addColumn('string', 'Name');
-            sb.append(HtmlUtils.call("data.addColumn", HtmlUtils.squote(type), HtmlUtils.squote(name)));
+            sb.append(HtmlUtils.call("data.addColumn",
+                                     HtmlUtils.squote(type),
+                                     HtmlUtils.squote(name)));
         }
 
 

@@ -36,10 +36,10 @@ import java.util.List;
  */
 public class DatedObject<ObjectType> {
 
-    /** _more_          */
+    /** _more_ */
     private Date date;
 
-    /** _more_          */
+    /** _more_ */
     private ObjectType object;
 
 

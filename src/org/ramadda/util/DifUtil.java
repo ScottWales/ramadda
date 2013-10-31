@@ -89,7 +89,7 @@ public class DifUtil {
     public static final String TAG_Online_Resource = "Online_Resource";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Data_Set_Citation = {
         TAG_Dataset_Creator, TAG_Dataset_Title, TAG_Dataset_Series_Name,
         TAG_Dataset_Release_Date, TAG_Dataset_Release_Place,
@@ -194,7 +194,7 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Detailed_Variable = "Detailed_Variable";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Parameters = {
         TAG_Parameters, TAG_Category, TAG_Topic, TAG_Term,
         TAG_Variable_Level_1, TAG_Variable_Level_2, TAG_Variable_Level_3
@@ -213,19 +213,19 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Long_Name = "Long_Name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_Source_Name = "Source_Name";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Sensor_Name = { TAG_Short_Name,
             TAG_Long_Name };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Project = { TAG_Short_Name,
             TAG_Long_Name };
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Source_Name = { TAG_Short_Name,
             TAG_Long_Name };
 
@@ -423,7 +423,7 @@ public class DifUtil {
     /** _more_ */
     public static final String TAG_Distribution_Fees = "Fees";
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Distribution = { TAG_Distribution_Media,
             TAG_Distribution_Size, TAG_Distribution_Format,
             TAG_Distribution_Fees };
@@ -469,7 +469,7 @@ public class DifUtil {
     public static final String TAG_URL = "URL";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] TAGS_Related_URL = { TAG_URL,
             TAG_Description };
 

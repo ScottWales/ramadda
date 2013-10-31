@@ -26,23 +26,23 @@ package org.ramadda.util;
  *
  *
  * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class Station {
 
-    /** _more_          */
+    /** _more_ */
     private String id;
 
-    /** _more_          */
+    /** _more_ */
     private String name;
 
-    /** _more_          */
+    /** _more_ */
     private double latitude;
 
-    /** _more_          */
+    /** _more_ */
     private double longitude;
 
-    /** _more_          */
+    /** _more_ */
     private double elevation;
 
     /**

@@ -47,13 +47,13 @@ public class TempDir {
     /** _more_ */
     private File dir;
 
-    /** _more_          */
+    /** _more_ */
     boolean recurse = true;
 
-    /** _more_          */
+    /** _more_ */
     boolean filesOk = true;
 
-    /** _more_          */
+    /** _more_ */
     boolean dirsOk = true;
 
     /** _more_ */

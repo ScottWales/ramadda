@@ -396,6 +396,7 @@ public class HtmlUtils {
     /** _more_ */
     public static final String CLASS_TEXTAREA = "textarea";
 
+    /** _more_          */
     public static final String STYLE_HIDDEN = "display:none;";
 
 
@@ -786,16 +787,31 @@ public class HtmlUtils {
     }
 
 
-    public static String buttons(String...args) {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String buttons(String... args) {
         StringBuffer sb = new StringBuffer();
-        for(int i=0;i<args.length;i++) {
-            if(i>0) sb.append(buttonSpace());
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) {
+                sb.append(buttonSpace());
+            }
             sb.append(args[i]);
         }
+
         return sb.toString();
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static String buttonSpace() {
         return space(2);
     }
@@ -2605,8 +2621,16 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param columns _more_
+     * @param attrs _more_
+     *
+     * @return _more_
+     */
     public static String table(Object[] columns, String attrs) {
-        return table(row(cols(columns),""), attrs);
+        return table(row(cols(columns), ""), attrs);
     }
 
 
@@ -3247,7 +3271,14 @@ public class HtmlUtils {
     public static int blockCnt = 0;
 
 
-    public static String getUniqueId(String prefix)  {
+    /**
+     * _more_
+     *
+     * @param prefix _more_
+     *
+     * @return _more_
+     */
+    public static String getUniqueId(String prefix) {
         return prefix + (blockCnt++);
     }
 
@@ -3277,11 +3308,13 @@ public class HtmlUtils {
         if ((showImg != null) && (showImg.length() > 0)) {
             img = HtmlUtils.img(visible
                                 ? hideImg
-                                : showImg, "", " align=bottom  "+ " id='" + id + "img' ");
+                                : showImg, "",
+                                           " align=bottom  " + " id='" + id
+                                           + "img' ");
         }
         String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
-                + id + "','" + id + "img','" + hideImg + "','" + showImg
-                                                   + "')");
+                                + id + "','" + id + "img','" + hideImg
+                                + "','" + showImg + "')");
         String link = img + space(1) + label;
         sb.append("<div  " + blockExtra + ">");
         sb.append(HtmlUtils.div(link, headerExtra + mouseEvent));
@@ -3463,11 +3496,11 @@ public class HtmlUtils {
         String       id = "block_" + (blockCnt++);
         StringBuffer sb = new StringBuffer();
         String mouseEvent = HtmlUtils.onMouseClick("toggleBlockVisibility('"
-                + id + "','" + id + "img','" + "" + "','" + ""
-                                                   + "')");
-        String link =
-            HtmlUtils.jsLink(mouseEvent, clickHtml,
-                         HtmlUtils.cssClass("toggleblocklabellink")) + label;
+                                + id + "','" + id + "img','" + "" + "','"
+                                + "" + "')");
+        String link = HtmlUtils.jsLink(
+                          mouseEvent, clickHtml,
+                          HtmlUtils.cssClass("toggleblocklabellink")) + label;
         sb.append(link);
         sb.append(
             open(TAG_SPAN,
