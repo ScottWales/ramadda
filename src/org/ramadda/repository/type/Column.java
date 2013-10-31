@@ -1125,7 +1125,7 @@ public class Column implements DataTypes, Constants {
         if (changeType) {
             sql = typeHandler.getDatabaseManager().getAlterTableSql(
                 getTableName(), name, type);
-            System.err.println("altering table: " + sql);
+            //            System.err.println("altering table: " + sql);
             SqlUtil.loadSql(sql, statement, true);
         }
     }
