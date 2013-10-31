@@ -2708,6 +2708,39 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
 
+    /**
+     * _more_
+     *
+     * @param table _more_
+     * @param column _more_
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    public String getAlterTableSql(String table, String column, String type) {
+        String sql;
+        if (isDatabaseDerby()) {
+            sql = "alter table " + table + "  alter column " + column
+                  + "  set data type " + type + ";";
+        } else if (isDatabasePostgres()) {
+            sql = "alter table " + table + " alter column " + column + " "
+                  + type + ";";
+        } else if (isDatabaseMysql()) {
+            //              ALTER TABLE t1 MODIFY col1 BIGINT;
+            sql = "alter table " + table + " modify " + column + " " + type
+                  + ";";
+        } else {
+            //h2
+            //            ALTER TABLE TEST ALTER COLUMN NAME CLOB;
+            sql = "alter table " + table + " alter column " + column + " "
+                  + type + ";";
+
+        }
+
+        return sql;
+    }
+
+
 
 
 }

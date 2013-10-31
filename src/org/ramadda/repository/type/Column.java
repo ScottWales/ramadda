@@ -1123,14 +1123,9 @@ public class Column implements DataTypes, Constants {
         SqlUtil.loadSql(sql, statement, true);
 
         if (changeType) {
-            if (typeHandler.getDatabaseManager().isDatabaseDerby()) {
-                sql = "alter table " + getTableName() + "  alter column "
-                      + name + "  set data type " + type + ";";
-            } else {
-                sql = "alter table " + getTableName() + " modify column "
-                      + name + " " + type + ";";
-            }
-            //            System.err.println("altering table: " + sql);
+            sql = typeHandler.getDatabaseManager().getAlterTableSql(
+                getTableName(), name, type);
+            System.err.println("altering table: " + sql);
             SqlUtil.loadSql(sql, statement, true);
         }
     }
