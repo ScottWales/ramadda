@@ -463,12 +463,26 @@ function RepositoryMap(mapId, params) {
             this.setSelectionBox(this.fldNorth.obj.value,
                     this.fldWest.obj.value, this.fldSouth.obj.value,
                     this.fldEast.obj.value);
-            var boxBounds = this.selectorBox.bounds
-            this.map.setCenter(boxBounds.getCenterLonLat());
-            if (zoom) {
-                this.map.zoomToExtent(boxBounds);
+            if (this.selectorBox) {
+                var boxBounds = this.selectorBox.bounds
+                this.map.setCenter(boxBounds.getCenterLonLat());
+                if (zoom) {
+                    this.map.zoomToExtent(boxBounds);
+                }
             }
         }
+    }
+
+    this.toggleSelectorBox = function(toggle) {
+       if (this.selectorControl) {
+          if (toggle) {
+             this.selectorControl.activate();
+             this.selectorControl.box.activate();
+          } else {
+             this.selectorControl.deactivate();
+             this.selectorControl.box.deactivate();
+          }
+       }
     }
 
     this.resetExtent = function() {
