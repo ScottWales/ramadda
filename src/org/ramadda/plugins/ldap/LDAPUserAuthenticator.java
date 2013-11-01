@@ -19,7 +19,7 @@
 */
 
 /*
- * Originally written by Kristian SebastiaÂ¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * Originally written by Kristian Sebastia¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  */
 
 package org.ramadda.plugins.ldap;
