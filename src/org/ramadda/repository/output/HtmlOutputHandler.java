@@ -101,6 +101,11 @@ public class HtmlOutputHandler extends OutputHandler {
         new OutputType("Tree View", "html.treeview", OutputType.TYPE_VIEW,
                        "", "/icons/application_side_tree.png");
 
+    /** _more_ */
+    public static final OutputType OUTPUT_INFO =
+        new OutputType("Information", "html.info", OutputType.TYPE_VIEW, "",
+                       ICON_INFORMATION);
+
 
 
     /*
@@ -173,7 +178,7 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_HTML);
-        addType(OUTPUT_TREE);
+        addType(OUTPUT_INFO);
         addType(OUTPUT_TABLE);
         addType(OUTPUT_GRID);
         addType(OUTPUT_TREEVIEW);
@@ -226,14 +231,14 @@ public class HtmlOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String makeHtmlHeader(Request request, Entry entry, String title) {
-        OutputType[] types = new OutputType[] { OUTPUT_TREE, OUTPUT_TABLE,
+        OutputType[] types = new OutputType[] { OUTPUT_INFO, OUTPUT_TABLE,
         /*OUTPUT_GRID,*/
         OUTPUT_TREEVIEW, CalendarOutputHandler.OUTPUT_TIMELINE,
                 CalendarOutputHandler.OUTPUT_CALENDAR };
         StringBuffer sb =
             new StringBuffer(
                 "<table border=0 cellspacing=0 cellpadding=0><tr>");
-        String selected = request.getString(ARG_OUTPUT, OUTPUT_TREE.getId());
+        String selected = request.getString(ARG_OUTPUT, OUTPUT_INFO.getId());
         if (title.length() > 0) {
             sb.append("<td align=center>" + msgLabel(title) + "</td>");
         }
@@ -277,6 +282,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<Entry> entries = state.getAllEntries();
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_HTML));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_INFO));
             if (entries.size() > 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(),
@@ -519,11 +525,18 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
+        boolean      doingInfo    = outputType.equals(OUTPUT_INFO);
+
         StringBuffer sb           = new StringBuffer();
-        String       wikiTemplate = getWikiText(request, entry);
-        if (wikiTemplate == null) {
-            wikiTemplate = getPageHandler().getWikiTemplate(request, entry,
-                    PageHandler.TEMPLATE_DEFAULT);
+        String       wikiTemplate = null;
+
+
+        if ( !doingInfo) {
+            wikiTemplate = getWikiText(request, entry);
+            if (wikiTemplate == null) {
+                wikiTemplate = getPageHandler().getWikiTemplate(request,
+                        entry, PageHandler.TEMPLATE_DEFAULT);
+            }
         }
 
         if (wikiTemplate != null) {
@@ -596,7 +609,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else if (output.equals(OUTPUT_GRAPH)) {
             return getRepository().getMimeTypeFromSuffix(".xml");
-        } else if (output.equals(OUTPUT_HTML) || output.equals(OUTPUT_TREE)) {
+        } else if (output.equals(OUTPUT_HTML) || output.equals(OUTPUT_INFO)) {
             return getRepository().getMimeTypeFromSuffix(".html");
         } else {
             return super.getMimeType(output);
@@ -1720,18 +1733,18 @@ public class HtmlOutputHandler extends OutputHandler {
         if ((subGroups.size() == 0) && (entries.size() == 0)) {
             //            doSimpleListing = false;
         }
+        boolean doingInfo = outputType.equals(OUTPUT_INFO);
 
+        if ( !doingInfo) {
+            if (typeHandler != null) {
+                Result typeResult = typeHandler.getHtmlDisplay(request,
+                                        group, subGroups, entries);
 
-
-        if (typeHandler != null) {
-            Result typeResult = typeHandler.getHtmlDisplay(request, group,
-                                    subGroups, entries);
-
-            if (typeResult != null) {
-                return typeResult;
+                if (typeResult != null) {
+                    return typeResult;
+                }
             }
         }
-
 
         StringBuffer sb = new StringBuffer("");
         request.appendMessage(sb);
@@ -1760,10 +1773,12 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         String wikiTemplate = null;
+
         //If the user specifically selected an output listing then don't do the wiki text
-        if ( !request.exists(ARG_OUTPUT)
-                || Misc.equals(request.getString(ARG_OUTPUT, ""),
-                               OUTPUT_HTML.getId())) {
+        if ( !doingInfo
+                && ( !request.exists(ARG_OUTPUT)
+                     || Misc.equals(request.getString(ARG_OUTPUT, ""),
+                                    OUTPUT_HTML.getId()))) {
             wikiTemplate = getWikiText(request, group);
             if (wikiTemplate == null) {
                 wikiTemplate = getPageHandler().getWikiTemplate(request,
@@ -1772,14 +1787,10 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-
         String head = null;
 
         if ((wikiTemplate == null) && !group.isDummy()) {
-
-            //            sb.append(getHtmlHeader(request,  group));
-            addDescription(request, group, sb, !hasChildren);
-            //If its the default view of an entry then just show the children listing
+            addDescription(request, group, sb, true);
             if ( !doSimpleListing) {
                 String informationBlock = getInformationTabs(request, group,
                                               false);

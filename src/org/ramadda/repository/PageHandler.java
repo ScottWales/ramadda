@@ -2453,7 +2453,7 @@ public class PageHandler extends RepositoryManager {
         List<Link>   links  = getEntryManager().getEntryLinks(request, entry);
         StringBuffer sb     = new StringBuffer();
 
-        OutputType   output = HtmlOutputHandler.OUTPUT_TREE;
+        OutputType   output = HtmlOutputHandler.OUTPUT_INFO;
         String treeLink = HtmlUtils.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
@@ -2464,7 +2464,6 @@ public class PageHandler extends RepositoryManager {
 
         sb.append(treeLink);
         for (Link link : links) {
-
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
                 String href = HtmlUtils.href(link.getUrl(),
                                              HtmlUtils.img(link.getIcon(),

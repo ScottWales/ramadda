@@ -96,15 +96,9 @@ public class OutputHandler extends RepositoryManager {
 
     /** HTML OutputType */
     public static final OutputType OUTPUT_HTML =
-        new OutputType("Information", "default.html",
+        new OutputType("Entry Page", "default.html",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
-                       ICON_INFORMATION);
-
-    /** Tree OutputType */
-    public static final OutputType OUTPUT_TREE =
-        new OutputType("Information", "tree.html",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
-                       ICON_TREE);
+                       "/icons/application_home.png");
 
 
     /** name */
@@ -1347,13 +1341,8 @@ public class OutputHandler extends RepositoryManager {
      * @param request _more_
      * @param sb _more_
      * @param entries _more_
-     * @param entriesToCheck _more_
-     * @param doFormOpen _more_
-     * @param doFormClose _more_
-     * @param doCbx _more_
      * @param doForm _more_
      * @param showCrumbs _more_
-     * @param hideParents _more_
      * @param showDetails _more_
      *
      * @return _more_
