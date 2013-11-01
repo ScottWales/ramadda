@@ -19,7 +19,7 @@
 */
 
 /*
- * Originally written by Kristian Sebastia¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * Originally written by Kristian Sebastian Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  */
 
 package org.ramadda.plugins.ldap;
@@ -47,7 +47,7 @@ import javax.naming.NamingException;
  * This is a user authenticator to implement LDAP authentication
  *
  *
- * @author Kristian SebastiaÂ¡n Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
+ * @author Kristian Sebastian Blalid Coastal Ocean Observing and Forecast System, Balearic Islands ICTS
  * @author Jeff McWhirter ramadda.org
  */
 public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
