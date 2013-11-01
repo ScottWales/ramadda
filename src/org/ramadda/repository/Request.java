@@ -26,6 +26,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -2236,12 +2237,14 @@ public class Request implements Constants, Cloneable {
      */
     public String getServerName() {
         String serverName = null;
-        try {
-            if (httpServletRequest != null) {
-                serverName = httpServletRequest.getServerName();
-            }
-        } catch (Exception ignoreThis) {}
-        if ((serverName == null) || (serverName.trim().length() == 0)) {
+        if(!repository.useFixedHostnameForAbsoluteUrls()) {
+            try {
+                if (httpServletRequest != null) {
+                    serverName = httpServletRequest.getServerName();
+                }
+            } catch (Exception ignoreThis) {}
+        }
+        if (!Utils.stringDefined(serverName)) {
             serverName = repository.getHostname();
         }
 
@@ -2254,12 +2257,13 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
-        try {
-            if (httpServletRequest != null) {
-                httpServletRequest.getServerPort();
-            }
-        } catch (Exception ignoreThis) {}
-
+        if(!repository.useFixedHostnameForAbsoluteUrls()) {
+            try {
+                if (httpServletRequest != null) {
+                    httpServletRequest.getServerPort();
+                }
+            } catch (Exception ignoreThis) {}
+        } 
         return repository.getPort();
     }
 

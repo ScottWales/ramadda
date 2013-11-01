@@ -520,7 +520,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String getHostname() {
         String hostname = getProperty(PROP_HOSTNAME, (String) null);
-        if ((hostname != null) && (hostname.trim().length() > 0)) {
+        if (Utils.stringDefined(hostname)) {
             if (hostname.equals("ipaddress")) {
                 return getIpAddress();
             }
@@ -537,14 +537,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @return _more_
      */
+    public boolean useFixedHostnameForAbsoluteUrls() {
+        return getProperty(PROP_USE_FIXED_HOSTNAME, false);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public int getPort() {
         String port = getProperty(PROP_PORT, (String) null);
-
-        if (port != null) {
-            port = port.trim();
-            if (port.length() > 0) {
-                return Integer.decode(port).intValue();
-            }
+        if (Utils.stringDefined(port)) {
+            return Integer.decode(port.trim()).intValue();
         }
 
         return super.getPort();
@@ -2319,41 +2325,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return "https://" + hostname + ":" + port + url;
         }
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     */
-    public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
-        if (requestUrl.getNeedsSsl()) {
-            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
-        }
-
-        return getUrlBase() + requestUrl.getPath();
-    }
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
-    public String getAbsoluteUrl(String url) {
-        int port = getPort();
-        if (port == 80) {
-            return getHttpProtocol() + "://" + getHostname() + url;
-        } else {
-            return getHttpProtocol() + "://" + getHostname() + ":" + port
-                   + url;
-        }
-    }
-
 
 
     /**

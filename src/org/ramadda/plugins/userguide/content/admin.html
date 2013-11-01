@@ -2,22 +2,25 @@
 
 <%nochildlist%>
 
-If you are a site administator an &quot;Admin&quot; link should be shown on the left
-of every page. This takes you to a set of Site Administration pages.
+If you are a site administator there should be an &quot;Admin&quot; link should be shown in RAMADDA. This takes you to a set of Site Administration pages.
 <p>
 The main admin settings page consists of:
 
 <subhead  id="contact"  intoc="false">Site and Contact Information</subhead>
 
+For information regarding SSL see the <a href="faq.html#ssl">FAQ</a>.
+
+<a name="hostname"></a>
+The Hostname and HTTP port should be set. RAMADDA uses these when it creates an absolute URL in some content  (e.g.,
+a generated THREDDS catalog).
+<p>
+For information on the Server Registry settings  see <a href="remoteservers.html">remoteservers.html</a>.
+
+<p>
 Specify the RAMADDA administator email for when RAMADDA sends email to users.
 The Mail Server is the smtp mail server that RAMADDA can use to send email.
 If this is not defined then user's cannot reset their passwords via email.
-<p>
-The Hostname and HTTP port should be set. RAMADDA uses these when it creates an absolute URL in some content  (e.g.,
-a generated THREDDS catalog).
-For information regarding SSL see the <a href="faq.html#ssl">FAQ</a>.
-<p>
-For information on the Server Registry settings  see <a href="remoteservers.html">remoteservers.html</a>.
+
 
 
 <subhead  id="access"  intoc="false">Access</subhead>

@@ -1060,6 +1060,23 @@ public class Admin extends RepositoryManager {
         csb.append(
             HtmlUtils.row(
                 HtmlUtils.colspan(msgHeader("Site Information"), 2)));
+        String allSslCbx =
+            HtmlUtils.space(3)
+            + HtmlUtils.checkbox(
+                PROP_ACCESS_ALLSSL, "true",
+                getProperty(PROP_ACCESS_ALLSSL, false)) + " "
+                    + msg("Force all connections to be secure");
+
+        String sslMsg =
+            "Note: To enable ssl see the <a target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
+        csb.append(
+            HtmlUtils.formEntryTop(
+                msgLabel("SSL"),
+                getPageHandler().showDialogNote(sslMsg) + HtmlUtils.br()
+                + allSslCbx));
+
+
+
         csb.append(HtmlUtils.formEntry(msgLabel("Hostname"),
                                        HtmlUtils.input(PROP_HOSTNAME,
                                            getProperty(PROP_HOSTNAME, ""),
@@ -1070,29 +1087,16 @@ public class Admin extends RepositoryManager {
                                            getProperty(PROP_PORT, ""),
                                            HtmlUtils.SIZE_5)));
 
+        String cbx = HtmlUtils.checkbox(PROP_USE_FIXED_HOSTNAME, "true",
+                                        getProperty(PROP_USE_FIXED_HOSTNAME,
+                                            false));
 
 
-
-
-
-        String allSslCbx =
-            HtmlUtils.space(3)
-            + HtmlUtils.checkbox(
-                PROP_ACCESS_ALLSSL, "true",
-                getProperty(PROP_ACCESS_ALLSSL, false)) + " "
-                    + msg("Force all connections to be secure");
-
-        String sslMsg =
-            "Note: To enable ssl see the <a href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
         csb.append(
-            HtmlUtils.formEntryTop(
-                msgLabel("SSL"),
-                allSslCbx + HtmlUtils.br()
-                + getPageHandler().showDialogNote(sslMsg)));
-
-
-
-
+            HtmlUtils.formEntry(
+                msgLabel("Absolute URLs"),
+                cbx + HtmlUtils.space(2)
+                + "Use the fixed hostname:port in absolute URLs instead of the request's info"));
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
@@ -1489,6 +1493,10 @@ public class Admin extends RepositoryManager {
 
         getRepository().writeGlobal(request, PROP_HOSTNAME);
         getRepository().writeGlobal(request, PROP_PORT);
+
+        String useFixed = "" + request.get(PROP_USE_FIXED_HOSTNAME, false);
+
+        getRepository().writeGlobal(PROP_USE_FIXED_HOSTNAME, useFixed);
 
         getRepository().writeGlobal(PROP_ACCESS_ALLSSL,
                                     "" + request.get(PROP_ACCESS_ALLSSL,

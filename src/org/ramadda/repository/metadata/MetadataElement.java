@@ -737,7 +737,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @throws Exception _more_
      */
-    public String getValueForXml(String templateType, Entry entry,
+    public String getValueForXml(Request request, String templateType, Entry entry,
                                  Metadata metadata, String value,
                                  Element parent)
             throws Exception {
@@ -754,7 +754,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         StringBuffer   xml           = new StringBuffer();
         List<Metadata> groupMetadata = getGroupData(value);
         for (Metadata subMetadata : groupMetadata) {
-            xml.append(applyTemplate(templateType, entry, subMetadata,
+            xml.append(applyTemplate(request, templateType, entry, subMetadata,
                                      parent));
         }
 

@@ -1777,11 +1777,16 @@ public class TypeHandler extends RepositoryManager {
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), getRepository().iconUrl(ICON_METADATA_ADD),
                                 "Add Property", OutputType.TYPE_EDIT));
-            links.add(
-                new Link(
-                    request.entryUrl(getRepository().URL_ACCESS_FORM, entry),
-                    getRepository().iconUrl(ICON_ACCESS), "Access",
-                    OutputType.TYPE_EDIT));
+
+            if (getAccessManager().canSetAccess(request, entry)) {
+                links.add(
+                    new Link(
+                        request.entryUrl(
+                            getRepository().URL_ACCESS_FORM,
+                            entry), getRepository().iconUrl(ICON_ACCESS),
+                                    "Access", OutputType.TYPE_EDIT));
+            }
+
 
             links.add(
                 new Link(

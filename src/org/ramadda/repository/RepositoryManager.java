@@ -170,19 +170,6 @@ public class RepositoryManager implements RepositorySource, Constants,
      * _more_
      *
      * @param request _more_
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     */
-    public String getAbsoluteUrl(Request request, RequestUrl requestUrl) {
-        return "";
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
      * @param label _more_
      * @param contents _more_
      *

@@ -1801,6 +1801,12 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_PORT = "ramadda.port";
 
+
+    /** _more_          */
+    public static final String PROP_USE_FIXED_HOSTNAME =
+        "ramadda.usefixedhostname";
+
+
     /** _more_ */
     public static final String PROP_RATINGS_ENABLE = "ramadda.ratings.enable";
 

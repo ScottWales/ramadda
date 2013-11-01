@@ -541,7 +541,7 @@ public class MetadataType extends MetadataTypeBase {
             throws Exception {
 
 
-        String xml = applyTemplate(templateType, entry, metadata, parent);
+        String xml = applyTemplate(request, templateType, entry, metadata, parent);
         if ((xml == null) || (xml.length() == 0)) {
             return false;
         }

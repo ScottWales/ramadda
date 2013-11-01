@@ -410,6 +410,28 @@ public class AccessManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     *
+     * @return _more_
+     */
+    public boolean canSetAccess(Request request, Entry entry) {
+        User user = request.getUser();
+        if (user.getAdmin()
+                || ( !user.getAnonymous()
+                     && Misc.equals(user, entry.getUser()))) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param action _more_
      * @param user _more_
      * @param requestIp _more_
@@ -871,8 +893,14 @@ public class AccessManager extends RepositoryManager {
      */
     public Result processAccessForm(Request request) throws Exception {
 
+
         StringBuffer sb    = new StringBuffer();
         Entry        entry = getEntryManager().getEntry(request);
+
+        if ( !canSetAccess(request, entry)) {
+            throw new AccessException("Can't set access", request);
+        }
+
         request.appendMessage(sb);
 
         StringBuffer currentAccess = new StringBuffer();
@@ -989,8 +1017,15 @@ public class AccessManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processAccessChange(Request request) throws Exception {
+
+
+
         request.ensureAuthToken();
-        Entry            entry       = getEntryManager().getEntry(request);
+        Entry entry = getEntryManager().getEntry(request);
+
+        if ( !canSetAccess(request, entry)) {
+            throw new AccessException("Can't set access", request);
+        }
         List<Permission> permissions = new ArrayList<Permission>();
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             List roles = StringUtil.split(request.getString(ARG_ROLES + "."
