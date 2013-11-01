@@ -2393,23 +2393,15 @@ public class PageHandler extends RepositoryManager {
         String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
                               "", true, false, popup);
 
-
-
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
                                        titleList);
 
         boolean showBreadcrumbs = pageStyle.getShowBreadcrumbs(entry);
-        boolean showToolbar     = pageStyle.getShowToolbar(entry);
-        boolean showMenubar     = pageStyle.getShowMenubar(entry);
-
-        String  toolbar         = showToolbar
+        boolean showMenu        = pageStyle.getShowMenubar(entry);
+        String  toolbar         = pageStyle.getShowToolbar(entry)
                                   ? getEntryToolbar(request, entry)
                                   : "";
-        String  menubar         = showMenubar
-                                  ? getEntryMenubar(request, entry)
-                                  : "";
-
 
         String  header          = "";
         if (showBreadcrumbs) {
@@ -2417,10 +2409,12 @@ public class PageHandler extends RepositoryManager {
             StringBuffer sb =
                 new StringBuffer(
                     "<div class=ramadda-breadcrumbs><table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
-            sb.append(
-                "<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
-            sb.append(menuLink);
-            sb.append("</div></td>");
+            if (showMenu) {
+                sb.append(
+                    "<td valign=center width=1%><div class=ramadda-breadcrumbs-menu>");
+                sb.append(menuLink);
+                sb.append("</div></td>");
+            }
 
             sb.append("<td>");
             sb.append(header);
