@@ -1057,7 +1057,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                          (String) null);
 
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
-                                            entry, tag, props, attrPrefix);
+                                            entry, tag, props);
         if (result == null) {
             result = getMessage(props, "Could not find entry ");
         }
@@ -1143,7 +1143,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * @param entry _more_
      * @param theTag _more_
      * @param props _more_
-     * @param attrPrefix _more_
      *
      * @return _more_
      *
@@ -1151,8 +1150,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      */
     private String getWikiIncludeInner(WikiUtil wikiUtil, Request request,
                                        Entry originalEntry, Entry entry,
-                                       String theTag, Hashtable props,
-                                       String attrPrefix)
+                                       String theTag, Hashtable props)
             throws Exception {
 
         boolean wikify   = Misc.getProperty(props, ATTR_WIKIFY, true);
@@ -1162,8 +1160,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         StringBuffer sb = new StringBuffer();
         if (theTag.equals(WIKI_PROP_INFORMATION)) {
-            boolean details = Misc.getProperty(props,
-                                  attrPrefix + ATTR_DETAILS, false);
+            boolean details = Misc.getProperty(props, ATTR_DETAILS, false);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(request, entry,
                         false, true).toString();
@@ -1452,8 +1449,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 boolean[] haveBearingLines = { false };
                 //Request   newRequest       = request.cloneMe();
                 //newRequest.putAll(props);
-                boolean details = Misc.getProperty(props,
-                                      attrPrefix + ATTR_DETAILS, false);
+                boolean details = Misc.getProperty(props, ATTR_DETAILS,
+                                      false);
                 String icon = Misc.getProperty(props, ATTR_ICON,
                                   (String) null);
                 if (icon != null) {
@@ -1996,8 +1993,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
-            boolean showDetails = Misc.getProperty(props,
-                                      attrPrefix + ATTR_DETAILS, true);
+            boolean showDetails = Misc.getProperty(props, ATTR_DETAILS, true);
 
             if ( !showDetails) {
                 request.put(ARG_DETAILS, "false");
