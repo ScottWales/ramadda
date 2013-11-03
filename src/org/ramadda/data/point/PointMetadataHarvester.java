@@ -173,8 +173,8 @@ public class PointMetadataHarvester extends RecordVisitor {
             return true;
         }
 
-        int fieldCnt = 0;
-        for (RecordField field : fields) {
+        for (int fieldCnt=0;fieldCnt<fields.size();fieldCnt++) {
+            RecordField field = fields.get(fieldCnt);
             if (field.isTypeNumeric()) {
                 ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
@@ -199,7 +199,6 @@ public class PointMetadataHarvester extends RecordVisitor {
                     }
                 }
             }
-            fieldCnt++;
         }
         cnt++;
         if (llg != null) {
@@ -284,13 +283,20 @@ public class PointMetadataHarvester extends RecordVisitor {
                    + "  longitude:" + minLongitude + " - " + maxLongitude;
 
         if (fields != null) {
-            int fieldCnt = 0;
-            for (RecordField field : fields) {
+            for (int fieldCnt=0;fieldCnt<fields.size();fieldCnt++) {
+                RecordField field = fields.get(fieldCnt);
                 if (field.isTypeNumeric()) {
+                    ValueGetter valueGetter = field.getValueGetter();
+                    if (valueGetter == null) {
+                        continue;
+                    }
+                    //Skip the arrays
+                    if (field.getArity() > 1) {
+                        continue;
+                    }
                     System.err.println(field + " " + ranges[fieldCnt][0]
                                        + " " + ranges[fieldCnt][1]);
                 }
-                fieldCnt++;
             }
         }
 
