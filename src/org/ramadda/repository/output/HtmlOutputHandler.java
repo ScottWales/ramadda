@@ -188,7 +188,7 @@ public class HtmlOutputHandler extends OutputHandler {
         addType(OUTPUT_SELECTXML);
         addType(OUTPUT_METADATAXML);
         addType(OUTPUT_LINKSXML);
-        addType(OUTPUT_TEST);
+        //        addType(OUTPUT_TEST);
     }
 
 
@@ -455,6 +455,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 return new Result("", xml, "text/xml");
             }
+            /********
             String wikiTemplate = getWikiText(request, entry);
             if (wikiTemplate == null) {
                 wikiTemplate = getPageHandler().getWikiTemplate(request,
@@ -473,12 +474,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 return new Result("", xml, "text/xml");
             }
-
+            *****/
             return getMetadataXml(request, entry, false);
         }
-
-
-
         return getHtmlResult(request, outputType, entry);
     }
 
@@ -1795,11 +1793,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 String informationBlock = getInformationTabs(request, group,
                                               false);
 
+
                 if (hasChildren) {
                     sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
                             informationBlock,
                             request.get(ARG_SHOW_ASSOCIATIONS,
-                                        !hasChildren)));
+                                        doingInfo?true:!hasChildren)));
                 } else {
                     sb.append(informationBlock);
                 }

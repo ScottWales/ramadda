@@ -299,7 +299,7 @@ function mouseUp(event) {
     mouseIsDown = 0;
     draggedEntry   = null;
     ramaddaUtil.setCursor('default');
-    var obj = ramaddaUtil.getDomObject('floatdiv');
+    var obj = ramaddaUtil.getDomObject('ramadda-floatdiv');
     if(obj) {
         var dragSourceObj= ramaddaUtil.getDomObject(dragSource);
         if(dragSourceObj) {
@@ -310,7 +310,7 @@ function mouseUp(event) {
             var steps = 10;
             var dx=(tox-fromx)/steps;
             var dy=(toy-fromy)/steps;
-            flyBackAndHide('floatdiv',0,steps,fromx,fromy,dx,dy);
+            flyBackAndHide('ramadda-floatdiv',0,steps,fromx,fromy,dx,dy);
         } else {
             hideObject(obj);
         }
@@ -357,7 +357,7 @@ function mouseMove(event) {
     event = ramaddaUtil.getEvent(event);
     if(draggedEntry && mouseIsDown) {
         mouseMoveCnt++;
-        var obj = ramaddaUtil.getDomObject('floatdiv');
+        var obj = ramaddaUtil.getDomObject('ramadda-floatdiv');
         if(mouseMoveCnt==6) {
             ramaddaUtil.setCursor('move');
         }
@@ -374,7 +374,7 @@ function mouseMove(event) {
 
 
 function moveFloatDiv(x,y) {
-    var obj = ramaddaUtil.getDomObject('floatdiv');
+    var obj = ramaddaUtil.getDomObject('ramadda-floatdiv');
     if(obj) {
         if(obj.style.visibility!="visible") {
             obj.style.visibility = "visible";
@@ -445,9 +445,18 @@ function mouseUpOnEntry(event, entryId, targetId) {
         obj.style.borderBottom="";
     }
     if(draggedEntry && draggedEntry!=entryId) {
+        $("#ramadda-dialog").html("what to do....");
+        $("#ramadda-dialog").dialog({
+                resizable: false,
+                modal: true,
+                buttons: {
+                   Cancel: function() {$( this ).dialog( "close" );}
+                }}
+        );
+
         url = "${urlroot}/entry/copy?action=action.move&from=" + draggedEntry +"&to=" + entryId;
         //	alert(url);
-	window.open(url,'move window','') ;
+        //	window.open(url,'move window','') ;
         //        document.location = url;
     }
 }
@@ -1216,6 +1225,7 @@ function closeFormLoadingDialog () {
     var dialog =   $(formDialogId);
     dialog.dialog('close');
 }
+
 
 
 function popupFormLoadingDialog (dialogId) { 

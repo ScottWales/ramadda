@@ -478,22 +478,15 @@ public class PageHandler extends RepositoryManager {
             //TODO: add a property to not buttonize
             String buttonizeJS =
                 HtmlUtils.script(JQuery.buttonize(":submit"));
-            templateJavascriptContent = HtmlUtils.div(
-                "",
-                HtmlUtils.id("ramadda-tooltipdiv")
-                + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
-                    "",
-                    HtmlUtils.id("popupdiv")
-                    + HtmlUtils.cssClass("tooltip-outer")) + HtmlUtils.div(
-                        "", HtmlUtils.id("output")) + HtmlUtils.div(
-                        "",
-                        HtmlUtils.id("ramadda-selectdiv")
-                        + HtmlUtils.cssClass(
-                            "ramadda-selectdiv")) + HtmlUtils.div(
-                                "",
-                                HtmlUtils.id("floatdiv")
-                                + HtmlUtils.cssClass(
-                                    "floatdiv")) + buttonizeJS;
+            //j-
+            StringBuffer sb  = new StringBuffer();
+            sb.append(HtmlUtils.div("", HtmlUtils.id("ramadda-tooltipdiv") + HtmlUtils.cssClass("tooltip-outer")));
+            sb.append(HtmlUtils.div("", HtmlUtils.id("ramadda-dialog")  + HtmlUtils.cssClass("ramadda-dialog"))); 
+            sb.append(HtmlUtils.div("", HtmlUtils.id("ramadda-selectdiv") + HtmlUtils.cssClass("ramadda-selectdiv")));
+            sb.append(HtmlUtils.div("", HtmlUtils.id("ramadda-floatdiv") + HtmlUtils.cssClass("ramadda-floatdiv")));
+            sb.append(buttonizeJS);
+            //j+
+            templateJavascriptContent =  sb.toString();
         }
 
         return templateJavascriptContent;

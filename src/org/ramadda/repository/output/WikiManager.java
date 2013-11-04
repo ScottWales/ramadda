@@ -547,7 +547,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
-                   "false", ATTR_DETAILS, "false")),
+                   "false", ATTR_DETAILS, "false",
+                   ATTR_ICON,"#/icons/dots/green.png", ARG_MAP_ICONSONLY, "false"
+)),
         prop(WIKI_PROP_MAPENTRY,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_DETAILS,
                    "false")),
@@ -1453,6 +1455,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                       false);
                 String icon = Misc.getProperty(props, ATTR_ICON,
                                   (String) null);
+
+                if (icon != null && icon.startsWith("#")) {
+                    icon = null;
+                }
                 if (icon != null) {
                     newRequest.put(ARG_ICON, icon);
                 }

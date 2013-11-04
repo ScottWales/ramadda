@@ -5,9 +5,10 @@ table, tr, th, td {
 
 body {
    font-family:  Arial, Helvetica, sans-serif;
+   font-size: 11pt;
    color: black;
    margin: 0px;
-   font-size: 11pt;
+   padding: 0px;
 }
 
 a {
@@ -34,14 +35,13 @@ form {
 }
 
 
-
 .input, .password, .fileinput,.textarea,.select {
-  border : 1px #888888 solid;
+  border : 1px #888 solid;
 }
-
 
 .input:focus, .textarea:focus {
   background: #fffeec;
+  border : 1px #000 solid;
 }
 
 
@@ -72,7 +72,6 @@ form {
 .entry-download-box {
   background-color: #338F33;
   background-color: #48be48;
-//  border: 1px #666 solid;
   max-width:8em;
   color: white;
   font-weight: bold; 
@@ -84,10 +83,6 @@ form {
   border-radius: 8px;
   -webkit-border-radius: 8px;
   text-align: bottom;
-//  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-//  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-//  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-  
 }
 
 .entry-download-box:hover {
@@ -172,7 +167,6 @@ form {
    margin-top:8px;
    margin-left:4px;
    max-width: 300;
-//   max-height: 100;
    overflow-x: auto;
 }
 
@@ -201,7 +195,6 @@ form {
 .entry-inline {
    max-height: 300px; 
    overflow-y: auto;
-   /*background-color : #efefef;*/
    border: 1px #888 solid; 
    padding: 5px;
    margin-top: 5px;
@@ -222,7 +215,6 @@ form {
    border-top-right-radius: 8px;
    font-weight: bold; 
    border-bottom: 1px #888 solid;
-   /*background-color: #efefef;*/
    padding: 5px;
    padding-left: 5px;
    padding-bottom: 0px;
@@ -251,7 +243,6 @@ form {
 .ramadda-system-message {
    margin:4px;
    padding:4px;
-   /* background-color: #ff0000; */
    border: 1px solid #666;
    font-weight: bold; 
 }
@@ -303,15 +294,7 @@ form {
 
 .ramadda-entry-menu-title {
   font-style:italic;
-  /*
-  font-size: 110%;
-  font-weight:bold;
-  */
   width: 100%;
-  /*
-  text-align:center;
-  text-decoration: underline;
-   */
    border-bottom : 1px #888 solid;
 }
 
@@ -362,21 +345,6 @@ form {
 }
 
 
-
-
-.messagepop {
-  background-color:#FFFFFF;
-  border:1px solid #999999;
-  cursor:default;
-  display:none;
-  margin-top: 15px;
-  position:absolute;
-  text-align:left;
-  width:394px;
-  z-index:50;
-  padding: 25px 25px 20px;
-}
-
 .boxquote {
   font-style:italic;
   margin:10pt;
@@ -393,17 +361,10 @@ label {
   text-indent: -15px;
 }
 
-.messagepop p, .messagepop.div {
-  border-bottom: 1px solid #EFEFEF;
-  margin: 8px 0;
-  padding-bottom: 8px;
-}
-
 
 
 .ramadda-harvester-active {
   background: #FFFFCC;
-  /* background-color: #ddd; */
 }
 
 .ramadda-comment-block {
@@ -429,9 +390,7 @@ label {
 }
 
 .ramadda-separator {
-   font-size: 9pt;
-   /*font-weight: bold;*/
-   /*color:#666666;*/
+   font-size: 80%;
 }
 
 
@@ -488,7 +447,7 @@ label {
    padding-top: 0px;
    font-weight: bold;
    vertical-align: bottom;
-   font-size: 12pt;
+   font-size: 110%;
 }
 
 
@@ -521,7 +480,6 @@ a.ramadda-heading-2-link:visited {
 .ramadda-acknowledgement, .ramadda-acknowledgement a {
    text-align: center;
    font-style:italic;
-   font-family: Arial;
    font-size: smaller;
    padding-bottom:10px;
 }
@@ -539,7 +497,7 @@ a.ramadda-heading-2-link:visited {
 }
 
 .ramadda-smallhelp {
-   font-size: 9pt;
+   font-size:80%;
 }
 
 .ramadda-stack {
@@ -568,7 +526,6 @@ a.ramadda-heading-2-link:visited {
 }
 
 .entryname {
-   /*font-size: 130%;*/
    margin-top:3px;
    padding-left:15px;
    font-weight: bold;
@@ -775,12 +732,12 @@ a.ramadda-menuitem-link {
 }
 
 .image-caption {
-     font-size: 10pt;
+     font-size: 90%;
      color: #666;
 }
 
 a.image-link {
-     font-size: 10pt;
+     font-size: 90%;
      color: #999;
 }
 
@@ -788,7 +745,6 @@ a.image-link {
 
 
 .sortlinkon  {
-//  font-size: 10pt;
   background-color : #eee;
   font-weight: bold;
   padding-left:2px;
@@ -796,13 +752,11 @@ a.image-link {
 }
 
 .sortlinkoff  {
-//  font-size: 10pt;
   padding-left:2px;
   padding-right:2px;
 }
 
 .sortlinkoff a {
-//   font-size: 10pt;
    color:black;
 //   text-decoration: none;
 }
@@ -1324,7 +1278,7 @@ xxxpath.link {
 }
 
 
-.floatdiv {
+.ramadda-floatdiv {
     filter:alpha(opacity=80);
     -moz-opacity:0.80;
      -khtml-opacity: 0.80;
