@@ -3902,7 +3902,6 @@ public class EntryManager extends RepositoryManager {
 
         StringBuffer fromList = new StringBuffer();
         for (Entry fromEntry : entries) {
-            fromList.append(HtmlUtils.space(3));
             fromList.append(getPageHandler().getBreadCrumbs(request,
                     fromEntry));
             fromList.append(HtmlUtils.br());
@@ -3922,33 +3921,25 @@ public class EntryManager extends RepositoryManager {
                     msg("What do you want to do with the following entry?"));
             }
             sb.append(HtmlUtils.br());
-            sb.append(msgLabel("Destination"));
-            sb.append(getEntryDisplayName(toEntry));
-            sb.append(HtmlUtils.br());
+            sb.append(HtmlUtils.insetDiv(fromList.toString(), 20,20,20,0));
             StringBuffer fb = new StringBuffer();
             request.formPostWithAuthToken(fb, getRepository().URL_ENTRY_COPY);
             fb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
             fb.append(HtmlUtils.hidden(ARG_FROM, fromIds));
 
-            if (isGroup) {
-                fb.append(HtmlUtils.submit(((entries.size() > 1)
-                                            ? msg("Copy them to the folder")
-                                            : msg(
-                                            "Copy it to the folder")), ARG_ACTION_COPY));
-                fb.append(HtmlUtils.buttonSpace());
-                fb.append(HtmlUtils.submit(((entries.size() > 1)
-                                            ? msg("Move them to the folder")
-                                            : msg(
-                                            "Move it to the folder")), ARG_ACTION_MOVE));
+            String destName = getEntryDisplayName(toEntry);
 
+            if (isGroup) {
+                fb.append(HtmlUtils.submit(msg("Move to") + " " + destName, ARG_ACTION_MOVE));
+                fb.append(HtmlUtils.buttonSpace());
+                fb.append(HtmlUtils.submit(msg("Copy to") +" " + destName, ARG_ACTION_COPY));
             }
 
             if (entries.size() == 1) {
                 fb.append(HtmlUtils.buttonSpace());
-                fb.append(HtmlUtils.submit(msg("Link it"),
+                fb.append(HtmlUtils.submit(msg("Link to") + " " + destName,
                                            ARG_ACTION_ASSOCIATE));
             }
-
 
             fb.append(HtmlUtils.buttonSpace());
             fb.append(HtmlUtils.submit(msg("Cancel"), ARG_CANCEL));
@@ -3956,9 +3947,8 @@ public class EntryManager extends RepositoryManager {
             StringBuffer contents = new StringBuffer(
                                         getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
-            contents.append(fromList);
-
-            return new Result(msg("Move confirm"), contents);
+            Result  result  =  new Result(msg("Move confirm"), contents);
+            return addEntryHeader(request, toEntry, result);
         }
 
 
@@ -3976,11 +3966,9 @@ public class EntryManager extends RepositoryManager {
         request.ensureAuthToken();
         if (request.exists(ARG_ACTION_MOVE)) {
             Entry toGroup = (Entry) toEntry;
-
             return processEntryMove(request, toGroup, entries);
         } else if (request.exists(ARG_ACTION_COPY)) {
             Entry toGroup = (Entry) toEntry;
-
             return processEntryCopy(request, toGroup, entries);
         } else if (request.exists(ARG_ACTION_ASSOCIATE)) {
             if (entries.size() == 1) {
@@ -3991,7 +3979,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        return new Result(msg("Move"), new StringBuffer());
+        Result result =  new Result(msg("Move"), new StringBuffer());
+        return addEntryHeader(request, toEntry, result);
 
     }
 

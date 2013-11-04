@@ -445,6 +445,7 @@ function mouseUpOnEntry(event, entryId, targetId) {
         obj.style.borderBottom="";
     }
     if(draggedEntry && draggedEntry!=entryId) {
+        /*
         $("#ramadda-dialog").html("what to do....");
         $("#ramadda-dialog").dialog({
                 resizable: false,
@@ -453,11 +454,11 @@ function mouseUpOnEntry(event, entryId, targetId) {
                    Cancel: function() {$( this ).dialog( "close" );}
                 }}
         );
-
+        */
         url = "${urlroot}/entry/copy?action=action.move&from=" + draggedEntry +"&to=" + entryId;
-        //	alert(url);
-        //	window.open(url,'move window','') ;
-        //        document.location = url;
+        //        alert(url);
+        //        window.open(url,'move window','') ;
+        document.location = url;
     }
 }
 
