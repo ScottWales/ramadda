@@ -596,10 +596,10 @@ public interface Constants {
     public static final String ARG_AREA_MODE = "areamode";
 
     /** _more_ */
-    public static final String VALUE_AREA_CONTAINS = "areacontains";
+    public static final String VALUE_AREA_CONTAINS = "contains";
 
     /** _more_ */
-    public static final String VALUE_AREA_OVERLAPS = "areaoverlaps";
+    public static final String VALUE_AREA_OVERLAPS = "overlaps";
 
 
     /** _more_ */

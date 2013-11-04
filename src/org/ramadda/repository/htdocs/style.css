@@ -57,7 +57,7 @@ form {
 .entry-action-list {
    background: transparent;
    padding: 0px;
-   border: 1;
+   border: 1px #aaa solid;
    max-width:100px;
  }
 

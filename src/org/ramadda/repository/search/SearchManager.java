@@ -1026,6 +1026,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             buff.append(img);
             buff.append(" ");
             String label = typeHandler.getDescription() + " (" + cnt + ")";
+
+
+
             buff.append(HtmlUtils.href(getRepository().getUrlBase()
                                        + "/search/type/"
                                        + typeHandler.getType(), label));
@@ -1067,6 +1070,47 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      */
     public Result processEntrySearchForm(Request request) throws Exception {
         return makeSearchForm(request, false, false);
+    }
+
+
+    public Result processSearchInfo(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(header(msg("Entry Types")));
+        sb.append(HtmlUtils.formTable());
+        for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
+            String link = HtmlUtils.href(URL_SEARCH_TYPE +"/" 
+                                         + typeHandler.getType(), typeHandler.getType());
+            sb.append(HtmlUtils.row(HtmlUtils.cols(link,typeHandler.getDescription())));
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+        sb.append(header(msg("Output Types")));
+        sb.append(HtmlUtils.formTable());
+        for(OutputHandler outputHandler: getRepository().getOutputHandlers()) {
+            for(OutputType type: outputHandler.getTypes()) {
+                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),type.getLabel())));
+            }
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+        sb.append(header(msg("Metadata Types")));
+        sb.append(HtmlUtils.formTable());
+        for (MetadataType type : getRepository().getMetadataManager().getMetadataTypes()) {
+            if ( !type.getSearchable()) {
+                continue;
+            }
+            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),type.getName())));
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+
+
+
+
+        return makeResult(request, msg("Search Metadata"), sb);
     }
 
 

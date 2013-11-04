@@ -231,7 +231,6 @@ public class OutputHandler extends RepositoryManager {
         return types;
     }
 
-
     /**
      *  Set the Name property.
      *
