@@ -668,7 +668,7 @@ public class MailHarvester extends Harvester {
                 Entry theFolder = theParentEntry;
                 for (String tok :
                         StringUtil.split(
-                            line.substring("to:".length()).trim(), "/", true,
+                            line.substring("at:".length()).trim(), "/", true,
                             true)) {
                     Entry folder =
                         getEntryManager().findEntryWithName(request,
