@@ -173,7 +173,7 @@ public class PointMetadataHarvester extends RecordVisitor {
             return true;
         }
 
-        for (int fieldCnt=0;fieldCnt<fields.size();fieldCnt++) {
+        for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
             if (field.isTypeNumeric()) {
                 ValueGetter valueGetter = field.getValueGetter();
@@ -182,6 +182,10 @@ public class PointMetadataHarvester extends RecordVisitor {
                 }
                 double value = valueGetter.getValue(pointRecord, field,
                                    visitInfo);
+
+                if (pointRecord.isMissingValue(field, value)) {
+                    continue;
+                }
 
                 if ( !Double.isNaN(value)) {
                     if (Double.isNaN(ranges[fieldCnt][0])) {
@@ -283,7 +287,7 @@ public class PointMetadataHarvester extends RecordVisitor {
                    + "  longitude:" + minLongitude + " - " + maxLongitude;
 
         if (fields != null) {
-            for (int fieldCnt=0;fieldCnt<fields.size();fieldCnt++) {
+            for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                 RecordField field = fields.get(fieldCnt);
                 if (field.isTypeNumeric()) {
                     ValueGetter valueGetter = field.getValueGetter();
