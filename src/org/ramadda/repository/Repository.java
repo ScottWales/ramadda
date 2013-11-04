@@ -1200,8 +1200,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         HtmlUtils.setBlockHideShowImage(iconUrl(ICON_MINUS),
                                         iconUrl(ICON_PLUS));
         HtmlUtils.setInlineHideShowImage(iconUrl(ICON_MINUS),
-        //iconUrl(ICON_ELLIPSIS));
-        iconUrl(ICON_PLUS));
+                                         iconUrl(ICON_PLUS));
 
         getLogManager().logInfo("RAMADDA started");
 
@@ -1256,7 +1255,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    private void loadTypeHandlers() throws Exception {
+    public void loadTypeHandlers() throws Exception {
         for (String file : getPluginManager().getTypeDefFiles()) {
             file = getStorageManager().localizePath(file);
             if (getPluginManager().haveSeen(file)) {

@@ -491,6 +491,9 @@ public class Admin extends RepositoryManager {
                     if (request.get(ARG_ADMIN_INSTALLPLUGIN, false)) {
                         getRepository().getPluginManager().installPlugin(
                             PluginManager.PLUGIN_ALL);
+
+                        getRepository().loadTypeHandlers();
+
                     }
 
                     addInitEntries(user);
@@ -646,7 +649,6 @@ public class Admin extends RepositoryManager {
         }
         Element root       = XmlUtil.getRoot(initEntriesXml);
         Request tmpRequest = getRepository().getRequest(user);
-        System.err.println("processing initial entries");
         List<Entry> newEntries =
             getEntryManager().processEntryXml(tmpRequest, root, null,
                 new Hashtable<String, File>());
