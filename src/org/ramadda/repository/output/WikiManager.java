@@ -1690,7 +1690,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 if ( !useDescription) {
                     Result      result      = null;
                     TypeHandler typeHandler = child.getTypeHandler();
-                    result = typeHandler.getHtmlDisplay(request, child);
                     if (typeHandler.isGroup()) {
                         List<Entry> entries   = new ArrayList<Entry>();
                         List<Entry> subGroups = new ArrayList<Entry>();
@@ -1698,6 +1697,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                 child, entries, subGroups, null);
                         result = typeHandler.getHtmlDisplay(request, child,
                                 subGroups, entries);
+                    } else {
+                        result = typeHandler.getHtmlDisplay(request, child);
                     }
                     if (result == null) {
                         result =
