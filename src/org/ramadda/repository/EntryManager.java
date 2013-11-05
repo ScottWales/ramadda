@@ -3346,7 +3346,7 @@ public class EntryManager extends RepositoryManager {
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
 
-        for(String preload: new String[]{"General", "Information","Documents", "Collaboration"}) {
+        for(String preload: new String[]{"General", "Information","Documents", "Collaboration","Database"}) {
             categories.add(preload);
             catMap.put(preload, new StringBuffer());
         }

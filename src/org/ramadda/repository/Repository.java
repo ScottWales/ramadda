@@ -1390,7 +1390,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @throws Exception _more_
      */
-    private void loadAdminHandlers() throws Exception {
+    public void loadAdminHandlers() throws Exception {
         for (Class adminHandlerClass :
                 getPluginManager().getAdminHandlerClasses()) {
             if (getPluginManager().haveSeen(adminHandlerClass)) {
@@ -3855,11 +3855,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param typeHandler _more_
      */
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
-        typeHandlersMap.put(typeName, typeHandler);
-        allTypeHandlers.add(typeHandler);
-        //        if(typeHandler.isGroup()) {
-        //            System.err.println("Group:" + typeHandler);
-        //        }
+        if(!typeHandlersMap.contains(typeName)) {
+            typeHandlersMap.put(typeName, typeHandler);
+            allTypeHandlers.add(typeHandler);
+        }
     }
 
 

@@ -1,6 +1,6 @@
 <types>
 
-  <type name="frames"  description="IFrames" handler="org.ramadda.plugins.frames.FramesTypeHandler" category="Information">
+  <type name="frames"  description="IFrames" handler="org.ramadda.plugins.frames.FramesTypeHandler" category="Gadgets">
      <property name="icon" value="/frames/application_split.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>

@@ -134,6 +134,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    public static final String ATTR_SUPERCATEGORY = "supercategory";
+
     /** _more_ */
     public static final String TAG_TYPE = "type";
 
@@ -193,6 +195,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String category = CATEGORY_DEFAULT;
 
+    private String superCategory = "";
+
     /** _more_ */
     private Hashtable dontShowInForm = new Hashtable();
 
@@ -249,6 +253,8 @@ public class TypeHandler extends RepositoryManager {
 
             this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                     category);
+            this.superCategory = XmlUtil.getAttribute(entryNode, ATTR_SUPERCATEGORY,
+                    superCategory);
             this.harvestPattern = XmlUtil.getAttribute(entryNode,
                     ATTR_PATTERN, (String) null);
 
@@ -5078,6 +5084,20 @@ public class TypeHandler extends RepositoryManager {
         }
 
         return this.category;
+    }
+
+
+    /**
+     *  Get the Category property.
+     *
+     *  @return The Category
+     */
+    public String getSuperCategory() {
+        if (this.superCategory.length()==0
+                && (parent != null)) {
+            return parent.getSuperCategory();
+        }
+        return this.superCategory;
     }
 
 

@@ -3,7 +3,7 @@
   <type name="media_youtubevideo"  
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
-        category="Information" 
+        category="Documents" 
         pattern="^http://www.youtube.com/watch\?v=.*">
      <property name="icon" value="/media/youtube.png"/>
      <property name="form.area.show" value="false"/>
@@ -22,7 +22,7 @@
   <type name="media_audiofile"  
         description="Audio File" 
         handler="org.ramadda.plugins.media.AudioTypeHandler" 
-        category="Information" 
+        category="Documents" 
         pattern=".*\.wav">
      <property name="icon" value="/media/sound.png"/>
 </type>

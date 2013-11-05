@@ -120,12 +120,13 @@ public class DbAdminHandler extends AdminHandlerImpl {
      * @throws Exception _more_
      */
     private void init() throws Exception {
+        //        System.err.println("DbAdminHandler.init");
         for (String pluginFile :
                 getRepository().getPluginManager().getPluginFiles()) {
             if ( !pluginFile.endsWith("db.xml")) {
                 continue;
             }
-
+            //            System.err.println("DbAdminHandler.init - plugin file:" + pluginFile);
             Element root     = XmlUtil.getRoot(pluginFile, getClass());
             List    children = XmlUtil.findChildren(root, TAG_TABLE);
             for (int i = 0; i < children.size(); i++) {
@@ -190,6 +191,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
                 columnNodes.add(0, createDateNode);
                 columnNodes.add(0, userNode);
                 columnNodes.add(0, idNode);
+                //                System.err.println ("DbAdminHandler: addingTypeHandler");
                 getRepository().addTypeHandler(tableId, typeHandler);
                 typeHandler.init(columnNodes);
             }

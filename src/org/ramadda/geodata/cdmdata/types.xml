@@ -30,7 +30,7 @@
      <property name="form.altitude.show.top" value="false"/>
    </type>
 
-  <type name="cdm_grid"  description="CDM Grid File" foruser="false" category="CDM Grid Data">
+  <type name="cdm_grid"  description="CDM Grid File" foruser="false" category="Radar Data">
      <property name="icon" value="/cdmdata/grid.gif"/>
      <property name="form.todate.show" value="false"/>
      <column name="type"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="cdm_grid"/>
