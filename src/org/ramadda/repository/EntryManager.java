@@ -3346,6 +3346,11 @@ public class EntryManager extends RepositoryManager {
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
 
+        for(String preload: new String[]{"General", "Information","Documents", "Collaboration"}) {
+            categories.add(preload);
+            catMap.put(preload, new StringBuffer());
+        }
+
         HashSet<String> exclude = new HashSet<String>();
         //        exclude.add(TYPE_FILE);
         //        exclude.add(TYPE_GROUP);
@@ -3380,20 +3385,23 @@ public class EntryManager extends RepositoryManager {
             }
 
 
-            StringBuffer buffer = catMap.get(typeHandler.getCategory());
+
+
+            boolean hasUsedType = (sessionTypes != null && sessionTypes.contains(typeHandler.getType()));
+            String category  = typeHandler.getCategory();
+            StringBuffer buffer = catMap.get(category);
+
             if (buffer == null) {
-                catMap.put(typeHandler.getCategory(),
+                catMap.put(category,
                            buffer = new StringBuffer());
-                if ((sessionTypes != null)
-                        && sessionTypes.contains(typeHandler.getType())) {
-                    categories.add(0, typeHandler.getCategory());
+                if (hasUsedType) {
+                    categories.add(0, category);
                 } else {
-                    categories.add(typeHandler.getCategory());
+                    categories.add(category);
                 }
-            } else if ((sessionTypes != null)
-                       && sessionTypes.contains(typeHandler.getType())) {
-                categories.remove(typeHandler.getCategory());
-                categories.add(0, typeHandler.getCategory());
+            } else if (hasUsedType) {
+                categories.remove(category);
+                categories.add(0, category);
             }
 
             buffer.append(HtmlUtils
@@ -3407,11 +3415,13 @@ public class EntryManager extends RepositoryManager {
         sb.append("<table cellpadding=10><tr valign=top>");
         int colCnt = 0;
         for (String cat : categories) {
+            StringBuffer catBuff = catMap.get(cat);
+            if(catBuff.length()==0) continue;
             sb.append(
                 HtmlUtils.col(
                     HtmlUtils.b(msg(cat))
                     + HtmlUtils.insetDiv(
-                        catMap.get(cat).toString(), 3, 15, 0, 0)));
+                                         catBuff.toString(), 3, 15, 0, 0)));
             colCnt++;
             if (colCnt > 3) {
                 sb.append("</tr><tr valign=top>");
