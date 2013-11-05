@@ -426,7 +426,6 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 new org.apache.tika.sax.BodyContentHandler();
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
-            System.out.println("contents: " + contents);
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new Field(FIELD_CONTENTS, contents, Field.Store.NO,
                                   Field.Index.ANALYZED));
@@ -1635,7 +1634,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                 new org.apache.tika.sax.BodyContentHandler(100000000);
             parser.parse(stream, handler, metadata);
             String contents = handler.toString();
-            System.out.println("contents: " + contents);
+            //            System.out.println("contents: " + contents);
         }
     }
 
