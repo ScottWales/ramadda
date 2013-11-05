@@ -363,6 +363,7 @@ public class MailHarvester extends Harvester {
      */
     public void checkEmail() throws Exception {
 
+
         currentStatus = "Checking mail";
         Properties props   = System.getProperties();
         Session    session = Session.getDefaultInstance(props);
@@ -425,6 +426,8 @@ public class MailHarvester extends Harvester {
                 continue;
             }
             messageBody = cleanUpText(messageBody);
+            //            System.err.println("*** Check Mail " + messageBody.length());
+            //            System.err.println("Message:" + messageBody);
             numPassed++;
             List<Entry> newEntries = new ArrayList<Entry>();
             if (action.equals(ACTION_EML)) {
@@ -662,6 +665,7 @@ public class MailHarvester extends Harvester {
         Entry     theParentEntry = parentEntry;
         for (String line : StringUtil.split(desc.toString(), "\n")) {
             String lline = line.toLowerCase();
+            //            System.err.println("LINE:" + line);
             if (lline.startsWith("name:")) {
                 entryInfo.name = line.substring("name:".length()).trim();
             } else if (lline.toLowerCase().startsWith("at:")) {
@@ -670,12 +674,12 @@ public class MailHarvester extends Harvester {
                         StringUtil.split(
                             line.substring("at:".length()).trim(), "/", true,
                             true)) {
+                    //                    System.err.println ("Looking for:" + tok);
                     Entry folder =
                         getEntryManager().findEntryWithName(request,
                             theFolder, tok);
                     if (folder == null) {
                         System.err.println("could not find folder: " + line);
-
                         break;
                     }
                     if ( !folder.isGroup()) {
@@ -879,8 +883,6 @@ public class MailHarvester extends Harvester {
      */
     private String cleanUpText(String text) {
         text = RepositoryUtil.encodeUntrustedText(text);
-        text = text.replaceAll("\n", "<br>");
-
         return text;
     }
 
