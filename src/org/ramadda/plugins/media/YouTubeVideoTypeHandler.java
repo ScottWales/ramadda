@@ -39,6 +39,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -82,41 +83,17 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
-     * @param path _more_
-     *
-     * @return _more_
-     */
-    public String getDefaultEntryName(String path) {
-        String html  = IOUtil.readContents(path, "");
-        String title = StringUtil.findPattern(html, "<title>(.*)</title>");
-        if (title == null) {
-            title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
-        }
-        System.err.println("title:" + title);
-        if (title != null) {
-            title = title.replace("- YouTube", "");
-
-            return title;
-        }
-
-        //TODO: fetch the web page and get the title
-        return "YouTube Video";
-    }
-
-    /**
-     * _more_
-     *
      * @param request _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param props _more_
      * @param entry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry entry)
+    @Override
+    public String getSimpleDisplay(Request request, Hashtable props,
+                                   Entry entry)
             throws Exception {
         String  sdisplay = entry.getValue(IDX_DISPLAY, "true");
         boolean display  = (sdisplay.length() == 0)
@@ -134,14 +111,11 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         if (id == null) {
             id = StringUtil.findPattern(url, "v=([^&]+)");
         }
+
         if (id == null) {
-            sb.append(
-                getPageHandler().showDialogError(
-                    "Could not find ID in YouTube URL"));
-
-            return new Result(msg("YouTube Video"), sb);
+            return getPageHandler().showDialogError(
+                "Could not find ID in YouTube URL");
         }
-
 
 
         String width  = entry.getValue(IDX_WIDTH, "640");
@@ -149,8 +123,6 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         double start  = entry.getValue(IDX_START, 0.0);
         double end    = entry.getValue(IDX_END, -1);
         sb.append("\n");
-        sb.append(HtmlUtils.href(url, url));
-        sb.append(HtmlUtils.br());
         sb.append(
             "<iframe id=\"ytplayer\" type=\"text/html\" frameborder=\"0\" ");
         sb.append(XmlUtil.attr("width", width));
@@ -171,6 +143,9 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         sb.append("src=\"" + embedUrl + "\"");
         sb.append(">\n");
         sb.append("</iframe>\n");
+
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.href(url, url));
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry, "video_cue",
@@ -212,8 +187,53 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
             sb.append("</td></tr></table>");
         }
 
+        return sb.toString();
+    }
 
-        return new Result(msg("YouTube Video"), sb);
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    public String getDefaultEntryName(String path) {
+        String html  = IOUtil.readContents(path, "");
+        String title = StringUtil.findPattern(html, "<title>(.*)</title>");
+        if (title == null) {
+            title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
+        }
+        System.err.println("title:" + title);
+        if (title != null) {
+            title = title.replace("- YouTube", "");
+
+            return title;
+        }
+
+        //TODO: fetch the web page and get the title
+        return "YouTube Video";
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public Result getHtmlDisplay(Request request, Entry entry)
+            throws Exception {
+        String s = getSimpleDisplay(request, null, entry);
+        if (s == null) {
+            return null;
+        }
+
+        return new Result(msg("YouTube Video"), new StringBuffer(s));
 
     }
 

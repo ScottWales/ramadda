@@ -200,6 +200,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_CHILDREN = "children";
 
+    /** _more_          */
+    public static final String ATTR_CONSTRAINSIZE = "constrainsize";
+
     /** attribute in import tag */
     public static final String ATTR_FORMAT = "format";
 
@@ -235,6 +238,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** attribute in import tag */
     public static final String ATTR_STYLE = "style";
+
+    /** _more_          */
+    public static final String ATTR_TAG = "tag";
+
 
     /** attribute in import tag */
     public static final String ATTR_TAGOPEN = "tagopen";
@@ -414,6 +421,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** wiki import */
     public static final String WIKI_PROP_DESCRIPTION = "description";
 
+    /** _more_ */
+    public static final String WIKI_PROP_SIMPLE = "simple";
+
     /** wiki import */
     public static final String WIKI_PROP_PROPERTIES = "properties";
 
@@ -515,7 +525,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         return prop + PROP_DELIM + args;
     }
 
-    //j--
+
 
     /** property delimiter */
     public static final String PROP_DELIM = ":";
@@ -525,31 +535,39 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                                   POS_LEFT);
 
     /** list of import items for the text editor menu */
+    //j-
     public static final String[] WIKIPROPS = {
         WIKI_PROP_GROUP + "Information",
         prop(WIKI_PROP_INFORMATION, attrs(ATTR_DETAILS, "false")),
         WIKI_PROP_NAME, WIKI_PROP_DESCRIPTION, WIKI_PROP_RESOURCE,
         WIKI_PROP_DATE_FROM, WIKI_PROP_DATE_TO, WIKI_PROP_LINK,
-        WIKI_PROP_HTML, WIKI_PROP_IMPORT, WIKI_PROP_GROUP + "Layout",
+        WIKI_PROP_HTML,
+        prop(WIKI_PROP_SIMPLE, attrs(ATTR_TEXTPOSITION, POS_LEFT)),
+        WIKI_PROP_IMPORT, WIKI_PROP_GROUP + "Layout",
         prop(WIKI_PROP_LINKS,
              attrs(ATTR_LINKRESOURCE, "true", ATTR_SEPARATOR, " | ",
                    ATTR_TAGOPEN, "", ATTR_TAGCLOSE, "")),
         WIKI_PROP_LIST,
         prop(WIKI_PROP_TABS,
-             attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK, "true")
+             attrs(ATTR_TAG, WIKI_PROP_SIMPLE, ATTR_SHOWLINK, "true")
              + ATTRS_LAYOUT),
         prop(WIKI_PROP_TREE, attrs(ATTR_DETAILS, "true")), WIKI_PROP_TREEVIEW,
         prop(WIKI_PROP_ACCORDIAN,
-             attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK, "true")
+             attrs(ATTR_TAG, WIKI_PROP_SIMPLE, ATTR_SHOWLINK, "true")
              + ATTRS_LAYOUT),
         WIKI_PROP_GRID, WIKI_PROP_TABLE,
         prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
+        prop(WIKI_PROP_APPLY,
+             attrs(APPLY_PREFIX + "tag", WIKI_PROP_HTML,
+                   APPLY_PREFIX + "layout", "table",
+                   APPLY_PREFIX + "columns", "1", APPLY_PREFIX + "header",
+                   "", APPLY_PREFIX + "footer", "", APPLY_PREFIX + "border",
+                   "0", APPLY_PREFIX + "bordercolor", "#000")),
         WIKI_PROP_GROUP + "Earth",
         prop(WIKI_PROP_MAP,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_LISTENTRIES,
-                   "false", ATTR_DETAILS, "false",
-                   ATTR_ICON,"#/icons/dots/green.png", ARG_MAP_ICONSONLY, "false"
-)),
+                   "false", ATTR_DETAILS, "false", ATTR_ICON,
+                   "#/icons/dots/green.png", ARG_MAP_ICONSONLY, "false")),
         prop(WIKI_PROP_MAPENTRY,
              attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "400", ATTR_DETAILS,
                    "false")),
@@ -564,7 +582,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    ATTR_THUMBNAIL, "true", ATTR_CAPTION,
                    "Figure ${count}: ${name}", ATTR_POPUPCAPTION, "over")),
         prop(WIKI_PROP_SLIDESHOW,
-             attrs(ATTR_USEDESCRIPTION, "true", ATTR_SHOWLINK, "true")
+             attrs(ATTR_TAG, WIKI_PROP_SIMPLE, ATTR_SHOWLINK, "true")
              + ATTRS_LAYOUT + attrs(ATTR_WIDTH, "400", ATTR_HEIGHT, "270")),
         WIKI_PROP_PLAYER, WIKI_PROP_GROUP + "Misc",
         prop(WIKI_PROP_CALENDAR, attrs(ATTR_DAY, "false")),
@@ -576,6 +594,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_TOOLS, WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
         WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH, WIKI_PROP_ROOT
     };
+    //j+
 
 
 
@@ -1456,7 +1475,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 String icon = Misc.getProperty(props, ATTR_ICON,
                                   (String) null);
 
-                if (icon != null && icon.startsWith("#")) {
+                if ((icon != null) && icon.startsWith("#")) {
                     icon = null;
                 }
                 if (icon != null) {
@@ -1588,6 +1607,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
 
+
             int          colCnt   = 0;
             for (Entry child : children) {
                 String childsHtml = getWikiInclude(wikiUtil, newRequest,
@@ -1655,6 +1675,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_PROP_SIMPLE)) {
+            return makeSimpleDisplay(request, props, originalEntry, entry);
         } else if (theTag.equals(WIKI_PROP_TABS)
                    || theTag.equals(WIKI_PROP_ACCORDIAN)
                    || theTag.equals(WIKI_PROP_SLIDESHOW)) {
@@ -1670,13 +1692,30 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                       false);
             boolean useCookies = Misc.getProperty(props, "cookie", false);
             String  linklabel  = Misc.getProperty(props, ATTR_LINKLABEL, "");
+
             int     width      = Misc.getProperty(props, ATTR_WIDTH, 400);
             int     height     = Misc.getProperty(props, ATTR_HEIGHT, 270);
-            int imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, width);
-            int maxImageHeight = Misc.getProperty(props, ATTR_MAXIMAGEHEIGHT,
-                                     height - 40);
+
+            if (doingSlideshow) {
+                props.put(ATTR_WIDTH, "" + width);
+                props.put(ATTR_HEIGHT, "" + height);
+                props.put(ATTR_CONSTRAINSIZE, "true");
+            }
+
+
+
+
+
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
+
+            String tag = Misc.getProperty(props, ATTR_TAG, WIKI_PROP_SIMPLE);
+            Request   newRequest = makeRequest(request, props);
+            Hashtable tmpProps   = new Hashtable(props);
+            tmpProps.remove(ATTR_ENTRY);
+
+
+
 
             for (Entry child : children) {
                 String title = getEntryDisplayName(child);
@@ -1686,7 +1725,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                             child)) + " " + title;
                 }
                 titles.add(title);
-                String content;
+                String content = getWikiInclude(wikiUtil, newRequest,
+                                     originalEntry, child, tag, tmpProps);
+
+
+                /*
                 if ( !useDescription) {
                     Result      result      = null;
                     TypeHandler typeHandler = child.getTypeHandler();
@@ -1721,14 +1764,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         }
                     }
                     if (child.getResource().isImage()) {
-                        if (doingSlideshow) {
-                            props.put("imageclass", "slides_image");
-                        }
                         Request newRequest = makeRequest(request, props);
                         content = getMapManager().makeInfoBubble(newRequest,
                                 child);
                     }
                 }
+                */
 
                 if (showLink) {
                     String url;
@@ -1772,8 +1813,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 // need to set the height of the div to include the nav bar
                 sb.append("#" + slideId + " { width: " + width
                           + "px; height: " + (height + 30) + "}\n");
-                sb.append(".slides_image {max-height: " + maxImageHeight
-                          + "px; overflow-x: none; overflow-y: none;}\n");
+
 
                 int border = Misc.getProperty(props, ATTR_BORDER, 1);
                 String borderColor = Misc.getProperty(props,
@@ -3443,6 +3483,181 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         public String toString() {
             return name;
         }
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param props _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String getDescription(Request request, Hashtable props,
+                                  Entry originalEntry, Entry entry)
+            throws Exception {
+        String  content;
+        boolean wikify = Misc.getProperty(props, ATTR_WIKIFY, false);
+        if (entry.getTypeHandler().isType(TYPE_WIKIPAGE)) {
+            content = entry.getValue(0, entry.getDescription());
+            wikify  = true;
+        } else {
+            content = entry.getDescription();
+        }
+
+        if (wikify) {
+            if ( !originalEntry.equals(entry)) {
+                content = wikifyEntry(request, entry, content, false, null,
+                                      null);
+            } else {
+                content = makeWikiUtil(request, false).wikify(content, null);
+            }
+        }
+
+        return content;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param props _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeSimpleDisplay(Request request, Hashtable props,
+                                    Entry originalEntry, Entry entry)
+            throws Exception {
+
+        String fromType = entry.getTypeHandler().getSimpleDisplay(request,
+                              props, entry);
+        if (fromType != null) {
+            return fromType;
+        }
+
+
+        boolean sizeConstrained = Misc.getProperty(props, ATTR_CONSTRAINSIZE,
+                                      false);;
+        String content = getDescription(request, props, originalEntry, entry);
+        if (entry.getResource().isImage()) {
+            StringBuffer extra = new StringBuffer();
+            String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
+            boolean layoutHorizontal = position.equals(POS_RIGHT)
+                                       || position.equals(POS_LEFT);
+            int     imageWidth = -1;
+
+            boolean haveText   = Utils.stringDefined(content);
+            if (sizeConstrained) {
+                imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
+                //Give some space to the text on the side
+                if (haveText && layoutHorizontal) {
+                    imageWidth -= 200;
+                }
+            }
+
+            imageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, imageWidth);
+
+            if (imageWidth > 0) {
+                extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                            "" + imageWidth));
+            }
+
+            String alt = request.getString(ATTR_ALT,
+                                           getEntryDisplayName(entry));
+            String imageClass = request.getString("imageclass",
+                                    (String) null);
+            if (Utils.stringDefined(alt)) {
+                extra.append(HtmlUtils.attr(ATTR_ALT, alt));
+            }
+            String image =
+                HtmlUtils.img(
+                    getRepository().getHtmlOutputHandler().getImageUrl(
+                        request, entry), "", extra.toString());
+            if (request.get(WikiManager.ATTR_LINK, true)) {
+                image = HtmlUtils.href(
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                    image);
+                /*  Maybe add this later
+                } else if (request.get(WikiManager.ATTR_LINKRESOURCE, false)) {
+                    image =  HtmlUtils.href(
+                        entry.getTypeHandler().getEntryResourceUrl(request, entry),
+                        image);
+                */
+            }
+
+            String extraDiv = "";
+            if (haveText && sizeConstrained) {
+                int height = Misc.getProperty(props, ATTR_HEIGHT, -1);
+                if ((height > 0) && position.equals(POS_BOTTOM)) {
+                    extraDiv =
+                        HtmlUtils.style("overflow-y: hidden; max-height:"
+                                        + (height - 100) + "px;");
+                }
+            }
+            image = HtmlUtils.div(image,
+                                  HtmlUtils.cssClass("entry-simple-image")
+                                  + extraDiv);
+            if ( !haveText) {
+                return image;
+            }
+
+
+            String textClass = "entry-simple-text";
+            if (position.equals(POS_NONE)) {
+                content = image;
+            } else if (position.equals(POS_BOTTOM)) {
+                content = image
+                          + HtmlUtils.div(content,
+                                          HtmlUtils.cssClass(textClass));
+            } else if (position.equals(POS_TOP)) {
+                content =
+                    HtmlUtils.div(content, HtmlUtils.cssClass(textClass))
+                    + image;
+            } else if (position.equals(POS_RIGHT)) {
+                content =
+                    HtmlUtils.table(
+                        HtmlUtils.row(
+                            HtmlUtils.col(image)
+                            + HtmlUtils.col(
+                                HtmlUtils.div(
+                                    content,
+                                    HtmlUtils.cssClass(
+                                        textClass))), HtmlUtils.attr(
+                                            HtmlUtils.ATTR_VALIGN,
+                                            "top")), HtmlUtils.attr(
+                                                HtmlUtils.ATTR_CELLPADDING,
+                                                    "0"));
+            } else if (position.equals(POS_LEFT)) {
+                content =
+                    HtmlUtils.table(
+                        HtmlUtils.row(
+                            HtmlUtils.col(
+                                HtmlUtils.div(
+                                    content,
+                                    HtmlUtils.cssClass(
+                                        textClass))) + HtmlUtils.col(
+                                            image), HtmlUtils.attr(
+                                            HtmlUtils.ATTR_VALIGN,
+                                            "top")), HtmlUtils.attr(
+                                                HtmlUtils.ATTR_CELLPADDING,
+                                                    "0"));
+            } else {
+                content = "Unknown position:" + position;
+            }
+        }
+        content = HtmlUtils.div(content, HtmlUtils.cssClass("entry-simple"));
+
+        return content;
     }
 
 

@@ -134,6 +134,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    /** _more_          */
     public static final String ATTR_SUPERCATEGORY = "supercategory";
 
     /** _more_ */
@@ -195,6 +196,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String category = CATEGORY_DEFAULT;
 
+    /** _more_          */
     private String superCategory = "";
 
     /** _more_ */
@@ -253,8 +255,8 @@ public class TypeHandler extends RepositoryManager {
 
             this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
                     category);
-            this.superCategory = XmlUtil.getAttribute(entryNode, ATTR_SUPERCATEGORY,
-                    superCategory);
+            this.superCategory = XmlUtil.getAttribute(entryNode,
+                    ATTR_SUPERCATEGORY, superCategory);
             this.harvestPattern = XmlUtil.getAttribute(entryNode,
                     ATTR_PATTERN, (String) null);
 
@@ -1355,8 +1357,6 @@ public class TypeHandler extends RepositoryManager {
     /**
      * Does this type match the file being harvester
      *
-     * @param f file to check
-     *
      * @param fullPath _more_
      * @param name _more_
      *
@@ -1450,7 +1450,6 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param root _more_
      * @param extraXml _more_
-     * @param metacategory _more_
      * @param metadataType _more_
      */
     public void addMetadataToXml(Entry entry, Element root,
@@ -1586,7 +1585,6 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param services _more_
      *
-     * @return _more_
      */
     public void getServices(Request request, Entry entry,
                             List<Service> services) {
@@ -4854,6 +4852,25 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param request _more_
+     * @param props _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getSimpleDisplay(Request request, Hashtable props,
+                                   Entry entry)
+            throws Exception {
+        return null;
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @return _more_
      */
     public String toString() {
@@ -5093,10 +5110,10 @@ public class TypeHandler extends RepositoryManager {
      *  @return The Category
      */
     public String getSuperCategory() {
-        if (this.superCategory.length()==0
-                && (parent != null)) {
+        if ((this.superCategory.length() == 0) && (parent != null)) {
             return parent.getSuperCategory();
         }
+
         return this.superCategory;
     }
 
