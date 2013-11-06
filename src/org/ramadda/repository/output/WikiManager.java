@@ -3549,6 +3549,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         boolean sizeConstrained = Misc.getProperty(props, ATTR_CONSTRAINSIZE,
                                       false);;
         String content = getDescription(request, props, originalEntry, entry);
+        boolean haveText   = Utils.stringDefined(content);
         if (entry.getResource().isImage()) {
             StringBuffer extra = new StringBuffer();
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
@@ -3556,7 +3557,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                                        || position.equals(POS_LEFT);
             int     imageWidth = -1;
 
-            boolean haveText   = Utils.stringDefined(content);
             if (sizeConstrained) {
                 imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
                 //Give some space to the text on the side
@@ -3654,6 +3654,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             } else {
                 content = "Unknown position:" + position;
             }
+        } else if(entry.getTypeHandler().isGroup()) {
+            //Do we tack on the listing
+            //content = content +
+            
+            StringBuffer sb  = new StringBuffer();
+            String link = getHtmlOutputHandler().getEntriesList(request, sb,
+                                                                getEntryManager().getChildren(request,entry), true, false, true);
+            content = content + sb;
         }
         content = HtmlUtils.div(content, HtmlUtils.cssClass("entry-simple"));
 
