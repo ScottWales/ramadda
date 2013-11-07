@@ -45,10 +45,15 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
 
 
     /** opendap suffix to use. The dodsC is from the TDS paths. The IDV uses it to recognize opendap grids */
-    public static final String OPENDAP_SUFFIX = "dodsC/entry.das";
+    public static final String OPENDAP_SUFFIX = "entry.das";
+
+
 
     /** the output handler to pass opendap calls to */
     private CdmDataOutputHandler dataOutputHandler;
+
+    /** _more_          */
+    private static boolean useApi = true;
 
     /**
      * ctor
@@ -98,6 +103,10 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @return _more_
      */
     public String getOpendapPrefix(Entry entry) {
+        if (useApi) {
+            return getRepository().getUrlBase() + "/" + PATH_OPENDAP;
+        }
+
         return getRepository().URL_ENTRY_SHOW.toString();
     }
 
@@ -112,12 +121,12 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     public String getOpendapSuffix(Entry entry) {
         String url;
         //Always use the full /entry/show/... url
-        boolean useApi = false;
         //        if(getEntryManager().isSynthEntry(entry.getId())) {
         if (useApi) {
             //entry.getFullName?
-            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
-                  + entry.getId() + "/" + OPENDAP_SUFFIX;
+            //            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
+            //                  + entry.getId() + "/" + OPENDAP_SUFFIX;
+            url = "/" + entry.getId() + "/" + OPENDAP_SUFFIX;
         } else {
             url = "/" + ARG_OUTPUT + ":"
                   + Request.encodeEmbedded(

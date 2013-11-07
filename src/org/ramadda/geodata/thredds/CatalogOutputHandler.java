@@ -110,8 +110,7 @@ public class CatalogOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_CATALOG_EMBED =
         new OutputType("THREDDS Catalog", "thredds.catalog.embed",
-                       OutputType.TYPE_FEEDS, "",
-                       ICON_CATALOG);
+                       OutputType.TYPE_FEEDS, "", ICON_CATALOG);
 
 
 
@@ -519,6 +518,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                              CatalogUtil.TAG_SERVICE,
                                              catalogInfo.root, attrs);
 
+
         catalogInfo.serviceMap.put(service, serviceNode);
 
         return true;
@@ -634,10 +634,11 @@ public class CatalogOutputHandler extends OutputHandler {
             String urlPath =
                 getDataOutputHandler().getOpendapHandler().getOpendapSuffix(
                     entry);
-            addService(
-                catalogInfo, SERVICE_OPENDAP,
-                getDataOutputHandler().getOpendapHandler().getOpendapPrefix(
-                    entry));
+            String opendapPrefix =
+                request.getAbsoluteUrl(getDataOutputHandler()
+                    .getOpendapHandler().getOpendapPrefix(entry));
+
+            addService(catalogInfo, SERVICE_OPENDAP, opendapPrefix);
             Element opendapDataDataset = dataset;
             cnt++;
             if (getCdmManager().isAggregation(entry)) {

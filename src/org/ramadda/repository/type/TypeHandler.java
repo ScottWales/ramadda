@@ -1718,7 +1718,7 @@ public class TypeHandler extends RepositoryManager {
                     new String[] { ARG_ENTRYID,
                                    entry.getId() }), getRepository()
                                    .iconUrl(
-                                       "/icons/application-detail.png"), "All Links", OutputType
+                                       "/icons/application-detail.png"), "All Services", OutputType
                                            .TYPE_FILE));
 
 
