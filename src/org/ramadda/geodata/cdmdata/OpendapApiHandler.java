@@ -112,16 +112,22 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     public String getOpendapSuffix(Entry entry) {
         String url;
         //Always use the full /entry/show/... url
+        boolean useApi = false;
         //        if(getEntryManager().isSynthEntry(entry.getId())) {
-        url = "/" + ARG_OUTPUT + ":"
-              + Request.encodeEmbedded(CdmDataOutputHandler.OUTPUT_OPENDAP)
-              + "/" + ARG_ENTRYID + ":"
-              + Request.encodeEmbedded(entry.getId()) + "/"
-              + getStorageManager().getFileTail(entry) + "/" + OPENDAP_SUFFIX;
-        /*        } else {
-        url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
-            + entry.getFullName() + "/" + OPENDAP_SUFFIX;
-            }*/
+        if (useApi) {
+            //entry.getFullName?
+            url = getRepository().getUrlBase() + "/" + PATH_OPENDAP + "/"
+                  + entry.getId() + "/" + OPENDAP_SUFFIX;
+        } else {
+            url = "/" + ARG_OUTPUT + ":"
+                  + Request.encodeEmbedded(
+                      CdmDataOutputHandler.OUTPUT_OPENDAP) + "/"
+                          + ARG_ENTRYID + ":"
+                          + Request.encodeEmbedded(entry.getId()) + "/"
+                          + getStorageManager().getFileTail(entry) + "/"
+                          + OPENDAP_SUFFIX;
+        }
+
         url = url.replaceAll(" ", "+");
 
         return url;
@@ -147,28 +153,24 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
         String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
         String path   = request.getRequestPath();
         path = path.substring(prefix.length());
-        System.err.println("prefix:" + path);
         path = IOUtil.getFileRoot(path);
         //Check for the dodsC in the path.
         if (path.endsWith("dodsC")) {
             path = IOUtil.getFileRoot(path);
         }
-        System.err.println("path:" + path);
         path = path.replaceAll("\\+", " ");
         Entry entry;
 
         if (request.exists(ARG_ENTRYID)) {
             entry = getEntryManager().getEntry(request);
         } else {
-            entry = getEntryManager().getEntry(request, path);
-            if(entry == null) {
+            entry = getEntryManager().getEntry(request, path.substring(1));
+            if (entry == null) {
                 entry = getEntryManager().findEntryFromName(request, path,
-                                                            request.getUser(), false);
+                        request.getUser(), false);
             }
 
         }
-        System.err.println ("entry:" + entry);
-
 
         if (entry == null) {
             throw new IllegalArgumentException("Could not find entry:"
