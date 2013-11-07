@@ -28,6 +28,18 @@
 </type>
 
 
+  <type name="media_video"   foruser="false"/>
+
+  <type name="media_video_quicktime"  
+        super="media_video"
+        description="Quicktime Video" 
+        xxxhandler="org.ramadda.plugins.media.AudioTypeHandler" 
+        category="Documents" 
+        pattern=".*\.mov">
+     <property name="icon" value="/icons/mov.png"/>
+</type>
+
+
   <type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
      <property name="icon" value="/media/pictures.png"/>
      <wiki><![CDATA[
