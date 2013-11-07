@@ -220,13 +220,15 @@ public class MailTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param wikiTemplate _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry)
+    public String getInnerWikiContent(Request request, Entry entry,
+                                      String wikiTemplate)
             throws Exception {
         StringBuffer sb   = new StringBuffer();
         String       from = entry.getValue(0, "");
@@ -261,8 +263,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                     false));
         }
 
-
-        return new Result(msg("Email Message"), sb);
+        return sb.toString();
     }
 
 

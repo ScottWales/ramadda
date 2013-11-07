@@ -606,21 +606,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ID_CHILDREN = "children";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCH_TYPE = "search.type";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCH_TEXT = "search.text";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCH_PARENT = "search.parent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCH_NORTH = "search.north";
 
     //    public static final String ATTR_SEARCH_PARENT = "search.parent";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_SEARCH = "search";
 
     /** _more_ */
@@ -1387,8 +1387,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return sb.toString();
             }
 
-            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
-                                OutputHandler.OUTPUT_HTML, entry);
+            Request myRequest = request.cloneMe();
+            myRequest.put(ARG_ENTRYID, entry.getId());
+            myRequest.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId());
+            myRequest.put(ARG_EMBEDDED, "true");
+
+
+            Result result = getEntryManager().processEntryShow(myRequest,
+                                entry);
+            //            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
+            //                                OutputHandler.OUTPUT_HTML, entry);
 
             return new String(result.getContent());
         } else if (theTag.equals(WIKI_PROP_CALENDAR)) {
@@ -1702,14 +1710,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean      doingSlideshow = theTag.equals(WIKI_PROP_SLIDESHOW);
             List<String> titles         = new ArrayList<String>();
             List<String> contents       = new ArrayList<String>();
-            String dfltTag = WIKI_PROP_SIMPLE;
+            String       dfltTag        = WIKI_PROP_SIMPLE;
 
-            if(props.get(ATTR_USEDESCRIPTION)!=null) {
+            if (props.get(ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = Misc.getProperty(props,
-                                                          ATTR_USEDESCRIPTION, true);
+                                             ATTR_USEDESCRIPTION, true);
 
-                if(useDescription) dfltTag = WIKI_PROP_SIMPLE;
-                else dfltTag = WIKI_PROP_HTML;
+                if (useDescription) {
+                    dfltTag = WIKI_PROP_SIMPLE;
+                } else {
+                    dfltTag = WIKI_PROP_HTML;
+                }
             }
 
             boolean showLink = Misc.getProperty(props, ATTR_SHOWLINK, true);

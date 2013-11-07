@@ -607,8 +607,6 @@ public class EntryManager extends RepositoryManager {
 
 
         addSessionFolder(request, entry);
-
-
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
                                  + getRepository().URL_ENTRY_SHOW.getPath();
