@@ -1340,3 +1340,15 @@ function inputIsRequired(domId) {
     }
     return true;
 }
+
+
+
+
+
+function setFormValue(id, v) {
+    $("#" +id).val(v);
+}
+
+function setHtml(id, v) {
+    $("#" +id).html(v);
+}
