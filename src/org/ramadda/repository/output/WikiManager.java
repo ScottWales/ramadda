@@ -1702,8 +1702,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             boolean      doingSlideshow = theTag.equals(WIKI_PROP_SLIDESHOW);
             List<String> titles         = new ArrayList<String>();
             List<String> contents       = new ArrayList<String>();
-            boolean useDescription = Misc.getProperty(props,
-                                         ATTR_USEDESCRIPTION, true);
+            String dfltTag = WIKI_PROP_SIMPLE;
+
+            if(props.get(ATTR_USEDESCRIPTION)!=null) {
+                boolean useDescription = Misc.getProperty(props,
+                                                          ATTR_USEDESCRIPTION, true);
+
+                if(useDescription) dfltTag = WIKI_PROP_SIMPLE;
+                else dfltTag = WIKI_PROP_HTML;
+            }
+
             boolean showLink = Misc.getProperty(props, ATTR_SHOWLINK, true);
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       false);
@@ -1718,9 +1726,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 props.put(ATTR_HEIGHT, "" + height);
                 props.put(ATTR_CONSTRAINSIZE, "true");
             }
-
-
-            String dfltTag = WIKI_PROP_SIMPLE;
 
             if (theTag.equals(WIKI_PROP_TABS)) {
                 dfltTag = WIKI_PROP_HTML;
