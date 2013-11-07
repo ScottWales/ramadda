@@ -266,12 +266,13 @@ are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
 <blockquote><pre>{{property entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
+               entries.filter="file|folder|image|type:some type|geo"
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
                count="number of entries to use" }}</pre></blockquote>
 
-The entries is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of:
+The entries attribute is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of:
 <ul>
 <li> <i>this</i> - the current entry
 <li> <i>children</i> - the children entry
@@ -281,6 +282,21 @@ The entries is a comma separated list of entry identifiers. They can be specific
 <li> <i>ancestors</i> - the ancestors up to the top-level entry
 <li> <i>siblings</i> - the sibling entries
 <li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined with:
+
+<ul>
+<li> search.text="text to search"
+<li> search.type="entry type"
+<li> search.bbox="north,west,south,east"   spatial bounds
+<li> search.group="parent entry id" or "this" for the current entry
+<li> search.filesuffix="file suffix" 
+<li> search.datadate.from="from date" 
+<li> search.datadate.to="to date" 
+<li> search.createdate.from="from date" 
+<li> search.createdate.to="to date" 
+<li> search.changedate.from="from date" 
+<li> search.changedate.to="to date" 
+</ul>
 </ul>
 
 You can filter what entries to use with <i>entries.filter</i>, e.g.:
@@ -301,23 +317,15 @@ So,  you could show all of the georeferenced entries in a map and all of the non
 {{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
 </pre>
 
-</ul>
+You can also:
 <ul>
-<ul>
-<li> If <i>folders</i> is set then only show folder like entries.
-<li> If <i>files</i> is set then only show non folders.
-<li> If <i>type</i> is set then only show entries of  that type.
-<li> The attribute <i>level</i> can be set to "1" (the default) or "2". 
-Level 1 refers to the immediate children
-entries of the given entry. Level 2 refers to the grandchildren entries (i.e., the children of the children).
-<li> If <i>associations</i> is set to true then the entries that are used are those that the current entry has an association to. Associations are named 
-and typed links between arbitrary entries.
-<li> If <i>entries</i> is set to a list of comma separated entry ids, then only those entrys are included.
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
 <li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
-<li> Place any entries specified by <i>first</i> at the beginning of the list.
+
 <li> Sort entries by name or date with <i>sort</i>
 <li> If <i>images</i> is set to true then only entries that are image files are included
-</ul>
+
 </ul>
 
 
@@ -333,7 +341,7 @@ If showtoggle="false" then the show/hide toggle link is not shown.
 
 <li> <a name="grid"></a>{{grid}}: Show the children in a grid. e.g., show 
 the grandchildren as a grid:
-<blockquote><pre>{{grid level="2"}}</pre></blockquote>
+<blockquote><pre>{{grid entries="grandchildren"}}</pre></blockquote>
 
 <li> <a name="recent"></a>{{recent <i>days="number of days to show"</i>}}:
 Show the most recent N days in a list organized by day.
@@ -347,8 +355,8 @@ Show images in an image player, e.g.
 Show a 3 column gallery:
 <blockquote><pre>{{gallery columns="3"}}</pre></blockquote> </pre>
 
-Show a vertical listing of the grandchildren entry images:
-<blockquote><pre>{{gallery level="2" columns="1"}}</pre></blockquote> </pre>
+Show a vertical listing of the children entry images:
+<blockquote><pre>{{gallery columns="1"}}</pre></blockquote> </pre>
 
 Set the image width and only show up to 5 images:
 <blockquote><pre>{{gallery  width="300" count="5"}}</pre></blockquote> </pre>
@@ -362,20 +370,19 @@ Show only the 3 specified entries in tabs:
                  49684d25-6af1-4188-a0ae-4d5302d22f2a" }}</pre></blockquote> </pre>
 
 Show only the children of type wikipage in tabs:
-<blockquote><pre>{{tabs type="wikipage"}}</pre></blockquote></pre>
+<blockquote><pre>{{tabs entries="type:wikipage"}}</pre></blockquote></pre>
 
 Additional arguments:
 
 <ul>
-<li>usedescription="true|false" - show the description instead of the entry
-<li>wikify="true|false" - convert any wiki tags in the description (default: true)
+<li>tag="some tag name" - The wiki tag to use to show the children. e.g., tag="simple" tag="html"
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
 <li>showlink="true|false" - show a link to the entry (default: true)
 <li>linklabel="label" - if showlink is true, use label in place of the entry
     name
 <li>imagewidth="width" - width of images
 <li>maximageheight="max height" - maximum height of images
 <li>linkresource="true|false" - if true, link to the entry resource
-<li>includeicon="true|false" - if true, include the appropriate icon in the tab
 </ul>
 
 <li> <a name="accordian"></a>{{accordian}}: Show the children in an accordian:

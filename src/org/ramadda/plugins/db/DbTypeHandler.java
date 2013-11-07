@@ -779,8 +779,6 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @return _more_
      */
     private String getWhatToShow(Request request) {
-        System.err.println("REQ:" + request);
-
         String what = request.getString(ARG_WHAT, null);
         if (what != null) {
             return what;

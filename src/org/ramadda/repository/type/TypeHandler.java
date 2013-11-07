@@ -134,7 +134,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SUPERCATEGORY = "supercategory";
 
     /** _more_ */
@@ -196,7 +196,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String category = CATEGORY_DEFAULT;
 
-    /** _more_          */
+    /** _more_ */
     private String superCategory = "";
 
     /** _more_ */
@@ -2442,6 +2442,8 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         clauses = new ArrayList<Clause>(clauses);
+
+
         //We do the replace because (for some reason) any CRNW screws up the pattern matching
         String       whatString   = cleanQueryString(what);
         String       extraString  = cleanQueryString(extra);
@@ -2506,6 +2508,9 @@ public class TypeHandler extends RepositoryManager {
                     TypeHandler typeHandler =
                         getRepository().getTypeHandler(type, false, false);
                     if (typeHandler == null) {
+                        //Force the bad type
+                        types.add(type);
+
                         continue;
                     }
                     typeHandler.getChildTypes(types);
@@ -2541,6 +2546,7 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+        //        System.err.println("clauses:" + clauses);
 
 
         return getDatabaseManager().select(what, tables, Clause.and(clauses),
@@ -4079,7 +4085,6 @@ public class TypeHandler extends RepositoryManager {
                                ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
                                VALUE_AREA_OVERLAPS));
 
-
         String[] areaCols = { Tables.ENTRIES.COL_NORTH,
                               Tables.ENTRIES.COL_WEST,
                               Tables.ENTRIES.COL_SOUTH,
@@ -4099,6 +4104,8 @@ public class TypeHandler extends RepositoryManager {
  ---------+---------+---------+------------
        180/-180     0      180/-180
         */
+
+
 
         if (bbox.allDefined()) {
             addCriteria(request, searchCriteria, (contains
@@ -4325,6 +4332,19 @@ public class TypeHandler extends RepositoryManager {
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
         String[] delimiters   = { "_", "." };
         int      argCnt       = 0;
+        if (request.defined(ARG_BBOX)) {
+            List<String> toks = StringUtil.split(request.getString(ARG_BBOX,
+                                    ""), ",", true, true);
+            if (toks.size() != 4) {
+                throw new IllegalArgumentException("Bad BBOX:"
+                        + request.getString(ARG_BBOX, ""));
+            }
+            for (int i = 0; i < 4; i++) {
+                bbox[i] = Double.parseDouble(toks.get(i));
+            }
+        }
+
+
         for (String argPrefix : argPrefixes) {
             if (request.defined(argPrefix)) {
                 List<String> toks =

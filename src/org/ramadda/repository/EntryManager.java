@@ -3346,7 +3346,9 @@ public class EntryManager extends RepositoryManager {
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
 
-        for(String preload: new String[]{"General", "Information","Documents", "Collaboration","Database"}) {
+        for (String preload : new String[] { "General", "Information",
+                                             "Documents", "Collaboration",
+                                             "Database" }) {
             categories.add(preload);
             catMap.put(preload, new StringBuffer());
         }
@@ -3387,13 +3389,14 @@ public class EntryManager extends RepositoryManager {
 
 
 
-            boolean hasUsedType = (sessionTypes != null && sessionTypes.contains(typeHandler.getType()));
-            String category  = typeHandler.getCategory();
-            StringBuffer buffer = catMap.get(category);
+            boolean hasUsedType =
+                ((sessionTypes != null)
+                 && sessionTypes.contains(typeHandler.getType()));
+            String       category = typeHandler.getCategory();
+            StringBuffer buffer   = catMap.get(category);
 
             if (buffer == null) {
-                catMap.put(category,
-                           buffer = new StringBuffer());
+                catMap.put(category, buffer = new StringBuffer());
                 if (hasUsedType) {
                     categories.add(0, category);
                 } else {
@@ -3416,12 +3419,12 @@ public class EntryManager extends RepositoryManager {
         int colCnt = 0;
         for (String cat : categories) {
             StringBuffer catBuff = catMap.get(cat);
-            if(catBuff.length()==0) continue;
-            sb.append(
-                HtmlUtils.col(
-                    HtmlUtils.b(msg(cat))
-                    + HtmlUtils.insetDiv(
-                                         catBuff.toString(), 3, 15, 0, 0)));
+            if (catBuff.length() == 0) {
+                continue;
+            }
+            sb.append(HtmlUtils.col(HtmlUtils.b(msg(cat))
+                                    + HtmlUtils.insetDiv(catBuff.toString(),
+                                        3, 15, 0, 0)));
             colCnt++;
             if (colCnt > 3) {
                 sb.append("</tr><tr valign=top>");
@@ -3931,7 +3934,7 @@ public class EntryManager extends RepositoryManager {
                     msg("What do you want to do with the following entry?"));
             }
             sb.append(HtmlUtils.br());
-            sb.append(HtmlUtils.insetDiv(fromList.toString(), 20,20,20,0));
+            sb.append(HtmlUtils.insetDiv(fromList.toString(), 20, 20, 20, 0));
             StringBuffer fb = new StringBuffer();
             request.formPostWithAuthToken(fb, getRepository().URL_ENTRY_COPY);
             fb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
@@ -3940,9 +3943,11 @@ public class EntryManager extends RepositoryManager {
             String destName = getEntryDisplayName(toEntry);
 
             if (isGroup) {
-                fb.append(HtmlUtils.submit(msg("Move to") + " " + destName, ARG_ACTION_MOVE));
+                fb.append(HtmlUtils.submit(msg("Move to") + " " + destName,
+                                           ARG_ACTION_MOVE));
                 fb.append(HtmlUtils.buttonSpace());
-                fb.append(HtmlUtils.submit(msg("Copy to") +" " + destName, ARG_ACTION_COPY));
+                fb.append(HtmlUtils.submit(msg("Copy to") + " " + destName,
+                                           ARG_ACTION_COPY));
             }
 
             if (entries.size() == 1) {
@@ -3957,7 +3962,8 @@ public class EntryManager extends RepositoryManager {
             StringBuffer contents = new StringBuffer(
                                         getPageHandler().showDialogQuestion(
                                             sb.toString(), fb.toString()));
-            Result  result  =  new Result(msg("Move confirm"), contents);
+            Result result = new Result(msg("Move confirm"), contents);
+
             return addEntryHeader(request, toEntry, result);
         }
 
@@ -3976,9 +3982,11 @@ public class EntryManager extends RepositoryManager {
         request.ensureAuthToken();
         if (request.exists(ARG_ACTION_MOVE)) {
             Entry toGroup = (Entry) toEntry;
+
             return processEntryMove(request, toGroup, entries);
         } else if (request.exists(ARG_ACTION_COPY)) {
             Entry toGroup = (Entry) toEntry;
+
             return processEntryCopy(request, toGroup, entries);
         } else if (request.exists(ARG_ACTION_ASSOCIATE)) {
             if (entries.size() == 1) {
@@ -3989,7 +3997,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        Result result =  new Result(msg("Move"), new StringBuffer());
+        Result result = new Result(msg("Move"), new StringBuffer());
+
         return addEntryHeader(request, toEntry, result);
 
     }
@@ -6167,6 +6176,8 @@ public class EntryManager extends RepositoryManager {
         List<Clause> where = typeHandler.assembleWhereClause(request,
                                  searchCriteriaSB);
 
+
+
         if (extraClauses != null) {
             where.addAll(extraClauses);
         }
@@ -6185,8 +6196,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List[] getEntries(Request request, List<Clause> clauses,
-                             TypeHandler typeHandler)
+    public List<Entry>[] getEntries(Request request, List<Clause> clauses,
+                                    TypeHandler typeHandler)
             throws Exception {
         int skipCnt = request.get(ARG_SKIP, 0);
         SqlUtil.debug = false;
@@ -6247,7 +6258,7 @@ public class EntryManager extends RepositoryManager {
         entries = getAccessManager().filterEntries(request, entries);
         groups  = getAccessManager().filterEntries(request, groups);
 
-        return new List[] { groups, entries };
+        return (List<Entry>[]) new List[] { groups, entries };
     }
 
 

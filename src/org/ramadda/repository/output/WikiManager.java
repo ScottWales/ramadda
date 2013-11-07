@@ -200,7 +200,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_CHILDREN = "children";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CONSTRAINSIZE = "constrainsize";
 
     /** attribute in import tag */
@@ -239,7 +239,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** attribute in import tag */
     public static final String ATTR_STYLE = "style";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TAG = "tag";
 
 
@@ -549,12 +549,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                    ATTR_TAGOPEN, "", ATTR_TAGCLOSE, "")),
         WIKI_PROP_LIST,
         prop(WIKI_PROP_TABS,
-             attrs(ATTR_TAG, WIKI_PROP_SIMPLE, ATTR_SHOWLINK, "true")
-             + ATTRS_LAYOUT),
+             attrs(ATTR_TAG, WIKI_PROP_HTML, ATTR_SHOWLINK, "true",
+                   ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         prop(WIKI_PROP_TREE, attrs(ATTR_DETAILS, "true")), WIKI_PROP_TREEVIEW,
         prop(WIKI_PROP_ACCORDIAN,
-             attrs(ATTR_TAG, WIKI_PROP_SIMPLE, ATTR_SHOWLINK, "true")
-             + ATTRS_LAYOUT),
+             attrs(ATTR_TAG, WIKI_PROP_HTML, ATTR_SHOWLINK, "true",
+                   ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         WIKI_PROP_GRID, WIKI_PROP_TABLE,
         prop(WIKI_PROP_RECENT, attrs(ATTR_DAYS, "3")),
         prop(WIKI_PROP_APPLY,
@@ -605,6 +605,23 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** _more_ */
     public static final String ID_CHILDREN = "children";
+
+    /** _more_          */
+    public static final String ATTR_SEARCH_TYPE = "search.type";
+
+    /** _more_          */
+    public static final String ATTR_SEARCH_TEXT = "search.text";
+
+    /** _more_          */
+    public static final String ATTR_SEARCH_PARENT = "search.parent";
+
+    /** _more_          */
+    public static final String ATTR_SEARCH_NORTH = "search.north";
+
+    //    public static final String ATTR_SEARCH_PARENT = "search.parent";
+
+    /** _more_          */
+    public static final String ID_SEARCH = "search";
 
     /** _more_ */
     public static final String ID_SIBLINGS = "siblings";
@@ -1703,13 +1720,18 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
+            String dfltTag = WIKI_PROP_SIMPLE;
 
+            if (theTag.equals(WIKI_PROP_TABS)) {
+                dfltTag = WIKI_PROP_HTML;
+            }
 
 
             boolean linkResource = Misc.getProperty(props, ATTR_LINKRESOURCE,
                                        false);
 
-            String tag = Misc.getProperty(props, ATTR_TAG, WIKI_PROP_SIMPLE);
+
+            String    tag        = Misc.getProperty(props, ATTR_TAG, dfltTag);
             Request   newRequest = makeRequest(request, props);
             Hashtable tmpProps   = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
@@ -2615,6 +2637,42 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
                 continue;
             }
+
+            if (entryid.equals(ID_SEARCH)) {
+                Request myRequest = new Request(getRepository(),
+                                        request.getUser());
+                myRequest.put(ARG_AREA_MODE,
+                              Misc.getProperty(props, ARG_AREA_MODE,
+                                  VALUE_AREA_CONTAINS));
+                myRequest.put(ARG_MAX,
+                              Misc.getProperty(props, "search." + ARG_MAX,
+                                  "100"));
+                String[] args = new String[] {
+                    ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
+                    ARG_BBOX + ".north", ARG_BBOX + ".west",
+                    ARG_BBOX + ".south", ARG_BBOX + ".east",
+                    Constants.dataDate.from, Constants.dataDate.to,
+                    Constants.createDate.from, Constants.createDate.to,
+                    Constants.changeDate.from, Constants.changeDate.to,
+                };
+                for (String arg : args) {
+                    String text = (String) props.get("search." + arg);
+                    if (text != null) {
+                        if (arg.equals(ARG_GROUP)) {
+                            if (text.equals(ID_THIS)) {
+                                text = baseEntry.getId();
+                            }
+                        }
+                        myRequest.put(arg, text);
+                    }
+                }
+                List<Entry>[] pair = getEntryManager().getEntries(myRequest);
+                entries.addAll(pair[0]);
+                entries.addAll(pair[1]);
+
+                continue;
+            }
+
 
             if (entryid.equals(ID_PARENT)) {
                 entries.add(getEntryManager().getEntry(request,
@@ -3548,14 +3606,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         boolean sizeConstrained = Misc.getProperty(props, ATTR_CONSTRAINSIZE,
                                       false);;
-        String content = getDescription(request, props, originalEntry, entry);
-        boolean haveText   = Utils.stringDefined(content);
+        String  content = getDescription(request, props, originalEntry,
+                                         entry);
+        boolean haveText = Utils.stringDefined(content);
         if (entry.getResource().isImage()) {
             StringBuffer extra = new StringBuffer();
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
                                        || position.equals(POS_LEFT);
-            int     imageWidth = -1;
+            int imageWidth = -1;
 
             if (sizeConstrained) {
                 imageWidth = Misc.getProperty(props, ATTR_WIDTH, 400);
@@ -3654,14 +3713,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             } else {
                 content = "Unknown position:" + position;
             }
-        } else if(entry.getTypeHandler().isGroup()) {
+        } else if (entry.getTypeHandler().isGroup()
+                   && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
             //Do we tack on the listing
-            //content = content +
-            
-            StringBuffer sb  = new StringBuffer();
-            String link = getHtmlOutputHandler().getEntriesList(request, sb,
-                                                                getEntryManager().getChildren(request,entry), true, false, true);
-            content = content + sb;
+            StringBuffer sb = new StringBuffer();
+            List<Entry> children = getEntryManager().getChildren(request,
+                                       entry);
+            if (children.size() > 0) {
+                String link = getHtmlOutputHandler().getEntriesList(request,
+                                  sb, children, true, false, true);
+                content = content + sb;
+            }
         }
         content = HtmlUtils.div(content, HtmlUtils.cssClass("entry-simple"));
 
