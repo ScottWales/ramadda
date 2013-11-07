@@ -2,13 +2,7 @@
 <tr valign=top>
 <td width=75%>
 <div class="entry-page-main">
-=== {{name}} ===
-{{description}}
-<block show="mobile" decorate="false">
-{{resource message="" includeicon="true" title="Download"}}
-</block>
-<br>
-{{information details="true"}}
+${innercontent}
 </div>
 </td>
 <block show="!mobile" decorate="false">

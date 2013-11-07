@@ -455,28 +455,30 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 return new Result("", xml, "text/xml");
             }
-            /********
-            String wikiTemplate = getWikiText(request, entry);
-            if (wikiTemplate == null) {
-                wikiTemplate = getPageHandler().getWikiTemplate(request,
-                        entry, PageHandler.TEMPLATE_DEFAULT);
-            }
 
-            if (wikiTemplate != null) {
-                String wiki = getWikiManager().wikifyEntry(request, entry,
-                                  wikiTemplate);
-                wiki = getRepository().translate(request, wiki);
-                StringBuffer xml = new StringBuffer("<content>\n");
-                XmlUtil.appendCdata(xml,
-                                    "<div class=entry-inline>" + wiki
-                                    + "</div>");
-                xml.append("\n</content>");
-
-                return new Result("", xml, "text/xml");
-            }
-            *****/
+            /**
+             * String wikiTemplate = getWikiText(request, entry);
+             * if (wikiTemplate == null) {
+             *   wikiTemplate = getPageHandler().getWikiTemplate(request,
+             *           entry, PageHandler.TEMPLATE_DEFAULT);
+             * }
+             *
+             * if (wikiTemplate != null) {
+             *   String wiki = getWikiManager().wikifyEntry(request, entry,
+             *                     wikiTemplate);
+             *   wiki = getRepository().translate(request, wiki);
+             *   StringBuffer xml = new StringBuffer("<content>\n");
+             *   XmlUtil.appendCdata(xml,
+             *                       "<div class=entry-inline>" + wiki
+             *                       + "</div>");
+             *   xml.append("\n</content>");
+             *
+             *   return new Result("", xml, "text/xml");
+             * }
+             */
             return getMetadataXml(request, entry, false);
         }
+
         return getHtmlResult(request, outputType, entry);
     }
 
@@ -538,6 +540,15 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (wikiTemplate != null) {
+            String innerContent =
+                entry.getTypeHandler().getInnerWikiContent(request, entry,
+                    wikiTemplate);
+            if (innerContent == null) {
+                innerContent =
+                    "{{description}} <block show=\"mobile\" decorate=\"false\">{{resource message=\"\" includeicon=\"true\" title=\"Download\"}}</block><br>{{information details=\"true\"}}";
+            }
+            wikiTemplate = wikiTemplate.replace("${innercontent}",
+                    innerContent);
             sb.append(getWikiManager().wikifyEntry(request, entry,
                     wikiTemplate));
         } else {
@@ -1503,8 +1514,10 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             entries.add(entry);
         }
+        List<String> contents = new ArrayList<String>();
+        List<String> titles   = new ArrayList<String>();
 
-        int typeCnt = 0;
+        int          typeCnt  = 0;
         for (String type : types) {
             typeCnt++;
             int          numCols     = 0;
@@ -1624,15 +1637,21 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             tableSB.append("</div>");
-            if (types.size() > 1) {
-                sb.append(HtmlUtils.makeShowHideBlock(typeLabel,
-                        HtmlUtils.insetLeft(tableSB.toString(), 10), true));
-            } else {
-                sb.append(tableSB.toString());
-            }
 
+            contents.add(tableSB.toString());
+            titles.add(typeLabel);
         }
-
+        if (types.size() == 1) {
+            sb.append(contents.get(0));
+        } else {
+            HtmlUtils.makeAccordian(sb, titles, contents);
+            /*            for(int i=0;i<titles.size();i++) {
+                String title = titles.get(i);
+                String content = contents.get(i);
+                sb.append(HtmlUtils.makeShowHideBlock(title,
+                                                      HtmlUtils.insetLeft(content, 10), true));
+                                                      }*/
+        }
     }
 
 
@@ -1797,8 +1816,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 if (hasChildren) {
                     sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
                             informationBlock,
-                            request.get(ARG_SHOW_ASSOCIATIONS,
-                                        doingInfo?true:!hasChildren)));
+                            request.get(ARG_SHOW_ASSOCIATIONS, doingInfo
+                            ? true
+                            : !hasChildren)));
                 } else {
                     sb.append(informationBlock);
                 }
@@ -1819,6 +1839,15 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         if (wikiTemplate != null) {
+            String innerContent =
+                group.getTypeHandler().getInnerWikiContent(request, group,
+                    wikiTemplate);
+            if (innerContent == null) {
+                innerContent =
+                    "{{description}}<p>{{tree details=\"true\" message=\"\"}}<p>";
+            }
+            wikiTemplate = wikiTemplate.replace("${innercontent}",
+                    innerContent);
             sb.append(getWikiManager().wikifyEntry(request, group,
                     wikiTemplate, true, subGroups, entries));
         } else {

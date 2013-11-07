@@ -65,16 +65,16 @@ public class AudioTypeHandler extends GenericTypeHandler {
      * _more_
      *
      * @param request _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
+     * @param props _more_
      * @param entry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry entry)
+    @Override
+    public String getSimpleDisplay(Request request, Hashtable props,
+                                   Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
         String html =
@@ -87,7 +87,26 @@ public class AudioTypeHandler extends GenericTypeHandler {
         sb.append(HtmlUtils.p());
         sb.append(entry.getDescription());
 
-        return new Result(msg("Audio"), sb);
+        return sb.toString();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param wikiTemplate _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getInnerWikiContent(Request request, Entry entry,
+                                      String wikiTemplate)
+            throws Exception {
+        return getSimpleDisplay(request, null, entry);
     }
 
 

@@ -135,7 +135,6 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-
     public Result getHtmlDisplay(Request request, Entry group,
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {

@@ -3,10 +3,7 @@
 <td  valign=top width="75%">
 <div class="entry-page-main">
 === {{name}} ===
-{{description}}
-<p>
-{{tree details="true" message=""}}
-<p>
+${innercontent}
 </div>
 </td>
 <block show="!mobile" decorate="false">

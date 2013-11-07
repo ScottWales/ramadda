@@ -168,6 +168,20 @@ form {
    overflow-y: auto;
 }
 
+.ui-accordion .ui-accordion-content {
+         padding:0px;
+}
+
+.ui-accordion .ui-accordion-header a {
+padding-top: 0.2em;
+padding-right-value: 0.5em;
+padding-bottom: 0.2em;
+padding-left-value: 0.2em;
+padding-left-ltr-source: physical;
+padding-left-rtl-source: physical;
+padding-right-ltr-source: physical;
+padding-right-rtl-source: physical;
+}
 
 .entry-page-main {
    margin:8px;

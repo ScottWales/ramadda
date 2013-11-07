@@ -220,21 +220,17 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param wikiTemplate _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry)
+    public String getInnerWikiContent(Request request, Entry entry,
+                                      String wikiTemplate)
             throws Exception {
-        String s = getSimpleDisplay(request, null, entry);
-        if (s == null) {
-            return null;
-        }
-
-        return new Result(msg("YouTube Video"), new StringBuffer(s));
-
+        return getSimpleDisplay(request, null, entry);
     }
 
 

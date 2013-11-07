@@ -703,6 +703,23 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     * @param wikiTemplate _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getInnerWikiContent(Request request, Entry entry,
+                                      String wikiTemplate)
+            throws Exception {
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      *
      * @return _more_
      *
