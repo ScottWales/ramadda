@@ -212,7 +212,7 @@ function  RamaddaEarth(id, url) {
         alert("Failure loading the Google Earth Plugin: " + errorCode);
     }
 
-    this.addPlacemark = function(id,name, desc, lat,lon, detailsUrl, icon, points, kmlUrl, fromTime, toTime) {
+    this.addPlacemark = function(id, name, desc, lat,lon, detailsUrl, icon, points, kmlUrl, fromTime, toTime) {
         var polygons = new Array();
         if(points) {
             var tmpArray = new Array();
@@ -443,6 +443,12 @@ function  RamaddaEarth(id, url) {
             this.setBalloon(ramaddaPlacemark,ramaddaPlacemark.details); 
             return;
         }
+
+        //For now just use the description in the placemark
+        var content = ramaddaPlacemark.description;
+        this.setBalloon(ramaddaPlacemark,ramaddaPlacemark.description); 
+        return;
+
 
         var callback = function(request) {
             if(myClick != _this.googleEarthClickCnt) {

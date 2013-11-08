@@ -2635,11 +2635,13 @@ public class TypeHandler extends RepositoryManager {
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
+     * @param formInfo _more_
      *
      * @throws Exception _more_
      */
     public void addSpatialToEntryForm(Request request, StringBuffer sb,
-                                      Entry parentEntry, Entry entry)
+                                      Entry parentEntry, Entry entry,
+                                      FormInfo formInfo)
             throws Exception {
 
         MapOutputHandler mapOutputHandler =
@@ -2674,46 +2676,7 @@ public class TypeHandler extends RepositoryManager {
             sb.append(formEntry(request, msgLabel("Location"), mapSelector));
 
         } else if (okToShowInForm(entry, ARG_AREA)) {
-            StringBuffer mapSB = new StringBuffer();
-            if (mapOutputHandler != null) {
-                List<Entry> entries = new ArrayList<Entry>();
-                if (entry != null) {
-                    entries.add(entry);
-                }
-                //                mapOutputHandler.getMap( request, entries,mapSB, 300,200,false);
-            }
-            String[] nwse = null;
-            if (entry != null) {
-                nwse = new String[] { entry.hasNorth()
-                                      ? "" + entry.getNorth()
-                                      : "", entry.hasWest()
-                                            ? "" + entry.getWest()
-                                            : "", entry.hasSouth()
-                        ? "" + entry.getSouth()
-                        : "", entry.hasEast()
-                              ? "" + entry.getEast()
-                              : "", };
-
-            } else if (parentEntry != null) {
-                if (parentEntry.hasAreaDefined()) {
-                    nwse = new String[] { "" + parentEntry.getNorth(),
-                                          "" + parentEntry.getWest(),
-                                          "" + parentEntry.getSouth(),
-                                          "" + parentEntry.getEast() };
-                } else if (parentEntry.hasLocationDefined()) {
-                    nwse = new String[] { "" + parentEntry.getNorth(),
-                                          "" + parentEntry.getWest(),
-                                          "" + parentEntry.getSouth(),
-                                          "" + parentEntry.getEast() };
-                }
-            }
-            String extraMapStuff = "";
-            MapInfo map = getRepository().getMapManager().createMap(request,
-                              true);
-            String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "",
-                                     "") + extraMapStuff;
-            sb.append(formEntry(request, msgLabel("Location"), mapSelector));
-
+            addAreaWidget(request, entry, sb, formInfo);
         }
 
 
@@ -2751,6 +2714,56 @@ public class TypeHandler extends RepositoryManager {
 
 
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param formInfo _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addAreaWidget(Request request, Entry entry, StringBuffer sb,
+                              FormInfo formInfo)
+            throws Exception {
+        String[] nwse = null;
+        if (entry != null) {
+            nwse = new String[] { entry.hasNorth()
+                                  ? "" + entry.getNorth()
+                                  : "", entry.hasWest()
+                                        ? "" + entry.getWest()
+                                        : "", entry.hasSouth()
+                    ? "" + entry.getSouth()
+                    : "", entry.hasEast()
+                          ? "" + entry.getEast()
+                          : "", };
+
+        }  /*else if (parentEntry != null) {
+              don't popuplate the form with the parent location
+                if (parentEntry.hasAreaDefined()) {
+                nwse = new String[] { "" + parentEntry.getNorth(),
+                "" + parentEntry.getWest(),
+                "" + parentEntry.getSouth(),
+                "" + parentEntry.getEast() };
+                } else if (parentEntry.hasLocationDefined()) {
+                nwse = new String[] { "" + parentEntry.getNorth(),
+                "" + parentEntry.getWest(),
+                "" + parentEntry.getSouth(),
+                "" + parentEntry.getEast() };
+                }
+         }
+             */
+        String  extraMapStuff = "";
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          true);
+        String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
+                             + extraMapStuff;
+        sb.append(formEntry(request, msgLabel("Location"), mapSelector));
+    }
+
 
 
     /**
@@ -3226,7 +3239,8 @@ public class TypeHandler extends RepositoryManager {
                 continue;
             }
             if (what.equals(ARG_LOCATION)) {
-                addSpatialToEntryForm(request, sb, parentEntry, entry);
+                addSpatialToEntryForm(request, sb, parentEntry, entry,
+                                      formInfo);
 
                 continue;
             }

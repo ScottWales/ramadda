@@ -32,6 +32,7 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -411,6 +412,9 @@ public class MapManager extends RepositoryManager {
                 category = entry.getTypeHandler().getCategory(
                     entry).getLabel().toString();
             }
+            if ( !Utils.stringDefined(category)) {
+                category = entry.getTypeHandler().getDescription();
+            }
             StringBuffer catSB = catMap.get(category);
             if (catSB == null) {
                 catMap.put(category, catSB = new StringBuffer());
@@ -421,15 +425,14 @@ public class MapManager extends RepositoryManager {
             catSB.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)
-                    + "" /*HtmlUtils.onMouseClick(call)*/));
+                    HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             boolean visible = true;
             //If there are lots of kmls then don't load all of them
             if (kmlUrl != null) {
                 visible = (kmlCnt++ < 3);
             }
-            catSB.append(
-                "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
+            //            catSB.append(
+            //                "<table cellspacing=0 cellpadding=0  width=100%><tr><td>");
             catSB.append(HtmlUtils.checkbox("tmp", "true", visible,
                     HtmlUtils.style("margin:0px;padding:0px;margin-right:5px;padding-bottom:10px;")
                     + HtmlUtils.id("googleearth.visibility." + entry.getId())
@@ -445,7 +448,8 @@ public class MapManager extends RepositoryManager {
                         iconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
             catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
-            catSB.append("</td><td align=right>");
+            //            catSB.append("</td>");
+            /*
             catSB.append(HtmlUtils.space(2));
             catSB.append(
                 HtmlUtils.href(
@@ -454,7 +458,9 @@ public class MapManager extends RepositoryManager {
                         getRepository().iconUrl(ICON_MAP_NAV),
                         "View entry"), HtmlUtils.cssClass(
                             CSS_CLASS_EARTH_LINK)));
-            catSB.append("</td></tr></table>");
+            catSB.append("</td>");
+            */
+            //            catSB.append("</tr></table>");
             catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             numEntries++;
 
@@ -543,21 +549,21 @@ public class MapManager extends RepositoryManager {
             }
 
 
+            String infoHtml =
+                cleanupInfo(request,
+                            getMapManager().makeInfoBubble(request, entry));
             js.append(
                 HtmlUtils.call(
-                    id + ".addPlacemark",
-                    HtmlUtils.comma(
-                        HtmlUtils.squote(entry.getId()),
-                            HtmlUtils.squote(name), HtmlUtils.squote(desc),
-                                "" + lat, "" + lon) + ","
-                                    + HtmlUtils.squote(detailsUrl) + ","
-                                        + HtmlUtils.squote(
-                                            request.getAbsoluteUrl(
-                                                iconUrl)) + ","
-                                                    + pointsString + ","
-                                                        + kmlUrl + ","
-                                                            + fromTime + ","
-                                                                + toTime));
+                    id + ".addPlacemark", HtmlUtils.comma(
+                        HtmlUtils.squote(entry.getId()), HtmlUtils.squote(
+                            name), HtmlUtils.squote(infoHtml), "" + lat, ""
+                                + lon) + "," + HtmlUtils.squote(detailsUrl)
+                                    + "," + HtmlUtils.squote(
+                                        request.getAbsoluteUrl(
+                                            iconUrl)) + "," + pointsString
+                                                + "," + kmlUrl + ","
+                                                    + fromTime + ","
+                                                        + toTime));
             js.append("\n");
         }
 
@@ -649,6 +655,8 @@ public class MapManager extends RepositoryManager {
         if (fromEntry != null) {
             return fromEntry;
         }
+        StringBuffer info = new StringBuffer();
+
         if (entry.getResource().isImage()) {
             int width  = request.get(ATTR_WIDTH, 400);
             int height = request.get(ATTR_HEIGHT, 270);
@@ -687,7 +695,7 @@ public class MapManager extends RepositoryManager {
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             String content  = entry.getDescription();
             if (position.equals(POS_NONE)) {
-                content = image + HtmlUtils.br();
+                content = image;
             } else if (position.equals(POS_BOTTOM)) {
                 content = image + HtmlUtils.br() + content;
             } else if (position.equals(POS_TOP)) {
@@ -710,14 +718,24 @@ public class MapManager extends RepositoryManager {
                 content = "Unknown position:" + position;
             }
 
-            return content;
+            String nameString = getEntryDisplayName(entry);
+            nameString = HtmlUtils.href(
+                HtmlUtils.url(
+                    request.url(getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
+                    entry.getId()), nameString);
+
+            info.append(nameString);
+            info.append(HtmlUtils.br());
+            info.append(content);
+
+            return info.toString();
         }
 
 
 
 
 
-        StringBuffer info = new StringBuffer("<table>");
+        info.append("<table>");
         info.append(entry.getTypeHandler().getInnerEntryContent(entry,
                 request, OutputHandler.OUTPUT_HTML, true, false, false));
 
@@ -946,13 +964,11 @@ public class MapManager extends RepositoryManager {
                         break;
                     }
                 }
-                String infoHtml = getMapManager().makeInfoBubble(request,
-                                      entry);
-                infoHtml = infoHtml.replace("\r", " ");
-                infoHtml = infoHtml.replace("\n", " ");
-                infoHtml = infoHtml.replace("\"", "\\\"");
-                infoHtml = infoHtml.replace("'", "\\'");
-                infoHtml = getRepository().translate(request, infoHtml);
+                String infoHtml = cleanupInfo(request,
+                                      getMapManager().makeInfoBubble(request,
+                                          entry));
+
+
                 String icon = getPageHandler().getIconUrl(request, entry);
                 map.addMarker(entry.getId(),
                               new LatLonPointImpl(Math.max(-80,
@@ -968,6 +984,26 @@ public class MapManager extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param infoHtml _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String cleanupInfo(Request request, String infoHtml)
+            throws Exception {
+        infoHtml = infoHtml.replace("\r", " ");
+        infoHtml = infoHtml.replace("\n", " ");
+        infoHtml = infoHtml.replace("\"", "\\\"");
+        infoHtml = infoHtml.replace("'", "\\'");
+        infoHtml = getRepository().translate(request, infoHtml);
+
+        return infoHtml;
+    }
 
     /**
      * Quote a String with double quotes (&quot;)

@@ -404,6 +404,8 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
         sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
+        addAreaWidget(request, entry, sb, formInfo);
+        //        super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
 
     }
 

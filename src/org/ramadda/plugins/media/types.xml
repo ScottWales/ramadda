@@ -50,7 +50,7 @@
 </type>
 
 
-  <type name="type_image"  foruser="false" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)"></type>
+  <type name="type_image"  description="Image" foruser="true" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)"></type>
 
 
   <type name="type_document"  foruser="false" category="Documents"></type>
