@@ -680,6 +680,7 @@ public class MailHarvester extends Harvester {
                             theFolder, tok);
                     if (folder == null) {
                         System.err.println("could not find folder: " + line);
+
                         break;
                     }
                     if ( !folder.isGroup()) {
@@ -883,6 +884,7 @@ public class MailHarvester extends Harvester {
      */
     private String cleanUpText(String text) {
         text = RepositoryUtil.encodeUntrustedText(text);
+
         return text;
     }
 

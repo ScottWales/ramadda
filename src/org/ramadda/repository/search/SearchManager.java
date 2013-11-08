@@ -1072,23 +1072,36 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processSearchInfo(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(header(msg("Entry Types")));
         sb.append(HtmlUtils.formTable());
-        for(TypeHandler typeHandler: getRepository().getTypeHandlers()) {
-            String link = HtmlUtils.href(URL_SEARCH_TYPE +"/" 
-                                         + typeHandler.getType(), typeHandler.getType());
-            sb.append(HtmlUtils.row(HtmlUtils.cols(link,typeHandler.getDescription())));
+        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
+            String link =
+                HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                               typeHandler.getType());
+            sb.append(HtmlUtils.row(HtmlUtils.cols(link,
+                    typeHandler.getDescription())));
         }
         sb.append(HtmlUtils.formTableClose());
 
 
         sb.append(header(msg("Output Types")));
         sb.append(HtmlUtils.formTable());
-        for(OutputHandler outputHandler: getRepository().getOutputHandlers()) {
-            for(OutputType type: outputHandler.getTypes()) {
-                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),type.getLabel())));
+        for (OutputHandler outputHandler :
+                getRepository().getOutputHandlers()) {
+            for (OutputType type : outputHandler.getTypes()) {
+                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                        type.getLabel())));
             }
         }
         sb.append(HtmlUtils.formTableClose());
@@ -1096,11 +1109,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
 
         sb.append(header(msg("Metadata Types")));
         sb.append(HtmlUtils.formTable());
-        for (MetadataType type : getRepository().getMetadataManager().getMetadataTypes()) {
+        for (MetadataType type :
+                getRepository().getMetadataManager().getMetadataTypes()) {
             if ( !type.getSearchable()) {
                 continue;
             }
-            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),type.getName())));
+            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                    type.getName())));
         }
         sb.append(HtmlUtils.formTableClose());
 

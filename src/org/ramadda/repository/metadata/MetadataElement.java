@@ -727,6 +727,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param templateType _more_
      * @param entry _more_
      * @param metadata _more_
@@ -737,9 +739,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @throws Exception _more_
      */
-    public String getValueForXml(Request request, String templateType, Entry entry,
-                                 Metadata metadata, String value,
-                                 Element parent)
+    public String getValueForXml(Request request, String templateType,
+                                 Entry entry, Metadata metadata,
+                                 String value, Element parent)
             throws Exception {
 
         if ( !dataType.equals(DATATYPE_GROUP)) {
@@ -754,8 +756,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         StringBuffer   xml           = new StringBuffer();
         List<Metadata> groupMetadata = getGroupData(value);
         for (Metadata subMetadata : groupMetadata) {
-            xml.append(applyTemplate(request, templateType, entry, subMetadata,
-                                     parent));
+            xml.append(applyTemplate(request, templateType, entry,
+                                     subMetadata, parent));
         }
 
         return xml.toString();

@@ -52,7 +52,7 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
     /** the output handler to pass opendap calls to */
     private CdmDataOutputHandler dataOutputHandler;
 
-    /** _more_          */
+    /** _more_ */
     private static boolean useApi = true;
 
     /**

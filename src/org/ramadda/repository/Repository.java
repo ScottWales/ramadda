@@ -3855,7 +3855,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param typeHandler _more_
      */
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
-        if(!typeHandlersMap.contains(typeName)) {
+        if ( !typeHandlersMap.contains(typeName)) {
             typeHandlersMap.put(typeName, typeHandler);
             allTypeHandlers.add(typeHandler);
         }

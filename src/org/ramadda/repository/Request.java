@@ -2237,14 +2237,14 @@ public class Request implements Constants, Cloneable {
      */
     public String getServerName() {
         String serverName = null;
-        if(!repository.useFixedHostnameForAbsoluteUrls()) {
+        if ( !repository.useFixedHostnameForAbsoluteUrls()) {
             try {
                 if (httpServletRequest != null) {
                     serverName = httpServletRequest.getServerName();
                 }
             } catch (Exception ignoreThis) {}
         }
-        if (!Utils.stringDefined(serverName)) {
+        if ( !Utils.stringDefined(serverName)) {
             serverName = repository.getHostname();
         }
 
@@ -2257,13 +2257,14 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
-        if(!repository.useFixedHostnameForAbsoluteUrls()) {
+        if ( !repository.useFixedHostnameForAbsoluteUrls()) {
             try {
                 if (httpServletRequest != null) {
                     httpServletRequest.getServerPort();
                 }
             } catch (Exception ignoreThis) {}
-        } 
+        }
+
         return repository.getPort();
     }
 

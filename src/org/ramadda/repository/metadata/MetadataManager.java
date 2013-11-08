@@ -816,6 +816,11 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<MetadataType> getMetadataTypes() {
         return metadataTypes;
     }
@@ -835,7 +840,7 @@ public class MetadataManager extends RepositoryManager {
             (List<Metadata>) getSessionManager().getSessionProperty(request,
                 PROP_METADATA);
 
-                return metadata;
+        return metadata;
     }
 
     /**

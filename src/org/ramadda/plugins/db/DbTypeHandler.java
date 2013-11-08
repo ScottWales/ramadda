@@ -1227,7 +1227,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     public Result handleList(Request request, Entry entry, Clause clause,
                              String action, boolean fromSearch)
             throws Exception {
-        String view = getWhatToShow(request);
+        String         view = getWhatToShow(request);
         List<Object[]> valueList;
 
         if ((dateColumns.size() > 0) && request.defined(ARG_YEAR)

@@ -2723,8 +2723,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             sql = "alter table " + table + "  alter column " + column
                   + "  set data type " + type + ";";
         } else if (isDatabasePostgres()) {
-            sql = "alter table " + table + " alter column " + column + " type "
-                  + type + ";";
+            sql = "alter table " + table + " alter column " + column
+                  + " type " + type + ";";
         } else if (isDatabaseMysql()) {
             //              ALTER TABLE t1 MODIFY col1 BIGINT;
             sql = "alter table " + table + " modify " + column + " " + type

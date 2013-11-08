@@ -193,6 +193,8 @@ public class MetadataTypeBase extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param templateType _more_
      * @param entry _more_
      * @param metadata _more_
@@ -200,8 +202,9 @@ public class MetadataTypeBase extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    protected void checkFileXml(Request request, String templateType, Entry entry,
-                                Metadata metadata, Element parent)
+    protected void checkFileXml(Request request, String templateType,
+                                Entry entry, Metadata metadata,
+                                Element parent)
             throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
@@ -212,9 +215,9 @@ public class MetadataTypeBase extends RepositoryManager {
                 continue;
             }
             String tail = getStorageManager().getFileTail(f.toString());
-            String path =request.getAbsoluteUrl(handler.getRepository()
-                                                .getMetadataManager()
-                                                .URL_METADATA_VIEW) + "/" + tail;
+            String path =
+                request.getAbsoluteUrl(handler.getRepository()
+                    .getMetadataManager().URL_METADATA_VIEW) + "/" + tail;
 
             String url = HtmlUtils.url(path, ARG_ELEMENT,
                                        element.getIndex() + "", ARG_ENTRYID,
@@ -235,6 +238,8 @@ public class MetadataTypeBase extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param templateType _more_
      * @param entry _more_
      * @param metadata _more_
@@ -244,8 +249,9 @@ public class MetadataTypeBase extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String applyTemplate(Request request, String templateType, Entry entry,
-                                Metadata metadata, Element parent)
+    public String applyTemplate(Request request, String templateType,
+                                Entry entry, Metadata metadata,
+                                Element parent)
             throws Exception {
         checkFileXml(request, templateType, entry, metadata, parent);
 
@@ -275,8 +281,8 @@ public class MetadataTypeBase extends RepositoryManager {
                                     formatDate(entry.getChangeDate()));
 
         for (MetadataElement element : getChildren()) {
-            String value = element.getValueForXml(request, templateType, entry,
-                               metadata,
+            String value = element.getValueForXml(request, templateType,
+                               entry, metadata,
                                metadata.getAttr(element.getIndex()), parent);
 
             template = applyMacros(template, element, value);

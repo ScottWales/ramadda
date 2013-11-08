@@ -1408,7 +1408,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             throws Exception {
         StringBuffer sb      = new StringBuffer();
 
-        String formUrl  = request.url(getRepository().URL_ENTRY_SHOW);
+        String       formUrl = request.url(getRepository().URL_ENTRY_SHOW);
         //        String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -1592,11 +1592,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         String baseName = IOUtil.stripExtension(entry.getName());
         String product  = request.getString(ARG_IDV_PRODUCT, PRODUCT_IMAGE);
         //        String url      = getEntryManager().getFullEntryShowUrl(request);
-        String url  = request.url(getRepository().URL_ENTRY_SHOW);
+        String url     = request.url(getRepository().URL_ENTRY_SHOW);
 
 
-        String islUrl   = url + "/" + baseName + ".isl";
-        String jnlpUrl  = url + "/" + baseName + ".jnlp";
+        String islUrl  = url + "/" + baseName + ".isl";
+        String jnlpUrl = url + "/" + baseName + ".jnlp";
 
         if (product.equals(PRODUCT_IMAGE)) {
             url = url + "/" + baseName + ".gif";
