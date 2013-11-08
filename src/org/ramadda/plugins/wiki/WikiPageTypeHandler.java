@@ -70,8 +70,10 @@ import java.util.Properties;
  */
 public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_ */
-    public static final String ARG_WIKI_TEXTAREA = "wikipage.wikitext";
+    /** 
+        The url argument of the text area. Note: this has to be of the form that the Column class handles in a save
+_more_ */
+    public static final String ARG_WIKI_TEXTAREA = Column.ARG_EDIT_PREFIX + "wikipage.wikitext";
 
 
     /** _more_ */

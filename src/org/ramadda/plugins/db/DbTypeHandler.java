@@ -1376,11 +1376,11 @@ public class DbTypeHandler extends BlobTypeHandler {
                                        entry.getId() }));
             String url = baseUrl + "&" + ARG_DB_VIEW + "=" + VIEW_NEW;
             String jsUrl = "javascript:document.location='" + url + "'+'&"
-                           + urlColumn.getFullName() + "='+"
+                           + urlColumn.getEditArg() + "='+"
                            + "document.location";
 
             if (labelColumn != null) {
-                jsUrl = jsUrl + "+'&" + labelColumn.getFullName()
+                jsUrl = jsUrl + "+'&" + labelColumn.getEditArg()
                         + "='+document.title";
             }
 
@@ -1388,7 +1388,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                 String selected =
                     "(window.getSelection? window.getSelection():document.getSelection?document.getSelection():document.selection?document.selection:'')";
 
-                jsUrl = jsUrl + "+'&" + descColumn.getFullName() + "='+"
+                jsUrl = jsUrl + "+'&" + descColumn.getEditArg() + "='+"
                         + selected;
             }
 
