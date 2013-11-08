@@ -163,6 +163,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
+    /** _more_          */
+    public static final String ASSOCIATION_LABEL = "Connections";
 
 
 
@@ -1139,10 +1141,10 @@ public class HtmlOutputHandler extends OutputHandler {
             getAssociationManager().getAssociationBlock(request, entry);
         if (associationBlock.length() > 0) {
             if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
-                tabTitles.add(0, msg("Links"));
+                tabTitles.add(0, msg(ASSOCIATION_LABEL));
                 tabContents.add(0, associationBlock);
             } else {
-                tabTitles.add(msg("Links"));
+                tabTitles.add(msg(ASSOCIATION_LABEL));
                 tabContents.add(associationBlock);
             }
         }
