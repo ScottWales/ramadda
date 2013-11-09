@@ -1322,6 +1322,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     ARG_GROUP, group.getId(), EntryManager.ARG_TYPE,
                     typeHandler.getType()), img + " " + msg(label));
 
+        } else if (theTag.equals("sarah")) {
+            return "hi this is sarah";
+
         } else if (theTag.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();
             desc = desc.replaceAll("\r\n\r\n", "\n<p>\n");
