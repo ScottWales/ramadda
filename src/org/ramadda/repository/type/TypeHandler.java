@@ -1372,6 +1372,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
     /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean anySuperTypesOfThisType() {
+        Class       myClass = getClass();
+        TypeHandler handler = this.parent;
+        while (handler != null) {
+            //            System.err.println("parent:" + handler.getClass().getName());
+            if (handler.getClass().isAssignableFrom(myClass)) {
+                //                System.err.println("Have super class");
+                return true;
+            }
+            handler = parent;
+        }
+
+        //        System.err.println("Don't Have super class");
+        return false;
+    }
+
+
+    /**
      * Does this type match the file being harvester
      *
      * @param fullPath _more_

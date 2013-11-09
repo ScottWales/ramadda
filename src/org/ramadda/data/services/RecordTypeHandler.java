@@ -181,6 +181,7 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
 
     /* Don't reinitialize the xml import
+       Maybe we should do this??
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node)
         throws Exception {
@@ -203,13 +204,15 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        //Don't call the super because this calls the parent.init method so
-        //we end up initializing twice
-        //        super.initializeEntryFromForm(request, entry, parent, newEntry);
-        if ( !newEntry) {
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
+        if (anySuperTypesOfThisType()) {
+            //Don't call the super because this calls the parent.init method so
+            //we end up initializing twice
             return;
         }
-        initializeNewEntry(entry);
+        if (newEntry) {
+            initializeNewEntry(entry);
+        }
     }
 
 
@@ -224,6 +227,9 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
     public void initializeEntry(Entry entry, File originalFile)
             throws Exception {
 
+        if (anySuperTypesOfThisType()) {
+            return;
+        }
         Hashtable existingProperties = getRecordProperties(entry);
         if ((existingProperties != null) && (existingProperties.size() > 0)) {
             return;
@@ -433,8 +439,6 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
     /**
      * _more_
      *
-     * @param f _more_
-     *
      * @param path _more_
      * @param filename _more_
      *
@@ -512,7 +516,6 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
      * @param entry _more_
      * @param services _more_
      *
-     * @return _more_
      */
     @Override
     public void getServices(Request request, Entry entry,

@@ -722,7 +722,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
      * Get the HTML display for this type
      *
      * @param request  the Request
-     * @param group    the group
      * @param entry _more_
      * @param subGroups    the subgroups
      * @param entries      the Entries

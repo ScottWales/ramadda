@@ -117,12 +117,17 @@ public class PointTypeHandler extends RecordTypeHandler {
      */
     @Override
     public void initializeNewEntry(Entry entry) throws Exception {
+        if (anySuperTypesOfThisType()) {
+            return;
+        }
+
+
         File file = entry.getFile();
         if ( !file.exists()) {
             return;
         }
 
-        System.err.println("POINT: initNewEntry");
+        System.err.println("PointTypeHandler: initNewEntry");
         log("initializeNewEntry:" + entry.getResource());
         initializeEntry(entry, file);
         PointOutputHandler outputHandler =
@@ -149,7 +154,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         visitorGroup.addVisitor(outputHandler.makeLatLonBinVisitor(request,
                 entry, pointEntries, null, dos, quickscanDouble));
         log("initializeNewEntry: visting file");
-        System.err.println("POINT: pointFile.visit:" + pointFile);
+        System.err.println("PointTypeHandler: pointFile.visit:" + pointFile);
         pointFile.visit(visitorGroup, new VisitInfo(VisitInfo.QUICKSCAN_NO),
                         null);
         dos.close();
@@ -172,6 +177,14 @@ public class PointTypeHandler extends RecordTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
+
+        if (anySuperTypesOfThisType()) {
+            super.initializeEntryFromForm(request, entry, parent, newEntry);
+
+            return;
+        }
+
+
         //Check for an uploaded properties file
         if (newEntry) {
             String propertyFileName =
@@ -186,9 +199,10 @@ public class PointTypeHandler extends RecordTypeHandler {
                 } else {
                     values[1] = contents;
                 }
-                System.err.println("value:" + values[1]);
+                //                System.err.println("value:" + values[1]);
             }
         }
+
         super.initializeEntryFromForm(request, entry, parent, newEntry);
 
     }
@@ -204,10 +218,12 @@ public class PointTypeHandler extends RecordTypeHandler {
     public void doFinalEntryInitialization(Request request, Entry entry) {
         try {
             super.doFinalEntryInitialization(request, entry);
-            getEntryManager().setBoundsFromChildren(request,
-                    entry.getParentEntry());
-            getEntryManager().setTimeFromChildren(request,
-                    entry.getParentEntry(), null);
+            if ( !anySuperTypesOfThisType()) {
+                getEntryManager().setBoundsFromChildren(request,
+                        entry.getParentEntry());
+                getEntryManager().setTimeFromChildren(request,
+                        entry.getParentEntry(), null);
+            }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -266,8 +282,6 @@ public class PointTypeHandler extends RecordTypeHandler {
     /**
      * _more_
      *
-     * @param f _more_
-     *
      * @param path _more_
      * @param filename _more_
      *
@@ -300,8 +314,6 @@ public class PointTypeHandler extends RecordTypeHandler {
     /**
      * _more_
      *
-     * @param pointEntry _more_
-     *
      * @param recordEntry _more_
      * @param metadata _more_
      *
@@ -328,7 +340,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
                 PointMetadataHarvester metadata2 =
                     new PointMetadataHarvester(llg);
-                System.err.println("POINT: visiting binary file");
+                //                System.err.println("PointTypeHandler: visiting binary file");
                 pointEntry.getBinaryPointFile().visit(metadata2,
                         new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
                 List<double[]> polygon = llg.getBoundingPolygon();
@@ -369,7 +381,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         if (fileMetadata != null) {
             if (fileMetadata.length != values.length - 2) {
                 throw new IllegalArgumentException("Bad file metadata count:"
-                        + fileMetadata + " was expecting:"
+                        + fileMetadata.length + " was expecting:"
                         + (values.length - 2));
             }
             for (int i = 0; i < fileMetadata.length; i++) {
@@ -423,7 +435,6 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @param entry _more_
      * @param services _more_
      *
-     * @return _more_
      */
     @Override
     public void getServices(Request request, Entry entry,

@@ -54,7 +54,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
      * @param repository _more_
      * @param entryNode _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public GranuleTypeHandler(Repository repository, Element entryNode)
             throws Exception {
@@ -69,7 +69,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
      * @param parent _more_
      * @param newEntry _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
@@ -88,12 +88,9 @@ public class GranuleTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
-     * @param request _more_
      * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public void initializeEntry(Entry entry) throws Exception {
         collectionId = "";
@@ -124,7 +121,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
      * @param tmpSb _more_
      * @param values _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, StringBuffer tmpSb,

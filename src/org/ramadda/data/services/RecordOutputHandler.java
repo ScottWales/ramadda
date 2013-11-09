@@ -820,7 +820,6 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      *
      * @param request the request
      * @param mainEntry Either the Point Collection or File Entry
-     * @param pointEntries _more_
      * @param recordEntries _more_
      * @param jobInfo processing job
      *

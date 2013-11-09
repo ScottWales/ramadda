@@ -71,8 +71,6 @@ public class PointJobManager extends RecordJobManager {
     /**
      * _more_
      *
-     * @param request _more_
-     *
      * @param dummy _more_
      *
      * @return _more_

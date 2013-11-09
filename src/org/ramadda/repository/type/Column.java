@@ -70,8 +70,10 @@ import java.util.List;
 
 public class Column implements DataTypes, Constants {
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EDIT_PREFIX = "edit.";
+
+    /** _more_ */
     public static final String ARG_SEARCH_PREFIX = "search.";
 
     /** _more_ */
@@ -1973,6 +1975,7 @@ public class Column implements DataTypes, Constants {
             throws Exception {
 
         if ( !addToForm) {
+            //            System.err.println ("not adding to form" );
             return;
         }
 
@@ -2059,6 +2062,8 @@ public class Column implements DataTypes, Constants {
             }
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
+
+
             String theValue = "";
             if (request.defined(urlArg + "_plus")) {
                 theValue = request.getAnonymousEncodedString(urlArg

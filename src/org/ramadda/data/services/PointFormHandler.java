@@ -1539,9 +1539,6 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                                         TIMESERIES_POINTS);
         final boolean hasWaveform =
             pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
-        //XXXX
-        System.err.println("WAVE:" + hasWaveform);
-
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
 
         final int[]          cnt            = { 0 };
