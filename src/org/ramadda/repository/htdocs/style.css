@@ -428,8 +428,6 @@ label {
 .ramadda-earth-entries {
    min-width: 150px;
    min-height:200px;
-   max-width: 250px;
-   overflow-x: auto;
    white-space:nowrap; 
 }
 
