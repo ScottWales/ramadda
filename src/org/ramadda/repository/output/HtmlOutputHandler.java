@@ -163,7 +163,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ASSOCIATION_LABEL = "Connections";
 
 
@@ -546,8 +546,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 entry.getTypeHandler().getInnerWikiContent(request, entry,
                     wikiTemplate);
             if (innerContent == null) {
-                innerContent =
-                    "{{description}} <block show=\"mobile\" decorate=\"false\">{{resource message=\"\" includeicon=\"true\" title=\"Download\"}}</block><br>{{information details=\"true\"}}";
+                innerContent = getPageHandler().getWikiTemplate(request,
+                        entry, PageHandler.TEMPLATE_CONTENT);
             }
             wikiTemplate = wikiTemplate.replace("${innercontent}",
                     innerContent);
@@ -1845,8 +1845,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 group.getTypeHandler().getInnerWikiContent(request, group,
                     wikiTemplate);
             if (innerContent == null) {
-                innerContent =
-                    "{{description}}<p>{{tree details=\"true\" message=\"\"}}<p>";
+                innerContent = getPageHandler().getWikiTemplate(request,
+                        group, PageHandler.TEMPLATE_CONTENT);
             }
             wikiTemplate = wikiTemplate.replace("${innercontent}",
                     innerContent);

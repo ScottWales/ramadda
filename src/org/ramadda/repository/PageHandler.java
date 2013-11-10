@@ -3023,10 +3023,10 @@ public class PageHandler extends RepositoryManager {
             wiki = getRepository().getResource(property);
         }
         if (wiki == null) {
-            wiki = getRepository().getResource(getProperty(propertyPrefix
-                    + (entry.isGroup()
-                       ? "folder"
-                       : "file"), ""));
+            String tmp = propertyPrefix + (entry.isGroup()
+                                           ? "folder"
+                                           : "file");
+            wiki = getRepository().getResource(getProperty(tmp, ""));
         }
         if (wiki != null) {
             typeToWikiTemplate.put(key, wiki);

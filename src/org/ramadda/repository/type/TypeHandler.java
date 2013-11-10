@@ -1744,8 +1744,8 @@ public class TypeHandler extends RepositoryManager {
                                            .TYPE_FILE));
 
 
-        //Allow users with the rights to export and import
-        if (canDoNew) {
+        //We don't actually prevent an export - just don't show the link in the menu
+        if ( !request.getUser().getAnonymous()) {
             links.add(
                 new Link(
                     HtmlUtils.url(
@@ -1761,6 +1761,10 @@ public class TypeHandler extends RepositoryManager {
                                                     .TYPE_FILE));
 
 
+        }
+
+        //Add an import link if they have the right privileges
+        if (canDoNew) {
             links.add(
                 new Link(
                     request.url(

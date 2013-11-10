@@ -197,10 +197,34 @@ padding-right-rtl-source: physical;
    overflow-x: auto;
 }
 
+.entry-page-name {
+ font-size: 150%;
+ font-weight: bold; 
+}
+
+.entry-page-description {
+//  background: #f9f9f9;
+//  border: 1px #efefef solid;
+  border-top: 1px #f4f4f4 solid;
+  border-bottom: 1px #f4f4f4 solid;
+
+  padding-top:0.5em;
+  padding-bottom:0.5em;
+
+  padding-left:0.7em;
+  padding-right:0.7em;
+
+
+  margin-top:0.2em;
+  margin-bottom:0.7em;
+
+}
+
+
 .entry-page-divider {
   height: 100%;
   width: 1px;
-  border-left: 1px #efefef dotted;
+  border-left: 1px #f4f4f4 solid;
   margin-left:4px;
   margin-right:4px;
 }
@@ -1380,7 +1404,7 @@ xxxpath.link {
 }
 
 .ramadda-breadcrumbs {
-   border-bottom : 1px #ccc solid;
+   border-bottom : 1px #888 solid;
    padding-left: 4px;
    padding-right: 2px;
    padding-top: 0px;
@@ -1621,8 +1645,9 @@ a.toggleblocklabellink:visited {
 	background: none;
 	font-weight: normal;
 	margin: 0px;
+	margin-bottom: .3em;
 	padding-top: .20em;
-	padding-bottom: .17em;
+	padding-bottom: .10em;
 	border-bottom: 1px solid #aaa;
         padding-right:10px;
 }
