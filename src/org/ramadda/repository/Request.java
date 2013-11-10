@@ -1585,6 +1585,13 @@ public class Request implements Constants, Cloneable {
 
     /**
      * _more_
+     */
+    public void clearUrlArgs() {
+        parameters = new Hashtable();
+    }
+
+    /**
+     * _more_
      *
      * @param key _more_
      * @param dflt _more_

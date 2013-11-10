@@ -3455,9 +3455,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               String wikiContent, boolean wrapInDiv,
                               List<Entry> subGroups, List<Entry> subEntries)
             throws Exception {
+        Request myRequest = request.cloneMe();
+        myRequest.clearUrlArgs();
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 ATTR_REQUEST,
-                                request, ATTR_ENTRY, entry }));
+                                myRequest, ATTR_ENTRY, entry }));
 
         wikiUtil.setMobile(request.isMobile());
 
