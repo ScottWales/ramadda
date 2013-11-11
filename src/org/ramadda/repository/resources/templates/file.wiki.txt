@@ -6,7 +6,7 @@ ${innercontent}
 </div>
 </td>
 <block show="!mobile" decorate="false">
-<td valign="center" align="center" height="100%" width="10"><div class="entry-page-divider"> </div></td>
+<td valign="center" align="center" height="100%" width="1" class="entry-page-divider"><div class="entry-page-divide-inner">&nbsp;</div></td>
 <td width=25%>
 <div class="entry-page-info">
 

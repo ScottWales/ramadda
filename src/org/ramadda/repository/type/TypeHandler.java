@@ -2056,6 +2056,9 @@ public class TypeHandler extends RepositoryManager {
                                 request, entry, desc)));
                 }
             }
+            sb.append(
+                "<tr><td width=20%><div style=\"height:1px;\"></div></td><td width=75%></td></tr>");
+
             String userSearchLink =
                 HtmlUtils.href(
                     HtmlUtils.url(
@@ -2100,23 +2103,6 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
 
-            if (showDate) {
-                sb.append(formEntry(request, msgLabel("Created"),
-                                    formatDate(request,
-                                        entry.getCreateDate(), entry)));
-
-                if (entry.getCreateDate() != entry.getChangeDate()) {
-                    sb.append(formEntry(request, msgLabel("Modified"),
-                                        formatDate(request,
-                                            entry.getChangeDate(), entry)));
-
-                }
-            }
-
-            if (showCreated) {
-                sb.append(formEntry(request, msgLabel("Created by"),
-                                    userSearchLink));
-            }
 
             Resource resource      = entry.getResource();
             String   resourceLink  = resource.getPath();
@@ -2163,14 +2149,37 @@ public class TypeHandler extends RepositoryManager {
 
                 }
 
+
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
-                if (entry.isFile()) {
-                    //                    sb.append(formEntry(request, msgLabel("Size"),
-                    //                            entry.getResource().getFileSize()
-                    //                            + HtmlUtils.space(1) + msg("bytes")));
+            }
+            if ( !showImage) {
+                //Only show the created by and type when the user is logged in
+                if (okToShowInHtml(entry, ARG_TYPE, true)) {
+                    sb.append(formEntry(request, msgLabel("Kind"),
+                                        getFileTypeDescription(entry)));
                 }
             }
+
+            if (showDate) {
+                sb.append(formEntry(request, msgLabel("Created"),
+                                    formatDate(request,
+                                        entry.getCreateDate(), entry)));
+
+                if (entry.getCreateDate() != entry.getChangeDate()) {
+                    sb.append(formEntry(request, msgLabel("Modified"),
+                                        formatDate(request,
+                                            entry.getChangeDate(), entry)));
+
+                }
+            }
+
+            if (showCreated) {
+                sb.append(formEntry(request, msgLabel("Created by"),
+                                    userSearchLink));
+            }
+
+
             boolean hasDataDate = false;
 
             if (Math.abs(entry.getCreateDate() - entry.getStartDate())
@@ -2224,15 +2233,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-            if ( !showImage) {
-                //Only show the created by and type when the user is logged in
-                //                if ( !request.isAnonymous()) {
-                if (okToShowInHtml(entry, ARG_TYPE, true)) {
-                    sb.append(formEntry(request, msgLabel("Kind"),
-                                        getFileTypeDescription(entry)));
-                }
-                //                }
-            }
 
             String category = entry.getCategory();
             if ( !entry.getTypeHandler().hasDefaultCategory()

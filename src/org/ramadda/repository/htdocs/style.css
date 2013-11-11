@@ -200,22 +200,23 @@ padding-right-rtl-source: physical;
 .entry-page-name {
  font-size: 150%;
  font-weight: bold; 
+ margin-bottom: 0.25em;
+ border-bottom: 1px #f4f4f4 solid;
+ margin-right:1em;
 }
 
 .entry-page-description {
-//  background: #f9f9f9;
-//  border: 1px #efefef solid;
-  border-top: 1px #f4f4f4 solid;
-  border-bottom: 1px #f4f4f4 solid;
+//  border-bottom: 1px #f4f4f4 solid;
 
-  padding-top:0.5em;
+  padding-top:0.25em;
   padding-bottom:0.5em;
 
-  padding-left:0.7em;
-  padding-right:0.7em;
+  padding-left:0.5em;
 
+//  padding-right:1em;
+  margin-right:1em;
 
-  margin-top:0.2em;
+  margin-top:0.0em;
   margin-bottom:0.7em;
 
 }
@@ -223,10 +224,16 @@ padding-right-rtl-source: physical;
 
 .entry-page-divider {
   height: 100%;
-  width: 1px;
-  border-left: 1px #f4f4f4 solid;
-  margin-left:4px;
-  margin-right:4px;
+  border-left: 1px #f8f8f8 solid;
+}
+
+
+.entry-page-divider-inner {
+  height: 100%;
+  width: 1em;
+  padding-left:26px;
+  margin-left:16px;
+  margin-right:6px;
 }
 
 .ramadda-folder-block {
@@ -1404,7 +1411,9 @@ xxxpath.link {
 }
 
 .ramadda-breadcrumbs {
-   border-bottom : 1px #888 solid;
+   border-bottom : 1px #ccc solid;
+   border-bottom : 1px #efefef solid;
+
    padding-left: 4px;
    padding-right: 2px;
    padding-top: 0px;
@@ -1560,9 +1569,8 @@ a.toggleblocklabellink:visited {
 }
 
 .formtable td {
-      xxxvertical-align: middle;
       padding-top: 6px;
-      padding-bottom: 2px;
+      padding-bottom: 4px;
       padding-left: 4px;
       padding-right: 4px;
 }
