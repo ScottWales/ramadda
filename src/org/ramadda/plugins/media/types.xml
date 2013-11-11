@@ -28,12 +28,15 @@
 </type>
 
 
-  <type name="media_video"   foruser="false"/>
+  <type name="media_video"   foruser="false">
+     <column name="width" type="int" label="Width"  default="320" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="256" showinhtml="false"/>
+  </type>
 
   <type name="media_video_quicktime"  
         super="media_video"
         description="Quicktime Video" 
-        xxxhandler="org.ramadda.plugins.media.AudioTypeHandler" 
+        handler="org.ramadda.plugins.media.QuicktimeTypeHandler" 
         category="Documents" 
         pattern=".*\.mov">
      <property name="icon" value="/icons/mov.png"/>

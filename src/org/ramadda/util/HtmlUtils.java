@@ -162,6 +162,8 @@ public class HtmlUtils {
     /** _more_ */
     public static final String TAG_DIV = "div";
 
+    public static final String TAG_EMBED = "embed";
+
     /** _more_ */
     public static final String TAG_FORM = "form";
 
