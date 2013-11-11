@@ -1761,7 +1761,7 @@ public class EntryManager extends RepositoryManager {
                         getPageHandler().showDialogError(
                             msg(
                             "Error: The entry you are editing has been edited since the time you began the edit:"
-                            + formTimestamp + ":" + currentTimestamp)));
+                            + new Date(formTimestamp) + ":" + new Date(currentTimestamp))));
 
                     return addEntryHeader(request, entry,
                                           new Result(msg("Entry Edit Error"),
