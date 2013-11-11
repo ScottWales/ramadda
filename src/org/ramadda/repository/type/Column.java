@@ -691,7 +691,7 @@ public class Column implements DataTypes, Constants {
      */
     private boolean toBoolean(Object[] values, int idx) {
         if (values[idx] == null) {
-            if (StringUtil.notEmpty(dflt)) {
+            if (Utils.stringDefined(dflt)) {
                 return new Boolean(dflt).booleanValue();
             }
 
@@ -906,7 +906,11 @@ public class Column implements DataTypes, Constants {
                 statement.setInt(statementIdx,
                                  ((Integer) values[offset]).intValue());
             } else {
-                statement.setInt(statementIdx, 0);
+                int value = 0;
+                if (Utils.stringDefined(dflt)) {
+                    value = Integer.parseInt(dflt);
+                }
+                statement.setInt(statementIdx, value);
             }
             statementIdx++;
         } else if (isDouble()) {
@@ -930,7 +934,11 @@ public class Column implements DataTypes, Constants {
                 }
                 statement.setDouble(statementIdx, value);
             } else {
-                statement.setDouble(statementIdx, Double.NaN);
+                double value = Double.NaN;
+                if (Utils.stringDefined(dflt)) {
+                    value = Double.parseDouble(dflt);
+                }
+                statement.setDouble(statementIdx, value);
             }
             statementIdx++;
         } else if (isType(DATATYPE_BOOLEAN)) {
@@ -940,7 +948,13 @@ public class Column implements DataTypes, Constants {
                         ? 1
                         : 0));
             } else {
-                statement.setInt(statementIdx, 0);
+                int value = 0;
+                if (Utils.stringDefined(dflt)) {
+                    value = dflt.equals("true")
+                            ? 1
+                            : 0;
+                }
+                statement.setInt(statementIdx, value);
             }
             statementIdx++;
         } else if (isDate()) {
@@ -987,7 +1001,6 @@ public class Column implements DataTypes, Constants {
             statementIdx++;
         } else {
             //            System.err.println("\tset statement:" + offset + " " + values[offset]);
-
             if (values[offset] != null) {
                 String value = toString(values, offset);
                 //Check the value
@@ -2033,7 +2046,7 @@ public class Column implements DataTypes, Constants {
             //Note: using the default will not work if we use checkboxes for the widget
             //For now we are using a yes/no combobox
             String value = request.getString(urlArg,
-                                             (StringUtil.notEmpty(dflt)
+                                             (Utils.stringDefined(dflt)
                     ? dflt
                     : "true")).toLowerCase();
             //            String value = request.getString(urlArg, "false");
@@ -2082,7 +2095,7 @@ public class Column implements DataTypes, Constants {
             values[offset] = theValue;
             typeHandler.addEnumValue(this, entry, theValue);
         } else if (isType(DATATYPE_INT)) {
-            int dfltValue = (StringUtil.notEmpty(dflt)
+            int dfltValue = (Utils.stringDefined(dflt)
                              ? new Integer(dflt).intValue()
                              : 0);
             if (request.exists(urlArg)) {
@@ -2091,7 +2104,7 @@ public class Column implements DataTypes, Constants {
                 values[offset] = dfltValue;
             }
         } else if (isType(DATATYPE_PERCENTAGE)) {
-            double dfltValue = (StringUtil.notEmpty(dflt)
+            double dfltValue = (Utils.stringDefined(dflt)
                                 ? new Double(dflt.trim()).doubleValue()
                                 : 0);
             if (request.exists(urlArg)) {
@@ -2102,7 +2115,7 @@ public class Column implements DataTypes, Constants {
 
             }
         } else if (isDouble()) {
-            double dfltValue = (StringUtil.notEmpty(dflt)
+            double dfltValue = (Utils.stringDefined(dflt)
                                 ? new Double(dflt.trim()).doubleValue()
                                 : 0);
             if (request.exists(urlArg)) {

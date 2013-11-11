@@ -29,8 +29,8 @@
 
 
   <type name="media_video"   foruser="false">
-     <column name="width" type="int" label="Width"  default="320" showinhtml="false"/>
-     <column name="height" type="int" label="Height"  default="256" showinhtml="false"/>
+     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
   </type>
 
   <type name="media_video_quicktime"  
