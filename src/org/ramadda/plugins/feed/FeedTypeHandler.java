@@ -27,8 +27,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.RssUtil;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -190,16 +190,7 @@ public class FeedTypeHandler extends GenericTypeHandler {
             String pubDate = XmlUtil.getGrandChildText(item,
                                  RssUtil.TAG_PUBDATE, "").trim();
 
-            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
-                             "").trim();
-            if (lat.length() == 0) {
-                lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
-            }
-            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
-                             "").trim();
-            if (lon.length() == 0) {
-                lon = XmlUtil.getGrandChildText(item, "long", "").trim();
-            }
+
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
             Date  dttm  = new Date();
@@ -215,10 +206,10 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 dttm = DateUtil.parse(pubDate);
             }
 
-            if ((lat.length() > 0) && (lon.length() > 0)) {
-                entry.setLocation(Double.parseDouble(lat),
-                                  Double.parseDouble(lon), 0);
-            }
+
+            setLocation(item, entry);
+
+
             //Tue, 25 Jan 2011 05:00:00 GMT
             Resource resource = new Resource(link);
             entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
@@ -267,16 +258,22 @@ public class FeedTypeHandler extends GenericTypeHandler {
             String pubDate = XmlUtil.getGrandChildText(item,
                                  AtomUtil.TAG_PUBLISHED, "").trim();
 
-            String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
-                             "").trim();
-            if (lat.length() == 0) {
-                lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
+            if ( !Utils.stringDefined(pubDate)) {
+                pubDate = XmlUtil.getGrandChildText(item,
+                        AtomUtil.TAG_UPDATED, "").trim();
+
             }
-            String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
-                             "").trim();
-            if (lon.length() == 0) {
-                lon = XmlUtil.getGrandChildText(item, "long", "").trim();
-            }
+
+
+            /**
+             *   NodeList categories = XmlUtil.getElements(item, AtomUtil.TAG_CATEGORY);
+             *   for (int childIdx = 0; childIdx < categories.getLength(); childIdx++) {
+             *        Element cat= (Element) categories.item(childIdx);
+             *   }
+             */
+
+
+
 
             Entry entry = new Entry(getSynthId(mainEntry, guid), this, false);
             Date  dttm       = null;
@@ -293,10 +290,8 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 dttm = DateUtil.parse(pubDate);
             }
 
-            if ((lat.length() > 0) && (lon.length() > 0)) {
-                entry.setLocation(Double.parseDouble(lat),
-                                  Double.parseDouble(lon), 0);
-            }
+            setLocation(item, entry);
+
             String link = XmlUtil.getGrandChildText(item,
                               "feedburner:origLink", "");
             //TODO: look through the link tags 
@@ -309,6 +304,59 @@ public class FeedTypeHandler extends GenericTypeHandler {
             getEntryManager().cacheEntry(entry);
         }
     }
+
+
+    /**
+     * _more_
+     *
+     * @param item _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    private void setLocation(Element item, Entry entry) throws Exception {
+
+        String lat = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLAT,
+                         "").trim();
+        if (lat.length() == 0) {
+            lat = XmlUtil.getGrandChildText(item, "lat", "").trim();
+        }
+        String lon = XmlUtil.getGrandChildText(item, RssUtil.TAG_GEOLON,
+                         "").trim();
+        if (lon.length() == 0) {
+            lon = XmlUtil.getGrandChildText(item, "long", "").trim();
+        }
+
+
+        if ( !Utils.stringDefined(lat)) {
+            String point = XmlUtil.getGrandChildText(item,
+                               RssUtil.TAG_GEORSS_POINT, "").trim();
+
+            if (Utils.stringDefined(point)) {
+                List<String> toks = StringUtil.split(point, " ", true, true);
+                if (toks.size() == 2) {
+                    lat = toks.get(0);
+                    lon = toks.get(1);
+                }
+            }
+        }
+
+
+        String elev = XmlUtil.getGrandChildText(item,
+                          RssUtil.TAG_GEORSS_ELEV, "").trim();
+
+
+        if (Utils.stringDefined(elev)) {
+            entry.setAltitude(Double.parseDouble(elev));
+        }
+
+        if ((lat.length() > 0) && (lon.length() > 0)) {
+            entry.setLocation(Double.parseDouble(lat),
+                              Double.parseDouble(lon), 0);
+        }
+
+    }
+
 
     /**
      * _more_

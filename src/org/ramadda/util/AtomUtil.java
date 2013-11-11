@@ -109,6 +109,15 @@ public class AtomUtil {
     /** _more_ */
     public static final String TAG_FEED = "feed";
 
+    /** _more_          */
+    public static final String TAG_CATEGORY = "feed";
+
+    /** _more_          */
+    public static final String ATTR_LABEL = "label";
+
+    /** _more_          */
+    public static final String ATTR_TERM = "term";
+
     /** _more_ */
     public static final String TAG_PUBLISHED = "published";
 
@@ -253,7 +262,6 @@ public class AtomUtil {
      *
      * @param rel _more_
      *
-     * @param type _more_
      * @param href _more_
      *
      * @return _more_

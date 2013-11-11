@@ -129,6 +129,14 @@ public class RssUtil {
     /** _more_ */
     public static final String TAG_GEORSSLON = "georss:lon";
 
+    /** _more_          */
+    public static final String TAG_GEORSS_POINT = "georss:point";
+
+    /** _more_          */
+    public static final String TAG_GEORSS_ELEV = "georss:elev";
+
+
+
 
     /** _more_ */
     public static final String TAG_GEOLAT = "geo:lat";
