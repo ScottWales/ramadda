@@ -53,16 +53,16 @@ You can run RAMADDA stand-alone from the command line. This only requires  Java 
 <ol>
 <li>
 Download the latest release from the 
-<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5b">RAMADDA SourceForge</a> site -  
-<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5b/ramadda1.5b.zip/download">ramadda1.5b.zip</a> 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5">RAMADDA SourceForge</a> site -  
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5/ramadda1.5.zip/download">ramadda1.5.zip</a> 
 
 <li> Unzip the file and consult the README.
 
 <li> Or, skip reading the documentation (like everyone else does) and jump right in and start RAMADDA. 
 
-Figure out where you want RAMADDA to store stuff in its <a href="#home">home directory</a> (default is <i>&lt;your home dir&gt;/.ramadda</i>). Then just run the script in the ramadda1.5b directory.
+Figure out where you want RAMADDA to store stuff in its <a href="#home">home directory</a> (default is <i>&lt;your home dir&gt;/.ramadda</i>). Then just run the script in the ramadda1.5 directory.
 <pre>
-   cd ramadda1.5b
+   cd ramadda1.5
    sh ramadda.sh -Dramadda_home=&lt;/ramadda/home/dir&gt;
 </pre>
 
@@ -82,7 +82,7 @@ This assumes you have Tomcat or some other servlet (e.g., Glassfish) container a
 
 <ol>
 <li> First,  download the
-<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5b/repository.war/download">repository.war</a> from the <a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5b">RAMADDA SourceForge</a> site. 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5/repository.war/download">repository.war</a> from the <a href="http://sourceforge.net/projects/ramadda/files/ramadda1.5">RAMADDA SourceForge</a> site. 
 
 
 <li> Specify the location of the  RAMADDA <a href="#home">home directory</a> by setting the property ramadda_home=/home/dir. 
@@ -349,7 +349,7 @@ To build RAMADDA SourceForge SVN:
 svn checkout svn://svn.code.sf.net/p/ramadda/code/ ramadda-code
 </pre>
 
-<li> Build RAMADDA.  This creates a stand-alone version in dist/ramadda1.5b
+<li> Build RAMADDA.  This creates a stand-alone version in dist/ramadda1.5
 <pre>
 cd ramadda-code
 ant
@@ -357,7 +357,7 @@ ant
 
 <li> Run ramadda. This creates a ramadda home directory in: ~/.ramadda
 <pre>
-cd dist/ramadda1.5b
+cd dist/ramadda1.5
 sh ramadda.sh
 </pre>
 
