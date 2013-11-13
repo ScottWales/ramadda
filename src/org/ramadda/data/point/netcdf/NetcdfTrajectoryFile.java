@@ -18,8 +18,7 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.data.point.ocean;
-
+package org.ramadda.data.point.netcdf;
 
 import org.ramadda.data.point.*;
 
@@ -53,8 +52,6 @@ import java.util.ArrayList;
 
 
 
-
-
 import java.util.Formatter;
 import java.util.List;
 
@@ -67,12 +64,12 @@ import java.util.List;
  * @version        $version$, Fri, Aug 23, '13
  * @author         Enter your name here...
  */
-public class NetcdfGliderFile extends NetcdfPointFile {
+public class NetcdfTrajectoryFile extends NetcdfPointFile {
 
     /**
      * ctor
      */
-    public NetcdfGliderFile() {}
+    public NetcdfTrajectoryFile() {}
 
 
 
@@ -87,7 +84,7 @@ public class NetcdfGliderFile extends NetcdfPointFile {
      * @param filename _more_
      * @throws IOException On badness
      */
-    public NetcdfGliderFile(String filename) throws IOException {
+    public NetcdfTrajectoryFile(String filename) throws IOException {
         super(filename);
     }
 
@@ -103,6 +100,9 @@ public class NetcdfGliderFile extends NetcdfPointFile {
     public boolean isCapable(String action) {
 
         if (action.equals(ACTION_MAPINCHART)) {
+            return true;
+        }
+        if (action.equals(ACTION_TRAJECTORY)) {
             return true;
         }
 
@@ -121,27 +121,9 @@ public class NetcdfGliderFile extends NetcdfPointFile {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-
-        NetcdfDataset   dataset  = NetcdfDataset.openDataset(getFilename());
         String          platform = "";
-
-        List<Attribute> attrs    = dataset.getGlobalAttributes();
-        for (Attribute attr : attrs) {
-            String name  = attr.getName();
-            String value = attr.getStringValue();
-            if (name.equals(NETCDF_ATTR_SUMMARY)) {
-                setDescriptionFromFile(value);
-            } else {
-                //TODO: find specific  metadata to extract
-                //putFileProperty(name, value);
-            }
-        }
-
-
         //LOOK: this needs to be in the same order as the oceantypes.xml defines in the point plugin
         setFileMetadata(new Object[] { platform });
-        dataset.close();
-
         return visitInfo;
     }
 
@@ -154,7 +136,7 @@ public class NetcdfGliderFile extends NetcdfPointFile {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        PointFile.test(args, NetcdfGliderFile.class);
+        PointFile.test(args, NetcdfTrajectoryFile.class);
     }
 
 

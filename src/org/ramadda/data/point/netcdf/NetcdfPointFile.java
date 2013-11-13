@@ -30,6 +30,7 @@ import org.ramadda.util.Utils;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.Calendar;
@@ -272,6 +273,20 @@ public class NetcdfPointFile extends PointFile {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         visitInfo.setRecordIO(readHeader(visitInfo.getRecordIO()));
 
+        NetcdfDataset   dataset  = NetcdfDataset.openDataset(getFilename());
+        String          platform = "";
+
+        List<Attribute> attrs    = dataset.getGlobalAttributes();
+        for (Attribute attr : attrs) {
+            String name  = attr.getName();
+            String value = attr.getStringValue();
+            if (name.equals(NETCDF_ATTR_SUMMARY)) {
+                setDescriptionFromFile(value);
+            } else {
+                putFileProperty(name, value);
+            }
+        }
+        dataset.close();
         return visitInfo;
     }
 
