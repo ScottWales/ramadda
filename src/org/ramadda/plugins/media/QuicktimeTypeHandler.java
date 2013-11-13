@@ -57,7 +57,7 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
 
 
     /**
-     * _more_
+     * ctor
      *
      * @param repository _more_
      * @param entryNode _more_
@@ -86,10 +86,8 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
             throws Exception {
         String width  = entry.getValue(IDX_WIDTH, "320");
         String height = entry.getValue(IDX_HEIGHT, "256");
-        String header =
-            getWikiManager().wikifyEntry(
-                request, entry,
-                "{{name box.class=entry-page-name}}\n{{description box.class=\"entry-page-description\"}}");
+        String header = getWikiManager().wikifyEntry(request, entry,
+                            DFLT_WIKI_HEADER);
         StringBuffer sb = new StringBuffer(header);
         String url = entry.getTypeHandler().getEntryResourceUrl(request,
                          entry);

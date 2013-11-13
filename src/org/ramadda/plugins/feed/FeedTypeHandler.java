@@ -187,6 +187,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
             seen.add(guid);
             String desc = XmlUtil.getGrandChildText(item,
                               RssUtil.TAG_DESCRIPTION, "");
+
+
+
             String pubDate = XmlUtil.getGrandChildText(item,
                                  RssUtil.TAG_PUBDATE, "").trim();
 
@@ -254,7 +257,13 @@ public class FeedTypeHandler extends GenericTypeHandler {
             }
             seen.add(guid);
             String desc = XmlUtil.getGrandChildText(item,
-                              AtomUtil.TAG_CONTENT, "");
+                              AtomUtil.TAG_CONTENT, null);
+
+            if(desc == null) {
+                desc = XmlUtil.getGrandChildText(item,
+                                                 AtomUtil.TAG_SUMMARY, "");
+            }
+
             String pubDate = XmlUtil.getGrandChildText(item,
                                  AtomUtil.TAG_PUBLISHED, "").trim();
 
