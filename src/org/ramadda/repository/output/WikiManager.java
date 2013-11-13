@@ -480,6 +480,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String FILTER_TYPE = "type:";
 
+    /** _more_ */
+    public static final String FILTER_SUFFIX = "suffix:";
+
 
 
 
@@ -2494,6 +2497,23 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 for (Entry child : entries) {
                     orNot(tmp, child, child.getTypeHandler().isType(type),
                           doNot);
+                }
+                entries = tmp;
+            } else if (filter.startsWith(FILTER_SUFFIX)) {
+                List<String> suffixes = StringUtil.split(
+                                            filter.substring(
+                                                FILTER_SUFFIX.length()), ",",
+                                                    true, true);
+                List<Entry> tmp = new ArrayList<Entry>();
+                for (Entry child : entries) {
+                    for (String suffix : suffixes) {
+                        boolean matches =
+                            child.getResource().getPath().endsWith(suffix);
+                        orNot(tmp, child, matches, doNot);
+                        if (matches) {
+                            break;
+                        }
+                    }
                 }
                 entries = tmp;
             }
