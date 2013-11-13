@@ -84,6 +84,9 @@ public class TemplateOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ATTR_ID = "id";
 
+    /** _more_          */
+    public static final String ATTR_EMBED = "embed";
+
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
@@ -118,6 +121,10 @@ public class TemplateOutputHandler extends OutputHandler {
     /** _more_ */
     private OutputType outputType;
 
+    /** _more_          */
+    private boolean embed;
+
+
     /**
      * _more_
      *
@@ -140,6 +147,7 @@ public class TemplateOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private void init(Element element) throws Exception {
+        embed = XmlUtil.getAttribute(element, ATTR_EMBED, false);
         String id = XmlUtil.getAttribute(element, ATTR_ID);
         String wikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI,
                                   "no wiki");
@@ -234,9 +242,15 @@ public class TemplateOutputHandler extends OutputHandler {
                               Entry group, List<Entry> subGroups,
                               List<Entry> entries)
             throws Exception {
+        String wiki = folderWikiTemplate;
+        if (embed) {
+            String outerTemplate = getPageHandler().getWikiTemplate(request,
+                                       group, PageHandler.TEMPLATE_DEFAULT);
+            wiki = outerTemplate.replace("${innercontent}", wiki);
+        }
 
-        String wiki = getWikiManager().wikifyEntry(request, group,
-                          folderWikiTemplate, false, subGroups, entries);
+        wiki = getWikiManager().wikifyEntry(request, group, wiki, false,
+                                            subGroups, entries);
 
         return new Result("", new StringBuffer(wiki));
 
@@ -258,8 +272,13 @@ public class TemplateOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        String wiki = getWikiManager().wikifyEntry(request, entry,
-                          fileWikiTemplate);
+        String wiki = fileWikiTemplate;
+        if (embed) {
+            String outerTemplate = getPageHandler().getWikiTemplate(request,
+                                       entry, PageHandler.TEMPLATE_DEFAULT);
+            wiki = outerTemplate.replace("${innercontent}", wiki);
+        }
+        wiki = getWikiManager().wikifyEntry(request, entry, wiki);
 
         return new Result("", new StringBuffer(wiki));
     }

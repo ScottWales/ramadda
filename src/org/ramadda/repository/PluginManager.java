@@ -275,6 +275,9 @@ public class PluginManager extends RepositoryManager {
             if (plugin.isDirectory()) {
                 continue;
             }
+            if (plugin.toString().endsWith("~")) {
+                continue;
+            }
             String pluginFile = plugin.toString();
             //            System.err.println ("plugin:" + pluginFile);
             if (haveSeen(pluginFile)) {
