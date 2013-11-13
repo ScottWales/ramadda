@@ -1806,11 +1806,10 @@ public class EntryManager extends RepositoryManager {
                     TypeHandler.TYPE_ANY));
         }
 
-        boolean     figureOutType = request.get(ARG_TYPE_GUESS, false);
-        System.err.println ("guess:" + figureOutType);
+        boolean figureOutType = request.get(ARG_TYPE_GUESS, false);
 
-        List<Entry> entries       = new ArrayList<Entry>();
-        String      category      = "";
+        List<Entry> entries  = new ArrayList<Entry>();
+        String      category = "";
         if (request.defined(ARG_CATEGORY)) {
             category = request.getString(ARG_CATEGORY, "");
         } else {
@@ -4810,13 +4809,11 @@ public class EntryManager extends RepositoryManager {
 
         TypeHandler typeHandler = null;
 
-        System.err.println ("type:" + type);
+        System.err.println("type:" + type);
 
 
         if (type.equals(TypeHandler.TYPE_GUESS)) {
             typeHandler = findDefaultTypeHandler(resource.getPath());
-            System.err.println ("path:" + resource.getPath());
-            System.err.println ("guess:" + typeHandler);
         }
 
 
@@ -4833,7 +4830,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        System.err.println ("type handler:" + typeHandler);
         Date createDate = new Date();
 
 

@@ -37,6 +37,14 @@
    </type>
 
 
+  <type name="test_virtual"  description="Test Virtual" handler="org.ramadda.repository.type.VirtualTypeHandler">
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <column name="entry_ids" size="1500" rows="5"  type="string"     label="Entry IDs" suffix="Entry ids to link to. One per line. Can follow search. wiki entries syntax"/>
+ </type>
+
+
 
   <type name="localfiles"  description="Server Side Files" handler="org.ramadda.repository.type.LocalFileTypeHandler">
      <property name="icon" value="/icons/folder_page.png"/>

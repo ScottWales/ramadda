@@ -606,6 +606,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** the id for this */
     public static final String ID_THIS = "this";
 
+    /** _more_          */
+    public static final String ID_ROOT = "root";
+
     /** _more_ */
     public static final String ID_CHILDREN = "children";
 
@@ -741,6 +744,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 if (entryId.equals(ID_THIS)) {
                     theEntry = entry;
+                }
+                if (entryId.equals(ID_ROOT)) {
+                    theEntry = getEntryManager().getTopGroup();
                 }
                 if (theEntry == null) {
                     if (entryId.equals(ID_PARENT)) {
@@ -2631,11 +2637,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      *
      * @throws Exception problem getting entries
      */
-    private List<Entry> getEntries(Request request, Entry baseEntry,
-                                   String ids, Hashtable props)
+    public List<Entry> getEntries(Request request, Entry baseEntry,
+                                  String ids, Hashtable props)
             throws Exception {
 
-        List<Entry> entries = new ArrayList<Entry>();
+        if (props == null) {
+            props = new Hashtable();
+        }
+        Hashtable   searchProps = null;
+        List<Entry> entries     = new ArrayList<Entry>();
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.equals(ID_ANCESTORS)) {
                 List<Entry> tmp    = new ArrayList<Entry>();
@@ -2670,6 +2680,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 continue;
             }
 
+            if (entryid.equals(ID_ROOT)) {
+                entries.add(getEntryManager().getTopGroup());
+
+                continue;
+            }
+
 
             if (entryid.equals(ID_THIS)) {
                 entries.add(baseEntry);
@@ -2677,15 +2693,32 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 continue;
             }
 
+            if (entryid.startsWith(ID_SEARCH + ".")) {
+                List<String> toks = StringUtil.splitUpTo(entryid, "=", 2);
+                entryid = ID_SEARCH;
+                if (toks.size() == 2) {
+                    if (searchProps == null) {
+                        searchProps = new Hashtable();
+                        searchProps.putAll(props);
+                    }
+                    searchProps.put(toks.get(0), toks.get(1));
+                }
+
+                continue;
+            }
+
             if (entryid.equals(ID_SEARCH)) {
+                if (searchProps == null) {
+                    searchProps = props;
+                }
                 Request myRequest = new Request(getRepository(),
                                         request.getUser());
                 myRequest.put(ARG_AREA_MODE,
-                              Misc.getProperty(props, ARG_AREA_MODE,
+                              Misc.getProperty(searchProps, ARG_AREA_MODE,
                                   VALUE_AREA_CONTAINS));
                 myRequest.put(ARG_MAX,
-                              Misc.getProperty(props, "search." + ARG_MAX,
-                                  "100"));
+                              Misc.getProperty(searchProps,
+                                  "search." + ARG_MAX, "100"));
                 String[] args = new String[] {
                     ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
                     ARG_BBOX + ".north", ARG_BBOX + ".west",
@@ -2695,7 +2728,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     Constants.changeDate.from, Constants.changeDate.to,
                 };
                 for (String arg : args) {
-                    String text = (String) props.get("search." + arg);
+                    String text = (String) searchProps.get("search." + arg);
                     if (text != null) {
                         if (arg.equals(ARG_GROUP)) {
                             if (text.equals(ID_THIS)) {
