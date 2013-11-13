@@ -95,6 +95,9 @@ public class TypeHandler extends RepositoryManager {
     public static final String TYPE_ANY = Constants.TYPE_ANY;
 
     /** _more_ */
+    public static final String TYPE_GUESS = "guess";
+
+    /** _more_ */
     public static final String TYPE_FILE = Constants.TYPE_FILE;
 
     /** _more_ */
@@ -155,6 +158,11 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public static final int MATCH_FALSE = 2;
+
+    /** _more_ */
+    public static String DFLT_WIKI_HEADER =
+        "{{name box.class=entry-page-name}}\n{{description box.class=\"entry-page-description\"}}";
+
 
 
     /** _more_ */
@@ -2313,7 +2321,8 @@ public class TypeHandler extends RepositoryManager {
             return false;
         }
 
-        return (desc.trim().startsWith("<wiki>"));
+        return (desc.trim().startsWith("<wiki_inner>")
+                || desc.trim().startsWith("<wiki>"));
     }
 
 

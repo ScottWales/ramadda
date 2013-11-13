@@ -1761,7 +1761,8 @@ public class EntryManager extends RepositoryManager {
                         getPageHandler().showDialogError(
                             msg(
                             "Error: The entry you are editing has been edited since the time you began the edit:"
-                            + new Date(formTimestamp) + ":" + new Date(currentTimestamp))));
+                            + new Date(formTimestamp) + ":"
+                            + new Date(currentTimestamp))));
 
                     return addEntryHeader(request, entry,
                                           new Result(msg("Entry Edit Error"),
@@ -1806,6 +1807,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         boolean     figureOutType = request.get(ARG_TYPE_GUESS, false);
+        System.err.println ("guess:" + figureOutType);
 
         List<Entry> entries       = new ArrayList<Entry>();
         String      category      = "";
@@ -1946,20 +1948,21 @@ public class EntryManager extends RepositoryManager {
 
             boolean isGzip = resource.endsWith(".gz");
 
-            // check if it's a zidv file and if so, don't unzip
-            if (unzipArchive && resource.toLowerCase().endsWith(".zidv")) {
+            // check if it's a zp file
+            if (unzipArchive && !resource.toLowerCase().endsWith(".zip")) {
                 unzipArchive = false;
             }
 
-            if (unzipArchive && !IOUtil.isZipFile(resource)) {
-                if ( !isGzip) {
+            /*
+            if (unzipArchive && !resource.toLowerCase().endsWith(".zip")) {
+                if (!isGzip) {
                     unzipArchive = false;
                 }
             }
-
             if (isGzip && unzipArchive) {
                 //TODO: use GZIPInputStream to unzip the file
             }
+            */
 
             boolean hasZip = false;
 
@@ -4694,8 +4697,12 @@ public class EntryManager extends RepositoryManager {
         if (name.length() > 200) {
             name = name.substring(0, 195) + "...";
         }
-        String type = XmlUtil.getAttribute(node, ATTR_TYPE,
-                                           TypeHandler.TYPE_FILE);
+
+
+
+
+
+
         String category = XmlUtil.getAttribute(node, ATTR_CATEGORY, "");
         String description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
                                  (String) null);
@@ -4765,14 +4772,8 @@ public class EntryManager extends RepositoryManager {
                                      ATTR_LOCALFILETOMOVE, (String) null);
 
 
-        //Pass in false so we error if the repository does not find the type
-        TypeHandler typeHandler = getRepository().getTypeHandler(type, false,
-                                      false);
 
-        if (typeHandler == null) {
-            throw new RepositoryUtil.MissingEntryException(
-                "Could not find type:" + type);
-        }
+
         String   id = getRepository().getGUID();
 
         Resource resource;
@@ -4801,6 +4802,38 @@ public class EntryManager extends RepositoryManager {
         } else {
             resource = new Resource("", Resource.TYPE_UNKNOWN);
         }
+
+
+
+        String type = XmlUtil.getAttribute(node, ATTR_TYPE,
+                                           TypeHandler.TYPE_FILE);
+
+        TypeHandler typeHandler = null;
+
+        System.err.println ("type:" + type);
+
+
+        if (type.equals(TypeHandler.TYPE_GUESS)) {
+            typeHandler = findDefaultTypeHandler(resource.getPath());
+            System.err.println ("path:" + resource.getPath());
+            System.err.println ("guess:" + typeHandler);
+        }
+
+
+        if (typeHandler == null) {
+            //Pass in false so we error if the repository does not find the type
+            typeHandler = getRepository().getTypeHandler(type, false, false);
+        }
+
+
+        if (typeHandler == null) {
+            throw new RepositoryUtil.MissingEntryException(
+                "Could not find type:" + type);
+        }
+
+
+
+        System.err.println ("type handler:" + typeHandler);
         Date createDate = new Date();
 
 

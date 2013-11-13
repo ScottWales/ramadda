@@ -775,7 +775,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = toString(values, offset);
             Entry  theEntry = null;
-            if ((entryId != null) && (entryId.length() > 0)) {
+            if (Utils.stringDefined(entryId)) {
                 try {
                     theEntry =
                         getRepository().getEntryManager().getEntry(null,
@@ -1420,7 +1420,7 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isType(DATATYPE_ENTRY)) {
             String value = request.getString(searchArg + "_hidden", "");
-            if (value.length() > 0) {
+            if (Utils.stringDefined(value)) {
                 where.add(Clause.eq(columnName, value));
             }
         } else if (isType(DATATYPE_LIST)) {
@@ -2341,8 +2341,6 @@ public class Column implements DataTypes, Constants {
                                   + "_to", request.getString(searchArg
                                       + "_to", ""), "size=\"10\"");
         } else if (isType(DATATYPE_ENTRY)) {
-
-
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;
             if ((entryId != null) && (entryId.length() > 0)) {
