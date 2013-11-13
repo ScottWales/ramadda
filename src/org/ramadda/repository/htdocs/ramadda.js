@@ -997,16 +997,13 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
     this.handleClick(event);
 }
 
-
-
-
-
 function selectClick(id,entryId,value) {
     selector = selectors[id];
     if (selector.selecttype=="wikilink") {
         insertAtCursor(selector.textComp.obj,"[[" +entryId+"|"+value+"]]");
     } else if (selector.selecttype=="entryid") {
-        insertTagsInner(selector.elementId, selector.textComp.obj, "entry=\"" +entryId+"|"+value+"\" "," ","importtype");
+        //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
+        insertTagsInner(selector.elementId, selector.textComp.obj, entryId," ","importtype");
     } else { 
         selector.getHiddenComponent().val(entryId);
         selector.getTextComponent().val(value);
