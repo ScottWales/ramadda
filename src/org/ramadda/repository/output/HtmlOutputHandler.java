@@ -527,40 +527,72 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-        boolean      doingInfo    = outputType.equals(OUTPUT_INFO);
-
-        StringBuffer sb           = new StringBuffer();
-        String       wikiTemplate = null;
-
-
-        if ( !doingInfo) {
-            wikiTemplate = getWikiText(request, entry);
-            if (wikiTemplate == null) {
-                wikiTemplate = getPageHandler().getWikiTemplate(request,
-                        entry, PageHandler.TEMPLATE_DEFAULT);
-            }
-        }
-
-        if (wikiTemplate != null) {
-            String innerContent =
-                entry.getTypeHandler().getInnerWikiContent(request, entry,
-                    wikiTemplate);
-            if (innerContent == null) {
-                innerContent = getPageHandler().getWikiTemplate(request,
-                        entry, PageHandler.TEMPLATE_CONTENT);
-            }
-            wikiTemplate = wikiTemplate.replace("${innercontent}",
-                    innerContent);
-            sb.append(getWikiManager().wikifyEntry(request, entry,
-                    wikiTemplate));
-        } else {
+        StringBuffer sb        = new StringBuffer();
+        boolean      doingInfo = outputType.equals(OUTPUT_INFO);
+        if (doingInfo) {
             addDescription(request, entry, sb, true);
             String informationBlock = getInformationTabs(request, entry,
                                           false);
             sb.append(informationBlock);
+        } else {
+            handleDefaultWiki(request, entry, sb, null, null);
         }
 
         return makeLinksResult(request, msg("Entry"), sb, new State(entry));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param folders _more_
+     * @param files _more_
+     *
+     * @throws Exception _more_
+     */
+    private void handleDefaultWiki(Request request, Entry entry,
+                                   StringBuffer sb, List<Entry> folders,
+                                   List<Entry> files)
+            throws Exception {
+        String wikiTemplate = getWikiText(request, entry);
+
+        String innerContent = null;
+        if ((wikiTemplate != null)
+                && wikiTemplate.startsWith("<wiki_inner>")) {
+            innerContent = wikiTemplate;
+            wikiTemplate = null;
+        }
+
+        if (wikiTemplate == null) {
+            wikiTemplate = getPageHandler().getWikiTemplate(request, entry,
+                    PageHandler.TEMPLATE_DEFAULT);
+        }
+        if (wikiTemplate == null) {
+            wikiTemplate = "=={{name}}=={{description}}{{information}}";
+        }
+        if (innerContent == null) {
+            innerContent =
+                entry.getTypeHandler().getInnerWikiContent(request, entry,
+                    wikiTemplate);
+        }
+
+        if (innerContent == null) {
+            innerContent = getPageHandler().getWikiTemplate(request, entry,
+                    PageHandler.TEMPLATE_CONTENT);
+        }
+        wikiTemplate = wikiTemplate.replace("${innercontent}", innerContent);
+
+
+        if (files != null) {
+            sb.append(getWikiManager().wikifyEntry(request, entry,
+                    wikiTemplate, true, files, folders));
+        } else {
+            sb.append(getWikiManager().wikifyEntry(request, entry,
+                    wikiTemplate));
+        }
     }
 
 
@@ -1790,69 +1822,40 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-
         String wikiTemplate = null;
 
-        //If the user specifically selected an output listing then don't do the wiki text
-        if ( !doingInfo
-                && ( !request.exists(ARG_OUTPUT)
-                     || Misc.equals(request.getString(ARG_OUTPUT, ""),
-                                    OUTPUT_HTML.getId()))) {
-            wikiTemplate = getWikiText(request, group);
-            if (wikiTemplate == null) {
-                wikiTemplate = getPageHandler().getWikiTemplate(request,
-                        group, PageHandler.TEMPLATE_DEFAULT);
-            }
-        }
+        if ( !doingInfo) {
+            handleDefaultWiki(request, group, sb, subGroups, entries);
+        } else {
+            if ( !group.isDummy()) {
+                addDescription(request, group, sb, true);
+                if ( !doSimpleListing) {
+                    String informationBlock = getInformationTabs(request,
+                                                  group, false);
+                    if (hasChildren) {
+                        sb.append(
+                            HtmlUtils.makeShowHideBlock(
+                                msg("Information"), informationBlock,
+                                request.get(ARG_SHOW_ASSOCIATIONS, doingInfo
+                                ? true
+                                : !hasChildren)));
+                    } else {
+                        sb.append(informationBlock);
+                    }
+                }
 
 
-        String head = null;
-
-        if ((wikiTemplate == null) && !group.isDummy()) {
-            addDescription(request, group, sb, true);
-            if ( !doSimpleListing) {
-                String informationBlock = getInformationTabs(request, group,
-                                              false);
-
-
-                if (hasChildren) {
-                    sb.append(HtmlUtils.makeShowHideBlock(msg("Information"),
-                            informationBlock,
-                            request.get(ARG_SHOW_ASSOCIATIONS, doingInfo
-                            ? true
-                            : !hasChildren)));
-                } else {
-                    sb.append(informationBlock);
+                StringBuffer metadataSB = new StringBuffer();
+                getMetadataManager().decorateEntry(request, group,
+                        metadataSB, false);
+                String metataDataHtml = metadataSB.toString();
+                if (metataDataHtml.length() > 0) {
+                    sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
+                            "<div class=\"description\">" + metadataSB
+                            + "</div>", false));
                 }
             }
 
-
-            StringBuffer metadataSB = new StringBuffer();
-            getMetadataManager().decorateEntry(request, group, metadataSB,
-                    false);
-            String metataDataHtml = metadataSB.toString();
-            if (metataDataHtml.length() > 0) {
-                sb.append(HtmlUtils.makeShowHideBlock(msg("Attachments"),
-                        "<div class=\"description\">" + metadataSB
-                        + "</div>", false));
-            }
-        }
-
-
-
-        if (wikiTemplate != null) {
-            String innerContent =
-                group.getTypeHandler().getInnerWikiContent(request, group,
-                    wikiTemplate);
-            if (innerContent == null) {
-                innerContent = getPageHandler().getWikiTemplate(request,
-                        group, PageHandler.TEMPLATE_CONTENT);
-            }
-            wikiTemplate = wikiTemplate.replace("${innercontent}",
-                    innerContent);
-            sb.append(getWikiManager().wikifyEntry(request, group,
-                    wikiTemplate, true, subGroups, entries));
-        } else {
             List<Entry> allEntries = new ArrayList<Entry>();
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);
@@ -1879,15 +1882,12 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                 }
             }
-
         }
+
+
 
         Result result = makeLinksResult(request, msg("Folder"), sb,
                                         new State(group, subGroups, entries));
-        if (head != null) {
-            result.putProperty(PROP_HTML_HEAD, head);
-        }
-
 
         return result;
     }
@@ -1912,27 +1912,35 @@ public class HtmlOutputHandler extends OutputHandler {
     private String getWikiText(Request request, Entry entry)
             throws Exception {
         String description = entry.getDescription();
+
+        String wikiInner   = null;
         //If it begins with <wiki> then it overrides anything else
+
         if (TypeHandler.isWikiText(description)) {
-            return description;
+            if (description.startsWith("<wiki_inner>")) {
+                wikiInner = description;
+                System.err.println("inner:" + wikiInner);
+            } else {
+                return description;
+            }
         }
 
         String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
                                   entry);
-        if (wikiTemplate != null) {
-            return wikiTemplate;
+        if (wikiTemplate == null) {
+            PageStyle pageStyle = request.getPageStyle(entry);
+            wikiTemplate = pageStyle.getWikiTemplate(entry);
         }
 
-        PageStyle pageStyle = request.getPageStyle(entry);
-        //        if (TypeHandler.isWikiText(entry.getDescription())) {
-        //            return entry.getDescription();
-        //        }
-        wikiTemplate = pageStyle.getWikiTemplate(entry);
-        if (wikiTemplate != null) {
-            return wikiTemplate;
+        if (wikiInner != null) {
+            if (wikiTemplate == null) {
+                return wikiInner;
+            }
+            wikiTemplate = wikiTemplate.replace("${innercontent}", wikiInner);
+            System.err.println("template:" + wikiTemplate);
         }
 
-        return null;
+        return wikiTemplate;
     }
 
 
