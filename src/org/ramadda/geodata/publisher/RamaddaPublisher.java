@@ -577,7 +577,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     attrs = Misc.toList(new String[] {
                         ATTR_ID, mainId, ATTR_FILE,
                         IOUtil.getFileTail(mainFile), ATTR_PARENT, parentId,
-                        ATTR_TYPE, TYPE_FILE, ATTR_NAME,
+                        ATTR_TYPE, "guess", ATTR_NAME,
                         nameFld.getText().trim(), ATTR_DESCRIPTION,
                         descFld.getText().trim(), ATTR_FROMDATE, fromDate,
                         ATTR_TODATE, toDate
@@ -669,8 +669,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         String id = (cnt++) + "";
                         attrs = Misc.toList(new String[] {
                             ATTR_ID, id, ATTR_FILE, entryName, ATTR_PARENT,
-                            parentId, ATTR_TYPE, TYPE_FILE, ATTR_NAME,
-                            entryName
+                            parentId, "type.guess", "true",
+                            //ATTR_TYPE, TYPE_FILE, 
+                            ATTR_NAME, entryName
                         });
                         if (dttm != null) {
                             attrs.addAll(Misc.newList(ATTR_FROMDATE,
