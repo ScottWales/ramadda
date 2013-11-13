@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<outputhandlers>
+<!-- 
+This is an example of how to define a wiki based output handler
+rename this file to <something>outputhandlers.xml and add it to a plugin
+-->
+
+    <outputhandler
+     class="org.ramadda.repository.output.TemplateOutputHandler"
+     id="test.out1"
+     name="Test output 1"
+     types="file,folder">
+    <wiki.file>
+<![CDATA[
+=={{name}}==
+{{description}}
+{{information}}
+]]>
+    </wiki.file>
+    <wiki.folder>
+<![CDATA[
+=={{name}}==
+{{description}}
+{{information}}
+{{tree}}
+]]>
+    </wiki.folder>
+    </outputhandler>
+
+
+</outputhandlers>
