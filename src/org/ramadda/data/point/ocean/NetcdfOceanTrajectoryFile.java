@@ -18,42 +18,22 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.data.point.netcdf;
+package org.ramadda.data.point.ocean;
 
 
 import org.ramadda.data.point.*;
-
-
 import org.ramadda.data.point.netcdf.*;
+
 
 
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
 
-import ucar.ma2.DataType;
-
-import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.*;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateRange;
-
-import ucar.unidata.util.IOUtil;
-
-
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.Misc;
 
 import java.io.*;
 
 import java.util.ArrayList;
-
-
-
-
-import java.util.Formatter;
 import java.util.List;
 
 
@@ -62,15 +42,15 @@ import java.util.List;
  * Class description
  *
  *
- * @version        $version$, Fri, Aug 23, '13
- * @author         Enter your name here...
+ * @version        $version$, Wed, Nov 13, '13
+ * @author         Enter your name here...    
  */
-public class NetcdfTrajectoryFile extends NetcdfPointFile {
+public class NetcdfOceanTrajectoryFile extends NetcdfTrajectoryFile {
 
     /**
      * ctor
      */
-    public NetcdfTrajectoryFile() {}
+    public NetcdfOceanTrajectoryFile() {}
 
 
 
@@ -85,29 +65,8 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      * @param filename _more_
      * @throws IOException On badness
      */
-    public NetcdfTrajectoryFile(String filename) throws IOException {
+    public NetcdfOceanTrajectoryFile(String filename) throws IOException {
         super(filename);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public boolean isCapable(String action) {
-
-        if (action.equals(ACTION_MAPINCHART)) {
-            return true;
-        }
-        if (action.equals(ACTION_TRAJECTORY)) {
-            return true;
-        }
-
-        return super.isCapable(action);
     }
 
 
@@ -122,7 +81,10 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
         super.prepareToVisit(visitInfo);
-        String platform = "";
+        //Need to find the platform or instrument property
+        String platform = Misc.getProperty(getFileProperties(), "platform",
+                                           "");
+
         //LOOK: this needs to be in the same order as the oceantypes.xml defines in the point plugin
         setFileMetadata(new Object[] { platform });
 
@@ -138,7 +100,7 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        PointFile.test(args, NetcdfTrajectoryFile.class);
+        PointFile.test(args, NetcdfOceanTrajectoryFile.class);
     }
 
 

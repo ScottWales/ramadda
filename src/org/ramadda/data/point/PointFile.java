@@ -73,7 +73,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /** _more_ */
     public static final String ACTION_WAVEFORM = "action.waveform";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ACTION_TRAJECTORY = "action.trajectory";
 
     /** _more_ */

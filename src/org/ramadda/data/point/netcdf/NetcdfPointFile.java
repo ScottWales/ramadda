@@ -66,6 +66,7 @@ import java.util.List;
  */
 public class NetcdfPointFile extends PointFile {
 
+    /** _more_          */
     public static final String NETCDF_ATTR_SUMMARY = "summary";
 
 
@@ -280,6 +281,9 @@ public class NetcdfPointFile extends PointFile {
         for (Attribute attr : attrs) {
             String name  = attr.getName();
             String value = attr.getStringValue();
+            if (value == null) {
+                continue;
+            }
             if (name.equals(NETCDF_ATTR_SUMMARY)) {
                 setDescriptionFromFile(value);
             } else {
@@ -287,6 +291,7 @@ public class NetcdfPointFile extends PointFile {
             }
         }
         dataset.close();
+
         return visitInfo;
     }
 
@@ -359,9 +364,7 @@ public class NetcdfPointFile extends PointFile {
             pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
                 ucar.nc2.constants.FeatureType.ANY_POINT, path, null, buf);
         }
-        if (pods == null) { 
-            
-        }
+        if (pods == null) {}
 
         return pods;
     }
