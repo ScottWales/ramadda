@@ -1326,7 +1326,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void loadOutputHandlers() throws Exception {
         for (String file : getPluginManager().getOutputDefFiles()) {
             file = getStorageManager().localizePath(file);
-            if (getPluginManager().haveSeen(file)) {
+            if (getPluginManager().haveSeen("outputhandler:" + file)) {
                 continue;
             }
             Element root = XmlUtil.getRoot(file, getClass());
