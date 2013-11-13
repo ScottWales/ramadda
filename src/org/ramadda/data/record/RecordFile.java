@@ -80,6 +80,16 @@ public abstract class RecordFile {
     /** _more_ */
     private Object[] fileMetadata;
 
+    /** _more_          */
+    private String descriptionFromFile;
+
+    /** _more_          */
+    private String nameFromFile;
+
+    /** _more_          */
+    private Hashtable fileProperties = new Hashtable();
+
+
 
     /**
      * ctor
@@ -1281,6 +1291,61 @@ public abstract class RecordFile {
         record.setRecordTime(date.getTime());
     }
 
+    /**
+     *  Set the NameFromFile property.
+     *
+     *  @param value The new value for NameFromFile
+     */
+    public void setNameFromFile(String value) {
+        nameFromFile = value;
+    }
 
+    /**
+     *  Get the NameFromFile property.
+     *
+     *  @return The NameFromFile
+     */
+    public String getNameFromFile() {
+        return nameFromFile;
+    }
+
+    /**
+     *  Set the DescriptionFromFile property.
+     *
+     *  @param value The new value for DescriptionFromFile
+     */
+    public void setDescriptionFromFile(String value) {
+        descriptionFromFile = value;
+    }
+
+    /**
+     *  Get the DescriptionFromFile property.
+     *
+     *  @return The DescriptionFromFile
+     */
+    public String getDescriptionFromFile() {
+        return descriptionFromFile;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public Hashtable getFileProperties() {
+        return fileProperties;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     */
+    public void putFileProperty(String name, Object value) {
+        fileProperties.put(name, value);
+    }
 
 }

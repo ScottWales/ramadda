@@ -84,6 +84,21 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     /**
      * _more_
      *
+     * @param property _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean isCapable(String property) throws Exception {
+        return getRecordFile().isCapable(property);
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param index _more_
      *
      * @return _more_

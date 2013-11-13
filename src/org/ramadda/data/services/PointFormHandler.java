@@ -577,7 +577,7 @@ public class PointFormHandler extends RecordFormHandler {
         String paramWidget = null;
         List   params      = new ArrayList();
         //TODO: we need a better way to say this is a elevation point cloud
-        //        if(pointEntry.getPointFile().isCapable(PointFile.ACTION_ELEVATION)) {
+        //        if(pointEntry.isCapable(PointFile.ACTION_ELEVATION)) {
         params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
         //        }
         if (recordEntry != null) {
@@ -614,7 +614,7 @@ public class PointFormHandler extends RecordFormHandler {
             HtmlUtils.row(
                 HtmlUtils.colspan(formHeader("Advanced Settings"), 2)));
 
-        if (recordEntry.getRecordFile().isCapable(PointFile.ACTION_GRID)) {
+        if (recordEntry.isCapable(PointFile.ACTION_GRID)) {
             sb.append(
                 HtmlUtils.formEntryTop(
                     msgLabel("Gridding"),
@@ -777,7 +777,7 @@ public class PointFormHandler extends RecordFormHandler {
             if (i == 0) {
                 formatCol.append(HtmlUtils.b(msg("Point Products")));
             } else {
-                if ( !recordEntry.getRecordFile().isCapable(
+                if ( !recordEntry.isCapable(
                         PointFile.ACTION_GRID)) {
                     continue;
                 }
@@ -863,7 +863,7 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
                                   4) + probHelpImg;
-            if (recordEntry.getRecordFile().isCapable(
+            if (recordEntry.isCapable(
                     PointFile.ACTION_TIME)) {
 
                 boolean showTime = true;
@@ -880,7 +880,7 @@ public class PointFormHandler extends RecordFormHandler {
                                           null, null, showTime)));
             }
 
-            if (recordEntry.getRecordFile().isCapable(
+            if (recordEntry.isCapable(
                     PointFile.ACTION_DECIMATE)) {
                 subsetSB.append(HtmlUtils.formEntry(msgLabel("Decimate"),
                         msgLabel("Skip every") + " "
@@ -889,7 +889,7 @@ public class PointFormHandler extends RecordFormHandler {
                                               ""), 4) + prob));
             }
 
-            if (recordEntry.getRecordFile().isCapable(
+            if (recordEntry.isCapable(
                     PointFile.ACTION_TRACKS)) {
                 subsetSB.append(
                     HtmlUtils.formEntry(
@@ -1250,7 +1250,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         StringBuffer mapSB = new StringBuffer();
         boolean showMap =
-            pointEntry.getPointFile().isCapable(PointFile.ACTION_MAPINCHART)
+            pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
             && request.get(ARG_MAP_SHOW, true)
             && getRepository().getMapManager().shouldShowMaps();
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
@@ -1267,7 +1267,7 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.id("point_timeseries_div")));
 
         boolean hasWaveform =
-            pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
+            pointEntry.isCapable(PointFile.ACTION_WAVEFORM);
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
         String waveformDisplay = request.getString(ARG_WAVEFORM_DISPLAY,
                                      "normal");
@@ -1538,7 +1538,7 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
         final int numPointsToPlot = request.get(ARG_NUMPOINTS,
                                         TIMESERIES_POINTS);
         final boolean hasWaveform =
-            pointEntry.getPointFile().isCapable(PointFile.ACTION_WAVEFORM);
+            pointEntry.isCapable(PointFile.ACTION_WAVEFORM);
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
 
         final int[]          cnt            = { 0 };

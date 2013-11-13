@@ -39,6 +39,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.grid.LatLonGrid;
 
 
@@ -327,8 +328,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         Entry      entry      = pointEntry.getEntry();
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
-        if (pointEntry.getRecordFile().isCapable(
-                PointFile.ACTION_BOUNDINGPOLYGON)) {
+        if (pointEntry.isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
             if ( !entry.hasMetadataOfType(
                     MetadataHandler.TYPE_SPATIAL_POLYGON)) {
                 LatLonGrid llg = new LatLonGrid(80, 40,
@@ -371,10 +371,20 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
+        String descriptionFromFile =
+            pointEntry.getRecordFile().getDescriptionFromFile();
+        if (Utils.stringDefined(descriptionFromFile)
+                && !Utils.stringDefined(entry.getDescription())) {
+            entry.setDescription(descriptionFromFile);
+        }
+
+
         //All point types should have at least:
         //pointCount, properties
         Object[] values = entry.getTypeHandler().getValues(entry);
         values[0] = new Integer(metadata.getCount());
+
+
 
         //If the file has metadata then it better match up with the values that are defined in types.xml
         Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();

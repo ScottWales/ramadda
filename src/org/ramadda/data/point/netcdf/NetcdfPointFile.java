@@ -65,7 +65,7 @@ import java.util.List;
  */
 public class NetcdfPointFile extends PointFile {
 
-    /** _more_ */
+    public static final String NETCDF_ATTR_SUMMARY = "summary";
 
 
 
@@ -343,6 +343,9 @@ public class NetcdfPointFile extends PointFile {
         if (pods == null) {  // try as ANY_POINT
             pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
                 ucar.nc2.constants.FeatureType.ANY_POINT, path, null, buf);
+        }
+        if (pods == null) { 
+            
         }
 
         return pods;
