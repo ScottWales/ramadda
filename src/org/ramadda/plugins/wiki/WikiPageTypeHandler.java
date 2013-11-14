@@ -406,8 +406,9 @@ _more_ */
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
         sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
+        addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
-        //        super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
+        //super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
 
     }
 
