@@ -37,8 +37,8 @@
    </type>
 
 
-  <type name="type_virtual"  description="Virtual Entries" handler="org.ramadda.repository.type.VirtualTypeHandler">
-     <property name="icon" value="/icons/application_link.png"/>
+  <type name="type_virtual"  description="Virtual Group" handler="org.ramadda.repository.type.VirtualTypeHandler">
+     <property name="icon" value="/icons/chart_organisation.png"/>
 
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="false"/>
