@@ -68,25 +68,6 @@ public class VirtualTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
-        if (entry.isGroup()) {
-            return iconUrl("/icons/application_link.png");
-        }
-
-        return super.getIconUrl(request, entry);
-    }
-
-    /**
-     * _more_
-     *
      * @param request _more_
      * @param column _more_
      * @param formBuffer _more_
@@ -165,9 +146,9 @@ public class VirtualTypeHandler extends GenericTypeHandler {
         idString = StringUtil.join(",", lines);
 
 
-        for (Entry entry :
-                 getWikiManager().getEntries(request, mainEntry, idString,
-                                            null)) {
+        List<Entry> entries = getWikiManager().getEntries(request, mainEntry,
+                                  mainEntry, idString, null, false, "");
+        for (Entry entry : entries) {
             ids.add(entry.getId());
         }
 

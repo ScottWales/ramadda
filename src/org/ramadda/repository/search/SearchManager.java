@@ -1454,10 +1454,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      * @throws Exception _more_
      */
     public void doDistributedSearch(final Request request,
-                                     List<ServerInfo> servers,
-                                     Entry tmpEntry,
-                                     final List<Entry> groups,
-                                     final List<Entry> entries)
+                                    List<ServerInfo> servers, Entry tmpEntry,
+                                    final List<Entry> groups,
+                                    final List<Entry> entries)
             throws Exception {
 
         String output = request.getString(ARG_OUTPUT, "");
@@ -1489,11 +1488,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                              + URL_ENTRY_SEARCH.getPath()
                                              + "?" + linkUrl;
 
+
+                    System.err.println(remoteSearchUrl);
                     try {
                         String entriesXml =
                             getStorageManager().readSystemResource(
                                 new URL(remoteSearchUrl));
-                        //                            System.err.println(entriesXml);
+                        System.err.println(entriesXml);
                         if ( !running[0]) {
                             return;
                         }

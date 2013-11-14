@@ -20,6 +20,7 @@
       <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="${tclsh}">
           <arg value="${basedir}/bin/idvdocgen/generate.tcl"/> 
       </exec>
+      <antcall target="plugin"/>
     </target>
 
 </project>

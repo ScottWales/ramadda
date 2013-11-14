@@ -257,7 +257,13 @@ The entries attribute is a comma separated list of entry identifiers. They can b
 <li> <i>ancestors</i> - the ancestors up to the top-level entry
 <li> <i>siblings</i> - the sibling entries
 <li> <i>links</i>  - the associated or linked entries
-<li> <i>search</i>  - search the entire repository. The search terms are defined with:
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+
+</ul>
+
+<h3>Search</h3>
+
+You can specify the following search attributes.
 
 <ul>
 <li> search.text="text to search"
@@ -267,28 +273,35 @@ The entries attribute is a comma separated list of entry identifiers. They can b
 <li> search.filesuffix="file suffix" 
 <li> search.datadate.from="from date" 
 <li> search.datadate.to="to date" 
+<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
 <li> search.createdate.from="from date" 
 <li> search.createdate.to="to date" 
+<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
 <li> search.changedate.from="from date" 
 <li> search.changedate.to="to date" 
-</ul>
+<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
 </ul>
 
-If you are using a search in a virtual entry then in the Entry IDs field you would do one per line, e.g.:
+<p>
+Here are some examples:
+<p>
+Find all entries with text 'climate':
 <pre>
-search.text="text to search"
-search.type="entry type"
-search.bbox="north,west,south,east"   
-search
+{{tree search.text="climate" entries="search"}}
 </pre>
 
 
-Don't forget to end this with &quot;search&quot; as that invokes the search
+Find all entries with file suffix 'pdf' that have been created in the last 2 days:
+<pre>
+{{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+</pre>
 
 
 
 
 
+
+<h3>Filtering Entries</h3>
 
 You can filter what entries to use with <i>entries.filter</i>, e.g.:
 <pre>
@@ -325,6 +338,19 @@ You can also:
 <li> If <i>images</i> is set to true then only entries that are image files are included
 
 </ul>
+
+
+<h3>Virtual Groups</h3>
+
+If you are using a search in a virtual entry then in the Entry IDs field you enter the search parameters one per line. Don't forget to end this with &quot;search&quot; as that invokes the search.  e.g.:
+<pre>
+search.text=text to search
+search.type=entry type
+search.bbox=north,west,south,east  
+search.createdate.relative=-1 day
+search
+</pre>
+
 
 
 <ul>
