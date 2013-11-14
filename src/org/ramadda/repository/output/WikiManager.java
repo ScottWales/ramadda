@@ -2919,12 +2919,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
-
                 if (addChildren) {
-                    Request clearRequest = request.cloneMe();
-                    clearRequest.clearUrlArgs();
                     List<Entry> children =
-                        getEntryManager().getChildrenAll(clearRequest, entry);
+                        getEntryManager().getChildrenAll(request, entry);
                     entries.addAll(children);
                 } else {
                     entries.add(entry);
@@ -3623,7 +3620,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               List<Entry> subGroups, List<Entry> subEntries)
             throws Exception {
         Request myRequest = request.cloneMe();
-        myRequest.clearUrlArgs();
         WikiUtil wikiUtil = new WikiUtil(Misc.newHashtable(new Object[] {
                                 ATTR_REQUEST,
                                 myRequest, ATTR_ENTRY, entry }));
