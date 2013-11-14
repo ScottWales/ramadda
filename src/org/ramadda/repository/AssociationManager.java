@@ -556,8 +556,10 @@ public class AssociationManager extends RepositoryManager {
             throws Exception {
         Entry entry = getEntryManager().getEntry(request, entryId);
         if (entry == null) {
-            throw new IllegalArgumentException(
-                "getAssociations Entry is null:" + entryId);
+            getLogManager().logError("getAssociations Entry is null:"
+                                     + entryId);
+
+            return new ArrayList<Association>();
         }
 
         return getAssociations(request, entry);

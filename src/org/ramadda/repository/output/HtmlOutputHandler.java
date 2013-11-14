@@ -583,7 +583,12 @@ public class HtmlOutputHandler extends OutputHandler {
             innerContent = getPageHandler().getWikiTemplate(request, entry,
                     PageHandler.TEMPLATE_CONTENT);
         }
-        wikiTemplate = wikiTemplate.replace("${innercontent}", innerContent);
+        if (innerContent == null) {}
+
+        if (innerContent != null) {
+            wikiTemplate = wikiTemplate.replace("${innercontent}",
+                    innerContent);
+        }
 
 
         if (files != null) {
@@ -1824,7 +1829,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         String wikiTemplate = null;
 
-        if ( !doingInfo) {
+        if ( !doingInfo && !group.isDummy()) {
             handleDefaultWiki(request, group, sb, subGroups, entries);
         } else {
             if ( !group.isDummy()) {

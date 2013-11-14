@@ -1484,9 +1484,10 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             final ServerInfo theServer = server;
             Runnable         runnable  = new Runnable() {
                 public void run() {
-                    String remoteSearchUrl = theServer.getUrl()
-                                             + URL_ENTRY_SEARCH.getPath()
-                                             + "?" + linkUrl;
+                    String remoteSearchUrl =
+                        theServer.getUrl() + URL_ENTRY_SEARCH.getPath() + "?"
+                        + linkUrl + "&max=5&type=project_gps_rinex";
+
 
 
                     System.err.println(remoteSearchUrl);

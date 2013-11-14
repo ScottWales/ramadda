@@ -608,12 +608,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     public static final String ID_THIS = "this";
 
     /** _more_ */
+    public static final String ID_REMOTE = "remote:";
+
+    /** _more_ */
     public static final String ID_ROOT = "root";
 
     /** _more_ */
     public static final String ID_CHILDREN = "children";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PREFIX_SEARCH = "search.";
 
     /** _more_ */
@@ -628,7 +631,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ATTR_SEARCH_NORTH = PREFIX_SEARCH + "north";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCH_URL = PREFIX_SEARCH + "url";
 
     //    public static final String ATTR_SEARCH_PARENT = PREFIX_SEARCH +"parent";
@@ -2384,7 +2387,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * Get the entries for the request
      *
      * @param request The request
-     * @param wikiUtil The wiki util
      * @param originalEntry _more_
      * @param entry  the parent entry
      * @param props  properties
@@ -2406,7 +2408,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * Get the entries for the request
      *
      * @param request  the request
-     * @param wikiUtil the WikiUtil
      * @param originalEntry _more_
      * @param entry    the entry
      * @param props    properties
@@ -2429,7 +2430,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
      * Get the entries for the request
      *
      * @param request  the request
-     * @param wikiUtil the WikiUtil
      * @param originalEntry _more_
      * @param entry    the entry
      * @param props    properties
@@ -2691,6 +2691,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
+            if (entryid.startsWith("#")) {
+                continue;
+            }
+
             if (entryid.equals(ID_ANCESTORS)) {
                 List<Entry> tmp    = new ArrayList<Entry>();
                 Entry       parent = baseEntry.getParentEntry();
@@ -2729,6 +2733,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 continue;
             }
 
+
+            if (entryid.startsWith(ID_REMOTE)) {
+                //                http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
+                List<String> toks = StringUtil.splitUpTo(entryid, ID_REMOTE,
+                                        2);
+                String url = toks.get(1);
+
+                continue;
+            }
 
             if (entryid.equals(ID_THIS)) {
                 entries.add(baseEntry);
