@@ -32,6 +32,7 @@ import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+import org.ramadda.repository.util.ServerInfo;
 
 import ucar.unidata.util.Misc;
 
@@ -2695,7 +2696,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             if (entryid.startsWith(ID_SEARCH + ".")) {
                 List<String> toks = StringUtil.splitUpTo(entryid, "=", 2);
-                entryid = ID_SEARCH;
                 if (toks.size() == 2) {
                     if (searchProps == null) {
                         searchProps = new Hashtable();
@@ -2703,11 +2703,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                     searchProps.put(toks.get(0), toks.get(1));
                 }
-
                 continue;
             }
 
-            if (entryid.equals(ID_SEARCH)) {
+
+            boolean isRemote = entryid.startsWith("search.url");
+            if (isRemote || entryid.equals(ID_SEARCH)) {
                 if (searchProps == null) {
                     searchProps = props;
                 }
@@ -2738,6 +2739,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         myRequest.put(arg, text);
                     }
                 }
+                
+                if(isRemote) {
+                    List<String> toks = StringUtil.splitUpTo(entryid, "=", 2);
+                    ServerInfo serverInfo = new ServerInfo(new URL(toks.get(1)),
+                                                           "remote server",
+                                                           "");
+                
+                    List<ServerInfo> servers  = new ArrayList<ServerInfo>();
+                    servers.add(serverInfo);
+                    List<Entry> remoteGroups = new ArrayList<Entry>();
+                    List<Entry> remoteEntries = new ArrayList<Entry>();
+                    getSearchManager().doDistributedSearch(request,
+                                                           servers,
+                                                           baseEntry,
+                                                           remoteGroups,remoteEntries);
+                    entries.addAll(remoteGroups);
+                    entries.addAll(remoteEntries);
+                    continue;
+                }
+
                 List<Entry>[] pair = getEntryManager().getEntries(myRequest);
                 entries.addAll(pair[0]);
                 entries.addAll(pair[1]);

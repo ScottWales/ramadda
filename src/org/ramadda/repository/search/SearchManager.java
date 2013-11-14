@@ -1453,7 +1453,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
      *
      * @throws Exception _more_
      */
-    private void doDistributedSearch(final Request request,
+    public void doDistributedSearch(final Request request,
                                      List<ServerInfo> servers,
                                      Entry tmpEntry,
                                      final List<Entry> groups,

@@ -166,7 +166,7 @@ public class VirtualTypeHandler extends GenericTypeHandler {
 
 
         for (Entry entry :
-                getWikiManager().getEntries(request, mainEntry, idString,
+                 getWikiManager().getEntries(request, mainEntry, idString,
                                             null)) {
             ids.add(entry.getId());
         }
