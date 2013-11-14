@@ -22,45 +22,21 @@ package org.ramadda.repository.type;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputHandler;
 
-import org.ramadda.repository.metadata.*;
-
-import org.ramadda.sql.Clause;
-
-
-import org.ramadda.sql.SqlUtil;
-
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.DateUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
-import java.io.File;
-import java.io.FilenameFilter;
-
-import java.sql.PreparedStatement;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-
-
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
+
 
 
 /**
@@ -108,6 +84,55 @@ public class VirtualTypeHandler extends GenericTypeHandler {
         return super.getIconUrl(request, entry);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param column _more_
+     * @param formBuffer _more_
+     * @param entry _more_
+     * @param values _more_
+     * @param state _more_
+     * @param formInfo _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addColumnToEntryForm(Request request, Column column,
+                                     StringBuffer formBuffer, Entry entry,
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo)
+            throws Exception {
+
+        if (column.getOffset() == 0) {
+            String value = "";
+            if (values != null) {
+                value = column.toString(values, column.getOffset());
+            }
+            String urlArg     = column.getEditArg();
+            String textAreaId = HtmlUtils.getUniqueId("input_");
+            String widget = HtmlUtils.textArea(urlArg, value, 10, 60,
+                                HtmlUtils.id(textAreaId));
+            formInfo.addSizeValidation(column.getLabel(), textAreaId, 1500);
+            String suffix =
+                "entry ids - one per row<br>Or use the  <a target=_help href=\"http://ramadda.org/repository/userguide/wikitext.html#collection\">entry shortcut and search</a> services";
+            String buttons = OutputHandler.getSelect(request, textAreaId,
+                                 "Add entry id", true, "entryid", entry,
+                                 false);
+
+            formBuffer.append(
+                HtmlUtils.formEntryTop(
+                    msgLabel(column.getLabel()),
+                    buttons + "<table cellspacing=0 cellpadding=0 border=0>"
+                    + HtmlUtils.row(HtmlUtils.cols(widget, suffix))
+                    + "</table>"));
+            formBuffer.append("\n");
+        } else {
+            super.addColumnToEntryForm(request, column, formBuffer, entry,
+                                       values, state, formInfo);
+        }
+
+    }
+
 
     /**
      * _more_
@@ -148,22 +173,6 @@ public class VirtualTypeHandler extends GenericTypeHandler {
 
         return ids;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param rootDirPath _more_
-     * @param childFile _more_
-     *
-     * @return _more_
-     */
-    public String getSynthId(Entry parentEntry, String rootDirPath,
-                             File childFile) {
-        return "";
-    }
-
 
 
     /**

@@ -274,6 +274,22 @@ The entries attribute is a comma separated list of entry identifiers. They can b
 </ul>
 </ul>
 
+If you are using a search in a virtual entry then in the Entry IDs field you would do one per line, e.g.:
+<pre>
+search.text="text to search"
+search.type="entry type"
+search.bbox="north,west,south,east"   
+search
+</pre>
+
+
+Don't forget to end this with &quot;search&quot; as that invokes the search
+
+
+
+
+
+
 You can filter what entries to use with <i>entries.filter</i>, e.g.:
 <pre>
 entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
