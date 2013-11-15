@@ -1753,16 +1753,20 @@ public class EntryManager extends RepositoryManager {
             //was editing an up to date entry
             if (request.defined(ARG_ENTRY_TIMESTAMP)) {
                 String formTimestamp = request.getString(ARG_ENTRY_TIMESTAMP,
-                                           "");
+                                           "0");
                 String currentTimestamp = getEntryTimestamp(entry);
                 if ( !Misc.equals(formTimestamp, currentTimestamp)) {
-                    StringBuffer sb = new StringBuffer();
+                    StringBuffer sb        = new StringBuffer();
+                    String       dateRange = "";
+                    try {
+                        dateRange = new Date(formTimestamp) + ":"
+                                    + new Date(currentTimestamp);
+                    } catch (Exception ignore) {}
                     sb.append(
                         getPageHandler().showDialogError(
                             msg(
                             "Error: The entry you are editing has been edited since the time you began the edit:"
-                            + new Date(formTimestamp) + ":"
-                            + new Date(currentTimestamp))));
+                            + dateRange)));
 
                     return addEntryHeader(request, entry,
                                           new Result(msg("Entry Edit Error"),
@@ -1806,10 +1810,10 @@ public class EntryManager extends RepositoryManager {
                     TypeHandler.TYPE_ANY));
         }
 
-        boolean figureOutType = request.get(ARG_TYPE_GUESS, false);
+        boolean     figureOutType = request.get(ARG_TYPE_GUESS, false);
 
-        List<Entry> entries  = new ArrayList<Entry>();
-        String      category = "";
+        List<Entry> entries       = new ArrayList<Entry>();
+        String      category      = "";
         if (request.defined(ARG_CATEGORY)) {
             category = request.getString(ARG_CATEGORY, "");
         } else {
