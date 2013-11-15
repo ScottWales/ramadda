@@ -50,6 +50,7 @@ public class WikiUtil {
     /** _more_ */
     public static final String ATTR_OPEN = "open";
 
+    /** _more_          */
     public static final String ATTR_VAR = "var";
 
     /** _more_ */
@@ -77,7 +78,9 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable properties;
 
-    private Hashtable<String,String> myVars = new Hashtable<String,String>();
+    /** _more_          */
+    private Hashtable<String, String> myVars = new Hashtable<String,
+                                                   String>();
 
     /** _more_ */
     private List categoryLinks = new ArrayList();
@@ -548,6 +551,7 @@ public class WikiUtil {
             int idx1 = s.indexOf("{{", baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
@@ -598,22 +602,24 @@ public class WikiUtil {
             if (idx3 < 0) {
                 break;
             }
-            String    first    = s.substring(0, idx1);
-            String    attrs    = s.substring(idx1 + 6, idx2);
-            String    inner    = s.substring(idx2 + 1, idx3);
-            Hashtable props    = StringUtil.parseHtmlProperties(attrs);
+            String    first = s.substring(0, idx1);
+            String    attrs = s.substring(idx1 + 6, idx2);
+            String    inner = s.substring(idx2 + 1, idx3);
+            Hashtable props = StringUtil.parseHtmlProperties(attrs);
 
 
             sb.append(first);
 
-            if(props.get(ATTR_VAR)!=null) {
+            if (props.get(ATTR_VAR) != null) {
                 myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
             } else {
-                boolean   open     = Misc.getProperty(props, ATTR_OPEN, true);
-                boolean   decorate = Misc.getProperty(props, ATTR_DECORATE, true);
-                String    title    = Misc.getProperty(props, ATTR_TITLE, "");
+                boolean open = Misc.getProperty(props, ATTR_OPEN, true);
+                boolean decorate = Misc.getProperty(props, ATTR_DECORATE,
+                                       true);
+                String title = Misc.getProperty(props, ATTR_TITLE, "");
                 //<block show="ismobile"
-                String  show = Misc.getProperty(props, ATTR_SHOW, (String) null);
+                String show = Misc.getProperty(props, ATTR_SHOW,
+                                  (String) null);
                 boolean shouldShow = true;
 
                 if (show != null) {
@@ -639,9 +645,9 @@ public class WikiUtil {
 
                 if (shouldShow) {
                     if (decorate) {
-                        sb.append(HtmlUtils.makeShowHideBlock(title, inner, open,
-                                                              HtmlUtils.cssClass("wiki-blockheader"),
-                                                              HtmlUtils.cssClass("wiki-block")));
+                        sb.append(HtmlUtils.makeShowHideBlock(title, inner,
+                                open, HtmlUtils.cssClass("wiki-blockheader"),
+                                HtmlUtils.cssClass("wiki-block")));
                     } else {
                         sb.append(inner);
                     }
@@ -686,11 +692,11 @@ public class WikiUtil {
 
 
 
-        for (java.util.Enumeration keys =
-                 myVars.keys(); keys.hasMoreElements(); ) {
+        for (java.util.Enumeration keys = myVars.keys();
+                keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
-            s = s.replace("${" + key +"}", value.toString());
+            s = s.replace("${" + key + "}", value.toString());
         }
 
         return s;
