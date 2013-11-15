@@ -259,9 +259,9 @@ public class FeedTypeHandler extends GenericTypeHandler {
             String desc = XmlUtil.getGrandChildText(item,
                               AtomUtil.TAG_CONTENT, null);
 
-            if(desc == null) {
-                desc = XmlUtil.getGrandChildText(item,
-                                                 AtomUtil.TAG_SUMMARY, "");
+            if (desc == null) {
+                desc = XmlUtil.getGrandChildText(item, AtomUtil.TAG_SUMMARY,
+                        "");
             }
 
             String pubDate = XmlUtil.getGrandChildText(item,
@@ -349,6 +349,58 @@ public class FeedTypeHandler extends GenericTypeHandler {
                 }
             }
         }
+
+
+        if ( !Utils.stringDefined(lat)) {
+            String polygon = XmlUtil.getGrandChildText(item,
+                                 RssUtil.TAG_GEORSS_POLYGON, "").trim();
+            if (Utils.stringDefined(polygon)) {
+                StringBuffer[] sb = new StringBuffer[] { new StringBuffer(),
+                        new StringBuffer(), new StringBuffer(),
+                        new StringBuffer() };
+
+                List<String> toks = StringUtil.split(polygon, " ", true,
+                                        true);
+                int    idx = 0;
+                double
+                    north  = -90,
+                    west   = 180,
+                    south  = 90,
+                    east   = -180;
+                for (int i = 0; i < toks.size(); i += 2) {
+                    double latv = Double.parseDouble(toks.get(i));
+                    double lonv = Double.parseDouble(toks.get(i + 1));
+                    north = Math.max(north, latv);
+                    south = Math.min(south, latv);
+                    west  = Math.min(west, lonv);
+                    east  = Math.max(east, lonv);
+                    String toAdd = latv + "," + lonv + ";";
+                    if ((sb[idx].length() + toAdd.length())
+                            >= (Metadata.MAX_LENGTH - 100)) {
+                        idx++;
+                        if (idx >= sb.length) {
+                            break;
+                        }
+                    }
+                    sb[idx].append(toAdd);
+                    //TODO: add a closing point???
+                }
+                //For now don't add the polygon.
+                Metadata polygonMetadata =
+                    new Metadata(getRepository().getGUID(), entry.getId(),
+                                 MetadataHandler.TYPE_SPATIAL_POLYGON,
+                                 DFLT_INHERITED, sb[0].toString(),
+                                 sb[1].toString(), sb[2].toString(),
+                                 sb[3].toString(), Metadata.DFLT_EXTRA);
+                //                entry.addMetadata(polygonMetadata, false);
+                entry.setNorth(north);
+                entry.setWest(west);
+                entry.setSouth(south);
+                entry.setEast(east);
+            }
+        }
+
+
 
 
         String elev = XmlUtil.getGrandChildText(item,
