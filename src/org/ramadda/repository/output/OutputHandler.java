@@ -1592,7 +1592,8 @@ public class OutputHandler extends RepositoryManager {
                 "<td width=\"200\" align=right "
                 + HtmlUtils.cssClass(CSS_CLASS_ENTRY_ROW_LABEL)
                 + "><div style=\"max-width:190px; overflow-x: hidden;\">");
-            sb.append(entry.getTypeHandler().getFileTypeDescription(entry));
+            sb.append(entry.getTypeHandler().getFileTypeDescription(request,
+                    entry));
             sb.append("</div></td>");
         }
 

@@ -553,6 +553,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 
+        if (request.exists(ARG_USER_ID)) {
+            formSB.append(HtmlUtils.formEntry(msgLabel("User"),
+                    HtmlUtils.input(ARG_USER_ID,
+                                    request.getString(ARG_USER_ID, ""),
+                                    HtmlUtils.SIZE_20)));
+        }
+
         formSB.append(HtmlUtils.formEntry("", buttons.toString()));
 
 

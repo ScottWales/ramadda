@@ -29,6 +29,7 @@ import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
 
 import org.ramadda.sql.Clause;
@@ -2076,6 +2077,20 @@ public class TypeHandler extends RepositoryManager {
                             "title=\"View user profile\"");
 
 
+            String linkMsg =
+                msg("Search for entries of this type created by the user");
+            userSearchLink =
+                HtmlUtils.href(
+                    getSearchManager().URL_SEARCH_TYPE + "/"
+                    + entry.getTypeHandler().getType() + "?" + ARG_USER_ID
+                    + "=" + entry.getUser().getId() + "&"
+                    + SearchManager.ARG_SEARCH_SUBMIT
+                    + "=true", entry.getUser().getLabel(), HtmlUtils.cssClass(
+                        "entry-type-search") + HtmlUtils.attr(
+                        HtmlUtils.ATTR_ALT, msg(linkMsg)) + HtmlUtils.attr(
+                        HtmlUtils.ATTR_TITLE, linkMsg));
+
+
             String createdDisplayMode =
                 getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
                                             "none").trim();
@@ -2161,11 +2176,12 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(formEntry(request, resourceLabel, resourceLink));
 
             }
+            //Only show the created by and type when the user is logged in
             if ( !showImage) {
-                //Only show the created by and type when the user is logged in
                 if (okToShowInHtml(entry, ARG_TYPE, true)) {
                     sb.append(formEntry(request, msgLabel("Kind"),
-                                        getFileTypeDescription(entry)));
+                                        getFileTypeDescription(request,
+                                            entry)));
                 }
             }
 
@@ -4837,19 +4853,34 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param entry _more_
      *
      * @return _more_
      */
-    public String getFileTypeDescription(Entry entry) {
+    public String getFileTypeDescription(Request request, Entry entry) {
         try {
             String desc = msg(entry.getTypeHandler().getDescription());
             if ( !Utils.stringDefined(desc)) {
                 desc = entry.getTypeHandler().getType();
             }
+
             if ( !entry.getTypeHandler().getType().equals(
                     TypeHandler.TYPE_FILE)) {
-                return desc;
+                String searchUrl =
+                    HtmlUtils.href(
+                        getSearchManager().URL_SEARCH_TYPE + "/"
+                        + entry.getTypeHandler().getType(), desc,
+                            HtmlUtils.cssClass("entry-type-search")
+                            + HtmlUtils.attr(
+                                HtmlUtils.ATTR_ALT,
+                                msg(
+                                "Search for entries of this type")) + HtmlUtils.attr(
+                                    HtmlUtils.ATTR_TITLE,
+                                    msg("Search for entries of this type")));
+
+                return searchUrl;
             }
             String path  = getPathForEntry(entry);
             String label = getLabelFromPath(path);

@@ -107,6 +107,25 @@ form {
 
 
 
+.entry-type-search {
+   text-decoration: none;
+   color: black;
+   padding-left: 10px;
+}
+
+.entry-type-search:link {
+   text-decoration: none;
+   color: black;
+}
+
+
+.entry-type-search:hover {
+   text-decoration: underline;
+   color: black;
+//   background: URL(${urlroot}/icons/find_small.png) no-repeat;
+}
+
+
 .entry-list {
     overflow-y: auto;
     border: 1px #aaa solid;
