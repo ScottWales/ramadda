@@ -168,6 +168,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** first attribute */
     public static final String ATTR_FIRST = "first";
 
+    public static final String ATTR_LAST = "last";
+
     /** sort attribute */
     public static final String ATTR_SORT = "sort";
 
@@ -2633,6 +2635,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 }
                 entries.remove(firstEntry);
                 entries.add(0, firstEntry);
+            }
+        }
+
+
+        String lastEntries = Misc.getProperty(props,
+                                  attrPrefix + ATTR_LAST, (String) null);
+
+        if (lastEntries != null) {
+            Hashtable<String, Entry> map = new Hashtable<String, Entry>();
+            for (Entry child : entries) {
+                map.put(child.getId(), child);
+            }
+            List<String> ids = StringUtil.split(lastEntries, ",");
+            for (int i = ids.size() - 1; i >= 0; i--) {
+                Entry lastEntry = map.get(ids.get(i));
+                if (lastEntry == null) {
+                    continue;
+                }
+                entries.remove(lastEntry);
+                entries.add(lastEntry);
             }
         }
 

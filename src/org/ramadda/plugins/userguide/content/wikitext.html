@@ -244,6 +244,7 @@ other groups of entries with any of the following arguments:
                entries.filter="file|folder|image|type:some type|geo|suffix:file suffixes"
                exclude="entryid1,entryid2,entryid3.."  
                first="entryid1,entryid2,entryid3.."  
+               last="entryid1,entryid2,entryid3.."  
                sort="name|date"  sortorder="up|down"
                count="number of entries to use" }}}]
 
@@ -331,6 +332,8 @@ So,  you could show all of the georeferenced entries in a map and all of the non
 You can also:
 <ul>
 <li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
 
 <li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
 
@@ -567,6 +570,24 @@ You can specify whether to show the content or not:
   this will only show for non-mobile users
 </block>
 }]
+
+You can also use the block tag to define a variable or macro that is used later.
+
+[xml {
+<block var="var_name">
+ any content here
+</block>
+}]
+
+
+This will not show the content in place. Rather you can reference and insert the content later with:
+[xml {
+ \${var_name}
+</block>
+}]
+
+
+
 
 
 

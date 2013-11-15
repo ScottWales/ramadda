@@ -44,15 +44,13 @@ import java.util.regex.*;
 
 
 /**
- *
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class WikiUtil {
 
     /** _more_ */
     public static final String ATTR_OPEN = "open";
+
+    public static final String ATTR_VAR = "var";
 
     /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
@@ -62,10 +60,6 @@ public class WikiUtil {
 
     /** _more_ */
     public static final String ATTR_SHOW = "show";
-
-
-
-
 
     /** _more_ */
     public static final String PROP_NOHEADING = "noheading";
@@ -82,6 +76,8 @@ public class WikiUtil {
 
     /** _more_ */
     private Hashtable properties;
+
+    private Hashtable<String,String> myVars = new Hashtable<String,String>();
 
     /** _more_ */
     private List categoryLinks = new ArrayList();
@@ -552,7 +548,6 @@ public class WikiUtil {
             int idx1 = s.indexOf("{{", baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
@@ -609,45 +604,51 @@ public class WikiUtil {
             Hashtable props    = StringUtil.parseHtmlProperties(attrs);
 
 
-            boolean   open     = Misc.getProperty(props, ATTR_OPEN, true);
-            boolean   decorate = Misc.getProperty(props, ATTR_DECORATE, true);
-            String    title    = Misc.getProperty(props, ATTR_TITLE, "");
             sb.append(first);
 
-            //<block show="ismobile"
-            String  show = Misc.getProperty(props, ATTR_SHOW, (String) null);
-            boolean shouldShow = true;
+            if(props.get(ATTR_VAR)!=null) {
+                myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
+            } else {
+                boolean   open     = Misc.getProperty(props, ATTR_OPEN, true);
+                boolean   decorate = Misc.getProperty(props, ATTR_DECORATE, true);
+                String    title    = Misc.getProperty(props, ATTR_TITLE, "");
+                //<block show="ismobile"
+                String  show = Misc.getProperty(props, ATTR_SHOW, (String) null);
+                boolean shouldShow = true;
 
-            if (show != null) {
-                if (show.equals("mobile")) {
-                    if ( !getMobile()) {
+                if (show != null) {
+                    if (show.equals("mobile")) {
+                        if ( !getMobile()) {
+                            shouldShow = false;
+                        }
+                    } else if (show.equals("!mobile")) {
+                        if (getMobile()) {
+                            shouldShow = false;
+                        }
+                    } else if (show.equals("none")) {
                         shouldShow = false;
+                    } else if (show.startsWith("user")) {
+                        if (user == null) {
+                            shouldShow = false;
+                        } else {
+                            shouldShow = true;
+                        }
                     }
-                } else if (show.equals("!mobile")) {
-                    if (getMobile()) {
-                        shouldShow = false;
-                    }
-                } else if (show.equals("none")) {
-                    shouldShow = false;
-                } else if (show.startsWith("user")) {
-                    if (user == null) {
-                        shouldShow = false;
+                }
+
+
+                if (shouldShow) {
+                    if (decorate) {
+                        sb.append(HtmlUtils.makeShowHideBlock(title, inner, open,
+                                                              HtmlUtils.cssClass("wiki-blockheader"),
+                                                              HtmlUtils.cssClass("wiki-block")));
                     } else {
-                        shouldShow = true;
+                        sb.append(inner);
                     }
                 }
+
             }
 
-
-            if (shouldShow) {
-                if (decorate) {
-                    sb.append(HtmlUtils.makeShowHideBlock(title, inner, open,
-                            HtmlUtils.cssClass("wiki-blockheader"),
-                            HtmlUtils.cssClass("wiki-block")));
-                } else {
-                    sb.append(inner);
-                }
-            }
             s = s.substring(idx3 + "</block>".length());
         }
         sb.append(s);
@@ -684,6 +685,13 @@ public class WikiUtil {
         }
 
 
+
+        for (java.util.Enumeration keys =
+                 myVars.keys(); keys.hasMoreElements(); ) {
+            Object key   = keys.nextElement();
+            Object value = myVars.get(key);
+            s = s.replace("${" + key +"}", value.toString());
+        }
 
         return s;
 
