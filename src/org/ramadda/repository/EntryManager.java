@@ -6480,13 +6480,20 @@ public class EntryManager extends RepositoryManager {
                 "No permissions to add new entry");
         }
 
-        Entry newEntry = ((entry != null)
-                          ? entry
-                          : new Entry(
-                              getRepository().getTypeHandler(
-                                  TypeHandler.TYPE_FILE), false));
         File newFile =
             getRepository().getStorageManager().moveToStorage(request, file);
+
+        TypeHandler typeHandler = findDefaultTypeHandler(newFile.toString());
+        if (typeHandler == null) {
+            typeHandler =
+                getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+        }
+
+        Entry newEntry = ((entry != null)
+                          ? entry
+                          : new Entry(typeHandler, false));
+
+
         newEntry.setParentEntry(parent);
         newEntry.setResource(new Resource(newFile, Resource.TYPE_STOREDFILE));
         newEntry.setId(getRepository().getGUID());
