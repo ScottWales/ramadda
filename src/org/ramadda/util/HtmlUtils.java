@@ -3156,6 +3156,10 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String cssBlock(String css) {
+        return importCss(css);
+    }
+
+    public static String importCss(String css) {
         return tag(TAG_STYLE, "", css);
     }
 
