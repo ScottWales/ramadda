@@ -1421,6 +1421,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER_NAME = "user.name";
 
+    public static final String ARG_USER_DESCRIPTION = "user.description";
+
     /** _more_ */
     public static final String ARG_USER_NEW = "user.new";
 
@@ -2252,7 +2254,7 @@ public interface Constants {
     public static final String ATTR_ALT = "alt";
 
     /** _more_ */
-    public static final String LABEL_NEW_ENTRY = "New Entry";
+    public static final String LABEL_NEW_ENTRY = "New entry...";
 
     /** _more_ */
     public static final String LABEL_ENTRY = "Entry";
