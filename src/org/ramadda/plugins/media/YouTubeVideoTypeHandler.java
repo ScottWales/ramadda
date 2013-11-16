@@ -113,6 +113,9 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         if (id == null) {
             id = StringUtil.findPattern(url, "v=([^&]+)");
         }
+        if (id == null) {
+            id = StringUtil.findPattern(url, "youtu.be/([^&]+)");
+        }
 
         if (id == null) {
             return getPageHandler().showDialogError(
