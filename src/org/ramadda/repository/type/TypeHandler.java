@@ -2068,27 +2068,6 @@ public class TypeHandler extends RepositoryManager {
             sb.append(
                 "<tr><td width=20%><div style=\"height:1px;\"></div></td><td width=75%></td></tr>");
 
-            String userSearchLink =
-                HtmlUtils.href(
-                    HtmlUtils.url(
-                        request.url(getRepository().URL_USER_PROFILE),
-                        ARG_USER_ID,
-                        entry.getUser().getId()), entry.getUser().getLabel(),
-                            "title=\"View user profile\"");
-
-
-            String linkMsg =
-                msg("Search for entries of this type created by the user");
-            userSearchLink =
-                HtmlUtils.href(
-                    getSearchManager().URL_SEARCH_TYPE + "/"
-                    + entry.getTypeHandler().getType() + "?" + ARG_USER_ID
-                    + "=" + entry.getUser().getId() + "&"
-                    + SearchManager.ARG_SEARCH_SUBMIT
-                    + "=true", entry.getUser().getLabel(), HtmlUtils.cssClass(
-                        "entry-type-search") + HtmlUtils.attr(
-                        HtmlUtils.ATTR_ALT, msg(linkMsg)) + HtmlUtils.attr(
-                        HtmlUtils.ATTR_TITLE, linkMsg));
 
 
             String createdDisplayMode =
@@ -2199,6 +2178,34 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if (showCreated) {
+                String userSearchLink =
+                    HtmlUtils
+                        .href(HtmlUtils
+                            .url(request
+                                .url(getRepository()
+                                    .URL_USER_PROFILE), ARG_USER_ID,
+                                        entry.getUser().getId()), entry
+                                            .getUser()
+                                            .getLabel(), "title=\"View user profile\"");
+
+
+                String linkMsg =
+                    msg(
+                    "Search for entries of this type created by the user");
+                userSearchLink =
+                    HtmlUtils
+                        .href(getSearchManager().URL_SEARCH_TYPE + "/"
+                              + entry.getTypeHandler().getType() + "?"
+                              + ARG_USER_ID + "=" + entry.getUser().getId()
+                              + "&" + SearchManager.ARG_SEARCH_SUBMIT
+                              + "=true", entry.getUser().getLabel(), HtmlUtils
+                                  .cssClass("entry-type-search") + HtmlUtils
+                                  .attr(HtmlUtils
+                                      .ATTR_ALT, msg(linkMsg)) + HtmlUtils
+                                          .attr(HtmlUtils
+                                              .ATTR_TITLE, linkMsg));
+
+
                 sb.append(formEntry(request, msgLabel("Created by"),
                                     userSearchLink));
             }
