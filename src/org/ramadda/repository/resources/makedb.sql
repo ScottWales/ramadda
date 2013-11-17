@@ -128,13 +128,14 @@ CREATE TABLE  users (id varchar(200),
                      question  varchar(200),
                      answer  varchar(200),  
                      password  varchar(200),
+                     description varchar(5000),
 		     admin int,
 		     language varchar(50),
 		     template varchar(200),
                      isguest int,
                      properties varchar(10000));
 
-
+alter table users add column description varchar(5000);
 
 
 -----------------------------------------------------------------------

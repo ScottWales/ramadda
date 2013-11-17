@@ -827,7 +827,8 @@ public class UserManager extends RepositoryManager {
                     new Object[] {
                 user.getId(), user.getName(), user.getEmail(),
                 user.getQuestion(), user.getAnswer(),
-                user.getHashedPassword(), new Boolean(user.getAdmin()),
+                user.getHashedPassword(), user.getDescription(),
+                new Boolean(user.getAdmin()),
                 user.getLanguage(), user.getTemplate(),
                 new Boolean(user.getIsGuest()), user.getPropertiesBlob()
             });
@@ -928,6 +929,7 @@ public class UserManager extends RepositoryManager {
                                      boolean doAdmin)
             throws Exception {
         user.setName(request.getString(ARG_USER_NAME, user.getName()));
+        user.setDescription(request.getString(ARG_USER_DESCRIPTION, user.getDescription()));
         user.setEmail(request.getString(ARG_USER_EMAIL, user.getEmail()));
         user.setTemplate(request.getString(ARG_TEMPLATE, user.getTemplate()));
         user.setLanguage(request.getString(ARG_USER_LANGUAGE,
@@ -1083,6 +1085,9 @@ public class UserManager extends RepositoryManager {
             sb.append(formEntry(request, msgLabel("Name"),
                                 HtmlUtils.input(ARG_USER_NAME,
                                     user.getName(), HtmlUtils.SIZE_40)));
+            sb.append(formEntry(request, msgLabel("Desription"),
+                                HtmlUtils.textArea(ARG_USER_DESCRIPTION,
+                                                   user.getDescription(), 5,20)));
         }
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
@@ -1231,7 +1236,7 @@ public class UserManager extends RepositoryManager {
                 break;
             }
             User user = new User(id, name, email, "", "",
-                                 hashPassword(password1), false, "", "",
+                                 hashPassword(password1), "", false, "", "",
                                  false, null);
             users.add(user);
         }
@@ -1245,6 +1250,7 @@ public class UserManager extends RepositoryManager {
 
         String  id        = "";
         String  name      = "";
+        String  desc      = "";
         String  email     = "";
         String  password1 = "";
         String  password2 = "";
@@ -1253,6 +1259,7 @@ public class UserManager extends RepositoryManager {
         if (request.defined(ARG_USER_ID)) {
             id        = request.getString(ARG_USER_ID, "").trim();
             name      = request.getString(ARG_USER_NAME, name).trim();
+            desc      = request.getString(ARG_USER_DESCRIPTION, name).trim();
             email     = request.getString(ARG_USER_EMAIL, "").trim();
             password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
             password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
@@ -1285,7 +1292,7 @@ public class UserManager extends RepositoryManager {
 
             if (okToAdd) {
                 User newUser = new User(id, name, email, "", "",
-                                        hashPassword(password1), admin, "",
+                                        hashPassword(password1), desc, admin, "",
                                         "", false, null);
                 users.add(newUser);
             }
@@ -1391,6 +1398,7 @@ public class UserManager extends RepositoryManager {
         StringBuffer formSB = new StringBuffer();
         String       id     = request.getString(ARG_USER_ID, "").trim();
         String       name   = request.getString(ARG_USER_NAME, "").trim();
+        String       desc   = request.getString(ARG_USER_DESCRIPTION, "").trim();
         String       email  = request.getString(ARG_USER_EMAIL, "").trim();
         boolean      admin  = request.get(ARG_USER_ADMIN, false);
 
@@ -1403,6 +1411,9 @@ public class UserManager extends RepositoryManager {
                                 HtmlUtils.input(ARG_USER_NAME, name,
                                     HtmlUtils.SIZE_40)));
 
+        formSB.append(formEntry(request, msgLabel("Desription"),
+                            HtmlUtils.textArea(ARG_USER_DESCRIPTION,
+                                               desc, 5,20)));
 
         formSB.append(formEntry(request, msgLabel("Admin"),
                                 HtmlUtils.checkbox(ARG_USER_ADMIN, "true",
@@ -1679,6 +1690,7 @@ public class UserManager extends RepositoryManager {
     public User getUser(ResultSet results) throws Exception {
         int col = 1;
         User user = new User(results.getString(col++),
+                             results.getString(col++),
                              results.getString(col++),
                              results.getString(col++),
                              results.getString(col++),

@@ -1259,6 +1259,12 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SEARCH_TYPE = "search.type";
 
+    /** _more_          */
+    public static final String ARG_SEARCH_SHOWFORM = "search.showform";
+
+    /** _more_          */
+    public static final String ARG_SEARCH_SHOWHEADER = "search.showheader";
+
     /** _more_ */
     public static final String SEARCH_TYPE_TEXT = "search.type.text";
 
@@ -1421,6 +1427,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER_NAME = "user.name";
 
+    /** _more_          */
     public static final String ARG_USER_DESCRIPTION = "user.description";
 
     /** _more_ */

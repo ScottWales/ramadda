@@ -423,7 +423,7 @@ public class Admin extends RepositoryManager {
                                         UserManager.ARG_USER_EMAIL,
                                         "").trim(), "", "",
                                             getUserManager().hashPassword(
-                                                password1), true, "", "",
+                                                password1), "", true, "", "",
                                                     false, null);
                     getUserManager().makeOrUpdateUser(user, false);
                     didIt(ARG_ADMIN_ADMINCREATED);

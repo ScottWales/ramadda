@@ -262,9 +262,10 @@ The entries attribute is a comma separated list of entry identifiers. They can b
 
 </ul>
 
-<h3>Search</h3>
+<h3>Search for entries</h3>
 
-You can specify the following search attributes.
+When using the term "search" when specifying entries 
+you can specify the following search attributes.
 
 <ul>
 <li> search.text="text to search"
@@ -296,8 +297,6 @@ Find all entries with file suffix 'pdf' that have been created in the last 2 day
 <pre>
 {{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
 </pre>
-
-
 
 
 
@@ -465,6 +464,15 @@ You can create a header with wiki text like:
 &lt;/center&gt;
 }]
 
+
+<li> [wiki::tagdef search {
+                  type="entry type" 
+                  search.showform="true|false"
+                  search.showheader="true|false"}]
+
+The "search" tag performs an entry type specific search and embed it into the wiki. This is the same as the top-level type specific search. You can use any of the "search." attributes defined above, e.g., search.text.
+
+The default is to not show the form.
 
 
 <li> [wiki::tagdef apply]

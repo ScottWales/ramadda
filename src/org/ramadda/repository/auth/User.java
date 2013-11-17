@@ -63,6 +63,8 @@ public class User {
     /** _more_ */
     private String answer = "";
 
+    private String description = "";
+
     /** _more_ */
     private String hashedPassword = "";
 
@@ -164,7 +166,7 @@ public class User {
      * @param propertiesBlob _more_
      */
     public User(String id, String name, String email, String question,
-                String answer, String hashedPassword, boolean admin,
+                String answer, String hashedPassword, String description, boolean admin,
                 String language, String template, boolean isGuest,
                 String propertiesBlob) {
         this.id             = id;
@@ -173,6 +175,7 @@ public class User {
         this.question       = question;
         this.answer         = answer;
         this.hashedPassword = hashedPassword;
+        this.description    = description;
         this.admin          = admin;
         if (language == null) {
             language = "";
@@ -429,6 +432,26 @@ public class User {
     public String getAnswer() {
         return answer;
     }
+
+/**
+Set the Description property.
+
+@param value The new value for Description
+**/
+public void setDescription (String value) {
+	description = value;
+}
+
+/**
+Get the Description property.
+
+@return The Description
+**/
+public String getDescription () {
+	return description;
+}
+
+
 
 
 

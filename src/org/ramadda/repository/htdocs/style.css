@@ -109,7 +109,6 @@ input, password, fileinput,textarea,select {
 
 
 .search-list {
-             margin-top:20px;
 }
 
 
@@ -189,13 +188,6 @@ input, password, fileinput,textarea,select {
 
 
 
-.entry-table {
-//  border: 1px #f4f4f4 solid;
-  max-height: 200px; 
-  overflow-y: auto;
-}
-
-
 .entry-table tr {
    border: 1px #f4f4f4 solid;
    padding:0px;
@@ -204,17 +196,20 @@ input, password, fileinput,textarea,select {
 
 
 
+
+
 .entry-table tr.odd {
-   background-color:#f2f2f2;
+   background-color:#f8f8f8;
 }
+
 
 .entry-table tr.even {
    background-color:#fff;
 }
 
 .entry-table td {
-    padding-top: 10px;
-    padding-bottom: 2px;
+    padding-top: 6px;
+    padding-bottom: 1px;
     padding-left: 8px;
     padding-right: 8px;
 }
@@ -229,20 +224,17 @@ td.entry-table-block {
      background-color:#fff;
 }
 
-
 .entry-table thead th {
-       padding: 3px 18px 3px 10px;
-       border-bottom: 1px solid black;
+       padding: 3px 10px 3px 10px;
+       border-bottom: 1px solid #888;
        font-weight: bold;
-       cursor: pointer;
 }
 
 .entry-table tfoot th {
-       padding: 3px 18px 3px 10px;
-       border-top: 1px solid black;
+       padding: 3px 10px 3px 10px;
+       border-top: 1px solid #888;
        font-weight: bold;
 }
-
 
 
 

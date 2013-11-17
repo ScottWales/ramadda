@@ -1522,6 +1522,7 @@ public class HtmlOutputHandler extends OutputHandler {
                           StringBuffer sb)
             throws Exception {
 
+        boolean showCategories = request.get(ARG_SHOWCATEGORIES, true);
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
         List<String> types = new ArrayList<String>();
@@ -1545,6 +1546,12 @@ public class HtmlOutputHandler extends OutputHandler {
                     type = "Files";
                 }
             }
+            
+            if(!showCategories) {
+                type = "entries";
+            }
+
+
             List<Entry> entries = map.get(type);
             if (entries == null) {
                 entries = new ArrayList<Entry>();
@@ -1656,7 +1663,11 @@ public class HtmlOutputHandler extends OutputHandler {
                             if (s == null) {
                                 s = "NA";
                             }
-                            tableSB.append(HtmlUtils.col(s));
+                            if (column.isNumeric()) {
+                                tableSB.append(HtmlUtils.colRight(s));
+                            } else {
+                                tableSB.append(HtmlUtils.col(s));
+                            }
                         }
                     }
                 }
@@ -1817,8 +1828,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-        showNext(request, subGroups, entries, sb);
-
 
         boolean hasChildren = ((subGroups.size() != 0)
                                || (entries.size() != 0));
@@ -1866,6 +1875,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
+            showNext(request, subGroups, entries, sb);
             List<Entry> allEntries = new ArrayList<Entry>();
             allEntries.addAll(subGroups);
             allEntries.addAll(entries);

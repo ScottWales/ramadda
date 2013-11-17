@@ -4378,23 +4378,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param request The request
-     *
-     * @return _more_
-     */
-    public int getMax(Request request) {
-        if (request.defined(ARG_SKIP)) {
-            return request.get(ARG_SKIP, 0)
-                   + request.get(ARG_MAX, DB_MAX_ROWS);
-        }
-
-        return request.get(ARG_MAX, DB_MAX_ROWS);
-    }
-
-
-    /**
-     * _more_
-     *
      * @return _more_
      *
      * @throws Exception _more_

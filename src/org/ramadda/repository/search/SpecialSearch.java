@@ -415,66 +415,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         makeHeader(request, sb);
 
-        String[] nwse = new String[] { request.getString(ARG_AREA_NORTH, ""),
-                                       request.getString(ARG_AREA_WEST, ""),
-                                       request.getString(ARG_AREA_SOUTH, ""),
-                                       request.getString(ARG_AREA_EAST,
-                                           ""), };
-
-
-
-
 
 
         StringBuffer formSB = new StringBuffer();
-        formSB.append("<div style=\"min-width:200px;\">");
-        formSB.append(request.form(URL_SEARCH,
-                                   HtmlUtils.attr(HtmlUtils.ATTR_NAME,
-                                       "apisearchform")));
-        formSB.append(HtmlUtils.br());
-        formSB.append(HtmlUtils.formTable());
-        if (showText) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
-                    HtmlUtils.input(ARG_TEXT,
-                                    request.getString(ARG_TEXT, ""),
-                                    HtmlUtils.SIZE_15 + " autofocus ")));
-        }
-
-        if (showDate) {
-            TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      Constants.dataDate, false);
-
-        }
-
-        if (showArea) {
-            MapInfo selectMap =
-                getRepository().getMapManager().createMap(request, true);
-            String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
-            formSB.append(formEntry(request, msgLabel("Location"),
-                                    mapSelector));
-        }
-
-
-        for (SyntheticField field : syntheticFields) {
-            String id = field.id;
-            formSB.append(formEntry(request, msgLabel(field.label),
-                                    HtmlUtils.input(id,
-                                        request.getString(id, ""),
-                                        HtmlUtils.SIZE_20)));
-        }
-
-        typeHandler.addToSpecialSearchForm(request, formSB);
-
-        for (String type : metadataTypes) {
-            MetadataType metadataType =
-                getRepository().getMetadataManager().findType(type);
-            if (metadataType != null) {
-                StringBuffer tmpsb = new StringBuffer();
-                metadataType.getHandler().addToSearchForm(request, tmpsb,
-                        metadataType);
-                formSB.append(tmpsb);
-            }
-        }
+        makeSearchForm(request, formSB);
 
 
         MapInfo map = getRepository().getMapManager().createMap(request,
@@ -517,61 +461,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         boolean georeferencedResults = tabs.contains(TAB_MAP)
                                        || tabs.contains(TAB_EARTH);
-
-
-        StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.buttons(HtmlUtils.submit(msg("Search"),
-                ARG_SEARCH_SUBMIT), HtmlUtils.submit(msg("Refine"),
-                    ARG_SEARCH_REFINE)));
-
-        //        if(georeferencedResults) {
-        //        }
-
-        if (doSearch) {
-            buttons.append(" ");
-            String baseUrl = request.getUrl();
-            buttons.append(HtmlUtils.br());
-            StringBuffer links = new StringBuffer();
-
-
-            for (OutputType outputType :
-                    new OutputType[] { KmlOutputHandler.OUTPUT_KML,
-                                       ZipOutputHandler.OUTPUT_ZIPTREE,
-                                       AtomOutputHandler.OUTPUT_ATOM,
-                                       JsonOutputHandler.OUTPUT_JSON,
-                                       CsvOutputHandler.OUTPUT_CSV, }) {
-                if (outputType.getIcon() != null) {
-                    links.append(
-                        HtmlUtils.img(iconUrl(outputType.getIcon())));
-                    links.append(" ");
-                }
-
-                links.append(
-                    HtmlUtils.href(
-                        baseUrl + "&"
-                        + HtmlUtils.arg(
-                            ARG_OUTPUT,
-                            outputType.toString()), outputType.getLabel()));
-                links.append(HtmlUtils.br());
-            }
-            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."),
-                    links.toString(), false));
-        }
-
-
-        if (request.exists(ARG_USER_ID)) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("User"),
-                    HtmlUtils.input(ARG_USER_ID,
-                                    request.getString(ARG_USER_ID, ""),
-                                    HtmlUtils.SIZE_20)));
-        }
-
-        formSB.append(HtmlUtils.formEntry("", buttons.toString()));
-
-
-        formSB.append(HtmlUtils.formTableClose());
-        formSB.append(HtmlUtils.formClose());
-        formSB.append("</div>");
 
 
         List<String> tabContents = new ArrayList<String>();
@@ -657,35 +546,161 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         } else {
             tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
-        sb.append(header(label));
-        sb.append(
-            "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-        sb.append(HtmlUtils.col(formSB.toString(), ""));
-
-        StringBuffer rightSite = new StringBuffer();
-        getRepository().getHtmlOutputHandler().showNext(request,
-                allEntries.size(), rightSite);
-
-        rightSite.append(tabs);
-        sb.append(
-            HtmlUtils.col(
-                rightSite.toString(),
-                HtmlUtils.style("min-width:" + minWidth + "px;")
-                + HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "left")));
-        sb.append("</table>");
-
-        sb.append(HtmlUtils.script(js.toString()));
-        if (allEntries.size() == 0) {
-            //            sb.append(getPageHandler().showDialogNote("No entries found"));
+        if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
+            sb.append(header(label));
         }
 
-        //        for (Entry entry : allEntries) {}
+        StringBuffer rightSide = new StringBuffer();
+        getRepository().getHtmlOutputHandler().showNext(request,
+                                                        allEntries.size(), rightSide);
+        rightSide.append(tabs);
+
+        boolean showForm = request.get(ARG_SEARCH_SHOWFORM, true);
+        if (showForm) {
+            sb.append(
+                "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
+            sb.append(HtmlUtils.col(formSB.toString(), ""));
+            sb.append(
+                HtmlUtils.col(
+                    rightSide.toString(),
+                    HtmlUtils.style("min-width:" + minWidth + "px;")
+                    + HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "left")));
+            sb.append("</table>");
+        } else {
+            sb.append(rightSide);
+        }
+
+        sb.append(HtmlUtils.script(js.toString()));
 
         return null;
 
     }
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param formSB _more_
+     *
+     * @throws Exception _more_
+     */
+    private void makeSearchForm(Request request, StringBuffer formSB)
+            throws Exception {
+
+
+        formSB.append("<div style=\"min-width:200px;\">");
+        formSB.append(request.form(URL_SEARCH,
+                                   HtmlUtils.attr(HtmlUtils.ATTR_NAME,
+                                       "apisearchform")));
+        formSB.append(HtmlUtils.br());
+        formSB.append(HtmlUtils.formTable());
+        if (showText) {
+            formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
+                    HtmlUtils.input(ARG_TEXT,
+                                    request.getString(ARG_TEXT, ""),
+                                    HtmlUtils.SIZE_15 + " autofocus ")));
+        }
+
+        if (showDate) {
+            TypeHandler.addDateSearch(getRepository(), request, formSB,
+                                      Constants.dataDate, false);
+
+        }
+
+        if (showArea) {
+            String[] nwse = new String[] {
+                                request.getString(ARG_AREA_NORTH, ""),
+                                request.getString(ARG_AREA_WEST, ""),
+                                request.getString(ARG_AREA_SOUTH, ""),
+                                request.getString(ARG_AREA_EAST, ""), };
+
+            MapInfo selectMap =
+                getRepository().getMapManager().createMap(request, true);
+            String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
+            formSB.append(formEntry(request, msgLabel("Location"),
+                                    mapSelector));
+        }
+
+
+        for (SyntheticField field : syntheticFields) {
+            String id = field.id;
+            formSB.append(formEntry(request, msgLabel(field.label),
+                                    HtmlUtils.input(id,
+                                        request.getString(id, ""),
+                                        HtmlUtils.SIZE_20)));
+        }
+
+        typeHandler.addToSpecialSearchForm(request, formSB);
+
+        for (String type : metadataTypes) {
+            MetadataType metadataType =
+                getRepository().getMetadataManager().findType(type);
+            if (metadataType != null) {
+                StringBuffer tmpsb = new StringBuffer();
+                metadataType.getHandler().addToSearchForm(request, tmpsb,
+                        metadataType);
+                formSB.append(tmpsb);
+            }
+        }
+
+
+
+        StringBuffer buttons = new StringBuffer();
+        buttons.append(HtmlUtils.buttons(HtmlUtils.submit(msg("Search"),
+                ARG_SEARCH_SUBMIT), HtmlUtils.submit(msg("Refine"),
+                    ARG_SEARCH_REFINE)));
+
+
+        boolean doSearch = true;
+        if (doSearch) {
+            buttons.append(" ");
+            String baseUrl = request.getUrl();
+            buttons.append(HtmlUtils.br());
+            StringBuffer links = new StringBuffer();
+
+
+            for (OutputType outputType :
+                    new OutputType[] { KmlOutputHandler.OUTPUT_KML,
+                                       ZipOutputHandler.OUTPUT_ZIPTREE,
+                                       AtomOutputHandler.OUTPUT_ATOM,
+                                       JsonOutputHandler.OUTPUT_JSON,
+                                       CsvOutputHandler.OUTPUT_CSV, }) {
+                if (outputType.getIcon() != null) {
+                    links.append(
+                        HtmlUtils.img(iconUrl(outputType.getIcon())));
+                    links.append(" ");
+                }
+
+                links.append(
+                    HtmlUtils.href(
+                        baseUrl + "&"
+                        + HtmlUtils.arg(
+                            ARG_OUTPUT,
+                            outputType.toString()), outputType.getLabel()));
+                links.append(HtmlUtils.br());
+            }
+            buttons.append(HtmlUtils.makeShowHideBlock(msg("More..."),
+                    links.toString(), false));
+        }
+
+
+        if (request.exists(ARG_USER_ID)) {
+            formSB.append(HtmlUtils.formEntry(msgLabel("User"),
+                    HtmlUtils.input(ARG_USER_ID,
+                                    request.getString(ARG_USER_ID, ""),
+                                    HtmlUtils.SIZE_20)));
+        }
+
+        formSB.append(HtmlUtils.formEntry("", buttons.toString()));
+
+
+        formSB.append(HtmlUtils.formTableClose());
+        formSB.append(HtmlUtils.formClose());
+        formSB.append("</div>");
+    }
 
 
     /**

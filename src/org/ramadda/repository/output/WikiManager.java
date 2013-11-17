@@ -168,6 +168,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** first attribute */
     public static final String ATTR_FIRST = "first";
 
+    /** _more_          */
     public static final String ATTR_LAST = "last";
 
     /** sort attribute */
@@ -598,7 +599,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_TAGCLOUD, attrs("type", "", "threshold", "0")),
         WIKI_PROP_PROPERTIES, WIKI_PROP_BREADCRUMBS, WIKI_PROP_FIELD,
         WIKI_PROP_TOOLS, WIKI_PROP_TOOLBAR, WIKI_PROP_LAYOUT, WIKI_PROP_MENU,
-        WIKI_PROP_ENTRYID, WIKI_PROP_SEARCH, WIKI_PROP_ROOT
+        WIKI_PROP_ENTRYID,
+        prop(WIKI_PROP_SEARCH,
+             attrs(ATTR_TYPE, "", ARG_MAX, "10", ARG_SEARCH_SHOWFORM,
+                   "false")),
+        WIKI_PROP_ROOT
     };
     //j+
 
@@ -1573,13 +1578,38 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return getEntryManager().getEntryActionsTable(request, entry,
                     type);
         } else if (theTag.equals(WIKI_PROP_SEARCH)) {
-            String id = Misc.getProperty(props, ATTR_ID, "");
-            SpecialSearch ss =
-                (SpecialSearch) getRepository().getApiManager().getApiHandler(
-                    id);
-            Request clonedRequest = request.cloneMe();
-            ss.processSearchRequest(clonedRequest, sb);
+            String type = Misc.getProperty(props, ATTR_TYPE,
+                                           Misc.getProperty(props, ATTR_ID,
+                                                            TypeHandler.TYPE_ANY));
+            TypeHandler typeHandler = getRepository().getTypeHandler(type);
 
+            if (typeHandler == null) {
+                return "Could not find search type: " + type;
+            }
+            String  incomingMax = request.getString(ARG_MAX, (String) null);
+            Request myRequest   = copyRequest(request, props);
+
+            if ( !myRequest.defined(ARG_SEARCH_SHOWHEADER)) {
+                myRequest.put(ARG_SEARCH_SHOWHEADER, "false");
+            }
+            if ( !myRequest.defined(ARG_SEARCH_SHOWFORM)) {
+                myRequest.put(ARG_SEARCH_SHOWFORM, "false");
+            }
+            if ( !myRequest.defined(ARG_SHOWCATEGORIES)) {
+                myRequest.put(ARG_SHOWCATEGORIES, "false");
+            }
+
+            addSearchTerms(myRequest, props, entry);
+
+            if (incomingMax != null) {
+                myRequest.put(ARG_MAX, incomingMax);
+            } else {
+                if ( !myRequest.exists(ARG_MAX)) {
+                    myRequest.put(ARG_MAX, "10");
+                }
+            }
+            SpecialSearch ss = typeHandler.getSpecialSearch();
+            ss.processSearchRequest(myRequest, sb);
             return sb.toString();
         } else if (theTag.equals(WIKI_PROP_APPLY)) {
             StringBuffer style = new StringBuffer(Misc.getProperty(props,
@@ -2208,6 +2238,26 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     }
 
     /**
+     * _more_
+     *
+     * @param request _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Request copyRequest(Request request, Hashtable props)
+            throws Exception {
+        Request clonedRequest = request.cloneMe();
+        clonedRequest.putAll(props);
+
+        return clonedRequest;
+    }
+
+
+
+    /**
      * Add the image popup javascript
      *
      * @param request  the Request
@@ -2639,8 +2689,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
-        String lastEntries = Misc.getProperty(props,
-                                  attrPrefix + ATTR_LAST, (String) null);
+        String lastEntries = Misc.getProperty(props, attrPrefix + ATTR_LAST,
+                                 (String) null);
 
         if (lastEntries != null) {
             Hashtable<String, Entry> map = new Hashtable<String, Entry>();
@@ -2811,28 +2861,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 myRequest.put(ARG_MAX,
                               Misc.getProperty(searchProps,
                                   PREFIX_SEARCH + ARG_MAX, "100"));
-                String[] args = new String[] {
-                    ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
-                    ARG_BBOX + ".north", ARG_BBOX + ".west",
-                    ARG_BBOX + ".south", ARG_BBOX + ".east",
-                    Constants.dataDate.from, Constants.dataDate.to,
-                    Constants.dataDate.relative, Constants.createDate.from,
-                    Constants.createDate.to, Constants.createDate.relative,
-                    Constants.changeDate.from, Constants.changeDate.to,
-                    Constants.changeDate.relative,
-                };
-                for (String arg : args) {
-                    String text = (String) searchProps.get(PREFIX_SEARCH
-                                      + arg);
-                    if (text != null) {
-                        if (arg.equals(ARG_GROUP)) {
-                            if (text.equals(ID_THIS)) {
-                                text = baseEntry.getId();
-                            }
-                        }
-                        myRequest.put(arg, text);
-                    }
-                }
+
+                addSearchTerms(request, searchProps,baseEntry);
+
 
                 if (isRemote) {
                     List<String> toks = (entryid.indexOf("=") >= 0)
@@ -2956,6 +2987,34 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
         return entries;
 
+    }
+
+
+
+
+    private void addSearchTerms(Request request, Hashtable props, Entry baseEntry) throws Exception {
+        String[] args = new String[] {
+            ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
+            ARG_BBOX + ".north", ARG_BBOX + ".west",
+            ARG_BBOX + ".south", ARG_BBOX + ".east",
+            Constants.dataDate.from, Constants.dataDate.to,
+            Constants.dataDate.relative, Constants.createDate.from,
+            Constants.createDate.to, Constants.createDate.relative,
+            Constants.changeDate.from, Constants.changeDate.to,
+            Constants.changeDate.relative,
+        };
+        for (String arg : args) {
+            String text = (String) props.get(PREFIX_SEARCH
+                                             + arg);
+            if (text != null) {
+                if (arg.equals(ARG_GROUP)) {
+                    if (text.equals(ID_THIS)) {
+                        text = baseEntry.getId();
+                    }
+                }
+                request.put(arg, text);
+            }
+        }
     }
 
 

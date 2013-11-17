@@ -319,7 +319,7 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
 
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        //        System.err.println ("cnt:" + cnt + " " + max);
+        //        ucar.unidata.util.Misc.printStack ("cnt:" + cnt + " " + max,5);
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
             sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
@@ -335,10 +335,18 @@ public class OutputHandler extends RepositoryManager {
                                         + ARG_SKIP + "="
                                         + (skip + max), msg("Next...")));
             }
-            request.put(ARG_MAX, "" + (max + VIEW_MAX_ROWS));
+            int moreMax = (int) (max * 1.5);
+            if (moreMax < 10) {
+                moreMax = 10;
+            }
+            int lessMax = max / 2;
+            if (lessMax < 1) {
+                lessMax = 1;
+            }
+            request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(), msg("View More")));
-                request.put(ARG_MAX, "" + (max / 2));
+                request.put(ARG_MAX, "" + lessMax);
                 toks.add(HtmlUtils.href(request.getUrl(), msg("View Less")));
             }
             if (toks.size() > 0) {
