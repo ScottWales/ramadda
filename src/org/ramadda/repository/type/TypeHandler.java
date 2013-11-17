@@ -3808,36 +3808,42 @@ public class TypeHandler extends RepositoryManager {
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra;
         if (arg.hasRange) {
-            dateExtra = HtmlUtils.br()
-                        + HtmlUtils.makeToggleInline(msg("More..."),
-                            HtmlUtils.p() + HtmlUtils.formTable(new String[] {
+            dateExtra = HtmlUtils.makeToggleInline(msg("..."),
+                    HtmlUtils.br() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
                 msgLabel("Or search relative"), dateSelectInput, "",
                 noDateInput + HtmlUtils.space(1)
                 + msg("Include entries with no data times")
             }), false);
         } else {
-            dateExtra = HtmlUtils.space(4)
-                        + HtmlUtils.makeToggleInline(msg("More..."),
-                            HtmlUtils.p()
-                            + HtmlUtils.formTable(new String[] {
-                                msgLabel("Or search relative"),
-                                dateSelectInput }), false);
+            dateExtra = HtmlUtils.makeToggleInline(msg("..."),
+                    HtmlUtils.br()
+                    + HtmlUtils.formTable(new String[] {
+                        msgLabel("Or search relative"),
+                        dateSelectInput }), false);
 
 
         }
 
+        String fromField = repository.getPageHandler().makeDateInput(request,
+                               arg.from, "searchform", null, null, showTime);
+        String toField = repository.getPageHandler().makeDateInput(request,
+                             arg.to, "searchform", null, null, showTime);
+        /*
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel(arg.label),
-                repository.getPageHandler().makeDateInput(request, arg.from,
-                    "searchform", null, null, showTime) + HtmlUtils.space(1)
+                                                      msgLabel(arg.label),
+                                                       + HtmlUtils.space(1)
                         + HtmlUtils.img(repository.iconUrl(ICON_RANGE))
                         + HtmlUtils.space(1)
-                        + repository.getPageHandler().makeDateInput(request,
-                            arg.to, "searchform", null, null,
-                            showTime) + dateExtra));
+                                                      +  + dateExtra));
+        */
 
-
+        basicSB.append(RepositoryManager.formEntryTop(request,
+                msgLabel("From " + arg.label), fromField));
+        basicSB.append(RepositoryManager.formEntryTop(request,
+                msgLabel("To " + arg.label), toField));
+        basicSB.append(RepositoryManager.formEntryTop(request, "",
+                dateExtra));
 
     }
 

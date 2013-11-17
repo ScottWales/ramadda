@@ -35,9 +35,10 @@ form {
 }
 
 
-.input, .password, .fileinput,.textarea,.select {
+input, password, fileinput,textarea,select {
   border : 1px #888 solid;
 }
+
 
 .input:focus, .textarea:focus {
   background: #fffeec;
@@ -105,6 +106,11 @@ form {
     color: #fff;
 }
 
+
+
+.search-list {
+             margin-top:20px;
+}
 
 
 .entry-type-search {
@@ -182,10 +188,64 @@ form {
 }
 
 
+
 .entry-table {
-   max-height: 600px; 
-   overflow-y: auto;
+//  border: 1px #f4f4f4 solid;
+  max-height: 200px; 
+  overflow-y: auto;
 }
+
+
+.entry-table tr {
+   border: 1px #f4f4f4 solid;
+   padding:0px;
+   padding-bottom:0px;
+}
+
+
+
+.entry-table tr.odd {
+   background-color:#f2f2f2;
+}
+
+.entry-table tr.even {
+   background-color:#fff;
+}
+
+.entry-table td {
+    padding-top: 10px;
+    padding-bottom: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.search-select {
+       max-width:150px;
+}
+
+td.entry-table-block {
+     border-bottom:1px #eee solid;
+     padding:0px;
+     background-color:#fff;
+}
+
+
+.entry-table thead th {
+       padding: 3px 18px 3px 10px;
+       border-bottom: 1px solid black;
+       font-weight: bold;
+       cursor: pointer;
+}
+
+.entry-table tfoot th {
+       padding: 3px 18px 3px 10px;
+       border-top: 1px solid black;
+       font-weight: bold;
+}
+
+
+
+
 
 .ui-accordion .ui-accordion-content {
          padding:0px;

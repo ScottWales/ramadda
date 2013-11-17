@@ -1722,7 +1722,8 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = (String) toString(values, offset);
             }
-            widget = HtmlUtils.select(urlArg, enumValues, value);
+            widget = HtmlUtils.select(urlArg, enumValues, value,
+                                      HtmlUtils.cssClass("column-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
@@ -1731,9 +1732,11 @@ public class Column implements DataTypes, Constants {
                 value = (String) toString(values, offset);
             }
             List enums = getEnumPlusValues(request, entry);
-            widget = HtmlUtils.select(urlArg, enums, value) + "  or:  "
-                     + HtmlUtils.input(urlArg + "_plus", "",
-                                       HtmlUtils.SIZE_20);
+            widget = HtmlUtils.select(
+                urlArg, enums, value,
+                HtmlUtils.cssClass("column-select")) + "  or:  "
+                    + HtmlUtils.input(
+                        urlArg + "_plus", "", HtmlUtils.SIZE_20);
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2297,8 +2300,6 @@ public class Column implements DataTypes, Constants {
                             null, null,
                             isType(DATATYPE_DATETIME)) + HtmlUtils.space(4)
                                 + msgLabel("Or") + dateSelectInput;
-
-
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget =
                 HtmlUtils.select(searchArg,
@@ -2328,7 +2329,8 @@ public class Column implements DataTypes, Constants {
                 tmpValues.addAll(values);
             }
             widget = HtmlUtils.select(searchArg, tmpValues,
-                                      request.getString(searchArg));
+                                      request.getString(searchArg),
+                                      HtmlUtils.cssClass("search-select"));
         } else if (isNumeric()) {
             String expr = HtmlUtils.select(searchArg + "_expr", EXPR_ITEMS,
                                            request.getString(searchArg

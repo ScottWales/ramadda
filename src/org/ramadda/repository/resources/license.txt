@@ -27,6 +27,7 @@ RAMADDA includes software developed by:
     * ViSAD from the University of Wisconsin (http://www.ssec.wisc.edu/~billh/visad.html)
     * JPEG Metadata Extractor (http://www.drewnoakes.com/code/exif/)
     * Jquery (http://jquery.com/)
+    * JQuery Data Tables (http://datatables.net/index)
     * Slidesjs (http://slidesjs.com/)
     * Fancybox (http://fancybox.net/)
     * Icons from the famfamfam icon collection: http://www.famfamfam.com/lab/icons/

@@ -336,11 +336,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         boolean     refinement = request.exists(ARG_SEARCH_REFINE);
 
 
+        if ( !request.exists(ARG_MAX)) {
+            request.put(ARG_MAX, "50");
+        }
 
-        int         cnt        = getEntryUtil().getEntryCount(typeHandler);
-        boolean     doSearch   = (refinement
-                                  ? false
-                                  : ((cnt < 100) || doSearchInitially));
+
+        int     cnt      = getEntryUtil().getEntryCount(typeHandler);
+        boolean doSearch = (refinement
+                            ? false
+                            : ((cnt < 100) || doSearchInitially));
+        doSearch = true;
+
         if (request.defined(ARG_SEARCH_SUBMIT)) {
             doSearch = true;
         }
@@ -571,10 +577,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<String> tabContents = new ArrayList<String>();
         List<String> tabTitles   = new ArrayList<String>();
         StringBuffer timelineSB  = new StringBuffer();
-        StringBuffer listSB      = new StringBuffer();
 
-
-        makeEntryList(request, listSB, allEntries);
 
         getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
                 allEntries, timelineSB,
@@ -586,10 +589,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                  HtmlUtils.italics(
                                      msg("Shift-drag to select region")));
         mapSB.append(map.getHtml());
-
-        //Pad it out
-        listSB.append(
-            "&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>");
 
         if (refinement) {
             tabTitles.add(msg("Results"));
@@ -613,6 +612,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             } else {
                 for (String tab : tabs) {
                     if (tab.equals(TAB_LIST)) {
+                        StringBuffer listSB = new StringBuffer();
+                        makeEntryList(request, listSB, allEntries);
                         tabContents.add(HtmlUtils.div(listSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
@@ -648,20 +649,29 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 }
             }
         }
-        String tabs = (tabContents.size() == 1)
-                      ? tabContents.get(0)
-                      : OutputHandler.makeTabs(tabTitles, tabContents, true);
+        String tabs;
+
+        if (tabContents.size() == 1) {
+            tabs = HtmlUtils.div(tabContents.get(0),
+                                 HtmlUtils.cssClass("search-list"));
+        } else {
+            tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
+        }
         sb.append(header(label));
         sb.append(
             "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top>");
-        String searchHtml =
-            HtmlUtils.makeShowHideBlock(HtmlUtils.img(iconUrl(ICON_SEARCH)),
-                                        formSB.toString(), searchOpen);
-        sb.append(HtmlUtils.col(searchHtml, ""
-        /*HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "200")*/
-        ));
-        sb.append(HtmlUtils.col(tabs, HtmlUtils.style("min-width:" + minWidth
-                + "px;") + HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "left")));
+        sb.append(HtmlUtils.col(formSB.toString(), ""));
+
+        StringBuffer rightSite = new StringBuffer();
+        getRepository().getHtmlOutputHandler().showNext(request,
+                allEntries.size(), rightSite);
+
+        rightSite.append(tabs);
+        sb.append(
+            HtmlUtils.col(
+                rightSite.toString(),
+                HtmlUtils.style("min-width:" + minWidth + "px;")
+                + HtmlUtils.attr(HtmlUtils.ATTR_ALIGN, "left")));
         sb.append("</table>");
 
         sb.append(HtmlUtils.script(js.toString()));

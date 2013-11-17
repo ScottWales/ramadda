@@ -1567,18 +1567,19 @@ public class HtmlOutputHandler extends OutputHandler {
                                        : typeHandler.getLabel();
             List<Column> columns     = typeHandler.getColumns();
             StringBuffer tableSB     = new StringBuffer();
-            tableSB.append("<div class=\"entry-table\">");
-            tableSB.append(
-                "<table width=100% cellspacing=2 cellpadding=2 border=0>");
-            tableSB.append("<tr>");
+            tableSB.append("<div class=\"entry-table-wrapper\">");
+            String tableId = HtmlUtils.getUniqueId("entrytable_");
+            tableSB.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
+                                          HtmlUtils.attrs(new String[] {
+                "class", "entry-table", "width", "100%", "cellspacing", "0",
+                "cellpadding", "0", "border", "0", HtmlUtils.ATTR_ID, tableId
+            })));
+            tableSB.append("<thead>");
+            tableSB.append("<tr valign=bottom>");
             numCols++;
-            //            tableSB.append(HtmlUtils.col("<b>" + msg("Name") +"</b>"));
-            tableSB.append(HtmlUtils.col("&nbsp;"));
+            tableSB.append(HtmlUtils.th(HtmlUtils.b(msg("Name"))));
             numCols++;
-            tableSB.append(HtmlUtils.col("&nbsp;"));
-            //            tableSB.append(HtmlUtils.col("<b>" + msg("Date") +"</b>"));
-
-
+            tableSB.append(HtmlUtils.th(HtmlUtils.b(msg("Date"))));
             boolean haveFiles = false;
             for (Entry entry : entries) {
                 if (entry.isFile()) {
@@ -1589,56 +1590,56 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             if (haveFiles) {
                 numCols++;
-                tableSB.append(HtmlUtils.col(""));
-                numCols++;
-                tableSB.append(HtmlUtils.col(HtmlUtils.b(msg("Size")),
-                                             " align=right "));
+                tableSB.append(HtmlUtils.th(HtmlUtils.b(msg("Size")),
+                                            " align=right "));
             }
-            //            tableSB.append(HtmlUtils.col("&nbsp;"));
             if (columns != null) {
                 for (Column column : columns) {
                     if (column.getCanList() && column.getCanShow()
                             && (column.getRows() <= 1)) {
                         numCols++;
                         tableSB.append(
-                            HtmlUtils.col(HtmlUtils.b(column.getLabel())));
+                            HtmlUtils.th(HtmlUtils.b(column.getLabel())));
                     }
                 }
             }
             tableSB.append("</tr>");
+            tableSB.append("</thead>");
+            tableSB.append("<tbody>");
 
-            String blank = HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
+            String  blank =
+                HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
+            boolean odd   = true;
             for (Entry entry : entries) {
-                tableSB.append(
-                    "<tr valign=top style=\"border-bottom:1px #888 solid;\" >");
+                tableSB.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                        HtmlUtils.attrs(new String[] { "class", odd
+                        ? "odd"
+                        : "even", "valign", "top" })));
 
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, getEntryDisplayName(entry));
-                tableSB.append(HtmlUtils.col(entryLink.getLink(),
-                                             " xxxwidth=50%  "));
+                tableSB.append(HtmlUtils.col(entryLink.getLink(), ""));
                 tableSB.append(
                     HtmlUtils.col(
                         entry.getTypeHandler().formatDate(
                             request, entry, new Date(entry.getStartDate()),
                             ""), " width=10% align=right "));
 
-                if (entry.isFile()) {
-                    tableSB.append(
-                        HtmlUtils.col(
-                            HtmlUtils.href(
-                                entry.getTypeHandler().getEntryResourceUrl(
-                                    request, entry), HtmlUtils.img(
-                                    iconUrl(ICON_DOWNLOAD), msg("Download"),
-                                    "")), " width=2% "));
-                } else if (haveFiles) {
-                    tableSB.append(HtmlUtils.col(""));
-                }
+
 
                 if (haveFiles) {
+
+                    String downloadLink =
+                        HtmlUtils.href(
+                            entry.getTypeHandler().getEntryResourceUrl(
+                                request, entry), HtmlUtils.img(
+                                iconUrl(ICON_DOWNLOAD), msg("Download"), ""));
+
                     if (entry.isFile()) {
                         tableSB.append(HtmlUtils
                             .col(formatFileLength(entry.getResource()
-                                .getFileSize()), " align=right nowrap "));
+                                .getFileSize()) + " "
+                                    + downloadLink, " align=right nowrap "));
                     } else {
                         tableSB.append(HtmlUtils.col("NA",
                                 " align=right nowrap "));
@@ -1660,16 +1661,20 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
                 }
                 tableSB.append("</tr>");
-                //                tableSB.append("<tr><td colspan=" + numCols
-                //                               + " style=\"border-bottom:1px #eee solid;\" >"
-                //                               + blank + "</td></tr>");
+                tableSB.append("<tr class=" + (odd
+                        ? "odd"
+                        : "even") + "><td class=entry-table-block colspan="
+                                  + numCols + " >"
+                                  + entryLink.getFolderBlock()
+                                  + "</td></tr>");
 
-                tableSB.append("<tr><td colspan=" + numCols
-                               + " style=\"border-bottom:1px #eee solid;\" >"
-                               + entryLink.getFolderBlock() + "</td></tr>");
-
+                odd = !odd;
             }
+            tableSB.append("</tbody>");
             tableSB.append("</table>");
+
+            //            String script = JQuery.ready(JQuery.select(JQuery.id(tableId)) +".dataTable();\n");
+            //            sb.append(HtmlUtils.script(script));
 
             if (typeCnt > 1) {
                 sb.append("<p>");
