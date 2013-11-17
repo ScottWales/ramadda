@@ -162,6 +162,7 @@ public class HtmlUtils {
     /** _more_ */
     public static final String TAG_DIV = "div";
 
+    /** _more_          */
     public static final String TAG_EMBED = "embed";
 
     /** _more_ */
@@ -228,6 +229,9 @@ public class HtmlUtils {
 
     /** _more_ */
     public static final String TAG_TD = "td";
+
+    /** _more_          */
+    public static final String TAG_TH = "th";
 
     /** _more_ */
     public static final String TAG_TR = "tr";
@@ -978,6 +982,30 @@ public class HtmlUtils {
      */
     public static String col(String v1, String attr) {
         return tag(TAG_TD, " " + attr + " ", v1);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param v1 _more_
+     *
+     * @return _more_
+     */
+    public static String th(String v1) {
+        return th(v1, "");
+    }
+
+    /**
+     * _more_
+     *
+     * @param v1 _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String th(String v1, String attr) {
+        return tag(TAG_TH, " " + attr + " ", v1);
     }
 
 
@@ -2286,11 +2314,7 @@ public class HtmlUtils {
                                 String extra, int maxLength) {
         StringBuffer sb = new StringBuffer();
         String       attrs;
-        if ((extra != null) && (extra.indexOf(ATTR_CLASS) < 0)) {
-            attrs = attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_SELECT);
-        } else {
-            attrs = attrs(ATTR_NAME, name);
-        }
+        attrs = attrs(ATTR_NAME, name);
         sb.append(open(TAG_SELECT, attrs + extra));
         sb.append("\n");
 
@@ -3159,6 +3183,13 @@ public class HtmlUtils {
         return importCss(css);
     }
 
+    /**
+     * _more_
+     *
+     * @param css _more_
+     *
+     * @return _more_
+     */
     public static String importCss(String css) {
         return tag(TAG_STYLE, "", css);
     }
