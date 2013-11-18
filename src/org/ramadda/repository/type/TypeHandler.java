@@ -39,6 +39,7 @@ import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 
@@ -2192,13 +2193,15 @@ public class TypeHandler extends RepositoryManager {
                 String linkMsg =
                     msg(
                     "Search for entries of this type created by the user");
+                String userLinkId = HtmlUtils.getUniqueId("userlink_");
                 userSearchLink =
                     HtmlUtils
                         .href(getSearchManager().URL_SEARCH_TYPE + "/"
                               + entry.getTypeHandler().getType() + "?"
                               + ARG_USER_ID + "=" + entry.getUser().getId()
                               + "&" + SearchManager.ARG_SEARCH_SUBMIT
-                              + "=true", entry.getUser().getLabel(), HtmlUtils
+                              + "=true", entry.getUser().getLabel(), HtmlUtils.id(userLinkId) +
+                              HtmlUtils
                                   .cssClass("entry-type-search") + HtmlUtils
                                   .attr(HtmlUtils
                                       .ATTR_ALT, msg(linkMsg)) + HtmlUtils
@@ -2208,7 +2211,14 @@ public class TypeHandler extends RepositoryManager {
 
                 sb.append(formEntry(request, msgLabel("Created by"),
                                     userSearchLink));
+                /*
+                String tt = JQuery.select(JQuery.id(userLinkId)) +".tooltip({content: function() {return 'tooltip';}});\n";
+                sb.append(HtmlUtils.comment("user tooltip"));
+                sb.append(HtmlUtils.script("\n$(function() {\n" + tt +"\n});\n"));
+                System.err.println(tt);
+                */
             }
+
 
 
             boolean hasDataDate = false;
