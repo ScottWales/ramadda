@@ -5478,10 +5478,14 @@ public class EntryManager extends RepositoryManager {
         if (decorateMetadata) {
             getMetadataManager().decorateEntry(request, entry, sb, true);
         }
+
         if (showLink) {
-            sb.append(getTooltipLink(request, entry, linkText, url));
+            sb.append(HtmlUtils.span(getTooltipLink(request, entry, linkText,
+                    url), HtmlUtils.cssClass("entry-link")));
         } else {
-            sb.append(HtmlUtils.span(linkText, targetEvent.toString()));
+            sb.append(HtmlUtils.span(linkText,
+                                     targetEvent.toString()
+                                     + HtmlUtils.cssClass("entry-link")));
         }
 
         String link = HtmlUtils.span(sb.toString(),

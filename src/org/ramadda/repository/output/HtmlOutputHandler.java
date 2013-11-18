@@ -1629,17 +1629,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 tableSB.append(
                     HtmlUtils.col(
                         entryLink.getLink(),
-                        HtmlUtils.cssClass("entry-table-name")));
+                        " nowrap " + HtmlUtils.cssClass("entry-table-name")));
+                String date = entry.getTypeHandler().formatDate(request,
+                                  entry, new Date(entry.getStartDate()), "");
                 tableSB.append(
                     HtmlUtils.col(
-                        entry.getTypeHandler().formatDate(
-                            request, entry, new Date(entry.getStartDate()),
-                            ""), " width=10% align=right "));
-
-
+                        date,
+                        " class=\"entry-table-date\" width=10% align=right "));
 
                 if (haveFiles) {
-
                     String downloadLink =
                         HtmlUtils.href(
                             entry.getTypeHandler().getEntryResourceUrl(

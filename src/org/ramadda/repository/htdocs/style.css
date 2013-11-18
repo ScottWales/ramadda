@@ -77,6 +77,13 @@ input, password, fileinput,textarea,select {
 
 
 
+.entry-link {
+//   border: 1px red solid;
+   max-width: 200px;
+   overflow-x:hidden;
+}
+
+
 .entry-list-block {
    padding-left:0px;
    padding-right:0px;
@@ -188,7 +195,15 @@ input, password, fileinput,textarea,select {
 
 
 .entry-table-name   {
-    max-width:400px;
+    max-width:20em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.entry-table-date   {
+//    max-width:10em;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .search-header {

@@ -85,7 +85,8 @@ public class PageHandler extends RepositoryManager {
 
     /** _more_ */
     public static final String DEFAULT_TIME_SHORTFORMAT =
-        "yyyy/MM/dd HH:mm z";
+    //        "yyyy/MM/dd HH:mm z";
+    "yyyy/MM/dd";
 
     /** _more_ */
     public static final String DEFAULT_TIME_THISYEARFORMAT =
@@ -1812,14 +1813,17 @@ public class PageHandler extends RepositoryManager {
             return BLANK;
         }
 
-        SimpleDateFormat sdf = getSDF(getProperty(PROP_DATE_SHORTFORMAT,
-                                   DEFAULT_TIME_SHORTFORMAT), timezone);
+        String fmt = getProperty(PROP_DATE_SHORTFORMAT,
+                                 DEFAULT_TIME_SHORTFORMAT);
+        SimpleDateFormat sdf      = getSDF(fmt, timezone);
 
-        Date   now      = new Date();
-        long   diff     = now.getTime() - d.getTime();
-        double minutes  = DateUtil.millisToMinutes(diff);
-        String fullDate = formatDate(d, timezone);
-        String result;
+
+
+        Date             now      = new Date();
+        long             diff     = now.getTime() - d.getTime();
+        double           minutes  = DateUtil.millisToMinutes(diff);
+        String           fullDate = formatDate(d, timezone);
+        String           result;
         if ((minutes > 0) && (minutes < 65) && (minutes > 55)) {
             result = "about an hour ago";
         } else if ((diff > 0) && (diff < DateUtil.minutesToMillis(1))) {
