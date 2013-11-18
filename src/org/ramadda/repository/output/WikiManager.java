@@ -2762,10 +2762,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
+        Request myRequest = new Request(getRepository(), request.getUser());
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
             }
+            entryid = entryid.replace("_COMMA_", ",");
 
             if (entryid.equals(ID_ANCESTORS)) {
                 List<Entry> tmp    = new ArrayList<Entry>();
@@ -2841,6 +2843,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         searchProps.putAll(props);
                     }
                     searchProps.put(toks.get(0), toks.get(1));
+                    myRequest.put(toks.get(0), toks.get(1));
                 }
 
                 continue;
@@ -2850,15 +2853,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 if (searchProps == null) {
                     searchProps = props;
                 }
-                Request myRequest = new Request(getRepository(),
-                                        request.getUser());
                 myRequest.put(ARG_AREA_MODE,
                               Misc.getProperty(searchProps, ARG_AREA_MODE,
                                   VALUE_AREA_CONTAINS));
                 myRequest.put(ARG_MAX,
                               Misc.getProperty(searchProps,
                                   PREFIX_SEARCH + ARG_MAX, "100"));
-
 
                 addSearchTerms(myRequest, searchProps, baseEntry);
 

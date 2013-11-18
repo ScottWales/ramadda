@@ -142,7 +142,8 @@ public class VirtualTypeHandler extends GenericTypeHandler {
             throws Exception {
         List<String> ids      = new ArrayList<String>();
         String       idString = (String) mainEntry.getValue(0, "");
-        List<String> lines    = StringUtil.split(idString, "\n", true, true);
+        idString = idString.replace(",", "_COMMA_");
+        List<String> lines = StringUtil.split(idString, "\n", true, true);
         idString = StringUtil.join(",", lines);
 
 

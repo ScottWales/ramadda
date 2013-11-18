@@ -1454,7 +1454,6 @@ public class Column implements DataTypes, Constants {
                         subClauses.add(Clause.eq(columnName, value));
                     }
                 }
-                //                System.err.println (Clause.or(subClauses));
                 where.add(Clause.or(subClauses));
             }
         } else {
@@ -1515,13 +1514,15 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     private List<String> getSearchValues(Request request) {
-        List<String> dflt      = new ArrayList<String>();
+        List<String> result    = new ArrayList<String>();
         String       searchArg = getSearchArg();
         if (request.defined(searchArg)) {
-            return request.get(searchArg, dflt);
+            for (String arg : (List<String>) request.get(searchArg, result)) {
+                result.addAll(StringUtil.split(arg, ",", true, true));
+            }
         }
 
-        return dflt;
+        return result;
     }
 
 
