@@ -2627,8 +2627,7 @@ public class TypeHandler extends RepositoryManager {
         int max = request.get(ARG_MAX, DB_MAX_ROWS);
 
         return getDatabaseManager().select(what, tables, Clause.and(clauses),
-                                           extra,
-                                           max);
+                                           extra, max);
 
     }
 

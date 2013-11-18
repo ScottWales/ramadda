@@ -552,7 +552,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         StringBuffer rightSide = new StringBuffer();
         getRepository().getHtmlOutputHandler().showNext(request,
-                                                        allEntries.size(), rightSide);
+                allEntries.size(), rightSide);
         rightSide.append(tabs);
 
         boolean showForm = request.get(ARG_SEARCH_SHOWFORM, true);

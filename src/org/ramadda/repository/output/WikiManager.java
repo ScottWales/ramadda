@@ -2541,7 +2541,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             props = new Hashtable();
         }
 
-
         //If there is a max property then clone the request and set the max
         int max = Misc.getProperty(props, attrPrefix + ATTR_MAX, -1);
         if (max > 0) {
@@ -2847,9 +2846,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 continue;
             }
 
-
-
-
             if (isRemote || entryid.equals(ID_SEARCH)) {
                 if (searchProps == null) {
                     searchProps = props;
@@ -2863,8 +2859,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               Misc.getProperty(searchProps,
                                   PREFIX_SEARCH + ARG_MAX, "100"));
 
-                addSearchTerms(request, searchProps, baseEntry);
 
+                addSearchTerms(myRequest, searchProps, baseEntry);
 
                 if (isRemote) {
                     List<String> toks = (entryid.indexOf("=") >= 0)
@@ -2881,8 +2877,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     List<Entry> remoteGroups  = new ArrayList<Entry>();
                     List<Entry> remoteEntries = new ArrayList<Entry>();
 
-                    getSearchManager().doDistributedSearch(request, servers,
-                            baseEntry, remoteGroups, remoteEntries);
+                    getSearchManager().doDistributedSearch(myRequest,
+                            servers, baseEntry, remoteGroups, remoteEntries);
                     entries.addAll(remoteGroups);
                     entries.addAll(remoteEntries);
 
@@ -3016,6 +3012,10 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         };
         for (String arg : args) {
             String text = (String) props.get(PREFIX_SEARCH + arg);
+            if (text == null) {
+                text = (String) props.get(arg);
+            }
+
             if (text != null) {
                 if (arg.equals(ARG_GROUP)) {
                     if (text.equals(ID_THIS)) {

@@ -278,8 +278,8 @@ public class LocalRepositoryManager extends RepositoryManager {
         if (user == null) {
             user = new User(
                 adminId, "Administrator", "", "", "",
-                childRepository.getUserManager().hashPassword(password),
-                "", true, "", "", false, null);
+                childRepository.getUserManager().hashPassword(password), "",
+                true, "", "", false, null);
             childRepository.getUserManager().makeOrUpdateUser(user, false);
             msg.append("Created admin: " + user.getId());
             msg.append(HtmlUtils.p());
