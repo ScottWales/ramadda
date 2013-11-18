@@ -187,6 +187,28 @@ input, password, fileinput,textarea,select {
 }
 
 
+.entry-table-name   {
+    max-width:400px;
+}
+
+
+.entry-table-page   {
+  font-size: 90%;
+  font-weight: bold;
+  margin-top:2px;
+  margin-bottom:2px;
+  margin-left:10px;
+
+}
+
+.entry-table-wrapper  {
+   margin-left:8px;
+   margin-right:8px;
+}
+
+.entry-table  {
+    border: 1px #ccc solid;
+}
 
 .entry-table tr {
    border: 1px #f4f4f4 solid;
@@ -194,46 +216,48 @@ input, password, fileinput,textarea,select {
    padding-bottom:0px;
 }
 
-
-
-
-
 .entry-table tr.odd {
-   background-color:#f8f8f8;
+   background-color:#fff;
 }
 
 
 .entry-table tr.even {
-   background-color:#fff;
+   background-color:#f6f6f6;
 }
 
-.entry-table td {
+.entry-table  td {
     padding-top: 6px;
-    padding-bottom: 1px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.search-select {
-       max-width:150px;
+    padding-bottom: 4px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 td.entry-table-block {
-     border-bottom:1px #eee solid;
      padding:0px;
+     margin:0px;
      background-color:#fff;
 }
 
+
 .entry-table thead th {
+       background-color:#f0f0f0;
        padding: 3px 10px 3px 10px;
-       border-bottom: 1px solid #888;
+       border-bottom: 1px solid #ccc;
+       border-right: 1px solid #ccc;
        font-weight: bold;
 }
 
 .entry-table tfoot th {
        padding: 3px 10px 3px 10px;
-       border-top: 1px solid #888;
+       border-top: 1px solid #ccc;
        font-weight: bold;
+}
+
+
+
+
+.search-select {
+       max-width:150px;
 }
 
 

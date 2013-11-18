@@ -322,18 +322,20 @@ public class OutputHandler extends RepositoryManager {
         //        ucar.unidata.util.Misc.printStack ("cnt:" + cnt + " " + max,5);
         if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
             int skip = Math.max(0, request.get(ARG_SKIP, 0));
+            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                     HtmlUtils.cssClass("entry-table-page")));
             sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
-            sb.append(HtmlUtils.space(4));
+            sb.append(HtmlUtils.space(2));
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
-                                        + (skip - max), msg("Previous...")));
+                                        + (skip - max), msg("Previous")));
             }
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
-                                        + (skip + max), msg("Next...")));
+                                        + (skip + max), msg("Next")));
             }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -345,14 +347,16 @@ public class OutputHandler extends RepositoryManager {
             }
             request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
-                toks.add(HtmlUtils.href(request.getUrl(), msg("View More")));
+                toks.add(HtmlUtils.href(request.getUrl(), msg("More")));
                 request.put(ARG_MAX, "" + lessMax);
-                toks.add(HtmlUtils.href(request.getUrl(), msg("View Less")));
+                toks.add(HtmlUtils.href(request.getUrl(), msg("Less")));
             }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
                         HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
+
             }
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             request.put(ARG_MAX, "" + max);
         }
 

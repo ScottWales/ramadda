@@ -63,6 +63,7 @@ public class User {
     /** _more_ */
     private String answer = "";
 
+    /** _more_ */
     private String description = "";
 
     /** _more_ */
@@ -159,6 +160,7 @@ public class User {
      * @param question _more_
      * @param answer _more_
      * @param hashedPassword _more_
+     * @param description _more_
      * @param admin _more_
      * @param language _more_
      * @param template _more_
@@ -166,9 +168,9 @@ public class User {
      * @param propertiesBlob _more_
      */
     public User(String id, String name, String email, String question,
-                String answer, String hashedPassword, String description, boolean admin,
-                String language, String template, boolean isGuest,
-                String propertiesBlob) {
+                String answer, String hashedPassword, String description,
+                boolean admin, String language, String template,
+                boolean isGuest, String propertiesBlob) {
         this.id             = id;
         this.name           = name;
         this.email          = email;
@@ -433,23 +435,27 @@ public class User {
         return answer;
     }
 
-/**
-Set the Description property.
+    /**
+     * Set the Description property.
+     *
+     * @param value The new value for Description
+     */
+    public void setDescription(String value) {
+        description = value;
+    }
 
-@param value The new value for Description
-**/
-public void setDescription (String value) {
-	description = value;
-}
+    /**
+     * Get the Description property.
+     *
+     * @return The Description
+     */
+    public String getDescription() {
+        if (description == null) {
+            description = "";
+        }
 
-/**
-Get the Description property.
-
-@return The Description
-**/
-public String getDescription () {
-	return description;
-}
+        return description;
+    }
 
 
 

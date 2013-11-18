@@ -84,7 +84,7 @@ public class TemplateOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_EMBED = "embed";
 
     /** _more_ */
@@ -121,7 +121,7 @@ public class TemplateOutputHandler extends OutputHandler {
     /** _more_ */
     private OutputType outputType;
 
-    /** _more_          */
+    /** _more_ */
     private boolean embed;
 
 

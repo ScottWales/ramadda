@@ -1546,8 +1546,8 @@ public class HtmlOutputHandler extends OutputHandler {
                     type = "Files";
                 }
             }
-            
-            if(!showCategories) {
+
+            if ( !showCategories) {
                 type = "entries";
             }
 
@@ -1625,7 +1625,11 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, getEntryDisplayName(entry));
-                tableSB.append(HtmlUtils.col(entryLink.getLink(), ""));
+
+                tableSB.append(
+                    HtmlUtils.col(
+                        entryLink.getLink(),
+                        HtmlUtils.cssClass("entry-table-name")));
                 tableSB.append(
                     HtmlUtils.col(
                         entry.getTypeHandler().formatDate(

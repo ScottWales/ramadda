@@ -828,9 +828,9 @@ public class UserManager extends RepositoryManager {
                 user.getId(), user.getName(), user.getEmail(),
                 user.getQuestion(), user.getAnswer(),
                 user.getHashedPassword(), user.getDescription(),
-                new Boolean(user.getAdmin()),
-                user.getLanguage(), user.getTemplate(),
-                new Boolean(user.getIsGuest()), user.getPropertiesBlob()
+                new Boolean(user.getAdmin()), user.getLanguage(),
+                user.getTemplate(), new Boolean(user.getIsGuest()),
+                user.getPropertiesBlob()
             });
             userMap.put(user.getId(), user);
 
@@ -929,7 +929,8 @@ public class UserManager extends RepositoryManager {
                                      boolean doAdmin)
             throws Exception {
         user.setName(request.getString(ARG_USER_NAME, user.getName()));
-        user.setDescription(request.getString(ARG_USER_DESCRIPTION, user.getDescription()));
+        user.setDescription(request.getString(ARG_USER_DESCRIPTION,
+                user.getDescription()));
         user.setEmail(request.getString(ARG_USER_EMAIL, user.getEmail()));
         user.setTemplate(request.getString(ARG_TEMPLATE, user.getTemplate()));
         user.setLanguage(request.getString(ARG_USER_LANGUAGE,
@@ -1087,7 +1088,7 @@ public class UserManager extends RepositoryManager {
                                     user.getName(), HtmlUtils.SIZE_40)));
             sb.append(formEntry(request, msgLabel("Desription"),
                                 HtmlUtils.textArea(ARG_USER_DESCRIPTION,
-                                                   user.getDescription(), 5,20)));
+                                    user.getDescription(), 5, 20)));
         }
         if (includeAdmin) {
             if ( !request.getUser().getAdmin()) {
@@ -1292,8 +1293,8 @@ public class UserManager extends RepositoryManager {
 
             if (okToAdd) {
                 User newUser = new User(id, name, email, "", "",
-                                        hashPassword(password1), desc, admin, "",
-                                        "", false, null);
+                                        hashPassword(password1), desc, admin,
+                                        "", "", false, null);
                 users.add(newUser);
             }
         }
@@ -1398,7 +1399,8 @@ public class UserManager extends RepositoryManager {
         StringBuffer formSB = new StringBuffer();
         String       id     = request.getString(ARG_USER_ID, "").trim();
         String       name   = request.getString(ARG_USER_NAME, "").trim();
-        String       desc   = request.getString(ARG_USER_DESCRIPTION, "").trim();
+        String       desc = request.getString(ARG_USER_DESCRIPTION,
+                                "").trim();
         String       email  = request.getString(ARG_USER_EMAIL, "").trim();
         boolean      admin  = request.get(ARG_USER_ADMIN, false);
 
@@ -1412,8 +1414,8 @@ public class UserManager extends RepositoryManager {
                                     HtmlUtils.SIZE_40)));
 
         formSB.append(formEntry(request, msgLabel("Desription"),
-                            HtmlUtils.textArea(ARG_USER_DESCRIPTION,
-                                               desc, 5,20)));
+                                HtmlUtils.textArea(ARG_USER_DESCRIPTION,
+                                    desc, 5, 20)));
 
         formSB.append(formEntry(request, msgLabel("Admin"),
                                 HtmlUtils.checkbox(ARG_USER_ADMIN, "true",

@@ -168,7 +168,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** first attribute */
     public static final String ATTR_FIRST = "first";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_LAST = "last";
 
     /** sort attribute */
@@ -1580,7 +1580,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         } else if (theTag.equals(WIKI_PROP_SEARCH)) {
             String type = Misc.getProperty(props, ATTR_TYPE,
                                            Misc.getProperty(props, ATTR_ID,
-                                                            TypeHandler.TYPE_ANY));
+                                               TypeHandler.TYPE_ANY));
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
 
             if (typeHandler == null) {
@@ -1610,6 +1610,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             SpecialSearch ss = typeHandler.getSpecialSearch();
             ss.processSearchRequest(myRequest, sb);
+
             return sb.toString();
         } else if (theTag.equals(WIKI_PROP_APPLY)) {
             StringBuffer style = new StringBuffer(Misc.getProperty(props,
@@ -2862,7 +2863,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                               Misc.getProperty(searchProps,
                                   PREFIX_SEARCH + ARG_MAX, "100"));
 
-                addSearchTerms(request, searchProps,baseEntry);
+                addSearchTerms(request, searchProps, baseEntry);
 
 
                 if (isRemote) {
@@ -2992,20 +2993,29 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
 
 
-    private void addSearchTerms(Request request, Hashtable props, Entry baseEntry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param props _more_
+     * @param baseEntry _more_
+     *
+     * @throws Exception _more_
+     */
+    private void addSearchTerms(Request request, Hashtable props,
+                                Entry baseEntry)
+            throws Exception {
         String[] args = new String[] {
             ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
-            ARG_BBOX + ".north", ARG_BBOX + ".west",
-            ARG_BBOX + ".south", ARG_BBOX + ".east",
-            Constants.dataDate.from, Constants.dataDate.to,
-            Constants.dataDate.relative, Constants.createDate.from,
-            Constants.createDate.to, Constants.createDate.relative,
-            Constants.changeDate.from, Constants.changeDate.to,
-            Constants.changeDate.relative,
+            ARG_BBOX + ".north", ARG_BBOX + ".west", ARG_BBOX + ".south",
+            ARG_BBOX + ".east", Constants.dataDate.from,
+            Constants.dataDate.to, Constants.dataDate.relative,
+            Constants.createDate.from, Constants.createDate.to,
+            Constants.createDate.relative, Constants.changeDate.from,
+            Constants.changeDate.to, Constants.changeDate.relative,
         };
         for (String arg : args) {
-            String text = (String) props.get(PREFIX_SEARCH
-                                             + arg);
+            String text = (String) props.get(PREFIX_SEARCH + arg);
             if (text != null) {
                 if (arg.equals(ARG_GROUP)) {
                     if (text.equals(ID_THIS)) {
