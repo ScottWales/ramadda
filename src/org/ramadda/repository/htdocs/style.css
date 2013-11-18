@@ -191,6 +191,19 @@ input, password, fileinput,textarea,select {
     max-width:400px;
 }
 
+.search-header {
+   font-weight: bold; 
+   font-size: 120%; 
+   border-bottom: 1px #eee solid;
+   margin-bottom:5px;
+}
+
+.search-select {
+       max-width:150px;
+}
+
+
+
 
 .entry-table-page   {
   font-size: 90%;
@@ -255,10 +268,6 @@ td.entry-table-block {
 
 
 
-
-.search-select {
-       max-width:150px;
-}
 
 
 

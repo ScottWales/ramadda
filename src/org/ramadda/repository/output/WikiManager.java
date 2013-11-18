@@ -602,7 +602,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         WIKI_PROP_ENTRYID,
         prop(WIKI_PROP_SEARCH,
              attrs(ATTR_TYPE, "", ARG_MAX, "10", ARG_SEARCH_SHOWFORM,
-                   "false")),
+                   "false", SpecialSearch.ATTR_TABS, SpecialSearch.TAB_LIST)),
         WIKI_PROP_ROOT
     };
     //j+

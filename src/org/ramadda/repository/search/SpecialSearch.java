@@ -59,6 +59,9 @@ import java.util.List;
  */
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
+    /** _more_          */
+    public static final String ATTR_TABS = "tabs";
+
     /** _more_ */
     public static final String TAB_LIST = "list";
 
@@ -182,16 +185,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }
         }
         String tabsToUse = (String) typeHandler.getProperty("search.tabs",
-                               null);
-        if (tabsToUse != null) {
-            tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
-        } else {
-            //The default is just the list
-            tabs.add(TAB_LIST);
-            //            tabs.add(TAB_MAP);
-            //            tabs.add(TAB_EARTH);
-            //            tabs.add(TAB_TIMELINE);
-        }
+                               TAB_LIST);
+        tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
 
         searchOpen = typeHandler.getProperty("search.searchopen",
                                              "true").equals("true");
@@ -206,7 +201,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         searchUrl = "/search/type/" + typeHandler.getType();
         label     = typeHandler.getProperty("search.label", null);
         if (label == null) {
-            label = "Search for " + typeHandler.getDescription();
+            label = msgLabel("Search") + " " + typeHandler.getDescription();
         }
         theType = typeHandler.getType();
     }
@@ -227,7 +222,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 metadataTypes.add(type);
             }
         }
-        String tabsToUse = (String) props.get("tabs");
+        String tabsToUse = (String) props.get(ATTR_TABS);
         if (tabsToUse != null) {
             tabs.addAll(StringUtil.split(tabsToUse, ",", true, true));
         } else {
@@ -248,7 +243,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         theType           = (String) props.get("type");
         typeHandler       = getRepository().getTypeHandler(theType);
         if (label == null) {
-            label = "Search for " + typeHandler.getDescription();
+            label = msgLabel("Search") + typeHandler.getDescription();
         }
     }
 
@@ -459,8 +454,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         map.centerOn(bounds);
 
 
-        boolean georeferencedResults = tabs.contains(TAB_MAP)
-                                       || tabs.contains(TAB_EARTH);
+        List<String> tabsToUse = tabs;
+
+        String tabsProp = request.getString("search.tabs",
+                                            request.getString("tabs",
+                                                (String) null));
+        if (tabsProp != null) {
+            tabsToUse = StringUtil.split(tabsProp, ",", true, true);
+        }
+
+        boolean georeferencedResults = tabsToUse.contains(TAB_MAP)
+                                       || tabsToUse.contains(TAB_EARTH);
 
 
         List<String> tabContents = new ArrayList<String>();
@@ -499,7 +503,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                             LABEL_NO_ENTRIES_FOUND), HtmlUtils.style(
                             "min-width:" + minWidth + "px")));
             } else {
-                for (String tab : tabs) {
+                for (String tab : tabsToUse) {
                     if (tab.equals(TAB_LIST)) {
                         StringBuffer listSB = new StringBuffer();
                         makeEntryList(request, listSB, allEntries);
@@ -547,7 +551,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs = OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
         if (request.get(ARG_SEARCH_SHOWHEADER, true)) {
-            sb.append(header(label));
+            sb.append(HtmlUtils.div(label,
+                                    HtmlUtils.cssClass("search-header")));
         }
 
         StringBuffer rightSide = new StringBuffer();
