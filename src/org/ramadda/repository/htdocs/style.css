@@ -122,7 +122,6 @@ input, password, fileinput,textarea,select {
 .entry-type-search {
    text-decoration: none;
    color: black;
-   padding-left: 10px;
 }
 
 .entry-type-search:link {
