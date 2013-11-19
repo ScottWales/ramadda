@@ -301,6 +301,10 @@ padding-right-ltr-source: physical;
 padding-right-rtl-source: physical;
 }
 
+.ui-dialog {
+   z-index: 10000;
+}
+
 .entry-page-main {
    margin:8px;
    margin-top:8px;
