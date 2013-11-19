@@ -35,7 +35,7 @@ var sphericalMercatorCS = new OpenLayers.Projection("EPSG:900913");
 
 var maxLatValue = 85;
 
-var initialExtent = new OpenLayers.Bounds(maxLatValue, -180, -maxLatValue, 180);
+var initialExtent = new OpenLayers.Bounds(-180, -maxLatValue, 180, maxLatValue);
 
 var positionMarkerID = "location";
 
@@ -558,7 +558,7 @@ function RepositoryMap(mapId, params) {
         var newRight = bounds.right;
         var extentBounds = this.map.restrictedExtent;
         if (!extentBounds) {
-            extentBounds = wmsBounds;
+            extentBounds = maxExtent;
         }
         /*
          * if (extentBounds.left < 0) { // map is -180 to 180 if (bounds.right >
@@ -633,9 +633,10 @@ function RepositoryMap(mapId, params) {
                         bounds.right, bounds.top));
                 ll = theMap.transformProjPoint(ll);
                 ur = theMap.transformProjPoint(ur);
-                theMap.setSelectionBox(ur.lat, ll.lon, ll.lat, ur.lon);
                 var bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon,
                         ur.lat);
+                bounds = theMap.normalizeBounds(bounds);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right);
                 theMap.findSelectionFields();
                 if (theMap.fldNorth) {
                     // theMap.fldNorth.obj.value = ur.lat;
@@ -823,7 +824,9 @@ function RepositoryMap(mapId, params) {
         }
 
         if (!this.boxes) {
-            this.boxes = new OpenLayers.Layer.Boxes("Boxes");
+            this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
+                            wrapDateLine : wrapDatelineDefault
+                        });
             if (!this.map) {
                 this.initialBoxes = this.boxes;
             } else {
