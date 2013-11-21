@@ -477,8 +477,17 @@ public class PageHandler extends RepositoryManager {
     public String getTemplateJavascriptContent() {
         if (templateJavascriptContent == null) {
             //TODO: add a property to not buttonize
+            StringBuffer js = new StringBuffer();
+            js.append(JQuery.buttonize(":submit"));
+            js.append("\n");
+            String btArgs = "{contentSelector: \"$(this).attr('tooltip')\",fill: '#efefef',cssStyles: {color: 'white', fontWeight: 'bold'},            trigger: ['mouseover', 'mouseclick'], xshrinkToFit: true,padding: 10, cornerRadius: 10,xspikeLength: 15,xspikeGirth: 5,positions: ['left', 'right', 'bottom']}";
+
+
+            js.append("$('[tooltip]').bt(" + btArgs +");\n");
+            js.append("\n");
             String buttonizeJS =
-                HtmlUtils.script(JQuery.buttonize(":submit"));
+                HtmlUtils.script(js.toString());
+            System.err.println (buttonizeJS);
             //j-
             StringBuffer sb = new StringBuffer();
             sb.append(HtmlUtils.div("",

@@ -2756,15 +2756,22 @@ public class UserManager extends RepositoryManager {
                     destUrl = new String(
                         RepositoryUtil.decodeBase64(
                             request.getUnsafeString(ARG_REDIRECT, "")));
-                    response.append(HtmlUtils.href(destUrl, msg("Continue")));
+                    //Gack  - make sure we don't redirect to the logout page
+                    if(destUrl.indexOf("logout")<0) {
+                        return new Result(destUrl);
+                    }
+                    response.append(HtmlUtils.href(getRepositoryBase().URL_ENTRY_SHOW.toString(), msg("Continue")));
                 } else if ( !user.canEditSettings()) {
                     response.append(
                         HtmlUtils.href(
                             getRepository().getUrlBase(), msg("Continue")));
                 } else {
+                    //Redirect to the top-level entry
+                    if(true)
+                        return new Result(getRepositoryBase().URL_ENTRY_SHOW.toString());
                     response.append(
                         HtmlUtils.href(
-                            getRepositoryBase().URL_ENTRY_SHOW.toString(),
+                                       getRepositoryBase().URL_ENTRY_SHOW.toString(),
                             msg(
                             "Continue to the top level of the repository")));
                     response.append("<p>");

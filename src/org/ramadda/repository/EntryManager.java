@@ -106,6 +106,12 @@ import java.util.zip.ZipInputStream;
  */
 public class EntryManager extends RepositoryManager {
 
+    public static final String[] PRELOAD_CATEGORIES = { "General", 
+                                                        "Information",
+                                                        "Documents", 
+                                                        "Collaboration",
+                                                        "Database" };
+
     /** _more_ */
     public static final String ENTRYID_PROCESS = "process";
 
@@ -3350,9 +3356,7 @@ public class EntryManager extends RepositoryManager {
         Hashtable<String, StringBuffer> catMap = new Hashtable<String,
                                                      StringBuffer>();
 
-        for (String preload : new String[] { "General", "Information",
-                                             "Documents", "Collaboration",
-                                             "Database" }) {
+        for (String preload : PRELOAD_CATEGORIES) {
             categories.add(preload);
             catMap.put(preload, new StringBuffer());
         }
