@@ -2261,7 +2261,7 @@ public interface Constants {
     public static final String ATTR_ALT = "alt";
 
     /** _more_ */
-    public static final String LABEL_NEW_ENTRY = "New Entry...";
+    public static final String LABEL_NEW_ENTRY = "New Entry ...";
 
     /** _more_ */
     public static final String LABEL_ENTRY = "Entry";

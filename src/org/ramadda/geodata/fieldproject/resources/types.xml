@@ -41,8 +41,9 @@
 
 
 
-  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project"      metadata="enum_tag,content.keyword,project_person,project_funding">
      <property name="icon" value="/fieldproject/page_world.png"/>
+
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
      <property name="form.datatype.show" value="false"/>

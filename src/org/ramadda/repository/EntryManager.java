@@ -106,11 +106,9 @@ import java.util.zip.ZipInputStream;
  */
 public class EntryManager extends RepositoryManager {
 
-    public static final String[] PRELOAD_CATEGORIES = { "General", 
-                                                        "Information",
-                                                        "Documents", 
-                                                        "Collaboration",
-                                                        "Database" };
+    /** _more_          */
+    public static final String[] PRELOAD_CATEGORIES = { "General",
+            "Information", "Documents", "Collaboration", "Database" };
 
     /** _more_ */
     public static final String ENTRYID_PROCESS = "process";
@@ -5704,7 +5702,7 @@ public class EntryManager extends RepositoryManager {
                 sb = actionSB;
             }
             //Only add the hr if we have more things in the list
-            if ((cnt < 2) && needToAddHr) {
+            if (needToAddHr && (sb.length() > tableHeader.length())) {
                 sb.append("<tr><td colspan=2><hr "
                           + HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)
                           + "></td></tr>");

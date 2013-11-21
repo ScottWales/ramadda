@@ -488,9 +488,7 @@ public class PageHandler extends RepositoryManager {
             js.append("\n");
             */
 
-            String buttonizeJS =
-                HtmlUtils.script(js.toString());
-            System.err.println (buttonizeJS);
+            String buttonizeJS = HtmlUtils.script(js.toString());
             //j-
             StringBuffer sb = new StringBuffer();
             sb.append(HtmlUtils.div("",

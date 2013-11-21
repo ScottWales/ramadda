@@ -265,7 +265,7 @@ public class MetadataManager extends RepositoryManager {
      * @param sb _more_
      * @param forLink _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void decorateEntry(Request request, Entry entry, StringBuffer sb,
                               boolean forLink)
@@ -288,7 +288,7 @@ public class MetadataManager extends RepositoryManager {
      * @param entry _more_
      * @param sb _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void getTextCorpus(Entry entry, StringBuffer sb) throws Exception {
         for (Metadata metadata : getMetadata(entry)) {
@@ -307,7 +307,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Metadata copyMetadata(Entry oldEntry, Entry newEntry,
                                  Metadata oldMetadata)
@@ -326,7 +326,7 @@ public class MetadataManager extends RepositoryManager {
      * @param entry _more_
      * @param urls _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void getThumbnailUrls(Request request, Entry entry,
                                  List<String> urls)
@@ -349,7 +349,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Metadata> findMetadata(Request request, Entry entry,
                                        String type, boolean checkInherited)
@@ -370,7 +370,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Metadata> findMetadata(Request request, Entry entry,
                                        String type, boolean checkInherited,
@@ -408,7 +408,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Metadata> getInheritedMetadata(Request request, Entry entry)
             throws Exception {
@@ -436,7 +436,7 @@ public class MetadataManager extends RepositoryManager {
      * @param entry _more_
      * @param result _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void findInheritedMetadata(Request request, Entry entry,
                                        List<Metadata> result)
@@ -472,7 +472,7 @@ public class MetadataManager extends RepositoryManager {
      * @param checkInherited _more_
      * @param firstTime _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void findMetadata(Request request, Entry entry, String type,
                               List<Metadata> result, boolean checkInherited,
@@ -513,7 +513,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Metadata findMetadata(Request request, Entry entry, String id)
             throws Exception {
@@ -538,7 +538,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
         if (entry.isDummy()) {
@@ -636,12 +636,11 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param zos _more_
      * @param fileWriter _more_
      * @param doc _more_
      * @param parent _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void addMetadata(Request request, Entry entry,
                             FileWriter fileWriter, Document doc,
@@ -686,7 +685,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public MetadataHandler findMetadataHandler(Metadata metadata)
             throws Exception {
@@ -711,7 +710,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public MetadataHandler findMetadataHandler(String type) throws Exception {
         for (MetadataHandler handler : metadataHandlers) {
@@ -734,7 +733,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public MetadataHandler getHandler(Class c) throws Exception {
         MetadataHandler handler = metadataHandlerMap.get(c);
@@ -761,11 +760,8 @@ public class MetadataManager extends RepositoryManager {
     /**
      * _more_
      *
-     *
-     * @param metadataDefFiles _more_
-     *
      * @param pluginManager _more_
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void loadMetadataHandlers(PluginManager pluginManager)
             throws Exception {
@@ -801,7 +797,7 @@ public class MetadataManager extends RepositoryManager {
      *
      *
      * @return _more_
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public StringBuffer addToSearchForm(Request request, StringBuffer sb)
             throws Exception {
@@ -832,7 +828,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public List<Metadata> getMetadataFromClipboard(Request request)
             throws Exception {
@@ -849,7 +845,7 @@ public class MetadataManager extends RepositoryManager {
      * @param request _more_
      * @param metadataList _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void copyMetadataToClipboard(Request request,
                                         List<Metadata> metadataList)
@@ -871,7 +867,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public StringBuffer addToBrowseSearchForm(Request request,
             StringBuffer sb)
@@ -896,7 +892,7 @@ public class MetadataManager extends RepositoryManager {
      * @param fileMap _more_
      * @param internal _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void processMetadataXml(Entry entry, Element entryChild,
                                    Hashtable fileMap, boolean internal)
@@ -911,7 +907,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param entry _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void newEntry(Entry entry) throws Exception {
         for (Metadata metadata : getMetadata(entry)) {
@@ -929,7 +925,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataChange(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
@@ -1034,7 +1030,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataList(Request request) throws Exception {
 
@@ -1082,7 +1078,7 @@ public class MetadataManager extends RepositoryManager {
      * @param doCloud _more_
      * @param threshold _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void doMakeTagCloudOrList(Request request, String metadataType,
                                      StringBuffer sb, boolean doCloud,
@@ -1174,7 +1170,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataView(Request request) throws Exception {
         Entry          entry        = getEntryManager().getEntry(request);
@@ -1202,7 +1198,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataForm(Request request) throws Exception {
         Entry        entry = getEntryManager().getEntry(request);
@@ -1221,7 +1217,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataForm(Request request, Entry entry,
                                       StringBuffer sb)
@@ -1317,7 +1313,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataAddForm(Request request) throws Exception {
         StringBuffer sb    = new StringBuffer();
@@ -1373,7 +1369,7 @@ public class MetadataManager extends RepositoryManager {
      * @param entry _more_
      * @param sb _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     private void makeAddList(Request request, Entry entry, StringBuffer sb)
             throws Exception {
@@ -1422,7 +1418,8 @@ public class MetadataManager extends RepositoryManager {
                 groupMap.put(name, groupSB = new StringBuffer());
                 groups.add(name);
             }
-            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
+            //            request.uploadFormWithAuthToken(groupSB, URL_METADATA_ADDFORM);
+            groupSB.append(request.form(URL_METADATA_ADDFORM));
             groupSB.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
             groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
             groupSB.append(HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
@@ -1453,7 +1450,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result processMetadataAdd(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
@@ -1491,7 +1488,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String[] getDistinctValues(Request request,
                                       MetadataHandler handler,
@@ -1525,7 +1522,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param metadata _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void insertMetadata(Metadata metadata) throws Exception {
         distinctMap = null;
@@ -1545,7 +1542,7 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param metadata _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void deleteMetadata(Metadata metadata) throws Exception {
         getDatabaseManager().delete(Tables.METADATA.NAME,

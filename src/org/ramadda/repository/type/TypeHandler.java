@@ -125,6 +125,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
+    /** _more_          */
+    public static final String ATTR_METADATA = "metadata";
 
 
     /** _more_ */
@@ -195,6 +197,9 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
 
+    /** _more_          */
+    private List<String> metadataTypes;
+
 
     /** _more_ */
     private String type;
@@ -260,6 +265,7 @@ public class TypeHandler extends RepositoryManager {
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
         if (entryNode != null) {
+
             displayTemplatePath = XmlUtil.getAttribute(entryNode,
                     "displaytemplate", (String) null);
 
@@ -289,6 +295,22 @@ public class TypeHandler extends RepositoryManager {
                                          (String) null) });
             }
         }
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private List<String> getMetadataTypes() {
+        if (metadataTypes == null) {
+            metadataTypes =
+                StringUtil.split(EnumeratedMetadataHandler.TYPE_TAG + ","
+                                 + ContentMetadataHandler.TYPE_KEYWORD, ",",
+                                     true, true);
+        }
+
+        return metadataTypes;
     }
 
     /**
@@ -417,6 +439,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     protected void init(Element entryNode) throws Exception {
+        this.metadataTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
+                ATTR_METADATA,
+                EnumeratedMetadataHandler.TYPE_TAG + ","
+                + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
         forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
         setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
         if (getType().indexOf(".") > 0) {
@@ -1706,10 +1732,7 @@ public class TypeHandler extends RepositoryManager {
                                         LABEL_NEW_ENTRY,
                                         OutputType.TYPE_FILE
                                         | OutputType.TYPE_TOOLBAR));
-            Link hr = new Link(true);
-            hr.setLinkType(OutputType.TYPE_FILE);
-            links.add(hr);
-
+            links.add(makeHRLink(OutputType.TYPE_FILE));
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
                     request, ARG_TYPE);
@@ -1738,7 +1761,7 @@ public class TypeHandler extends RepositoryManager {
                                  OutputType.TYPE_FILE));
                 }
                 if (didone) {
-                    links.add(hr);
+                    links.add(makeHRLink(OutputType.TYPE_FILE));
                 }
             }
         }
@@ -1782,9 +1805,7 @@ public class TypeHandler extends RepositoryManager {
                         entry.getId()), getRepository().iconUrl(ICON_IMPORT),
                                         "Import " + LABEL_ENTRIES,
                                         OutputType.TYPE_FILE));
-            Link hr = new Link(true);
-            hr.setLinkType(OutputType.TYPE_FILE);
-            links.add(hr);
+            links.add(makeHRLink(OutputType.TYPE_FILE));
         }
 
 
@@ -1828,12 +1849,37 @@ public class TypeHandler extends RepositoryManager {
                         getMetadataManager().URL_METADATA_FORM,
                         entry), getRepository().iconUrl(ICON_METADATA_EDIT),
                                 "Edit Properties", OutputType.TYPE_EDIT));
+
+            if (getMetadataTypes().size() > 0) {
+                links.add(makeHRLink(OutputType.TYPE_EDIT));
+            }
+
             links.add(
                 new Link(
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), getRepository().iconUrl(ICON_METADATA_ADD),
-                                "Add Property", OutputType.TYPE_EDIT));
+                                "Add Property ...", OutputType.TYPE_EDIT));
+
+            if (getMetadataTypes().size() > 0) {
+                for (String metadataType : getMetadataTypes()) {
+                    MetadataType type =
+                        getMetadataManager().findType(metadataType);
+                    links.add(
+                        new Link(
+                            request.entryUrl(
+                                getMetadataManager().URL_METADATA_ADDFORM,
+                                    entry, ARG_METADATA_TYPE,
+                                        metadataType), getRepository()
+                                            .iconUrl(ICON_METADATA_ADD), msg(
+                                                "Add") + " "
+                                                    + type.getName(), OutputType
+                                                        .TYPE_EDIT));
+                }
+                links.add(makeHRLink(OutputType.TYPE_EDIT));
+            }
+
+
 
             if (getAccessManager().canSetAccess(request, entry)) {
                 links.add(
@@ -1905,6 +1951,21 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param mask _more_
+     *
+     * @return _more_
+     */
+    private Link makeHRLink(int mask) {
+        Link hr = new Link(true);
+        hr.setLinkType(mask);
+
+        return hr;
+    }
 
 
     /**
@@ -2194,21 +2255,21 @@ public class TypeHandler extends RepositoryManager {
                     msg(
                     "Search for entries of this type created by the user");
                 String userLinkId = HtmlUtils.getUniqueId("userlink_");
-                String tooltip = "<a href=http://google.com>google</a>";
-                userSearchLink =
-                    HtmlUtils
-                        .href(getSearchManager().URL_SEARCH_TYPE + "/"
-                              + entry.getTypeHandler().getType() + "?"
-                              + ARG_USER_ID + "=" + entry.getUser().getId()
-                              + "&" + SearchManager.ARG_SEARCH_SUBMIT
-                              + "=true", entry.getUser().getLabel(), HtmlUtils.id(userLinkId) +
-                              " tooltip=\""  +  tooltip +"\"" +
-                              HtmlUtils
-                                  .cssClass("entry-type-search") + HtmlUtils
-                                  .attr(HtmlUtils
-                                      .ATTR_ALT, msg(linkMsg)) + HtmlUtils
-                                          .attr(HtmlUtils
-                                              .ATTR_TITLE, linkMsg));
+                String tooltip    = "<a href=http://google.com>google</a>";
+                userSearchLink = HtmlUtils
+                    .href(getSearchManager().URL_SEARCH_TYPE + "/"
+                          + entry.getTypeHandler().getType() + "?"
+                          + ARG_USER_ID + "=" + entry.getUser().getId() + "&"
+                          + SearchManager.ARG_SEARCH_SUBMIT
+                          + "=true", entry.getUser().getLabel(), HtmlUtils
+                              .id(userLinkId) + " tooltip=\"" + tooltip
+                                  + "\""
+                                  + HtmlUtils.cssClass("entry-type-search")
+                                  + HtmlUtils
+                                      .attr(HtmlUtils
+                                          .ATTR_ALT, msg(linkMsg)) + HtmlUtils
+                                              .attr(HtmlUtils
+                                                  .ATTR_TITLE, linkMsg));
 
 
                 sb.append(formEntry(request, msgLabel("Created by"),
@@ -3190,7 +3251,7 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                     String extra =
-                        HtmlUtils.makeShowHideBlock(msg("More..."),
+                        HtmlUtils.makeShowHideBlock(msg("More ..."),
                             extraMore + addMetadata + HtmlUtils.br()
                             + unzipWidget + HtmlUtils.br()
                             + datePatternWidget, false);
@@ -3493,7 +3554,7 @@ public class TypeHandler extends RepositoryManager {
                                    request.get(ARG_ISREGEXP, false)) + " "
                                        + msg("Use regular expression");
 
-            extra = HtmlUtils.makeToggleInline(msg("More..."), extra, false);
+            extra = HtmlUtils.makeToggleInline(msg("More ..."), extra, false);
         } else {
             extra = "";
         }
@@ -3821,7 +3882,7 @@ public class TypeHandler extends RepositoryManager {
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra;
         if (arg.hasRange) {
-            dateExtra = HtmlUtils.makeToggleInline(msg("..."),
+            dateExtra = HtmlUtils.makeToggleInline(msg("More ..."),
                     HtmlUtils.br() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
                 msgLabel("Or search relative"), dateSelectInput, "",
@@ -3829,7 +3890,7 @@ public class TypeHandler extends RepositoryManager {
                 + msg("Include entries with no data times")
             }), false);
         } else {
-            dateExtra = HtmlUtils.makeToggleInline(msg("..."),
+            dateExtra = HtmlUtils.makeToggleInline(msg("More ..."),
                     HtmlUtils.br()
                     + HtmlUtils.formTable(new String[] {
                         msgLabel("Or search relative"),
