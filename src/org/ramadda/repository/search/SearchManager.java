@@ -68,6 +68,7 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.OpenSearchUtil;
 
 import org.ramadda.util.TTLObject;
+import org.ramadda.util.WadlUtil;
 
 
 import org.w3c.dom.*;
@@ -1042,7 +1043,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         int colCnt = 0;
         for (String cat : cb.getCategories()) {
             StringBuffer content = cb.get(cat);
-            if(content.length()==0) {
+            if (content.length() == 0) {
                 continue;
             }
             colCnt++;
@@ -1094,6 +1095,63 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         StringBuffer sb = new StringBuffer();
         sb.append(header(msg("Entry Types")));
         sb.append(HtmlUtils.formTable());
+        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
+            String link =
+                HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
+                               typeHandler.getType());
+            sb.append(HtmlUtils.row(HtmlUtils.cols(link,
+                    typeHandler.getDescription())));
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+        sb.append(header(msg("Output Types")));
+        sb.append(HtmlUtils.formTable());
+        for (OutputHandler outputHandler :
+                getRepository().getOutputHandlers()) {
+            for (OutputType type : outputHandler.getTypes()) {
+                sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                        type.getLabel())));
+            }
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+        sb.append(header(msg("Metadata Types")));
+        sb.append(HtmlUtils.formTable());
+        for (MetadataType type :
+                getRepository().getMetadataManager().getMetadataTypes()) {
+            if ( !type.getSearchable()) {
+                continue;
+            }
+            sb.append(HtmlUtils.row(HtmlUtils.cols(type.getId(),
+                    type.getName())));
+        }
+        sb.append(HtmlUtils.formTableClose());
+
+
+
+        return makeResult(request, msg("Search Metadata"), sb);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processSearchWadl(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        WadlUtil.openTag(sb);
+
+        WadlUtil.closeTag(sb);
+
+
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
                 HtmlUtils.href(URL_SEARCH_TYPE + "/" + typeHandler.getType(),
