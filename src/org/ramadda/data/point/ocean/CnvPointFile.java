@@ -59,7 +59,7 @@ public class CnvPointFile extends CsvFile {
 
     /**
      * Used by CsvPointFile to know when to stop reading the header
-     * 
+     *
      * @return header delimiter
      */
     @Override
@@ -165,7 +165,10 @@ public class CnvPointFile extends CsvFile {
 
 
         //This gets used by ramadda when creating an entry
-        setDescriptionFromFile(comments.toString());
+        //Clean up non ascii
+        String entryDesc = comments.toString();
+        entryDesc = entryDesc.replaceAll("[^\n\\x20-\\x7E]+", " ");
+        setDescriptionFromFile(entryDesc);
 
         //Store the fields
         putProperty(PROP_FIELDS, fields.toString());
