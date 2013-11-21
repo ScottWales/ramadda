@@ -116,7 +116,7 @@ public class NoaaTowerPointFile extends NoaaPointFile {
      *
      * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String filename  = getOriginalFilename(getFilename());
         String siteId    = StringUtil.findPattern(filename, "^(.*)_.*");

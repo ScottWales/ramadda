@@ -93,9 +93,9 @@ public class IAGA2002PointFile extends CsvFile {
      *
      * @param visitInfo visit info
      * @return possible new visitinfo
-     * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Set the delimiter and how many lines in the header to skip
         putProperty(PROP_DELIMITER, "");
         super.prepareToVisit(visitInfo);

@@ -83,7 +83,7 @@ public class NoaaFlaskMonthPointFile extends NoaaPointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         dateIndices = new int[] { IDX_YEAR, IDX_MONTH };
 

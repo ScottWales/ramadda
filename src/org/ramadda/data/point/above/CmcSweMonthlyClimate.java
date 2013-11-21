@@ -102,7 +102,8 @@ public class CmcSweMonthlyClimate extends CsvFile {
      *
      * @throws IOException on badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String unit   = attrUnit("feet");
         String fields = makeFields(new String[] {

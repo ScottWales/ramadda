@@ -120,7 +120,7 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String platform = "";
         //LOOK: this needs to be in the same order as the oceantypes.xml defines in the point plugin

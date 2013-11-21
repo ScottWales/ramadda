@@ -54,7 +54,8 @@ public class ShebaPointFile extends CsvFile {
      * @return possible new visitinfo
      * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Set the delimiter
         putProperty(PROP_DELIMITER, "tab");
         //Set the fields. the method reads the file ShebaPointFile.fields.txt

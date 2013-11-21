@@ -147,6 +147,9 @@ public abstract class RecordFile {
         fileMetadata = metadata;
     }
 
+
+
+
     /**
      * _more_
      */
@@ -643,7 +646,7 @@ public abstract class RecordFile {
      *
      * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         return visitInfo;
     }
 

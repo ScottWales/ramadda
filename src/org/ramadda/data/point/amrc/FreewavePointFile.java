@@ -71,7 +71,8 @@ public class FreewavePointFile extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         putProperty(PROP_DELIMITER, ",");
         putProperty(PROP_SKIPLINES, "4");
 

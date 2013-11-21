@@ -100,7 +100,7 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String filename = getOriginalFilename(getFilename());
 

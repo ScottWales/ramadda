@@ -143,7 +143,7 @@ public class IdvPointFile extends CsvFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         List<String> headerLines = getHeaderLines();
         if (headerLines.size() != 2) {

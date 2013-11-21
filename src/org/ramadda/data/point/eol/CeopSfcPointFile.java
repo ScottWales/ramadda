@@ -54,7 +54,8 @@ public class CeopSfcPointFile extends CsvFile {
      * @return possible new visitinfo
      * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Set the delimiter
         putProperty(PROP_DELIMITER, " ");
         //Set the fields. the method reads the file CeopSfcPointFile.fields.txt

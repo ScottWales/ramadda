@@ -98,7 +98,8 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
      *
      * @throws IOException on badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         putProperty(PROP_DELIMITER, ",");
         putProperty(PROP_SKIPLINES, "20");
         super.prepareToVisit(visitInfo);

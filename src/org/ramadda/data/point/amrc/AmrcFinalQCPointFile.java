@@ -143,7 +143,8 @@ public class AmrcFinalQCPointFile extends CsvFile {
      * @return possible new visitinfo
      * @throws IOException On badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Se the delimiter and how many lines in the header to skip
         putProperty(PROP_DELIMITER, " ");
         putProperty(PROP_SKIPLINES, "2");

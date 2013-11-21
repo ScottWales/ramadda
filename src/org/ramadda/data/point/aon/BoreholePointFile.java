@@ -149,7 +149,8 @@ YEAR,DATE,0.0,0.25,0.5,0.75,1.0,2.0,3.0,4.0
      *
      * @throws IOException on badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         List<String> header = getHeaderLines();
 

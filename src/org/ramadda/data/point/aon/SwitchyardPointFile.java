@@ -57,7 +57,8 @@ public class SwitchyardPointFile extends SingleSiteTextFile {
      * @return visit info
      * @throws IOException on badness
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+@Override
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
         try {
             putProperty(PROP_DELIMITER, " ");

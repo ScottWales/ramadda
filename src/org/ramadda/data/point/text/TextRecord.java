@@ -31,6 +31,9 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
+import java.text.SimpleDateFormat;
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -318,7 +321,7 @@ public class TextRecord extends DataRecord {
                     } else if (field.isTypeDate()) {
                         String dttm = field.getDefaultStringValue();
                         objectValues[fieldCnt] =
-                            field.getDateFormat().parse(dttm);
+                            getDateFormat(field).parse(dttm);
                     } else {
                         values[fieldCnt] = field.getDefaultDoubleValue();
                     }
@@ -342,10 +345,10 @@ public class TextRecord extends DataRecord {
                     tok = tok.replaceAll("\"", "");
                     try {
                         objectValues[fieldCnt] =
-                            field.getDateFormat().parse(tok);
+                            getDateFormat(field).parse(tok);
                     } catch (java.text.ParseException ignore) {
                         objectValues[fieldCnt] =
-                            field.getDateFormat().parse(tok + " UTC");
+                            getDateFormat(field).parse(tok + " UTC");
                     }
 
                     continue;
@@ -383,6 +386,16 @@ public class TextRecord extends DataRecord {
 
 
     }
+
+
+    private SimpleDateFormat getDateFormat(RecordField field) {
+        SimpleDateFormat sdf = field.getDateFormat();
+        if(sdf == null) {
+            field.setDateFormat(sdf= getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));
+        }
+        return sdf;
+    }
+
 
 
     /**

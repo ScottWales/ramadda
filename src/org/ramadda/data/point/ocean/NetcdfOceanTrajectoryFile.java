@@ -43,7 +43,7 @@ import java.util.List;
  *
  *
  * @version        $version$, Wed, Nov 13, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class NetcdfOceanTrajectoryFile extends NetcdfTrajectoryFile {
 
@@ -77,9 +77,9 @@ public class NetcdfOceanTrajectoryFile extends NetcdfTrajectoryFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         //Need to find the platform or instrument property
         String platform = Misc.getProperty(getFileProperties(), "platform",

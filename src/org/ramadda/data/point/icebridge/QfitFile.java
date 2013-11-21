@@ -94,7 +94,7 @@ public class QfitFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Get the date from the filename
         String dttm =
             StringUtil.findPattern(

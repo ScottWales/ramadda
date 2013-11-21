@@ -93,6 +93,8 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
+    public static final String DFLT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm Z";
+
     /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
 
@@ -338,7 +340,7 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
@@ -513,6 +515,11 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public String attrValue(String v) {
         return HtmlUtils.attr(ATTR_VALUE, v);
+    }
+
+
+    public String attr(String n, String v) {
+        return HtmlUtils.attr(n, v);
     }
 
     /**

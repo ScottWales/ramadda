@@ -93,7 +93,7 @@ public class NoaaFlaskEventPointFile extends NoaaPointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String fields   = getFieldsFileContents();
         String filename = getOriginalFilename(getFilename());

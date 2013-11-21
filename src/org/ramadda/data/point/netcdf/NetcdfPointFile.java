@@ -271,7 +271,7 @@ public class NetcdfPointFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws IOException {
+    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         visitInfo.setRecordIO(readHeader(visitInfo.getRecordIO()));
 
         NetcdfDataset   dataset  = NetcdfDataset.openDataset(getFilename());
