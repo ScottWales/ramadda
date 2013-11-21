@@ -1549,13 +1549,12 @@ xxxpath.link {
 }
 
 .ramadda-breadcrumbs-menu-img {
-   padding: 0px;
-   background-color: #fff;
+   padding: 1px;
 }
 
 .ramadda-breadcrumbs-menu-img:hover {
-   padding: 0px;
-   background-color: #888;
+   padding: 1px;
+   background-color: #00f;
 }
 
 .ramadda-breadcrumbs-menu {
