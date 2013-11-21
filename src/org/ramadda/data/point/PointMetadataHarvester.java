@@ -152,7 +152,8 @@ public class PointMetadataHarvester extends RecordVisitor {
         }
 
         //Skip this if it doesn't have a valid position
-        if ( !pointRecord.isValidPosition()) {
+        if ( !pointRecord.isValidPosition()
+                && pointRecord.needsValidPosition()) {
             if (Double.isNaN(lat) && Double.isNaN(lon)) {
                 //TODO:what do do with undefined
             } else {

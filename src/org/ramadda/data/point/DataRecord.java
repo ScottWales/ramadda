@@ -342,6 +342,20 @@ public class DataRecord extends PointRecord {
      * _more_
      *
      * @param attrId _more_
+     * @param value _more_
+     */
+    public void setValue(int attrId, Object value) {
+        int idx = attrId - ATTR_FIRST;
+        //Offset since the  field ids are 1 based not 0 based
+        idx               = idx - 1;
+        objectValues[idx] = value;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param attrId _more_
      *
      * @return _more_
      */

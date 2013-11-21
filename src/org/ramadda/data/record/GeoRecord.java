@@ -102,6 +102,15 @@ public abstract class GeoRecord extends Record {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean needsValidPosition() {
+        return true;
+    }
+
 
 
 }
