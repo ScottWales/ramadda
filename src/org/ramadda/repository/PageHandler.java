@@ -21,37 +21,34 @@
 package org.ramadda.repository;
 
 
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.*;
-
-
+import org.ramadda.repository.auth.Permission;
+import org.ramadda.repository.auth.User;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.output.CalendarOutputHandler;
+import org.ramadda.repository.output.HtmlOutputHandler;
+import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.output.PageStyle;
 import org.ramadda.util.HtmlTemplate;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-import org.ramadda.util.PropertyProvider;
-import org.ramadda.util.WikiUtil;
 
 import ucar.unidata.ui.ImageUtils;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import java.io.*;
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 
 import java.net.URL;
 
@@ -63,7 +60,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -451,9 +447,10 @@ public class PageHandler extends RepositoryManager {
 
         if (makePopup) {
             String userImage =
-                HtmlUtils.img(iconUrl("/icons/gear.png"),
-                              msg("Login, user settings, help"),
-                              HtmlUtils.cssClass("ramadda-user-menu-image"));
+                HtmlUtils.img(
+                    iconUrl(getProperty(ICON_USERLINKS, "/icons/cog.png")),
+                    msg("Login, User Settings, Help"),
+                    HtmlUtils.cssClass("ramadda-user-menu-image"));
             //        userLinks = makePopupLink(userImage, userLinks, "", true, true, bottom);
             userLinks =
                 HtmlUtils.div(userLinks,

@@ -227,6 +227,9 @@ public interface Constants {
     public static final String ICON_LINK = "ramadda.icon.link";
 
     /** _more_ */
+    public static final String ICON_USERLINKS = "ramadda.icon.userlinks";
+
+    /** _more_ */
     public static final String ICON_LIST = "ramadda.icon.list";
 
     /** _more_ */
