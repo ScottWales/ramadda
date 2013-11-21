@@ -56,7 +56,7 @@ public class RepositoryUtil {
     //that gets replaced with  this. Repository checks incoming paths and strips this off
 
     /** _more_ */
-    public static final String HTDOCS_VERSION = "htdocs_v1_5_r1";
+    public static final String HTDOCS_VERSION = "htdocs_v1_5_r2";
 
     /** _more_ */
     public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
