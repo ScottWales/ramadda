@@ -454,7 +454,7 @@ Instrument: {{name}}
 
   <type name="project_softwarepackage"  description="Software Tool" category="Science Project">
      <property name="icon" value="/fieldproject/disk_multiple.png"/>
-     <property name="form.file.show" value="false"/>
+     <property name="form.file.show" value="true"/>
      <property name="form.url.show" value="true"/>
      <property name="form.resource.label" value="Link"/>
      <property name="form.datatype.show" value="false"/>
