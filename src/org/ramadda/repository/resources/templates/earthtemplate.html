@@ -10,8 +10,7 @@ id=earth
 ramadda.template.link.wrapper =<a class="link" href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
 
-ramadda.template.userlink.wrapper =<a class="link" href="${url}">${label}</a>
-ramadda.template.userlink.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.popup=true
 
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
@@ -69,13 +68,16 @@ color:black
 }
 
 
-
-.ramadda-header a:hover  {color:red;}
-.ramadda-header a {color:white;}
-.ramadda-header-label {
+.ramadda-header-label a {
     font-size:24px;
     color:white;
-    }
+}
+
+
+.ramadda-header-label  {
+    font-size:24px;
+    color:white;
+}
 
 .ramadda-header {
    background:#030361;
@@ -84,7 +86,6 @@ color:black
    padding: 5px;
    padding-top: 30px;
    padding-bottom: 0px;
-   color:white;
 }
 
 .ramadda-outercontents {

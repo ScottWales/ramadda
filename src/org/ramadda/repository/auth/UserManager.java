@@ -2077,20 +2077,14 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      * @param htmlTemplate _more_
+     * @param template _more_
+     * @param separator _more_
      *
      * @return _more_
      */
-    public String getUserLinks(Request request, HtmlTemplate htmlTemplate) {
-        User user = request.getUser();
-        String template =
-            htmlTemplate.getTemplateProperty("ramadda.template.link.wrapper",
-                                             "");
-        template = htmlTemplate.getTemplateProperty(
-            "ramadda.template.userlink.wrapper", template);
-        String separator = htmlTemplate.getTemplateProperty(
-                               "ramadda.template.link.separator", "");
-        separator = htmlTemplate.getTemplateProperty(
-            "ramadda.template.userlink.separator", separator);
+    public String getUserLinks(Request request, String template,
+                               String separator) {
+        User user   = request.getUser();
 
         List extras = new ArrayList();
         List urls   = new ArrayList();
@@ -2140,6 +2134,7 @@ public class UserManager extends RepositoryManager {
             tips.add(msg("View Help"));
         }
 
+
         List links = new ArrayList();
         for (int i = 0; i < urls.size(); i++) {
             String link = template.replace("${label}",
@@ -2149,6 +2144,7 @@ public class UserManager extends RepositoryManager {
             link = link.replace("${extra}", extras.get(i).toString());
             links.add(link);
         }
+
 
         return StringUtil.join(separator, links);
     }
@@ -2757,21 +2753,26 @@ public class UserManager extends RepositoryManager {
                         RepositoryUtil.decodeBase64(
                             request.getUnsafeString(ARG_REDIRECT, "")));
                     //Gack  - make sure we don't redirect to the logout page
-                    if(destUrl.indexOf("logout")<0) {
+                    if (destUrl.indexOf("logout") < 0) {
                         return new Result(destUrl);
                     }
-                    response.append(HtmlUtils.href(getRepositoryBase().URL_ENTRY_SHOW.toString(), msg("Continue")));
+                    response.append(
+                        HtmlUtils.href(
+                            getRepositoryBase().URL_ENTRY_SHOW.toString(),
+                            msg("Continue")));
                 } else if ( !user.canEditSettings()) {
                     response.append(
                         HtmlUtils.href(
                             getRepository().getUrlBase(), msg("Continue")));
                 } else {
                     //Redirect to the top-level entry
-                    if(true)
-                        return new Result(getRepositoryBase().URL_ENTRY_SHOW.toString());
+                    if (true) {
+                        return new Result(
+                            getRepositoryBase().URL_ENTRY_SHOW.toString());
+                    }
                     response.append(
                         HtmlUtils.href(
-                                       getRepositoryBase().URL_ENTRY_SHOW.toString(),
+                            getRepositoryBase().URL_ENTRY_SHOW.toString(),
                             msg(
                             "Continue to the top level of the repository")));
                     response.append("<p>");

@@ -423,23 +423,67 @@ public class PageHandler extends RepositoryManager {
                 template = tmpTemplate;
             }
         }
-        String   html   = template;
-        String[] macros = new String[] {
+        String html = template;
+
+        boolean makePopup = htmlTemplate.getTemplateProperty(
+                                "ramadda.template.userlink.popup", false);
+        String userLinkTemplate;
+        String separator;
+
+        if (makePopup) {
+            userLinkTemplate =
+                "<div class=\"ramadda-user-link\"><a href=\"${url}\" title=\"${tooltip}\">${label}</a></div>";
+            separator = "";
+        } else {
+            userLinkTemplate = htmlTemplate.getTemplateProperty(
+                "ramadda.template.link.wrapper", "");
+            userLinkTemplate = htmlTemplate.getTemplateProperty(
+                "ramadda.template.userlink.wrapper", userLinkTemplate);
+            separator = htmlTemplate.getTemplateProperty(
+                "ramadda.template.link.separator", "");
+            separator = htmlTemplate.getTemplateProperty(
+                "ramadda.template.userlink.separator", separator);
+        }
+
+
+        String userLinks = getUserManager().getUserLinks(request,
+                               userLinkTemplate, separator);
+
+        if (makePopup) {
+            String userImage =
+                HtmlUtils.img(iconUrl("/icons/gear.png"),
+                              msg("Login, user settings, help"),
+                              HtmlUtils.cssClass("ramadda-user-menu-image"));
+            //        userLinks = makePopupLink(userImage, userLinks, "", true, true, bottom);
+            userLinks =
+                HtmlUtils.div(userLinks,
+                              HtmlUtils.cssClass("ramadda-user-menu"));
+            userLinks = makePopupLink(userImage, userLinks, false, true);
+        }
+
+
+
+
+        StringBuffer bottom = new StringBuffer(result.getBottomHtml());
+
+
+
+
+
+        String[]     macros = new String[] {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, iconUrl(ICON_HEADER), MACRO_HEADER_TITLE,
-            pageTitle, MACRO_USERLINK,
-            getUserManager().getUserLinks(request, htmlTemplate), MACRO_LINKS,
-            linksHtml, MACRO_REPOSITORY_NAME,
+            pageTitle, MACRO_USERLINK, userLinks, MACRO_LINKS, linksHtml,
+            MACRO_REPOSITORY_NAME,
             repository.getProperty(PROP_REPOSITORY_NAME, "Repository"),
             MACRO_FOOTER, repository.getProperty(PROP_HTML_FOOTER, BLANK),
-            MACRO_TITLE, result.getTitle(), MACRO_BOTTOM,
-            result.getBottomHtml(), MACRO_SEARCH_URL,
-            getSearchManager().getSearchUrl(request), MACRO_CONTENT,
-            content + jsContent, MACRO_FAVORITES, favorites.toString(),
-            MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
-            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
-            entryBreadcrumbs, MACRO_HEADFINAL, head, MACRO_ROOT,
-            repository.getUrlBase(),
+            MACRO_TITLE, result.getTitle(), MACRO_BOTTOM, bottom.toString(),
+            MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
+            MACRO_CONTENT, content + jsContent, MACRO_FAVORITES,
+            favorites.toString(), MACRO_ENTRY_HEADER, entryHeader,
+            MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
+            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_HEADFINAL, head,
+            MACRO_ROOT, repository.getUrlBase(),
         };
 
 

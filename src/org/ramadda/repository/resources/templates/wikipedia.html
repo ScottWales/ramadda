@@ -9,6 +9,8 @@ id=wikipedia
 ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.link.separator=
 
+ramadda.template.userlink.popup=true
+
 ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.userlink.separator=
 
@@ -143,7 +145,6 @@ ${headfinal}
 <span class="linkslabel">Account:</span>
 -->
 <div class="leftbox">
-${userlinks}
 </div>
 <br>
 
@@ -152,7 +153,9 @@ ${favorites}
 </td>
 
 <td>
+<table width=100%><tr valign=bottom><td>
 <div  class="ramadda-header-leftcolumn-title">${header.title} - ${title}</div>
+</td><td align=right>${userlinks}</td></tr></table>
 <div class="ramadda-content">${entry.header}<div class="ramadda-innercontent">${content}</div></div>
 </td></tr></table>
 <div class="ramadda-footer">${footer}</div>

@@ -1114,18 +1114,24 @@ function showPopup(event, srcId, popupId, alignLeft) {
     popupObject = popup;
     popupSrcId = srcId;
 
+    var myalign = 'left top';
+    var atalign = 'left top';
+    if(alignLeft) {
+        myalign = 'right top';
+        atalign =  'left top';
+    }
     showObject(popup);
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
-                my: 'left top',
-                at: 'left bottom',
+                my: myalign,
+                at: atalign,
                 collision: "none none"
                 });
     //Do it again to fix a bug on safari
     jQuery("#"+popupId ).position({
                 of: jQuery( "#" + srcId ),
-                my: 'left top',
-                at: 'left bottom',
+                my: myalign,
+                at: atalign,
                 collision: "none none"
                 });
 }

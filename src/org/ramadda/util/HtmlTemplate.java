@@ -218,7 +218,24 @@ public class HtmlTemplate {
         }
 
         return propertyProvider.getProperty(name, dflt);
-
     }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public boolean getTemplateProperty(String name, boolean dflt) {
+        String v = getTemplateProperty(name, null);
+        if (v == null) {
+            return dflt;
+        }
+
+        return v.equals("true");
+    }
+
 
 }

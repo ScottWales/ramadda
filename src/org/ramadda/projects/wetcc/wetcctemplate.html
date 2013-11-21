@@ -7,10 +7,7 @@ id=wetcc
 
 ramadda.template.link.wrapper =<a  href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
-
-ramadda.template.userlink.wrapper =<a  href="${url}">${label}</a>
-ramadda.template.userlink.separator=&nbsp;|&nbsp;
-
+ramadda.template.userlink.popup=true
 ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
 ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
@@ -26,12 +23,12 @@ ${imports}
        padding-right:10px;
        color: white;
    }
-  .wetcc-header a { 
-       color: white;
-   }
   .wetcc-header-links  { 
        padding-top:10px;
        padding-bottom:5px;
+       color: white;
+   }
+  .wetcc-header-links a { 
        color: white;
    }
   .ramadda-innercontent {
@@ -52,7 +49,7 @@ ${headfinal}
 <table  class="wetcc-header"  cellpadding="0" cellspacing="0" width="100%">
 <tr><td colspan="2"><center><img src="${root}/wetcc/logo.png"></center>
 </td></tr>
-<tr valign="bottom"><td><div class="wetcc-header-links">${links}</div></td><td align=right><div class="wetcc-header-links">${userlinks}</div></td></tr>
+<tr valign="bottom"><td><div class="wetcc-header-links">${links}</div></td><td align=right>${userlinks}</td></tr>
 </table>
 <div class="ramadda-content">${entry.header}<div class="ramadda-innercontent">${content}</div></div>
 </td>
