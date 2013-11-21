@@ -447,10 +447,9 @@ public class PageHandler extends RepositoryManager {
 
         if (makePopup) {
             String userImage =
-                HtmlUtils.img(
-                    iconUrl(getProperty(ICON_USERLINKS, "/icons/cog.png")),
-                    msg("Login, User Settings, Help"),
-                    HtmlUtils.cssClass("ramadda-user-menu-image"));
+                HtmlUtils.img(iconUrl(ICON_USERLINKS),
+                              msg("Login, user settings, help"),
+                              HtmlUtils.cssClass("ramadda-user-menu-image"));
             //        userLinks = makePopupLink(userImage, userLinks, "", true, true, bottom);
             userLinks =
                 HtmlUtils.div(userLinks,

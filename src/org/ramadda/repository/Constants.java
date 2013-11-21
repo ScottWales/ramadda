@@ -295,6 +295,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_SEARCH = "ramadda.icon.search";
 
+
     /** _more_ */
     public static final String ICON_TEXT = "ramadda.icon.text";
 
