@@ -93,6 +93,8 @@ public class QfitFile extends PointFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Get the date from the filename

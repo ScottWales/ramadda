@@ -57,7 +57,7 @@ public class GCNetPointFile extends CsvFile {
      *
      * @throws Exception _more_
      */
-@Override
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Put the delimiter first so we can read the header in the parent method
         putProperty(PROP_HEADER_DELIMITER, "");

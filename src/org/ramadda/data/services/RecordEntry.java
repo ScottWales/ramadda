@@ -220,6 +220,11 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         return entry;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String toString() {
         return "record entry:" + entry;
     }

@@ -388,11 +388,20 @@ public class TextRecord extends DataRecord {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param field _more_
+     *
+     * @return _more_
+     */
     private SimpleDateFormat getDateFormat(RecordField field) {
         SimpleDateFormat sdf = field.getDateFormat();
-        if(sdf == null) {
-            field.setDateFormat(sdf= getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));
+        if (sdf == null) {
+            field.setDateFormat(sdf =
+                getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));
         }
+
         return sdf;
     }
 

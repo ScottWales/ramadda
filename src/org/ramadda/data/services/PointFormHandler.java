@@ -777,8 +777,7 @@ public class PointFormHandler extends RecordFormHandler {
             if (i == 0) {
                 formatCol.append(HtmlUtils.b(msg("Point Products")));
             } else {
-                if ( !recordEntry.isCapable(
-                        PointFile.ACTION_GRID)) {
+                if ( !recordEntry.isCapable(PointFile.ACTION_GRID)) {
                     continue;
                 }
                 formats.append(HtmlUtils.col(HtmlUtils.space(5)));
@@ -863,8 +862,7 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.input(ARG_PROBABILITY,
                                   request.getString(ARG_PROBABILITY, ""),
                                   4) + probHelpImg;
-            if (recordEntry.isCapable(
-                    PointFile.ACTION_TIME)) {
+            if (recordEntry.isCapable(PointFile.ACTION_TIME)) {
 
                 boolean showTime = true;
                 subsetSB.append(
@@ -880,8 +878,7 @@ public class PointFormHandler extends RecordFormHandler {
                                           null, null, showTime)));
             }
 
-            if (recordEntry.isCapable(
-                    PointFile.ACTION_DECIMATE)) {
+            if (recordEntry.isCapable(PointFile.ACTION_DECIMATE)) {
                 subsetSB.append(HtmlUtils.formEntry(msgLabel("Decimate"),
                         msgLabel("Skip every") + " "
                         + HtmlUtils.input(ARG_RECORD_SKIP,
@@ -889,8 +886,7 @@ public class PointFormHandler extends RecordFormHandler {
                                               ""), 4) + prob));
             }
 
-            if (recordEntry.isCapable(
-                    PointFile.ACTION_TRACKS)) {
+            if (recordEntry.isCapable(PointFile.ACTION_TRACKS)) {
                 subsetSB.append(
                     HtmlUtils.formEntry(
                         msgLabel("GLAS Tracks"),
@@ -1249,10 +1245,9 @@ public class PointFormHandler extends RecordFormHandler {
                                    + "\";\n"));
 
         StringBuffer mapSB = new StringBuffer();
-        boolean showMap =
-            pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
-            && request.get(ARG_MAP_SHOW, true)
-            && getRepository().getMapManager().shouldShowMaps();
+        boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
+                          && request.get(ARG_MAP_SHOW, true)
+                          && getRepository().getMapManager().shouldShowMaps();
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
                           300, false);
         if (showMap) {
@@ -1266,8 +1261,7 @@ public class PointFormHandler extends RecordFormHandler {
                 + HtmlUtils.cssClass("point_timeseries_div")
                 + HtmlUtils.id("point_timeseries_div")));
 
-        boolean hasWaveform =
-            pointEntry.isCapable(PointFile.ACTION_WAVEFORM);
+        boolean hasWaveform = pointEntry.isCapable(PointFile.ACTION_WAVEFORM);
         final String waveformName = request.getString(ARG_WAVEFORM_NAME, "");
         String waveformDisplay = request.getString(ARG_WAVEFORM_DISPLAY,
                                      "normal");

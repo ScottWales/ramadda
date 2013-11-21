@@ -80,13 +80,13 @@ public abstract class RecordFile {
     /** _more_ */
     private Object[] fileMetadata;
 
-    /** _more_          */
+    /** _more_ */
     private String descriptionFromFile;
 
-    /** _more_          */
+    /** _more_ */
     private String nameFromFile;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable fileProperties = new Hashtable();
 
 
@@ -645,6 +645,8 @@ public abstract class RecordFile {
      * @return _more_
      *
      * @throws IOException On badness
+     *
+     * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         return visitInfo;

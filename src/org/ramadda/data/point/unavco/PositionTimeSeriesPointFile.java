@@ -86,6 +86,8 @@ public class PositionTimeSeriesPointFile extends CsvFile {
      * @return the visit info
      *
      * @throws IOException on badness
+     *
+     * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         putProperty(PROP_DELIMITER, isPos

@@ -172,8 +172,10 @@ public class M88PointFile extends CsvFile {
      * @param visitInfo visit info
      * @return possible new visitinfo
      * @throws IOException On badness
+     *
+     * @throws Exception _more_
      */
-@Override
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         //Set the delimiter and how many lines in the header to skip
         putProperty(PROP_DELIMITER, "tab");

@@ -66,7 +66,7 @@ import java.util.List;
  */
 public class NetcdfPointFile extends PointFile {
 
-    /** _more_          */
+    /** _more_ */
     public static final String NETCDF_ATTR_SUMMARY = "summary";
 
 

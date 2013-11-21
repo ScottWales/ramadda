@@ -38,6 +38,7 @@ import java.util.List;
 
 /**
  * A reader for the SeaBird CNV file format
+ *
  * Run this with:
  * java org.ramadda.data.point.ocean.CnvPointFile <filename>
  *
@@ -142,7 +143,11 @@ public class CnvPointFile extends CsvFile {
         for (String line : headerLines) {
             //# name 0 = scan: Scan Count
             if (line.startsWith("*")) {
-                comments.append(line.substring(1).trim());
+                //Strip off *
+                while (line.startsWith("*")) {
+                    line = line.substring(1).trim();
+                }
+                comments.append(line);
                 comments.append("<br>\n");
             }
             if (line.startsWith("# name ")) {
@@ -155,19 +160,28 @@ public class CnvPointFile extends CsvFile {
                 String desc = (tuple.size() > 1)
                               ? tuple.get(1)
                               : name;
-                desc = desc.replace("[", "(");
-                desc = desc.replace("]", ")");
-                desc = desc.replace(",", " - ");
-                fields.append(makeField(name, attr("description", desc),
+                toks = StringUtil.splitUpTo(desc, "[", 2);
+
+                String unit = "";
+                if (toks.size() > 1) {
+                    desc = toks.get(0).trim();
+                    unit = attrUnit(toks.get(1).replace("]", "").trim());
+                    unit = unit.replace(",", "-");
+                }
+                desc = desc.replace(",", "-");
+                fields.append(makeField(name, unit, attr("label", desc),
                                         attrChartable(), attrSearchable()));
             }
         }
 
+        //        System.err.println (fields);
 
-        //This gets used by ramadda when creating an entry
+
         //Clean up non ascii
         String entryDesc = comments.toString();
         entryDesc = entryDesc.replaceAll("[^\n\\x20-\\x7E]+", " ");
+
+        //This gets used by ramadda when creating an entry
         setDescriptionFromFile(entryDesc);
 
         //Store the fields

@@ -287,7 +287,7 @@ public class CsvFile extends TextFile {
                 label = (String) properties.get("description");
             }
             if (label != null) {
-                field.setDescription(label);
+                field.setLabel(label);
             }
             field.setValueGetter(new ValueGetter() {
                 public double getValue(Record record, RecordField field,

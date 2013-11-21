@@ -97,8 +97,10 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
      * @return visit info
      *
      * @throws IOException on badness
+     *
+     * @throws Exception _more_
      */
-@Override
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         putProperty(PROP_DELIMITER, ",");
         putProperty(PROP_SKIPLINES, "20");

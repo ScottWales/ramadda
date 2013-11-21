@@ -281,14 +281,25 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             throws Exception {
         try {
             getEntryMetadataInner(request, recordEntry, sb);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             //For now ignore the error since if we encounter bad data doing anything with the entry is broken
-            getLogManager().logError("Error reading record metadata:" + recordEntry.getEntry().getName(), exc);
+            getLogManager().logError("Error reading record metadata:"
+                                     + recordEntry.getEntry().getName(), exc);
         }
     }
 
-    private void getEntryMetadataInner(Request request, RecordEntry recordEntry,
-                                 StringBuffer sb)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param recordEntry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void getEntryMetadataInner(Request request,
+                                       RecordEntry recordEntry,
+                                       StringBuffer sb)
             throws Exception {
         sb.append(recordEntry.getRecordFile().getHtmlDescription());
         List<RecordField> fields     =
