@@ -31,65 +31,53 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 
 
 /**
  */
-public abstract class SingleSiteTextFile extends CsvFile {
+public class MultiMonthFile extends CsvFile {
+
+    /** _more_ */
+    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
+
 
     /**
-     * _more_
+     * The constructor
+     *
+     * @param filename file
+     * @throws IOException On badness
      */
-    public SingleSiteTextFile() {}
-
-    /**
-     * ctor
-     *
-     *
-     * @param filename _more_
-     *
-     * @throws IOException _more_
-     */
-    public SingleSiteTextFile(String filename) throws IOException {
+    public MultiMonthFile(String filename) throws IOException {
         super(filename);
     }
 
     /**
      * _more_
      *
-     * @param filename _more_
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
-    public SingleSiteTextFile(String filename, Hashtable properties)
-            throws IOException {
-        super(filename, properties);
-    }
-
-
-    /**
-     *  Since these are single station files don't do bounds, etc
-     *
-     * @param action _more_
+     * @param visitInfo _more_
      *
      * @return _more_
      */
-    public boolean isCapable(String action) {
-        if (action.equals(ACTION_BOUNDINGPOLYGON)) {
-            return false;
-        }
-        if (action.equals(ACTION_GRID)) {
-            return false;
-        }
+    public Record doMakeRecord(VisitInfo visitInfo) {
+        MultiMonthRecord record = new MultiMonthRecord(this, "temperature",
+                                      "Temperature", "deg C", -99.9);
+        record.setFirstDataLine(firstDataLine);
 
-        return super.isCapable(action);
+        return record;
     }
 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
+        PointFile.test(args, MultiMonthFile.class);
+    }
 
 }

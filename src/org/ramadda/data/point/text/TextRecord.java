@@ -280,27 +280,43 @@ public class TextRecord extends DataRecord {
      *
      * @throws IOException _more_
      */
+    public String readNextLine(RecordIO recordIO) throws IOException {
+        while (true) {
+            if (firstDataLine != null) {
+                line          = firstDataLine;
+                firstDataLine = null;
+            } else {
+                line = recordIO.readLine();
+            }
+            if (line == null) {
+                return line;
+            }
+            line = line.trim();
+            if ( !lineOk(line)) {
+                continue;
+            }
+
+            return line;
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     public ReadStatus read(RecordIO recordIO) throws IOException {
 
         try {
-            while (true) {
-                if (firstDataLine != null) {
-                    line          = firstDataLine;
-                    firstDataLine = null;
-                } else {
-                    line = recordIO.readLine();
-                }
-                if (line == null) {
-                    return ReadStatus.EOF;
-                }
-                line = line.trim();
-                if ( !lineOk(line)) {
-                    continue;
-                }
-
-                break;
+            String line = readNextLine(recordIO);
+            if (line == null) {
+                return ReadStatus.EOF;
             }
-
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }

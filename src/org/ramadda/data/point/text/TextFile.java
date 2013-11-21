@@ -93,7 +93,7 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DFLT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm Z";
 
     /** _more_ */
@@ -123,7 +123,6 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -338,8 +337,6 @@ public abstract class TextFile extends PointFile implements Fields {
      * @param visitInfo _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
