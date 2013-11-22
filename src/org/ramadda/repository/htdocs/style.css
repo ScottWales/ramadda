@@ -1,6 +1,7 @@
 menutable, tr, th, td {
       font-size: 100%;
       font: inherit;
+      font-size: 11pt;
 }
 
 body {
@@ -631,7 +632,7 @@ label {
 }
 
 .ramadda-user-menu-image:hover {
-//   background-color: #aaa;
+   background-color: #ddd;
 }
 
 
@@ -1590,7 +1591,6 @@ xxxpath.link {
 .ramadda-breadcrumbs {
    border-bottom : 1px #ccc solid;
    border-bottom : 1px #efefef solid;
-
    padding-left: 4px;
    padding-right: 2px;
    padding-top: 0px;
@@ -1599,11 +1599,11 @@ xxxpath.link {
 
 .ramadda-breadcrumbs-menu-img {
    padding: 1px;
+   margin:0px;
 }
 
 .ramadda-breadcrumbs-menu-img:hover {
-   padding: 1px;
-   background-color: #00f;
+//  background-color:#ccc;
 }
 
 .ramadda-breadcrumbs-menu {
@@ -1618,10 +1618,6 @@ xxxpath.link {
 
 
 .breadcrumbs {
-   /*
-   font-weight: bold;
-   font-size: 12pt;
-   */
    margin-top:5px;
    text-decoration: none;
    vertical-align: bottom;
