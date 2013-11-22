@@ -1559,18 +1559,9 @@ public class OutputHandler extends RepositoryManager {
         sb.append("</td>");
 
 
-        /*
-        String desc = entry.getDescription();
-        StringBuffer descSB = new StringBuffer();
-        String toggleJS = HtmlUtils.makeToggleBlock(desc,
-                                                   descSB, false);
-        sb.append(descSB);
-        */
 
         StringBuffer extraAlt = new StringBuffer();
-        //        extraAlt.append(entry.getUser().getId());
-
-        boolean showDate = !request.get(ARG_TREEVIEW, false);
+        boolean      showDate = !request.get(ARG_TREEVIEW, false);
 
         if ( !showDetails) {
             showDate = false;

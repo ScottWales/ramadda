@@ -1425,10 +1425,10 @@ public class HtmlOutputHandler extends OutputHandler {
             col++;
             sb.append("<td valign=bottom align=center width=" + width
                       + "% >");
-            List<String> urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request, entry, urls);
             String url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                           entry, ARG_OUTPUT, OUTPUT_GRID);
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
             if (urls.size() > 0) {
                 sb.append(
                     HtmlUtils.href(
@@ -1452,6 +1452,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.space(1));
                 sb.append(HtmlUtils.br());
             }
+
             String icon = getPageHandler().getIconUrl(request, entry);
             sb.append(HtmlUtils.href(url, HtmlUtils.img(icon)));
             sb.append(HtmlUtils.space(1));

@@ -106,7 +106,7 @@ import java.util.zip.ZipInputStream;
  */
 public class EntryManager extends RepositoryManager {
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] PRELOAD_CATEGORIES = { "General",
             "Information", "Documents", "Collaboration", "Database" };
 
@@ -5293,7 +5293,8 @@ public class EntryManager extends RepositoryManager {
                                  String textBeforeEntryLink)
             throws Exception {
         return getAjaxLink(request, entry, linkText, url, forTreeNavigation,
-                           textBeforeEntryLink, true);
+                           textBeforeEntryLink,
+                           request.get(ARG_DECORATE, true));
     }
 
     /**

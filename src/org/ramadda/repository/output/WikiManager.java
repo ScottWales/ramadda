@@ -111,6 +111,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
+
+    /** _more_          */
     public static final String ATTR_DECORATE = "decorate";
 
     /** maximum attribute */
@@ -151,8 +153,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
-    /** _more_ */
-    public static final String ATTR_INCLUDEDESCRIPTION = "includedescription";
+    /** _more_          */
+    public static final String ATTR_SHOWDESCRIPTION = "showdescription";
+
 
     /** _more_ */
     public static final String ATTR_ICON = "icon";
@@ -1683,9 +1686,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             List<String> titles   = new ArrayList<String>();
 
 
+            boolean includeIcon = Misc.getProperty(props,
+                                      APPLY_PREFIX + ATTR_INCLUDEICON, false);
 
 
-            int          colCnt   = 0;
+            int colCnt = 0;
             for (Entry child : children) {
                 String childsHtml = getWikiInclude(wikiUtil, newRequest,
                                         originalEntry, child, tag, tmpProps);
@@ -1734,9 +1739,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                     }
                 } else {
                     contents.add(content.toString());
-                    titles.add(getEntryDisplayName(child));
+                    String title = getEntryDisplayName(child);
+                    if (includeIcon) {
+                        title = HtmlUtils.img(
+                            getPageHandler().getIconUrl(
+                                request, child)) + " " + title;
+                    }
+                    titles.add(title);
                 }
             }
+
             if (layout.equals("table")) {
                 if (columns > 1) {
                     sb.append("</table>");
@@ -2130,7 +2142,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
-            boolean decorate = Misc.getProperty(props, ATTR_DECORATE, true);
+            boolean decorate    = Misc.getProperty(props, ATTR_DECORATE,
+                                      true);
             boolean showDetails = Misc.getProperty(props, ATTR_DETAILS, true);
 
             if ( !showDetails) {
@@ -3052,14 +3065,15 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         int     width        = Misc.getProperty(props, ATTR_WIDTH, 200);
         int serverImageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
 
-        int     columns      = Misc.getProperty(props, ATTR_COLUMNS, 2);
+        int     columns      = Misc.getProperty(props, ATTR_COLUMNS, 3);
         boolean random       = Misc.getProperty(props, ATTR_RANDOM, false);
         boolean popup        = Misc.getProperty(props, ATTR_POPUP, true);
         boolean thumbnail    = Misc.getProperty(props, ATTR_THUMBNAIL, true);
         String  caption = Misc.getProperty(props, ATTR_CAPTION, "${name}");
         String captionPos = Misc.getProperty(props, ATTR_POPUPCAPTION,
                                              "none");
-
+        boolean showDesc = Misc.getProperty(props, ATTR_SHOWDESCRIPTION,
+                                            false);
         if (popup) {
             addImagePopupJS(request, sb, props);
         }
@@ -3133,6 +3147,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             theCaption = theCaption.replace("${name}", child.getLabel());
             theCaption = theCaption.replace("${description}",
                                             child.getDescription());
+
             if (popup) {
                 String popupExtras = HtmlUtils.cssClass("popup_image");
                 if ( !captionPos.equals("none")) {
@@ -3147,12 +3162,21 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             buff.append("</div>");
 
+
             theCaption =
                 HtmlUtils.href(entryUrl, theCaption,
                                HtmlUtils.style("color:#666;font-size:10pt;"));
 
             buff.append(HtmlUtils.div(theCaption,
                                       HtmlUtils.cssClass("image-caption")));
+            if (showDesc) {
+                if (Utils.stringDefined(child.getDescription())) {
+                    buff.append("<div class=\"image-description\">");
+                    buff.append(child.getDescription());
+                    buff.append("</div>");
+                }
+            }
+
             buff.append("</div>");
         }
         sb.append("<table cellspacing=4>");
