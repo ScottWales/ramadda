@@ -360,7 +360,7 @@ search
 <li> [wiki::tagdef tree]:
 The [wiki::tagdef tree] tag is used to display the children entries of a folder.
 It can take the form:
-[wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true"}]]
+[wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true" }]]
 
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
@@ -377,7 +377,7 @@ Show images in an image player, e.g.
 [wiki::text {{{imageplayer}}}] </pre>
 
 
-<li> [wiki::tagdef gallery {width="image width" columns="number of columns" }]:
+<li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]:
 Show a 3 column gallery:
 [wiki::text {{{gallery columns="3"}}}] </pre>
 
@@ -490,6 +490,7 @@ apply.header="text to go before can contain macros ${name} ${url}"
 apply.footer="text to go after"
 apply.border="border width - defaults to 0"
 apply.bordercolor="border color"
+apply.includeicon="true|false"
 ...
 &lt;arguments for the apply tag&gt;
 }}

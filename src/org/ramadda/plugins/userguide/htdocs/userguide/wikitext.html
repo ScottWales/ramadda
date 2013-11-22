@@ -385,7 +385,7 @@ search
 <li> <a name="tree"></a>{{tree}}:
 The <a name="tree"></a>{{tree}} tag is used to display the children entries of a folder.
 It can take the form:
-<blockquote><pre><a name="tree"></a>{{tree <i>title="Links" showtoggle="false" open="true"</i>}}</pre></blockquote>
+<blockquote><pre><a name="tree"></a>{{tree <i>title="Links" showtoggle="false" open="true" </i>}}</pre></blockquote>
 
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
@@ -402,7 +402,7 @@ Show images in an image player, e.g.
 <blockquote><pre>{{imageplayer}}</pre></blockquote> </pre>
 
 
-<li> <a name="gallery"></a>{{gallery <i>width="image width" columns="number of columns" </i>}}:
+<li> <a name="gallery"></a>{{gallery <i>width="image width" columns="number of columns" showdescription="true"</i>}}:
 Show a 3 column gallery:
 <blockquote><pre>{{gallery columns="3"}}</pre></blockquote> </pre>
 
@@ -515,6 +515,7 @@ apply.header="text to go before can contain macros ${name} ${url}"
 apply.footer="text to go after"
 apply.border="border width - defaults to 0"
 apply.bordercolor="border color"
+apply.includeicon="true|false"
 ...
 &lt;arguments for the apply tag&gt;
 }}
