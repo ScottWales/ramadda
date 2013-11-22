@@ -111,6 +111,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
+    public static final String ATTR_DECORATE = "decorate";
 
     /** maximum attribute */
     public static final String ATTR_MAX = "max";
@@ -2129,17 +2130,23 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
+            boolean decorate = Misc.getProperty(props, ATTR_DECORATE, true);
             boolean showDetails = Misc.getProperty(props, ATTR_DETAILS, true);
 
             if ( !showDetails) {
                 request.put(ARG_DETAILS, "false");
             }
+            if ( !decorate) {
+                request.put(ARG_DECORATE, "false");
+            }
             String link = getHtmlOutputHandler().getEntriesList(request, sb,
                               children, true, false, showDetails);
+            if ( !decorate) {
+                request.put(ARG_DECORATE, "false");
+            }
             if ( !showDetails) {
                 request.remove(ARG_DETAILS);
             }
-
             if (showCategories) {
                 request.remove(ARG_SHOWCATEGORIES);
             }

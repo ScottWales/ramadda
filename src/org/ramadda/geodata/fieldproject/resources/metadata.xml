@@ -11,8 +11,8 @@
     </type>
 
 
-    <type id="project_funding" name="Funding Information" searchable="true">
-      <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA" />
+    <type id="project_funding" name="Funding Information" searchable="true" browsable="true">
+      <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA"/>
       <element id="title" name="Title"/>
       <element id="id" name="ID"/>
       <element id="url" datatype="url" name="URL"/>

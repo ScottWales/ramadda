@@ -181,6 +181,11 @@ public interface Constants {
     public static final String ICON_GRAYRECTARROW =
         "ramadda.icon.grayrectarrow";
 
+
+
+    /** _more_ */
+    public static final String ICON_HOME = "ramadda.icon.home";
+
     /** _more_ */
     public static final String ICON_HEADER = "ramadda.icon.header";
 
