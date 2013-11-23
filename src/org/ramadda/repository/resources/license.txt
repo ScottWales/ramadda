@@ -23,11 +23,12 @@ RAMADDA includes software developed by:
     * The University Corporation for Atmospheric Research  (UCAR)
     * The Jython project (http://www.jython.org)
     * NOAA
-    * Google
+    * Google 
     * ViSAD from the University of Wisconsin (http://www.ssec.wisc.edu/~billh/visad.html)
     * JPEG Metadata Extractor (http://www.drewnoakes.com/code/exif/)
     * Jquery (http://jquery.com/)
     * JQuery Data Tables (http://datatables.net/index)
+    * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm) Taylor Hornby 
     * Slidesjs (http://slidesjs.com/)
     * Fancybox (http://fancybox.net/)
     * Icons from the famfamfam icon collection: http://www.famfamfam.com/lab/icons/

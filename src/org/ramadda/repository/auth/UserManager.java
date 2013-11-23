@@ -30,8 +30,8 @@ import org.ramadda.sql.Clause;
 import org.ramadda.sql.SqlUtil;
 
 import org.ramadda.util.HtmlTemplate;
-
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -334,7 +334,7 @@ public class UserManager extends RepositoryManager {
      *
      * @return hashed password
      */
-    public String hashPassword_oldway(String password) {
+    public String hashPassword_oldoldway(String password) {
         if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
             return RepositoryUtil.hashPasswordForOldMD5(password);
         } else {
@@ -352,9 +352,11 @@ public class UserManager extends RepositoryManager {
      *
      * @return hashed password
      */
-    public String hashPassword(String password) {
+    private String hashPassword_oldway(String password) {
         //See, e.g. http://www.jasypt.org/howtoencryptuserpasswords.html
         try {
+            //having a single salt repository wide isn't a great way to do this
+            //It really should be a per user/password salt that gets stored in the db as well
             String salt1 = getProperty(PROP_PASSWORD_SALT1, "");
             String salt2 = getProperty(PROP_PASSWORD_SALT2, "");
             if (salt1.length() > 0) {
@@ -387,6 +389,22 @@ public class UserManager extends RepositoryManager {
 
 
     /**
+     * hash the given raw text password for storage into the database
+     *
+     * @param password raw text password
+     *
+     * @return hashed password
+     */
+    public String hashPassword(String password) {
+        try {
+            return PasswordHash.createHash(password);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+    /**
      * _more_
      *
      * @param bytes _more_
@@ -405,37 +423,6 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * This is a routine created by Matias Bonet to handle pre-existing passwords that
-     * were hashed via md5
-     *
-     * @param password The password
-     *
-     * @return hashed password
-     */
-    private String hashPasswordOldWay(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(password.getBytes("UTF-8"));
-            byte         messageDigest[] = md.digest();
-            StringBuffer hexString       = new StringBuffer();
-            for (int i = 0; i < messageDigest.length; i++) {
-                String hex = Integer.toHexString(0xFF & messageDigest[i]);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-
-            //            System.out.println(hexString.toString());
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new IllegalStateException(nsae.getMessage());
-        } catch (UnsupportedEncodingException uee) {
-            throw new IllegalStateException(uee.getMessage());
-        }
-    }
 
 
 
@@ -2679,18 +2666,13 @@ public class UserManager extends RepositoryManager {
      */
     public boolean isPasswordValid(String userId, String rawPassword)
             throws Exception {
-        String hashedPassword = hashPassword(rawPassword);
-        Clause clause = Clause.and(Clause.eq(Tables.USERS.COL_ID, userId),
-                                   Clause.eq(Tables.USERS.COL_PASSWORD,
-                                             hashedPassword));
-        if (getDatabaseManager().tableContains(clause, Tables.USERS.NAME,
-                Tables.USERS.COLUMNS)) {
-            return true;
+        User user = authenticateUser(null, userId, rawPassword,
+                                     new StringBuffer());
+        if (user == null) {
+            return false;
         }
 
-        System.err.println("not in db:" + clause);
-
-        return false;
+        return true;
     }
 
 
@@ -2852,48 +2834,55 @@ public class UserManager extends RepositoryManager {
                                   String password,
                                   StringBuffer loginFormExtra)
             throws Exception {
-        User      user = null;
-        ResultSet results;
-        Statement statement;
 
 
-        //Try the database
         String hashedPassword = hashPassword(password);
-        statement = getDatabaseManager().select(Tables.USERS.COLUMNS,
-                Tables.USERS.NAME,
-                Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
-                           Clause.eq(Tables.USERS.COL_PASSWORD,
-                                     hashedPassword)));
-        results = statement.getResultSet();
-        if (results.next()) {
+
+        Statement statement =
+            getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                        Tables.USERS.NAME,
+                                        Clause.eq(Tables.USERS.COL_ID, name));
+
+        ResultSet results = statement.getResultSet();
+
+        //User is not in the database
+        if ( !results.next()) {
+            return null;
+        }
+
+        String storedHash =
+            results.getString(Tables.USERS.COL_NODOT_PASSWORD);
+        if ( !Utils.stringDefined(storedHash)) {
+            return null;
+        }
+
+        boolean userOK = PasswordHash.validatePassword(password, storedHash);
+
+
+        //Check for old formats of hashes
+        if ( !userOK) {
+            userOK = storedHash.equals(hashPassword_oldway(password));
+            //            System.err.println ("trying the old way:" + userOK);
+        }
+
+        if ( !userOK) {
+            userOK = storedHash.equals(hashPassword_oldoldway(password));
+            //            System.err.println ("trying the old old way:" + userOK);
+        }
+
+        User user = null;
+
+        if (userOK) {
             user = getUser(results);
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
+
 
         if (user != null) {
             return user;
         }
 
-        //Try the old hashing way
-        String oldWay = hashPassword_oldway(password);
-        statement = getDatabaseManager().select(Tables.USERS.COLUMNS,
-                Tables.USERS.NAME,
-                Clause.and(Clause.eq(Tables.USERS.COL_ID, name),
-                           Clause.eq(Tables.USERS.COL_PASSWORD, oldWay)));
-        results = statement.getResultSet();
-        if (results.next()) {
-            user = getUser(results);
-        }
-        getDatabaseManager().closeAndReleaseConnection(statement);
 
-        if (user != null) {
-            return user;
-        }
-
-        //For testing - we can specify a ldap:... user name to force connecting through ldap
-        if (name.startsWith("ldap:")) {
-            name = name.substring(5);
-        }
 
         //Try the authenticators
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
