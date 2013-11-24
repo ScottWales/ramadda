@@ -83,6 +83,9 @@ public class StorageManager extends RepositoryManager {
     /** the users directory */
     public static final String DIR_USERS = "users";
 
+    /** _more_          */
+    public static final String DIR_VOLATILE = "volatile";
+
     /** the backups directory */
     public static final String DIR_BACKUPS = "backups";
 
@@ -388,6 +391,16 @@ public class StorageManager extends RepositoryManager {
      */
     public File getResourceDir() {
         return new File(IOUtil.joinDir(repositoryDir, DIR_RESOURCES));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public File getVolatileDir() {
+        return new File(IOUtil.joinDir(repositoryDir, DIR_VOLATILE));
     }
 
     /**

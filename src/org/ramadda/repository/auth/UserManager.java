@@ -38,11 +38,13 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.UnsupportedEncodingException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+
+import java.security.SignatureException;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -52,6 +54,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 
 /**
@@ -201,13 +206,13 @@ public class UserManager extends RepositoryManager {
         new Hashtable<String, PasswordReset>();
 
 
-    /** _more_          */
+    /** _more_ */
     private String salt;
 
-    /** _more_          */
+    /** _more_ */
     private String salt1;
 
-    /** _more_          */
+    /** _more_ */
     private String salt2;
 
 
@@ -218,12 +223,6 @@ public class UserManager extends RepositoryManager {
      */
     public UserManager(Repository repository) {
         super(repository);
-        salt  = getProperty(PROP_PASSWORD_SALT, "");
-        salt1 = getProperty(PROP_PASSWORD_SALT1, "");
-        salt2 = getProperty(PROP_PASSWORD_SALT2, "");
-        allowedIpsForLogin =
-            StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
-                             true, true);
     }
 
 
@@ -298,6 +297,15 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void initUsers(List<User> cmdLineUsers) throws Exception {
+        salt  = getProperty(PROP_PASSWORD_SALT, "");
+        salt1 = getProperty(PROP_PASSWORD_SALT1, "");
+        salt2 = getProperty(PROP_PASSWORD_SALT2, "");
+        allowedIpsForLogin =
+            StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
+                             true, true);
+
+
+
         makeUserIfNeeded(new User(USER_DEFAULT, "Default User"));
         makeUserIfNeeded(new User(USER_ANONYMOUS, "Anonymous"));
         makeUserIfNeeded(new User(USER_LOCALFILE, "Local Files"));
@@ -350,15 +358,54 @@ public class UserManager extends RepositoryManager {
      * @param password _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    private String getPasswordToUse(String password) {
-        //Prepend the secret system-wide salt
+    private String getPasswordToUse(String password) throws Exception {
+        //If we have a salt then use a generated hmac as the password to hash
         if (salt.length() != 0) {
-            password = salt + password;
+            return calculateRFC2104HMAC(password, salt);
         }
 
         return password;
     }
+
+    //From: http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/AuthJavaSampleHMACSignature.html
+
+    /**
+     * _more_
+     *
+     * @param data _more_
+     * @param key _more_
+     *
+     * @return _more_
+     *
+     * @throws java.security.SignatureException _more_
+     */
+    public static String calculateRFC2104HMAC(String data, String key)
+            throws java.security.SignatureException {
+        try {
+            String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+            // get an hmac_sha1 key from the raw key bytes
+            SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(),
+                                           HMAC_SHA1_ALGORITHM);
+
+
+            // get an hmac_sha1 Mac instance and initialize with the signing key
+            Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+            mac.init(signingKey);
+
+            // compute the hmac on input data bytes
+            byte[] rawHmac = mac.doFinal(data.getBytes());
+
+            // base64-encode the hmac
+            return RepositoryUtil.encodeBase64(rawHmac);
+        } catch (Exception e) {
+            throw new SignatureException("Failed to generate HMAC : "
+                                         + e.getMessage());
+        }
+    }
+
 
 
     /**
@@ -783,7 +830,6 @@ public class UserManager extends RepositoryManager {
                 "Database already contains user:" + user.getId());
         }
 
-        System.err.println("updating:" + user.getHashedPassword());
         getDatabaseManager().update(Tables.USERS.NAME, Tables.USERS.COL_ID,
                                     user.getId(), new String[] {
             Tables.USERS.COL_NAME, Tables.USERS.COL_PASSWORD,
@@ -1024,7 +1070,6 @@ public class UserManager extends RepositoryManager {
     private void makeUserForm(Request request, User user, StringBuffer sb,
                               boolean includeAdmin)
             throws Exception {
-        //        System.err.println ("User:" + user);
         sb.append(HtmlUtils.formTable());
         if (user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),
@@ -2992,7 +3037,6 @@ public class UserManager extends RepositoryManager {
                     String redirect =
                         getRepositoryBase().URL_USER_HOME.toString();
 
-                    //                    System.err.println("zzz redirecting to:" + redirect);
                     return new Result(HtmlUtils.url(redirect, ARG_MESSAGE,
                             getRepository().translate(request,
                                 "Favorites Added")));
@@ -3410,6 +3454,5 @@ public class UserManager extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
-
 
 }

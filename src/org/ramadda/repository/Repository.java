@@ -1026,6 +1026,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
                 loadProperties(localProperties, f.toString());
             }
+
+
+            for (File f : getStorageManager().getVolatileDir().listFiles()) {
+                if ( !f.toString().endsWith(".properties")) {
+                    continue;
+                }
+                loadProperties(localProperties, f.toString());
+                System.err.println(
+                    "RAMADDA: loaded and deleted volatile file:" + f);
+                f.delete();
+            }
+
         } catch (Exception exc) {}
 
 
