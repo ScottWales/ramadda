@@ -151,9 +151,9 @@ public class OutputHandler extends RepositoryManager {
     /**
      * Do we allow arachnids?
      *
-     * @return  true if spiders allowed
+     * @return  true if robots allowed
      */
-    public boolean allowSpiders() {
+    public boolean allowRobots() {
         return false;
     }
 

@@ -2669,6 +2669,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private boolean acceptRobots() {
+        return !getProperty(PROP_ACCESS_NOBOTS, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
+    public Result getNoRobotsResult(Request request) {
+        Result result = new Result("", new StringBuffer("no bots"));
+        result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+
+        return result;
+    }
+
 
     /**
      * _more_
@@ -2683,12 +2706,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         long   t1 = System.currentTimeMillis();
         Result result;
-        if (getProperty(PROP_ACCESS_NOBOTS, false)) {
-            if (request.isSpider()) {
-                return new Result("", new StringBuffer("no bots for now"));
-            }
+        if ( !acceptRobots() && request.isRobot()) {
+            return getNoRobotsResult(request);
         }
-
 
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
@@ -3011,7 +3031,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ( !path.startsWith(urlBase)) {
             path = urlBase + path;
         }
-
 
         path = path.replaceAll("//", "/");
         //        System.err.println("path:" + path);
@@ -3564,10 +3583,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public List<Link> getOutputLinks(Request request,
                                      OutputHandler.State state)
             throws Exception {
-        boolean    isSpider = request.isSpider();
-        List<Link> links    = new ArrayList<Link>();
+        boolean    isRobot = request.isRobot();
+        List<Link> links   = new ArrayList<Link>();
         for (OutputHandler outputHandler : outputHandlers) {
-            if (isSpider && !outputHandler.allowSpiders()) {
+            if (isRobot && !outputHandler.allowRobots()) {
                 continue;
             }
             String c = outputHandler.getClass().getName().toLowerCase();
@@ -4175,6 +4194,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               false);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processRobotsTxt(Request request) throws Exception {
+        StringBuffer sb = new StringBuffer("User-agent: *\n");
+        if ( !acceptRobots()) {
+            sb.append("Disallow: /\n");
+        } else {
+            sb.append("Allow: /\n");
+        }
+        Result result = new Result("", sb);
+        result.setShouldDecorate(false);
+
+        return result;
+    }
 
 
     /**

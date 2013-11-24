@@ -798,9 +798,9 @@ public class EntryManager extends RepositoryManager {
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
 
-        if (request.isSpider()) {
-            if ( !outputHandler.allowSpiders()) {
-                return new Result("", new StringBuffer("no bots here"));
+        if (request.isRobot()) {
+            if ( !outputHandler.allowRobots()) {
+                return getRepository().getNoRobotsResult(request);
             }
         }
 

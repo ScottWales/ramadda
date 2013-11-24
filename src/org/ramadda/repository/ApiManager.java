@@ -443,7 +443,10 @@ public class ApiManager extends RepositoryManager {
             incoming = incoming.substring(1);
         }
         if ( !incoming.startsWith(urlBase)) {
-            return null;
+            //check for top-level apis
+            ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
+
+            return apiMethod;
         }
         incoming = incoming.substring(urlBase.length());
         if (incoming.length() == 0) {

@@ -552,7 +552,7 @@ public class AccessManager extends RepositoryManager {
     public boolean canAccessFile(Request request, Entry entry)
             throws Exception {
         //Check if its a crawler
-        if ((request != null) && request.isSpider()) {
+        if ((request != null) && request.isRobot()) {
             return false;
         }
 

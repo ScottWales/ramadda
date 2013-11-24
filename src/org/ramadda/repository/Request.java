@@ -2205,7 +2205,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      */
-    public boolean isSpider() {
+    public boolean isRobot() {
         String userAgent = getUserAgent();
         if (userAgent == null) {
             return false;
@@ -2217,7 +2217,9 @@ public class Request implements Constants, Cloneable {
                 || (userAgent.indexOf("slurp") >= 0)
                 || (userAgent.indexOf("spider") >= 0)
                 || (userAgent.indexOf("bots") >= 0)
-                || (userAgent.indexOf("bot.php") >= 0)
+                || (userAgent.indexOf("bot/") >= 0)
+                || (userAgent.indexOf("bot.") >= 0)
+                || (userAgent.indexOf(".bot") >= 0)
                 || (userAgent.indexOf("msnbot") >= 0));
     }
 

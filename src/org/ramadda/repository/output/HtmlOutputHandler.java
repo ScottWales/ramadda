@@ -201,7 +201,8 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @return _more_
      */
-    public boolean allowSpiders() {
+    @Override
+    public boolean allowRobots() {
         return true;
     }
 
