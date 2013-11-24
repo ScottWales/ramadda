@@ -638,6 +638,7 @@ label {
 
 
 .ramadda-user-link {
+   min-width: 100px;
    padding-top:5px;
    padding-bottom:3px;
    padding-right:8px;

@@ -31,7 +31,9 @@ import java.math.BigInteger;
 
 import java.security.NoSuchAlgorithmException;
 
-//This code is originally developed by Taylor Hornby. The above copyright comment gets added by jindent.
+//This code is originally developed by Taylor Hornby. Apologies for the above copyright comment.
+//It gets added by jindent and doesn't actually belong here.
+//
 //Changes include adding the package and checking for the correct hash format when doing the split below
 
 

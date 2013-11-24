@@ -1859,7 +1859,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
                         entry), getRepository().iconUrl(ICON_METADATA_ADD),
-                                "Add Property ...", OutputType.TYPE_EDIT));
+                                "Add Property...", OutputType.TYPE_EDIT));
 
             if (getMetadataTypes().size() > 0) {
                 for (String metadataType : getMetadataTypes()) {
@@ -3251,7 +3251,7 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                     String extra =
-                        HtmlUtils.makeShowHideBlock(msg("More ..."),
+                        HtmlUtils.makeShowHideBlock(msg("More..."),
                             extraMore + addMetadata + HtmlUtils.br()
                             + unzipWidget + HtmlUtils.br()
                             + datePatternWidget, false);
@@ -3554,7 +3554,7 @@ public class TypeHandler extends RepositoryManager {
                                    request.get(ARG_ISREGEXP, false)) + " "
                                        + msg("Use regular expression");
 
-            extra = HtmlUtils.makeToggleInline(msg("More ..."), extra, false);
+            extra = HtmlUtils.makeToggleInline(msg("More..."), extra, false);
         } else {
             extra = "";
         }
@@ -3882,7 +3882,7 @@ public class TypeHandler extends RepositoryManager {
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra;
         if (arg.hasRange) {
-            dateExtra = HtmlUtils.makeToggleInline(msg("More ..."),
+            dateExtra = HtmlUtils.makeToggleInline(msg("More..."),
                     HtmlUtils.br() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
                 msgLabel("Or search relative"), dateSelectInput, "",
@@ -3890,7 +3890,7 @@ public class TypeHandler extends RepositoryManager {
                 + msg("Include entries with no data times")
             }), false);
         } else {
-            dateExtra = HtmlUtils.makeToggleInline(msg("More ..."),
+            dateExtra = HtmlUtils.makeToggleInline(msg("More..."),
                     HtmlUtils.br()
                     + HtmlUtils.formTable(new String[] {
                         msgLabel("Or search relative"),

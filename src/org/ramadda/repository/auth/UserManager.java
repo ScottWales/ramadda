@@ -109,6 +109,11 @@ public class UserManager extends RepositoryManager {
         "ramadda.password.hash.iterations";
 
     /** _more_ */
+    public static final String PROP_PASSWORD_SALT =
+        "ramadda.password.hash.salt";
+
+
+    /** _more_ */
     public static final String PROP_PASSWORD_SALT1 =
         "ramadda.password.hash.salt1";
 
@@ -196,6 +201,16 @@ public class UserManager extends RepositoryManager {
         new Hashtable<String, PasswordReset>();
 
 
+    /** _more_          */
+    private String salt;
+
+    /** _more_          */
+    private String salt1;
+
+    /** _more_          */
+    private String salt2;
+
+
     /**
      * ctor
      *
@@ -203,6 +218,12 @@ public class UserManager extends RepositoryManager {
      */
     public UserManager(Repository repository) {
         super(repository);
+        salt  = getProperty(PROP_PASSWORD_SALT, "");
+        salt1 = getProperty(PROP_PASSWORD_SALT1, "");
+        salt2 = getProperty(PROP_PASSWORD_SALT2, "");
+        allowedIpsForLogin =
+            StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
+                             true, true);
     }
 
 
@@ -232,17 +253,9 @@ public class UserManager extends RepositoryManager {
         if (getRepository().isReadOnly()) {
             return false;
         }
-        if (allowedIpsForLogin == null) {
-            allowedIpsForLogin =
-                StringUtil.split(getProperty(PROP_LOGIN_ALLOWEDIPS, ""), ",",
-                                 true, true);
-            //            getLogManager().logInfoAndPrint(
-            //                "UserManager: allowed ip addresses: " + allowedIpsForLogin);
-        }
 
         if (allowedIpsForLogin.size() > 0) {
             String requestIp = request.getIp();
-            //            System.err.println ("IP:" + requestIp +" ips:" + allowedIpsForLogin);
             if (requestIp == null) {
                 return false;
             }
@@ -263,13 +276,12 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param result _more_
      *
-     * @return _more_
+     * @return The result
      */
     private Result addHeader(Request request, Result result) {
-        //        if(true) return result;
         try {
             return addHeaderToAncillaryPage(request, result);
         } catch (Exception exc) {
@@ -327,64 +339,25 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    /**
-     * hash the given raw text password for storage into the database
-     *
-     * @param password raw text password
-     *
-     * @return hashed password
-     */
-    public String hashPassword_oldoldway(String password) {
-        if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
-            return RepositoryUtil.hashPasswordForOldMD5(password);
-        } else {
-            return RepositoryUtil.hashPassword(password);
-        }
-    }
+
 
 
 
 
     /**
-     * hash the given raw text password for storage into the database
+     * _more_
      *
-     * @param password raw text password
+     * @param password _more_
      *
-     * @return hashed password
+     * @return _more_
      */
-    private String hashPassword_oldway(String password) {
-        //See, e.g. http://www.jasypt.org/howtoencryptuserpasswords.html
-        try {
-            //having a single salt repository wide isn't a great way to do this
-            //It really should be a per user/password salt that gets stored in the db as well
-            String salt1 = getProperty(PROP_PASSWORD_SALT1, "");
-            String salt2 = getProperty(PROP_PASSWORD_SALT2, "");
-            if (salt1.length() > 0) {
-                password = salt1 + password;
-            }
-            int hashIterations =
-                getRepository().getProperty(PROP_PASSWORD_ITERATIONS, 1);
-            byte[] bytes = password.getBytes("UTF-8");
-            for (int i = 0; i < hashIterations; i++) {
-                bytes = doHashPassword(bytes);
-            }
-            if (salt2.length() > 0) {
-                byte[] prefix   = salt2.getBytes("UTF-8");
-                byte[] newBytes = new byte[prefix.length + bytes.length];
-                for (int i = 0; i < prefix.length; i++) {
-                    newBytes[i] = prefix[i];
-                }
-                for (int i = 0; i < bytes.length; i++) {
-                    newBytes[prefix.length + i] = bytes[i];
-                }
-                bytes = newBytes;
-            }
-            String result = RepositoryUtil.encodeBase64(bytes);
-
-            return result.trim();
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
+    private String getPasswordToUse(String password) {
+        //Prepend the secret system-wide salt
+        if (salt.length() != 0) {
+            password = salt + password;
         }
+
+        return password;
     }
 
 
@@ -397,31 +370,12 @@ public class UserManager extends RepositoryManager {
      */
     public String hashPassword(String password) {
         try {
-            return PasswordHash.createHash(password);
+            return PasswordHash.createHash(getPasswordToUse(password));
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param bytes _more_
-     *
-     * @return _more_
-     */
-    private byte[] doHashPassword(byte[] bytes) {
-        try {
-            String digest    = getProperty(PROP_PASSWORD_DIGEST, "SHA-512");
-            MessageDigest md = MessageDigest.getInstance(digest);
-            md.update(bytes);
-
-            return md.digest();
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
 
 
 
@@ -511,8 +465,8 @@ public class UserManager extends RepositoryManager {
      * @return _more_
      */
     public boolean isRequestOk(Request request) {
-        if (getProperty(PROP_ACCESS_ADMINONLY, false)
-                && !request.getUser().getAdmin()) {
+        User user = request.getUser();
+        if (getProperty(PROP_ACCESS_ADMINONLY, false) && !user.getAdmin()) {
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 return false;
@@ -520,7 +474,7 @@ public class UserManager extends RepositoryManager {
         }
 
         if (getProperty(PROP_ACCESS_REQUIRELOGIN, false)
-                && request.getUser().getAnonymous()) {
+                && user.getAnonymous()) {
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 return false;
@@ -632,7 +586,7 @@ public class UserManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public User getLocalFileUser() throws Exception {
         return findUser(USER_LOCALFILE);
@@ -755,7 +709,7 @@ public class UserManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public boolean userExistsInDatabase(User user) throws Exception {
         return getDatabaseManager().tableContains(user.getId(),
@@ -789,7 +743,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param user _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public void changePassword(User user) throws Exception {
         getDatabaseManager().update(
@@ -829,6 +783,7 @@ public class UserManager extends RepositoryManager {
                 "Database already contains user:" + user.getId());
         }
 
+        System.err.println("updating:" + user.getHashedPassword());
         getDatabaseManager().update(Tables.USERS.NAME, Tables.USERS.COL_ID,
                                     user.getId(), new String[] {
             Tables.USERS.COL_NAME, Tables.USERS.COL_PASSWORD,
@@ -881,25 +836,27 @@ public class UserManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * This checks the PASSWORD1 and PASSWORD2 URL arguments for equality.
+     * If they are defined and are equal then the hashed password is set for the user
+     * and this returns true.
+     *
+     * If the passwords are not equal then false
      *
      * @param request the request
      * @param user The user
      *
-     * @return _more_
+     * @return Are the passwords equal and did the user's password get set
      */
-    private boolean checkPasswords(Request request, User user) {
+    private boolean checkAndSetNewPassword(Request request, User user) {
         String password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
         String password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
-        if (password1.length() > 0) {
-            if ( !password1.equals(password2)) {
-                return false;
-            } else {
-                user.setPassword(hashPassword(password1));
-            }
+        if ((password1.length() > 0) && password1.equals(password2)) {
+            user.setPassword(hashPassword(password1));
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
 
@@ -935,10 +892,10 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param user _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     private void applyAdminState(Request request, User user)
             throws Exception {
@@ -986,7 +943,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -1009,7 +966,7 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
-            if ( !checkPasswords(request, user)) {
+            if ( !checkAndSetNewPassword(request, user)) {
                 sb.append(
                     getPageHandler().showDialogWarning(
                         "Incorrect passwords"));
@@ -1160,7 +1117,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -1175,11 +1132,11 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Result adminUserNewDo(Request request) throws Exception {
 
@@ -1374,10 +1331,10 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param sb _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     private void makeNewUserForm(Request request, StringBuffer sb)
             throws Exception {
@@ -1527,7 +1484,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -1753,10 +1710,10 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param entries _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     private void removeFromCart(Request request, List<Entry> entries)
             throws Exception {
@@ -1775,7 +1732,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -1807,7 +1764,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2003,7 +1960,7 @@ public class UserManager extends RepositoryManager {
      * @param title _more_
      * @param sb _more_
      *
-     * @return _more_
+     * @return The result
      */
     public Result makeResult(Request request, String title, StringBuffer sb) {
         StringBuffer headerSB = new StringBuffer();
@@ -2033,7 +1990,7 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param sb _more_
      */
     public void addUserHeader(Request request, StringBuffer sb) {
@@ -2060,14 +2017,13 @@ public class UserManager extends RepositoryManager {
 
 
     /**
-     * _more_
+     * Get the login/settings/help links
      *
      * @param request the request
-     * @param htmlTemplate _more_
-     * @param template _more_
-     * @param separator _more_
+     * @param template template to make the links
+     * @param separator separator between links
      *
-     * @return _more_
+     * @return user links
      */
     public String getUserLinks(Request request, String template,
                                String separator) {
@@ -2144,7 +2100,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2244,7 +2200,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2323,7 +2279,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2398,7 +2354,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2468,7 +2424,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2515,7 +2471,7 @@ public class UserManager extends RepositoryManager {
                      : null);
         if (user != null) {
             if (request.exists(ARG_USER_PASSWORD1)) {
-                if (checkPasswords(request, user)) {
+                if (checkAndSetNewPassword(request, user)) {
                     applyUserProperties(request, user, false);
                     sb.append(
                         getPageHandler().showDialogNote(
@@ -2646,7 +2602,7 @@ public class UserManager extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public boolean isPasswordValid(User user, String rawPassword)
             throws Exception {
@@ -2682,7 +2638,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -2821,14 +2777,14 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param name _more_
      * @param password _more_
      * @param loginFormExtra _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     private User authenticateUser(Request request, String name,
                                   String password,
@@ -2836,7 +2792,7 @@ public class UserManager extends RepositoryManager {
             throws Exception {
 
 
-        String hashedPassword = hashPassword(password);
+
 
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
@@ -2856,8 +2812,10 @@ public class UserManager extends RepositoryManager {
             return null;
         }
 
-        boolean userOK = PasswordHash.validatePassword(password, storedHash);
-
+        //Call getPasswordToUse to add the system salt
+        boolean userOK =
+            PasswordHash.validatePassword(getPasswordToUse(password),
+                                          storedHash);
 
         //Check for old formats of hashes
         if ( !userOK) {
@@ -2926,7 +2884,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -3109,7 +3067,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -3224,7 +3182,7 @@ public class UserManager extends RepositoryManager {
      *
      * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
      * @throws Exception On badness
      */
@@ -3278,11 +3236,11 @@ public class UserManager extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Result checkIfUserCanChangeSettings(Request request)
             throws Exception {
@@ -3310,14 +3268,15 @@ public class UserManager extends RepositoryManager {
     }
 
 
+
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
-     * @return _more_
+     * @return The result
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Result processChange(Request request) throws Exception {
         Result result = checkIfUserCanChangeSettings(request);
@@ -3333,7 +3292,7 @@ public class UserManager extends RepositoryManager {
         boolean settingsOk = true;
         String  message;
         if (request.exists(ARG_USER_PASSWORD1)) {
-            settingsOk = checkPasswords(request, user);
+            settingsOk = checkAndSetNewPassword(request, user);
             if ( !settingsOk) {
                 sb.append(
                     getPageHandler().showDialogWarning(
@@ -3371,6 +3330,85 @@ public class UserManager extends RepositoryManager {
                                         getRepository().translate(request,
                                             message)));
 
+    }
+
+
+
+    /**
+     * hash the given raw text password for storage into the database
+     *
+     * @param password raw text password
+     *
+     * @return hashed password
+     */
+    public String hashPassword_oldoldway(String password) {
+        if (getProperty(PROP_PASSWORD_OLDMD5, false)) {
+            return RepositoryUtil.hashPasswordForOldMD5(password);
+        } else {
+            return RepositoryUtil.hashPassword(password);
+        }
+    }
+
+
+
+    /**
+     * hash the given raw text password for storage into the database
+     *
+     * @param password raw text password
+     *
+     * @return hashed password
+     */
+    private String hashPassword_oldway(String password) {
+        //See, e.g. http://www.jasypt.org/howtoencryptuserpasswords.html
+        try {
+            //having a single salt repository wide isn't a great way to do this
+            //It really should be a per user/password salt that gets stored in the db as well
+            if (salt1.length() > 0) {
+                password = salt1 + password;
+            }
+            int hashIterations =
+                getRepository().getProperty(PROP_PASSWORD_ITERATIONS, 1);
+            byte[] bytes = password.getBytes("UTF-8");
+            for (int i = 0; i < hashIterations; i++) {
+                bytes = doHashPassword(bytes);
+            }
+            if (salt2.length() > 0) {
+                byte[] prefix   = salt2.getBytes("UTF-8");
+                byte[] newBytes = new byte[prefix.length + bytes.length];
+                for (int i = 0; i < prefix.length; i++) {
+                    newBytes[i] = prefix[i];
+                }
+                for (int i = 0; i < bytes.length; i++) {
+                    newBytes[prefix.length + i] = bytes[i];
+                }
+                bytes = newBytes;
+            }
+            String result = RepositoryUtil.encodeBase64(bytes);
+
+            return result.trim();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param bytes _more_
+     *
+     * @return _more_
+     */
+    private byte[] doHashPassword(byte[] bytes) {
+        try {
+            String digest    = getProperty(PROP_PASSWORD_DIGEST, "SHA-512");
+            MessageDigest md = MessageDigest.getInstance(digest);
+            md.update(bytes);
+
+            return md.digest();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 
