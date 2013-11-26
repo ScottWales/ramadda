@@ -177,17 +177,16 @@ public class DataRecord extends PointRecord {
 
                 continue;
             }
-            //            String name = field.getName().toLowerCase();
-            String name = field.getName();
+            String casedName =field.getName();
+            String name = casedName.toLowerCase();
 
             for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
                 boolean gotOne = false;
                 for (String timeFieldName : timeFields[timeIdx]) {
-                    if (name.equals(timeFieldName)) {
+                    if (casedName.equals(timeFieldName)) {
                         gotDateFields        = true;
                         timeIndices[timeIdx] = fieldIdx + 1;
                         gotOne               = true;
-
                         break;
                     }
                 }
@@ -205,6 +204,7 @@ public class DataRecord extends PointRecord {
 
                 continue;
             }
+
             if (name.equals("x")) {
                 if (idxX == -1) {
                     idxX = fieldIdx;
