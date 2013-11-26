@@ -896,13 +896,14 @@ public class UserManager extends RepositoryManager {
     private boolean checkAndSetNewPassword(Request request, User user) {
         String password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
         String password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
-        if ((password1.length() > 0) && password1.equals(password2)) {
-            user.setPassword(hashPassword(password1));
-
-            return true;
+        if(Utils.stringDefined(password1) || Utils.stringDefined(password2)) {
+            if (password1.equals(password2)) {
+                user.setPassword(hashPassword(password1));
+                return true;
+            }
+            return false;
         }
-
-        return false;
+        return true;
     }
 
 
@@ -1012,11 +1013,16 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
-            if ( !checkAndSetNewPassword(request, user)) {
+            if (!checkAndSetNewPassword(request, user)) {
                 sb.append(
                     getPageHandler().showDialogWarning(
                         "Incorrect passwords"));
             } else {
+                if (request.defined(ARG_USER_PASSWORD1)) {
+                    sb.append(
+                              getPageHandler().showDialogNote(
+                                                              msg("Password changed")));
+                }
                 applyUserProperties(request, user, true);
             }
         }
@@ -1046,8 +1052,11 @@ public class UserManager extends RepositoryManager {
             sb.append(buttons);
             makeUserForm(request, user, sb, true);
             if (user.canChangePassword()) {
+                sb.append(HtmlUtils.p());
+                sb.append(RepositoryUtil.header(msgLabel("Password")));
                 makePasswordForm(request, user, sb);
             }
+            sb.append(HtmlUtils.p());
             sb.append(buttons);
         }
         sb.append(HtmlUtils.formClose());
