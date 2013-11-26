@@ -72,6 +72,9 @@ public class DataRecord extends PointRecord {
     /** _more_ */
     protected boolean[] synthetic;
 
+    /** _more_          */
+    private boolean positionRequired = true;
+
     /** _more_ */
     protected int idxX;
 
@@ -127,6 +130,7 @@ public class DataRecord extends PointRecord {
      * @param fields _more_
      */
     public void initFields(List<RecordField> fields) {
+
         numDataFields = 0;
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
@@ -147,77 +151,85 @@ public class DataRecord extends PointRecord {
         };
         boolean    gotDateFields = false;
         String[][] timeFields    = {
-            { "year", "yyyy" }, { "month" }, { "day", "dom" },
-            { "hour", "hr" }, { "minute" }, { "second" },
+            { "year", "yyyy", "yy" }, { "month", "MM" },
+            { "day", "dom", "dd" }, { "hour", "hr", "hh" },
+            { "minute", "mm" }, { "second" },
         };
 
+
+        positionRequired = getRecordFile().getProperty("position.required",
+                "true").equals("true");
         idxX = idxY = idxZ = idxTime = -1;
         boolean seenLon = false;
         boolean seenLat = false;
-        for (int i = 0; i < fields.size(); i++) {
-            RecordField field = fields.get(i);
-            hasDefault[i] = field.hasDefaultValue();
-            skip[i]       = field.getSkip();
-            synthetic[i]  = field.getSynthetic();
-            if ( !synthetic[i] && !skip[i] && !hasDefault[i]) {
+
+        for (int fieldIdx = 0; fieldIdx < fields.size(); fieldIdx++) {
+            RecordField field = fields.get(fieldIdx);
+            hasDefault[fieldIdx] = field.hasDefaultValue();
+            skip[fieldIdx]       = field.getSkip();
+            synthetic[fieldIdx]  = field.getSynthetic();
+            if ( !synthetic[fieldIdx] && !skip[fieldIdx]
+                    && !hasDefault[fieldIdx]) {
                 numDataFields++;
             }
             if (field.isTypeDate() && (idxTime == -1)) {
-                idxTime = i;
+                idxTime = fieldIdx;
 
                 continue;
             }
-            String name = field.getName().toLowerCase();
+            //            String name = field.getName().toLowerCase();
+            String name = field.getName();
+
             for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
                 boolean gotOne = false;
                 for (String timeFieldName : timeFields[timeIdx]) {
                     if (name.equals(timeFieldName)) {
-                        gotDateFields = true;
-                        //                        System.err.println("got time:" + name + " idx:" + i);
-                        timeIndices[timeIdx] = i + 1;
+                        gotDateFields        = true;
+                        timeIndices[timeIdx] = fieldIdx + 1;
                         gotOne               = true;
 
                         break;
                     }
-                    if (gotOne) {
-                        break;
-                    }
+                }
+                if (gotOne) {
+                    break;
                 }
             }
             if ((latField != null) && latField.equalsIgnoreCase(name)) {
-                idxY = i;
+                idxY = fieldIdx;
 
                 continue;
             }
             if ((lonField != null) && lonField.equalsIgnoreCase(name)) {
-                idxX = i;
+                idxX = fieldIdx;
+
                 continue;
             }
             if (name.equals("x")) {
                 if (idxX == -1) {
-                    idxX = i;
+                    idxX = fieldIdx;
                 }
             } else if (name.equals("longitude") || name.equals("long")
                        || name.equals("lon")) {
                 if ( !seenLon) {
-                    idxX    = i;
+                    idxX    = fieldIdx;
                     seenLon = true;
                 }
             } else if (name.equals("y")) {
                 if (idxY == -1) {
-                    idxY = i;
+                    idxY = fieldIdx;
                 }
 
             } else if (name.equals("latitude") || name.equals("lat")) {
                 if ( !seenLat) {
-                    idxY    = i;
+                    idxY    = fieldIdx;
                     seenLat = true;
                 }
             } else if (name.equals("z") || name.equals("altitude")
                        || name.equals("elevation") || name.equals("elev")
                        || name.equals("alt")) {
                 if (idxZ == -1) {
-                    idxZ = i;
+                    idxZ = fieldIdx;
                 }
             }
         }
@@ -233,9 +245,15 @@ public class DataRecord extends PointRecord {
 
 
 
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param field _more_
+     */
     public static void initField(RecordField field) {
         field.setValueGetter(new ValueGetter() {
             public double getValue(Record record, RecordField field,
@@ -257,17 +275,28 @@ public class DataRecord extends PointRecord {
 
     /**
      * _more_
+     *
+     * @return _more_
+     */
+    public boolean needsValidPosition() {
+        return positionRequired;
+    }
+
+
+    /**
+     * _more_
      */
     public void checkIndices() {
-        if (idxX == -1) {
-            throw new IllegalArgumentException(
-                "Could not find x index, e.g., longitude, lon, x, etc.");
+        if (positionRequired) {
+            if (idxX == -1) {
+                throw new IllegalArgumentException(
+                    "Could not find x index, e.g., longitude, lon, x, etc.");
+            }
+            if (idxY == -1) {
+                throw new IllegalArgumentException(
+                    "Could not find y index, e.g., latitude, lat, y, etc.");
+            }
         }
-        if (idxY == -1) {
-            throw new IllegalArgumentException(
-                "Could not find y index, e.g., latitude, lat, y, etc.");
-        }
-
     }
 
     /**
@@ -406,6 +435,7 @@ public class DataRecord extends PointRecord {
         int idx = attrId - ATTR_FIRST;
         //Offset since the  field ids are 1 based not 0 based
         idx = idx - 1;
+
         if ((idx >= 0) && (idx < values.length)) {
             return objectValues[idx];
         }
@@ -413,6 +443,25 @@ public class DataRecord extends PointRecord {
         return super.getObjectValue(attrId);
     }
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public boolean hasObjectValue(int attrId) {
+        int idx = attrId - ATTR_FIRST;
+        //Offset since the  field ids are 1 based not 0 based
+        idx = idx - 1;
+
+        if ((idx >= 0) && (idx < values.length)) {
+            return objectValues[idx] != null;
+        }
+
+        return false;
+    }
 
 
     /** _more_ */

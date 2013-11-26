@@ -305,6 +305,16 @@ public abstract class Record implements Cloneable {
         throw new IllegalArgumentException("Unknown attribute id:" + attrId);
     }
 
+    /**
+     * _more_
+     *
+     * @param attrId _more_
+     *
+     * @return _more_
+     */
+    public boolean hasObjectValue(int attrId) {
+        return false;
+    }
 
     /**
      * _more_

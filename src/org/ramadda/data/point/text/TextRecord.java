@@ -223,52 +223,6 @@ public class TextRecord extends DataRecord {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public String getStringValue(int attrId) {
-        int idx = attrId - ATTR_FIRST;
-        //Offset since the  field ids are 1 based not 0 based
-        idx = idx - 1;
-        if ((idx >= 0) && (idx < values.length)) {
-            //Maybe just a number
-            if (objectValues[idx] == null) {
-                return "" + values[idx];
-            }
-
-            return objectValues[idx].toString();
-        }
-
-        return super.getStringValue(attrId);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param attrId _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public Object getObjectValue(int attrId) {
-        int idx = attrId - ATTR_FIRST;
-        //Offset since the  field ids are 1 based not 0 based
-        idx = idx - 1;
-        if ((idx >= 0) && (idx < values.length)) {
-            return objectValues[idx];
-        }
-
-        return super.getObjectValue(attrId);
-    }
-
-
-
 
 
     /**
@@ -384,10 +338,12 @@ public class TextRecord extends DataRecord {
                 }
             }
 
-            setLocation(values[idxX], values[idxY], ((idxZ >= 0)
-                    ? values[idxZ]
-                    : 0));
-            convertedXYZToLatLonAlt = true;
+            if ((idxX > 0) && (idxY > 0)) {
+                setLocation(values[idxX], values[idxY], ((idxZ >= 0)
+                        ? values[idxZ]
+                        : 0));
+                convertedXYZToLatLonAlt = true;
+            }
 
             if (idxTime >= 0) {
                 setRecordTime(getRecordTime());

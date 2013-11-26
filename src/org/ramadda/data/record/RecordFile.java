@@ -576,7 +576,12 @@ public abstract class RecordFile {
     }
 
 
-    public void  setFields(List<RecordField> f) { 
+    /**
+     * _more_
+     *
+     * @param f _more_
+     */
+    public void setFields(List<RecordField> f) {
         fields = f;
     }
 
@@ -717,7 +722,10 @@ public abstract class RecordFile {
         return status;
     }
 
-    public void doQuickVisit()  {
+    /**
+     * _more_
+     */
+    public void doQuickVisit() {
         try {
             RecordIO  recordIO     = doMakeInputIO(true);
             VisitInfo tmpVisitInfo = new VisitInfo();
@@ -1305,12 +1313,20 @@ public abstract class RecordFile {
             if (i > 0) {
                 dttm.append("-");
             }
-            int v = (int) record.getValue(indices[i]);
-            if (v < 10) {
-                dttm.append("0");
+
+
+            if (record.hasObjectValue(indices[i])) {
+                dttm.append(record.getObjectValue(indices[i]));
+            } else {
+                int v = (int) record.getValue(indices[i]);
+                if (v < 10) {
+                    dttm.append("0");
+                }
+                dttm.append(v);
             }
-            dttm.append(v);
         }
+
+        //        Date date = makeDateFormat("yyyy-MM-dd-HH").parse("2012-01-14-02");
         Date date = sdf.parse(dttm.toString());
         record.setRecordTime(date.getTime());
     }
