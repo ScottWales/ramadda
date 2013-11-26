@@ -1689,6 +1689,9 @@ public class UserManager extends RepositoryManager {
      */
     public User getUser(ResultSet results) throws Exception {
         int col = 1;
+        //id, name, email, question, answer, hashedPassword, description
+        //admin, language, template, isGuest, propertiesBlob
+
         User user = new User(results.getString(col++),
                              results.getString(col++),
                              results.getString(col++),
