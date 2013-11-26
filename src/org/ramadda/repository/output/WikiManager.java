@@ -608,6 +608,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         prop(WIKI_PROP_SEARCH,
              attrs(ATTR_TYPE, "", ARG_MAX, "10", ARG_SEARCH_SHOWFORM,
                    "false", SpecialSearch.ATTR_TABS, SpecialSearch.TAB_LIST)),
+        prop(WIKI_PROP_UPLOAD,
+             attrs(ATTR_TITLE, "Upload file", ATTR_INCLUDEICON,"false")),
         WIKI_PROP_ROOT
     };
     //j+
@@ -1316,11 +1318,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         instanceof LocalFileTypeHandler)) {
                 return "";
             }
-            String      type = Misc.getProperty(props, ATTR_TYPE, "file");
-            TypeHandler typeHandler = getRepository().getTypeHandler(type);
+            TypeHandler typeHandler = getRepository().getTypeHandler(Misc.getProperty(props, ATTR_TYPE, TypeHandler.TYPE_FILE));
             if (typeHandler == null) {
-                typeHandler =
-                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+                return "ERROR: unknown type";
             }
             if ( !typeHandler.getForUser()) {
                 return "";
@@ -1331,15 +1331,17 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if ( !typeHandler.canBeCreatedBy(request)) {
                 return "";
             }
-            String icon = typeHandler.getProperty("icon", (String) null);
-            String img;
-            if (icon == null) {
-                icon = ICON_BLANK;
-                img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
-                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                        "16"));
-            } else {
-                img = HtmlUtils.img(typeHandler.iconUrl(icon));
+            String img = "";
+            if(Misc.getProperty(props, ATTR_INCLUDEICON, false)) {
+                String icon = typeHandler.getProperty("icon", (String) null);
+                if (icon == null) {
+                    icon = ICON_BLANK;
+                    img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                                       "16"));
+                } else {
+                    img = HtmlUtils.img(typeHandler.iconUrl(icon));
+                }
             }
 
             String label = Misc.getProperty(props, ATTR_TITLE,
@@ -1348,9 +1350,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             return HtmlUtils.href(request.url(getRepository().URL_ENTRY_FORM,
                     ARG_GROUP, group.getId(), EntryManager.ARG_TYPE,
                     typeHandler.getType()), img + " " + msg(label));
-
-        } else if (theTag.equals("sarah")) {
-            return "hi this is sarah";
 
         } else if (theTag.equals(WIKI_PROP_DESCRIPTION)) {
             String desc = entry.getDescription();
