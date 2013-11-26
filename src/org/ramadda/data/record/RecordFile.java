@@ -717,6 +717,20 @@ public abstract class RecordFile {
         return status;
     }
 
+    public void doQuickVisit()  {
+        try {
+            RecordIO  recordIO     = doMakeInputIO(true);
+            VisitInfo tmpVisitInfo = new VisitInfo();
+            tmpVisitInfo.setRecordIO(recordIO);
+            prepareToVisit(tmpVisitInfo);
+            recordIO.close();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+
+
     /**
      * _more_
      *

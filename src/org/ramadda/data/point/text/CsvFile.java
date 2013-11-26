@@ -171,15 +171,7 @@ public class CsvFile extends TextFile {
     public List<RecordField> doMakeFields() {
         String fieldString = getProperty(PROP_FIELDS, null);
         if (fieldString == null) {
-            try {
-                RecordIO  recordIO  = doMakeInputIO(true);
-                VisitInfo visitInfo = new VisitInfo();
-                visitInfo.setRecordIO(recordIO);
-                visitInfo = prepareToVisit(visitInfo);
-                recordIO.close();
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            doQuickVisit();
             fieldString = getProperty(PROP_FIELDS, null);
         }
 

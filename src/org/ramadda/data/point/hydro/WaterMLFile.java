@@ -34,36 +34,34 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.List;
 
 
 /**
+ * Reads waterml xml files
  */
 public class WaterMLFile extends PointFile {
 
-
-    /** _more_ */
+    /** date parser */
     private SimpleDateFormat sdf;
 
-    /** _more_ */
+    /** How many fields (lat,lon,...) before the data fields */
     private static final int OFFSET = 4;
 
-    /** _more_ */
+    /** read from file */
     private double latitude  = 0,
-                   longitude = 0,
-                   altitude  = 0;
+        longitude = 0,
+        altitude  = 0;
 
     /** _more_ */
     private List<RecordField> fields;
 
-    /** _more_ */
+    /** time series values */
     private double[][] values;
 
-    /** _more_ */
+    /** dates */
     private List<Date> dates;
 
     /**
@@ -86,22 +84,11 @@ public class WaterMLFile extends PointFile {
      * @return _more_
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
-        DataRecord dataRecord = new DataRecord(this) {
-            public void checkIndices() {}
-        };
+        DataRecord dataRecord = new DataRecord(this);
         if (fields == null) {
-            try {
-                RecordIO  recordIO     = doMakeInputIO(true);
-                VisitInfo tmpVisitInfo = new VisitInfo();
-                tmpVisitInfo.setRecordIO(recordIO);
-                prepareToVisit(tmpVisitInfo);
-                recordIO.close();
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            doQuickVisit();
         }
         dataRecord.initFields(fields);
-
         return dataRecord;
     }
 
@@ -115,7 +102,6 @@ public class WaterMLFile extends PointFile {
      */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-
         if (fields != null) {
             return visitInfo;
         }
@@ -126,8 +112,8 @@ public class WaterMLFile extends PointFile {
                                    WaterMLUtil.TAG_TIMESERIES);
 
         if (timeseriesNodes.size() == 0) {
+            //TODO???
             return visitInfo;
-            //            throw new IllegalArgumentException("No timeseries found");
         }
 
         int                numParams  = timeseriesNodes.size();
@@ -217,18 +203,12 @@ public class WaterMLFile extends PointFile {
             field.setChartable(true);
             field.setSearchable(true);
             fields.add(field);
-
-            //            valuesList.add(values);
             numValues = Math.max(numValues, values.size());
         }
 
-
-        RecordField dateField = new RecordField("date", "Date", "Date", 4,
-                                    "");
+        RecordField dateField = new RecordField("date", "Date", "Date", 4,"");
         dateField.setType(RecordField.TYPE_DATE);
         fields.add(0, dateField);
-
-
 
         RecordField elevField = new RecordField("elevation", "Elevation",
                                     "Elevation", 3, "m");
@@ -252,6 +232,7 @@ public class WaterMLFile extends PointFile {
         fields.add(0, latField);
 
 
+        //This sets the getters
         for (RecordField recordField : fields) {
             DataRecord.initField(recordField);
         }
@@ -312,8 +293,6 @@ public class WaterMLFile extends PointFile {
         dataRecord.setLatitude(latitude);
         dataRecord.setLongitude(longitude);
         dataRecord.setAltitude(altitude);
-        //        convertedXYZToLatLonAlt = true;
-
         return Record.ReadStatus.OK;
     }
 
