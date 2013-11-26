@@ -173,49 +173,6 @@
    </type>
 
 
-  <type name="project_contact"  description="Contact" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
-     <property name="icon" value="/icons/user.png"/>
-     <property name="html.type.show" value="false"/>
-     <property name="html.date.show" value="false"/>
-
-     <property name="form.resource.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-
-     <property name="form.area.show" value="false"/>
-     <property name="form.description.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="form.altitude.show" value="false"/>
-
-     <property name="search.tabs" value="list"/>
-     <property name="search.form.date.show" value="false"/>
-
-     <column name="address" label="Address" size="1000" rows="5"/>
-     <column name="email" label="Email" type="email"/>
-     <column name="phone" label="Phone" />
-     <column name="affiliation" label="Affiliation" type="enumerationplus" />
-     <column name="notes" label="Notes"  size="1000" rows="5" />
-     <wiki><![CDATA[
-{{noheading}}
-=={{name}}==
-<table width="100%">
-<tr valign=top>
-<td width="50%">
-{{description wikify="true"}}
-
-{{information}}
-
-{{tree  showtoggle="false" message="" prefix="==Data=="}}
-
-</td>
-<td width="50%">
-{{image src="::*" message="" width="300"}}
-<p>
-</td></tr>
-</table>
-]]>
-</wiki>
-   </type>
-
 
 
 
@@ -453,6 +410,62 @@ Instrument: {{name}}
    </type>
 
 
+
+  <type name="project_meeting"  description="Meeting" category="Science Project"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/fieldproject/group.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="topic" label="Topic"  size="1000"  cansearch="true" />
+     <column name="location" label="Location"  size="1000"  cansearch="true" />
+     <column name="participants" label="Participants"  size="5000" rows="5"  cansearch="true" />
+   </type>
+
+
+  <type name="project_contact"  description="Contact" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/icons/user.png"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+     <property name="form.area.show" value="false"/>
+     <property name="form.description.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+     <property name="search.tabs" value="list"/>
+     <property name="search.form.date.show" value="false"/>
+
+     <column name="address" label="Address" size="1000" rows="5"/>
+     <column name="email" label="Email" type="email"/>
+     <column name="phone" label="Phone" />
+     <column name="affiliation" label="Affiliation" type="enumerationplus" />
+     <column name="notes" label="Notes"  size="1000" rows="5" />
+     <wiki><![CDATA[
+{{noheading}}
+=={{name}}==
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+{{information}}
+
+{{tree  showtoggle="false" message="" prefix="==Data=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+</td></tr>
+</table>
+]]>
+</wiki>
+   </type>
 
 
   <type name="project_tool"  category="Software and Services" foruser="false"/>
