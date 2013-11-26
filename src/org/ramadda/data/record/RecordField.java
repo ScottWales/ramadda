@@ -206,7 +206,7 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return name + ":" + label;
+        return "field:" + name + " label: " + label + " param:" +paramId;
     }
 
 

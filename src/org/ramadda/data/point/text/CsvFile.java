@@ -288,7 +288,7 @@ public class CsvFile extends TextFile {
             if (label != null) {
                 field.setLabel(label);
             }
-            initField(field);
+            DataRecord.initField(field);
             fields.add(field);
         }
 
@@ -296,27 +296,6 @@ public class CsvFile extends TextFile {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param field _more_
-     */
-    public void initField(RecordField field) {
-        field.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
-                                   VisitInfo visitInfo) {
-                TextRecord textRecord = (TextRecord) record;
-
-                return textRecord.getValue(field.getParamId());
-            }
-            public String getStringValue(Record record, RecordField field,
-                                         VisitInfo visitInfo) {
-                TextRecord textRecord = (TextRecord) record;
-
-                return textRecord.getStringValue(field.getParamId());
-            }
-        });
-    }
 
     /**
      * _more_

@@ -134,9 +134,9 @@ public class PointMetadataHarvester extends RecordVisitor {
      *
      * @return _more_
      */
+@Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                Record record) {
-
 
         PointRecord pointRecord = (PointRecord) record;
         double      lat         = pointRecord.getLatitude();
@@ -151,9 +151,12 @@ public class PointMetadataHarvester extends RecordVisitor {
             }
         }
 
+        boolean skipRecord =(!pointRecord.isValidPosition()
+                             && pointRecord.needsValidPosition());
+
+
         //Skip this if it doesn't have a valid position
-        if ( !pointRecord.isValidPosition()
-                && pointRecord.needsValidPosition()) {
+        if (skipRecord) {
             if (Double.isNaN(lat) && Double.isNaN(lon)) {
                 //TODO:what do do with undefined
             } else {
@@ -170,12 +173,13 @@ public class PointMetadataHarvester extends RecordVisitor {
                     return false;
                 }
             }
-
             return true;
         }
 
+
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
+                    
             if (field.isTypeNumeric()) {
                 ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
@@ -183,11 +187,9 @@ public class PointMetadataHarvester extends RecordVisitor {
                 }
                 double value = valueGetter.getValue(pointRecord, field,
                                    visitInfo);
-
                 if (pointRecord.isMissingValue(field, value)) {
                     continue;
                 }
-
                 if ( !Double.isNaN(value)) {
                     if (Double.isNaN(ranges[fieldCnt][0])) {
                         ranges[fieldCnt][0] = value;
@@ -195,7 +197,6 @@ public class PointMetadataHarvester extends RecordVisitor {
                         ranges[fieldCnt][0] = Math.min(value,
                                 ranges[fieldCnt][0]);
                     }
-
                     if (Double.isNaN(ranges[fieldCnt][1])) {
                         ranges[fieldCnt][1] = value;
                     } else {
@@ -215,7 +216,6 @@ public class PointMetadataHarvester extends RecordVisitor {
             minTime = Math.min(minTime, time);
             maxTime = Math.max(maxTime, time);
         }
-
 
 
         minLatitude  = getMin(minLatitude, pointRecord.getLatitude());
@@ -286,6 +286,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     public String toString() {
         String s = "latitude:" + minLatitude + " - " + maxLatitude
                    + "  longitude:" + minLongitude + " - " + maxLongitude;
+
 
         if (fields != null) {
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {

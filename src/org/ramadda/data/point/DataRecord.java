@@ -115,6 +115,7 @@ public class DataRecord extends PointRecord {
      */
     public DataRecord(RecordFile file, List<RecordField> fields) {
         super(file);
+        this.fields = fields;
     }
 
 
@@ -126,7 +127,6 @@ public class DataRecord extends PointRecord {
      * @param fields _more_
      */
     public void initFields(List<RecordField> fields) {
-
         numDataFields = 0;
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
@@ -191,7 +191,6 @@ public class DataRecord extends PointRecord {
             }
             if ((lonField != null) && lonField.equalsIgnoreCase(name)) {
                 idxX = i;
-
                 continue;
             }
             if (name.equals("x")) {
@@ -235,6 +234,25 @@ public class DataRecord extends PointRecord {
 
 
     }
+
+
+    public static void initField(RecordField field) {
+        field.setValueGetter(new ValueGetter() {
+            public double getValue(Record record, RecordField field,
+                                   VisitInfo visitInfo) {
+                DataRecord dataRecord = (DataRecord) record;
+
+                return dataRecord.getValue(field.getParamId());
+            }
+            public String getStringValue(Record record, RecordField field,
+                                         VisitInfo visitInfo) {
+                DataRecord dataRecord = (DataRecord) record;
+
+                return dataRecord.getStringValue(field.getParamId());
+            }
+        });
+    }
+
 
 
     /**
@@ -317,8 +335,7 @@ public class DataRecord extends PointRecord {
             return values[idx];
         }
 
-        System.err.println("attrId:" + attrId + "  " + values.length
-                           + " idx=" + idx);
+
 
         return super.getValue(attrId);
     }

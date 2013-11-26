@@ -575,6 +575,11 @@ public abstract class RecordFile {
         return fields;
     }
 
+
+    public void  setFields(List<RecordField> f) { 
+        fields = f;
+    }
+
     /**
      * _more_
      *

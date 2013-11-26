@@ -82,10 +82,6 @@ public class NetcdfPointFile extends PointFile {
     /**
      * ctor
      *
-     *
-     *
-     *
-     *
      * @param filename _more_
      * @throws IOException On badness
      */

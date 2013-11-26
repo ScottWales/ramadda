@@ -297,8 +297,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                                              ICON_DATA, category);
 
 
-
-
+        setFormHandler(new PointFormHandler(this));
+        setRecordJobManager(new PointJobManager(this));
+        addDefaultOutputTypes();
     }
 
     /**
@@ -546,6 +547,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param request The request
      * @param entry the entry
      * @param asynch Is this an asynchronous request
+     * @param pointEntries List of entries to process
      * @param recordEntries _more_
      * @param jobId The job ID
      *

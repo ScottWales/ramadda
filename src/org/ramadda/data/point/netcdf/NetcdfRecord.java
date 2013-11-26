@@ -106,7 +106,6 @@ public class NetcdfRecord extends DataRecord {
         ucar.unidata.geoloc.EarthLocation el        = po.getLocation();
         if (el == null) {
             System.err.println("skipping");
-
             return ReadStatus.SKIP;
         }
         setLocation(el.getLongitude(), el.getLatitude(), el.getAltitude());
