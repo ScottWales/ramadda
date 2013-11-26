@@ -24,6 +24,8 @@ package org.ramadda.repository;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 
+import org.ramadda.repository.util.RequestArgument;
+
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -1555,7 +1557,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      */
-    public String getString(String[] keys, String dflt) {
+    public String xxxgetString(String[] keys, String dflt) {
         for (String key : keys) {
             String value = getString(key, (String) null);
             if (value != null) {
@@ -1565,6 +1567,65 @@ public class Request implements Constants, Cloneable {
 
         return dflt;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     *
+     * @return _more_
+     */
+    public boolean defined(RequestArgument arg) {
+        for (String key : arg.getArgs(this)) {
+            if (defined(key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getString(RequestArgument arg, String dflt) {
+        for (String key : arg.getArgs(this)) {
+            String value = getString(key, (String) null);
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return dflt;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public double get(RequestArgument arg, double dflt) {
+        for (String key : arg.getArgs(this)) {
+            if (defined(key)) {
+                return get(key, dflt);
+            }
+        }
+
+        return dflt;
+    }
+
+
+
 
     /**
      * _more_
@@ -1700,6 +1761,7 @@ public class Request implements Constants, Cloneable {
     public String getIds(String dflt) {
         return getString(ARG_ENTRYIDS, dflt);
     }
+
 
     /**
      * _more_

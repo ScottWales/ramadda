@@ -29,6 +29,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.repository.util.DateArgument;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -3024,11 +3025,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String[] args = new String[] {
             ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
             ARG_BBOX + ".north", ARG_BBOX + ".west", ARG_BBOX + ".south",
-            ARG_BBOX + ".east", Constants.dataDate.from,
-            Constants.dataDate.to, Constants.dataDate.relative,
-            Constants.createDate.from, Constants.createDate.to,
-            Constants.createDate.relative, Constants.changeDate.from,
-            Constants.changeDate.to, Constants.changeDate.relative,
+            ARG_BBOX + ".east", DateArgument.ARG_DATA.getFrom(),
+            DateArgument.ARG_DATA.getTo(), DateArgument.ARG_DATA.getRelative(),
+            DateArgument.ARG_CREATE.getFrom(), DateArgument.ARG_CREATE.getTo(),
+            DateArgument.ARG_CREATE.getRelative(), DateArgument.ARG_CHANGE.getFrom(),
+            DateArgument.ARG_CHANGE.getTo(), DateArgument.ARG_CHANGE.getRelative(),
         };
         for (String arg : args) {
             String text = (String) props.get(PREFIX_SEARCH + arg);

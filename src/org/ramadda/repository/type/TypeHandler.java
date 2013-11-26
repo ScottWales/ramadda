@@ -31,13 +31,14 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
+import org.ramadda.repository.util.DateArgument;
+import org.ramadda.repository.util.RequestArgument;
 
 import org.ramadda.sql.Clause;
 
 
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.SelectionRectangle;
@@ -47,6 +48,8 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.DateUtil;
+
+
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -91,6 +94,27 @@ import java.util.Properties;
 public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
+    public static final RequestArgument REQUESTARG_NORTH =
+        new RequestArgument("ramadda.arg.area.north");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_WEST =
+        new RequestArgument("ramadda.arg.area.west");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_SOUTH =
+        new RequestArgument("ramadda.arg.area.south");
+
+    /** _more_ */
+    public static final RequestArgument REQUESTARG_EAST =
+        new RequestArgument("ramadda.arg.area.east");
+
+    /** _more_ */
+    public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
+            REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
+
+
+    /** _more_ */
     public static final String CATEGORY_DEFAULT = "General";
 
     /** _more_ */
@@ -125,7 +149,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_METADATA = "metadata";
 
 
@@ -152,6 +176,8 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public static final String TAG_HANDLER = "handler";
+
+
 
 
     /** _more_ */
@@ -184,6 +210,12 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    /** _more_          */
+    private static List<DateArgument> dateArgs;
+
+
+
+
     /** _more_ */
     private TypeHandler parent;
 
@@ -197,7 +229,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> metadataTypes;
 
 
@@ -3727,7 +3759,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        for (Constants.DateArg arg : Constants.DATEARGS) {
+        for (DateArgument arg : DateArgument.SEARCH_ARGS) {
             addDateSearch(getRepository(), request, basicSB, arg, true);
         }
 
@@ -3832,8 +3864,7 @@ public class TypeHandler extends RepositoryManager {
      * @param showTime _more_
      */
     public static void addDateSearch(Repository repository, Request request,
-                                     StringBuffer basicSB,
-                                     Constants.DateArg arg,
+                                     StringBuffer basicSB, DateArgument arg,
                                      boolean showTime) {
         List dateTypes = new ArrayList();
         dateTypes.add(new TwoFacedObject(msg("Contained by range"),
@@ -3855,25 +3886,21 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-        if (request.exists(arg.relative)) {
-            dateSelectValue = request.getString(arg.relative, "");
+        if (request.exists(arg.getRelative())) {
+            dateSelectValue = request.getString(arg.getRelative(), "");
         } else {
             dateSelectValue = "none";
         }
 
-        String dateSelectInput = HtmlUtils.select(arg.relative, dateSelect,
-                                     dateSelectValue);
-        String minDate = request.getDateSelect(arg.from, (String) null);
-        String maxDate = request.getDateSelect(arg.to, (String) null);
-        //        request.remove(arg.from);
-        //        request.remove(arg.to);
-        //        List<TypeHandler> typeHandlers =
-        //            repository.getTypeHandlers(request);
+        String dateSelectInput = HtmlUtils.select(arg.getRelative(),
+                                     dateSelect, dateSelectValue);
+        String minDate = request.getDateSelect(arg.getFrom(), (String) null);
+        String maxDate = request.getDateSelect(arg.getTo(), (String) null);
 
 
-        String dateTypeValue = request.getString(arg.mode,
+        String dateTypeValue = request.getString(arg.getMode(),
                                    DATE_SEARCHMODE_DEFAULT);
-        String dateTypeInput = HtmlUtils.select(arg.mode, dateTypes,
+        String dateTypeInput = HtmlUtils.select(arg.getMode(), dateTypes,
                                    dateTypeValue);
 
         String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
@@ -3881,7 +3908,7 @@ public class TypeHandler extends RepositoryManager {
                                  VALUE_NODATAMODE_INCLUDE,
                                  noDataMode.equals(VALUE_NODATAMODE_INCLUDE));
         String dateExtra;
-        if (arg.hasRange) {
+        if (arg.getHasRange()) {
             dateExtra = HtmlUtils.makeToggleInline(msg("More..."),
                     HtmlUtils.br() + HtmlUtils.formTable(new String[] {
                 msgLabel("Search for data whose time is"), dateTypeInput,
@@ -3900,12 +3927,13 @@ public class TypeHandler extends RepositoryManager {
         }
 
         String fromField = repository.getPageHandler().makeDateInput(request,
-                               arg.from, "searchform", null, null, showTime);
+                               arg.getFrom(), "searchform", null, null,
+                               showTime);
         String toField = repository.getPageHandler().makeDateInput(request,
-                             arg.to, "searchform", null, null, showTime);
+                             arg.getTo(), "searchform", null, null, showTime);
         /*
         basicSB.append(RepositoryManager.formEntryTop(request,
-                                                      msgLabel(arg.label),
+                                                      msgLabel(arg.getLabel()),
                                                        + HtmlUtils.space(1)
                         + HtmlUtils.img(repository.iconUrl(ICON_RANGE))
                         + HtmlUtils.space(1)
@@ -3913,9 +3941,9 @@ public class TypeHandler extends RepositoryManager {
         */
 
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel("From " + arg.label), fromField));
+                msgLabel("From " + arg.getLabel()), fromField));
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel("To " + arg.label), toField));
+                msgLabel("To " + arg.getLabel()), toField));
         basicSB.append(RepositoryManager.formEntryTop(request, "",
                 dateExtra));
 
@@ -4148,9 +4176,10 @@ public class TypeHandler extends RepositoryManager {
 
 
         List<Clause> dateClauses = new ArrayList<Clause>();
-        for (Constants.DateArg arg : Constants.DATEARGS) {
-            Date[] dateRange = request.getDateRange(arg.from, arg.to,
-                                   arg.relative, new Date());
+        for (DateArgument arg : getDateArgs()) {
+            Date[] dateRange = request.getDateRange(arg.getFrom(),
+                                   arg.getTo(), arg.getRelative(),
+                                   new Date());
             if ((dateRange[0] != null) || (dateRange[1] != null)) {
                 Date date1 = dateRange[0];
                 Date date2 = dateRange[1];
@@ -4161,19 +4190,18 @@ public class TypeHandler extends RepositoryManager {
                     date2 = date1;
                 }
 
-                if (arg.equals(Constants.createDate)
-                        || arg.equals(Constants.changeDate)) {
-                    String column = arg.equals(Constants.createDate)
+                if (arg.forCreateDate() || arg.forChangeDate()) {
+                    String column = arg.forCreateDate()
                                     ? Tables.ENTRIES.COL_CREATEDATE
                                     : Tables.ENTRIES.COL_CHANGEDATE;
                     if (date1 != null) {
                         addCriteria(request, searchCriteria,
-                                    msg(arg.label) + ">=", date1);
+                                    msg(arg.getLabel()) + ">=", date1);
                         dateClauses.add(Clause.ge(column, date1));
                     }
                     if (date2 != null) {
                         addCriteria(request, searchCriteria,
-                                    msg(arg.label) + "<=", date2);
+                                    msg(arg.getLabel()) + "<=", date2);
                         dateClauses.add(Clause.le(column, date2));
                     }
 
@@ -4181,7 +4209,7 @@ public class TypeHandler extends RepositoryManager {
                 }
 
 
-                String dateSearchMode = request.getString(arg.mode,
+                String dateSearchMode = request.getString(arg.getMode(),
                                             DATE_SEARCHMODE_DEFAULT);
                 if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
                     addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
@@ -4495,25 +4523,8 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public static SelectionRectangle getSelectionBounds(Request request) {
-        String[] argPrefixes  = { ARG_AREA, ARG_BBOX };
-        String[] areaNames    = { "North", "West", "South", "East" };
-        String[] areaSuffixes = { "north", "west", "south", "east" };
+        String[] argPrefixes = { ARG_AREA, ARG_BBOX };
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
-        String[] delimiters   = { "_", "." };
-        int      argCnt       = 0;
-        if (request.defined(ARG_BBOX)) {
-            List<String> toks = StringUtil.split(request.getString(ARG_BBOX,
-                                    ""), ",", true, true);
-            if (toks.size() != 4) {
-                throw new IllegalArgumentException("Bad BBOX:"
-                        + request.getString(ARG_BBOX, ""));
-            }
-            for (int i = 0; i < 4; i++) {
-                bbox[i] = Double.parseDouble(toks.get(i));
-            }
-        }
-
-
         for (String argPrefix : argPrefixes) {
             if (request.defined(argPrefix)) {
                 List<String> toks =
@@ -4526,17 +4537,11 @@ public class TypeHandler extends RepositoryManager {
                     }
                 }
             }
-            for (String delimiter : delimiters) {
-                for (int i = 0; i < 4; i++) {
-                    if ( !Double.isNaN(bbox[i])) {
-                        continue;
-                    }
-                    String areaArg = argPrefix + delimiter + areaSuffixes[i];
-                    if (request.defined(areaArg)) {
-                        bbox[i] = request.get(areaArg, 0.0);
-                        argCnt++;
-                    }
-                }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (request.defined(AREA_NWSE[i])) {
+                bbox[i] = request.get(AREA_NWSE[i], 0.0);
             }
         }
 
@@ -5415,6 +5420,47 @@ public class TypeHandler extends RepositoryManager {
     public String getEntryName(Entry entry) {
         return entry.getName();
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private List<DateArgument> getDateArgs() {
+        if (dateArgs == null) {
+            List<DateArgument> tmp = new ArrayList<DateArgument>();
+            for (DateArgument arg : DateArgument.SEARCH_ARGS) {
+                tmp.add(arg);
+            }
+            List<String> from = StringUtil.split(
+                                    getRepository().getProperty(
+                                        "ramadda.arg.date.from", ""), ",",
+                                            true, true);
+            List<String> to = StringUtil.split(
+                                  getRepository().getProperty(
+                                      "ramadda.arg.date.to", ""), ",", true,
+                                          true);
+            List<String> mode = StringUtil.split(
+                                    getRepository().getProperty(
+                                        "ramadda.arg.date.mode", ""), ",",
+                                            true, true);
+            List<String> relative = StringUtil.split(
+                                        getRepository().getProperty(
+                                            "ramadda.arg.date.relative",
+                                            ""), ",", true, true);
+            for (int i = 0; i < from.size(); i++) {
+                tmp.add(new DateArgument(DateArgument.TYPE_DATA, from.get(i),
+                                         to.get(i), mode.get(i),
+                                         relative.get(i)));
+            }
+            dateArgs = tmp;
+        }
+
+        return dateArgs;
+    }
+
 
 
 }

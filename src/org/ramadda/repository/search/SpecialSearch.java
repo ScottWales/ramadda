@@ -27,6 +27,7 @@ import org.ramadda.repository.*;
 
 import org.ramadda.repository.*;
 
+import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
@@ -611,7 +612,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (showDate) {
             TypeHandler.addDateSearch(getRepository(), request, formSB,
-                                      Constants.dataDate, false);
+                                      DateArgument.ARG_DATA, false);
 
         }
 
