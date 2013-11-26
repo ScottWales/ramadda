@@ -27,10 +27,8 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.util.WaterMLUtil;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.*;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -52,7 +50,7 @@ public class WaterMLFile extends PointFile {
     private SimpleDateFormat sdf;
 
     /** _more_ */
-    private static final int OFFSET = 3;
+    private static final int OFFSET = 4;
 
     /** _more_ */
     private double latitude  = 0,
@@ -225,6 +223,13 @@ public class WaterMLFile extends PointFile {
         }
 
 
+        RecordField dateField = new RecordField("date", "Date", "Date", 4,
+                                    "");
+        dateField.setType(RecordField.TYPE_DATE);
+        fields.add(0, dateField);
+
+
+
         RecordField elevField = new RecordField("elevation", "Elevation",
                                     "Elevation", 3, "m");
         elevField.setDefaultDoubleValue(altitude =
@@ -252,19 +257,24 @@ public class WaterMLFile extends PointFile {
         }
         setFields(fields);
 
-        dates  = new ArrayList<Date>();
-
         values = new double[numParams][];
         for (int i = 0; i < numParams; i++) {
             values[i] = new double[numValues];
         }
 
         for (int i = 0; i < listOfValues.size(); i++) {
+            if (i == 0) {
+                dates = new ArrayList<Date>();
+            }
             List valueNodes = listOfValues.get(i);
             for (int valueIdx = 0; valueIdx < valueNodes.size(); valueIdx++) {
                 //<value censorCode="nc" dateTime="2007-11-05T14:30:00" timeOffset="-07:00" dateTimeUTC="2007-11-05T21:30:00" methodCode="4" sourceCode="2" qualityControlLevelCode="0">13.33616</value>
                 Element valueNode = (Element) valueNodes.get(valueIdx);
 
+                if (i == 0) {
+                    dates.add(sdf.parse(XmlUtil.getAttribute(valueNode,
+                            WaterMLUtil.ATTR_DATETIMEUTC, "")));
+                }
                 double value =
                     Double.parseDouble(XmlUtil.getChildText(valueNode));
                 values[i][valueIdx] = value;
@@ -298,6 +308,7 @@ public class WaterMLFile extends PointFile {
             dataRecord.setValue(i + 1 + OFFSET, values[i][currentIdx]);
         }
 
+        dataRecord.setValue(4, dates.get(currentIdx));
         dataRecord.setLatitude(latitude);
         dataRecord.setLongitude(longitude);
         dataRecord.setAltitude(altitude);
