@@ -97,11 +97,11 @@ public class MultiMonthRecord extends TextRecord {
         RecordField dateField = new RecordField("date", "Date", "Date", 1,
                                     "");
         dateField.setType(RecordField.TYPE_DATE);
-        file.initField(dateField);
+        DataRecord.initField(dateField);
 
         RecordField valueField = new RecordField(shortName, longName,
                                      longName, 2, unit);
-        file.initField(valueField);
+        DataRecord.initField(valueField);
 
         fields.add(dateField);
         fields.add(valueField);
