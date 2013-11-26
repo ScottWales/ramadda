@@ -176,6 +176,7 @@ public class CsvFile extends TextFile {
                 VisitInfo visitInfo = new VisitInfo();
                 visitInfo.setRecordIO(recordIO);
                 visitInfo = prepareToVisit(visitInfo);
+                recordIO.close();
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }

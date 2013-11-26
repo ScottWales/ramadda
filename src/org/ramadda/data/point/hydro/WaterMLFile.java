@@ -30,7 +30,6 @@ import org.ramadda.util.WaterMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -49,13 +48,25 @@ import java.util.List;
 public class WaterMLFile extends PointFile {
 
 
-    private double latitude=0, longitude=0, altitude=0;
+    /** _more_ */
+    private SimpleDateFormat sdf;
+
+    /** _more_ */
+    private static final int OFFSET = 3;
+
+    /** _more_ */
+    private double latitude  = 0,
+                   longitude = 0,
+                   altitude  = 0;
 
     /** _more_ */
     private List<RecordField> fields;
 
     /** _more_ */
     private double[][] values;
+
+    /** _more_ */
+    private List<Date> dates;
 
     /**
      * The constructor
@@ -65,6 +76,7 @@ public class WaterMLFile extends PointFile {
      */
     public WaterMLFile(String filename) throws IOException {
         super(filename);
+        sdf = makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
 
 
@@ -77,9 +89,21 @@ public class WaterMLFile extends PointFile {
      */
     public Record doMakeRecord(VisitInfo visitInfo) {
         DataRecord dataRecord = new DataRecord(this) {
-                public void checkIndices() {}
-            };
+            public void checkIndices() {}
+        };
+        if (fields == null) {
+            try {
+                RecordIO  recordIO     = doMakeInputIO(true);
+                VisitInfo tmpVisitInfo = new VisitInfo();
+                tmpVisitInfo.setRecordIO(recordIO);
+                prepareToVisit(tmpVisitInfo);
+                recordIO.close();
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
         dataRecord.initFields(fields);
+
         return dataRecord;
     }
 
@@ -93,20 +117,24 @@ public class WaterMLFile extends PointFile {
      */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
+
+        if (fields != null) {
+            return visitInfo;
+        }
         fields = new ArrayList<RecordField>();
         Element root = XmlUtil.getRoot(getFilename(), getClass());
 
         List timeseriesNodes = XmlUtil.findChildren(root,
-                              WaterMLUtil.TAG_TIMESERIES);
+                                   WaterMLUtil.TAG_TIMESERIES);
+
         if (timeseriesNodes.size() == 0) {
-            throw new IllegalArgumentException("No timeseries found");
+            return visitInfo;
+            //            throw new IllegalArgumentException("No timeseries found");
         }
 
         int                numParams  = timeseriesNodes.size();
         int                numValues  = 0;
         List<List<Double>> valuesList = new ArrayList<List<Double>>();
-        
-
 
         /*
       <geoLocation>
@@ -116,26 +144,30 @@ public class WaterMLFile extends PointFile {
         </geogLocation>
         */
 
-        Object[] fileMetadata = null;
+        Object[]   fileMetadata = null;
 
-        String latitude = null;
-        String longitude = null;
-
-        List<List>  listOfValues = new ArrayList<List>();
+        String     latitude     = null;
+        String     longitude    = null;
+        String     elevation    = "0";
+        List<List> listOfValues = new ArrayList<List>();
 
         for (int i = 0; i < timeseriesNodes.size(); i++) {
             Element timeSeriesNode = (Element) timeseriesNodes.get(i);
             Element sourceInfo = XmlUtil.findChild(timeSeriesNode,
                                      WaterMLUtil.TAG_SOURCEINFO);
-            if(latitude==null) {
+
+            elevation = XmlUtil.getGrandChildText(sourceInfo,
+                    WaterMLUtil.TAG_ELEVATION_M, elevation);
+
+            if (latitude == null) {
                 Element latitudeNode = XmlUtil.findDescendant(sourceInfo,
-                                                              WaterMLUtil.TAG_LATITUDE);
+                                           WaterMLUtil.TAG_LATITUDE);
                 Element longitudeNode = XmlUtil.findDescendant(sourceInfo,
-                                                               WaterMLUtil.TAG_LONGITUDE);
-                if(latitudeNode!=null) {
+                                            WaterMLUtil.TAG_LONGITUDE);
+                if (latitudeNode != null) {
                     latitude = XmlUtil.getChildText(latitudeNode);
                 }
-                if(longitudeNode!=null) {
+                if (longitudeNode != null) {
                     longitude = XmlUtil.getChildText(longitudeNode);
                 }
             }
@@ -164,7 +196,7 @@ public class WaterMLFile extends PointFile {
 
 
             List values = XmlUtil.findChildren(valuesNode,
-                                               WaterMLUtil.TAG_VALUE);
+                              WaterMLUtil.TAG_VALUE);
 
             listOfValues.add(values);
             //            <siteName>Little Bear River at Mendon Road near Mendon, Utah</siteName>
@@ -174,14 +206,15 @@ public class WaterMLFile extends PointFile {
             String siteCode = XmlUtil.getGrandChildText(sourceInfo,
                                   WaterMLUtil.TAG_SITECODE, "");
 
-            if(fileMetadata==null) {
-                fileMetadata = new Object[]{siteCode, siteName};
+            if (fileMetadata == null) {
+                fileMetadata = new Object[] { siteCode, siteName };
                 setFileMetadata(fileMetadata);
             }
 
-            String varName = variableCode +"-" + dataType;
-            String var = variableName +"-" + dataType;
-            RecordField field = new RecordField(varName, var, var,  i + 1+2, "");
+            String varName = variableName + "-" + dataType;
+            String var     = variableName + "-" + dataType;
+            RecordField field = new RecordField(varName, var, var,
+                                    i + 1 + OFFSET, "");
             field.setType(RecordField.TYPE_NUMERIC);
             field.setChartable(true);
             field.setSearchable(true);
@@ -191,25 +224,35 @@ public class WaterMLFile extends PointFile {
             numValues = Math.max(numValues, values.size());
         }
 
-        RecordField lonField = new RecordField("longitude", "longitude","longitude",  2, "degrees");
-        lonField.setDefaultDoubleValue(this.longitude = Double.parseDouble(longitude));
+
+        RecordField elevField = new RecordField("elevation", "Elevation",
+                                    "Elevation", 3, "m");
+        elevField.setDefaultDoubleValue(altitude =
+            Double.parseDouble(elevation));
+        elevField.setType(RecordField.TYPE_NUMERIC);
+        fields.add(0, elevField);
+
+        RecordField lonField = new RecordField("longitude", "longitude",
+                                   "longitude", 2, "degrees");
+        lonField.setDefaultDoubleValue(this.longitude =
+            Double.parseDouble(longitude));
         lonField.setType(RecordField.TYPE_NUMERIC);
-        lonField.setChartable(true);
-        lonField.setSearchable(true);
         fields.add(0, lonField);
 
-        RecordField latField = new RecordField("latitude", "latitude","latitude",  1, "degrees");
-        latField.setDefaultDoubleValue(this.latitude = Double.parseDouble(latitude));
+        RecordField latField = new RecordField("latitude", "latitude",
+                                   "latitude", 1, "degrees");
+        latField.setDefaultDoubleValue(this.latitude =
+            Double.parseDouble(latitude));
         latField.setType(RecordField.TYPE_NUMERIC);
-        latField.setChartable(true);
-        latField.setSearchable(true);
         fields.add(0, latField);
 
 
-        for(RecordField recordField: fields) {
+        for (RecordField recordField : fields) {
             DataRecord.initField(recordField);
         }
         setFields(fields);
+
+        dates  = new ArrayList<Date>();
 
         values = new double[numParams][];
         for (int i = 0; i < numParams; i++) {
@@ -222,12 +265,14 @@ public class WaterMLFile extends PointFile {
                 //<value censorCode="nc" dateTime="2007-11-05T14:30:00" timeOffset="-07:00" dateTimeUTC="2007-11-05T21:30:00" methodCode="4" sourceCode="2" qualityControlLevelCode="0">13.33616</value>
                 Element valueNode = (Element) valueNodes.get(valueIdx);
 
-                double value = Double.parseDouble(XmlUtil.getChildText(valueNode));
+                double value =
+                    Double.parseDouble(XmlUtil.getChildText(valueNode));
                 values[i][valueIdx] = value;
             }
         }
 
         return visitInfo;
+
     }
 
     /**
@@ -244,13 +289,13 @@ public class WaterMLFile extends PointFile {
                                             Record record)
             throws IOException {
         visitInfo.addRecordIndex(1);
-        int currentIdx = visitInfo.getRecordIndex();
+        int        currentIdx = visitInfo.getRecordIndex();
         DataRecord dataRecord = (DataRecord) record;
         if (currentIdx >= values[0].length) {
             return Record.ReadStatus.EOF;
         }
         for (int i = 0; i < values.length; i++) {
-            dataRecord.setValue(i+1+2, values[i][currentIdx]);
+            dataRecord.setValue(i + 1 + OFFSET, values[i][currentIdx]);
         }
 
         dataRecord.setLatitude(latitude);
