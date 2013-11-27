@@ -18,11 +18,6 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-
-
-
-
-
 //jeffmc: added package
 package org.ramadda.repository.auth;
 
@@ -83,31 +78,31 @@ import javax.crypto.spec.PBEKeySpec;
  *
  *
  * @version        $version$, Sat, Nov 23, '13
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class PasswordHash {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
 
     // The following constants may be changed without breaking existing hashes.
 
-    /** _more_          */
+    /** _more_ */
     public static final int SALT_BYTE_SIZE = 24;
 
-    /** _more_          */
+    /** _more_ */
     public static final int HASH_BYTE_SIZE = 24;
 
-    /** _more_          */
+    /** _more_ */
     public static final int PBKDF2_ITERATIONS = 1000;
 
-    /** _more_          */
+    /** _more_ */
     public static final int ITERATION_INDEX = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int SALT_INDEX = 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int PBKDF2_INDEX = 2;
 
     /**
@@ -178,16 +173,16 @@ public class PasswordHash {
                                            String correctHash)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Decode the hash into its parameters
-        String[] params     = correctHash.split(":");
+        String[] params = correctHash.split(":");
         //jeffmc: check for an incorrectly formatted hash
-        if(params.length!=3) {
+        if (params.length != 3) {
             //A bad hash
             return false;
         }
 
-        int      iterations = Integer.parseInt(params[ITERATION_INDEX]);
-        byte[]   salt       = fromHex(params[SALT_INDEX]);
-        byte[]   hash       = fromHex(params[PBKDF2_INDEX]);
+        int    iterations = Integer.parseInt(params[ITERATION_INDEX]);
+        byte[] salt       = fromHex(params[SALT_INDEX]);
+        byte[] hash       = fromHex(params[PBKDF2_INDEX]);
         // Compute the hash of the provided password, using the same salt, 
         // iteration count, and hash length
         byte[] testHash = pbkdf2(password, salt, iterations, hash.length);

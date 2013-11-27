@@ -4815,8 +4815,6 @@ public class EntryManager extends RepositoryManager {
 
         TypeHandler typeHandler = null;
 
-        System.err.println("type:" + type);
-
 
         if (type.equals(TypeHandler.TYPE_GUESS)) {
             typeHandler = findDefaultTypeHandler(resource.getPath());

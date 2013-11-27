@@ -896,13 +896,17 @@ public class UserManager extends RepositoryManager {
     private boolean checkAndSetNewPassword(Request request, User user) {
         String password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
         String password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
-        if(Utils.stringDefined(password1) || Utils.stringDefined(password2)) {
+        if (Utils.stringDefined(password1)
+                || Utils.stringDefined(password2)) {
             if (password1.equals(password2)) {
                 user.setPassword(hashPassword(password1));
+
                 return true;
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -1013,15 +1017,15 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_USER_CHANGE)) {
             request.ensureAuthToken();
-            if (!checkAndSetNewPassword(request, user)) {
+            if ( !checkAndSetNewPassword(request, user)) {
                 sb.append(
                     getPageHandler().showDialogWarning(
                         "Incorrect passwords"));
             } else {
                 if (request.defined(ARG_USER_PASSWORD1)) {
                     sb.append(
-                              getPageHandler().showDialogNote(
-                                                              msg("Password changed")));
+                        getPageHandler().showDialogNote(
+                            msg("Password changed")));
                 }
                 applyUserProperties(request, user, true);
             }
@@ -1545,6 +1549,9 @@ public class UserManager extends RepositoryManager {
     public Result adminUserList(Request request) throws Exception {
 
         if (request.exists(ARG_REMOVESESSIONID)) {
+            getSessionManager().debugSession(
+                "RAMADDA.adminUserList: removing session:"
+                + request.getString(ARG_REMOVESESSIONID));
             getSessionManager().removeSession(
                 request.getString(ARG_REMOVESESSIONID));
 
@@ -2731,7 +2738,12 @@ public class UserManager extends RepositoryManager {
 
             if (user != null) {
                 addActivity(request, user, ACTIVITY_LOGIN, "");
-                getSessionManager().setUserSession(request, user);
+                getSessionManager().createSession(request, user);
+                if (responseAsXml) {
+                    System.err.println("RAMADDA: setting user session "
+                                       + request.getSessionId());
+                }
+
                 if (responseAsXml) {
                     return new Result(XmlUtil.tag(TAG_RESPONSE,
                             XmlUtil.attr(ATTR_CODE, CODE_OK),
@@ -2948,6 +2960,8 @@ public class UserManager extends RepositoryManager {
     public Result processLogout(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         addActivity(request, request.getUser(), ACTIVITY_LOGOUT, "");
+        getSessionManager().debugSession("RAMADDA.processLogout: "
+                                         + request.getSessionId());
         getSessionManager().removeUserSession(request);
         request.setSessionId(getSessionManager().createSessionId());
         sb.append(getPageHandler().showDialogNote(msg("You are logged out")));

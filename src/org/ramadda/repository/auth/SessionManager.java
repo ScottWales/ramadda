@@ -76,9 +76,12 @@ import java.util.Properties;
  */
 public class SessionManager extends RepositoryManager {
 
-    /** The number of days a session is active in the database */
-    private static final double SESSION_DAYS = 1.0;
+    /** _more_ */
+    private static boolean debugSession = false;
 
+
+    /** The number of days a session is active in the database */
+    private static final double SESSION_DAYS = 2.0;
 
 
     /** _more_ */
@@ -113,6 +116,7 @@ public class SessionManager extends RepositoryManager {
      */
     public SessionManager(Repository repository) {
         super(repository);
+        debugSession = repository.getProperty("ramadda.debug.session", false);
         this.cookieName = "ramadda"
                           + repository.getUrlBase().replaceAll("/", "_")
                           + "_session";
@@ -133,9 +137,21 @@ public class SessionManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param msg _more_
+     */
+    public static void debugSession(String msg) {
+        if (debugSession) {
+            System.err.println(msg);
+        }
+    }
+
+    /**
+     * _more_
+     *
      * @throws Exception _more_
      */
     private void deleteAllSessions() throws Exception {
+        debugSession("RAMADDA.deleteAllSessions");
         sessionMap = new Hashtable<String, Session>();
         anonymousSessionMap.clearCache();
     }
@@ -230,6 +246,8 @@ public class SessionManager extends RepositoryManager {
             } else {}
         }
         for (Session session : sessionsToDelete) {
+            debugSession("RAMADDA.cullSessions: removing old session:"
+                         + session);
             removeSession(session.getId());
         }
 
@@ -381,12 +399,34 @@ public class SessionManager extends RepositoryManager {
      */
     public Session getSession(String sessionId, boolean checkAnonymous)
             throws Exception {
+        return getSession(sessionId, checkAnonymous, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param sessionId _more_
+     * @param checkAnonymous _more_
+     * @param debug _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Session getSession(String sessionId, boolean checkAnonymous,
+                              boolean debug)
+            throws Exception {
         Session session = sessionMap.get(sessionId);
         if (session != null) {
+            //            debugSession("RAMADDA.getSession got session from session map:" + session);
             return session;
         }
         session = anonymousSessionMap.get(sessionId);
         if (session != null) {
+            debugSession(
+                "RAMADDA.getSession got session from anonymous session map: "
+                + session);
+
             return session;
         }
 
@@ -397,17 +437,16 @@ public class SessionManager extends RepositoryManager {
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
-            //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
-            boolean ok = true;
-            while ((results = iter.getNext()) != null && ok) {
+            while ((results = iter.getNext()) != null) {
                 session = makeSession(results);
-                //                    System.err.println ("Got session:" + session);
+                debugSession("RAMADDA.getSession got session from database:"
+                             + session);
                 session.setLastActivity(new Date());
-                //Remove it from the DB and then readd it so we update the lastActivity
+                //Remove it from the DB and then re-add it so we update the lastActivity
                 removeSession(session.getId());
                 addSession(session);
-                sessionMap.put(sessionId, session);
-                ok = false;
+
+                break;
             }
         } finally {
             getDatabaseManager().closeAndReleaseConnection(stmt);
@@ -453,6 +492,7 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void removeSession(String sessionId) throws Exception {
+        debugSession("RAMADDA.removeSession:" + sessionId);
         sessionMap.remove(sessionId);
         anonymousSessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
@@ -467,12 +507,14 @@ public class SessionManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addSession(Session session) throws Exception {
+    private void addSession(Session session) throws Exception {
+        debugSession("RAMADDA.addSession:" + session);
         sessionMap.put(session.getId(), session);
-        //COL_SESSION_ID,COL_USER_ID,COL_CREATE_DATE,COL_LAST_ACTIVE_DATE,COL_EXTRA
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
-                session.getUserId(), new Date(), new Date(), "" });
+                session.getUserId(), session.getCreateDate(),
+                session.getLastActivity(),
+                "" });
     }
 
 
@@ -507,16 +549,17 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public void checkSession(Request request) throws Exception {
+
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
         for (String cookieValue : cookies) {
-            request.setSessionId(cookieValue);
             if (user == null) {
                 Session session = getSession(cookieValue, false);
                 if (session != null) {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
+                    request.setSessionId(cookieValue);
 
                     break;
                 }
@@ -525,12 +568,24 @@ public class SessionManager extends RepositoryManager {
 
         //Check for the session id as a url argument
         if ((user == null) && request.hasParameter(ARG_SESSIONID)) {
-            Session session = getSession(request.getString(ARG_SESSIONID),
-                                         false);
+            String sessionId = request.getString(ARG_SESSIONID);
+            debugSession("RAMADDA: has sessionid argument:" + sessionId);
+            Session session = getSession(sessionId, false, true);
             if (session != null) {
                 session.setLastActivity(new Date());
                 user = getUserManager().getCurrentUser(session.getUser());
                 session.setUser(user);
+                debugSession("RAMADDA: found sesssion user =" + user);
+            } else {
+                debugSession("RAMADDA: could not find session:" + sessionId);
+                debugSession("RAMADDA: sessionMap:" + sessionMap);
+
+                //Puke out of here
+                throw new IllegalStateException("Invalid session:"
+                        + sessionId);
+                //                user = getUserManager().getAnonymousUser();
+                //                session.setUser(user);
+                //                request.setSessionId(createSessionId());
             }
         }
 
@@ -547,7 +602,7 @@ public class SessionManager extends RepositoryManager {
             if ( !getUserManager().isPasswordValid(user, password)) {
                 throw new IllegalArgumentException(msg("Incorrect password"));
             }
-            setUserSession(request, user);
+            createSession(request, user);
         }
 
         //Check for basic auth
@@ -576,19 +631,20 @@ public class SessionManager extends RepositoryManager {
                         } else {}
                     }
                     if (user != null) {
-                        setUserSession(request, user);
+                        createSession(request, user);
                     }
                 }
             }
         }
 
+
+        //Make sure we have the current user state
+        user = getUserManager().getCurrentUser(user);
+
         if ((request.getSessionId() == null)
                 && !request.defined(ARG_SESSIONID)) {
             request.setSessionId(createSessionId());
         }
-
-        //Make sure we have the current user state
-        user = getUserManager().getCurrentUser(user);
 
         if (user == null) {
             user = getUserManager().getAnonymousUser();
@@ -600,8 +656,8 @@ public class SessionManager extends RepositoryManager {
                 anonymousSessionMap.put(request.getSessionId(), session);
             }
         }
-
         request.setUser(user);
+
     }
 
 
@@ -675,14 +731,21 @@ public class SessionManager extends RepositoryManager {
      * @param request _more_
      * @param user _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public void setUserSession(Request request, User user) throws Exception {
+    public Session createSession(Request request, User user)
+            throws Exception {
         if (request.getSessionId() == null) {
             request.setSessionId(createSessionId());
         }
-        addSession(new Session(request.getSessionId(), user, new Date()));
+        Session session = new Session(request.getSessionId(), user,
+                                      new Date());
+        addSession(session);
         request.setUser(user);
+
+        return session;
     }
 
 
@@ -724,18 +787,16 @@ public class SessionManager extends RepositoryManager {
                 HtmlUtils.cols(
                     HtmlUtils.bold(msg("User")),
                     HtmlUtils.bold(msg("Since")),
-                    HtmlUtils.bold(msg("Last Activity")))));
+                    HtmlUtils.bold(msg("Last Activity")),
+                    HtmlUtils.bold(msg("Session ID")))));
         for (Session session : sessions) {
             String url = request.url(getRepositoryBase().URL_USER_LIST,
                                      ARG_REMOVESESSIONID, session.getId());
-            sessionHtml.append(
-                HtmlUtils.row(
-                    HtmlUtils.cols(
-                        HtmlUtils.href(
-                            url, HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
-                                + session.user.getLabel(), formatDate(
-                                    request, session.createDate), formatDate(
-                                    request, session.getLastActivity()))));
+            sessionHtml.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,
+                    HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
+                        + session.getUser().getLabel(), formatDate(request,
+                            session.getCreateDate()), formatDate(request,
+                                session.getLastActivity()), session.getId())));
         }
         sessionHtml.append(HtmlUtils.formTableClose());
 
@@ -745,167 +806,6 @@ public class SessionManager extends RepositoryManager {
 
 
 
-
-    /**
-     * Class Session _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
-    public static class Session {
-
-        /** _more_ */
-        String id;
-
-        /** _more_ */
-        User user;
-
-        /** _more_ */
-        Date createDate;
-
-        /** _more_ */
-        Date lastActivity;
-
-        /** _more_ */
-        private Hashtable properties = new Hashtable();
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param user _more_
-         * @param createDate _more_
-         */
-        public Session(String id, User user, Date createDate) {
-            this(id, user, createDate, new Date());
-        }
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param user _more_
-         * @param createDate _more_
-         * @param lastActivity _more_
-         */
-        public Session(String id, User user, Date createDate,
-                       Date lastActivity) {
-            this.id           = id;
-            this.user         = user;
-            this.createDate   = createDate;
-            this.lastActivity = lastActivity;
-        }
-
-        /**
-         * _more_
-         *
-         * @param key _more_
-         * @param value _more_
-         */
-        public void putProperty(Object key, Object value) {
-            properties.put(key, value);
-        }
-
-        /**
-         * _more_
-         *
-         * @param key _more_
-         *
-         * @return _more_
-         */
-        public Object getProperty(Object key) {
-            return properties.get(key);
-        }
-
-        /**
-         *  Set the Id property.
-         *
-         *  @param value The new value for Id
-         */
-        public void setId(String value) {
-            id = value;
-        }
-
-        /**
-         *  Get the Id property.
-         *
-         *  @return The Id
-         */
-        public String getId() {
-            return id;
-        }
-
-        /**
-         *  Set the User property.
-         *
-         *  @param value The new value for User
-         */
-        public void setUser(User value) {
-            user = value;
-        }
-
-        /**
-         *  Get the User property.
-         *
-         *  @return The User
-         */
-        public User getUser() {
-            return user;
-        }
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
-        public String getUserId() {
-            if (user == null) {
-                return "";
-            }
-
-            return user.getId();
-        }
-
-        /**
-         *  Set the CreateDate property.
-         *
-         *  @param value The new value for CreateDate
-         */
-        public void setCreateDate(Date value) {
-            createDate = value;
-        }
-
-        /**
-         *  Get the CreateDate property.
-         *
-         *  @return The CreateDate
-         */
-        public Date getCreateDate() {
-            return createDate;
-        }
-
-        /**
-         *  Set the LastActivity property.
-         *
-         *  @param value The new value for LastActivity
-         */
-        public void setLastActivity(Date value) {
-            lastActivity = value;
-        }
-
-        /**
-         *  Get the LastActivity property.
-         *
-         *  @return The LastActivity
-         */
-        public Date getLastActivity() {
-            return lastActivity;
-        }
-
-
-
-    }
 
 
 }
