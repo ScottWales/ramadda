@@ -70,13 +70,13 @@ import java.util.Properties;
 
 
 /**
- * Class Session _more_
+ * Class UserSession _more_
  *
  *
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class Session {
+public class UserSession {
 
     /** _more_ */
     private String id;
@@ -100,7 +100,7 @@ public class Session {
      * @param user _more_
      * @param createDate _more_
      */
-    public Session(String id, User user, Date createDate) {
+    public UserSession(String id, User user, Date createDate) {
         this(id, user, createDate, new Date());
     }
 
@@ -112,7 +112,8 @@ public class Session {
      * @param createDate _more_
      * @param lastActivity _more_
      */
-    public Session(String id, User user, Date createDate, Date lastActivity) {
+    public UserSession(String id, User user, Date createDate,
+                       Date lastActivity) {
         this.id           = id;
         this.user         = user;
         this.createDate   = createDate;
