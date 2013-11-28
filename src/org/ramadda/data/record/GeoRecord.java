@@ -39,6 +39,12 @@ public abstract class GeoRecord extends Record {
 
     /**
      * _more_
+     */
+    public GeoRecord() {}
+
+
+    /**
+     * _more_
      *
      * @param recordFile _more_
      */

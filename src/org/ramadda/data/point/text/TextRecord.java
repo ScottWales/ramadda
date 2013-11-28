@@ -72,6 +72,11 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private int badCnt = 0;
 
+    /**
+     * _more_
+     */
+    public TextRecord() {}
+
 
     /**
      * _more_
@@ -418,6 +423,9 @@ public class TextRecord extends DataRecord {
 
 
 
+    /** _more_          */
+    boolean testing = false;
+
     /**
      * _more_
      *
@@ -426,14 +434,33 @@ public class TextRecord extends DataRecord {
      * @return _more_
      */
     public boolean split(String sourceString) {
+        if (tokens == null) {
+            testing = true;
+            tokens  = new String[10];
+        }
         int length        = 1;
         int fullTokenCnt  = 0;
         int numTokensRead = 0;
         int fromIndex     = 0;
         int sourceLength  = sourceString.length();
         //        System.err.println ("line:" + sourceString);
+        boolean inQuotes = sourceString.startsWith("\"");
+        int     idx;
+        /*
+        //            10,"text column",20,"another text column"
+        0
+        */
+
         while (true) {
-            int idx = sourceString.indexOf(delimiter, fromIndex);
+            //            System.err.println("FROM:" + fromIndex +" " + inQuotes);
+
+            if (inQuotes) {
+                idx = sourceString.indexOf("\"", fromIndex + 1);
+                //                System.err.println ("\tidx:" + idx);
+                idx++;
+            } else {
+                idx = sourceString.indexOf(delimiter, fromIndex);
+            }
             //            System.err.println ("\tidx:" + idx +" delimiter:" + delimiter +":  str:" + sourceString);
             String theString;
             if (idx < 0) {
@@ -450,12 +477,31 @@ public class TextRecord extends DataRecord {
                     fromIndex = idx + length;
                 }
             }
+
+            theString = theString.trim();
+            if (inQuotes) {
+                theString = theString.substring(1, theString.length() - 1);
+            }
             //            System.err.println ("\ttokens[" + numTokensRead +"] = " + theString);
-            tokens[numTokensRead++] = theString.trim();
+            tokens[numTokensRead++] = theString;
+
             if ((idx < 0) || (numTokensRead == tokens.length)) {
                 break;
             }
+            if (fromIndex >= sourceLength) {
+                break;
+            }
+            if (fromIndex < sourceLength) {
+                //                System.err.println("C:" + sourceString.charAt(fromIndex));
+                inQuotes = sourceString.charAt(fromIndex) == '\"';
+            }
         }
+
+        if (testing) {
+            return true;
+        }
+
+
         if (bePickyAboutTokens && (numTokensRead != tokens.length)) {
             badCnt++;
             //Handle the goofy point cloud text file that occasionally has a single number
@@ -576,13 +622,12 @@ public class TextRecord extends DataRecord {
      * @param args _more_
      */
     public static void main(String[] args) {
-        int    precision = 4;
-        double value     = 1.23456789;
-        //        double nv = Math.round(value * factor) / factor;
-        double factor = Math.pow(10, precision);
-        double nv     = Math.round(value * factor) / factor;
-        System.err.println(factor);
-        System.err.println(nv);
+        TextRecord record = new TextRecord();
+        record.setDelimiter(",");
+        record.testing = true;
+        for (String line : args) {
+            record.split(line);
+        }
     }
 
 

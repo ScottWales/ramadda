@@ -72,7 +72,7 @@ public class DataRecord extends PointRecord {
     /** _more_ */
     protected boolean[] synthetic;
 
-    /** _more_          */
+    /** _more_ */
     private boolean positionRequired = true;
 
     /** _more_ */
@@ -86,6 +86,12 @@ public class DataRecord extends PointRecord {
 
     /** _more_ */
     protected int idxTime;
+
+    /**
+     * _more_
+     */
+    public DataRecord() {}
+
 
     /**
      * _more_
@@ -177,8 +183,8 @@ public class DataRecord extends PointRecord {
 
                 continue;
             }
-            String casedName =field.getName();
-            String name = casedName.toLowerCase();
+            String casedName = field.getName();
+            String name      = casedName.toLowerCase();
 
             for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
                 boolean gotOne = false;
@@ -187,6 +193,7 @@ public class DataRecord extends PointRecord {
                         gotDateFields        = true;
                         timeIndices[timeIdx] = fieldIdx + 1;
                         gotOne               = true;
+
                         break;
                     }
                 }

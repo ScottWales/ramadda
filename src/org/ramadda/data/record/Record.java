@@ -88,6 +88,12 @@ public abstract class Record implements Cloneable {
     /** _more_ */
     private long recordTime = UNDEFINED_TIME;
 
+
+    /**
+     * _more_
+     */
+    public Record() {}
+
     /**
      * Ctor
      *

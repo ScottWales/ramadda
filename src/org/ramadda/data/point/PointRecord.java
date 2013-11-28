@@ -68,6 +68,12 @@ public abstract class PointRecord extends GeoRecord {
 
     /**
      * _more_
+     */
+    public PointRecord() {}
+
+
+    /**
+     * _more_
      *
      * @param recordFile _more_
      */
