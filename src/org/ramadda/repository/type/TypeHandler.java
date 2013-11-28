@@ -152,6 +152,9 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_METADATA = "metadata";
 
+    /** _more_          */
+    public static final String ATTR_CHILDTYPES = "childtypes";
+
 
     /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
@@ -210,7 +213,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private static List<DateArgument> dateArgs;
 
 
@@ -231,6 +234,9 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     private List<String> metadataTypes;
+
+    /** _more_          */
+    private List<String> childTypes;
 
 
     /** _more_ */
@@ -475,6 +481,9 @@ public class TypeHandler extends RepositoryManager {
                 ATTR_METADATA,
                 EnumeratedMetadataHandler.TYPE_TAG + ","
                 + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
+
+        this.childTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
+                ATTR_CHILDTYPES, ""));
         forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
         setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
         if (getType().indexOf(".") > 0) {
@@ -1756,6 +1765,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+
             links.add(
                 new Link(
                     request.url(
@@ -1768,33 +1778,12 @@ public class TypeHandler extends RepositoryManager {
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
                     request, ARG_TYPE);
-            if (pastTypes != null) {
-                boolean didone = false;
-                for (String pastType : pastTypes) {
-                    if (pastType.equals(TYPE_FILE)
-                            || pastType.equals(TYPE_GROUP)) {
-                        continue;
-                    }
-                    didone = true;
-                    TypeHandler pastTypeHandler =
-                        getRepository().getTypeHandler(pastType);
-                    String icon = pastTypeHandler.getProperty("icon",
-                                      (String) null);
-                    if (icon == null) {
-                        icon = getRepository().iconUrl(ICON_ENTRY_ADD);
-                    } else {
-                        icon = pastTypeHandler.iconUrl(icon);
-                    }
-
-                    links.add(new Link(request
-                        .url(getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                             entry.getId(), ARG_TYPE, pastType), icon,
-                                 "New " + pastTypeHandler.getDescription(),
-                                 OutputType.TYPE_FILE));
-                }
-                if (didone) {
-                    links.add(makeHRLink(OutputType.TYPE_FILE));
-                }
+            HashSet seen   = new HashSet();
+            boolean didone = addTypes(request, entry, links, childTypes,
+                                      seen);
+            didone |= addTypes(request, entry, links, pastTypes, seen);
+            if (didone) {
+                links.add(makeHRLink(OutputType.TYPE_FILE));
             }
         }
 
@@ -1999,6 +1988,55 @@ public class TypeHandler extends RepositoryManager {
         return hr;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param links _more_
+     * @param types _more_
+     * @param seen _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean addTypes(Request request, Entry entry, List<Link> links,
+                             List<String> types, HashSet<String> seen)
+            throws Exception {
+        if (types == null) {
+            return false;
+        }
+        boolean didone = false;
+        for (String type : types) {
+            if (type.equals(TYPE_FILE) || type.equals(TYPE_GROUP)) {
+                continue;
+            }
+            if (seen.contains(type)) {
+                continue;
+            }
+            seen.add(type);
+            didone = true;
+            TypeHandler typeHandler = getRepository().getTypeHandler(type);
+            String      icon = typeHandler.getProperty("icon", (String) null);
+            if (icon == null) {
+                icon = getRepository().iconUrl(ICON_ENTRY_ADD);
+            } else {
+                icon = typeHandler.iconUrl(icon);
+            }
+
+            links.add(
+                new Link(
+                    request.url(
+                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
+                        entry.getId(), ARG_TYPE, type), icon,
+                            "New " + typeHandler.getDescription(),
+                            OutputType.TYPE_FILE));
+        }
+
+        return didone;
+    }
 
     /**
      * _more_
