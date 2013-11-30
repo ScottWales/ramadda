@@ -3,6 +3,7 @@
 CWD=`pwd`
 
 RAMADDA_DIR=`dirname $0`
+RAMADDA_PARENT_DIR=`dirname $RAMADDA_DIR`
 
 #RAMADDA home directory
 if [ -z "$RAMADDA_HOME" ]; then
@@ -30,7 +31,14 @@ if test -e  ${RAMADDA_ENV_FILE} ; then
     . ${RAMADDA_ENV_FILE}
 fi
 
-##See if there is one in the cwd
+##See if there is one in the parent dir
+RAMADDA_ENV_FILE=${RAMADDA_PARENT_DIR}/ramaddaenv.sh
+if test -e  ${RAMADDA_ENV_FILE} ; then 
+    echo "RAMADDA initializing with: ${RAMADDA_ENV_FILE}"
+    . ${RAMADDA_ENV_FILE}
+fi
+
+##See if there is one in the current working directory
 if test  -e ${CWD}/ramaddaenv.sh ; then 
     . ${CWD}/ramaddaenv.sh
 fi
