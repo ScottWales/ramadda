@@ -109,6 +109,83 @@ public class CsvImporter extends ImportHandler {
                              getStorageManager().getFileInputStream(
                                  fileName)));
 
+        //Check for CZO format
+        if (csv.startsWith("SiteCode,SiteName,")) {
+            processCZO(sb, csv);
+        } else {
+            processDefault(sb, csv);
+        }
+
+        sb.append("</entries>");
+
+        return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param csv _more_
+     *
+     * @throws Exception _more_
+     */
+    private void processCZO(StringBuffer sb, String csv) throws Exception {
+        String   entryType = "project_site";
+        int[]    indices   = {
+            0, 4, 6, 7, 8, 9, 10, 11, 12
+        };
+        String[] columns   = {
+            "short_name", "latlong_datum", "vertical_datum", "local_x",
+            "local_y", "local_projection", "position_accuracy", "state",
+            "county"
+        };
+        int cnt = 0;
+        for (String line : StringUtil.split(csv, "\n", true, true)) {
+            cnt++;
+            if (cnt == 1) {
+                continue;
+            }
+            List<String> toks = StringUtil.split(line, ",");
+            //SiteCode,SiteName,Latitude,Longitude,LatLongDatumID,Elevation_m,VerticalDatum,LocalX,LocalY,LocalProjectionID,PosAccuracy_m,State,County,Comments
+            String       name     = getValue(1, toks);
+            String       desc     = getValue(13, toks);
+            double       lat      = Double.parseDouble(getValue(2, toks));
+            double       lon      = Double.parseDouble(getValue(3, toks));
+            double       elev     = Double.parseDouble(getValue(5, toks));
+
+            StringBuffer innerXml = new StringBuffer();
+            for (int colCnt = 0; colCnt < columns.length; colCnt++) {
+                String col      = columns[colCnt];
+                String colValue = getValue(indices[colCnt], toks);
+                if (Utils.stringDefined(colValue)) {
+                    innerXml.append(XmlUtil.tag(col, "", colValue));
+                }
+            }
+            String attrs = XmlUtil.attrs(new String[] {
+                ATTR_TYPE, entryType, ATTR_LATITUDE, "" + lat, ATTR_LONGITUDE,
+                "" + lon, ATTR_ALTITUDE, "" + elev, ATTR_NAME, name,
+                ATTR_DESCRIPTION, desc
+            });
+            sb.append(XmlUtil.tag("entry", attrs, innerXml.toString()));
+        }
+
+
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param csv _more_
+     *
+     * @throws Exception _more_
+     */
+    private void processDefault(StringBuffer sb, String csv)
+            throws Exception {
+
         int    IDX_LAT         = 0;
         int    IDX_LON         = 1;
         int    IDX_NAME        = 2;
@@ -152,13 +229,8 @@ public class CsvImporter extends ImportHandler {
             sb.append(XmlUtil.tag("entry", attrs, innerXml.toString()));
         }
 
-
-        sb.append("</entries>");
-
-        return new ByteArrayInputStream(sb.toString().getBytes());
-
-
     }
+
 
     /**
      * _more_

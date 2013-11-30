@@ -1068,6 +1068,9 @@ public class GenericTypeHandler extends TypeHandler {
                     StringBuffer tmpSb = new StringBuffer();
                     formatColumnHtmlValue(request, entry, column, tmpSb,
                                           values);
+                    if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
+                        continue;
+                    }
 
                     if (column.getShowLabel()) {
                         myBuff.append(formEntry(request,

@@ -152,7 +152,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_METADATA = "metadata";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CHILDTYPES = "childtypes";
 
 
@@ -235,7 +235,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private List<String> metadataTypes;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> childTypes;
 
 
@@ -2197,8 +2197,8 @@ public class TypeHandler extends RepositoryManager {
                                 request, entry, desc)));
                 }
             }
-            sb.append(
-                "<tr><td width=20%><div style=\"height:1px;\"></div></td><td width=75%></td></tr>");
+            //            sb.append(
+            //                "<tr><td width=20%><div style=\"height:1px;\"></div></td><td width=75%></td></tr>");
 
 
 

@@ -253,6 +253,9 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean changeType = false;
 
+    /** _more_          */
+    private boolean showEmpty = true;
+
     /** _more_ */
     private String suffix;
 
@@ -387,6 +390,7 @@ public class Column implements DataTypes, Constants {
         type = XmlUtil.getAttribute(element, ATTR_TYPE, DATATYPE_STRING);
         changeType     = XmlUtil.getAttribute(element, ATTR_CHANGETYPE,
                 false);
+        showEmpty      = XmlUtil.getAttribute(element, "showempty", true);
         dflt = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
         isIndex        = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
         isCategory     = XmlUtil.getAttribute(element, ATTR_ISCATEGORY,
@@ -832,6 +836,11 @@ public class Column implements DataTypes, Constants {
                 s = s.replaceAll(",", "_COMMA_");
                 s = s.replaceAll("\n", " ");
             }
+            if (s.length() == 0) {
+                if ( !getShowEmpty()) {
+                    return;
+                }
+            }
 
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(
@@ -934,7 +943,8 @@ public class Column implements DataTypes, Constants {
                 }
                 statement.setDouble(statementIdx, value);
             } else {
-                double value = Double.NaN;
+                //                double value = Double.NaN;
+                double value = 0;
                 if (Utils.stringDefined(dflt)) {
                     value = Double.parseDouble(dflt);
                 }
@@ -2628,6 +2638,16 @@ public class Column implements DataTypes, Constants {
      */
     public boolean getIsCategory() {
         return isCategory;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getShowEmpty() {
+        return showEmpty;
     }
 
 
