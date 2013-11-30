@@ -45,7 +45,7 @@ in the release directory.  Then, if it exists, the script execs ramaddaenv.sh
 in the current working directory (where you are running RAMADDA from).
 
 If you want to override the location of the RAMADDA home dir or the port 
-used then  set the environment variables or copy ramadda1.4/ramaddaenv.sh to where 
+used then  set the environment variables or copy ramadda1.5/ramaddaenv.sh to where 
 you'll be running RAMADDA from and edit it there. You can also pass in the arguments 
 from the command line, e.g.:
 
@@ -100,14 +100,13 @@ to get a listing of the processes running Java Then do:
 ###################################################################
 Running in the background
 ###################################################################
-The backgroundramadda.sh script is used to run RAMADDA in the background.
-It simply redirects the output to a ramadda.out file.
+The ramaddainit.sh script is used to run RAMADDA in the background.
 
-If you want to run ramadda in the background then do:
+Do any of:
+sh ramaddainit.sh start
+sh ramaddainit.sh stop
+sh ramaddainit.sh restart
+sh ramaddainit.sh status
 
-   nohup sh backgroundramadda.sh &
-
-Note: You should also add the backgroundramadda.sh call to any server 
-initialization scripts if you want to have ramadda run on machine reboot
 
 

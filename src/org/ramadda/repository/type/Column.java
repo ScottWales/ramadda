@@ -294,6 +294,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String dflt;
 
+    private double dfltDouble = Double.NaN;
+
     /** _more_ */
     private int size = 200;
 
@@ -471,6 +473,11 @@ public class Column implements DataTypes, Constants {
                 enumValues = new ArrayList<TwoFacedObject>();
             }
         }
+
+        if(isNumeric() && Utils.stringDefined(dflt)) {
+            dfltDouble = Double.parseDouble(dflt);
+        }
+
 
     }
 
@@ -763,6 +770,15 @@ public class Column implements DataTypes, Constants {
                 //                Misc.printArray("", values);
                 double percent = (Double) values[offset];
                 sb.append((int) (percent * 100) + "");
+            }
+
+        } else if (isType(DATATYPE_DOUBLE)) {
+            if (csv) {
+                sb.append(toString(values, offset));
+            } else {
+                double v = (Double) values[offset];
+                if(v == dfltDouble && !getShowEmpty()) return;
+                sb.append(v);
             }
         } else if (isType(DATATYPE_DATETIME)) {
             if (sdf != null) {
