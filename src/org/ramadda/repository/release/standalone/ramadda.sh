@@ -36,6 +36,8 @@ if test  -e ${CWD}/ramaddaenv.sh ; then
 fi
 
 
+echo "Running RAMADDA: ${JAVA} -Xmx${JAVA_MEMORY} -XX:MaxPermSize=${JAVA_PERMGEN} -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -Dramadda_home=${RAMADDA_HOME} $* "
+
 ${JAVA} -Xmx${JAVA_MEMORY} -XX:MaxPermSize=${JAVA_PERMGEN} -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -Dramadda_home=${RAMADDA_HOME} $* 
 
 
