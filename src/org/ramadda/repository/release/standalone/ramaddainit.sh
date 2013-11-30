@@ -3,8 +3,12 @@
 RAMADDA_DIR=`dirname $0`
 
 BASE=$RAMADDA_DIR
-PID=$BASE/ramadda.pid
-LOG=$BASE/ramadda.log
+PARENT=`dirname $BASE`
+
+#This saves the log and pid in the parent directory
+PID=$PARENT/ramadda.pid
+LOG=$PARENT/ramadda.log
+
 COMMAND="sh $RAMADDA_DIR/ramadda.sh"
 
 status() {
