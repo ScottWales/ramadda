@@ -129,15 +129,15 @@
      <column name="status" type="enumerationplus"  label="Status"    cansearch="true"  showempty="false"/>
      <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"  showempty="false"/>
      <column name="location"  type="string"  label="Where" rows="2" columns="60"  showempty="false"/>
-     <column name="country"   label="Country"    type="enumerationplus"  searchable="true"  showempty="false"/>
-     <column name="state"   label="State/Province"    type="enumerationplus"  searchable="true" showempty="false"/>
-     <column name="county"   label="County"    type="enumerationplus"  searchable="true"  showempty="false"/>
-     <column name="local_x"   label="Local X Coordinate"    type="double"   default="0"  showempty="false"/>
-     <column name="local_y"   label="Local Y Coordinate"    type="double"   default="0"  showempty="false"/>
-     <column name="local_projection"   label="Local Projection"    type="enumerationplus"   showempty="false"/>
-     <column name="vertical_datum"   label="Vertical Datum"    type="enumerationplus"   showempty="false"/>
-     <column name="latlong_datum"   label="Horizontal Datum"    type="enumerationplus"   showempty="false"/>
-     <column name="position_accuracy"   label="Position Accuracy"    type="double"  suffix="meters"  default="0"  showempty="false"/>
+     <column name="country"   label="Country"    type="enumerationplus"  searchable="true"  showempty="false" canlist="false"/>
+     <column name="state"   label="State/Province"    type="enumerationplus"  searchable="true" showempty="false"  canlist="false" />
+     <column name="county"   label="County"    type="enumerationplus"  searchable="true"  showempty="false"  canlist="false" />
+     <column name="local_x"   label="Local X Coordinate"    type="double"   default="0"  showempty="false"  canlist="false" />
+     <column name="local_y"   label="Local Y Coordinate"    type="double"   default="0"  showempty="false"  canlist="false" />
+     <column name="local_projection"   label="Local Projection"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="vertical_datum"   label="Vertical Datum"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="latlong_datum"   label="Horizontal Datum"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="position_accuracy"   label="Position Accuracy"    type="double"  suffix="meters"  default="0"  showempty="false"  canlist="false" />
 
 
      <wiki><![CDATA[
