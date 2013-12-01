@@ -165,7 +165,8 @@
 </table>
 
 
-{{properties metadata.types="enum_tag,project_person,project_funding,content.url" message="" }}
+{{properties metadata.types="project_person,project_funding,content.url" message="" }}
+{{properties metadata.types="!project_person,!project_funding,!content.url" message="" }}
 
 
 </td>
@@ -181,9 +182,7 @@
 
 </table>
 
-<p>
 
-{{properties block.show="true" block.open="false" block.title="View all properties" prefix="==Properties=="}}
 ]]>
 </wiki>
 
