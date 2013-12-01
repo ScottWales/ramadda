@@ -25,6 +25,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -455,7 +456,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_EMAIL)) {
             html = HtmlUtils.href("mailto:" + value, value);
         } else if (dataType.equals(DATATYPE_URL)) {
-            html = HtmlUtils.href(value, value);
+            if (Utils.stringDefined(value)) {
+                html = HtmlUtils.href(value, value);
+            } else {
+                html = "";
+            }
         } else {
             html = value;
         }

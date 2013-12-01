@@ -28,8 +28,8 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.DateArgument;
+import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -113,7 +113,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
 
     /** maximum attribute */
@@ -154,7 +154,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** include icon attribute */
     public static final String ATTR_INCLUDEICON = "includeicon";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SHOWDESCRIPTION = "showdescription";
 
 
@@ -609,7 +609,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
              attrs(ATTR_TYPE, "", ARG_MAX, "10", ARG_SEARCH_SHOWFORM,
                    "false", SpecialSearch.ATTR_TABS, SpecialSearch.TAB_LIST)),
         prop(WIKI_PROP_UPLOAD,
-             attrs(ATTR_TITLE, "Upload file", ATTR_INCLUDEICON,"false")),
+             attrs(ATTR_TITLE, "Upload file", ATTR_INCLUDEICON, "false")),
         WIKI_PROP_ROOT
     };
     //j+
@@ -1318,7 +1318,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                         instanceof LocalFileTypeHandler)) {
                 return "";
             }
-            TypeHandler typeHandler = getRepository().getTypeHandler(Misc.getProperty(props, ATTR_TYPE, TypeHandler.TYPE_FILE));
+            TypeHandler typeHandler =
+                getRepository().getTypeHandler(Misc.getProperty(props,
+                    ATTR_TYPE, TypeHandler.TYPE_FILE));
             if (typeHandler == null) {
                 return "ERROR: unknown type";
             }
@@ -1332,13 +1334,13 @@ public class WikiManager extends RepositoryManager implements WikiUtil
                 return "";
             }
             String img = "";
-            if(Misc.getProperty(props, ATTR_INCLUDEICON, false)) {
+            if (Misc.getProperty(props, ATTR_INCLUDEICON, false)) {
                 String icon = typeHandler.getProperty("icon", (String) null);
                 if (icon == null) {
                     icon = ICON_BLANK;
                     img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
                                         HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                                       "16"));
+                                            "16"));
                 } else {
                     img = HtmlUtils.img(typeHandler.iconUrl(icon));
                 }
@@ -2389,7 +2391,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         List tabContents = new ArrayList<String>();
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
-                    request, entry, true, false, metadataTypes)) {
+                    request, entry, metadataTypes)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -3025,10 +3027,14 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
             ARG_BBOX + ".north", ARG_BBOX + ".west", ARG_BBOX + ".south",
             ARG_BBOX + ".east", DateArgument.ARG_DATA.getFrom(),
-            DateArgument.ARG_DATA.getTo(), DateArgument.ARG_DATA.getRelative(),
-            DateArgument.ARG_CREATE.getFrom(), DateArgument.ARG_CREATE.getTo(),
-            DateArgument.ARG_CREATE.getRelative(), DateArgument.ARG_CHANGE.getFrom(),
-            DateArgument.ARG_CHANGE.getTo(), DateArgument.ARG_CHANGE.getRelative(),
+            DateArgument.ARG_DATA.getTo(),
+            DateArgument.ARG_DATA.getRelative(),
+            DateArgument.ARG_CREATE.getFrom(),
+            DateArgument.ARG_CREATE.getTo(),
+            DateArgument.ARG_CREATE.getRelative(),
+            DateArgument.ARG_CHANGE.getFrom(),
+            DateArgument.ARG_CHANGE.getTo(),
+            DateArgument.ARG_CHANGE.getRelative(),
         };
         for (String arg : args) {
             String text = (String) props.get(PREFIX_SEARCH + arg);

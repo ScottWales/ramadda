@@ -3,11 +3,11 @@
 
   <handler category="Project" xclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
 
-    <type id="project_person" name="Project Personnel">
+    <type id="project_person" name="Project Personnel" searchable="true" >
       <element id="name" name="Name"/>
       <element id="type" name="Type" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/personnel.properties"/>
       <element id="institution" name="Institution"/>
-      <element id="email" name="Email"/>
+      <element id="email" name="Email" datatype="email"/>
     </type>
 
 

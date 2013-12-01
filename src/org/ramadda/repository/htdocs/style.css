@@ -391,6 +391,24 @@ padding-right-rtl-source: physical;
 }
 
 
+.metadata-header {
+   margin-top:10px;
+   font-weight: bold; 
+}
+
+
+.metadata-row-even {
+   margin-left: 20px;
+   margin-bottom:5px;
+   background-color:#ffffff;
+}
+
+.metadata-row-odd {
+   margin-left: 20px;
+   margin-bottom:5px;
+   background-color:#eeeeee;
+}
+
 .metadata-small-label {
    border-top-left-radius: 8px;
    border-top-right-radius: 8px;
@@ -483,6 +501,7 @@ padding-right-rtl-source: physical;
 
 .ramadda-popup {
    display: none;
+
    text-decoration: none;
    border : 1px #aaa solid;
    background-color : #FFFFFF;
@@ -1836,7 +1855,9 @@ a.toggleblocklabellink:visited {
 	font-weight: normal;
 	margin: 0px;
 	margin-bottom: .3em;
-	padding-top: .20em;
+	margin-right: 10px;
+	padding-left: 6px;
+	padding-top: .50em;
 	padding-bottom: .10em;
 	border-bottom: 1px solid #aaa;
         padding-right:10px;

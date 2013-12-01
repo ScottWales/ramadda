@@ -81,7 +81,7 @@
       <element name="Value"  searchable="true"/>
       <template type="thredds"><![CDATA[<property name="synonym" value="${Value}"/>]]></template>
       <template type="atom"><![CDATA[<property name="synonym" value="${Value}"/>]]></template>
-      <template type="html"><![CDATA[ ${Value}]]></template>
+      <template type="html"><![CDATA[${Value}]]></template>
     </type>
 
   </handler>

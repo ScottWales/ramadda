@@ -72,7 +72,7 @@
 {{description wikify="true"}}
 </div>
 
-==Information==
+==Project Information==
 <table class="formtable">
 {{resource row.label="URL:"  message=""}}
 {{field name="project_id" row.label="Project ID:"}}
@@ -80,11 +80,10 @@
 {{field name="location" row.label="Location:"}}
 </table>
 
+{{properties metadata.types="project_person,project_funding,content.url" message="" }}
 
-{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
+{{links entry="Links" message=""}}
 
-
-{{tree title="Data" showtoggle="false" message="" prefix="==Data=="}}
 
 </td>
 <td width="50%">
@@ -92,18 +91,20 @@
 <p>
 {{mapentry width="350" message=""}}
 <p>
-{{links entry="Links" message=""}}
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
 </td></tr>
 
 
 
 </table>
 
-
-{{properties block.show="true" block.open="false" block.title="Click to view Properties" prefix="==Properties=="}}
-
-
 <p>
+
+{{properties block.show="true" block.open="false" block.title="View all properties" prefix="==Properties=="}}
+
+
 ]]>
 </wiki>
    </type>
@@ -169,7 +170,7 @@
 </table>
 
 ==Properties==
-<block open="false" title="Click to view Properties">
+<block open="false" title="View  all properties">
 {{properties message="No properties"}}
 </block>
 
@@ -375,7 +376,7 @@ Instrument: {{name}}
 </table>
 
 ==Properties==
-<block open="false" title="Click to view Properties">
+<block open="false" title="View all properties">
 {{properties}}
 </block>
 

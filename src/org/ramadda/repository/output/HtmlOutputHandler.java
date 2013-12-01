@@ -28,6 +28,7 @@ import org.ramadda.repository.type.*;
 
 
 import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
@@ -354,20 +355,6 @@ public class HtmlOutputHandler extends OutputHandler {
     private Result getMetadataXml(Request request, Entry entry,
                                   boolean showLinks)
             throws Exception {
-        /*
-                StringBuffer sb = new StringBuffer();
-                request.put(ARG_OUTPUT, OUTPUT_HTML);
-                boolean didOne = false;
-                sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
-                sb.append(entry.getTypeHandler().getInnerEntryContent(entry, request,
-                        OutputHandler.OUTPUT_HTML, true, true, true));
-                for (TwoFacedObject tfo :
-                        getMetadataHtml(request, entry, false, false)) {
-                    sb.append(tfo.getId().toString());
-                }
-                sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-        */
-
         String contents;
         if (showLinks) {
             int menuType = OutputType.TYPE_VIEW | OutputType.TYPE_FILE
@@ -667,23 +654,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param decorate _more_
-     * @param addLink _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
-    public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-            boolean decorate, boolean addLink)
-            throws Exception {
-        return getMetadataHtml(request, entry, decorate, addLink, null);
-    }
+
 
     /**
      * _more_
@@ -691,7 +662,6 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param decorate _more_
-     * @param addLink _more_
      * @param onlyTheseTypes _more_
      *
      * @return _more_
@@ -699,7 +669,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-            boolean decorate, boolean addLink, List<String> onlyTheseTypes)
+            List<String> onlyTheseTypes)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -710,8 +680,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
-        Hashtable    catMap = new Hashtable();
-        List<String> cats   = new ArrayList<String>();
+        CategoryBuffer catBuff = new CategoryBuffer();
+        Hashtable      catMap  = new Hashtable();
+        List<String>   cats    = new ArrayList<String>();
         List<MetadataHandler> metadataHandlers =
             getMetadataManager().getMetadataHandlers();
 
@@ -720,7 +691,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
-        boolean didone = false;
+        boolean                    didone  = false;
+        Hashtable<String, Boolean> typeRow = new Hashtable<String, Boolean>();
+
         for (Metadata metadata : metadataList) {
             if ((onlyTheseTypes != null) && (onlyTheseTypes.size() > 0)) {
                 if ( !onlyTheseTypes.contains(metadata.getType())) {
@@ -738,53 +711,29 @@ public class HtmlOutputHandler extends OutputHandler {
             if (html == null) {
                 continue;
             }
-            boolean isSimple = metadataHandler.isSimple(metadata);
-            String  cat      = type.getDisplayCategory();
-            if ( !decorate) {
-                cat = "Properties";
-            }
-            Object[] blob     = (Object[]) catMap.get(cat);
-            boolean  firstOne = false;
-            if (blob == null) {
-                firstOne = true;
-                blob     = new Object[] { new StringBuffer(),
-                                          new Integer(1) };
-                catMap.put(cat, blob);
+            String         cat = type.getDisplayCategory();
+
+            CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
+            if (cb == null) {
+                cb = new CategoryBuffer();
+                catMap.put(cat, cb);
                 cats.add(cat);
             }
-            StringBuffer sb     = (StringBuffer) blob[0];
-            int          rowNum = ((Integer) blob[1]).intValue();
-
-            if (firstOne) {
-                if (decorate) {
-                    sb.append(
-                        "<table width=\"100%\" border=0 cellspacing=\"0\" cellpadding=\"3\">\n");
-                }
-                if (addLink && canEdit) {
-                    if (decorate) {
-                        sb.append("<tr><td></td><td>");
-                    }
-                    sb.append(
-                        new Link(
-                            request.entryUrl(
-                                getMetadataManager().URL_METADATA_FORM,
-                                entry), iconUrl(ICON_METADATA_EDIT),
-                                        msg("Edit Metadata")));
-                    sb.append(
-                        new Link(
-                            request.entryUrl(
-                                getRepository().getMetadataManager()
-                                    .URL_METADATA_ADDFORM, entry), iconUrl(
-                                        ICON_METADATA_ADD), msg(
-                                        "Add Property")));
-                    if (decorate) {
-                        sb.append("</td></tr>");
-                    }
-                }
+            StringBuffer sb      = cb.get(type.getName());
+            Boolean      rowFlag = typeRow.get(type.getName());
+            if (rowFlag == null) {
+                rowFlag = new Boolean(true);
+                typeRow.put(type.getName(), rowFlag);
             }
-            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
+            boolean even = rowFlag.booleanValue();
+            typeRow.put(type.getName(), new Boolean( !even));
+            String rowClass = "metadata-row-" + (even
+                    ? "even"
+                    : "odd");
             if (smallDisplay) {
-                sb.append(HtmlUtils.open("tr", " valign=\"top\" "));
+                sb.append(HtmlUtils.open("tr",
+                                         " valign=\"top\" "
+                                         + HtmlUtils.cssClass(rowClass)));
                 sb.append(HtmlUtils.open("td"));
                 sb.append(
                     HtmlUtils.tag(
@@ -797,43 +746,26 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.close("td"));
                 sb.append(HtmlUtils.close("tr"));
             } else {
-                if (decorate && !isSimple) {
-                    String row =
-                        " <tr  " + theClass
-                        + " valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
-                        + html[0] + "</nobr></td><td>"
-                    //                    + HtmlUtils.makeToggleInline("", html[1], false)
-                    + HtmlUtils.makeToggleInline("", html[1],
-                        true) + "</td></tr>";
-                    sb.append(row);
-                } else {
-                    String row =
-                        " <tr  valign=\"top\"><td width=\"10%\" align=\"right\" valign=\"top\" class=\"formlabel\"><nobr>"
-                        + html[0] + "</nobr></td><td>" + html[1]
-                        + "</td></tr>";
-                    sb.append(row);
-                }
+                sb.append(HtmlUtils.div(html[1],
+                                        HtmlUtils.cssClass(rowClass)));
             }
             sb.append("\n");
-            if (++rowNum > 2) {
-                rowNum = 1;
-            }
-            blob[1] = new Integer(rowNum);
         }
 
 
         for (String cat : cats) {
-            Object[]     blob = (Object[]) catMap.get(cat);
-            StringBuffer sb   = (StringBuffer) blob[0];
-            if (decorate) {
-                sb.append("</table>\n");
+            CategoryBuffer cb = (CategoryBuffer) catMap.get(cat);
+            StringBuffer   sb = new StringBuffer();
+            for (String category : cb.getCategories()) {
+                String header = HtmlUtils.div(category,
+                                    HtmlUtils.cssClass("metadata-header"));
+                sb.append(header);
+                sb.append(cb.get(category));
             }
-            //            System.err.println("-------------------\n" + sb);
             result.add(new TwoFacedObject(cat, sb));
         }
 
         return result;
-
     }
 
 
@@ -1153,8 +1085,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
 
-        for (TwoFacedObject tfo :
-                getMetadataHtml(request, entry, true, true)) {
+        for (TwoFacedObject tfo : getMetadataHtml(request, entry, null)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

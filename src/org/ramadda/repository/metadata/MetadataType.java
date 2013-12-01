@@ -24,7 +24,7 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -43,7 +43,6 @@ import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.io.InputStream;
 
 import java.net.URL;
@@ -896,8 +895,9 @@ public class MetadataType extends MetadataTypeBase {
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
+        String searchLink = "";
         if ( !smallDisplay && getSearchable()) {
-            content.append(handler.getSearchLink(request, metadata));
+            searchLink = handler.getSearchLink(request, metadata);
         }
 
 
@@ -920,6 +920,7 @@ public class MetadataType extends MetadataTypeBase {
                 value = value.replaceAll("\"", "&quot;");
                 html  = applyMacros(html, element, value);
             }
+            content.append(searchLink);
             content.append(html);
         } else {
             int                   cnt      = 1;
@@ -930,14 +931,24 @@ public class MetadataType extends MetadataTypeBase {
                 MetadataElement.FormInfo formInfo =
                     element.getHtml(metadata.getAttr(cnt), 0);
                 if (formInfo != null) {
-                    //xxxx
+                    String metadataHtml = formInfo.content;
+                    if ((cnt > 1) && !Utils.stringDefined(metadataHtml)) {
+                        cnt++;
+
+                        continue;
+                    }
+
+                    if (searchLink != null) {
+                        metadataHtml = searchLink + " " + metadataHtml;
+                        searchLink   = null;
+                    }
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
                             HtmlUtils.row(
-                                HtmlUtils.colspan(formInfo.content, 2)));
+                                HtmlUtils.colspan(metadataHtml, 2)));
                     } else {
                         content.append(HtmlUtils.formEntry(formInfo.label,
-                                formInfo.content));
+                                metadataHtml));
                     }
                     didOne = true;
                 }
