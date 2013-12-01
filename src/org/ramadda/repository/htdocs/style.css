@@ -393,7 +393,11 @@ padding-right-rtl-source: physical;
 
 .metadata-header {
    margin-top:10px;
-   font-weight: bold; 
+   border-bottom: 1px #eeeeee solid;
+   font-size:110%;
+   font-size: 150%;
+   margin-right: 50px;
+//   font-weight: bold; 
 }
 
 
@@ -1862,13 +1866,13 @@ a.toggleblocklabellink:visited {
 	border-bottom: 1px solid #aaa;
         padding-right:10px;
 }
-.wiki-h1 { font-size: 188%; }
+.wiki-h1 { font-size: 170%; }
 .wiki-h2 { font-size: 150%; }
 .wiki-h3, .wiki-h4, .wiki-h5, .wiki-h6 {
 	border-bottom: none;
 	font-weight: bold;
 }
-.wiki-h3 { font-size: 132%; }
+.wiki-h3 { font-size: 130%; }
 .wiki-h4 { font-size: 110%; color: #888;}
 .wiki-h5 { font-size: 100%;}
 .wiki-h6 { font-size: 80%;}

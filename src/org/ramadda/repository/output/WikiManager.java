@@ -2380,18 +2380,29 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     private String makeEntryTabs(Request request, Entry entry,
                                  Hashtable props)
             throws Exception {
+
+        List<String> onlyTheseTypes = null;
+        List<String> notTheseTypes = null;
+
         String metadataTypesAttr = Misc.getProperty(props,
                                        ATTR_METADATA_TYPES, (String) null);
-        List<String> metadataTypes = null;
         if (metadataTypesAttr != null) {
-            metadataTypes = StringUtil.split(metadataTypesAttr, ",", true,
-                                             true);
+            onlyTheseTypes = new ArrayList<String>();
+            notTheseTypes = new ArrayList<String>();
+            for(String type:  StringUtil.split(metadataTypesAttr, ",", true,
+                                               true)) {
+                if(type.startsWith("!")) {
+                    notTheseTypes.add(type.substring(1));
+                } else {
+                    onlyTheseTypes.add(type);
+                }
+            }
         }
         List tabTitles   = new ArrayList<String>();
         List tabContents = new ArrayList<String>();
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
-                    request, entry, metadataTypes)) {
+                                                                       request, entry, onlyTheseTypes,notTheseTypes)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

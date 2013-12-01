@@ -107,6 +107,9 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    /** _more_          */
+    public static final String ATTR_DISPLAYGROUP = "displaygroup";
+
 
     /** _more_ */
     public static final String ATTR_BROWSABLE = "browsable";
@@ -135,6 +138,9 @@ public class MetadataType extends MetadataTypeBase {
 
     /** _more_ */
     private String displayCategory = "Properties";
+
+    /** _more_          */
+    private String displayGroup = null;
 
     /** _more_ */
     private String category = "Properties";
@@ -300,6 +306,9 @@ public class MetadataType extends MetadataTypeBase {
         setDisplayCategory(XmlUtil.getAttributeFromTree(node,
                 ATTR_DISPLAYCATEGORY, "Properties"));
 
+
+        setDisplayGroup(XmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
+                (String) null));
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
                 handler.getHandlerGroupName()));
 
@@ -1140,6 +1149,30 @@ public class MetadataType extends MetadataTypeBase {
      */
     public String getDisplayCategory() {
         return this.displayCategory;
+    }
+
+
+
+    /**
+     *  Set the DisplayGroup property.
+     *
+     *  @param value The new value for DisplayGroup
+     */
+    public void setDisplayGroup(String value) {
+        this.displayGroup = value;
+    }
+
+    /**
+     *  Get the DisplayGroup property.
+     *
+     *  @return The DisplayGroup
+     */
+    public String getDisplayGroup() {
+        if (displayGroup == null) {
+            return getName();
+        }
+
+        return displayGroup;
     }
 
     /**

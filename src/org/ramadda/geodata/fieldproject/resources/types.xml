@@ -13,7 +13,7 @@
 <tr valign=top>
 <td width="50%">
 <div style="max-height: 400px; overflow-y: auto;">
-== {{name}} ==
+<div class="wiki-h1">{{name}}</div>
 
 {{description wikify="true"}}
 </div>
@@ -67,7 +67,7 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
-== {{name}} ==
+<div class="wiki-h1">{{name}}</div>
 <div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
 </div>
@@ -76,11 +76,14 @@
 <table class="formtable">
 {{resource row.label="URL:"  message=""}}
 {{field name="project_id" row.label="Project ID:"}}
+{{field name="status" row.label="Status:"}}
 {{field name="project_type" row.label="Type:"}}
 {{field name="location" row.label="Location:"}}
+{{field name="notes" row.label="Notes:"}}
 </table>
 
 {{properties metadata.types="project_person,project_funding,content.url" message="" }}
+{{properties metadata.types="!project_person,!project_funding,!content.url" message="" }}
 
 {{links entry="Links" message=""}}
 
@@ -97,12 +100,9 @@
 </td></tr>
 
 
-
 </table>
 
-<p>
 
-{{properties block.show="true" block.open="false" block.title="View all properties" prefix="==Properties=="}}
 
 
 ]]>
@@ -146,13 +146,26 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
+<div class="wiki-h1">{{name}}</div>
+<div style="max-height: 400px; overflow-y: auto;">
 {{description wikify="true"}}
+</div>
 
-{{information}}
+==Site Information==
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+     {{field name="short_name"  row.label="Short Name"
+     {{field name="site_type"   row.label="Site Type"}}
+     {{field name="status"      row.label="Status"}}
+     {{field name="network"     row.label="Network"}}
+     {{field name="location"    row.label="Where"}}
+     {{field name="country"     row.label="Country"}}
+     {{field name="state"       row.label="State/Province"}}
+     {{field name="county"      row.label="County"}}
+</table>
 
-{{properties metadata.types="project_funding,content.url" message="" prefix="==Links=="}}
 
-{{tree title="Data" showtoggle="false" message="" prefix="==Data=="}}
+{{properties metadata.types="enum_tag,project_person,project_funding,content.url" message="" }}
 
 
 </td>
@@ -160,21 +173,17 @@
 {{image src="::*" message="" width="300"}}
 <p>
 {{mapentry width="350" message=""}}
-
 <p>
-{{map entry="Locations"  width="350" message="" prefix="<b>Site Locations</b>"}}
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
 </td></tr>
-
-
 
 </table>
 
-==Properties==
-<block open="false" title="View  all properties">
-{{properties message="No properties"}}
-</block>
-
 <p>
+
+{{properties block.show="true" block.open="false" block.title="View all properties" prefix="==Properties=="}}
 ]]>
 </wiki>
 
@@ -250,7 +259,7 @@
 
      <wiki><![CDATA[
 {{noheading}}
-==Assessment: {{name}}==
+<div class="wiki-h1">Assessment: {{name}}</div>
 
 {{description wikify="true"}}
 
@@ -289,7 +298,7 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
-<div class="wiki-h3">Field Note  -- {{name}} </div>
+<div class="wiki-h1">Field Note: {{name}}</div>
 
 {{description wikify="true"}}
 
@@ -351,9 +360,7 @@
 <table width="100%">
 <tr valign=top>
 <td width="50%">
-<div class="wiki-h1">
-Instrument: {{name}}
-</div>
+<div class="wiki-h1">Instrument: {{name}}</div>
 
 {{description wikify="true"}}
 
@@ -457,7 +464,7 @@ Instrument: {{name}}
      <column name="notes" label="Notes"  size="1000" rows="5" />
      <wiki><![CDATA[
 {{noheading}}
-=={{name}}==
+<div class="wiki-h1">{{name}}</div>
 <table width="100%">
 <tr valign=top>
 <td width="50%">
@@ -569,8 +576,7 @@ Instrument: {{name}}
      <column name="expected_users" type="string"  label="Expected Users"   changetype="true" size="2000"/>
      <wiki><![CDATA[
 {{noheading}}
-=={{name}}==
-
+<div class="wiki-h1">{{name}}</div>
 <table widt="100%"><tr valign="top">
 <td width="50%">{{description wikify="true"}}</td>
 <td>

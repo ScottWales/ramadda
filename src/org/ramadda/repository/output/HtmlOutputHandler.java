@@ -661,7 +661,6 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @param request _more_
      * @param entry _more_
-     * @param decorate _more_
      * @param onlyTheseTypes _more_
      *
      * @return _more_
@@ -669,7 +668,8 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-            List<String> onlyTheseTypes)
+                                                List<String> onlyTheseTypes,
+                                                List<String> notTheseTypes)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -701,6 +701,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
+            if ((notTheseTypes != null) && (notTheseTypes.size() > 0)) {
+                if ( notTheseTypes.contains(metadata.getType())) {
+                    continue;
+                }
+            }
+
             MetadataType type = getRepository().getMetadataManager().findType(
                                     metadata.getType());
             if (type == null) {
@@ -719,11 +725,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 catMap.put(cat, cb);
                 cats.add(cat);
             }
-            StringBuffer sb      = cb.get(type.getName());
-            Boolean      rowFlag = typeRow.get(type.getName());
+
+
+
+            String       group   = type.getDisplayGroup();
+            StringBuffer sb      = cb.get(group);
+            Boolean      rowFlag = typeRow.get(group);
             if (rowFlag == null) {
                 rowFlag = new Boolean(true);
-                typeRow.put(type.getName(), rowFlag);
+                typeRow.put(group, rowFlag);
             }
             boolean even = rowFlag.booleanValue();
             typeRow.put(type.getName(), new Boolean( !even));
@@ -758,7 +768,7 @@ public class HtmlOutputHandler extends OutputHandler {
             StringBuffer   sb = new StringBuffer();
             for (String category : cb.getCategories()) {
                 String header = HtmlUtils.div(category,
-                                    HtmlUtils.cssClass("metadata-header"));
+                                    HtmlUtils.cssClass("wiki-h2"));
                 sb.append(header);
                 sb.append(cb.get(category));
             }
@@ -1085,7 +1095,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
 
-        for (TwoFacedObject tfo : getMetadataHtml(request, entry, null)) {
+        for (TwoFacedObject tfo : getMetadataHtml(request, entry, null,null)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -1244,7 +1254,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 json.append(Json.map(new String[] { "values",
                         Json.list(new String[] { "--", lastValue + "-v1",
                         lastValue + "-v2", lastValue + "-v3" }) }, false));
-                System.err.println(json);
+                //                System.err.println(json);
                 testCache.put(valueKey, json);
             }
 
@@ -1291,7 +1301,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                 HtmlUtils.attr("id", formId + "_image")));
 
         sb.append(HtmlUtils.script(js.toString()));
-        System.err.println(sb);
+        //        System.err.println(sb);
 
         return new Result("test", sb);
     }
@@ -1874,7 +1884,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (TypeHandler.isWikiText(description)) {
             if (description.startsWith("<wiki_inner>")) {
                 wikiInner = description;
-                System.err.println("inner:" + wikiInner);
             } else {
                 return description;
             }
@@ -1892,7 +1901,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 return wikiInner;
             }
             wikiTemplate = wikiTemplate.replace("${innercontent}", wikiInner);
-            System.err.println("template:" + wikiTemplate);
         }
 
         return wikiTemplate;
