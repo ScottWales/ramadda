@@ -69,6 +69,7 @@ public class CzoPointFile extends CsvFile {
         putProperty(PROP_DELIMITER, ",");
         putProperty(PROP_SKIPLINES, "1");
         super.prepareToVisit(visitInfo);
+
         return visitInfo;
     }
 
@@ -91,15 +92,15 @@ public class CzoPointFile extends CsvFile {
             return false;
         }
         TextRecord textRecord = (TextRecord) record;
-/*
-        //Get the date from the values
-        String dttm = ((int) textRecord.getValue(IDX_YEAR)) + "-"
-                      + ((int) textRecord.getValue(IDX_MONTH)) + "-"
-                      + ((int) textRecord.getValue(IDX_DAY)) + " "
-                      + textRecord.getStringValue(IDX_TIME);
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
-*/
+        /*
+                //Get the date from the values
+                String dttm = ((int) textRecord.getValue(IDX_YEAR)) + "-"
+                              + ((int) textRecord.getValue(IDX_MONTH)) + "-"
+                              + ((int) textRecord.getValue(IDX_DAY)) + " "
+                              + textRecord.getStringValue(IDX_TIME);
+                Date date = sdf.parse(dttm);
+                record.setRecordTime(date.getTime());
+        */
 
         return true;
     }
