@@ -78,11 +78,25 @@ public class RecordTool {
 
                 continue;
             }
+
+
+            if (arg.equals("-class")) {
+                if (i == args.length - 1) {
+                    usage("Need " + arg + " argument");
+                }
+                setRecordFileClass(args[++i]);
+
+                continue;
+            }
             rest.add(arg);
         }
 
         return rest;
     }
+
+
+
+
 
     /**
      * _more_

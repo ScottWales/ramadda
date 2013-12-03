@@ -201,6 +201,8 @@ public class PointBounds extends RecordTool {
             }
 
 
+
+
             if ( !new File(arg).exists()) {
                 usage("File:" + arg + " does not exist");
             }

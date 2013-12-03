@@ -51,10 +51,12 @@ public class Point2Csv extends RecordTool {
      *
      * @param factoryClass _more_
      * @param args _more_
+     * @param argArray _more_
      *
      * @throws Exception _more_
      */
-    public Point2Csv(String factoryClass, String[] args) throws Exception {
+    public Point2Csv(String factoryClass, String[] argArray)
+            throws Exception {
 
         super(factoryClass);
         double             north     = 0,
@@ -70,75 +72,78 @@ public class Point2Csv extends RecordTool {
         final boolean[]    lonLatAlt = { false };
         List<RecordFilter> filters   = new ArrayList<RecordFilter>();
         VisitInfo          visitInfo = new VisitInfo();
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+
+        List<String>       args      = processArgs(argArray);
+        int                numArgs   = args.size();
+        for (int i = 0; i < args.size(); i++) {
+            String arg = args.get(i);
             if (arg.equals("-out")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                outFile = args[++i];
+                outFile = args.get(++i);
 
                 continue;
             }
             if (arg.equals("-class")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                setRecordFileClass(args[++i]);
+                setRecordFileClass(args.get(++i));
 
                 continue;
             }
             if (arg.equals("-bounds")) {
-                if (i + 4 >= args.length) {
+                if (i + 4 >= numArgs) {
                     usage("Need " + arg + " argument");
                 }
                 filters.add(
                     new LatLonBoundsFilter(
-                        Double.parseDouble(args[++i]),
-                        Double.parseDouble(args[++i]),
-                        Double.parseDouble(args[++i]),
-                        Double.parseDouble(args[++i])));
+                        Double.parseDouble(args.get(++i)),
+                        Double.parseDouble(args.get(++i)),
+                        Double.parseDouble(args.get(++i)),
+                        Double.parseDouble(args.get(++i))));
 
                 continue;
             }
             if (arg.equals("-skip")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                visitInfo.setSkip(Integer.parseInt(args[++i]));
+                visitInfo.setSkip(Integer.parseInt(args.get(++i)));
 
                 continue;
             }
             if (arg.equals("-start")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                visitInfo.setStart(Integer.parseInt(args[++i]));
+                visitInfo.setStart(Integer.parseInt(args.get(++i)));
 
                 continue;
             }
             if (arg.equals("-max")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                visitInfo.setMax(Integer.parseInt(args[++i]));
+                visitInfo.setMax(Integer.parseInt(args.get(++i)));
 
                 continue;
             }
             if (arg.equals("-prefix")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
-                prefix = args[++i];
+                prefix = args.get(++i);
 
                 continue;
             }
             if (arg.equals("-randomized")) {
-                if (i == args.length - 1) {
+                if (i == numArgs - 1) {
                     usage("Need " + arg + " argument");
                 }
                 filters.add(
-                    new RandomizedFilter(Double.parseDouble(args[++i])));
+                    new RandomizedFilter(Double.parseDouble(args.get(++i))));
 
                 continue;
             }
@@ -158,6 +163,7 @@ public class Point2Csv extends RecordTool {
 
                 continue;
             }
+
             if (arg.startsWith("-")) {
                 usage("Unknown argument:" + arg);
             }
