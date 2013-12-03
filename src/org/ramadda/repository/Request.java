@@ -91,7 +91,7 @@ public class Request implements Constants, Cloneable {
     private Hashtable fileUploads;
 
     /** _more_ */
-    private String type;
+    private String urlPath;
 
     /** _more_ */
     private Hashtable parameters;
@@ -155,38 +155,44 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private PageStyle pageStyle;
 
+    /** _more_ */
+    private boolean sessionIdWasSet = false;
+
+    /** _more_ */
+    private boolean sessionHasBeenHandled = false;
+
 
     /**
-     * _more_
+     * ctor
      *
-     * @param repository _more_
+     * @param repository the repository
      * @param user _more_
      */
     public Request(Repository repository, User user) {
         this.repository = repository;
         this.user       = user;
-        this.type       = "";
+        this.urlPath    = "";
         this.parameters = new Hashtable();
     }
 
 
     /**
-     * _more_
+     * ctor
      *
-     * @param repository _more_
+     * @param repository the repository
      * @param user _more_
      * @param path _more_
      */
     public Request(Repository repository, User user, String path) {
         this.repository = repository;
         this.user       = user;
-        this.type       = path;
+        this.urlPath    = path;
         this.parameters = new Hashtable();
     }
 
 
     /**
-     * _more_
+     * ctor
      *
      * @param that _more_
      * @param path _more_
@@ -194,7 +200,7 @@ public class Request implements Constants, Cloneable {
     public Request(Request that, String path) {
         this.repository          = that.getRepository();
         this.user                = that.getUser();
-        this.type                = path;
+        this.urlPath             = path;
         this.parameters          = new Hashtable();
         this.originalParameters  = new Hashtable();
         this.isMobile            = that.isMobile;
@@ -206,16 +212,16 @@ public class Request implements Constants, Cloneable {
 
 
     /**
-     * _more_
+     * ctor
      *
-     *
-     * @param repository _more_
-     * @param type _more_
+     * @param repository the repository
+     * @param urlPath _more_
      * @param parameters _more_
      */
-    public Request(Repository repository, String type, Hashtable parameters) {
+    public Request(Repository repository, String urlPath,
+                   Hashtable parameters) {
         this.repository         = repository;
-        this.type               = type;
+        this.urlPath            = urlPath;
         this.parameters         = parameters;
         this.originalParameters = new Hashtable();
         originalParameters.putAll(parameters);
@@ -226,18 +232,19 @@ public class Request implements Constants, Cloneable {
     /**
      * _more_
      *
-     * @param repository _more_
-     * @param type _more_
+     * @param repository the repository
+     * @param urlPath _more_
      * @param parameters _more_
      * @param httpServletRequest _more_
      * @param httpServletResponse _more_
      * @param httpServlet _more_
      */
-    public Request(Repository repository, String type, Hashtable parameters,
+    public Request(Repository repository, String urlPath,
+                   Hashtable parameters,
                    HttpServletRequest httpServletRequest,
                    HttpServletResponse httpServletResponse,
                    HttpServlet httpServlet) {
-        this(repository, type, parameters);
+        this(repository, urlPath, parameters);
         this.httpServletRequest  = httpServletRequest;
         this.httpServletResponse = httpServletResponse;
         this.httpServlet         = httpServlet;
@@ -256,7 +263,7 @@ public class Request implements Constants, Cloneable {
     /**
      * _more_
      *
-     * @param repository _more_
+     * @param repository the repository
      *
      * @return _more_
      */
@@ -295,7 +302,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String getSession(String key, String dflt) throws Exception {
         return (String) getRepository().getSessionManager()
@@ -311,7 +318,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public String getStringOrSession(String key, String sessionPrefix,
                                      String dflt)
@@ -330,7 +337,7 @@ public class Request implements Constants, Cloneable {
      * @param key _more_
      * @param value _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void putSession(String key, String value) throws Exception {
         getRepository().getSessionManager().putSessionProperty(this, key,
@@ -1224,7 +1231,7 @@ public class Request implements Constants, Cloneable {
         }
         Request that = (Request) o;
 
-        return this.type.equals(that.type)
+        return this.urlPath.equals(that.urlPath)
                && Misc.equals(this.user, that.user)
                && this.originalParameters.equals(that.originalParameters);
     }
@@ -1236,7 +1243,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int hashCode() {
-        return type.hashCode() ^ Misc.hashcode(user)
+        return urlPath.hashCode() ^ Misc.hashcode(user)
                ^ originalParameters.hashCode();
     }
 
@@ -1522,28 +1529,27 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
-    //.../?sessionid=foobar
-
     /**
      * _more_
      */
     public void ensureAuthToken() {
-        //java.awt.Toolkit.getDefaultToolkit().beep();
-
         String authToken   = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId = getSessionId();
         if (mySessionId == null) {
             mySessionId = getString(ARG_SESSIONID, (String) null);
         }
-        //        System.err.println("session:" + mySessionId);
-        //        System.err.println("auth token:" + authToken);
-        //        System.err.println("session hashed:" + repository.getAuthToken(mySessionId));
+
+
         if ((authToken != null) && (mySessionId != null)) {
             if (authToken.equals(repository.getAuthToken(mySessionId))) {
                 return;
             }
         }
+
+        System.err.println("bad auth token\n\tsession:" + mySessionId);
+        System.err.println("\tauth token:" + authToken);
+        System.err.println("\tsession hashed:"
+                           + repository.getAuthToken(mySessionId));
 
         throw new IllegalArgumentException("Bad authentication token");
     }
@@ -1887,7 +1893,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws java.text.ParseException _more_
+     * @throws java.text.ParseException On badness
      */
     public Date get(Object key, Date dflt) throws java.text.ParseException {
         String result = (String) getValue(key, (String) null);
@@ -1906,7 +1912,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Date getDate(String from, Date dflt) throws Exception {
         if ( !defined(from)) {
@@ -1927,7 +1933,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws java.text.ParseException _more_
+     * @throws java.text.ParseException On badness
      */
     public Date[] getDateRange(String from, String to, Date dflt)
             throws java.text.ParseException {
@@ -1944,7 +1950,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws java.text.ParseException _more_
+     * @throws java.text.ParseException On badness
      */
     public Date[] getDateRange(String from, String to, String relativeArg,
                                Date dflt)
@@ -2029,12 +2035,12 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
-     * Set the Type property.
+     * Set the UrlPath property.
      *
-     * @param value The new value for Type
+     * @param value The new value for UrlPath
      */
-    public void setType(String value) {
-        type = value;
+    public void setUrlPath(String value) {
+        urlPath = value;
     }
 
 
@@ -2044,22 +2050,22 @@ public class Request implements Constants, Cloneable {
      * @param value _more_
      */
     public void setRequestPath(String value) {
-        type = value;
+        urlPath = value;
     }
 
     /**
-     * Get the Type property.
+     * Get the UrlPath property.
      *
-     * @return The Type
+     * @return The UrlPath
      */
     public String getRequestPath() {
-        return type;
+        return urlPath;
     }
 
 
 
     /**
-     * Class BadInputException _more_
+     * Class BadInputException On badness
      *
      *
      * @author RAMADDA Development Team
@@ -2128,14 +2134,12 @@ public class Request implements Constants, Cloneable {
     public String toString() {
         String args = getUrlArgs();
         if (args.trim().length() > 0) {
-            return type + " url args:" + args;
+            return urlPath + " url args:" + args;
         } else {
-            return type;
+            return urlPath;
         }
     }
 
-    /** _more_ */
-    private boolean sessionIdWasSet = false;
 
     /**
      * Set the SessionId property.
@@ -2146,6 +2150,8 @@ public class Request implements Constants, Cloneable {
         sessionId = value;
         if (value != null) {
             sessionIdWasSet = true;
+        } else {
+            sessionIdWasSet = false;
         }
     }
 
@@ -2562,7 +2568,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result returnFile(File file, String filename) throws Exception {
         setReturnFilename(filename);
@@ -2587,7 +2593,7 @@ public class Request implements Constants, Cloneable {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public Result returnStream(InputStream is) throws Exception {
         Result result = new Result();
@@ -2619,6 +2625,24 @@ public class Request implements Constants, Cloneable {
         return makeAbsoluteUrls;
     }
 
+
+    /**
+     *  Set the SessionHasBeenHandled property.
+     *
+     *  @param value The new value for SessionHasBeenHandled
+     */
+    public void setSessionHasBeenHandled(boolean value) {
+        sessionHasBeenHandled = value;
+    }
+
+    /**
+     *  Get the SessionHasBeenHandled property.
+     *
+     *  @return The SessionHasBeenHandled
+     */
+    public boolean getSessionHasBeenHandled() {
+        return sessionHasBeenHandled;
+    }
 
 
 }

@@ -59,8 +59,22 @@ public class RequestUrl {
      * @param path _more_
      */
     public RequestUrl(RepositorySource repositorySource, String path) {
+        this(repositorySource, path, false);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param repositorySource _more_
+     * @param path _more_
+     * @param needsSsl _more_
+     */
+    public RequestUrl(RepositorySource repositorySource, String path,
+                      boolean needsSsl) {
         this.repositorySource = repositorySource;
         this.path             = path;
+        this.needsSsl         = needsSsl;
         if (path.endsWith("*")) {
             basePath = path.substring(0, path.length() - 2);
         } else {

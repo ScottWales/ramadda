@@ -514,6 +514,7 @@ public class UserManager extends RepositoryManager {
     public boolean isRequestOk(Request request) {
         User user = request.getUser();
         if (getProperty(PROP_ACCESS_ADMINONLY, false) && !user.getAdmin()) {
+            getRepository().debugSession("isRequestOK: Admin only");
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 return false;
@@ -524,6 +525,9 @@ public class UserManager extends RepositoryManager {
                 && user.getAnonymous()) {
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
+                getRepository().debugSession(
+                    "isRequestOk: login is required ");
+
                 return false;
             }
         }
@@ -565,8 +569,12 @@ public class UserManager extends RepositoryManager {
 
         sb.append(header(msg("Please login")));
         String id = request.getString(ARG_USER_ID, "");
+        //        sb.append(HtmlUtils.formPost(getRepository().getUrlPath(request,
+        //                getRepositoryBase().URL_USER_LOGIN)));
+
         sb.append(HtmlUtils.formPost(getRepository().getUrlPath(request,
                 getRepositoryBase().URL_USER_LOGIN)));
+
         if (request.defined(ARG_REDIRECT)) {
             String redirect = request.getUnsafeString(ARG_REDIRECT, "");
             //Um, a bit of a hack
@@ -2708,6 +2716,8 @@ public class UserManager extends RepositoryManager {
      */
     public Result processLogin(Request request) throws Exception {
 
+        getSessionManager().debugSession("RAMADDA.processLogin");
+
         if ( !canDoLogin(request)) {
             return new Result(
                 msg("Login"),
@@ -2738,7 +2748,13 @@ public class UserManager extends RepositoryManager {
 
             if (user != null) {
                 addActivity(request, user, ACTIVITY_LOGIN, "");
+                getSessionManager().debugSession(
+                    "RAMADDA.processLogin: login OK. user=" + user);
                 getSessionManager().createSession(request, user);
+                getSessionManager().debugSession(
+                    "RAMADDA.processLogin: after create session:"
+                    + request.getUser());
+
                 if (responseAsXml) {
                     System.err.println("RAMADDA: setting user session "
                                        + request.getSessionId());
@@ -2839,6 +2855,7 @@ public class UserManager extends RepositoryManager {
         }
 
         return addHeader(request, new Result(msg("Login"), sb));
+
 
     }
 

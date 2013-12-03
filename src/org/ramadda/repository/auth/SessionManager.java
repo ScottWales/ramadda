@@ -76,8 +76,6 @@ import java.util.Properties;
  */
 public class SessionManager extends RepositoryManager {
 
-    /** _more_ */
-    private static boolean debugSession = false;
 
 
     /** The number of days a session is active in the database */
@@ -93,7 +91,7 @@ public class SessionManager extends RepositoryManager {
 
     /** _more_ */
     private Hashtable<String, UserSession> sessionMap = new Hashtable<String,
-                                                        UserSession>();
+                                                            UserSession>();
 
     //This holds sessions for anonymous users. The timeout is 24 hours. Max size is 1000
 
@@ -116,7 +114,6 @@ public class SessionManager extends RepositoryManager {
      */
     public SessionManager(Repository repository) {
         super(repository);
-        debugSession = repository.getProperty("ramadda.debug.session", false);
         this.cookieName = "ramadda"
                           + repository.getUrlBase().replaceAll("/", "_")
                           + "_session";
@@ -139,10 +136,8 @@ public class SessionManager extends RepositoryManager {
      *
      * @param msg _more_
      */
-    public static void debugSession(String msg) {
-        if (debugSession) {
-            System.err.println(msg);
-        }
+    public void debugSession(String msg) {
+        getRepository().debugSession(msg);
     }
 
     /**
@@ -231,7 +226,7 @@ public class SessionManager extends RepositoryManager {
      */
     private void cullSessionsInner() throws Exception {
         List<UserSession> sessionsToDelete = new ArrayList<UserSession>();
-        long          now              = new Date().getTime();
+        long              now              = new Date().getTime();
         Statement stmt = getDatabaseManager().select(Tables.SESSIONS.COLUMNS,
                              Tables.SESSIONS.NAME, (Clause) null);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
@@ -239,7 +234,7 @@ public class SessionManager extends RepositoryManager {
         double           timeDiff = DateUtil.daysToMillis(SESSION_DAYS);
         while ((results = iter.getNext()) != null) {
             UserSession session        = makeSession(results);
-            Date    lastActiveDate = session.getLastActivity();
+            Date        lastActiveDate = session.getLastActivity();
             //Check if the last activity was > 24 hours ago
             if ((now - lastActiveDate.getTime()) > timeDiff) {
                 sessionsToDelete.add(session);
@@ -414,7 +409,7 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public UserSession getSession(String sessionId, boolean checkAnonymous,
-                              boolean debug)
+                                  boolean debug)
             throws Exception {
         UserSession session = sessionMap.get(sessionId);
         if (session != null) {
@@ -553,6 +548,8 @@ public class SessionManager extends RepositoryManager {
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
         for (String cookieValue : cookies) {
+            getRepository().debugSession("checkSession: cookie:"
+                                         + cookieValue);
             if (user == null) {
                 UserSession session = getSession(cookieValue, false);
                 if (session != null) {
@@ -560,6 +557,8 @@ public class SessionManager extends RepositoryManager {
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
                     request.setSessionId(cookieValue);
+                    getRepository().debugSession(
+                        "checkSession: got session from cookie");
 
                     break;
                 }
@@ -578,7 +577,6 @@ public class SessionManager extends RepositoryManager {
                 debugSession("RAMADDA: found sesssion user =" + user);
             } else {
                 debugSession("RAMADDA: could not find session:" + sessionId);
-                debugSession("RAMADDA: sessionMap:" + sessionMap);
 
                 //Puke out of here
                 throw new IllegalStateException("Invalid session:"
@@ -649,13 +647,19 @@ public class SessionManager extends RepositoryManager {
         if (user == null) {
             user = getUserManager().getAnonymousUser();
             //Create a temporary session
-            UserSession session = anonymousSessionMap.get(request.getSessionId());
+            UserSession session =
+                anonymousSessionMap.get(request.getSessionId());
             if (session == null) {
+                getRepository().debugSession(
+                    "checkSession: adding anonymous session:"
+                    + request.getSessionId());
                 session = new UserSession(request.getSessionId(), user,
-                                      new Date());
+                                          new Date());
                 anonymousSessionMap.put(request.getSessionId(), session);
             }
         }
+
+
         request.setUser(user);
 
     }
@@ -741,7 +745,7 @@ public class SessionManager extends RepositoryManager {
             request.setSessionId(createSessionId());
         }
         UserSession session = new UserSession(request.getSessionId(), user,
-                                      new Date());
+                                  new Date());
         addSession(session);
         request.setUser(user);
 
@@ -780,8 +784,8 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public StringBuffer getSessionList(Request request) throws Exception {
-        List<UserSession> sessions    = getSessions();
-        StringBuffer  sessionHtml = new StringBuffer(HtmlUtils.formTable());
+        List<UserSession> sessions = getSessions();
+        StringBuffer sessionHtml   = new StringBuffer(HtmlUtils.formTable());
         sessionHtml.append(
             HtmlUtils.row(
                 HtmlUtils.cols(

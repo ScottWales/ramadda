@@ -381,6 +381,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     public static boolean debug = true;
 
+    /** _more_ */
+    private static boolean debugSession = false;
+
 
     /** _more_ */
     private GroupTypeHandler groupTypeHandler;
@@ -1041,8 +1044,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } catch (Exception exc) {}
 
 
-        debug = getProperty(PROP_DEBUG, false);
-        //        System.err.println ("debug:" + debug);
+        debug    = getProperty(PROP_DEBUG, false);
+
 
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
@@ -1086,6 +1089,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 true));
 
         initProxy();
+
+        if ( !debugSession) {
+            debugSession = getProperty("ramadda.debug.session", false);
+        }
+
 
     }
 
@@ -2716,7 +2724,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private Result handleRequestInner(Request request) throws Exception {
 
-        long   t1 = System.currentTimeMillis();
+        debugSession("RAMADDA.handleRequest:" + request.getRequestPath());
+
         Result result;
         if ( !acceptRobots() && request.isRobot()) {
             return getNoRobotsResult(request);
@@ -2829,12 +2838,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         boolean okToAddCookie = false;
 
 
-        if ((result != null) && (result.getInputStream() == null)
-                && result.isHtml() && result.getShouldDecorate()
-                && result.getNeedToWrite()) {
+        if (result != null) {
+            okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
+        }
+
+        if ((result.getInputStream() == null) && result.isHtml()
+                && result.getShouldDecorate() && result.getNeedToWrite()) {
             result.putProperty(PROP_NAVLINKS,
                                getPageHandler().getNavLinks(request));
-            okToAddCookie = result.getResponseCode() == Result.RESPONSE_OK;
             getPageHandler().decorateResult(request, result);
         }
 
@@ -2842,18 +2853,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             okToAddCookie = true;
         }
 
-        long t2 = System.currentTimeMillis();
-        if ((result != null) && (t2 != t1)
-                && (true || request.get("debug", false))) {
-            if ((t2 - t1) > 100) {
-                //                System.err.println("Time:" + request.getRequestPath() + " "
-                //                                   + (t2 - t1));
-            }
+
+        if (request.getSessionHasBeenHandled()) {
+            okToAddCookie = false;
         }
-        if (okToAddCookie
+        if (okToAddCookie && (result != null)
                 && (request.getSessionIdWasSet()
-                    || (request.getSessionId() == null)) && (result
-                       != null)) {
+                    || (request.getSessionId() == null))) {
             if (request.getSessionId() == null) {
                 request.setSessionId(getSessionManager().createSessionId());
             }
@@ -2868,6 +2874,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 cookieExpirationDate = sdf.format(future);
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
+            debugSession("Cookie:"
+                         + getSessionManager().getSessionCookieName() + "="
+                         + sessionId + " path=" + getUrlBase());
             result.addCookie(getSessionManager().getSessionCookieName(),
                              sessionId + "; path=" + getUrlBase()
                              + "; expires=" + cookieExpirationDate
@@ -2875,6 +2884,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return result;
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String debugPrefix() {
+        return getUrlBase() + ": ";
+    }
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debugSession(String msg) {
+        if (debugSession) {
+            System.err.println(debugPrefix() + msg);
+        }
     }
 
 
@@ -2893,21 +2924,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (apiMethod == null) {
             return getHtdocsFile(request);
         }
-        //        getAdmin().checkMemory("memory:");
-        //        System.err.println("request:"  + request);
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
+            debugSession("redirecting to ssl:" + request.getUrl());
+
             return sslRedirect;
         }
         //        println(absoluteUrl(request.getUrl()));
 
         request.setApiMethod(apiMethod);
         apiMethod.incrNumberOfCalls();
-
-        String userAgent = request.getHeaderArg("User-Agent");
-        if (userAgent == null) {
-            userAgent = "Unknown";
-        }
 
         if ( !getAdmin().getInstallationComplete()) {
             return getAdmin().doInitialization(request);

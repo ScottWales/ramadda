@@ -217,7 +217,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_USER_LOGIN = new RequestUrl(this,
-                                                 "/user/login");
+                                                 "/user/login", true);
 
 
     /** _more_ */

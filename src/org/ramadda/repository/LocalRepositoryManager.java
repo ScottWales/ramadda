@@ -438,12 +438,13 @@ public class LocalRepositoryManager extends RepositoryManager {
                     || childRepository.getUrlBase().equals(path)) {
                 Request originalRequest = request;
                 request = request.cloneMe(childRepository);
+                originalRequest.setSessionHasBeenHandled(true);
                 //                request.setRequestPath(suffix);
                 request.setUser(null);
                 request.setSessionId(null);
-                //                System.err.println ("Dispatch:" + originalRequest + " " + originalRequest.getSecure() + " new:" +
+                //                System.err.println ("RAMADDA.Dispatch:" + originalRequest + " " + originalRequest.getSecure() + " new:" +
                 //                                    request + " "  + request.getSecure());
-                //                System.err.println (getRepository().getUrlBase() + ": Local dispatching:" + request);
+                //                System.err.println (getRepository().getUrlBase() + ": Local dispatching:" + request.getRequestPath());
                 Result result = childRepository.handleRequest(request);
                 //                System.err.println (getRepository().getUrlBase() + ": done dispatching:" + request.getSessionId());
 
