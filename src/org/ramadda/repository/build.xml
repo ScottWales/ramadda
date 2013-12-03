@@ -124,7 +124,7 @@
          <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="${clientbase}/lib/commons-logging-1.1.jar"/>
          <zipfileset dir="${lib_dir}" includes="commons-codec-1.3.jar" fullpath="${clientbase}/lib/commons-codec-1.3.jar"/>
          <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="${clientbase}/README"/>
-         <zipfileset dir="${ramadda_dir}/release" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
         </zip>
 
     </target>
