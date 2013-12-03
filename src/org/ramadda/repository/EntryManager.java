@@ -6603,12 +6603,23 @@ public class EntryManager extends RepositoryManager {
             getDatabaseManager().setDate(statement, col + 1, new Date());
         }
         col += 2;
-        statement.setDouble(col++, entry.getSouth());
-        statement.setDouble(col++, entry.getNorth());
-        statement.setDouble(col++, entry.getEast());
-        statement.setDouble(col++, entry.getWest());
-        statement.setDouble(col++, entry.getAltitudeTop());
-        statement.setDouble(col++, entry.getAltitudeBottom());
+
+
+        //This cleans  up bad double values
+        getDatabaseManager().setDouble(statement, col++, entry.getSouth(),
+                                       Entry.NONGEO);
+        getDatabaseManager().setDouble(statement, col++, entry.getNorth(),
+                                       Entry.NONGEO);
+        getDatabaseManager().setDouble(statement, col++, entry.getEast(),
+                                       Entry.NONGEO);
+        getDatabaseManager().setDouble(statement, col++, entry.getWest(),
+                                       Entry.NONGEO);
+        getDatabaseManager().setDouble(statement, col++,
+                                       entry.getAltitudeTop(), Entry.NONGEO);
+        getDatabaseManager().setDouble(statement, col++,
+                                       entry.getAltitudeBottom(),
+                                       Entry.NONGEO);
+
         if ( !isNew) {
             statement.setString(col++, entry.getId());
         }

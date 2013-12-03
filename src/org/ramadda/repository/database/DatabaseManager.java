@@ -2741,6 +2741,23 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-
-
+    /**
+     * _more_
+     *
+     * @param statement _more_
+     * @param col _more_
+     * @param value _more_
+     * @param missing _more_
+     *
+     * @throws Exception _more_
+     */
+    public void setDouble(PreparedStatement statement, int col, double value,
+                          double missing)
+            throws Exception {
+        if(Double.isNaN(value) || value == Double.NEGATIVE_INFINITY ||
+           value == Double.POSITIVE_INFINITY) {
+            value =missing;
+        }
+        statement.setDouble(col, value);
+    }
 }

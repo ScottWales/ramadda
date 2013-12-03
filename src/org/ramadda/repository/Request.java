@@ -1539,9 +1539,8 @@ public class Request implements Constants, Cloneable {
             mySessionId = getString(ARG_SESSIONID, (String) null);
         }
 
-
         if ((authToken != null) && (mySessionId != null)) {
-            if (authToken.equals(repository.getAuthToken(mySessionId))) {
+            if (authToken.trim().equals(repository.getAuthToken(mySessionId))) {
                 return;
             }
         }
