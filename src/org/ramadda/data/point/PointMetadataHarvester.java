@@ -285,7 +285,8 @@ public class PointMetadataHarvester extends RecordVisitor {
      */
     public String toString() {
         String s = "latitude:" + minLatitude + " - " + maxLatitude
-                   + "  longitude:" + minLongitude + " - " + maxLongitude;
+                   + "  longitude:" + minLongitude + " - " + maxLongitude
+            + " elevation:" + minElevation + " - " + maxElevation;
 
 
         if (fields != null) {
