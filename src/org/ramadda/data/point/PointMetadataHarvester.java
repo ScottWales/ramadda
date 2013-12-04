@@ -134,7 +134,7 @@ public class PointMetadataHarvester extends RecordVisitor {
      *
      * @return _more_
      */
-@Override
+    @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                Record record) {
 
@@ -151,8 +151,8 @@ public class PointMetadataHarvester extends RecordVisitor {
             }
         }
 
-        boolean skipRecord =(!pointRecord.isValidPosition()
-                             && pointRecord.needsValidPosition());
+        boolean skipRecord = ( !pointRecord.isValidPosition()
+                               && pointRecord.needsValidPosition());
 
 
         //Skip this if it doesn't have a valid position
@@ -173,13 +173,14 @@ public class PointMetadataHarvester extends RecordVisitor {
                     return false;
                 }
             }
+
             return true;
         }
 
 
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
-                    
+
             if (field.isTypeNumeric()) {
                 ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
@@ -286,7 +287,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     public String toString() {
         String s = "latitude:" + minLatitude + " - " + maxLatitude
                    + "  longitude:" + minLongitude + " - " + maxLongitude
-            + " elevation:" + minElevation + " - " + maxElevation;
+                   + " elevation:" + minElevation + " - " + maxElevation;
 
 
         if (fields != null) {

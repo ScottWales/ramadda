@@ -215,6 +215,13 @@ public class CsvFile extends TextFile {
             //            System.err.println ("props:" + properties);
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, "unit", ""));
+
+            String utcoffset = getProperty(properties, "utcoffset",
+                                           (String) null);
+
+            if(utcoffset!=null) {
+                field.setUtcOffset(new Integer(utcoffset).intValue());
+            }
             String precision = getProperty(properties, "precision",
                                            (String) null);
             if (precision != null) {
@@ -229,6 +236,8 @@ public class CsvFile extends TextFile {
                 field.setMissingValue(Double.parseDouble(missing));
             }
 
+
+            String timezone = getProperty(properties, "timezone", (String) null);
 
             String fmt = getProperty(properties, "fmt", (String) null);
             if (fmt == null) {

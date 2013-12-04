@@ -295,8 +295,7 @@ public class TextRecord extends DataRecord {
                             field.getDefaultStringValue();
                     } else if (field.isTypeDate()) {
                         String dttm = field.getDefaultStringValue();
-                        objectValues[fieldCnt] =
-                            getDateFormat(field).parse(dttm);
+                        objectValues[fieldCnt] = parseDate(field, dttm);
                     } else {
                         values[fieldCnt] = field.getDefaultDoubleValue();
                     }
@@ -317,14 +316,8 @@ public class TextRecord extends DataRecord {
                     continue;
                 }
                 if (field.isTypeDate()) {
-                    tok = tok.replaceAll("\"", "");
-                    try {
-                        objectValues[fieldCnt] =
-                            getDateFormat(field).parse(tok);
-                    } catch (java.text.ParseException ignore) {
-                        objectValues[fieldCnt] =
-                            getDateFormat(field).parse(tok + " UTC");
-                    }
+                    tok                    = tok.replaceAll("\"", "");
+                    objectValues[fieldCnt] = parseDate(field, tok);
 
                     continue;
                 }
@@ -363,6 +356,37 @@ public class TextRecord extends DataRecord {
 
 
     }
+
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param tok _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Date parseDate(RecordField field, String tok) throws Exception {
+        Date date   = null;
+        int  offset = field.getUtcOffset();
+        try {
+            date = getDateFormat(field).parse(tok);
+        } catch (java.text.ParseException ignore) {
+            date = getDateFormat(field).parse(tok + " UTC");
+        }
+        if (offset != 0) {
+            long millis = date.getTime();
+            millis += (-offset * 1000 * 3600);
+            //            System.err.println ("date1:" + date);
+            date = new Date(millis);
+            //            System.err.println ("date2:" + date);
+            //            System.exit(0);
+        }
+
+        return date;
+    }
+
 
 
     /**
@@ -423,7 +447,7 @@ public class TextRecord extends DataRecord {
 
 
 
-    /** _more_          */
+    /** _more_ */
     boolean testing = false;
 
     /**
