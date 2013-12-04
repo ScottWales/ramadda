@@ -180,15 +180,13 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
 
 
-    /* Don't reinitialize the xml import
-       Maybe we should do this??
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node)
         throws Exception {
         super.initializeEntryFromXml(request,  entry, node);
         initializeNewEntry(entry);
     }
-    */
+
 
     /**
      * _more_

@@ -220,10 +220,11 @@ public class MetadataHandler extends RepositoryManager {
             }
             int index = XmlUtil.getAttribute(childNode, Metadata.ATTR_INDEX,
                                              -1);
-            String value = new String(
-                               RepositoryUtil.decodeBase64(
-                                   XmlUtil.getChildText(childNode)));
-            metadata.setAttr(index, value);
+            String text = XmlUtil.getChildText(childNode);
+            if (XmlUtil.getAttribute(childNode, "encoded", true)) {
+                text = new String(RepositoryUtil.decodeBase64(text));
+            }
+            metadata.setAttr(index, text);
         }
 
         MetadataType metadataType = findType(type);
@@ -500,7 +501,6 @@ public class MetadataHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param zos _more_
      * @param fileWriter _more_
      * @param metadata _more_
      * @param node _more_

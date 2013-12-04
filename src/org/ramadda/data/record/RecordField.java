@@ -79,6 +79,9 @@ public class RecordField {
     /** _more_ */
     private SimpleDateFormat dateFormat;
 
+    /** _more_          */
+    private int utcOffset = 0;
+
     /** _more_ */
     private double roundingFactor = 0;
 
@@ -206,7 +209,7 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return "field:" + name + " label: " + label + " param:" +paramId;
+        return "field:" + name + " label: " + label + " param:" + paramId;
     }
 
 
@@ -738,6 +741,26 @@ public class RecordField {
     public SimpleDateFormat getDateFormat() {
         return dateFormat;
     }
+
+    /**
+     * Set the UtcOffset property.
+     *
+     * @param value The new value for UtcOffset
+     */
+    public void setUtcOffset(int value) {
+        utcOffset = value;
+    }
+
+    /**
+     * Get the UtcOffset property.
+     *
+     * @return The UtcOffset
+     */
+    public int getUtcOffset() {
+        return utcOffset;
+    }
+
+
 
 
     /**

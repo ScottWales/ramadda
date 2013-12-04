@@ -545,6 +545,7 @@ public class SessionManager extends RepositoryManager {
      */
     public void checkSession(Request request) throws Exception {
 
+        debugSession("RAMADDA: checkSession");
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
         for (String cookieValue : cookies) {
@@ -566,7 +567,16 @@ public class SessionManager extends RepositoryManager {
         }
 
         //Check for the session id as a url argument
-        if ((user == null) && request.hasParameter(ARG_SESSIONID)) {
+        if ( !request.defined(ARG_SESSIONID)) {
+            debugSession("RAMADDA: no sessionid argument defined:" + request);
+        }
+
+        if (request.defined(ARG_SESSIONID)) {
+            if (user != null) {
+                debugSession(
+                    "RAMADDA: has sessionid argument but also has a user:"
+                    + user);
+            }
             String sessionId = request.getString(ARG_SESSIONID);
             debugSession("RAMADDA: has sessionid argument:" + sessionId);
             UserSession session = getSession(sessionId, false, true);

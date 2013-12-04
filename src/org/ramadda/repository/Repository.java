@@ -2953,7 +2953,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (result == null) {
             return null;
         }
-        getLogManager().logRequest(request, result.getResponseCode());
+        //        getLogManager().logRequest(request, result.getResponseCode());
 
         return result;
 

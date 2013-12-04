@@ -41,6 +41,15 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
+
+    <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
+      <element name="Acknowledgement" />
+<!-- todo -->
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+    </type>
+
     <type
        name="URL"
        searchable="false"
