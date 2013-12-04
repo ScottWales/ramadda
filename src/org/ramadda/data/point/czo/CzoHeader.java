@@ -365,6 +365,7 @@ public class CzoHeader {
     private void addMetadata(StringBuffer xml, List<String> values,
                              String type) {
         for (String v : values) {
+            v = v.replace("","");
             xml.append(XmlUtil.tag("metadata", XmlUtil.attrs("type", type),
                                    XmlUtil.tag("attr",
                                        "encoded=\"false\" index=\"1\"",

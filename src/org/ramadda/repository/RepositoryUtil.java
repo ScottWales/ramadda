@@ -81,13 +81,16 @@ public class RepositoryUtil {
      *
      * @return _more_
      */
-    public static String hashString(String password) {
+    public static String hashString(String string) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update(password.getBytes("UTF-8"));
+            md.update(string.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
+            String s = new String(bytes);
             String result = encodeBase64(bytes);
-
+            System.err.println("Hash input string:" + string  +":");
+            System.err.println("Hash result:" + s  +":");
+            System.err.println("Hash base64:" + result  +":");
             return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
