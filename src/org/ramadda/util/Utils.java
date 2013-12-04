@@ -526,4 +526,9 @@ public class Utils {
         return cal.get(cal.MONTH);
     }
 
+    public static String removeNonAscii(String s) {
+        s = s.replaceAll("[^\r\n\\x20-\\x7E]+", "_");
+        return s;
+    }
+
 }
