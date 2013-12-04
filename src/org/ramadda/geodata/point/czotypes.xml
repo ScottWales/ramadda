@@ -15,8 +15,10 @@
   </type>
 
 
-  <type name="type_point_czo"  xsuper="type_point" description="CZO Display File Format"  xhandler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_czo"  super="type_point" description="CZO Display File Format"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/czo.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+
   </type>
 
 </types>

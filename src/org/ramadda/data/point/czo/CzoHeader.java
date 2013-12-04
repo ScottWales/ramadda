@@ -224,7 +224,7 @@ public class CzoHeader {
         }
         sb.append(XmlUtil.openTag("entry",
                                   extra
-                                  + XmlUtil.attrs("type", "point_text",
+                                  + XmlUtil.attrs("type", "type_point_czo",
                                       "name", name)));
         StringBuffer pointProps = new StringBuffer();
         StringBuffer fields     = new StringBuffer();
