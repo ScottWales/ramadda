@@ -662,14 +662,14 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param onlyTheseTypes _more_
+     * @param notTheseTypes _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-                                                List<String> onlyTheseTypes,
-                                                List<String> notTheseTypes)
+            List<String> onlyTheseTypes, List<String> notTheseTypes)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -678,6 +678,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (metadataList.size() == 0) {
             return result;
         }
+        metadataList = Metadata.sort(metadataList);
 
 
         CategoryBuffer catBuff = new CategoryBuffer();
@@ -702,7 +703,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
 
             if ((notTheseTypes != null) && (notTheseTypes.size() > 0)) {
-                if ( notTheseTypes.contains(metadata.getType())) {
+                if (notTheseTypes.contains(metadata.getType())) {
                     continue;
                 }
             }
@@ -1095,7 +1096,8 @@ public class HtmlOutputHandler extends OutputHandler {
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
 
-        for (TwoFacedObject tfo : getMetadataHtml(request, entry, null,null)) {
+        for (TwoFacedObject tfo :
+                getMetadataHtml(request, entry, null, null)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

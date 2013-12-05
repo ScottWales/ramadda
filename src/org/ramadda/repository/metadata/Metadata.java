@@ -42,10 +42,6 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
-import java.io.File;
-import java.io.InputStream;
-
-
 
 import java.net.*;
 
@@ -53,6 +49,10 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -338,6 +338,53 @@ public class Metadata implements Constants {
         return s.length() < MAX_LENGTH;
     }
 
+    /**
+     * _more_
+     *
+     * @param metadata _more_
+     *
+     * @return _more_
+     */
+    public static List<Metadata> sort(List<Metadata> metadata) {
+        ArrayList<Metadata> sorted =
+            (ArrayList<Metadata>) new ArrayList(metadata);
+        Collections.sort(sorted, new MetadataCompare());
+
+        return sorted;
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Dec 4, '13
+     * @author         Enter your name here...    
+     */
+    private static class MetadataCompare implements Comparator<Metadata> {
+
+        /**
+         * _more_
+         *
+         * @param o1 _more_
+         * @param o2 _more_
+         *
+         * @return _more_
+         */
+        public int compare(Metadata o1, Metadata o2) {
+            int result = o1.getType().compareTo(o2.getType());
+            if (result != 0) {
+                return result;
+            }
+            result = o1.attr1.compareTo(o2.attr1);
+            if (result != 0) {
+                return result;
+            }
+            result = o1.attr2.compareTo(o2.attr2);
+
+            return result;
+        }
+    }
 
     /**
      * _more_
