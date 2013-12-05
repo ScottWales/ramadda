@@ -56,8 +56,8 @@ import org.ramadda.repository.metadata.*;
 
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.DateArgument;
+import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.sql.Clause;
 
@@ -174,7 +174,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
     /** _more_ */
     public final RequestUrl URL_SEARCH_BROWSE = new RequestUrl(this,
                                                     "/search/browse",
-                                                    "Browse");
+                                                    "Browse Metadata");
 
 
 
@@ -644,8 +644,9 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         url = HtmlUtils.url(url, new String[] {
             ARG_OUTPUT, AtomOutputHandler.OUTPUT_ATOM.getId(), ARG_TEXT,
             OpenSearchUtil.MACRO_TEXT, ARG_BBOX, OpenSearchUtil.MACRO_BBOX,
-            DateArgument.ARG_DATA.getFromArg(), OpenSearchUtil.MACRO_TIME_START,
-            DateArgument.ARG_DATA.getToArg(), OpenSearchUtil.MACRO_TIME_END,
+            DateArgument.ARG_DATA.getFromArg(),
+            OpenSearchUtil.MACRO_TIME_START, DateArgument.ARG_DATA.getToArg(),
+            OpenSearchUtil.MACRO_TIME_END,
         }, false);
 
 

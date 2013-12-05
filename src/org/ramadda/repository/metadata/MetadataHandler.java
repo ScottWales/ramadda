@@ -840,11 +840,14 @@ public class MetadataHandler extends RepositoryManager {
      * @param request _more_
      * @param sb _more_
      * @param type _more_
+     * @param titles _more_
+     * @param contents _more_
      *
      * @throws Exception _more_
      */
     public void addToBrowseSearchForm(Request request, StringBuffer sb,
-                                      MetadataType type)
+                                      MetadataType type, List<String> titles,
+                                      List<String> contents)
             throws Exception {
 
         boolean doSelect = true;
@@ -854,6 +857,12 @@ public class MetadataHandler extends RepositoryManager {
                     getRepository().getMetadataManager().URL_METADATA_LIST,
                     ARG_METADATA_TYPE, type.toString()), HtmlUtils.img(
                         getRepository().iconUrl(ICON_LIST), "View Listing"));
+
+        cloudLink = HtmlUtils.href(
+            request.url(
+                getRepository().getMetadataManager().URL_METADATA_LIST,
+                ARG_METADATA_TYPE, type.toString()), msg("View Listing"));
+
         String url =
             request.url(getRepository().getSearchManager().URL_ENTRY_SEARCH);
         String[] values = getMetadataManager().getDistinctValues(request,
@@ -862,6 +871,9 @@ public class MetadataHandler extends RepositoryManager {
             return;
         }
         StringBuffer content = new StringBuffer();
+        content.append(cloudLink);
+        content.append(HtmlUtils.p());
+        content.append(HtmlUtils.h3(msg("Search")));
         content.append("<div class=\"browseblock\">");
         int rowNum = 1;
         for (int i = 0; i < values.length; i++) {
@@ -884,8 +896,10 @@ public class MetadataHandler extends RepositoryManager {
         }
         content.append("</div>");
 
-        sb.append(HtmlUtils.makeShowHideBlock(cloudLink + HtmlUtils.space(1)
-                + type.getLabel(), content.toString(), false));
+        titles.add(type.getLabel());
+        contents.add(content.toString());
+        sb.append(HtmlUtils.makeShowHideBlock(type.getLabel(),
+                content.toString(), false));
 
 
     }

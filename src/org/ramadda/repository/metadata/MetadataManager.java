@@ -872,12 +872,28 @@ public class MetadataManager extends RepositoryManager {
     public StringBuffer addToBrowseSearchForm(Request request,
             StringBuffer sb)
             throws Exception {
+        StringBuffer tmp      = new StringBuffer();
+        List<String> titles   = new ArrayList<String>();
+        List<String> contents = new ArrayList<String>();
+        sb.append("<ul>");
         for (MetadataType type : metadataTypes) {
             if ( !type.getBrowsable()) {
                 continue;
             }
-            type.getHandler().addToBrowseSearchForm(request, sb, type);
+            String link =
+                HtmlUtils
+                    .href(request
+                        .url(getRepository().getMetadataManager()
+                            .URL_METADATA_LIST, ARG_METADATA_TYPE,
+                                type.toString()), type.getLabel());
+
+            sb.append("<li>");
+            sb.append(link);
+            //            type.getHandler().addToBrowseSearchForm(request, tmp, type, titles, contents);
         }
+        sb.append("</ul>");
+
+        //        HtmlUtils.makeAccordian(sb, titles, contents);
 
         return sb;
     }
@@ -1054,13 +1070,15 @@ public class MetadataManager extends RepositoryManager {
                              CSS_CLASS_SEPARATOR)) + HtmlUtils.href(
                                  request.getUrl(), msg("Cloud"));
         }
-        sb.append(HtmlUtils.center(HtmlUtils.span(header,
-                HtmlUtils.cssClass(CSS_CLASS_HEADING_2))));
-        sb.append(HtmlUtils.hr());
-
         String metadataType     = request.getString(ARG_METADATA_TYPE, "");
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
+
+        sb.append(header);
+        sb.append(HtmlUtils.hr());
+
+
+
         doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0);
 
         return getSearchManager().makeResult(request,
