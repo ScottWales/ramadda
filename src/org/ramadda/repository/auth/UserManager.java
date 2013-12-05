@@ -2877,55 +2877,15 @@ public class UserManager extends RepositoryManager {
                                   StringBuffer loginFormExtra)
             throws Exception {
 
+        getRepository().debugSession("RAMADDA.authenticateUser:" + name);
 
-
-
-        Statement statement =
-            getDatabaseManager().select(Tables.USERS.COLUMNS,
-                                        Tables.USERS.NAME,
-                                        Clause.eq(Tables.USERS.COL_ID, name));
-
-        ResultSet results = statement.getResultSet();
-
-        //User is not in the database
-        if ( !results.next()) {
-            return null;
-        }
-
-        String storedHash =
-            results.getString(Tables.USERS.COL_NODOT_PASSWORD);
-        if ( !Utils.stringDefined(storedHash)) {
-            return null;
-        }
-
-        //Call getPasswordToUse to add the system salt
-        boolean userOK =
-            PasswordHash.validatePassword(getPasswordToUse(password),
-                                          storedHash);
-
-        //Check for old formats of hashes
-        if ( !userOK) {
-            userOK = storedHash.equals(hashPassword_oldway(password));
-            //            System.err.println ("trying the old way:" + userOK);
-        }
-
-        if ( !userOK) {
-            userOK = storedHash.equals(hashPassword_oldoldway(password));
-            //            System.err.println ("trying the old old way:" + userOK);
-        }
-
-        User user = null;
-
-        if (userOK) {
-            user = getUser(results);
-        }
-        getDatabaseManager().closeAndReleaseConnection(statement);
-
-
+        User user = authenticateUserFromDatabase(request, name, password);
         if (user != null) {
+            getRepository().debugSession(
+                "RAMADDA.authenticateUser: authenticated from database");
+
             return user;
         }
-
 
         //Try the authenticators
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
@@ -2933,14 +2893,13 @@ public class UserManager extends RepositoryManager {
                     request, loginFormExtra, name, password);
             if (user != null) {
                 user.setIsLocal(false);
+                getRepository().debugSession(
+                    "RAMADDA.authenticateUser: authenticated from external authenticator");
 
-                break;
+                return user;
             }
         }
 
-        if (user != null) {
-            return user;
-        }
 
         //
         //!!IMPORTANT!!
@@ -2949,19 +2908,23 @@ public class UserManager extends RepositoryManager {
         //If that user is an admin then they have admin rights here
         //
         if (getRepository().getParentRepository() != null) {
-            if(name.startsWith("parent:")) {
-                name = name.replace("parent:","");
+            if (name.startsWith("parent:")) {
+                name = name.replace("parent:", "");
             }
-            getSessionManager().debugSession("RAMADDA. authenticating user with parent repository");
+            getSessionManager().debugSession(
+                "RAMADDA. authenticating user with parent repository");
             user = getRepository().getParentRepository().getUserManager()
                 .authenticateUser(request, name, password, loginFormExtra);
             if (user != null) {
-                getSessionManager().debugSession("RAMADDA. got user from parent repository");
+                getSessionManager().debugSession(
+                    "RAMADDA. got user from parent repository");
                 String userName = user.getName();
-                if(userName.length()==0) userName = user.getId();
+                if (userName.length() == 0) {
+                    userName = user.getId();
+                }
                 //Change the name to denote this user comes from above
                 user.setName(getRepository().getParentRepository()
-                             .getUrlBase().substring(1) + ":" + userName);
+                    .getUrlBase().substring(1) + ":" + userName);
             }
         }
 
@@ -2969,7 +2932,66 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param name _more_
+     * @param password _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private User authenticateUserFromDatabase(Request request, String name,
+            String password)
+            throws Exception {
 
+        Statement statement =
+            getDatabaseManager().select(Tables.USERS.COLUMNS,
+                                        Tables.USERS.NAME,
+                                        Clause.eq(Tables.USERS.COL_ID, name));
+
+        ResultSet results = statement.getResultSet();
+
+        try {
+            //User is not in the database
+            if ( !results.next()) {
+                return null;
+            }
+
+            String storedHash =
+                results.getString(Tables.USERS.COL_NODOT_PASSWORD);
+            if ( !Utils.stringDefined(storedHash)) {
+                return null;
+            }
+
+            //Call getPasswordToUse to add the system salt
+            boolean userOK =
+                PasswordHash.validatePassword(getPasswordToUse(password),
+                    storedHash);
+
+            //Check for old formats of hashes
+            if ( !userOK) {
+                userOK = storedHash.equals(hashPassword_oldway(password));
+                //            System.err.println ("trying the old way:" + userOK);
+            }
+
+            if ( !userOK) {
+                userOK = storedHash.equals(hashPassword_oldoldway(password));
+                //            System.err.println ("trying the old old way:" + userOK);
+            }
+
+
+            if (userOK) {
+                return getUser(results);
+            }
+
+            return null;
+        } finally {
+            getDatabaseManager().closeAndReleaseConnection(statement);
+        }
+    }
 
     /**
      * _more_
