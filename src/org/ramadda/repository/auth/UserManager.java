@@ -2952,9 +2952,11 @@ public class UserManager extends RepositoryManager {
             if(name.startsWith("parent:")) {
                 name = name.replace("parent:","");
             }
+            getSessionManager().debugSession("RAMADDA. authenticating user with parent repository");
             user = getRepository().getParentRepository().getUserManager()
                 .authenticateUser(request, name, password, loginFormExtra);
             if (user != null) {
+                getSessionManager().debugSession("RAMADDA. got user from parent repository");
                 String userName = user.getName();
                 if(userName.length()==0) userName = user.getId();
                 //Change the name to denote this user comes from above
