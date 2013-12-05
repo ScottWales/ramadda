@@ -2927,7 +2927,6 @@ public class UserManager extends RepositoryManager {
         }
 
 
-
         //Try the authenticators
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
             user = userAuthenticator.authenticateUser(getRepository(),
@@ -2950,12 +2949,17 @@ public class UserManager extends RepositoryManager {
         //If that user is an admin then they have admin rights here
         //
         if (getRepository().getParentRepository() != null) {
+            if(name.startsWith("parent:")) {
+                name = name.replace("parent:","");
+            }
             user = getRepository().getParentRepository().getUserManager()
                 .authenticateUser(request, name, password, loginFormExtra);
             if (user != null) {
+                String userName = user.getName();
+                if(userName.length()==0) userName = user.getId();
                 //Change the name to denote this user comes from above
                 user.setName(getRepository().getParentRepository()
-                    .getUrlBase().substring(1) + ":" + user.getName());
+                             .getUrlBase().substring(1) + ":" + userName);
             }
         }
 

@@ -380,12 +380,8 @@ public class LocalRepositoryManager extends RepositoryManager {
             }
             propsSB.append(
                 "#generated password salts\n#do not change these or your passwords will be invalidated\n\n");
-            propsSB.append(UserManager.PROP_PASSWORD_SALT1 + "=" + seed1
+            propsSB.append(UserManager.PROP_PASSWORD_SALT + "=" + seed1
                            + "\n");
-            propsSB.append(UserManager.PROP_PASSWORD_SALT2 + "=" + seed2
-                           + "\n");
-            propsSB.append(UserManager.PROP_PASSWORD_ITERATIONS + "="
-                           + (500 + random.nextInt(200)));
             IOUtil.writeFile(passwordPropertiesFile, propsSB.toString());
         }
 
