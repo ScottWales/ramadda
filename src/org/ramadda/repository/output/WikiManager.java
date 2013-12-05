@@ -2382,16 +2382,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             throws Exception {
 
         List<String> onlyTheseTypes = null;
-        List<String> notTheseTypes = null;
+        List<String> notTheseTypes  = null;
 
         String metadataTypesAttr = Misc.getProperty(props,
                                        ATTR_METADATA_TYPES, (String) null);
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
-            notTheseTypes = new ArrayList<String>();
-            for(String type:  StringUtil.split(metadataTypesAttr, ",", true,
-                                               true)) {
-                if(type.startsWith("!")) {
+            notTheseTypes  = new ArrayList<String>();
+            for (String type :
+                    StringUtil.split(metadataTypesAttr, ",", true, true)) {
+                if (type.startsWith("!")) {
                     notTheseTypes.add(type.substring(1));
                 } else {
                     onlyTheseTypes.add(type);
@@ -2402,7 +2402,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         List tabContents = new ArrayList<String>();
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
-                                                                       request, entry, onlyTheseTypes,notTheseTypes)) {
+                    request, entry, onlyTheseTypes, notTheseTypes)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -2674,7 +2674,8 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             List<Entry> okEntries = new ArrayList<Entry>();
             for (Entry e : entries) {
-                if ( !seen.contains(e.getId())) {
+                if ( !seen.contains(e.getId())
+                        && !seen.contains(e.getName())) {
                     okEntries.add(e);
                 }
             }
