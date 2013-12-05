@@ -445,7 +445,7 @@ public class PageHandler extends RepositoryManager {
         String userLinks = getUserManager().getUserLinks(request,
                                userLinkTemplate, separator);
 
-        if (makePopup) {
+        if (makePopup && (userLinks != null && !userLinks.trim().isEmpty())) {
             String userImage =
                 HtmlUtils.img(iconUrl(ICON_USERLINKS),
                               msg("Login, user settings, help"),
