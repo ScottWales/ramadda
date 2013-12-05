@@ -566,10 +566,6 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
-        //Check for the session id as a url argument
-        if ( !request.defined(ARG_SESSIONID)) {
-            debugSession("RAMADDA: no sessionid argument defined:" + request);
-        }
 
         if (request.defined(ARG_SESSIONID)) {
             if (user != null) {

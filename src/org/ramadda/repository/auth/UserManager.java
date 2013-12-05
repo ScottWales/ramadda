@@ -227,6 +227,15 @@ public class UserManager extends RepositoryManager {
 
 
     /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debugLogin(String msg) {
+        System.err.println(getRepository().debugPrefix() + ":" + msg);
+    }
+
+    /**
      * add the user authenticator
      *
      * @param userAuthenticator user authenticator
@@ -2716,7 +2725,7 @@ public class UserManager extends RepositoryManager {
      */
     public Result processLogin(Request request) throws Exception {
 
-        getSessionManager().debugSession("RAMADDA.processLogin");
+        debugLogin("RAMADDA.processLogin");
 
         if ( !canDoLogin(request)) {
             return new Result(
@@ -2748,12 +2757,10 @@ public class UserManager extends RepositoryManager {
 
             if (user != null) {
                 addActivity(request, user, ACTIVITY_LOGIN, "");
-                getSessionManager().debugSession(
-                    "RAMADDA.processLogin: login OK. user=" + user);
+                debugLogin("RAMADDA.processLogin: login OK. user=" + user);
                 getSessionManager().createSession(request, user);
-                getSessionManager().debugSession(
-                    "RAMADDA.processLogin: after create session:"
-                    + request.getUser());
+                debugLogin("RAMADDA.processLogin: after create session:"
+                           + request.getUser());
 
                 if (responseAsXml) {
                     System.err.println("RAMADDA: setting user session "
@@ -2877,11 +2884,11 @@ public class UserManager extends RepositoryManager {
                                   StringBuffer loginFormExtra)
             throws Exception {
 
-        getRepository().debugSession("RAMADDA.authenticateUser:" + name);
+        debugLogin("RAMADDA.authenticateUser:" + name);
 
         User user = authenticateUserFromDatabase(request, name, password);
         if (user != null) {
-            getRepository().debugSession(
+            debugLogin(
                 "RAMADDA.authenticateUser: authenticated from database");
 
             return user;
@@ -2893,7 +2900,7 @@ public class UserManager extends RepositoryManager {
                     request, loginFormExtra, name, password);
             if (user != null) {
                 user.setIsLocal(false);
-                getRepository().debugSession(
+                debugLogin(
                     "RAMADDA.authenticateUser: authenticated from external authenticator");
 
                 return user;
@@ -2911,13 +2918,11 @@ public class UserManager extends RepositoryManager {
             if (name.startsWith("parent:")) {
                 name = name.replace("parent:", "");
             }
-            getSessionManager().debugSession(
-                "RAMADDA. authenticating user with parent repository");
+            debugLogin("RAMADDA. authenticating user with parent repository");
             user = getRepository().getParentRepository().getUserManager()
                 .authenticateUser(request, name, password, loginFormExtra);
             if (user != null) {
-                getSessionManager().debugSession(
-                    "RAMADDA. got user from parent repository");
+                debugLogin("RAMADDA. got user from parent repository");
                 String userName = user.getName();
                 if (userName.length() == 0) {
                     userName = user.getId();
