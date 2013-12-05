@@ -232,7 +232,7 @@ public class UserManager extends RepositoryManager {
      * @param msg _more_
      */
     public void debugLogin(String msg) {
-        System.err.println(getRepository().debugPrefix() + ":" + msg);
+        //        System.err.println(getRepository().debugPrefix() + ":" + msg);
     }
 
     /**
@@ -374,6 +374,7 @@ public class UserManager extends RepositoryManager {
         //If we have a salt then use a generated hmac as the password to hash
         if (salt.length() != 0) {
             debugLogin("Has SALT:" + salt);
+
             return calculateRFC2104HMAC(password, salt);
         }
 
@@ -2885,12 +2886,13 @@ public class UserManager extends RepositoryManager {
                                   StringBuffer loginFormExtra)
             throws Exception {
 
-        debugLogin("RAMADDA.authenticateUser:" + name + " p:" + password);
+        debugLogin("RAMADDA.authenticateUser:" + name);
 
         User user = authenticateUserFromDatabase(request, name, password);
         if (user != null) {
             debugLogin(
                 "RAMADDA.authenticateUser: authenticated from database");
+
             return user;
         }
 
@@ -2963,6 +2965,7 @@ public class UserManager extends RepositoryManager {
             //User is not in the database
             if ( !results.next()) {
                 debugLogin("RAMADDA: No user in database:" + name);
+
                 return null;
             }
 
@@ -2970,15 +2973,14 @@ public class UserManager extends RepositoryManager {
                 results.getString(Tables.USERS.COL_NODOT_PASSWORD);
             if ( !Utils.stringDefined(storedHash)) {
                 debugLogin("RAMADDA: No stored hash");
+
                 return null;
             }
 
             String passwordToUse = getPasswordToUse(password);
             //Call getPasswordToUse to add the system salt
-            debugLogin("RAMADDA: password to use:" + passwordToUse + " stored hash:" + storedHash);
-            boolean userOK =
-                PasswordHash.validatePassword(passwordToUse,
-                                              storedHash);
+            boolean userOK = PasswordHash.validatePassword(passwordToUse,
+                                 storedHash);
 
             //Check for old formats of hashes
             if ( !userOK) {
