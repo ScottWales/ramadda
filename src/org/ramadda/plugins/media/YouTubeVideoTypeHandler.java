@@ -104,9 +104,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         }
 
         StringBuffer sb = new StringBuffer();
-        sb.append(DFLT_WIKI_HEADER);
-
-
+        sb.append(getWikiManager().wikifyEntry(request, entry, DFLT_WIKI_HEADER));
 
         String url = entry.getResource().getPath();
         String id  = StringUtil.findPattern(url, "v=([^&]+)&");
