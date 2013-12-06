@@ -3140,9 +3140,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String root : htdocRoots) {
             root = getStorageManager().localizePath(root);
             String fullPath = root + path;
+          
             try {
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
+
+                //If its just sitting on the server then don't decorate
+                if(new File(fullPath).exists()) {
+                    decorate = false;
+                }
+
                 if (path.endsWith(".js") || path.endsWith(".css")) {
                     String js = IOUtil.readInputStream(inputStream);
                     js          = js.replace("${urlroot}", urlBase);
