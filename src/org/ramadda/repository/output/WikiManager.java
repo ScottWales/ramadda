@@ -668,6 +668,9 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ID_GRANDCHILDREN = "grandchildren";
 
+    /** _more_          */
+    public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
+
     /** _more_ */
     public static final String ID_LINKS = "links";
 
@@ -2973,22 +2976,37 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
 
 
-            if (entryid.equals(ID_GRANDCHILDREN)) {
+            if (entryid.equals(ID_GRANDCHILDREN)
+                    || entryid.equals(ID_GREATGRANDCHILDREN)) {
                 List<Entry> children = getEntryManager().getChildren(request,
                                            baseEntry);
                 List<Entry> grandChildren = new ArrayList<Entry>();
                 for (Entry child : children) {
+                    //Include the children non folders
                     if ( !child.isGroup()) {
                         grandChildren.add(child);
-                    }
-                }
-
-                for (Entry child : children) {
-                    if (child.isGroup()) {
+                    } else {
                         grandChildren.addAll(
                             getEntryManager().getChildren(request, child));
                     }
                 }
+
+
+                if (entryid.equals(ID_GREATGRANDCHILDREN)) {
+                    List<Entry> greatgrandChildren = new ArrayList<Entry>();
+                    for (Entry child : grandChildren) {
+                        if ( !child.isGroup()) {
+                            greatgrandChildren.add(child);
+                        } else {
+                            greatgrandChildren.addAll(
+                                getEntryManager().getChildren(
+                                    request, child));
+
+                        }
+                    }
+                    grandChildren = greatgrandChildren;
+                }
+
                 entries.addAll(
                     getEntryUtil().sortEntriesOnDate(grandChildren, true));
 
