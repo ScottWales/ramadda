@@ -582,7 +582,7 @@ public class PhoneHarvester extends Harvester {
                     return true;
                 }
                 List<org.ramadda.repository.Comment> comments =
-                    getEntryManager().getComments(getRequest(), currentEntry);
+                    getRepository().getCommentManager().getComments(getRequest(), currentEntry);
                 for (org.ramadda.repository.Comment comment : comments) {
                     msg.append(XmlUtil.encodeString("Comment:"
                             + comment.getSubject() + "\n"
