@@ -103,6 +103,10 @@ public class LDAPUserAuthenticator extends UserAuthenticatorImpl {
         LDAPManager.log("LDAPUserAuthenticator created");
     }
 
+    //    public String toString() {
+        //        return "LDAPUserAuthenticator:" + getManager() ;
+    //    }
+
 
 
     /**

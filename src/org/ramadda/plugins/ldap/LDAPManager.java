@@ -479,7 +479,7 @@ public class LDAPManager {
      */
     public static void debug(String msg) {
         log(msg);
-        //        System.err.println("LDAP:" + msg);
+        System.err.println("LDAP:" + msg);
     }
 
     /**
@@ -539,6 +539,11 @@ public class LDAPManager {
         return context;
     }
 
+
+
+    public String toString() {
+        return ldapUrl;
+    }
 
 
     /**
