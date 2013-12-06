@@ -88,9 +88,9 @@ public class RepositoryUtil {
             byte[] bytes  = md.digest();
             String s = new String(bytes);
             String result = encodeBase64(bytes);
-            System.err.println("Hash input string:" + string  +":");
-            System.err.println("Hash result:" + s  +":");
-            System.err.println("Hash base64:" + result  +":");
+            //            System.err.println("Hash input string:" + string  +":");
+            //            System.err.println("Hash result:" + s  +":");
+            //            System.err.println("Hash base64:" + result  +":");
             return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
@@ -290,6 +290,13 @@ public class RepositoryUtil {
         }
     }
 
+
+
+    public static void main(String[]args) {
+        for(String arg: args) {
+            hashString(arg);
+        }
+    }
 
 
 
