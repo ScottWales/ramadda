@@ -206,6 +206,9 @@ public class UserManager extends RepositoryManager {
         new Hashtable<String, PasswordReset>();
 
 
+    /** _more_          */
+    private boolean debug = false;
+
     /** _more_ */
     private String salt;
 
@@ -232,7 +235,10 @@ public class UserManager extends RepositoryManager {
      * @param msg _more_
      */
     public void debugLogin(String msg) {
-        //        System.err.println(getRepository().debugPrefix() + ":" + msg);
+        if (debug) {
+            //System.err.println(getRepository().debugPrefix() + ":" + msg);
+            System.err.println(msg);
+        }
     }
 
     /**
@@ -306,6 +312,7 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void initUsers(List<User> cmdLineUsers) throws Exception {
+        debug = getProperty("ramadda.debug.login", false);
         salt  = getProperty(PROP_PASSWORD_SALT, "");
         salt1 = getProperty(PROP_PASSWORD_SALT1, "");
         salt2 = getProperty(PROP_PASSWORD_SALT2, "");
@@ -672,8 +679,6 @@ public class UserManager extends RepositoryManager {
         return findUser(id, false);
     }
 
-    /** _more_ */
-    private static final boolean TESTAUTH = false;
 
 
     /**
@@ -688,25 +693,16 @@ public class UserManager extends RepositoryManager {
      */
     public User findUser(String id, boolean userDefaultIfNotFound)
             throws Exception {
+        //        debugLogin("RAMADDA.findUser: " + id);
         if (id == null) {
             return null;
         }
         User user = userMap.get(id);
         if (user != null) {
-            //            System.err.println ("got from user map:" + id +" " + user);
+            //System.err.println ("got from user map:" + id +" " + user);
             return user;
         }
 
-        if (TESTAUTH) {
-            for (UserAuthenticator userAuthenticator : userAuthenticators) {
-                user = userAuthenticator.findUser(getRepository(), id);
-                if (user != null) {
-                    user.setIsLocal(false);
-
-                    return user;
-                }
-            }
-        }
 
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
@@ -715,9 +711,13 @@ public class UserManager extends RepositoryManager {
         ResultSet results = statement.getResultSet();
         if (results.next()) {
             user = getUser(results);
+            debugLogin("RAMADDA.findUser: from database:" + user);
         } else {
             for (UserAuthenticator userAuthenticator : userAuthenticators) {
+                debugLogin("RAMADDA.findUser: calling authenticator:"
+                           + userAuthenticator);
                 user = userAuthenticator.findUser(getRepository(), id);
+                debugLogin("RAMADDA.findUser: from authenticator:" + user);
                 if (user != null) {
                     user.setIsLocal(false);
 
@@ -725,6 +725,7 @@ public class UserManager extends RepositoryManager {
                 }
             }
         }
+
         getDatabaseManager().closeAndReleaseConnection(statement);
 
         if (user == null) {
@@ -2891,19 +2892,23 @@ public class UserManager extends RepositoryManager {
         User user = authenticateUserFromDatabase(request, name, password);
         if (user != null) {
             debugLogin(
-                "RAMADDA.authenticateUser: authenticated from database");
+                "RAMADDA.authenticateUser: authenticated from database:"
+                + user);
 
             return user;
         }
 
         //Try the authenticators
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
+            debugLogin("RAMADDA.authenticateUser: trying:"
+                       + userAuthenticator);
             user = userAuthenticator.authenticateUser(getRepository(),
                     request, loginFormExtra, name, password);
             if (user != null) {
                 user.setIsLocal(false);
                 debugLogin(
-                    "RAMADDA.authenticateUser: authenticated from external authenticator");
+                    "RAMADDA.authenticateUser: authenticated from external authenticator: "
+                    + user + " " + userAuthenticator);
 
                 return user;
             }
