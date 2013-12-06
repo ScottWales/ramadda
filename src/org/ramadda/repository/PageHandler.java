@@ -2949,7 +2949,7 @@ public class PageHandler extends RepositoryManager {
                                  Permission.ACTION_COMMENT);
 
         StringBuffer  sb       = new StringBuffer();
-        List<Comment> comments = getEntryManager().getComments(request,
+        List<Comment> comments = getRepository().getCommentManager().getComments(request,
                                      entry);
 
         if (canComment) {

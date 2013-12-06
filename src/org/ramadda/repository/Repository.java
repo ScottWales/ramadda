@@ -234,6 +234,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The EntryManager */
     private EntryManager entryManager;
 
+    /** The CommentManager */
+    private CommentManager commentManager;
+
     /** The PageHandler */
     private PageHandler pageHandler;
 
@@ -792,6 +795,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             wikiManager            = null;
             logManager             = null;
             entryManager           = null;
+            commentManager         = null;
             associationManager     = null;
             searchManager          = null;
             mapManager             = null;
@@ -1510,6 +1514,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new EntryManager(this);
     }
 
+
+    protected CommentManager doMakeCommentManager() {
+        return new CommentManager(this);
+    }
+
     /**
      * _more_
      *
@@ -1738,6 +1747,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return entryManager;
+    }
+
+    public CommentManager getCommentManager() {
+        if (commentManager == null) {
+            commentManager = doMakeCommentManager();
+        }
+
+        return commentManager;
     }
 
 

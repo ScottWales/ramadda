@@ -216,6 +216,8 @@ public class ApiManager extends RepositoryManager {
                 handler = getRepository().getEntryManager();
             } else if (handlerName.equals("associationmanager")) {
                 handler = getRepository().getAssociationManager();
+            } else if (handlerName.equals("commentmanager")) {
+                handler = getRepository().getCommentManager();
             } else if (handlerName.equals("metadatamanager")) {
                 handler = getRepository().getMetadataManager();
             } else if (handlerName.equals("registrymanager")) {

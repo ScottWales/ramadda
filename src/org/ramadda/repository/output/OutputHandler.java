@@ -1831,7 +1831,7 @@ public class OutputHandler extends RepositoryManager {
                                         boolean onlyIfWeHaveThem)
             throws Exception {
         StringBuffer  sb       = new StringBuffer();
-        List<Comment> comments = getEntryManager().getComments(request,
+        List<Comment> comments = getRepository().getCommentManager().getComments(request,
                                      entry);
         if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
             sb.append(getPageHandler().getCommentHtml(request, entry));

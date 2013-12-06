@@ -2754,10 +2754,61 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void setDouble(PreparedStatement statement, int col, double value,
                           double missing)
             throws Exception {
-        if(Double.isNaN(value) || value == Double.NEGATIVE_INFINITY ||
-           value == Double.POSITIVE_INFINITY) {
-            value =missing;
+        if (Double.isNaN(value) || (value == Double.NEGATIVE_INFINITY)
+                || (value == Double.POSITIVE_INFINITY)) {
+            value = missing;
         }
         statement.setDouble(col, value);
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param stmt _more_
+     * @param handler _more_
+     *
+     * @throws Exception _more_
+     */
+    public void iterate(Statement stmt, SqlUtil.ResultsHandler handler)
+            throws Exception {
+        SqlUtil.Iterator iter = getIterator(stmt);
+        ResultSet        results;
+        while ((results = iter.getNext()) != null) {
+            if ( !handler.handleResults(results)) {
+                closeAndReleaseConnection(stmt);
+
+                return;
+            }
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     *
+     * @return _more_
+     */
+    public String makeOrderBy(String column) {
+        return makeOrderBy(column, true);
+    }
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     * @param ascending _more_
+     *
+     * @return _more_
+     */
+    public String makeOrderBy(String column, boolean ascending) {
+        return " order by " + column + (ascending
+                                        ? " asc "
+                                        : " desc ");
+    }
+
+
 }
