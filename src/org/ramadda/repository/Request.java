@@ -1538,10 +1538,10 @@ public class Request implements Constants, Cloneable {
         if (mySessionId == null) {
             mySessionId = getString(ARG_SESSIONID, (String) null);
         }
-        
-        if (authToken != null && mySessionId != null) {
+
+        if ((authToken != null) && (mySessionId != null)) {
             //            System.err.println("checking auth token");
-            String sessionAuth= RepositoryUtil.hashString(mySessionId);
+            String sessionAuth = RepositoryUtil.hashString(mySessionId);
             if (authToken.trim().equals(sessionAuth)) {
                 return;
             }
@@ -2339,7 +2339,7 @@ public class Request implements Constants, Cloneable {
         if ( !repository.useFixedHostnameForAbsoluteUrls()) {
             try {
                 if (httpServletRequest != null) {
-                    httpServletRequest.getServerPort();
+                    return httpServletRequest.getServerPort();
                 }
             } catch (Exception ignoreThis) {}
         }

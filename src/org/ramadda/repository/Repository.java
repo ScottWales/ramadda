@@ -1515,6 +1515,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     protected CommentManager doMakeCommentManager() {
         return new CommentManager(this);
     }
@@ -1749,6 +1754,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return entryManager;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public CommentManager getCommentManager() {
         if (commentManager == null) {
             commentManager = doMakeCommentManager();
@@ -2350,10 +2360,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           : getHostname();
         int    port     = getHttpsPort();
         if (port < 0) {
-            return getHttpProtocol() + "://" + hostname + ":" + getPort()
-                   + url;
-            //            return url;
-            //            throw new IllegalStateException("Do not have ssl port defined");
+            String result = getHttpProtocol() + "://" + hostname + ":"
+                            + request.getServerPort() + url;
+
+            return result;
         }
         if (port == 0) {
             return "https://" + hostname + url;
