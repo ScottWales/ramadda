@@ -100,6 +100,11 @@ Next, create an xml file that defines the entries you want to create.
 &lt;/entries&gt;
 </pre>
 
+A simple way to see the example entry xml is to create a folder or file entry  in RAMADDA. 
+Set its description, time, spatial bounds, etc and add a number of properties to it.
+Or create a tree of folders and files.
+Then do File->Export. Uzip the .zip file and look at the entries.xml
+
 
 
 <ul>
@@ -243,7 +248,7 @@ default is encoded=true which implies the text is base64 encoded (see below).
 
 
 A simple way to see the metadata xml is to create a folder or other entry  in RAMADDA. Add a number of properties to it then do File->Export. Uzip the .zip file and look at the entries.xml
-Note the contents of the attr tags are CDATA blocks of base64 encoded text. 
+Note: the contents of the attr tags are CDATA blocks of base64 encoded text. 
 Base64 encoding of the text is the default and is what is expected when RAMADDA ingests this XML unless 
 you have encoded=false.
 
