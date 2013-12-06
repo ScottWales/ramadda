@@ -29,6 +29,7 @@ import ucar.unidata.util.IOUtil;
 
 
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -144,6 +145,23 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
 
 
     /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private CdmDataOutputHandler getDataOutputHandler() throws Exception {
+        if (dataOutputHandler == null) {
+            dataOutputHandler =
+                (CdmDataOutputHandler) getRepository().getOutputHandler(
+                    CdmDataOutputHandler.OUTPUT_OPENDAP);
+        }
+
+        return dataOutputHandler;
+    }
+
+    /**
      * handle the request
      *
      * @param request request
@@ -153,15 +171,16 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      * @throws Exception on badness
      */
     public Result processOpendapRequest(Request request) throws Exception {
-        if (dataOutputHandler == null) {
-            dataOutputHandler =
-                (CdmDataOutputHandler) getRepository().getOutputHandler(
-                    CdmDataOutputHandler.OUTPUT_OPENDAP);
-        }
         //Find the entry path
-        String prefix = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
-        String path   = request.getRequestPath();
+        String  prefix   = getRepository().getUrlBase() + "/" + PATH_OPENDAP;
+        String  path     = request.getRequestPath();
+        boolean doLatest = false;
         path = path.substring(prefix.length());
+        if (path.startsWith("/latest")) {
+            path     = path.substring("/latest".length());
+            doLatest = true;
+        }
+
         path = IOUtil.getFileRoot(path);
         //Check for the dodsC in the path.
         if (path.endsWith("dodsC")) {
@@ -178,7 +197,6 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
                 entry = getEntryManager().findEntryFromName(request, path,
                         request.getUser(), false);
             }
-
         }
 
         if (entry == null) {
@@ -186,7 +204,28 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
                     + path);
         }
 
-        return dataOutputHandler.outputOpendap(request, entry);
+        if (doLatest && entry.getTypeHandler().isGroup()) {
+            List<Entry> entries = getEntryManager().getChildren(request,
+                                      entry);
+            entries = getEntryUtil().sortEntriesOnDate(entries, true);
+            Entry theEntry = null;
+            for (Entry child : entries) {
+                if (getDataOutputHandler().getCdmManager().canLoadAsCdm(
+                        child)) {
+                    theEntry = child;
+
+                    break;
+                }
+            }
+            if (theEntry == null) {
+                throw new IllegalArgumentException(
+                    "Could not find any CDM child entries when doing latest");
+            }
+            entry = theEntry;
+            System.err.println("OPENDAP: using latest:" + entry.getName());
+        }
+
+        return getDataOutputHandler().outputOpendap(request, entry);
     }
 
 
