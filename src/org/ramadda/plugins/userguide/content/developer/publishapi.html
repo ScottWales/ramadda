@@ -21,11 +21,16 @@ GUI facilities (e.g., a folder JTree component).
 
 
 
+
 Lets say you want to upload a file (e.g., test.png) to RAMADDA. First you need to establish a session with RAMADDA.
 You can just do a url get with:
 <pre>
+https://&lt;server&gt;:&lt;https port&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
+Or if you don't have https:
 http://&lt;server&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
 </pre> 
+
+
 
 The output=xml tells RAMADDA to return the result as xml.
 <p>
@@ -69,7 +74,7 @@ Next, create an xml file that defines the entries you want to create.
             type="file" 
             id="0" 
             file="test.png"  
-            parent="0/0" 
+            parent="&lt;some parent entry id&gt;" 
             south="-7.926" 
             west="-198.358"
             north="71.864" 
@@ -91,16 +96,16 @@ could create a folder entry and then another entry that is a child of the folder
 <pre>
  &lt;entries&gt;
   &lt;entry name="Some folder" 
-            id="0"
-            parent="0/0" 
+            id="somedummyid0"
+            parent="&lt;some parent entry id&gt;" 
             type="group"  /&gt;
 
   &lt;entry name="test.png" 
             description=""  
             type="file" 
-            id="1" 
+            id="somedummyid1" 
             file="test.png"  
-            parent="0"  /&gt;
+            parent="somedummyid0"  /&gt;
 &lt;/entries&gt;
 </pre>
 
@@ -120,6 +125,14 @@ file=thezipfile
 </pre>
 
 
+Note: an alternative way to specify the destination parent entry in the repository is to pass the entry id
+in as a URL argument:
+<pre>
+group=<i>some parent entry id</i> 
+</pre>
+
+
+
 If you are not uploading files you can just post the xml file instead of the zip file.
 In that case instead of a file= attribute in the xml use url=, e.g.,:
 <pre>
@@ -128,7 +141,7 @@ In that case instead of a file= attribute in the xml use url=, e.g.,:
             type="file" 
             id="0" 
             url="the opendap url"  
-            parent="0/0" 
+            parent="&lt;some parent entry id&gt;" 
 &lt;/entries&gt;
 </pre>
 
@@ -155,8 +168,8 @@ Here is a longer version of an entries file:
 
 <pre>
 &lt;entries&gt;
-  &lt;entry description="" east="-3.950" file="test.xidv" fromdate="2008-08-19 16:01:00 GMT" id="0" name="test.png" north="71.864" parent="0/0" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
-  &lt;entry east="-3.950" file="test.png" fromdate="2008-08-19 16:01:00 GMT" id="1" name="test.png - Product" north="71.864" parent="0/0" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;entry description="" east="-3.950" file="test.xidv" fromdate="2008-08-19 16:01:00 GMT" id="0" name="test.png" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;entry east="-3.950" file="test.png" fromdate="2008-08-19 16:01:00 GMT" id="1" name="test.png - Product" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
   &lt;association from="0" name="generated product" to="1"/&gt;
 &lt;/entries&gt;
 </pre>
