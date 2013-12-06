@@ -2303,5 +2303,24 @@ public class SqlUtil {
         return "%" + s + "%";
     }
 
+    /**
+     * Interface description
+     *
+     *
+     * @author         Enter your name here...    
+     */
+    public static interface ResultsHandler {
+
+        /**
+         * _more_
+         *
+         * @param results _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public boolean handleResults(ResultSet results) throws Exception;
+    }
 
 }
