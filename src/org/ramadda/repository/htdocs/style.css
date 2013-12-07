@@ -401,16 +401,25 @@ padding-right-rtl-source: physical;
 }
 
 
+.metadata-row-divider {
+   border-bottom: 1px #ddd dotted;
+   height: 1px;
+   margin-top:2px;
+   margin-bottom:2px;
+   margin-left:10px;
+   margin-right:10px;
+}
+
 .metadata-row-even {
-   margin-left: 20px;
-   margin-bottom:5px;
+   margin-left: 10px;
+   margin-bottom:2px;
    background-color:#ffffff;
 }
 
 .metadata-row-odd {
-   margin-left: 20px;
-   margin-bottom:5px;
-   background-color:#eeeeee;
+   margin-left: 10px;
+   margin-bottom:2px;
+//   background-color:#efefef;
 }
 
 .metadata-small-label {
@@ -1859,15 +1868,33 @@ a.toggleblocklabellink:visited {
 	font-weight: normal;
 	margin: 0px;
 	margin-bottom: .3em;
-	margin-right: 10px;
+//	margin-right: 10px;
 	padding-left: 6px;
 	padding-top: .50em;
-	padding-bottom: .10em;
-	border-bottom: 1px solid #aaa;
+	padding-bottom: 0em;
+	border-bottom: 1px solid #888;
         padding-right:10px;
 }
-.wiki-h1 { font-size: 170%; }
-.wiki-h2 { font-size: 150%; }
+.wiki-h1 { 
+ padding-left: 2px;
+ font-size: 150%;
+//font-size: 170%; 
+}
+.wiki-h2 { 
+        border-top-left-radius: 5px;
+	font-weight: bold;
+        margin-top:8px;
+	padding-left: 8px;
+	padding-top: 6px;
+//	padding-bottom: 1px;
+//        font-size: 125%; 
+	background-color: #ededed;
+	border-bottom: 1px solid #ccc
+}
+
+
+
+
 .wiki-h3, .wiki-h4, .wiki-h5, .wiki-h6 {
 	border-bottom: none;
 	font-weight: bold;

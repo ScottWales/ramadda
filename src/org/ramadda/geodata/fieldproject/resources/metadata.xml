@@ -3,7 +3,7 @@
 
   <handler category="Project" xclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
 
-    <type id="project_person" name="Project Personnel" searchable="true" >
+    <type id="project_person" name="Project Personnel" searchable="true" priority="10">
       <element id="name" name="Name"/>
       <element id="type" name="Type" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/personnel.properties"/>
       <element id="institution" name="Institution"/>
@@ -11,7 +11,7 @@
     </type>
 
 
-    <type id="project_funding" name="Funding Information" searchable="true" browsable="true">
+    <type id="project_funding" name="Funding Information" searchable="true" browsable="true"  priority="5">
       <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA"/>
       <element id="title" name="Title"/>
       <element id="id" name="ID"/>

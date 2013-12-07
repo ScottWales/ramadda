@@ -548,35 +548,41 @@ public class MetadataManager extends RepositoryManager {
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
-            debug("METADATA:getMetadata entry:" + entry.getName()
-                  + " metadata:" + metadataList);
+            //            debug("METADATA:getMetadata entry:" + entry.getName()
+            //                  + " metadata:" + metadataList);
 
             return metadataList;
         }
 
-        metadataList = new ArrayList();
+        final List<Metadata> finalMetadataList = new ArrayList();
         Statement stmt =
             getDatabaseManager().select(
                 Tables.METADATA.COLUMNS, Tables.METADATA.NAME,
                 Clause.eq(Tables.METADATA.COL_ENTRY_ID, entry.getId()),
-                " order by " + Tables.METADATA.COL_TYPE);
-        SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-        ResultSet        results;
-        while ((results = iter.getNext()) != null) {
-            int             col     = 1;
-            String          type    = results.getString(3);
-            MetadataHandler handler = findMetadataHandler(type);
+                getDatabaseManager().makeOrderBy(Tables.METADATA.COL_TYPE));
 
-            metadataList.add(handler.makeMetadata(results.getString(col++),
-                    results.getString(col++), results.getString(col++),
-                    results.getInt(col++) == 1, results.getString(col++),
-                    results.getString(col++), results.getString(col++),
-                    results.getString(col++), results.getString(col++)));
-        }
+        getDatabaseManager().iterate(stmt, new SqlUtil.ResultsHandler() {
+            public boolean handleResults(ResultSet results) throws Exception {
+                int             col     = 1;
+                String          type    = results.getString(3);
+                MetadataHandler handler = findMetadataHandler(type);
 
+                finalMetadataList.add(
+                    handler.makeMetadata(
+                        results.getString(col++), results.getString(col++),
+                        results.getString(col++), results.getInt(col++) == 1,
+                        results.getString(col++), results.getString(col++),
+                        results.getString(col++), results.getString(col++),
+                        results.getString(col++)));
+
+                return true;
+            }
+        });
+
+        metadataList = Metadata.sort(finalMetadataList);
         entry.setMetadata(metadataList);
 
-        return metadataList;
+        return finalMetadataList;
     }
 
 

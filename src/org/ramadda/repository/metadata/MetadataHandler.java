@@ -423,36 +423,14 @@ public class MetadataHandler extends RepositoryManager {
                                  boolean inherited, String attr1,
                                  String attr2, String attr3, String attr4,
                                  String extra) {
-        return new Metadata(id, entryId, type, inherited, attr1, attr2,
-                            attr3, attr4, extra);
-    }
+        MetadataType metadataType = findType(type);
+        Metadata metadata = new Metadata(id, entryId, type, inherited, attr1,
+                                         attr2, attr3, attr4, extra);
+        if (metadataType != null) {
+            metadata.setPriority(metadataType.getPriority());
+        }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param id _more_
-     * @param entry _more_
-     * @param type _more_
-     * @param inherited _more_
-     * @param attr1 _more_
-     * @param attr2 _more_
-     * @param attr3 _more_
-     * @param attr4 _more_
-     * @param extra _more_
-     * @param newMetadata _more_
-     *
-     * @return _more_
-     */
-    protected final Metadata makeMetadata(Request request, String id,
-                                          Entry entry, String type,
-                                          boolean inherited, String attr1,
-                                          String attr2, String attr3,
-                                          String attr4, String extra,
-                                          boolean newMetadata) {
-        return new Metadata(id, entry.getId(), type, inherited, attr1, attr2,
-                            attr3, attr4, extra);
+        return metadata;
     }
 
 

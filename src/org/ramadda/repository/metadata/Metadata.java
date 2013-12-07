@@ -104,6 +104,9 @@ public class Metadata implements Constants {
     /** _more_ */
     public static final String DFLT_ENTRYID = "";
 
+    /** _more_          */
+    public static final int PRIORITY_UNDEFINED = 0;
+
     /** _more_ */
     private Entry entry;
 
@@ -116,6 +119,8 @@ public class Metadata implements Constants {
     /** _more_ */
     private String type;
 
+    /** _more_ */
+    private int priority = PRIORITY_UNDEFINED;
 
     /** _more_ */
     private String attr1 = "";
@@ -312,6 +317,7 @@ public class Metadata implements Constants {
         this.entryId   = entryId;
         this.type      = that.type;
         this.inherited = that.inherited;
+        this.priority  = that.priority;
         this.attr1     = that.attr1;
         this.attr2     = that.attr2;
         this.attr3     = that.attr3;
@@ -359,12 +365,12 @@ public class Metadata implements Constants {
      *
      *
      * @version        $version$, Wed, Dec 4, '13
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class MetadataCompare implements Comparator<Metadata> {
 
         /**
-         * _more_
+         * compare based on priority then type then attribute  values
          *
          * @param o1 _more_
          * @param o2 _more_
@@ -372,6 +378,18 @@ public class Metadata implements Constants {
          * @return _more_
          */
         public int compare(Metadata o1, Metadata o2) {
+
+            if ((o1.priority != PRIORITY_UNDEFINED)
+                    || (o2.priority != PRIORITY_UNDEFINED)) {
+                if (o1.priority > o2.priority) {
+                    return -1;
+                }
+                if (o2.priority > o1.priority) {
+                    return 1;
+                }
+            }
+
+
             int result = o1.getType().compareTo(o2.getType());
             if (result != 0) {
                 return result;
@@ -380,6 +398,7 @@ public class Metadata implements Constants {
             if (result != 0) {
                 return result;
             }
+
             result = o1.attr2.compareTo(o2.attr2);
 
             return result;
@@ -1115,6 +1134,17 @@ public class Metadata implements Constants {
             throw new RuntimeException(exc);
         }
     }
+
+    /**
+     * _more_
+     *
+     * @param p _more_
+     */
+    public void setPriority(int p) {
+        priority = p;
+    }
+
+
 
 
 }

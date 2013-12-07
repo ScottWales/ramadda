@@ -91,6 +91,9 @@ public class MetadataType extends MetadataTypeBase {
     public static final String ATTR_ID = "id";
 
     /** _more_ */
+    public static final String ATTR_PRIORITY = "priority";
+
+    /** _more_ */
     public static final String ATTR_ADMINONLY = "adminonly";
 
     /** _more_ */
@@ -107,7 +110,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DISPLAYGROUP = "displaygroup";
 
 
@@ -129,6 +132,8 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private String id;
 
+    /** _more_ */
+    private int priority = 0;
 
     /** _more_ */
     private boolean makeDatabaseTable = false;
@@ -139,7 +144,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private String displayCategory = "Properties";
 
-    /** _more_          */
+    /** _more_ */
     private String displayGroup = null;
 
     /** _more_ */
@@ -299,6 +304,8 @@ public class MetadataType extends MetadataTypeBase {
         entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
                 (String) null);
 
+        priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,
+                priority);
 
         setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
                 false));
@@ -1242,6 +1249,17 @@ public class MetadataType extends MetadataTypeBase {
      */
     public boolean getHasDatabaseTable() {
         return makeDatabaseTable;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getPriority() {
+        return priority;
     }
 
 }

@@ -678,8 +678,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (metadataList.size() == 0) {
             return result;
         }
-        metadataList = Metadata.sort(metadataList);
-
 
         CategoryBuffer catBuff = new CategoryBuffer();
         Hashtable      catMap  = new Hashtable();
@@ -737,10 +735,13 @@ public class HtmlOutputHandler extends OutputHandler {
                 typeRow.put(group, rowFlag);
             }
             boolean even = rowFlag.booleanValue();
-            typeRow.put(type.getName(), new Boolean( !even));
-            String rowClass = "metadata-row-" + (even
+            typeRow.put(group, new Boolean( !even));
+            String  rowClass = "metadata-row-" + (even
                     ? "even"
                     : "odd");
+
+            boolean first    = sb.length() == 0;
+
             if (smallDisplay) {
                 sb.append(HtmlUtils.open("tr",
                                          " valign=\"top\" "
@@ -757,6 +758,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HtmlUtils.close("td"));
                 sb.append(HtmlUtils.close("tr"));
             } else {
+                if ( !first) {
+                    sb.append("<div class=\"metadata-row-divider\"></div>");
+                }
                 sb.append(HtmlUtils.div(html[1],
                                         HtmlUtils.cssClass(rowClass)));
             }
