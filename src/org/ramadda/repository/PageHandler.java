@@ -428,7 +428,7 @@ public class PageHandler extends RepositoryManager {
 
         if (makePopup) {
             userLinkTemplate =
-                "<div class=\"ramadda-user-link\"><a href=\"${url}\" title=\"${tooltip}\">${label}</a></div>";
+                "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
             separator = "";
         } else {
             userLinkTemplate = htmlTemplate.getTemplateProperty(
@@ -442,8 +442,11 @@ public class PageHandler extends RepositoryManager {
         }
 
 
+
+
+        StringBuffer extra = new StringBuffer();
         String userLinks = getUserManager().getUserLinks(request,
-                               userLinkTemplate, separator);
+                                                         userLinkTemplate, separator, extra, makePopup);
 
         if (makePopup && (userLinks != null && !userLinks.trim().isEmpty())) {
             String userImage =
@@ -454,7 +457,8 @@ public class PageHandler extends RepositoryManager {
             userLinks =
                 HtmlUtils.div(userLinks,
                               HtmlUtils.cssClass("ramadda-user-menu"));
-            userLinks = makePopupLink(userImage, userLinks, false, true);
+            userLinks = extra +makePopupLink(userImage, userLinks, false, true);
+
         }
 
 

@@ -2110,7 +2110,7 @@ public class UserManager extends RepositoryManager {
      * @return user links
      */
     public String getUserLinks(Request request, String template,
-                               String separator) {
+                               String separator, StringBuffer prefix, boolean makePopup) {
         User user   = request.getUser();
 
         List extras = new ArrayList();
@@ -2145,11 +2145,18 @@ public class UserManager extends RepositoryManager {
             labels.add(msg("Logout"));
             tips.add(msg("Logout"));
 
-            extras.add("");
-            urls.add(request.url(getRepositoryBase().URL_USER_HOME));
             String label = user.getLabel().replace(" ", "&nbsp;");
-            labels.add(label);
-            tips.add(msg("Go to user settings"));
+            String settingsUrl = request.url(getRepositoryBase().URL_USER_HOME);
+
+            if(makePopup) {
+                prefix.append(HtmlUtils.href(settingsUrl,label));
+                prefix.append(HtmlUtils.space(2));
+            } else {
+                extras.add("");
+                urls.add(settingsUrl);
+                labels.add(label);
+                tips.add(msg("Go to user settings"));
+            }
         }
 
         if (getProperty(PROP_SHOW_HELP, true)
@@ -2165,7 +2172,7 @@ public class UserManager extends RepositoryManager {
         List links = new ArrayList();
         for (int i = 0; i < urls.size(); i++) {
             String link = template.replace("${label}",
-                                           labels.get(i).toString());
+                                           labels.get(i).toString()); 
             link = link.replace("${url}", urls.get(i).toString());
             link = link.replace("${tooltip}", tips.get(i).toString());
             link = link.replace("${extra}", extras.get(i).toString());

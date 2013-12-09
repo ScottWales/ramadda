@@ -177,10 +177,15 @@ input, password, fileinput,textarea,select {
 }
 
 .entry-list-row {
-  margin-top:2px;
+  margin-top:0px;
+  padding-top: 2px;
   padding: 2px;
   padding-right: 0px;
   border-bottom:1px #dadada dotted;
+}
+
+.entry-list-row:hover {
+//  background-color:#f2f2f2;
 }
 
 .entry-tree-row {
@@ -656,10 +661,14 @@ label {
 
 
 
+.ramadda-user-menu-item {
+
+}
+
 .ramadda-user-menu-image {
    margin-right: 3px;
-   margin-bottom: 1px;
-   padding:1px;
+   margin-bottom: 0px;
+   padding:0px;
    width: 18px;
 }
 
@@ -671,16 +680,19 @@ label {
 
 .ramadda-user-link {
    min-width: 100px;
-   padding-top:5px;
-   padding-bottom:3px;
+   padding-top:4px;
+   padding-bottom:2px;
    padding-right:8px;
    padding-left:8px;
+   margin-top:1px;
    text-align:left;
-   border-bottom: 1px #efefef solid;
+   border-bottom: 1px #aaa solid;
 }
 
 .ramadda-user-link:hover {
-   background-color: #efefef;
+   background-color: #eee;
+   text-decoration: underline;
+   cursor:pointer;
 }
 
 
@@ -1881,14 +1893,15 @@ a.toggleblocklabellink:visited {
 //font-size: 170%; 
 }
 .wiki-h2 { 
-        border-top-left-radius: 5px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 2px;
 	font-weight: bold;
-        margin-top:8px;
+        margin-top:10px;
 	padding-left: 8px;
-	padding-top: 6px;
+	padding-top: 4px;
 //	padding-bottom: 1px;
 //        font-size: 125%; 
-	background-color: #ededed;
+	background-color: #f4f4f4;
 	border-bottom: 1px solid #ccc
 }
 

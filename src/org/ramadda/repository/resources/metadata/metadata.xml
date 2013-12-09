@@ -26,7 +26,7 @@
     </type>
 -->
 
-    <type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags">
+    <type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords">
       <element name="Tag Value" />
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
@@ -34,7 +34,7 @@
     </type>
 
 
-    <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Keywords"  >
+    <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Tags and Keywords"  >
       <element name="Keyword" />
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
