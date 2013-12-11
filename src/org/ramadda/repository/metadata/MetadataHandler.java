@@ -741,7 +741,7 @@ public class MetadataHandler extends RepositoryManager {
         return HtmlUtils.href(
             getSearchUrl(request, metadata),
             HtmlUtils.img(
-                getRepository().iconUrl(ICON_SEARCH),
+                getRepository().iconUrl(ICON_SEARCH_SMALL),
                 "Search for entries with this metadata", " border=0 "));
     }
 

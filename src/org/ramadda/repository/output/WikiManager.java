@@ -3951,7 +3951,20 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String  content = getDescription(request, props, originalEntry,
                                          entry);
         boolean haveText = Utils.stringDefined(content);
+        String imageUrl  = null;
+
         if (entry.getResource().isImage()) {
+            imageUrl =  getRepository().getHtmlOutputHandler().getImageUrl(request, entry);
+        } else {
+                List<String> urls = new ArrayList<String>();
+                getMetadataManager().getThumbnailUrls(request, entry, urls);
+                if (urls.size() > 0) {
+                    imageUrl = urls.get(0);
+                }
+        }
+
+
+        if (imageUrl!=null) {
             StringBuffer extra = new StringBuffer();
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
@@ -3982,8 +3995,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             }
             String image =
                 HtmlUtils.img(
-                    getRepository().getHtmlOutputHandler().getImageUrl(
-                        request, entry), "", extra.toString());
+                              imageUrl, "", extra.toString());
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
@@ -4011,7 +4023,6 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if ( !haveText) {
                 return image;
             }
-
 
             String textClass = "entry-simple-text";
             if (position.equals(POS_NONE)) {
@@ -4055,8 +4066,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             } else {
                 content = "Unknown position:" + position;
             }
-        } else if (entry.getTypeHandler().isGroup()
-                   && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
+        } 
+
+
+        if (entry.getTypeHandler().isGroup()
+            && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
             //Do we tack on the listing
             StringBuffer sb = new StringBuffer();
             List<Entry> children = getEntryManager().getChildren(request,

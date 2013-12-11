@@ -8,6 +8,9 @@ RAMADDA version <%ramadda.version%> is now available for download at:
 <a href="http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/">
 http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/</a>
 </ul>
+
+This release contains many bug fixes and a major redesign of the user interface.
+
 <br>
 
 <div class="boxquote">
@@ -15,24 +18,26 @@ Note: When installing a new version of RAMADDA you also need to install new vers
 plugin files.  <a href="#plugins">More information below</a> 
 </div>
 
-<h3>New Features</h3>
-
-This release contains many bug fixes and a major redesign of the user interface.
 
 
 <a name="plugins"></a>
-<h3>Installing Plugins</h3>
+
+Plugins are installed in the <i>&lt;ramadda home&gt;/plugins</i> directory.
 Most of the plugins are provided in an 
 <a href="http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/allplugins.jar/download">allplugins.jar</a> file. 
+A number of other plugins are listed below.
 
-This has changed in version 1.5. 
+<div class="boxquote">
+Note: This has changed in version 1.5. 
 RAMADDA used to provide the plugins in an allplugins.zip file which contained individual plugins that would
 be unzipped and written out every time RAMADDA ran. All of the plugin code and resources are now placed into one big jar file.
-<p>
-If you are currently running RAMADDA you should remove all of the existing plugins in your 
-<i>&lt;ramadda home&gt;/plugins</i> directory and install the allplugins.jar and/or the individual plugins. 
-If you have already installed the allplugins.jar (not allplugins.zip) then RAMADDA will
-will automatically install the new allplugins.jar file.
+</div>
+
+<b>If you have previously installed allplugins.zip then delete the file and install allplugins.jar.</b>
+
+<b>If you have previously installed allplugins.jar then RAMADDA will automatically update the plugun at runtime.</b>
+
+<b>If you have other plugins installed then you should update them to the latest versions</b>
 
 If you are installing RAMADDA for the first time you can opt to install the allplugins.jar during
 the site installation process.
