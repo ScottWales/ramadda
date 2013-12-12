@@ -1965,7 +1965,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
-                                   "Copy or Move " + LABEL_ENTRY,
+                                   "Copy/Move/Link",
                                    OutputType.TYPE_EDIT));
         }
     }
