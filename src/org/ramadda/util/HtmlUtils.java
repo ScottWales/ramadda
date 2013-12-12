@@ -2619,8 +2619,12 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String table(String contents) {
+        return table(contents, 0,0);
+    }
+
+    public static String table(String contents, int padding, int spacing) {
         return table(contents,
-                     attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
+                     attrs(ATTR_CELLPADDING, "" +padding, ATTR_CELLSPACING, "" +spacing));
     }
 
     /**
