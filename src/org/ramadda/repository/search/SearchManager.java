@@ -1459,11 +1459,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             HtmlUtils.href(url,
                            HtmlUtils.img(iconUrl(ICON_SEARCH),
                                          "Search Again"));
-        //            searchForm.append(searchLink);
-        if (s.length() > 0) {
-            searchForm.append(msg("Search Criteria") + "<br><table>" + s
-                              + "</table>");
-        }
+
         boolean foundAny = (groups.size() > 0) || (entries.size() > 0);
         if (foundAny) {
             String searchUrl = request.getUrl();
@@ -1476,18 +1472,25 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
         makeSearchForm(request, textSearch, true, searchForm);
 
 
-        String form = HtmlUtils.makeShowHideBlock(
-                          searchLink + msg("Search Again"),
-                          HtmlUtils.inset(
-                              searchForm.toString(), 0, 20, 0, 0), false);
         StringBuffer header = new StringBuffer();
         header.append(getPageHandler().makeHeader(request, getSearchUrls(),
                 ""));
         header.append(msgHeader("Search Results"));
 
         if (foundAny) {
+            String form = HtmlUtils.makeShowHideBlock(msg("Search Again"),
+                              HtmlUtils.inset(searchForm.toString(), 0, 20,
+                                  0, 0), false);
             header.append(form);
+            if (s.length() > 0) {
+                header.append(HtmlUtils.table(s, 5, 0));
+            }
         } else {
+            header.append(
+                getPageHandler().showDialogNote(msg("No entries found")));
+            if (s.length() > 0) {
+                header.append(HtmlUtils.table(s, 5, 0));
+            }
             header.append(searchForm);
         }
 

@@ -1786,8 +1786,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (isSearchResults) {
             if ( !hasChildren) {
-                sb.append(
-                    getPageHandler().showDialogNote(msg("No entries found")));
+                //                sb.append(
+                //                    getPageHandler().showDialogNote(msg("No entries found")));
             }
         }
 
@@ -1834,7 +1834,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 getEntriesList(request, sb, allEntries, true,
                                group.isDummy(), true);
             } else {
-                if ( !Utils.stringDefined(group.getDescription())) {
+
+                if ( !isSearchResults
+                        && !Utils.stringDefined(group.getDescription())) {
                     sb.append(
                         getPageHandler().showDialogNote(
                             msg(LABEL_EMPTY_FOLDER)));
