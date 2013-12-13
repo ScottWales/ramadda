@@ -670,6 +670,7 @@ label {
    margin-bottom: 0px;
    padding:0px;
    width: 18px;
+   vertical-align: middle;
 }
 
 .ramadda-user-menu-image:hover {
@@ -691,7 +692,7 @@ label {
 
 .ramadda-user-link:hover {
    background-color: #eee;
-   text-decoration: underline;
+   /* text-decoration: underline;*/
    cursor:pointer;
 }
 
@@ -700,20 +701,13 @@ label {
    color: black;
 }
 
-
-.ramadda-user-link  a {
-   color: black;
-}
-
-
-
-
 .ramadda-user-menu {
   font-weight: normal;
 }
 
 .ramadda-user-menu a {
    font-weight: normal;
+   width: 100%;
 }
 
 .ramadda-user-field {
