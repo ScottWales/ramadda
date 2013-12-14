@@ -519,8 +519,15 @@ public class MailHarvester extends Harvester {
                                 "RAMADDA harvested emails",
                                 result.toString(), false);
                     }
+                    HashSet seen = new HashSet();
                     for (EntryInfo info : entryInfos) {
+                        System.err.println ("forwards:" + info.forwards);
                         for (String forward : info.forwards) {
+                            if(seen.contains(forward)) continue;
+                            status.append("sent link to: " + forward);
+                            status.append(HtmlUtils.br());
+                            seen.add(forward);
+                            System.err.println ("sending mail to:" + forward);
                             getRepository().getMailManager().sendEmail(
                                 forward, "RAMADDA email", result.toString(),
                                 false);
