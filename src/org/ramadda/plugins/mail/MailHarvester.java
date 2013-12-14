@@ -30,6 +30,8 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.MailUtil;
 
+import org.ramadda.util.Utils;
+
 
 import org.w3c.dom.*;
 
@@ -354,16 +356,9 @@ public class MailHarvester extends Harvester {
     /**
      * _more_
      *
-     * @param request _more_
-     * @param info _more_
-     *
-     * @return _more_
-     *
      * @throws Exception _more_
      */
     public void checkEmail() throws Exception {
-
-
         currentStatus = "Checking mail";
         Properties props   = System.getProperties();
         Session    session = Session.getDefaultInstance(props);
@@ -429,12 +424,13 @@ public class MailHarvester extends Harvester {
             //            System.err.println("*** Check Mail " + messageBody.length());
             //            System.err.println("Message:" + messageBody);
             numPassed++;
-            List<Entry> newEntries = new ArrayList<Entry>();
+            List<Entry>     newEntries = new ArrayList<Entry>();
+            List<EntryInfo> entryInfos = new ArrayList<EntryInfo>();
             if (action.equals(ACTION_EML)) {
-                processEml(getBaseGroup(), message, newEntries);
+                processEml(getBaseGroup(), message, newEntries, entryInfos);
             } else {
                 processMessage(getBaseGroup(), message, content, messageBody,
-                               newEntries);
+                               newEntries, entryInfos);
             }
 
             if (newEntries.size() == 0) {
@@ -468,6 +464,7 @@ public class MailHarvester extends Harvester {
                 }
                 EntryInfo entryInfo = getEntryInfo(getRequest(),
                                           getBaseGroup(), name, messageBody);
+                entryInfos.add(entryInfo);
                 typeHandler = getRepository().getTypeHandler(type);
                 Date now = new Date();
                 Entry entry =
@@ -477,17 +474,19 @@ public class MailHarvester extends Harvester {
                                 "", now.getTime(), now.getTime(),
                                 now.getTime(), now.getTime(), null);
 
+                entryInfo.newEntry = entry;
                 newEntries.add(entry);
                 getEntryManager().addNewEntries(getRequest(), newEntries);
             }
 
-            if (newEntries.size() > 0) {
+            if (entryInfos.size() > 0) {
                 StringBuffer result = new StringBuffer();
-                if (defined(response)) {
+                if (Utils.stringDefined(response)) {
                     result.append(response);
                     result.append("\n");
                 }
-                for (Entry newEntry : newEntries) {
+                for (EntryInfo entryInfo : entryInfos) {
+                    Entry newEntry = entryInfo.newEntry;
                     String fullEntryUrl =
                         HtmlUtils.url(
                             getEntryManager().getFullEntryShowUrl(
@@ -512,10 +511,22 @@ public class MailHarvester extends Harvester {
                     }
                     status.append(HtmlUtils.br());
                 }
-                if (defined(response) && getAdmin().isEmailCapable()) {
-                    String to = InternetAddress.toString(message.getFrom());
-                    getRepository().getMailManager().sendEmail(to,
-                            "harvested emails", result.toString(), false);
+                if (getAdmin().isEmailCapable()) {
+                    if (Utils.stringDefined(response)) {
+                        String to =
+                            InternetAddress.toString(message.getFrom());
+                        getRepository().getMailManager().sendEmail(to,
+                                "RAMADDA harvested emails",
+                                result.toString(), false);
+                    }
+                    for (EntryInfo info : entryInfos) {
+                        for (String forward : info.forwards) {
+                            getRepository().getMailManager().sendEmail(
+                                forward, "RAMADDA email", result.toString(),
+                                false);
+
+                        }
+                    }
                 }
             }
 
@@ -571,12 +582,14 @@ public class MailHarvester extends Harvester {
      * @param content _more_
      * @param desc _more_
      * @param newEntries _more_
+     * @param entryInfos _more_
      *
      * @throws Exception _more_
      */
     private void processMessage(Entry parentEntry, Message message,
                                 Object content, String desc,
-                                List<Entry> newEntries)
+                                List<Entry> newEntries,
+                                List<EntryInfo> entryInfos)
             throws Exception {
 
         Request request = getRequest();
@@ -589,7 +602,7 @@ public class MailHarvester extends Harvester {
                     Object partContent = part.getContent();
                     if (partContent instanceof MimeMultipart) {
                         processMessage(parentEntry, message, partContent,
-                                       desc, newEntries);
+                                       desc, newEntries, entryInfos);
                     } else {}
 
                     continue;
@@ -640,6 +653,8 @@ public class MailHarvester extends Harvester {
                         getEntryManager().addNewEntries(getRequest(),
                                 entries);
                         newEntries.add(entry);
+                        entryInfo.newEntry = entry;
+                        entryInfos.add(entryInfo);
                     }
                 }
             }
@@ -668,6 +683,16 @@ public class MailHarvester extends Harvester {
             //            System.err.println("LINE:" + line);
             if (lline.startsWith("name:")) {
                 entryInfo.name = line.substring("name:".length()).trim();
+            } else if (lline.startsWith("fwd:")) {
+                entryInfo.forwards.addAll(
+                    StringUtil.split(
+                        line.substring("fwd:".length()).trim(), ",", true,
+                        true));
+            } else if (lline.startsWith("forward:")) {
+                entryInfo.forwards.addAll(
+                    StringUtil.split(
+                        line.substring("forward:".length()).trim(), ",",
+                        true, true));
             } else if (lline.toLowerCase().startsWith("at:")) {
                 Entry theFolder = theParentEntry;
                 for (String tok :
@@ -710,11 +735,12 @@ public class MailHarvester extends Harvester {
      * @param parentEntry _more_
      * @param message _more_
      * @param entries _more_
+     * @param infos _more_
      *
      * @throws Exception _more_
      */
     private void processEml(Entry parentEntry, Message message,
-                            List<Entry> entries)
+                            List<Entry> entries, List<EntryInfo> infos)
             throws Exception {
         String       name         = message.getSubject();
         File f = getStorageManager().getTmpFile(getRequest(), name + ".eml");
@@ -736,6 +762,7 @@ public class MailHarvester extends Harvester {
         typeHandler.initializeEntryFromForm(getRequest(), entry, parentEntry,
                                             true);
         entries.add(entry);
+        infos.add(new EntryInfo(entry));
         getEntryManager().addNewEntries(getRequest(), entries);
     }
 
@@ -854,6 +881,23 @@ public class MailHarvester extends Harvester {
      */
     private static class EntryInfo {
 
+        /** _more_ */
+        Entry parentEntry;
+
+        /** _more_          */
+        Entry newEntry;
+
+        /** _more_ */
+        String name;
+
+        /** _more_ */
+        StringBuffer text = new StringBuffer();
+
+        /** _more_          */
+        List<String> forwards = new ArrayList<String>();
+
+
+
         /**
          * _more_
          *
@@ -865,14 +909,16 @@ public class MailHarvester extends Harvester {
             this.name        = name;
         }
 
-        /** _more_ */
-        Entry parentEntry;
+        /**
+         * _more_
+         *
+         * @param entry _more_
+         */
+        public EntryInfo(Entry entry) {
+            this.newEntry = entry;
+        }
 
-        /** _more_ */
-        String name;
 
-        /** _more_ */
-        StringBuffer text = new StringBuffer();
     }
 
     /**
