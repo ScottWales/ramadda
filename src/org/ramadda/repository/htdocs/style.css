@@ -1906,10 +1906,10 @@ a.toggleblocklabellink:visited {
 	border-bottom: none;
 	font-weight: bold;
 }
-.wiki-h3 { font-size: 130%; }
-.wiki-h4 { font-size: 110%; color: #888;}
-.wiki-h5 { font-size: 100%;}
-.wiki-h6 { font-size: 80%;}
+.wiki-h3 { xfont-size: 130%; }
+.wiki-h4 { xfont-size: 110%; color: #888;}
+.wiki-h5 { xfont-size: 100%;}
+.wiki-h6 { xfont-size: 80%;}
 
 .wiki-hr {
 	height: 1px;
