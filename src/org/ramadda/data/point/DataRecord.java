@@ -152,7 +152,12 @@ public class DataRecord extends PointRecord {
         hasDefault   = new boolean[fields.size()];
         skip         = new boolean[fields.size()];
         synthetic    = new boolean[fields.size()];
-        int[]      timeIndices   = {
+
+        int        dateIndex     = -1;
+        int        timeIndex     = -1;
+        String     dateFormat    = null;
+
+        int[]      ymdhmsIndices = {
             -1, -1, -1, -1, -1, -1
         };
         boolean    gotDateFields = false;
@@ -186,13 +191,20 @@ public class DataRecord extends PointRecord {
             String casedName = field.getName();
             String name      = casedName.toLowerCase();
 
+            if (field.getIsDate()) {
+                dateIndex = fieldIdx + 1;
+            }
+            if (field.getIsTime()) {
+                timeIndex = fieldIdx + 1;
+            }
+
             for (int timeIdx = 0; timeIdx < timeFields.length; timeIdx++) {
                 boolean gotOne = false;
                 for (String timeFieldName : timeFields[timeIdx]) {
                     if (casedName.equals(timeFieldName)) {
-                        gotDateFields        = true;
-                        timeIndices[timeIdx] = fieldIdx + 1;
-                        gotOne               = true;
+                        gotDateFields          = true;
+                        ymdhmsIndices[timeIdx] = fieldIdx + 1;
+                        gotOne                 = true;
 
                         break;
                     }
@@ -243,8 +255,12 @@ public class DataRecord extends PointRecord {
 
         //timeField
 
+        if ((dateIndex >= 0) || (timeIndex >= 0)) {
+            getRecordFile().setDateTimeIndex(dateIndex, timeIndex);
+        }
+
         if (gotDateFields) {
-            getRecordFile().setDateIndices(timeIndices);
+            getRecordFile().setYMDHMSIndices(ymdhmsIndices);
         }
 
 

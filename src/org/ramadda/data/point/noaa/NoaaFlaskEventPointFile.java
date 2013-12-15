@@ -110,9 +110,9 @@ public class NoaaFlaskEventPointFile extends NoaaPointFile {
                                        labIdNumber, measurementGroup, });
         fields = fields.replace("${parameter}", parameter);
         putProperty(PROP_FIELDS, fields);
-        dateIndices = new int[] {
-            IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND
-        };
+        setYMDHMSIndices(new int[] {
+                IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND
+            });
 
         return visitInfo;
     }

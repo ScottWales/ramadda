@@ -76,10 +76,16 @@ public class RecordField {
     /** _more_ */
     private boolean isTypeDate = false;
 
+    /** _more_          */
+    private boolean isDate = false;
+
+    /** _more_          */
+    private boolean isTime = false;
+
     /** _more_ */
     private SimpleDateFormat dateFormat;
 
-    /** _more_          */
+    /** _more_ */
     private int utcOffset = 0;
 
     /** _more_ */
@@ -797,6 +803,42 @@ public class RecordField {
      */
     public String getHeaderPattern() {
         return headerPattern;
+    }
+
+    /**
+     * Set the IsDate property.
+     *
+     * @param value The new value for IsDate
+     */
+    public void setIsDate(boolean value) {
+        isDate = value;
+    }
+
+    /**
+     * Get the IsDate property.
+     *
+     * @return The IsDate
+     */
+    public boolean getIsDate() {
+        return isDate;
+    }
+
+    /**
+     * Set the IsTime property.
+     *
+     * @param value The new value for IsTime
+     */
+    public void setIsTime(boolean value) {
+        isTime = value;
+    }
+
+    /**
+     * Get the IsTime property.
+     *
+     * @return The IsTime
+     */
+    public boolean getIsTime() {
+        return isTime;
     }
 
 

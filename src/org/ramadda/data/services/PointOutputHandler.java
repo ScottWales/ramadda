@@ -95,7 +95,6 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** This is used to create a product for a point collection or a point file. */
     public final OutputType OUTPUT_PRODUCT;
 
-
     /** output type */
     public final OutputType OUTPUT_VIEW;
 

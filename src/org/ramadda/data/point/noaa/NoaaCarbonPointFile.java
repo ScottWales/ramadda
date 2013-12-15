@@ -126,8 +126,8 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                                        toks.get(3),  //lab id number
                                        measurementGroup, });
         if (type == TYPE_HOURLY) {
-            dateIndices = new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY,
-                                      IDX_HOUR };
+            setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY,
+                                       IDX_HOUR });
             putFields(new String[] {
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE,
@@ -146,7 +146,7 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                 makeField(FIELD_INSTRUMENT, attrType(TYPE_STRING)),
             });
         } else if (type == TYPE_DAILY) {
-            dateIndices = new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY };
+            setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY });
             putFields(new String[] {
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE,
@@ -162,7 +162,7 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                 makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
             });
         } else {
-            dateIndices = new int[] { IDX_YEAR, IDX_MONTH };
+            setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH });
             putFields(new String[] {
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE,

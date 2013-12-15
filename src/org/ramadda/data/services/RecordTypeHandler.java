@@ -180,10 +180,19 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param node _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node)
-        throws Exception {
-        super.initializeEntryFromXml(request,  entry, node);
+            throws Exception {
+        super.initializeEntryFromXml(request, entry, node);
         initializeNewEntry(entry);
     }
 
@@ -331,18 +340,32 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        Object[] values           = entry.getTypeHandler().getValues(entry);
-        String   propertiesString = (values[IDX_PROPERTIES] != null)
-                                    ? values[IDX_PROPERTIES].toString()
-                                    : "";
-        if (propertiesString != null) {
-            Properties p = new Properties();
-            p.load(new ByteArrayInputStream(propertiesString.getBytes()));
+        Object[]   values           = entry.getTypeHandler().getValues(entry);
+        String     propertiesString = (values[IDX_PROPERTIES] != null)
+                                      ? values[IDX_PROPERTIES].toString()
+                                      : "";
+        Properties p                = null;
 
-            return p;
+        String typeProperties = getProperty("record.properties",
+                                            (String) null);
+        System.err.println("got property:" + typeProperties);
+
+        if (typeProperties != null) {
+            if (p == null) {
+                p = new Properties();
+            }
+            p.load(new ByteArrayInputStream(typeProperties.getBytes()));
         }
 
-        return null;
+
+        if (propertiesString != null) {
+            if (p == null) {
+                p = new Properties();
+            }
+            p.load(new ByteArrayInputStream(propertiesString.getBytes()));
+        }
+
+        return p;
     }
 
     /**

@@ -82,14 +82,14 @@
 {{field name="notes" row.label="Notes:"}}
 </table>
 
-{{properties metadata.types="project_person,project_funding,content.url" message="" }}
-{{properties metadata.types="!project_person,!project_funding,!content.url" message="" }}
+{{properties metadata.types="!project_pi" message="" }}
 
 {{links entry="Links" message=""}}
 
 
 </td>
 <td width="50%">
+{{properties metadata.types="project_pi" message="" }}
 {{image src="::*" message="" width="300"}}
 <p>
 {{mapentry width="350" message=""}}
@@ -165,8 +165,7 @@
 </table>
 
 
-{{properties metadata.types="project_person,project_funding,content.url" message="" }}
-{{properties metadata.types="!project_person,!project_funding,!content.url" message="" }}
+{{properties metadata.types="!project_pi" message="" }}
 
 
 </td>
@@ -194,9 +193,11 @@
 
 
 
-  <type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+<type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <column name="release_status" type="enumerationplus"  label="Status"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt"  default="active"/>
      <column name="results" label="Results" rows="5"/>
      <column name="weather_conditions" label="Weather Conditions" rows="2"/>
+
      <property name="icon" value="/fieldproject/world_go.png"/>
      <property name="form.description.label" value="Objective"/>
      <property name="form.resource.show" value="false"/>
@@ -210,6 +211,7 @@
      <property name="search.metadatatypes" value="project_person"/>
      <property name="search.initsearch" value="true"/>
      <property name="search.form.date.show" value="true"/>
+
 
    </type>
 

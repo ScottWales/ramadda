@@ -23,5 +23,21 @@
      <property name="record.file.class" value="org.ramadda.data.point.ocean.CnvPointFile"/>
   </type>
 
+  <type name="type_point_ocean_ooi_dmgx"  super="type_point_ocean" description="OOI Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/ooi.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+fields=date[type="string" isdate="true"],time[type="string" istime="true"],ax_g[searchable="true" chartable="true"], ay_g[searchable="true" chartable="true"], az_g[searchable="true" chartable="true"], rx_rad_s[searchable="true" chartable="true"], ry_rad_s[searchable="true" chartable="true"],  rz_rad_s[searchable="true" chartable="true"],  mx_gauss[searchable="true" chartable="true"],  my_gauss[searchable="true" chartable="true"],  mz_gauss[searchable="true" chartable="true"], t_sec[]
+     </property>
+
+  </type>
+
+
+
+
 
 </types>

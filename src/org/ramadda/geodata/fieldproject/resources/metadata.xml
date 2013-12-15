@@ -11,6 +11,15 @@
     </type>
 
 
+
+    <type id="project_pi" name="Principal Investigator" searchable="true" priority="20"  displaygroup="Project Lead">
+      <element id="name" name="Name"/>
+      <element id="institution" name="Institution"/>
+      <element id="email" name="Email" datatype="email"/>
+      <element id="url" datatype="url" name="URL"/>
+    </type>
+
+
     <type id="project_funding" name="Funding Information" searchable="true" browsable="true"  priority="5">
       <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA"/>
       <element id="title" name="Title"/>

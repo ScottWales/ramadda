@@ -359,6 +359,7 @@ public class MailHarvester extends Harvester {
      * @throws Exception _more_
      */
     public void checkEmail() throws Exception {
+
         currentStatus = "Checking mail";
         Properties props   = System.getProperties();
         Session    session = Session.getDefaultInstance(props);
@@ -432,6 +433,7 @@ public class MailHarvester extends Harvester {
                 processMessage(getBaseGroup(), message, content, messageBody,
                                newEntries, entryInfos);
             }
+
 
             if (newEntries.size() == 0) {
                 //See if the first line is a URL
@@ -511,6 +513,7 @@ public class MailHarvester extends Harvester {
                     }
                     status.append(HtmlUtils.br());
                 }
+
                 if (getAdmin().isEmailCapable()) {
                     if (Utils.stringDefined(response)) {
                         String to =
@@ -521,13 +524,12 @@ public class MailHarvester extends Harvester {
                     }
                     HashSet seen = new HashSet();
                     for (EntryInfo info : entryInfos) {
-                        System.err.println ("forwards:" + info.forwards);
                         for (String forward : info.forwards) {
-                            if(seen.contains(forward)) continue;
-                            status.append("sent link to: " + forward);
+                            if (seen.contains(forward)) {
+                                continue;
+                            }
                             status.append(HtmlUtils.br());
                             seen.add(forward);
-                            System.err.println ("sending mail to:" + forward);
                             getRepository().getMailManager().sendEmail(
                                 forward, "RAMADDA email", result.toString(),
                                 false);
@@ -560,6 +562,7 @@ public class MailHarvester extends Harvester {
                     : "")));
             status.append("<br>");
         }
+
 
     }
 
@@ -891,7 +894,7 @@ public class MailHarvester extends Harvester {
         /** _more_ */
         Entry parentEntry;
 
-        /** _more_          */
+        /** _more_ */
         Entry newEntry;
 
         /** _more_ */
@@ -900,7 +903,7 @@ public class MailHarvester extends Harvester {
         /** _more_ */
         StringBuffer text = new StringBuffer();
 
-        /** _more_          */
+        /** _more_ */
         List<String> forwards = new ArrayList<String>();
 
 
@@ -923,6 +926,16 @@ public class MailHarvester extends Harvester {
          */
         public EntryInfo(Entry entry) {
             this.newEntry = entry;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public String toString() {
+            return "EntryInfo:" + name + " fwds:" + forwards;
         }
 
 

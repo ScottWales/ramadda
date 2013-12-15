@@ -51,15 +51,35 @@ import java.util.zip.*;
  */
 public abstract class RecordFile {
 
-    /** _more_ */
+
+    /** _more_          */
+    public static final String PROP_DATEFORMAT = "dateformat";
+
+    /** _more_          */
+    public static final String PROP_ISDATE = "isdate";
+
+    /** _more_          */
+    public static final String PROP_ISTIME = "istime";
+
+    /** _more_          */
+    public static final String PROP_UTCOFFSET = "utcoffset";
+
+    /** _more_          */
+    public static final String PROP_PRECISION = "precision";
+
+    /** _more_          */
+    public static final String PROP_FORMAT = "format";
+
+
+
+    /** force compile */
     private static final RecordVisitorGroup dummy1 = null;
 
-    /** _more_ */
+    /** force compile */
     private static final RecordCountVisitor dummy2 = null;
 
-    /** _more_ */
+    /** force compile */
     private static final GeoRecord dummy3 = null;
-
 
 
     /** debug */
@@ -89,6 +109,29 @@ public abstract class RecordFile {
     /** _more_ */
     private Hashtable fileProperties = new Hashtable();
 
+
+    /** _more_ */
+    private int[] ymdhmsIndices;
+
+    /** _more_ */
+    private int dateIndex = -1;
+
+    /** _more_ */
+    private int timeIndex = -1;
+
+    /** _more_ */
+    private StringBuffer dttm = new StringBuffer();
+
+    /** _more_ */
+    private SimpleDateFormat sdf;
+
+    /** _more_ */
+    private static SimpleDateFormat[] sdfs = new SimpleDateFormat[] {
+        makeDateFormat("yyyy"), makeDateFormat("yyyy-MM"),
+        makeDateFormat("yyyy-MM-dd"), makeDateFormat("yyyy-MM-dd-HH"),
+        makeDateFormat("yyyy-MM-dd-HH-mm"),
+        makeDateFormat("yyyy-MM-dd-HH-mm-ss"),
+    };
 
 
     /**
@@ -165,7 +208,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws CloneNotSupportedException _more_
+     * @throws CloneNotSupportedException On badness
      */
     public RecordFile cloneMe(String filename, Hashtable properties)
             throws CloneNotSupportedException {
@@ -256,11 +299,11 @@ public abstract class RecordFile {
 
 
     /**
-     * _more_
+     * clone me
      *
-     * @return _more_
+     * @return my clone
      *
-     * @throws CloneNotSupportedException _more_
+     * @throws CloneNotSupportedException On badness
      */
     public RecordFile cloneMe() throws CloneNotSupportedException {
         return (RecordFile) super.clone();
@@ -268,22 +311,22 @@ public abstract class RecordFile {
 
 
     /**
-     * _more_
+     * Can this recordfile load  the given file
      *
-     * @param file _more_
+     * @param file the file
      *
-     * @return _more_
+     * @return default is false
      */
     public boolean canLoad(String file) {
         return false;
     }
 
     /**
-     * _more_
+     * Check to see if this file is capable of the given action
      *
-     * @param action _more_
+     * @param action the action
      *
-     * @return _more_
+     * @return is capable
      */
     public boolean isCapable(String action) {
         String p = (String) getProperty(action);
@@ -416,7 +459,7 @@ public abstract class RecordFile {
      *
      * @param buff _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void getInfo(Appendable buff) throws Exception {}
 
@@ -654,9 +697,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws IOException On badness
-     *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         return visitInfo;
@@ -868,8 +909,11 @@ public abstract class RecordFile {
      *
      * @param indices _more_
      */
-    public void setDateIndices(int[] indices) {
-        dateIndices = indices;
+    public void setYMDHMSIndices(int[] indices) {
+        ymdhmsIndices = indices;
+        if (ymdhmsIndices != null) {
+            sdf = getDateFormat(ymdhmsIndices);
+        }
     }
 
 
@@ -881,12 +925,16 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record)
             throws Exception {
-        if (dateIndices != null) {
-            setDateFromFields(record, dateIndices);
+        if (ymdhmsIndices != null) {
+            setDateFromYMDHMS(record, ymdhmsIndices, sdf);
+        } else if ((sdf != null)
+                   && ((dateIndex != -1) || (timeIndex != -1))) {
+            setDateFromDateAndTimeIndex(record);
+
         }
 
         return true;
@@ -934,7 +982,7 @@ public abstract class RecordFile {
      * @param pw _more_
      * @param fields _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void printCsv(final PrintWriter pw, final List<RecordField> fields)
             throws Exception {
@@ -1010,8 +1058,6 @@ public abstract class RecordFile {
     /**
      * _more_
      *
-     * @param outputStream _more_
-     *
      * @param recordOutput _more_
      * @param visitInfo _more_
      * @param filter _more_
@@ -1055,7 +1101,7 @@ public abstract class RecordFile {
      * @param visitInfo _more_
      * @param filter _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
     public void writeRecords(RecordIO recordInput, RecordIO recordOutput,
                              VisitInfo visitInfo, RecordFilter filter)
@@ -1257,16 +1303,6 @@ public abstract class RecordFile {
     }
 
 
-    /** _more_ */
-    protected int[] dateIndices;
-
-    /** _more_ */
-    private static SimpleDateFormat[] sdfs = new SimpleDateFormat[] {
-        makeDateFormat("yyyy"), makeDateFormat("yyyy-MM"),
-        makeDateFormat("yyyy-MM-dd"), makeDateFormat("yyyy-MM-dd-HH"),
-        makeDateFormat("yyyy-MM-dd-HH-mm"),
-        makeDateFormat("yyyy-MM-dd-HH-mm-ss"),
-    };
 
     /**
      * _more_
@@ -1274,12 +1310,14 @@ public abstract class RecordFile {
      * @param record _more_
      * @param indices _more_
      *
+     * @param ymdhmsIndices _more_
+     *
      * @return _more_
      */
-    public SimpleDateFormat getDateFormat(Record record, int[] indices) {
+    private SimpleDateFormat getDateFormat(int[] ymdhmsIndices) {
         int goodCnt = 0;
-        for (int i = 0; i < indices.length; i++) {
-            if (indices[i] < 0) {
+        for (int i = 0; i < ymdhmsIndices.length; i++) {
+            if (ymdhmsIndices[i] < 0) {
                 break;
             }
             goodCnt++;
@@ -1299,13 +1337,14 @@ public abstract class RecordFile {
      *
      * @param record _more_
      * @param indices _more_
+     * @param sdf _more_
      *
-     * @throws Exception _more_
+     * @throws Exception On badness
      */
-    public void setDateFromFields(Record record, int[] indices)
+    private void setDateFromYMDHMS(Record record, int[] indices,
+                                   SimpleDateFormat sdf)
             throws Exception {
-        StringBuffer     dttm = new StringBuffer();
-        SimpleDateFormat sdf  = getDateFormat(record, indices);
+        dttm.setLength(0);
         for (int i = 0; i < indices.length; i++) {
             if (indices[i] < 0) {
                 break;
@@ -1313,23 +1352,61 @@ public abstract class RecordFile {
             if (i > 0) {
                 dttm.append("-");
             }
-
-
-            if (record.hasObjectValue(indices[i])) {
-                dttm.append(record.getObjectValue(indices[i]));
-            } else {
-                int v = (int) record.getValue(indices[i]);
-                if (v < 10) {
-                    dttm.append("0");
-                }
-                dttm.append(v);
-            }
+            dttm.append(getString(record, indices[i]));
         }
 
         //        Date date = makeDateFormat("yyyy-MM-dd-HH").parse("2012-01-14-02");
         Date date = sdf.parse(dttm.toString());
         record.setRecordTime(date.getTime());
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param record _more_
+     *
+     * @throws Exception On badness
+     */
+    private void setDateFromDateAndTimeIndex(Record record) throws Exception {
+        dttm.setLength(0);
+        if (dateIndex >= 0) {
+            dttm.append(getString(record, dateIndex));
+        }
+        if (timeIndex >= 0) {
+            if (dateIndex >= 0) {
+                dttm.append(" ");
+            }
+            dttm.append(getString(record, timeIndex));
+        }
+
+        Date date = sdf.parse(dttm.toString());
+        record.setRecordTime(date.getTime());
+    }
+
+    /**
+     * _more_
+     *
+     * @param record _more_
+     * @param index _more_
+     *
+     * @return _more_
+     */
+    private String getString(Record record, int index) {
+        if (record.hasObjectValue(index)) {
+            return record.getObjectValue(index).toString();
+        } else {
+            int v = (int) record.getValue(index);
+            if (v < 10) {
+                return "0";
+            }
+
+            return "" + v;
+        }
+    }
+
+
 
     /**
      *  Set the NameFromFile property.
@@ -1387,5 +1464,42 @@ public abstract class RecordFile {
     public void putFileProperty(String name, Object value) {
         fileProperties.put(name, value);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param dateIndex _more_
+     * @param timeIndex _more_
+     */
+    public void setDateTimeIndex(int dateIndex, int timeIndex) {
+        this.dateIndex = dateIndex;
+        this.timeIndex = timeIndex;
+        sdf = makeDateFormat(getProperty(PROP_DATEFORMAT, "yyyy-MM-dd"));
+
+
+    }
+
+
+
+    /**
+     * Set the Sdf property.
+     *
+     * @param value The new value for Sdf
+     */
+    public void setSdf(SimpleDateFormat value) {
+        sdf = value;
+    }
+
+    /**
+     * Get the Sdf property.
+     *
+     * @return The Sdf
+     */
+    public SimpleDateFormat getSdf() {
+        return sdf;
+    }
+
+
 
 }

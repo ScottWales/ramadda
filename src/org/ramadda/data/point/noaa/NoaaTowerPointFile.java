@@ -145,7 +145,7 @@ public class NoaaTowerPointFile extends NoaaPointFile {
                       attrMissing(MISSING2)),
             makeField(FIELD_QC_FLAG, attrType(TYPE_STRING)),
         });
-        setDateIndices(new int[] {
+        setYMDHMSIndices(new int[] {
             IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND
         });
 

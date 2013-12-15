@@ -87,7 +87,7 @@ public class NoaaFlaskMonthPointFile extends NoaaPointFile {
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
-        dateIndices = new int[] { IDX_YEAR, IDX_MONTH };
+        setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH });
 
         String fields   = getFieldsFileContents();
         String filename = getOriginalFilename(getFilename());
