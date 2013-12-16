@@ -2252,14 +2252,17 @@ public class TypeHandler extends RepositoryManager {
                     //Not sure why we were doing this but it screws up chinese characters
                     //                    resourceLink =
                     //                        HtmlUtils.urlEncodeExceptSpace(resourceLink);
+                    resourceLabel = msgLabel("File");
                     if (getAccessManager().canDownload(request, entry)) {
-                        resourceLabel = msgLabel("File");
                         resourceLink =
                             resourceLink + HtmlUtils.space(2)
                             + HtmlUtils.href(getEntryResourceUrl(request,
                                 entry), HtmlUtils.img(iconUrl(ICON_DOWNLOAD),
                                     msg("Download"), ""));
 
+                    } else {
+                        resourceLink =
+                            resourceLink + HtmlUtils.space(2) + "(" + msg("restricted")+")";
                     }
                 }
                 if (entry.getResource().getFileSize() > 0) {
