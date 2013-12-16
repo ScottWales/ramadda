@@ -554,7 +554,7 @@
    </type>
 
 
-  <type name="project_dataformat"  description="Data Format" category="Services and Software">
+  <type name="project_dataformat"  description="Data Format" category="Services and Software"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/fieldproject/database_gear.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
