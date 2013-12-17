@@ -259,6 +259,16 @@ public class TextRecord extends DataRecord {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
+    public boolean isLineData(String line) {
+        return ((TextFile) getRecordFile()).isLineData(line);
+    }
 
     /**
      * _more_
@@ -272,10 +282,17 @@ public class TextRecord extends DataRecord {
     public ReadStatus read(RecordIO recordIO) throws IOException {
 
         try {
-            String line = readNextLine(recordIO);
-            if (line == null) {
-                return ReadStatus.EOF;
+            String line = null;
+            while (true) {
+                line = readNextLine(recordIO);
+                if (line == null) {
+                    return ReadStatus.EOF;
+                }
+                if (isLineData(line)) {
+                    break;
+                }
             }
+
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }

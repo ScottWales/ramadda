@@ -1,22 +1,22 @@
 /*
-* Copyright 2008-2013 Geode Systems LLC
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-* software and associated documentation files (the "Software"), to deal in the Software 
-* without restriction, including without limitation the rights to use, copy, modify, 
-* merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-* permit persons to whom the Software is furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all copies 
-* or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-* FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-* DEALINGS IN THE SOFTWARE.
-*/
+ * Copyright 2008-2013 Geode Systems LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+ * software and associated documentation files (the "Software"), to deal in the Software 
+ * without restriction, including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies 
+ * or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ */
 
 package org.ramadda.data.record;
 
@@ -211,13 +211,13 @@ public abstract class RecordFile {
      * @throws CloneNotSupportedException On badness
      */
     public RecordFile cloneMe(String filename, Hashtable properties)
-            throws CloneNotSupportedException {
+        throws CloneNotSupportedException {
         RecordFile that = cloneMe();
         that.initAfterClone();
         that.setFilename(filename);
         if (properties == null) {
             properties = getPropertiesForFile(filename,
-                    that.getPropertiesFileName());
+                                              that.getPropertiesFileName());
         }
         that.setProperties(properties);
 
@@ -280,7 +280,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public static Hashtable getPropertiesForFile(String file,
-            String defaultCommonFile) {
+                                                 String defaultCommonFile) {
         File   f      = new File(file);
         File   parent = f.getParentFile();
         String commonFile;
@@ -290,8 +290,8 @@ public abstract class RecordFile {
             commonFile = parent + File.separator + defaultCommonFile;
         }
         File[] propertiesFiles = new File[] { new File(commonFile),
-                new File(IOUtil.stripExtension(file) + ".properties"),
-                new File(file + ".properties"), };
+                                              new File(IOUtil.stripExtension(file) + ".properties"),
+                                              new File(file + ".properties"), };
 
         return getProperties(propertiesFiles);
     }
@@ -499,7 +499,7 @@ public abstract class RecordFile {
      * @throws IOException On badness
      */
     public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+        throws IOException {
         int         size = 8000;
         InputStream is   = null;
         if (new File(filename).exists()) {
@@ -522,9 +522,9 @@ public abstract class RecordFile {
 
                 break;
                 /*                String path = ze.getName();
-                if(path.toLowerCase().endsWith(".las")) {
-                    break;
-                }
+                                  if(path.toLowerCase().endsWith(".las")) {
+                                  break;
+                                  }
                 */
             }
             is = zin;
@@ -555,7 +555,7 @@ public abstract class RecordFile {
      */
     public DataOutputStream doMakeOutputStream() throws IOException {
         return new DataOutputStream(
-            new BufferedOutputStream(new FileOutputStream(filename), 10000));
+                                    new BufferedOutputStream(new FileOutputStream(filename), 10000));
     }
 
     /**
@@ -755,7 +755,7 @@ public abstract class RecordFile {
      */
     public Record.ReadStatus readNextRecord(VisitInfo visitInfo,
                                             Record record)
-            throws IOException {
+        throws IOException {
         visitInfo.addRecordIndex(1);
         Record.ReadStatus status =
             record.readNextRecord(visitInfo.getRecordIO());
@@ -801,7 +801,7 @@ public abstract class RecordFile {
      * @throws Exception On badness
      */
     public void visit(RecordVisitor visitor, RecordFilter filter)
-            throws Exception {
+        throws Exception {
         visit(visitor, doMakeVisitInfo(), filter);
     }
 
@@ -818,7 +818,7 @@ public abstract class RecordFile {
      */
     public void visit(RecordVisitor visitor, VisitInfo visitInfo,
                       RecordFilter filter)
-            throws Exception {
+        throws Exception {
 
         //        System.err.println("RecordFile: " + getClass().getName() + ".visit");
         if (visitInfo == null) {
@@ -843,14 +843,14 @@ public abstract class RecordFile {
 
             while (true) {
                 if ((visitInfo.getStop() > 0)
-                        && (visitInfo.getRecordIndex()
-                            > visitInfo.getStop())) {
+                    && (visitInfo.getRecordIndex()
+                        > visitInfo.getStop())) {
                     break;
                 }
                 try {
                     //This sets the record index
                     Record.ReadStatus status = readNextRecord(visitInfo,
-                                                   record);
+                                                              record);
                     if (status == Record.ReadStatus.EOF) {
                         break;
                     }
@@ -860,14 +860,14 @@ public abstract class RecordFile {
                             continue;
                         }
                         if ((filter == null)
-                                || filter.isRecordOk(record, visitInfo)) {
+                            || filter.isRecordOk(record, visitInfo)) {
                             cnt++;
                             if ((visitInfo.getMax() > 0)
-                                    && (cnt >= visitInfo.getMax())) {
+                                && (cnt >= visitInfo.getMax())) {
                                 break;
                             }
                             if ( !visitor.visitRecord(this, visitInfo,
-                                    record)) {
+                                                      record)) {
                                 break;
                             }
                         }
@@ -928,7 +928,7 @@ public abstract class RecordFile {
      * @throws Exception On badness
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record)
-            throws Exception {
+        throws Exception {
         if (ymdhmsIndices != null) {
             setDateFromYMDHMS(record, ymdhmsIndices, sdf);
         } else if ((sdf != null)
@@ -961,17 +961,17 @@ public abstract class RecordFile {
     public void printCsv(final PrintWriter pw) throws Exception {
         final int[]   cnt     = { 0 };
         RecordVisitor visitor = new RecordVisitor() {
-            public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
-                if (cnt[0] == 0) {
-                    record.printCsvHeader(visitInfo, pw);
-                }
-                cnt[0]++;
-                record.printCsv(visitInfo, pw);
+                public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
+                                           Record record) {
+                    if (cnt[0] == 0) {
+                        record.printCsvHeader(visitInfo, pw);
+                    }
+                    cnt[0]++;
+                    record.printCsv(visitInfo, pw);
 
-                return true;
-            }
-        };
+                    return true;
+                }
+            };
         visit(visitor);
     }
 
@@ -985,7 +985,7 @@ public abstract class RecordFile {
      * @throws Exception On badness
      */
     public void printCsv(final PrintWriter pw, final List<RecordField> fields)
-            throws Exception {
+        throws Exception {
         RecordVisitor visitor = new CsvVisitor(pw, fields);
         visit(visitor);
     }
@@ -1004,10 +1004,10 @@ public abstract class RecordFile {
      * @throws IOException On badness
      */
     public boolean skip(VisitInfo visitInfo, Record record, int howMany)
-            throws IOException {
+        throws IOException {
         visitInfo.addRecordIndex(howMany);
         visitInfo.getRecordIO().getDataInputStream().skipBytes(howMany
-                * record.getRecordSize());
+                                                               * record.getRecordSize());
 
         return true;
     }
@@ -1069,7 +1069,7 @@ public abstract class RecordFile {
      */
     public VisitInfo write(RecordIO recordOutput, VisitInfo visitInfo,
                            RecordFilter filter, boolean writeHeader)
-            throws Exception {
+        throws Exception {
         if (visitInfo == null) {
             visitInfo = doMakeVisitInfo();
         }
@@ -1105,7 +1105,7 @@ public abstract class RecordFile {
      */
     public void writeRecords(RecordIO recordInput, RecordIO recordOutput,
                              VisitInfo visitInfo, RecordFilter filter)
-            throws Exception {
+        throws Exception {
         Record record = makeRecord(visitInfo);
         int    index  = 0;
         if (visitInfo.getStart() > 0) {
@@ -1121,7 +1121,7 @@ public abstract class RecordFile {
                 record.readNextRecord(recordInput);
                 record.index = index;
                 if ((filter == null)
-                        || filter.isRecordOk(record, visitInfo)) {
+                    || filter.isRecordOk(record, visitInfo)) {
                     visitInfo.incrCount();
                     record.write(recordOutput);
                 }
@@ -1276,8 +1276,8 @@ public abstract class RecordFile {
     public boolean isMissingValue(Record record, RecordField field,
                                   String s) {
         return s.equals("---") || s.equals("n.v.") || (s.length() == 0)
-               || s.equals("null") || s.equals("nan") || s.equals("NAN")
-               || s.equals("NA") || s.equals("NaN");
+            || s.equals("null") || s.equals("nan") || s.equals("NAN")
+            || s.equals("NA") || s.equals("NaN");
     }
 
 
@@ -1343,7 +1343,7 @@ public abstract class RecordFile {
      */
     private void setDateFromYMDHMS(Record record, int[] indices,
                                    SimpleDateFormat sdf)
-            throws Exception {
+        throws Exception {
         dttm.setLength(0);
         for (int i = 0; i < indices.length; i++) {
             if (indices[i] < 0) {
@@ -1369,8 +1369,14 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    private void setDateFromDateAndTimeIndex(Record record) throws Exception {
+    public void setDateFromDateAndTimeIndex(Record record) throws Exception {
         dttm.setLength(0);
+        getDateTimeString(record, dttm, dateIndex, timeIndex);
+        Date date = sdf.parse(dttm.toString());
+        record.setRecordTime(date.getTime());
+    }
+
+    public void getDateTimeString(Record record, StringBuffer dttm, int dateIndex, int timeIndex) throws Exception {
         if (dateIndex >= 0) {
             dttm.append(getString(record, dateIndex));
         }
@@ -1378,12 +1384,19 @@ public abstract class RecordFile {
             if (dateIndex >= 0) {
                 dttm.append(" ");
             }
-            dttm.append(getString(record, timeIndex));
+            //Not sure if we want to pad as the date format might handle it
+            String timeField = getString(record, timeIndex);
+            if(timeField.length()==1) {
+                dttm.append("000");
+            } else  if(timeField.length()==2) {
+                dttm.append("00");
+            } else  if(timeField.length()==3) {
+                dttm.append("0");
+            }
+            dttm.append(timeField);
         }
-
-        Date date = sdf.parse(dttm.toString());
-        record.setRecordTime(date.getTime());
     }
+
 
     /**
      * _more_
@@ -1393,7 +1406,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    private String getString(Record record, int index) {
+    public String getString(Record record, int index) {
         if (record.hasObjectValue(index)) {
             return record.getObjectValue(index).toString();
         } else {
@@ -1499,6 +1512,45 @@ public abstract class RecordFile {
     public SimpleDateFormat getSdf() {
         return sdf;
     }
+
+    /**
+       Set the DateIndex property.
+
+       @param value The new value for DateIndex
+    **/
+    public void setDateIndex (int value) {
+	dateIndex = value;
+    }
+
+    /**
+       Get the DateIndex property.
+
+       @return The DateIndex
+    **/
+    public int getDateIndex () {
+	return dateIndex;
+    }
+
+    /**
+       Set the TimeIndex property.
+
+       @param value The new value for TimeIndex
+    **/
+    public void setTimeIndex (int value) {
+	timeIndex = value;
+    }
+
+    /**
+       Get the TimeIndex property.
+
+       @return The TimeIndex
+    **/
+    public int getTimeIndex () {
+	return timeIndex;
+    }
+
+
+
 
 
 

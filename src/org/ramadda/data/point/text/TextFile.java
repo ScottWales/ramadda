@@ -99,6 +99,9 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
 
+    /** _more_          */
+    public static final String PROP_DATEFORMAT = "dateformat";
+
     /** _more_ */
     public static final String PROP_HEADER_DELIMITER = "header.delimiter";
 
@@ -345,17 +348,30 @@ public abstract class TextFile extends PointFile implements Fields {
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
         if (headerDelimiter != null) {
+            boolean starts = headerDelimiter.startsWith("starts:");
+            if (starts) {
+                headerDelimiter =
+                    headerDelimiter.substring("starts:".length());
+            }
             while (true) {
                 String line = visitInfo.getRecordIO().readLine();
                 if (line == null) {
                     break;
                 }
                 line = line.trim();
+                if (starts && line.startsWith(headerDelimiter)) {
+                    break;
+                }
                 if (line.equals(headerDelimiter)) {
                     break;
                 }
                 if ( !haveReadHeader) {
                     headerLines.add(line);
+                }
+                //Don't go crazy if we miss the header
+                if (headerLines.size() > 500) {
+                    throw new IllegalStateException(
+                        "Reading way too many header lines");
                 }
             }
         } else if (isHeaderStandard()) {
@@ -415,6 +431,18 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public void putFields(String[] fields) {
         putProperty(PROP_FIELDS, makeFields(fields));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
+    public boolean isLineData(String line) {
+        return true;
     }
 
 
