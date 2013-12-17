@@ -23,7 +23,6 @@ package org.ramadda.data.point.wsbb;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
-
 import org.ramadda.data.record.*;
 import org.ramadda.util.Utils;
 
@@ -35,27 +34,27 @@ import java.io.*;
 import java.util.List;
 
 
-
 /**
+ * A file reader for the Global Geodynamics GGP format
  */
 public class GgpPointFile extends CsvFile {
 
-    /** _more_ */
+    /** what to use for missing numeric metadata */
     public static final double DOUBLE_UNDEFINED = 0;
 
-    /** _more_ */
+    /** header delimiter */
     public static final String HEADER_DELIMITER = "starts:C***********";
 
-    /** _more_ */
+    /** skip this */
     public static final String BLOCK_START = "77777777";
 
-    /** _more_ */
+    /** skip this */
     public static final String BLOCK_END = "88888888";
 
-    /** _more_ */
+    /** skip this */
     public static final String FILE_END = "99999999";
 
-    /** _more_ */
+    /** missing value */
     public static final double MISSING = 99999.999;
 
     /**
@@ -69,14 +68,14 @@ public class GgpPointFile extends CsvFile {
     }
 
     /**
-     * _more_
+     * In the GGP format there can be blocks of delimited data
      *
-     * @param line _more_
+     * @param line line of text
      *
-     * @return _more_
+     * @return is this good data
      */
     @Override
-    public boolean isLineData(String line) {
+    public boolean isLineValidData(String line) {
         if (line.startsWith(BLOCK_START)) {
             return false;
         }
@@ -104,11 +103,15 @@ public class GgpPointFile extends CsvFile {
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         StringBuffer desc = new StringBuffer();
+        //Set some of the properties
         putProperty(PROP_DELIMITER, " ");
         putProperty(PROP_HEADER_DELIMITER, HEADER_DELIMITER);
         putProperty(PROP_DATEFORMAT, "yyyyMMdd HHmmss");
+
+        //Read the header
         super.prepareToVisit(visitInfo);
 
+        //Pull the metadata from the header
         List<String> headerLines         = getHeaderLines();
         String       station             = "",
                      instrument          = "",
@@ -128,10 +131,15 @@ public class GgpPointFile extends CsvFile {
                 String value = toks.get(1).trim();
                 if (name.indexOf("Station") >= 0) {
                     station = value;
+                    //clean up the station
+                    station = station.replaceAll(",", " - ");
                 } else if (name.indexOf("Instrument") >= 0) {
                     instrument = value;
+                    //clean up the instrument
+                    instrument = instrument.replaceAll(",", " - ");
                 } else if (name.indexOf("Author") >= 0) {
                     author = value;
+                    author = author.replaceAll(",", " - ");
                 } else if (name.indexOf("Latitude") >= 0) {
                     latitude = Misc.decodeLatLon(value);
                 } else if (name.indexOf("Longitude") >= 0) {
@@ -143,9 +151,10 @@ public class GgpPointFile extends CsvFile {
                 } else if (name.indexOf("Height") >= 0) {
                     elevation = parseDouble(value);
                 } else {
-                    //System.err.println("NA:" + line);
+                    //System.err.println("Unknown:" + line);
                 }
             } else {
+                //I've seen some files with comment lines. 
                 if (line.startsWith("#")) {
                     line = line.substring(1);
                     desc.append(line);
@@ -154,11 +163,10 @@ public class GgpPointFile extends CsvFile {
             }
         }
 
-
         setDescriptionFromFile(desc.toString());
         setLocation(latitude, longitude, elevation);
 
-        //LOOK: this needs to be in the same order as the wsbbtypes.xml defines in the point plugin
+        //this needs to be in the same order as the wsbbtypes.xml in the point plugin
         setFileMetadata(new Object[] {
             station, instrument, author, new Double(timeDelay),
             new Double(gravityCalibration), new Double(pressureCalibration)
@@ -168,16 +176,18 @@ public class GgpPointFile extends CsvFile {
         //Note: The first fields (site, lat, lon, elev) aren't in the data rows
         //We define that there are fields but they have a fixed value.
 
-        station = station.replaceAll(",", " - ");
         putFields(new String[] {
             //Embed the values for site, lat, lon and elevation
-            makeField("station", attrType(TYPE_STRING),
+            makeField(FIELD_STATION, attrType(TYPE_STRING),
                       attrValue(station.trim())),
             makeField(FIELD_LATITUDE, attrValue(latitude)),
             makeField(FIELD_LONGITUDE, attrValue(longitude)),
             makeField(FIELD_ELEVATION, attrValue(elevation)),
-            makeField(FIELD_DATE, attrType(TYPE_STRING) + " isdate=true "),
-            makeField(FIELD_TIME, attrType(TYPE_STRING) + " istime=true "),
+            makeField(FIELD_DATE,
+                      attrType(TYPE_STRING) + attr("isdate", "true")),
+            makeField(FIELD_TIME,
+                      attrType(TYPE_STRING) + attr("istime", "true")),
+            //TODO: What is the unit for gravity and pressure
             makeField("gravity", attrUnit("V"), attrChartable(),
                       attrMissing(MISSING)),
             makeField("pressure", attrUnit("hPa"), attrChartable(),
@@ -189,14 +199,14 @@ public class GgpPointFile extends CsvFile {
 
 
     /**
-     * _more_
+     * Override the base file reader method that gets the date-time string from the field values
+     * We do this because some of the GGP files did not pad their hhmmss column with "0"
+     * @param record data record that got read
+     * @param dttm buffer to set the date string with
+     * @param dateIndex the date column
+     * @param timeIndex the time column
      *
-     * @param record _more_
-     * @param dttm _more_
-     * @param dateIndex _more_
-     * @param timeIndex _more_
-     *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     @Override
     public void getDateTimeString(Record record, StringBuffer dttm,
@@ -213,11 +223,11 @@ public class GgpPointFile extends CsvFile {
     }
 
     /**
-     * _more_
+     * utility to parse a double from the header
      *
-     * @param s _more_
+     * @param s string value
      *
-     * @return _more_
+     * @return double value if s is defined. else the DOUBLE_DEFINED
      */
     private double parseDouble(String s) {
         if (Utils.stringDefined(s)) {
@@ -232,10 +242,11 @@ public class GgpPointFile extends CsvFile {
         return DOUBLE_UNDEFINED;
     }
 
+
     /**
-     * _more_
+     * Test main
      *
-     * @param args _more_
+     * @param args cmd line args
      */
     public static void main(String[] args) {
         PointFile.test(args, GgpPointFile.class);

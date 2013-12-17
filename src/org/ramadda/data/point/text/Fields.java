@@ -57,6 +57,8 @@ public interface Fields {
     /** _more_ */
     public static final String FIELD_SITE_ID = "Site_Id";
 
+    public static final String FIELD_STATION = "Station";
+
     /** _more_ */
     public static final String FIELD_LATITUDE = "Latitude";
 

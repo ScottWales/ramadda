@@ -441,7 +441,7 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      * @return _more_
      */
-    public boolean isLineData(String line) {
+    public boolean isLineValidData(String line) {
         return true;
     }
 

@@ -266,8 +266,8 @@ public class TextRecord extends DataRecord {
      *
      * @return _more_
      */
-    public boolean isLineData(String line) {
-        return ((TextFile) getRecordFile()).isLineData(line);
+    public boolean isLineValidData(String line) {
+        return ((TextFile) getRecordFile()).isLineValidData(line);
     }
 
     /**
@@ -288,7 +288,7 @@ public class TextRecord extends DataRecord {
                 if (line == null) {
                     return ReadStatus.EOF;
                 }
-                if (isLineData(line)) {
+                if (isLineValidData(line)) {
                     break;
                 }
             }
