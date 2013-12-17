@@ -348,7 +348,6 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
         String typeProperties = getProperty("record.properties",
                                             (String) null);
-        System.err.println("got property:" + typeProperties);
 
         if (typeProperties != null) {
             if (p == null) {
