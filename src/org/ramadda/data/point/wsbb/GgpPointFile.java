@@ -36,22 +36,28 @@ import java.util.List;
 
 /**
  * A file reader for the Global Geodynamics GGP format
+ * This is defined as an entry type in the point plugin
+ * Look in org/ramadda/geodata/point/wsbb/wsbbtypes.xml
  */
 public class GgpPointFile extends CsvFile {
 
     /** what to use for missing numeric metadata */
     public static final double DOUBLE_UNDEFINED = 0;
 
-    /** header delimiter */
+    /**
+     * header delimiter.
+     *   If the delimiter starts with "starts:" then the TextFile
+     *   checks the line accordingly. Else it checks for equality.
+     */
     public static final String HEADER_DELIMITER = "starts:C***********";
 
-    /** skip this */
+    /** skip lines that equal */
     public static final String BLOCK_START = "77777777";
 
-    /** skip this */
+    /** skip lines that equal */
     public static final String BLOCK_END = "88888888";
 
-    /** skip this */
+    /** skip lines that equal */
     public static final String FILE_END = "99999999";
 
     /** missing value */
