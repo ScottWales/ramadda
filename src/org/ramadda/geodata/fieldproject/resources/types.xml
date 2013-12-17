@@ -521,7 +521,7 @@
 
 
 
-  <type name="project_vocabulary"  description="Vocabulary" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Services and Software" childtypes="project_term,project_standard_name">
+  <type name="project_vocabulary"  description="Vocabulary" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Software and Services" childtypes="project_term,project_standard_name">
      <property name="icon" value="/fieldproject/book-open-text.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -530,7 +530,7 @@
    </type>
 
 
-  <type name="project_term"  description="Vocabulary Term" category="Services and Software" mefirst="true">
+  <type name="project_term"  description="Vocabulary Term" category="Software and Services" mefirst="true">
      <property name="form.name.label" value="Term"/>
      <property name="form.description.label" value="Definition"/>
      <property name="icon" value="/fieldproject/textfield.png"/>
@@ -543,7 +543,7 @@
 
 
 
-  <type name="project_standard_name"  description="Parameter Name" category="Services and Software">
+  <type name="project_standard_name"  description="Parameter Name" category="Software and Services">
      <property name="icon" value="/fieldproject/pencil-ruler.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
@@ -554,7 +554,7 @@
    </type>
 
 
-  <type name="project_dataformat"  description="Data Format" category="Services and Software"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+  <type name="project_dataformat"  description="Data Format" category="Software and Services"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
      <property name="icon" value="/fieldproject/database_gear.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
