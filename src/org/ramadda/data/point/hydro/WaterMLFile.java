@@ -27,12 +27,12 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.util.WaterMLUtil;
 
-import org.w3c.dom.*;
+
 
 import ucar.unidata.xml.XmlUtil;
 
+import org.w3c.dom.*;
 import java.io.*;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,8 +52,8 @@ public class WaterMLFile extends PointFile {
 
     /** read from file */
     private double latitude  = 0,
-        longitude = 0,
-        altitude  = 0;
+                   longitude = 0,
+                   altitude  = 0;
 
     /** _more_ */
     private List<RecordField> fields;
@@ -89,6 +89,7 @@ public class WaterMLFile extends PointFile {
             doQuickVisit();
         }
         dataRecord.initFields(fields);
+
         return dataRecord;
     }
 
@@ -102,6 +103,7 @@ public class WaterMLFile extends PointFile {
      */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
+
         if (fields != null) {
             return visitInfo;
         }
@@ -206,7 +208,8 @@ public class WaterMLFile extends PointFile {
             numValues = Math.max(numValues, values.size());
         }
 
-        RecordField dateField = new RecordField("date", "Date", "Date", 4,"");
+        RecordField dateField = new RecordField("date", "Date", "Date", 4,
+                                    "");
         dateField.setType(RecordField.TYPE_DATE);
         fields.add(0, dateField);
 
@@ -264,6 +267,7 @@ public class WaterMLFile extends PointFile {
 
         return visitInfo;
 
+
     }
 
     /**
@@ -293,7 +297,24 @@ public class WaterMLFile extends PointFile {
         dataRecord.setLatitude(latitude);
         dataRecord.setLongitude(longitude);
         dataRecord.setAltitude(altitude);
+
         return Record.ReadStatus.OK;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param action _more_
+     *
+     * @return _more_
+     */
+    public boolean isCapable(String action) {
+        if (action.equals(ACTION_TIME)) {
+            return true;
+        }
+
+        return super.isCapable(action);
     }
 
 
