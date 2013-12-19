@@ -99,7 +99,7 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     public static final String PROP_SKIPLINES = "skiplines";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DATEFORMAT = "dateformat";
 
     /** _more_ */

@@ -48,32 +48,16 @@ public class PointChecker extends RecordTool {
      *
      * @throws Exception _more_
      */
-    public PointChecker(String[] args) throws Exception {
+    public PointChecker(String[] argArray) throws Exception {
         super(null);
-        //        super(Lidar2Csv.LIDAR_FACTORY_CLASS);
-        long         total   = 0;
-        List<String> argList = processArgs(args);
-        for (int i = 0; i < argList.size(); i++) {
-            String arg = argList.get(i);
-            PointFile file =
-                (PointFile) getRecordFileFactory().doMakeRecordFile(arg);
-            PointMetadataHarvester visitor = new PointMetadataHarvester();
-            file.visit(visitor, new VisitInfo(), null);
-            System.err.println(
-                args[i] + /*" " + file.getClass().getName() +*/ " #points:"
-                + visitor.getCount() + " bounds:" + visitor.getMaxLatitude()
-                + " " + visitor.getMinLongitude() + " "
-                + visitor.getMinLatitude() + " " + visitor.getMaxLongitude()
-                + " elevation:" + visitor.getMinElevation() + " "
-                + visitor.getMaxElevation());
-            StringBuffer buff = new StringBuffer();
-            file.getInfo(buff);
-            if (buff.length() > 0) {
-                System.err.println(buff);
-            }
-            total += visitor.getCount();
+        List<String> args = processArgs(argArray);
+        for (String arg: args) {
+            System.err.println ("Checking:" + arg);
+            PointFile pointFile = (PointFile) doMakeRecordFile(arg);
+            StringBuffer sb  = new StringBuffer();
+            pointFile.runCheck(arg,sb);
+            System.err.println (sb);
         }
-        System.err.println("total #points:" + total);
     }
 
     /**

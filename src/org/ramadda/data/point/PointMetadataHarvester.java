@@ -138,6 +138,7 @@ public class PointMetadataHarvester extends RecordVisitor {
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
                                Record record) {
 
+
         PointRecord pointRecord = (PointRecord) record;
         double      lat         = pointRecord.getLatitude();
         double      lon         = pointRecord.getLongitude();
@@ -154,7 +155,7 @@ public class PointMetadataHarvester extends RecordVisitor {
         boolean skipRecord = ( !pointRecord.isValidPosition()
                                && pointRecord.needsValidPosition());
 
-
+        //        System.err.println("skip:" + skipRecord + " lat: " + lat + " " + lon);
         //Skip this if it doesn't have a valid position
         if (skipRecord) {
             if (Double.isNaN(lat) && Double.isNaN(lon)) {
@@ -285,10 +286,20 @@ public class PointMetadataHarvester extends RecordVisitor {
      * @return _more_
      */
     public String toString() {
-        String s = "latitude:" + minLatitude + " - " + maxLatitude
-                   + "  longitude:" + minLongitude + " - " + maxLongitude
-                   + " elevation:" + minElevation + " - " + maxElevation;
+        StringBuffer sb = new StringBuffer();
+        sb.append("latitude:" + minLatitude + " - " + maxLatitude);
+        sb.append("\n");
+        sb.append("longitude:" + minLongitude + " - " + maxLongitude);
+        sb.append("\n");
+        sb.append("elevation:" + minElevation + " - " + maxElevation);
+        sb.append("\n");
 
+
+        if (hasTimeRange()) {
+            sb.append("time:" + " " + new Date(getMinTime()) + " -- "
+                      + new Date(getMaxTime()));
+            sb.append("\n");
+        }
 
         if (fields != null) {
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
@@ -302,19 +313,15 @@ public class PointMetadataHarvester extends RecordVisitor {
                     if (field.getArity() > 1) {
                         continue;
                     }
-                    System.err.println(field + " " + ranges[fieldCnt][0]
-                                       + " " + ranges[fieldCnt][1]);
+                    sb.append(field + " " + ranges[fieldCnt][0] + " "
+                              + ranges[fieldCnt][1] + "\n");
                 }
             }
         }
 
 
-        if (hasTimeRange()) {
-            return s + "  time:" + " " + new Date(getMinTime()) + " -- "
-                   + new Date(getMaxTime());
-        } else {
-            return s + " no time";
-        }
+        return sb.toString();
+
     }
 
 

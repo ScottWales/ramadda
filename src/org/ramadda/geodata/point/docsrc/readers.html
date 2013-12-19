@@ -7,19 +7,23 @@ Here are some examples of different point data readers.
 
 Lets assume we have a simple CSV file with 4 columns - 
 
-[ht::pre {
-latitude, longitude, date, value
-40.0,-107,2012/10/12,  -0.931363
-45.0,-110.0,2012/10/12, -0.930391
-...
-}]
+[importcsv data/example1.csv]
 
-We can read this file with just a point.properties file:
-[ht::pre {
-skiplines=1
-fields=latitude\[unit="degrees"\],longitude\[unit="degrees"\],date\[type="date" format="yyyy/MM/dd"\],value\[searchable="true" chartable="true" unit="some unit"\]
-}]
+We can read this file with just a point.properties file. The key properties are
+<i>delimiter</i>, <i>skiplines</i> and <i>fields</i>.
 
+[importcsv data/example1.csv.properties]
+
+The <i>fields</i> property is a comma separated list of the column field identifiers.
+There may be an optional set of attributes defined with "\[" "\]" delimiters, e.g.:
+<pre>
+    fieldname\[attr1="value1" attr2="value2" ...\]
+</pre>
+
+
+An alternative way to specify attributes of fields is with other named properties as shown:
+
+[importcsv data/example1_alt.csv.properties]
 
 
 [ht::pre {

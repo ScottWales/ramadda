@@ -63,3 +63,11 @@ proc importxml {file} {
    set xml
 }
 
+
+proc importcsv {file {css {}}} {
+   lappend ::filesToCopy [file join  $file] [file join [gen::getTargetDir]  [file dirname $file]]
+   set csv [import  $file]
+    set href "<a href=\"$file\">[file tail $file]</a>"
+    return "<p>$href <pre style=\"margin:0px;margin-left:10px;border: 1px #000 solid;max-height:150px; overflow-y:auto;max-width:800px;overflow:auto;$css\">$csv</pre><p>\n"
+}
+

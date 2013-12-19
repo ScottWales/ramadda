@@ -571,6 +571,42 @@ public abstract class PointFile extends RecordFile implements Cloneable {
     /**
      * _more_
      *
+     * @param file _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void runCheck(String file, StringBuffer sb) throws Exception {
+        long                         t1       = System.currentTimeMillis();
+        final int[]                  cnt      = { 0 };
+        final PointMetadataHarvester metadata = new PointMetadataHarvester() {
+            public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
+                                       Record record) {
+                cnt[0]++;
+
+                return super.visitRecord(file, visitInfo, record);
+            }
+        };
+        Hashtable properties = RecordFile.getPropertiesForFile(file,
+                                   PointFile.DFLT_PROPERTIES_FILE);
+
+        if (properties != null) {
+            this.setProperties(properties);
+        }
+
+
+        this.visit(metadata);
+        long t2 = System.currentTimeMillis();
+        sb.append("# records:" + cnt[0]);
+        sb.append("\n");
+        sb.append("" + metadata);
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param args _more_
      * @param pointFileClass _more_
      */
@@ -578,37 +614,13 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         for (int argIdx = 0; argIdx < args.length; argIdx++) {
             String arg = args[argIdx];
             try {
-                long        t1 = System.currentTimeMillis();
-                final int[] cnt = { 0 };
-                final PointMetadataHarvester metadata =
-                    new PointMetadataHarvester() {
-                    public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
-                        cnt[0]++;
-
-                        return super.visitRecord(file, visitInfo, record);
-                    }
-                };
-
-
-
                 PointFile pointFile =
                     (PointFile) Misc.findConstructor(pointFileClass,
                         new Class[] {
                             String.class }).newInstance(new Object[] { arg });
-                Hashtable properties = RecordFile.getPropertiesForFile(arg,
-                                           PointFile.DFLT_PROPERTIES_FILE);
-
-                if (properties != null) {
-                    pointFile.setProperties(properties);
-                }
-
-
-                System.err.println("checking:" + arg);
-                pointFile.visit(metadata);
-                long t2 = System.currentTimeMillis();
-                System.err.println("time:" + (t2 - t1) / 1000.0
-                                   + " # record:" + cnt[0] + " " + metadata);
+                StringBuffer sb = new StringBuffer();
+                pointFile.runCheck(arg, sb);
+                System.err.println(sb);
             } catch (Exception exc) {
                 System.err.println("Error:" + exc + " file:" + arg);
                 exc.printStackTrace();

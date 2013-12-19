@@ -23,6 +23,8 @@ package org.ramadda.data.record;
 
 import org.ramadda.util.Utils;
 
+import ucar.unidata.util.Misc;
+
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -47,6 +49,14 @@ public class RecordField {
 
     /** _more_ */
     public static final String PROP_SEARCHABLE = "searchable";
+
+    /** _more_ */
+    public static final String PROP_ISDATE = "isdate";
+
+    /** _more_ */
+    public static final String PROP_ISTIME = "istime";
+
+
 
     /** _more_ */
     public static final String PROP_SEARCH_SUFFIX = "search.suffix";
@@ -76,10 +86,10 @@ public class RecordField {
     /** _more_ */
     private boolean isTypeDate = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isDate = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isTime = false;
 
     /** _more_ */

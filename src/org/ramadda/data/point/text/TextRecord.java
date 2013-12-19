@@ -349,11 +349,11 @@ public class TextRecord extends DataRecord {
                     if (isMissingValue(field, values[fieldCnt])) {
                         values[fieldCnt] = Double.NaN;
                     }
-
                 }
+                //                System.err.println ("value[ " + fieldCnt +"] = " + values[fieldCnt]);
             }
 
-            if ((idxX > 0) && (idxY > 0)) {
+            if ((idxX >= 0) && (idxY >= 0)) {
                 setLocation(values[idxX], values[idxY], ((idxZ >= 0)
                         ? values[idxZ]
                         : 0));

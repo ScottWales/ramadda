@@ -216,34 +216,39 @@ public class CsvFile extends TextFile {
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, "unit", ""));
 
-            String utcoffset = getProperty(properties, PROP_UTCOFFSET,
+
+
+            field.setIsDate(getProperty(field, properties,
+                                        RecordField.PROP_ISDATE,
+                                        "false").equals("true"));
+            field.setIsTime(getProperty(field, properties,
+                                        RecordField.PROP_ISTIME,
+                                        "false").equals("true"));
+
+            String utcoffset = getProperty(field, properties, PROP_UTCOFFSET,
                                            (String) null);
-
-            field.setIsDate(Misc.getProperty(properties, PROP_ISDATE, false));
-            field.setIsTime(Misc.getProperty(properties, PROP_ISTIME, false));
-
             if (utcoffset != null) {
                 field.setUtcOffset(new Integer(utcoffset).intValue());
             }
-            String precision = getProperty(properties, PROP_PRECISION,
+            String precision = getProperty(field, properties, PROP_PRECISION,
                                            (String) null);
             if (precision != null) {
                 field.setRoundingFactor(Math.pow(10,
                         Integer.parseInt(precision)));
             }
 
-
-            String missing = getProperty(properties, "missing",
+            String missing = getProperty(field, properties, "missing",
                                          defaultMissing);
             if (missing != null) {
                 field.setMissingValue(Double.parseDouble(missing));
             }
 
-            String timezone = getProperty(properties, "timezone",
+            String timezone = getProperty(field, properties, "timezone",
                                           (String) null);
-            String fmt = getProperty(properties, "fmt", (String) null);
+            String fmt = getProperty(field, properties, "fmt", (String) null);
             if (fmt == null) {
-                fmt = getProperty(properties, PROP_FORMAT, (String) null);
+                fmt = getProperty(field, properties, PROP_FORMAT,
+                                  (String) null);
             }
 
             if (fmt != null) {
@@ -251,11 +256,13 @@ public class CsvFile extends TextFile {
                 field.setDateFormat(new SimpleDateFormat(fmt));
             }
 
-            String type = getProperty(properties, "type", (String) null);
+            String type = getProperty(field, properties, "type",
+                                      (String) null);
             if (type != null) {
                 field.setType(type);
             }
-            String value = getProperty(properties, "value", (String) null);
+            String value = getProperty(field, properties, "value",
+                                       (String) null);
             if (value != null) {
                 if (field.isTypeString()) {
                     field.setDefaultStringValue(value);
@@ -285,9 +292,11 @@ public class CsvFile extends TextFile {
                             "false").equals("true")) {
                 field.setSearchable(true);
             }
-            String label = (String) properties.get("label");
+            String label = getProperty(field, properties, "label",
+                                       (String) null);
             if (label == null) {
-                label = (String) properties.get("description");
+                label = getProperty(field, properties, "description",
+                                    (String) null);
             }
             if (label != null) {
                 field.setLabel(label);
