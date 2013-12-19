@@ -278,7 +278,7 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      * _more_
      */
     protected void initProperties() {
-        //        System.err.println ("PointFile.initProperties:" + getProperties());
+        System.err.println ("PointFile.initProperties:" + getProperties());
         description  = getProperty(PROP_DESCRIPTION, description);
         crs          = getProperty(PROP_CRS, crs);
         isGeographic = crs.equals(CRS_GEOGRAPHIC);

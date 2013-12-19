@@ -313,7 +313,7 @@ public class PointMetadataHarvester extends RecordVisitor {
                     if (field.getArity() > 1) {
                         continue;
                     }
-                    sb.append(field + " " + ranges[fieldCnt][0] + " "
+                    sb.append(field.getName() + ": " + ranges[fieldCnt][0] + " "
                               + ranges[fieldCnt][1] + "\n");
                 }
             }

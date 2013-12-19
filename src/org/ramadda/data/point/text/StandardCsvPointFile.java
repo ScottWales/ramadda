@@ -55,7 +55,9 @@ public abstract class StandardCsvPointFile extends TextFile {
     /**
      * _more_
      */
-    public StandardCsvPointFile() {}
+    public StandardCsvPointFile() {
+        System.err.println("OK");
+    }
 
     /**
      * ctor

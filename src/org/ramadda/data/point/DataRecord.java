@@ -169,7 +169,7 @@ public class DataRecord extends PointRecord {
 
 
         positionRequired = getRecordFile().getProperty("position.required",
-                "true").equals("true");
+                "false").equals("true");
         idxX = idxY = idxZ = idxTime = -1;
         boolean seenLon = false;
         boolean seenLat = false;

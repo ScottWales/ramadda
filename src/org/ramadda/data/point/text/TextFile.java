@@ -115,6 +115,7 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 
+    private  boolean headerStandard = false;
 
     /**
      * _more_
@@ -239,7 +240,11 @@ public abstract class TextFile extends PointFile implements Fields {
      * @return _more_
      */
     public boolean isHeaderStandard() {
-        return false;
+        return headerStandard;
+    }
+
+    public void setIsHeaderStandard (boolean v) {
+        headerStandard = v;
     }
 
     /**
@@ -368,7 +373,7 @@ public abstract class TextFile extends PointFile implements Fields {
                 if ( !haveReadHeader) {
                     headerLines.add(line);
                 }
-                //Don't go crazy if we miss the header
+                //Don't go crazy if we miss the header delimiter
                 if (headerLines.size() > 500) {
                     throw new IllegalStateException(
                         "Reading way too many header lines");
@@ -387,7 +392,6 @@ public abstract class TextFile extends PointFile implements Fields {
 
                 if ( !isHeaderLine(line)) {
                     firstDataLine = line;
-
                     break;
                 }
 
@@ -417,6 +421,7 @@ public abstract class TextFile extends PointFile implements Fields {
             }
         }
 
+        initProperties();
         return visitInfo;
     }
 

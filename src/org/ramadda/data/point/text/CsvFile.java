@@ -176,6 +176,12 @@ public class CsvFile extends TextFile {
         }
 
         if (fieldString == null) {
+            setIsHeaderStandard(true);
+            doQuickVisit();
+            fieldString = getProperty(PROP_FIELDS, null);
+        }
+
+        if (fieldString == null) {
             throw new IllegalArgumentException("Properties must have a "
                     + PROP_FIELDS + " value");
         }
