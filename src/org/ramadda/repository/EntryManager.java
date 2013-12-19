@@ -8586,7 +8586,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
 
         //If its not a FILE then don't do anything
-        if ( !entry.getResource().isFileType()) {
+        if ( !entry.getResource().isServerSideFile()) {
             return entry;
         }
 

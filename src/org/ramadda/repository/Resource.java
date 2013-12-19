@@ -302,6 +302,16 @@ public class Resource {
      *
      * @return _more_
      */
+    public boolean isServerSideFile() {
+        return type.equals(TYPE_LOCAL_FILE);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isStoredFile() {
         return type.equals(TYPE_STOREDFILE);
     }
