@@ -1,9 +1,74 @@
 [ht::head {Developing Point Readers}]
 <%nochildlist%>
 
+
 Here are some examples of different point data readers.
 
-<subhead intoc="false" id="">Simple CSV Example</subhead>
+<subhead intoc="false" id="">Simple CSV Examples</subhead>
+
+If you have text formatted data that you want to ingest into RAMADDA
+
+The "standard CSV" format has any  number of comment and property lines 
+delimited by "#" at the beginning of the file followed by any number of data records.
+The properties are defined in the header with:
+<pre>
+#name=value
+</pre>
+
+The only property that is required is the <i>fields</i> property - a comma separated
+list of field identifiers with a set of attributes contained within &quot;\[&quot; and 
+&quot;\]&quot;.
+
+Here is a simple example with just a single column value:
+[importcsv data/value.csv]
+
+Here is a simple example with 2 columns. The second column has a missing value defined.
+[importcsv data/2values.csv]
+
+
+
+The <i>fields</i> property is a comma separated list of the column field identifiers.
+There may be an optional set of attributes defined with "\[" "\]" delimiters, e.g.:
+<pre>
+    fieldname\[attr1="value1" attr2="value2" ...\]
+</pre>
+
+
+An alternative way to specify attributes of fields is with other named properties as shown:
+[importcsv data/2values_alt.csv]
+
+
+You can specify a date/time by specifying its type="date". Use format="date format" to
+specify the date format. Here is an example with time and a single value. 
+
+[importcsv data/time_value.csv]
+
+If you have georeferenced data then specify latitude and longitude columns. Please, please, please, use decimal degrees east -180 to 180 and decimal degrees north -90 to 90.
+
+[importcsv data/latlon_value.csv]
+
+
+Here is a georeferenced time series:
+[importcsv data/latlon_time_value.csv]
+
+
+You can specify different coordinate reference systems with the <i>crs</i> property.
+For UTM coordinates specify an X and Y field and the utm zone and north/south flag:
+Here is data in UTM zone 58 South:
+[importcsv data/utm58s_rgbi.csv]
+
+Here is data in a WGS84 ellipsoid:
+[importcsv data/wgs84_rgbi.csv]
+
+
+You can also specify EPSG coordinate systems  by setting the crs property to:
+<pre>
+crs=epsg:&lt;epgs code&gt;
+</pre>
+
+
+If you have text point files that are in some pre-existing format (i.e., you can't add "#" properties) then you can specfy
+
 
 Lets assume we have a simple CSV file with 4 columns - 
 
@@ -25,16 +90,12 @@ An alternative way to specify attributes of fields is with other named propertie
 
 [importcsv data/example1_alt.csv.properties]
 
+position.required=false
 
-[ht::pre {
-date time value
-2012/10/12 14:11:17.14 -0.931363
-2012/10/12 14:11:17.24 -0.930391
-...
-}]
+[importcsv data/example3.csv]
 
 
-We can read this file with just a point.properties file:
+We can read this file with the metadata defined in a point.properties file:
 [ht::pre {
 delimiter=
 position.required=false
