@@ -624,12 +624,11 @@ public class AccessManager extends RepositoryManager {
         }
 
         if ((entry.getResource() != null)
-                && Misc.equals(entry.getResource().getType(),
-                               Resource.TYPE_FILE)) {
+                && entry.getResource().isFileType()) {
             if ( !entry.getResource().getTheFile().exists()) {
-                getEntryManager().entryFileIsMissing(entry);
-                //Don't show the bad files for regular folk
-                if (request.isAnonymous()) {
+                entry = getEntryManager().handleMissingFileEntry(request,
+                        entry);
+                if (entry == null) {
                     return null;
                 }
             }

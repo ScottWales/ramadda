@@ -1789,9 +1789,8 @@ public class EntryManager extends RepositoryManager {
                                 request, "Cannot delete top-level folder")));
                 }
 
-                List<Entry> entries = new ArrayList<Entry>();
-                entries.add(entry);
-                deleteEntries(request, entries, null);
+
+                deleteEntry(request, entry);
                 Entry group = findGroup(request, entry.getParentEntryId());
 
                 return new Result(
@@ -2977,6 +2976,22 @@ public class EntryManager extends RepositoryManager {
         return addEntryHeader(request, entry, result);
     }
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    private void deleteEntry(Request request, Entry entry) throws Exception {
+        List<Entry> entries = new ArrayList<Entry>();
+        entries.add(entry);
+        deleteEntries(request, entries, null);
+    }
 
 
 
@@ -5387,7 +5402,7 @@ public class EntryManager extends RepositoryManager {
      * @param entry _more_
      * @param typeMask _more_
      * @param links _more_
-     * @param returnNullIfNoneMatch _more_
+     * @param return NullIfNoneMatch _more_
      * @param header _more_
      *
      * @return _more_
@@ -8372,24 +8387,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /** _more_ */
-    private HashSet missingResources = new HashSet();
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
-    public void entryFileIsMissing(Entry entry) {
-        String path = entry.getResource().getPath();
-        if ( !missingResources.contains(path)) {
-            missingResources.add(path);
-            logInfo("File for entry: " + entry.getId() + " does not exist:"
-                    + path);
-        }
-    }
-
-
 
 
 
@@ -8563,5 +8560,64 @@ public class EntryManager extends RepositoryManager {
         return true;
     }
 
+
+    /** _more_ */
+    private HashSet missingResources = new HashSet();
+
+    /** _more_          */
+    public static final String PROP_DELETE_ENTRY_FILE_IS_MISSING =
+        "ramadda.delete_entry_when_file_is_missing";
+
+    /**
+     * This handles entries when their file is missing 
+     * If the property ramadda.delete_entry_when_file_is_missing is set to true
+     * then the entry is deleted.
+     * Else, if the user is not logged then the the entry isn't shown
+     * 
+     *
+     * @param request the request
+     * @param entry the entry
+     *
+     * @return The entry or null if missing
+     *
+     * @throws Exception on badness
+     */
+    public Entry handleMissingFileEntry(Request request, Entry entry)
+            throws Exception {
+
+        //If its not a FILE then don't do anything
+        if ( !entry.getResource().isFileType()) {
+            return entry;
+        }
+
+        File f = entry.getResource().getTheFile();
+        if (f.exists()) {
+            return entry;
+        }
+
+        if (getProperty(PROP_DELETE_ENTRY_FILE_IS_MISSING, false)) {
+            deleteEntry(request, entry);
+            logInfo("RAMADDA: Deleted entry with missing file: "
+                    + entry.getName() + " File:" + f);
+
+            return null;
+        }
+
+        //Don't show the bad files for regular folk
+        if (request.isAnonymous()) {
+            return null;
+        }
+
+        String path = entry.getResource().getPath();
+        if ( !missingResources.contains(path)) {
+            missingResources.add(path);
+            logError("File for entry: " + entry.getId() + " does not exist:"
+                     + path, null);
+        }
+
+        return entry;
+
+
+    }
 
 }
