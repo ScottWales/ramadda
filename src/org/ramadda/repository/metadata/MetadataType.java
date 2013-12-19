@@ -715,6 +715,41 @@ public class MetadataType extends MetadataTypeBase {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     * @param filter _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getDisplayImageUrl(Request request, Entry entry,
+                                     Metadata metadata, String filter)
+            throws Exception {
+        for (MetadataElement element : getChildren()) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
+                continue;
+            }
+            if ( !element.showAsAttachment()) {
+                continue;
+            }
+            if (element.getThumbnail()) {
+                //???                continue;
+            }
+            String url = getImageUrl(request, entry, metadata, filter);
+            if (url != null) {
+                return url;
+            }
+        }
+
+        return null;
+    }
+
+
 
     /**
      * _more_
@@ -945,7 +980,8 @@ public class MetadataType extends MetadataTypeBase {
             content.append(HtmlUtils.formTable());
             for (MetadataElement element : children) {
                 MetadataElement.FormInfo formInfo =
-                    element.getHtml(metadata.getAttr(cnt), 0);
+                    element.getHtml(request, entry, this, metadata,
+                                    metadata.getAttr(cnt), 0);
                 if (formInfo != null) {
                     String metadataHtml = formInfo.content;
                     if ((cnt > 1) && !Utils.stringDefined(metadataHtml)) {

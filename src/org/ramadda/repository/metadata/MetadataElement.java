@@ -342,6 +342,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      * _more_
      *
      * @param sb _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param type _more_
+     * @param containerMetadata _more_
      * @param value _more_
      * @param depth _more_
      *
@@ -349,15 +354,33 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      *
      * @throws Exception _more_
      */
-    public FormInfo getHtml(String value, int depth) throws Exception {
+    public FormInfo getHtml(Request request, Entry entry, MetadataType type,
+                            Metadata containerMetadata, String value,
+                            int depth)
+            throws Exception {
 
         if ((value == null) || dataType.equals(DATATYPE_SKIP)) {
             return null;
         }
-        //For now skip showing files
+
         if (dataType.equals(DATATYPE_FILE)) {
+            //Don't show thumbnails
+            if (getThumbnail()) {
+                return null;
+            }
+
+            String url = getImageUrl(request, entry, containerMetadata, this,
+                                     null);
+            if (url != null) {
+                return new FormInfo(
+                    "",
+                    HtmlUtils.img(
+                        url, HtmlUtils.cssClass("ramadda-metadata-image")));
+            }
+
             return null;
         }
+
         String tab = "";
         for (int i = 0; i < depth; i++) {
             tab = tab + "    ";
@@ -375,7 +398,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 List<MetadataElement> children  = getChildren();
                 for (MetadataElement element : children) {
                     FormInfo formInfo =
-                        element.getHtml(metadata.getAttr(element.getIndex()),
+                        element.getHtml(request, entry, type, metadata,
+                                        metadata.getAttr(element.getIndex()),
                                         depth + 1);
                     if (formInfo == null) {
                         continue;

@@ -17,6 +17,7 @@
       <element id="institution" name="Institution"/>
       <element id="email" name="Email" datatype="email"/>
       <element id="url" datatype="url" name="URL"/>
+      <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
     </type>
 
 

@@ -104,7 +104,7 @@ public class Metadata implements Constants {
     /** _more_ */
     public static final String DFLT_ENTRYID = "";
 
-    /** _more_          */
+    /** _more_ */
     public static final int PRIORITY_UNDEFINED = 0;
 
     /** _more_ */

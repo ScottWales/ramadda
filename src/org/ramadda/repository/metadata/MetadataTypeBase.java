@@ -526,40 +526,73 @@ public class MetadataTypeBase extends RepositoryManager {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
             }
-
-            File f = getFile(entry, metadata, element);
-            if (f == null) {
-                String value = metadata.getAttr(element.getIndex());
-                if ((value != null) && value.startsWith("http")) {
-                    return value;
-                }
-
-                return null;
-            }
-
-            String tail = getStorageManager().getFileTail(f.toString());
-            if (matchFile != null) {
-                if ( !matchFile.equals("*")
-                        && !Misc.equals(matchFile, tail)) {
-                    continue;
-                }
-            }
-            if (ImageUtils.isImage(f.toString())) {
-                tail = tail.replaceAll(" ", "_");
-                String path =
-                    handler.getRepository().getMetadataManager()
-                        .URL_METADATA_VIEW + "/" + tail;
-
-
-                return HtmlUtils.url(path, ARG_ELEMENT,
-                                     element.getIndex() + "", ARG_ENTRYID,
-                                     metadata.getEntryId(), ARG_METADATA_ID,
-                                     metadata.getId());
+            String url = getImageUrl(request, entry, metadata, element,
+                                     matchFile);
+            if (url != null) {
+                return url;
             }
         }
 
         return null;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     * @param element _more_
+     * @param matchFile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getImageUrl(Request request, Entry entry,
+                              Metadata metadata, MetadataElement element,
+                              String matchFile)
+            throws Exception {
+
+        File f = getFile(entry, metadata, element);
+        if (f == null) {
+            String value = metadata.getAttr(element.getIndex());
+            if ((value != null) && value.startsWith("http")) {
+                return value;
+            }
+
+            return null;
+        }
+
+        String tail = getStorageManager().getFileTail(f.toString());
+        if (matchFile != null) {
+            if ( !matchFile.equals("*") && !Misc.equals(matchFile, tail)) {
+                return null;
+            }
+            //hack, hack
+            if (matchFile.equals("display")) {
+                if ( !element.showAsAttachment()) {
+                    return null;
+                }
+            }
+
+        }
+        if (ImageUtils.isImage(f.toString())) {
+            tail = tail.replaceAll(" ", "_");
+            String path =
+                handler.getRepository().getMetadataManager()
+                    .URL_METADATA_VIEW + "/" + tail;
+
+
+            return HtmlUtils.url(path, ARG_ELEMENT, element.getIndex() + "",
+                                 ARG_ENTRYID, metadata.getEntryId(),
+                                 ARG_METADATA_ID, metadata.getId());
+        }
+
+        return null;
+    }
+
 
     /**
      * _more_

@@ -668,7 +668,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
     /** _more_ */
     public static final String ID_GRANDCHILDREN = "grandchildren";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
 
     /** _more_ */
@@ -1057,14 +1057,16 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         }
 
 
+        if ((attachment != null) && attachment.equals("*")) {
+            attachment = null;
+        }
         for (Metadata metadata : getMetadataManager().getMetadata(srcEntry)) {
             MetadataType metadataType =
                 getMetadataManager().findType(metadata.getType());
             if (metadataType == null) {
-                //                System.err.println("Whoaa: "+ metadata.getType());
                 continue;
             }
-            String url = metadataType.getImageUrl(request, srcEntry,
+            String url = metadataType.getDisplayImageUrl(request, srcEntry,
                              metadata, attachment);
             if (url != null) {
                 return getWikiImage(wikiUtil, request, url, srcEntry, props);
@@ -3951,20 +3953,22 @@ public class WikiManager extends RepositoryManager implements WikiUtil
         String  content = getDescription(request, props, originalEntry,
                                          entry);
         boolean haveText = Utils.stringDefined(content);
-        String imageUrl  = null;
+        String  imageUrl = null;
 
         if (entry.getResource().isImage()) {
-            imageUrl =  getRepository().getHtmlOutputHandler().getImageUrl(request, entry);
+            imageUrl =
+                getRepository().getHtmlOutputHandler().getImageUrl(request,
+                    entry);
         } else {
-                List<String> urls = new ArrayList<String>();
-                getMetadataManager().getThumbnailUrls(request, entry, urls);
-                if (urls.size() > 0) {
-                    imageUrl = urls.get(0);
-                }
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+            if (urls.size() > 0) {
+                imageUrl = urls.get(0);
+            }
         }
 
 
-        if (imageUrl!=null) {
+        if (imageUrl != null) {
             StringBuffer extra = new StringBuffer();
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
@@ -3993,9 +3997,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             if (Utils.stringDefined(alt)) {
                 extra.append(HtmlUtils.attr(ATTR_ALT, alt));
             }
-            String image =
-                HtmlUtils.img(
-                              imageUrl, "", extra.toString());
+            String image = HtmlUtils.img(imageUrl, "", extra.toString());
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HtmlUtils.href(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
@@ -4066,11 +4068,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
             } else {
                 content = "Unknown position:" + position;
             }
-        } 
+        }
 
 
         if (entry.getTypeHandler().isGroup()
-            && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
+                && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
             //Do we tack on the listing
             StringBuffer sb = new StringBuffer();
             List<Entry> children = getEntryManager().getChildren(request,

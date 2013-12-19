@@ -445,6 +445,10 @@ padding-right-rtl-source: physical;
 }
 
 
+.metadata-image {
+    max-width: 400px; 
+    overflow-x: none;
+}
 
 .shadow-box {
    border : 1px #ccc solid;
