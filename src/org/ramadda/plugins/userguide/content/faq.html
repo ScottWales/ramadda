@@ -172,7 +172,23 @@ Your Java runtime should also have the system property -Dfile.encoding=utf-8  de
 
 
 
+<faqitem cat="Administration" id="missing" q="I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?" >
 
+
+If you have harvested files into RAMADDA from your server file system and subsequently delete those files (e.g., scouring a real-time archive) RAMADDA will not delete the corresponding entries automatically. Instead, by default, RAMADDA will not show those kinds of entries to non logged in users but will show them to logged in users. However, no file download is available because the file is missing.
+
+To clean up these entries in RAMADDA you can manually delete the entries or you can set a property to automatically delete these types of entries.
+
+<pre>
+ramadda.delete_entry_when_file_is_missing=true
+</pre>
+
+<b>
+Be careful with this. I (jeffmc) have seen remote file systems go down momentarily and if this had been set then all of my entries that I had harvested would have been deleted.
+</b>
+
+
+</faqitem>
 
 </faq>
 

@@ -41,6 +41,7 @@ pre {
 <div class="faq-question"> <b>1.9.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
 <div class="faq-question"> <b>1.10.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
 <div class="faq-question"> <b>1.11.</b> <a class="faq-question-link" href="#template">Running with non-ascii characters</a></div>
+<div class="faq-question"> <b>1.12.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question"><h4> 1.1.  I forgot my user id. How do I retrieve it?</h4></div>
 </a><div class="faq-answer"><b>A.</b> 
@@ -186,6 +187,24 @@ If you are running mysql there are some <a href="https://www.google.com/search?h
 <p>
 
 Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
+
+</div>
+<p><hr align="center" width="10%"><p><a name="missing"></a><div class="faq-question"><h4> 1.12.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+
+
+If you have harvested files into RAMADDA from your server file system and subsequently delete those files (e.g., scouring a real-time archive) RAMADDA will not delete the corresponding entries automatically. Instead, by default, RAMADDA will not show those kinds of entries to non logged in users but will show them to logged in users. However, no file download is available because the file is missing.
+
+To clean up these entries in RAMADDA you can manually delete the entries or you can set a property to automatically delete these types of entries.
+
+<pre>
+ramadda.delete_entry_when_file_is_missing=true
+</pre>
+
+<b>
+Be careful with this. I (jeffmc) have seen remote file systems go down momentarily and if this had been set then all of my entries that I had harvested would have been deleted.
+</b>
+
 
 </div>
 <p><hr align="center" width="10%"><p></div></div></div>

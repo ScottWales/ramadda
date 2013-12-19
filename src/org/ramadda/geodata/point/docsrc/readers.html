@@ -1,0 +1,65 @@
+[ht::head {Developing Point Readers}]
+<%nochildlist%>
+
+Here are some examples of different point data readers.
+
+<subhead intoc="false" id="">Simple CSV Example</subhead>
+
+Lets assume we have a simple CSV file with 4 columns - 
+
+[ht::pre {
+latitude, longitude, date, value
+40.0,-107,2012/10/12,  -0.931363
+45.0,-110.0,2012/10/12, -0.930391
+...
+}]
+
+We can read this file with just a point.properties file:
+[ht::pre {
+skiplines=1
+fields=latitude\[unit="degrees"\],longitude\[unit="degrees"\],date\[type="date" format="yyyy/MM/dd"\],value\[searchable="true" chartable="true" unit="some unit"\]
+}]
+
+
+
+[ht::pre {
+date time value
+2012/10/12 14:11:17.14 -0.931363
+2012/10/12 14:11:17.24 -0.930391
+...
+}]
+
+
+We can read this file with just a point.properties file:
+[ht::pre {
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+fields=date\[type="string" isdate="true"\],time\[type="string" istime="true"\],value\[searchable="true" chartable="true" unit="some unit"\]
+}]
+
+
+The "isdate" and "istime" attributes result in the date/time being formed from both the column values. The date format that
+is used is specified as well.
+
+This type of file can be read from the command line. For files of this type to be ingested into RAMADDA
+we need to define a new entry type in a types.xml plugin file.
+
+
+[xml {
+  <type name="type_point_test"  super="type_point" description="Test data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+fields=date\[type="string" isdate="true"\],time\[type="string" istime="true"\],value\[searchable="true" chartable="true" unit="some unit"\]
+     </property>
+}]
+
+
+[ht::foot]
+
+
