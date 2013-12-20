@@ -53,8 +53,17 @@ proc xml {args} {
 
 
 
-proc importxml {file} {
-   lappend ::filesToCopy [file join  $file] [file join [gen::getTargetDir]  [file dirname $file]]
+
+proc copy_file {file} {
+    set targetDir [file join [gen::getTargetDir]  [file dirname $file] ]
+    file mkdir $targetDir
+    lappend ::filesToCopy [file join  $file] $targetDir
+}
+
+
+
+proc import_xml {file} {
+   copy_file $file
    set xml [import  $file]
    set href "<a href=\"$file\"><img src=\"folder.gif\" border=\"0\">$file</a>"
    set xml [xml [string trim $xml]]
@@ -65,9 +74,10 @@ proc importxml {file} {
 
 
 proc importcsv {file {css {}}} {
+    copy_file $file
    lappend ::filesToCopy [file join  $file] [file join [gen::getTargetDir]  [file dirname $file]]
    set csv [import  $file]
     set href "<a href=\"$file\">[file tail $file]</a>"
-    return "<p>$href <pre style=\"margin:0px;margin-left:10px;border: 1px #000 solid;max-height:150px; overflow-y:auto;max-width:800px;overflow:auto;$css\">$csv</pre><p>\n"
+    return "<div style=\"margin-top:10px; margin-bottom:20px;margin-left:20px;\">$href <pre style=\"margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;$css\">$csv</pre></div>\n"
 }
 
