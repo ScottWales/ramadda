@@ -106,6 +106,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     private boolean showText = true;
 
+    private boolean showName = false;
+    private boolean showDesc = false;
+
     /** _more_ */
     private boolean showArea = true;
 
@@ -195,6 +198,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 "false").equals("true");
         showText = typeHandler.getProperty("search.form.text.show",
                                            "true").equals("true");
+        showName = typeHandler.getProperty("search.form.name.show",
+                                           showName+"").equals("true");
+        showDesc = typeHandler.getProperty("search.form.description.show",
+                                           showDesc+"").equals("true");
         showArea = typeHandler.getProperty("search.form.area.show",
                                            "true").equals("true");
         showDate = typeHandler.getProperty("search.form.date.show",
@@ -237,6 +244,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         searchOpen        = Misc.getProperty(props, "searchopen", true);
         doSearchInitially = Misc.getProperty(props, "initsearch", true);
         showText          = Misc.getProperty(props, "form.text.show", true);
+        showName          = Misc.getProperty(props, "form.name.show", showName);
+        showDesc          = Misc.getProperty(props, "form.description.show", showDesc);
         showArea          = Misc.getProperty(props, "form.area.show", true);
         showDate          = Misc.getProperty(props, "form.date.show", true);
         searchUrl         = (String) props.get("searchurl");
@@ -607,6 +616,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
                     HtmlUtils.input(ARG_TEXT,
                                     request.getString(ARG_TEXT, ""),
+                                    HtmlUtils.SIZE_15 + " autofocus ")));
+        }
+
+        if (showName) {
+            formSB.append(HtmlUtils.formEntry(msgLabel("Name"),
+                    HtmlUtils.input(ARG_NAME,
+                                    request.getString(ARG_NAME, ""),
+                                    HtmlUtils.SIZE_15 + " autofocus ")));
+        }
+
+        if (showDesc) {
+            formSB.append(HtmlUtils.formEntry(msgLabel("Description"),
+                    HtmlUtils.input(ARG_DESCRIPTION,
+                                    request.getString(ARG_DESCRIPTION, ""),
                                     HtmlUtils.SIZE_15 + " autofocus ")));
         }
 

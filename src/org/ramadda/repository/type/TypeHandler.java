@@ -4545,6 +4545,25 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
+        String []textArgs = {ARG_NAME, ARG_DESCRIPTION};
+        String []columns = {Tables.ENTRIES.COL_NAME, Tables.ENTRIES.COL_DESCRIPTION};
+
+        for(int textIdx=0;textIdx<textArgs.length;textIdx++) {
+            String value = request.getString(textArgs[textIdx],(String)null);
+            if(!Utils.stringDefined(value)) {
+                continue;
+            }
+            if (!request.get(ARG_EXACT, false)) {
+                value = "%" + value +"%";
+                where.add(getDatabaseManager().makeLikeTextClause(columns[textIdx],
+                                                                  value, false));
+            } else {
+                where.add(Clause.eq(columns[textIdx],value, false));
+            }
+
+        }
+
+
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
         //A hook to allow the database manager do its own text search based on the dbms type
         if (textToSearch.length() > 0) {
@@ -4728,7 +4747,6 @@ public class TypeHandler extends RepositoryManager {
                                 Tables.ENTRIES.COL_ID)));
                 }
                 if (doRegexp) {
-
                     ors.add(
                         getDatabaseManager().makeRegexpClause(
                             Tables.ENTRIES.COL_NAME, nameTok, doNot));

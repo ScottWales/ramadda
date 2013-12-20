@@ -3076,6 +3076,7 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             if (text != null) {
                 if (arg.equals(ARG_GROUP)) {
+                    //TODO: Handle other identifiers
                     if (text.equals(ID_THIS)) {
                         text = baseEntry.getId();
                     }
