@@ -76,6 +76,9 @@ public interface Fields {
     public static final String FIELD_DATE = "Date";
 
     /** _more_ */
+    public static final String FIELD_DOY = "Doy";
+
+    /** _more_ */
     public static final String FIELD_TIME = "Time";
 
     /** _more_ */

@@ -276,6 +276,12 @@ public class Json {
     }
 
 
+    public static String formatNumber(double d) {
+        if(Double.isNaN(d)) return "null";
+        return ""+d;
+    }
+
+
     /**
      * Clean and quote some text
      *

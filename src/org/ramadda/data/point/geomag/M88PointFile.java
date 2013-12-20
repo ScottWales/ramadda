@@ -53,18 +53,6 @@ public class M88PointFile extends CsvFile {
     public static final String FIELD_SURVEY_ID = "SURVEY_ID";
 
     /** _more_ */
-    public static final String FIELD_DATE = "DATE";
-
-    /** _more_ */
-    public static final String FIELD_TIME = "TIME";
-
-    /** _more_ */
-    public static final String FIELD_LAT = "LAT";
-
-    /** _more_ */
-    public static final String FIELD_LON = "LON";
-
-    /** _more_ */
     public static final String FIELD_ALT_BAROM = "ALT_BAROM";
 
     /** _more_ */
@@ -130,7 +118,7 @@ public class M88PointFile extends CsvFile {
 
     /** _more_ */
     public static final String[] NOT_CHARTABLE_FIELDS = {
-        FIELD_DATE, FIELD_TIME, FIELD_LAT, FIELD_LON, FIELD_ALT_BAROM,
+        FIELD_DATE, FIELD_TIME, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ALT_BAROM,
         FIELD_ALT_GPS, FIELD_ALT_RADAR
     };
 
@@ -252,12 +240,10 @@ public class M88PointFile extends CsvFile {
         return super.isCapable(action);
     }
 
-    /*
-     * This gets called after a record has been read
-     */
+
 
     /**
-     * _more_
+     * This gets called after a record has been read
      *
      * @param visitInfo _more_
      * @param record _more_

@@ -23,37 +23,22 @@ package org.ramadda.data.point.geomag;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
-
 import org.ramadda.data.record.*;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.text.SimpleDateFormat;
-
-import java.util.Date;
 import java.util.List;
 
 
 
 /**
+ * A file reader for IAGA2002 formatted geomagnetic data
+ * run:
+ * java org.ramadda.data.point.geomag.IAGA2002PointFile  examples/abk20130725vmin.min
  */
 public class IAGA2002PointFile extends CsvFile {
-
-
-    /** _more_ */
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    /** _more_ */
-    public static final String FIELD_DATE = "DATE";
-
-    /** _more_ */
-    public static final String FIELD_TIME = "TIME";
-
-    /** _more_ */
-    public static final String FIELD_DOY = "DOY";
 
 
     /**
@@ -67,21 +52,22 @@ public class IAGA2002PointFile extends CsvFile {
     }
 
     /**
-     * _more_
+     * Tell the base class to read the header the standard way  - until a non header line is reached
      *
-     * @return _more_
+     * @return true
      */
     public boolean isHeaderStandard() {
         return true;
     }
 
     /**
-     * _more_
+     * Overwrite base class method to determine if the given line is a header line
      *
-     * @param line _more_
+     * @param line line
      *
-     * @return _more_
+     * @return is header line
      */
+    @Override
     public boolean isHeaderLine(String line) {
         return line.endsWith("|");
     }
@@ -98,12 +84,14 @@ public class IAGA2002PointFile extends CsvFile {
      */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-        //Set the delimiter and how many lines in the header to skip
+
+        //Set the delimiter and the date format
         putProperty(PROP_DELIMITER, "");
+        putProperty(PROP_DATEFORMAT, "yyyy-MM-dd HH:mm:ss");
         super.prepareToVisit(visitInfo);
 
-        //Read the header and make sure things are cool
         List<String> headerLines = getHeaderLines();
+
         /*
 Format                 IAGA-2002                                    |
  Source of Data         Sveriges geologiska undersokning             |
@@ -118,6 +106,8 @@ Format                 IAGA-2002                                    |
  Data Interval Type     1-minute                                     |
  Data Type              variation
         */
+
+        //Read the metadata from the header
         int    idx       = 0;
         String format    = getHeaderValue(headerLines.get(idx++));
         String source    = getHeaderValue(headerLines.get(idx++));
@@ -136,21 +126,29 @@ Format                 IAGA-2002                                    |
         String interval    = getHeaderValue(headerLines.get(idx++));
         String dataType    = getHeaderValue(headerLines.get(idx++));
 
+        //This matches up with the entry definition in the point plugin in
+        //org/ramadda/geodata/point/geomagtypes.xml
+
         setFileMetadata(new Object[] {
             iagaCode, station, source, orientation, sampling, interval,
             dataType
         });
 
 
+        //The  date and time fields are defined as string. The isdate and istime attributes
+        //cause the 2 fields to be concatenated together and the above date format is applied
+        //The attrValue(latitude), etc., is the way the georeferencing is passed back
         StringBuffer sb = new StringBuffer();
         sb.append(makeFields(new String[] {
-            makeField(FIELD_DATE, attrType("string")),
-            makeField(FIELD_TIME, attrType("string")), makeField(FIELD_DOY),
+            makeField(FIELD_DATE, attrType("string"), attr("isdate", "true")),
+            makeField(FIELD_TIME, attrType("string"), attr("istime", "true")),
+            makeField(FIELD_DOY),
             makeField(FIELD_LATITUDE, attrValue(latitude)),
             makeField(FIELD_LONGITUDE, attrValue(longitude)),
             makeField(FIELD_ELEVATION, attrValue(elevation)),
         }));
 
+        //The IAGA has different value columns depending on the reported in the header
         for (int i = 0; i < reported.length(); i++) {
             char c = reported.charAt(i);
             sb.append(",");
@@ -164,13 +162,13 @@ Format                 IAGA-2002                                    |
     }
 
     /**
-     * _more_
+     * Utility to read the IAGA2002 header and gets the value
      *
-     * @param line _more_
+     * @param line header  line
      *
-     * @return _more_
+     * @return value
      */
-    public String getHeaderValue(String line) {
+    private String getHeaderValue(String line) {
         String s = line.substring(23).trim();
         s = s.substring(0, s.length() - 1);
         s = s.trim();
@@ -178,38 +176,6 @@ Format                 IAGA-2002                                    |
         return s;
     }
 
-
-    /*
-     * This gets called after a record has been read
-     */
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
-            throws Exception {
-        if ( !super.processAfterReading(visitInfo, record)) {
-            return false;
-        }
-        TextRecord   textRecord = (TextRecord) record;
-        String       dateString = textRecord.getStringValue(1);
-        String       timeString = textRecord.getStringValue(2);
-        StringBuffer dttm       = new StringBuffer();
-        dttm.append(dateString);
-        dttm.append(" ");
-        dttm.append(timeString);
-        Date date = sdf.parse(dttm.toString());
-        record.setRecordTime(date.getTime());
-
-        return true;
-    }
 
     /**
      * _more_

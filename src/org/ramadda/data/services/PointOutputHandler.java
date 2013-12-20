@@ -39,6 +39,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.SelectionRectangle;
 
 import org.ramadda.util.TempDir;
@@ -158,6 +159,9 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_CSV;
 
+    /** _more_          */
+    public final OutputType OUTPUT_JSON;
+
     /** output type */
     public final OutputType OUTPUT_ASC;
 
@@ -261,6 +265,10 @@ public class PointOutputHandler extends RecordOutputHandler {
                                     OutputType.TYPE_OTHER, "csv", ICON_CSV,
                                     category);
 
+        OUTPUT_JSON = new OutputType("JSON", base + ".json",
+                                     OutputType.TYPE_OTHER, "json", ICON_CSV,
+                                     category);
+
 
         OUTPUT_ASC = new OutputType("ARC ASCII Grid", base + ".asc",
                                     OutputType.TYPE_OTHER, "asc", ICON_DATA,
@@ -309,6 +317,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         addType(OUTPUT_RESULTS);
         addType(OUTPUT_PRODUCT);
         addType(OUTPUT_CSV);
+        addType(OUTPUT_JSON);
         addType(OUTPUT_NC);
         addType(OUTPUT_VIEW);
         addType(OUTPUT_BOUNDS);
@@ -990,6 +999,11 @@ public class PointOutputHandler extends RecordOutputHandler {
             visitors.add(makeCsvVisitor(request, entry, pointEntries,
                                         jobInfo.getJobId()));
         }
+        if (formats.contains(OUTPUT_JSON.getId())) {
+            visitors.add(makeJsonVisitor(request, entry, pointEntries,
+                                         jobInfo.getJobId()));
+        }
+
         if (formats.contains(OUTPUT_NC.getId())) {
             visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
@@ -1104,6 +1118,115 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
 
                 return true;
+            }
+        };
+
+        return visitor;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param mainEntry _more_
+     * @param pointEntries _more_
+     * @param jobId _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public RecordVisitor makeJsonVisitor(
+            final Request request, final Entry mainEntry,
+            List<? extends PointEntry> pointEntries, final Object jobId)
+            throws Exception {
+
+        RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
+                                    mainEntry, ".json") {
+            private int               cnt = 0;
+            private List<RecordField> fields;
+            private PrintWriter       pw;
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record)
+                    throws Exception {
+                if ( !jobOK(jobId)) {
+                    return false;
+                }
+                if (fields == null) {
+                    fields = record.getFields();
+                    pw     = getThePrintWriter();
+                    pw.append("[");
+
+                    pw.append("[");
+                    int headerCnt = 0;
+                    for (RecordField field : fields) {
+                        if (field.getSynthetic()) {
+                            continue;
+                        }
+                        if (field.getArity() > 1) {
+                            continue;
+                        }
+                        if (headerCnt > 0) {
+                            pw.append(",");
+                        }
+                        headerCnt++;
+                        pw.append(HtmlUtils.quote(field.getName()));
+                    }
+                    pw.append("],\n");
+
+                } else {
+                    pw.append(",\n");
+                }
+                pw.append("[");
+                int fieldCnt = 0;
+                for (RecordField field : fields) {
+                    if (field.getSynthetic()) {
+                        continue;
+                    }
+                    if (field.getArity() > 1) {
+                        continue;
+                    }
+                    String      svalue;
+                    ValueGetter getter = field.getValueGetter();
+                    if (getter == null) {
+                        if (field.isTypeString()) {
+                            svalue = HtmlUtils.quote(
+                                record.getStringValue(field.getParamId()));
+                        } else {
+                            double value =
+                                record.getValue(field.getParamId());
+                            svalue = Json.formatNumber(value);
+                        }
+                    } else {
+                        if (field.isTypeString()) {
+                            svalue =
+                                HtmlUtils.quote(getter.getStringValue(record,
+                                    field, visitInfo));
+                        } else {
+                            svalue =
+                                Json.formatNumber(getter.getValue(record,
+                                    field, visitInfo));
+                        }
+                    }
+                    if (fieldCnt > 0) {
+                        pw.append(",");
+                    }
+                    pw.append(svalue);
+                    fieldCnt++;
+                }
+                pw.append("]");
+                cnt++;
+
+                return true;
+            }
+
+            @Override
+            public void finished(RecordFile file, VisitInfo visitInfo) {
+                super.finished(file, visitInfo);
+                if (pw != null) {
+                    pw.append("]");
+                }
             }
         };
 
@@ -2368,6 +2491,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                 boolean forCollection) {
         outputs.add(getPointFormHandler().getSelect(OUTPUT_SUBSET));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_CSV));
+        outputs.add(getPointFormHandler().getSelect(OUTPUT_JSON));
         //        outputs.add(getPointFormHandler().getSelect(OUTPUT_NC));
         outputs.add(getPointFormHandler().getSelect(OUTPUT_LATLONALTCSV));
     }
