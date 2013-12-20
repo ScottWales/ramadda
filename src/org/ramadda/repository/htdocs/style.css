@@ -899,6 +899,8 @@ a.ramadda-heading-2-link:visited {
      border: 1px #ddd solid;
      padding: 4px;
      border-radius: 6px;
+     max-width: 300px;
+     overflow-x:auto;
 }
 
 .entry-tools-box {
