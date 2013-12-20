@@ -35,7 +35,6 @@ start() {
         touch $PID
         if nohup $COMMAND >>$LOG 2>&1 &
         then echo $! >$PID
-             echo "Done."
              echo "$(date '+%Y-%m-%d %X'): START" >>$LOG
         else echo "Error... "
              /bin/rm $PID
@@ -48,11 +47,9 @@ kill_cmd() {
     while true
     do
         LIST=`ps -ef | grep -v grep | grep java | grep ramadda.jar |  awk '{print $2}'`
-        echo GOT
-        echo $LIST
         if [ "$LIST" ]
         then
-            echo; echo "$MSG $LIST" ; echo
+            echo "$MSG $LIST" ; 
             echo $LIST | xargs kill $SIGNAL
             sleep 2
             SIGNAL="-9" ; MSG="Killing $SIGNAL"
@@ -61,7 +58,7 @@ kill_cmd() {
                 /bin/rm $PID
             fi
         else
-           echo; echo "All killed..." ; echo
+           echo "All killed..." ; 
            break
         fi
     done
@@ -73,8 +70,7 @@ stop() {
     if [ -f $PID ]
     then
         if kill $( cat $PID )
-        then echo "Done."
-             echo "$(date '+%Y-%m-%d %X'): STOP" >>$LOG
+        then echo "$(date '+%Y-%m-%d %X'): STOP" >>$LOG
         fi
         /bin/rm $PID
         kill_cmd
