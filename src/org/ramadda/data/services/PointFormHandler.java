@@ -793,7 +793,7 @@ public class PointFormHandler extends RecordFormHandler {
                     "<br><br><br>&nbsp;&nbsp;&nbsp;to make&nbsp;&nbsp;&nbsp;<br>"
                     + HtmlUtils.img(
                         getRepository().fileUrl(
-                            "/nlas/icons/rightarrow.jpg"));
+                            "/point/rightarrow.jpg"));
                 formats.append(
                     HtmlUtils.col(
                         middle,
@@ -1236,10 +1236,14 @@ public class PointFormHandler extends RecordFormHandler {
         Entry        entry      = pointEntry.getEntry();
         int numPointsToPlot = request.get(ARG_NUMPOINTS, TIMESERIES_POINTS);
         StringBuffer sb         = new StringBuffer();
-        String script =
-            IOUtil.readContents(
-                "/org/unavco/projects/nlas/ramadda/htdocs/nlas/nlas.js", "");
-        sb.append(HtmlUtils.script(script));
+
+        sb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
+
+//        String script =
+             //            IOUtil.readContents(
+        //                "/org/unavco/projects/nlas/ramadda/htdocs/nlas/nlas.js", "");
+        //        sb.append(HtmlUtils.script(script));
+
         sb.append(HtmlUtils.script("var pointDataDomainBase = \""
                                    + getOutputHandler().getDomainBase()
                                    + "\";\n"));

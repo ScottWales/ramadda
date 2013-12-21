@@ -23,7 +23,6 @@ package org.ramadda.data.point.amrc;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
-
 import org.ramadda.data.record.*;
 
 import ucar.unidata.util.Misc;
@@ -37,11 +36,8 @@ import java.util.Date;
 import java.util.List;
 
 
-
 /**
- * This is a hand written file that reads the AMRC final QC'ed point data
- * It also acts as a good framework to document how to develop a point data
- * reader.
+ * This class reads the QC'ed meteorolgical data from the Antarctic Meteorology Research Center (AMRC).
  *
  * The AMRC data is of the form:
  * <pre>
@@ -51,9 +47,11 @@ import java.util.List;
  * </pre>
  *
  * This class overwrites prepareToVisit to read the metadata from the header
- * and define the fields (i.e.,  the data dictionary). It overwrites processAfterReading
- * to set the Date/time of the observation
+ * and define the fields (i.e.,  the data dictionary).
+ * The data that the API produces looks like:
+ * site_id,   latitude, longitude, elevation, year, julian day, month, day, ...
  *
+ * It overwrites processAfterReading to set the Date/time of the observation
  *
  * You can run this from the command line with:
  * java org.ramadda.data.point.amrc.AmrcFinalQCFile file.txt
@@ -69,61 +67,47 @@ import java.util.List;
 public class AmrcFinalQCPointFile extends CsvFile {
 
     //Corresponds to the fields in the data
-    //We use the date field indidces to get the obs date
+    //We use the date field indices to get the obs date
 
-    /** _more_ */
+    /** base index to count from */
     private static int IDX = 1;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_SITE_ID = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_LATITUDE = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_LONGITUDE = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_ELEVATION = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_YEAR = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_JULIAN_DAY = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_MONTH = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_DAY = IDX++;
 
-    /** _more_ */
+    /** data index */
     public static final int IDX_TIME = IDX++;
 
-    /** _more_ */
-    public static final int IDX_TEMPERATURE = IDX++;
 
-    /** _more_ */
-    public static final int IDX_PRESSURE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_WIND_SPEED = IDX++;
-
-    /** _more_ */
-    public static final int IDX_WIND_DIRECTION = IDX++;
-
-    /** _more_ */
-    public static final int IDX_RELATIVE_HUMIDITY = IDX++;
-
-    /** _more_ */
-    public static final int IDX_DELTA_T = IDX++;
-
-    /** _more_ */
+    /** date formatter */
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
-    /** _more_ */
+    /** missing value */
     public static final double MISSING = 444.0;
+
+    /** buffer         */
+    private StringBuffer dttm = new StringBuffer();
 
     /**
      * The constructor
@@ -141,15 +125,16 @@ public class AmrcFinalQCPointFile extends CsvFile {
      *
      * @param visitInfo visit info
      * @return possible new visitinfo
-     * @throws IOException On badness
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-        //Se the delimiter and how many lines in the header to skip
+        //Set the delimiter and how many lines in the header to skip
         putProperty(PROP_DELIMITER, " ");
         putProperty(PROP_SKIPLINES, "2");
+
+        //Process the header
         super.prepareToVisit(visitInfo);
 
 
@@ -195,7 +180,7 @@ public class AmrcFinalQCPointFile extends CsvFile {
 
         setLocation(lat, lon, elevation);
 
-        //LOOK: this needs to be in the same order as the amrctypes.xml defines in the point plugin
+        //This needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[] { siteId, siteName, argosId });
 
         //Define the fields
@@ -230,19 +215,17 @@ public class AmrcFinalQCPointFile extends CsvFile {
     }
 
 
-    /*
-     * This gets called after a record has been read
-     */
-
     /**
-     * _more_
+     * This gets called after a record has been read.
+     * The base TextRecord/CsvFile can handle [date,time] and [year,month,day,hour,minute,second] columns.
+     * Just not [year,month,day,hhmm] for now
      *
-     * @param visitInfo _more_
-     * @param record _more_
+     * @param visitInfo Contains record visit information
+     * @param record The record
      *
-     * @return _more_
+     * @return Should we continue processing the file
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public boolean processAfterReading(VisitInfo visitInfo, Record record)
             throws Exception {
@@ -250,21 +233,26 @@ public class AmrcFinalQCPointFile extends CsvFile {
             return false;
         }
         TextRecord textRecord = (TextRecord) record;
+        dttm.setLength(0);
+
         //Get the date from the values
-        String dttm = ((int) textRecord.getValue(IDX_YEAR)) + "-"
-                      + ((int) textRecord.getValue(IDX_MONTH)) + "-"
-                      + ((int) textRecord.getValue(IDX_DAY)) + " "
-                      + textRecord.getStringValue(IDX_TIME);
-        Date date = sdf.parse(dttm);
+        dttm.append((int) textRecord.getValue(IDX_YEAR));
+        dttm.append("-");
+        dttm.append((int) textRecord.getValue(IDX_MONTH));
+        dttm.append("-");
+        dttm.append((int) textRecord.getValue(IDX_DAY));
+        dttm.append(" ");
+        dttm.append(textRecord.getStringValue(IDX_TIME));
+        Date date = sdf.parse(dttm.toString());
         record.setRecordTime(date.getTime());
 
         return true;
     }
 
     /**
-     * _more_
+     * command line test
      *
-     * @param args _more_
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         PointFile.test(args, AmrcFinalQCPointFile.class);

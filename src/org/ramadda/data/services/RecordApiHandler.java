@@ -344,6 +344,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
         }
         RecordOutputHandler loh = getRecordOutputHandler();
         for (String blob : values) {
+            //Handle old nlas format
             blob = blob.replaceAll(
                 "org.unavco.projects.nlas.ramadda.JobInfo",
                 "org.ramadda.repository.job.JobInfo");
