@@ -4,6 +4,11 @@
 </head>
 <body>
 <div style="margin-left:10px; margin-top:10px;">
+<style type="text/css">
+pre {
+   margin-top: 5px;
+}
+</style>
 
 &nbsp;<p>
 
@@ -15,30 +20,126 @@ can create the Record class that knows how to read a record from the file.
 
 <h2>Getting Started</h2>
 
-
 First, check out the core RAMADDA package
 
 <pre>
-svn co https://ramadda.svn.sourceforge.net/svnroot/ramadda
+svn checkout svn://svn.code.sf.net/p/ramadda/code/ ramadda-code
 </pre>
 
-And check out the NLAS package:
+The point data file reading code is in:
 <pre>
-svn co https://nlas.svn.sourceforge.net/svnroot/nlas/trunk
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/data/point/">src/org/ramadda/data/point</a>
 </pre>
 
-We'll use readers developed for IceBridge data which is in the NLAS package. Change directory into:
+The point data plugin is in:
 <pre>
-cd trunk/src/org/unavco/data/lidar/icebridge/
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/geodata/point/">src/org/ramadda/geodata/point</a>
 </pre>
+
+
+
+<h2>AMRC Text Files</h2>
+We're going to look at meteorological data from 
+the Antarctic Meteorology Research Center (AMRC). 
+
+Some example data can be found
+on the <a href="http://community.ramadda.org/repository/repos/data/alias/amrc">RAMADDA
+comunity site</a>.
+<p>
+
+The code is at:
+<pre>
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/data/point/amrc/AmrcFinalQCPointFile.java">src/org/ramadda/data/point/amrc/AmrcFinalQCPointFile.java</a>
+</pre>
+
+There is an example file:
+<pre>
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/data/point/amrc/exampleamrcqc.txt">src/org/ramadda/data/point/amrc/exampleamrcqc.txt</a>
+</pre>
+
+The plugin is defined in:
+<pre>
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/geodata/point/amrc/amrctypes.xml">src/org/ramadda/geodata/point/amrc/amrctypes.xml</a>
+</pre>
+
+To run this from the command line (assuming you've installed the pointtools):
+<pre>
+    pointchecker.sh  -class org.ramadda.data.point.amrc.AmrcFinalQCPointFile exampleamrcqc.txt
+</pre>
+
+Or if you have your environment set up:
+<pre>
+    java org.ramadda.data.point.amrc.AmrcFinalQCPointFile exampleamrcqc.txt
+</pre>
+
+
+The AmrcFinalQCPointFile class reads the final QC'ed text file format:
+<pre>
+Year: 2001  Month: 09  ID: BPT  ARGOS:  8923  Name: Bonaparte Point     
+Lat: 64.78S  Lon:  64.07W  Elev:    8m
+2001 244  9  1 0000   -2.5  444.0    0.2  110.0  444.0  444.0
+2001 244  9  1 0010   -2.5  444.0    0.2  114.0  444.0  444.0
+2001 244  9  1 0020   -2.5  444.0    0.2  110.0  444.0  444.0
+2001 244  9  1 0030   -2.5  444.0    0.0    0.0  444.0  444.0
+2001 244  9  1 0040   -2.5  444.0    0.0    0.0  444.0  444.0
+</pre>
+
+This is:
+<pre>
+year,julian_day,month,day,hhmm,temperature,pressure,wind_speed,wind_direction,relative_humidity,delta_t
+</pre>
+
+We need to write some code because the point data API expects geo and time referencing so the
+AmrcFinalQCPointFile code extracts the metadata from the header and
+tacks on site,lat,lon,elevation to each row (well, sortof).
+
+The API sees:
+<pre>
+site_id,latitude,longitude,elevation,year, julian day, month, day, hhmm, ...
+</pre>
+
+
+In the  AmrcFinalQCPointFile.prepareToVisit method the 2 line header is read, the
+georeferencing metadata is then used to define the fields as, using value="..." field
+attribute to insert the metadata values.
+This allows us to take the metadata in the header (e.g., location) and have it applied to the data records.
+
+The base point code (for now) doesn't handle the particular way of expressing time so the
+AmrcFinalQCPointFile code handles it in its processAfterReading method.
+This parses the date/time from the column values and sets the time on the Record.
+
+
+<pre>
+fields=
+site_id\[ type="string"   value="BPT"  \],
+latitude\[ value="-64.78"  \],
+longitude\[ value="-64.07"  \],
+elevation\[ value="    8"  \],
+year\[ \],
+julian_Day\[ \],
+month\[ \],
+day\[ \],
+time\[ type="string"  \],
+temperature\[ unit="Celsius"   chartable="true"  \],
+pressure\[ unit="hPa"   chartable="true"  \],
+wind_speed\[ unit="m/s"   chartable="true"  \],
+wind_direction\[ unit="degrees"  \],
+relative_humidity\[ unit="%"   chartable="true"  \],
+</pre>
+
+
 
 
 <h2>Mcords IRMCR2 Text Format</h2>
-One of the readers defined in this package supports the Mcords IRMCR2 text data. 
+
+Mcords is one of the airborne LiDAR data sets from NASA's Operation IceBridge. Example IceBridge data can be found 
+on the <a href="http://community.ramadda.org/repository/repos/data/alias/icebridge">RAMADDA community site</a>
+
 The Mcords data is available here:
 <a href="ftp://n4ftl01u.ecs.nasa.gov/SAN2/ICEBRIDGE_FTP/BRMCR2_MCORDSiceThickness_v01/">
 ftp://n4ftl01u.ecs.nasa.gov/SAN2/ICEBRIDGE_FTP/BRMCR2_MCORDSiceThickness_v01
 </a>
+
 
 and looks like:
 <pre>
@@ -59,18 +160,26 @@ create a Record class that is used to read and store the values for one line or 
 
 One could hand write both the File and the Reader class but RAMADDA provides a data dictionary based
 code generation facility.
-In the Icebridge package there is a <i>definerecords.tcl</i> script that contains the data dictionary 
+
+
+In the Icebridge package there is a 
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/data/point/icebridge/definerecords.tcl">
+definerecords.tcl</a> script that contains the data dictionary 
 that generates Java code for the various readers. To run this do:
+
 <pre>
-tclsh definerecords.tcl
+  tclsh definerecords.tcl
 </pre>
 
-This script generates a self-contained McordsIrmcr2File class. This class contains a
+This script generates a self-contained 
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/data/point/icebridge/McordsIrmcr2File.java">
+McordsIrmcr2File</a> class. 
+This class contains a
 generated McordsIrmcr2Record class that does the actual reading. This code is generated by the
 generateRecordClass  procedure
 defined in ../..record/generate.tcl. The following arguments are used
 <table cellpadding=5>
-<tr valign=top><td><i>org.unavco.data.lidar.icebridge.McordsIrmcr2Record</i></td>
+<tr valign=top><td><i>org.ramadda.data.point.icebridge.McordsIrmcr2Record</i></td>
 <td>Generate this Java class </td></tr>
 <tr valign=top><td><i>-lineoriented 1</i></td>
 <td>This is a text line oriented file, not a binary file</td></tr>
@@ -129,26 +238,30 @@ are chartable.
 
 
 The generated  McordIrmcr2File class has  a main that can be used to test, e.g.:<pre>
-java org.unavco.data.lidar.icebridge.McordIrmcr2File &lt;data file&gt;
+java org.ramadda.data.point.icebridge.McordIrmcr2File &lt;data file&gt;
 </pre>
+
 
 To use the file reader within RAMADDA one has to add a new RAMADDA entry type in a plugin. 
-The NLAS RAMADDA plugin is located here:
+The main RAMADDA point plugin is located here:
 <pre>
-cd src/org/unavco/projects/nlas/ramadda
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/geodata/point/amrc/amrctypes.xml">src/org/ramadda/geodata/point/icebridgetypes.xml</a>
 </pre>
 
-In resources/types.xml is the entry used for the Mcords file. This specifies a record.file.class property that is used to instantiate the file reader. Running <i>ant</i> in the plugin directory creates an nlasplugin.jar.
 
-<pre>
-&lt;type name="lidar_mccords_irmcr2"  
-      description="McCords Irmcr2 Data" 
-      handler="org.unavco.projects.nlas.ramadda.LidarTypeHandler" 
-      super="lidar" category="LiDAR"&gt;
-     &lt;property name="icon" value="/nlas/icons/nasa.png"/&gt;
-     &lt;property name="record.file.class" value="org.unavco.data.lidar.icebridge.McordsIrmcr2File"/&gt;
-&lt;/type&gt;
-</pre>
+In icebridgetypes.xml is the entry definition for the Mcords file type. 
+This specifies a record.file.class property that is used to instantiate the file reader. 
+
+[xml {
+  <type 
+     name="type_point_icebridge_mccords_irmcr2"  
+     description="McCords Irmcr2 Data" 
+     handler="org.ramadda.data.services.PointTypeHandler" 
+     super="type_point_icebridge" >
+     <property name="icon" value="/point/nasa.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.icebridge.McordsIrmcr2File"/>
+  </type>
+}]
 
 
 
@@ -172,72 +285,13 @@ generateRecordClass org.unavco.data.lidar.icebridge.QFit10WordRecord
 }
 </pre>
 
-The records all have some common fields - relativeTime, latitude, longitude and elevation. These fields have various scaling factors. 
+The records all have some common fields - relativeTime, latitude, longitude and elevation. 
+These fields have various scaling factors. 
 We declare those fields in the base (hand written) QfitRecord class and that class in turn implements the
 getLatitude, getLongitude, etc., methods, scaling the integer values accordingly.
 
 The QfitFile is not generated. It handles the logic of determining what record format the file is in, its endianness and pulls out 
 the base date from the file name. 
 
-
-<h2>AMRC Text Files</h2>
-This example is in the core RAMADDA source tree. Check it out from Sourceforge:
-<pre>
-svn co https://ramadda.svn.sourceforge.net/svnroot/ramadda
-cd src/org/ramadda/data/point/amrc
-</pre>
-
-
-The AmrcFinalQCPointFile class reads the final QC'ed text file format:
-<pre>
-Year: 2001  Month: 09  ID: BPT  ARGOS:  8923  Name: Bonaparte Point     
-Lat: 64.78S  Lon:  64.07W  Elev:    8m
-2001 244  9  1 0000   -2.5  444.0    0.2  110.0  444.0  444.0
-2001 244  9  1 0010   -2.5  444.0    0.2  114.0  444.0  444.0
-2001 244  9  1 0020   -2.5  444.0    0.2  110.0  444.0  444.0
-2001 244  9  1 0030   -2.5  444.0    0.0    0.0  444.0  444.0
-2001 244  9  1 0040   -2.5  444.0    0.0    0.0  444.0  444.0
-</pre>
-
-The AmrcFinalQCPointFile does not create a specific Record class (like the examples above). Rather, it
-uses the generic TextRecord that is instantiated by a <i>fields</i> property.
-
-In the  AmrcFinalQCPointFile.prepareToVisit method the 2 line header is read and the fields are defined:
-<pre>
-fields=
-Site_Id\[ type="string"   value="BPT"  \],
-Latitude\[ value="-64.78"  \],
-Longitude\[ value="-64.07"  \],
-Elevation\[ value="    8"  \],
-Year\[ \],
-Julian_Day\[ \],
-Month\[ \],
-Day\[ \],
-Time\[ type="string"  \],
-Temperature\[ unit="Celsius"   chartable="true"  \],
-Pressure\[ unit="hPa"   chartable="true"  \],
-Wind_Speed\[ unit="m/s"   chartable="true"  \],
-Wind_Direction\[ unit="degrees"  \],
-Relative_Humidity\[ unit="%"   chartable="true"  \],
-</pre>
-</body>
-</html>
-
-The fields that have the <i>value</i> attribute set are not actually in the data. This allows us to take the metadata in the header (e.g., location) and have it applied to the data records.
-
-The AmrcFinalQCPointFile class also implements the processAfterReading method to parse the date/time from the column values and set the time on the Record:
-<pre>
-    public boolean processAfterReading(VisitInfo visitInfo, Record record) throws Exception {
-        if(!super.processAfterReading(visitInfo, record)) return false;
-        TextRecord textRecord = (TextRecord) record;
-        String dttm = ((int)textRecord.getValue(IDX_YEAR))+"-" + ((int)textRecord.getValue(IDX_MONTH)) +"-"+ 
-           ((int)textRecord.getValue(IDX_DAY)) + " " + textRecord.getStringValue(IDX_TIME);
-        Date date = sdf.parse(dttm);
-        record.setRecordTime(date.getTime());
-        return true;
-    }
-</pre>
-
-</div>
 </body>
 </html>
