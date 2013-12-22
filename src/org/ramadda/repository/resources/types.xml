@@ -82,16 +82,50 @@
  </type>
 
 
-  <type name="type_column"  description="RAMADDA Database Column" handler="org.ramadda.repository.type.ColumnTypeHandler">
+  <type name="type_metadata_definition"  description="RAMADDA Data Definition" handler="org.ramadda.repository.type.MetadataDefinitionTypeHandler" childtypes="type_metadata_column">
+     <property name="icon" value="/icons/folder_database.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+     <column name="type"  type="enumeration"     label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
+     <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
+
+     <column name="handler_class" type="string"     label="Handler Class"  showinhtml="true" />
+<wiki>
+{{table}}
+
+{{metadata.bulkform}}
+</wiki>
+ </type>
+
+
+
+
+  <type name="type_metadata_column"  description="RAMADDA Data Field" handler="org.ramadda.repository.type.MetadataColumnTypeHandler">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
-     <column name="column_index"  type="int"     label="Index" columns="4"  showinhtml="true"/>
+     <column name="column_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>
      <column name="column_name" type="string"     label="Column Name" columns="80"  showinhtml="true"/>
      <column name="datatype"  type="enumeration"   label="Data Type" values="file:/org/ramadda/repository/resources/columntypes.properties"/>
-     <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values"/>
-     <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;rows=text area rows&lt;br&gt;size=string db size&lt;br&gt;group=,&lt;br&gt;isindex=true&lt;br&gt;cansearch, canshow, canlist"/>
+
+     <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values" canlist="false"/>
+     <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;group=,&lt;br&gt;isindex=true&lt;br&gt;cansearch, canshow, canlist"/>
+
+     <column name="textfield_rows" type="int"     default="1" label="Text Field Rows" columns="5"  showinhtml="true" xxxgroup="" canlist="false"/>
+     <column name="textfield_columns" type="int"     default="60" label="Text Field Columns" columns="5"  showinhtml="true" canlist="false"/>
+     <column name="database_column_size" type="int"   default="200"  label="Database Column Size" columns="5"  showinhtml="true" canlist="false"/>
+
+     <column name="missing" type="string"     label="Missing Value" columns="10"  showinhtml="true" group="Fields for Data" canlist="false"/>
+     <column name="unit" type="string"        label="Unit" columns="10"  showinhtml="true" canlist="false"/>
+
+<wiki>
+{{information}}
+
+{{tree message=""}}
+</wiki>
  </type>
 
 

@@ -756,6 +756,17 @@ public class Entry implements Cloneable {
         return values;
     }
 
+    public Object getValue(int index) {
+        if ((values == null) || (index >= values.length)
+                || (values[index] == null)) {
+            return null;
+        }
+
+        return values[index];
+    }
+
+
+
     /**
      * Get the string value of the values index
      *

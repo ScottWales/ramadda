@@ -6914,20 +6914,20 @@ public class EntryManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
-     * @param group _more_
+     * @param parentEntry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Entry> getChildrenAll(Request request, Entry group)
+    public List<Entry> getChildrenAll(Request request, Entry parentEntry)
             throws Exception {
         List<Entry> children = new ArrayList<Entry>();
-        if ( !group.isGroup()) {
+        if ( !parentEntry.isGroup()) {
             return children;
         }
         List<Entry>  entries = new ArrayList<Entry>();
-        List<String> ids     = getChildIds(request, (Entry) group, null);
+        List<String> ids     = getChildIds(request, parentEntry, null);
         for (String id : ids) {
             Entry entry = getEntry(request, id);
             if (entry == null) {
@@ -6940,8 +6940,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
-
-        return children;
+        return  parentEntry.getTypeHandler().postProcessEntries(request, children);
     }
 
 
@@ -6976,8 +6975,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
-
-        return children;
+        return  parentEntry.getTypeHandler().postProcessEntries(request, children);
     }
 
 

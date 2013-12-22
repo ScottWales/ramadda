@@ -49,7 +49,10 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class ColumnTypeHandler extends GenericTypeHandler {
+public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
+
+
+    public static final String  TYPE_METADATA_COLUMN= "type_metadata_column";
 
     /** _more_ */
     public static final int COL_INDEX = 0;
@@ -63,7 +66,7 @@ public class ColumnTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public ColumnTypeHandler(Repository repository, Element entryNode)
+    public MetadataColumnTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -79,5 +82,27 @@ public class ColumnTypeHandler extends GenericTypeHandler {
     public boolean canBeCreatedBy(Request request) {
         return request.getUser().getAdmin();
     }
+
+
+
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+            throws Exception {
+        super.initializeEntryFromForm(request, entry,
+                                      parent, newEntry);
+        Integer index =  (Integer) entry.getValue(0);
+        int idx = index.intValue();
+        if(idx<0) {
+            int maxIndex = -1;
+            for(Entry sibling: getEntryManager().getChildrenAll(request, parent)) {
+                if(sibling.isType(TYPE_METADATA_COLUMN)) {
+                    maxIndex = Math.max(maxIndex, ((Integer)sibling.getValue(0)).intValue());
+                }
+            }
+            getValues(entry)[0] = new Integer(maxIndex+1);
+        }
+
+    }
+
 
 }

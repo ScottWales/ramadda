@@ -33,6 +33,7 @@ import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.RequestArgument;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.sql.Clause;
 
@@ -4639,19 +4640,29 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group,
                                where);
+        List<Entry> myEntries = new ArrayList<Entry>();
+        List<Entry> mySubGroups = new ArrayList<Entry>();
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
                 continue;
             }
             if (getEntryManager().handleEntryAsGroup(entry)) {
-                subGroups.add(entry);
+                mySubGroups.add(entry);
             } else {
-                entries.add(entry);
+                myEntries.add(entry);
             }
         }
+
+        subGroups.addAll(postProcessEntries(request, mySubGroups));
+        entries.addAll(postProcessEntries(request, myEntries));
+
+
     }
 
+    public List<Entry> postProcessEntries(Request request, List<Entry> entries) {
+        return entries;
+    }
 
 
 
@@ -5240,6 +5251,7 @@ public class TypeHandler extends RepositoryManager {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         List                 tmp  = new ArrayList();
         tmp.addAll(set);
+
         for (String s : (List<String>) Misc.sort(tmp)) {
             tfos.add(new TwoFacedObject(s));
         }
@@ -5519,6 +5531,15 @@ public class TypeHandler extends RepositoryManager {
 
         return dateArgs;
     }
+
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props) {
+        return null;
+    }
+
+
+
 
 
 
