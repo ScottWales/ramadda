@@ -2030,10 +2030,11 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return sb.toString();
         } else if (theTag.equals(WIKI_PROP_TABLE)) {
+            List<Entry> entries = getEntries(request,
+                                             originalEntry, entry,
+                                             props);
             getHtmlOutputHandler().makeTable(request,
-                                             getEntries(request,
-                                                 originalEntry, entry,
-                                                     props), sb);
+                                             entries, sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_PROP_RECENT)) {
@@ -2249,6 +2250,12 @@ public class WikiManager extends RepositoryManager implements WikiUtil
 
             return StringUtil.join(separator, links);
         } else {
+            String fromTypeHandler = entry.getTypeHandler().getWikiInclude(wikiUtil, request,
+                                                                           originalEntry, entry, theTag, props);
+            if(fromTypeHandler!=null) {
+                return fromTypeHandler;
+            }
+
             for (PageDecorator pageDecorator :
                     repository.getPluginManager().getPageDecorators()) {
                 String fromPageDecorator =
