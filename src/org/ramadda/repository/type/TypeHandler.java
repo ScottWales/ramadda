@@ -33,7 +33,6 @@ import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.RequestArgument;
-import org.ramadda.util.WikiUtil;
 
 import org.ramadda.sql.Clause;
 
@@ -44,6 +43,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 
 import org.w3c.dom.Element;
@@ -398,8 +398,11 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public String getWikiTemplate(Request request, Entry entry) {
+    public String getWikiTemplate(Request request, Entry entry)
+            throws Exception {
         if (wikiTemplate != null) {
             return wikiTemplate;
         }
@@ -1966,8 +1969,7 @@ public class TypeHandler extends RepositoryManager {
                     request.entryUrl(
                         getRepository().URL_ENTRY_COPY, entry,
                         ARG_FROM), getRepository().iconUrl(ICON_MOVE),
-                                   "Copy/Move/Link",
-                                   OutputType.TYPE_EDIT));
+                                   "Copy/Move/Link", OutputType.TYPE_EDIT));
         }
     }
 
@@ -2262,8 +2264,8 @@ public class TypeHandler extends RepositoryManager {
                                     msg("Download"), ""));
 
                     } else {
-                        resourceLink =
-                            resourceLink + HtmlUtils.space(2) + "(" + msg("restricted")+")";
+                        resourceLink = resourceLink + HtmlUtils.space(2)
+                                       + "(" + msg("restricted") + ")";
                     }
                 }
                 if (entry.getResource().getFileSize() > 0) {
@@ -4546,20 +4548,23 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        String []textArgs = {ARG_NAME, ARG_DESCRIPTION};
-        String []columns = {Tables.ENTRIES.COL_NAME, Tables.ENTRIES.COL_DESCRIPTION};
+        String[] textArgs = { ARG_NAME, ARG_DESCRIPTION };
+        String[] columns = { Tables.ENTRIES.COL_NAME,
+                             Tables.ENTRIES.COL_DESCRIPTION };
 
-        for(int textIdx=0;textIdx<textArgs.length;textIdx++) {
-            String value = request.getString(textArgs[textIdx],(String)null);
-            if(!Utils.stringDefined(value)) {
+        for (int textIdx = 0; textIdx < textArgs.length; textIdx++) {
+            String value = request.getString(textArgs[textIdx],
+                                             (String) null);
+            if ( !Utils.stringDefined(value)) {
                 continue;
             }
-            if (!request.get(ARG_EXACT, false)) {
-                value = "%" + value +"%";
-                where.add(getDatabaseManager().makeLikeTextClause(columns[textIdx],
-                                                                  value, false));
+            if ( !request.get(ARG_EXACT, false)) {
+                value = "%" + value + "%";
+                where.add(
+                    getDatabaseManager().makeLikeTextClause(
+                        columns[textIdx], value, false));
             } else {
-                where.add(Clause.eq(columns[textIdx],value, false));
+                where.add(Clause.eq(columns[textIdx], value, false));
             }
 
         }
@@ -4640,7 +4645,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group,
                                where);
-        List<Entry> myEntries = new ArrayList<Entry>();
+        List<Entry> myEntries   = new ArrayList<Entry>();
         List<Entry> mySubGroups = new ArrayList<Entry>();
         for (String id : ids) {
             Entry entry = getEntryManager().getEntry(request, id);
@@ -4660,7 +4665,16 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    public List<Entry> postProcessEntries(Request request, List<Entry> entries) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     */
+    public List<Entry> postProcessEntries(Request request,
+                                          List<Entry> entries) {
         return entries;
     }
 
@@ -5532,9 +5546,24 @@ public class TypeHandler extends RepositoryManager {
         return dateArgs;
     }
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props) {
+                                 String tag, Hashtable props) throws Exception {
         return null;
     }
 

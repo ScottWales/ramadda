@@ -18,12 +18,14 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.repository.type;
+package org.ramadda.plugins.metameta;
 
 
 
 
+import org.ramadda.repository.type.*;
 import org.ramadda.repository.*;
+
 
 import org.ramadda.util.HtmlUtils;
 
