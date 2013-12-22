@@ -21,10 +21,12 @@
 package org.ramadda.plugins.metameta;
 
 
+import org.ramadda.repository.*;
+
+
 
 
 import org.ramadda.repository.type.*;
-import org.ramadda.repository.*;
 
 
 import org.ramadda.util.HtmlUtils;
@@ -54,7 +56,8 @@ import java.util.List;
 public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    public static final String  TYPE_METADATA_COLUMN= "type_metadata_column";
+    /** _more_ */
+    public static final String TYPE_METADATA_COLUMN = "type_metadata_column";
 
     /** _more_ */
     public static final int COL_INDEX = 0;
@@ -86,22 +89,52 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        super.initializeEntryFromForm(request, entry,
-                                      parent, newEntry);
-        Integer index =  (Integer) entry.getValue(0);
-        int idx = index.intValue();
-        if(idx<0) {
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
+        setSortOrder(request, entry, parent);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     *
+     * @throws Exception _more_
+     */
+    private void setSortOrder(Request request, Entry entry, Entry parent)
+            throws Exception {
+
+        Integer index = (Integer) getValues(entry)[0];
+        int     idx   = ((index == null)
+                         ? -1
+                         : index.intValue());
+        if (idx < 0) {
             int maxIndex = -1;
-            for(Entry sibling: getEntryManager().getChildrenAll(request, parent)) {
-                if(sibling.isType(TYPE_METADATA_COLUMN)) {
-                    maxIndex = Math.max(maxIndex, ((Integer)sibling.getValue(0)).intValue());
+            List<Entry> siblings = getEntryManager().getChildrenAll(request,
+                                       parent);
+            for (Entry sibling : siblings) {
+                if (sibling.isType(TYPE_METADATA_COLUMN)) {
+                    int siblingIndex =
+                        ((Integer) getValues(sibling)[0]).intValue();
+                    maxIndex = Math.max(maxIndex, siblingIndex);
                 }
             }
-            getValues(entry)[0] = new Integer(maxIndex+1);
+            getValues(entry)[0] = new Integer(maxIndex + 1);
         }
 
     }

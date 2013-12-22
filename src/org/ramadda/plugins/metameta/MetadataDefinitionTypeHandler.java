@@ -57,6 +57,8 @@ import java.util.List;
  */
 public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
 
+    /** _more_          */
+    public static final String ARG_METADATA_BULK = "metadata.bulk";
 
     /**
      * _more_
@@ -66,10 +68,12 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public MetadataDefinitionTypeHandler(Repository repository, Element entryNode)
+    public MetadataDefinitionTypeHandler(Repository repository,
+                                         Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
+
 
 
     /**
@@ -84,23 +88,43 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     */
     @Override
-    public List<Entry> postProcessEntries(Request request, List<Entry> entries) {
+    public List<Entry> postProcessEntries(Request request,
+                                          List<Entry> entries) {
         List<Entry> sorted = sortEntries(entries, false);
-        System.err.println ("sorted:" + sorted);
-        return  sorted;
+
+        return sorted;
     }
 
-    private List<Entry> sortEntries(List<Entry> entries, final boolean descending) {
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    private List<Entry> sortEntries(List<Entry> entries,
+                                    final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
-                Entry e1     = (Entry) o1;
-                Entry e2     = (Entry) o2;
-                int result;
-                if(e1.isType(MetadataColumnTypeHandler.TYPE_METADATA_COLUMN) && e2.isType(MetadataColumnTypeHandler.TYPE_METADATA_COLUMN)) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+                int   result;
+                if (e1.isType(MetadataColumnTypeHandler.TYPE_METADATA_COLUMN)
+                        && e2.isType(
+                            MetadataColumnTypeHandler.TYPE_METADATA_COLUMN)) {
                     Integer i1 = (Integer) e1.getValue(0);
                     Integer i2 = (Integer) e2.getValue(0);
-                    result =  i1.compareTo(i2);
+                    result = i1.compareTo(i2);
                 } else {
                     result = e1.getName().compareToIgnoreCase(e2.getName());
                 }
@@ -122,23 +146,153 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
+
         return (List<Entry>) Misc.toList(array);
     }
 
 
-@Override
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param links _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getEntryLinks(Request request, Entry entry, List<Link> links)
+            throws Exception {
+        super.getEntryLinks(request, entry, links);
+        /*
+        links.add(
+            new Link(
+                request.entryUrl(
+                    getRepository().URL_ENTRY_ACCESS, entry, "type",
+                    "kml"), getRepository().iconUrl(ICON_KML),
+                    "Convert GPX to KML", OutputType.TYPE_FILE));*/
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryAccess(Request request, Entry entry)
+            throws Exception {
+
+
+        if ( !getEntryManager().canAddTo(request, entry)) {
+            return null;
+        }
+
+        if (request.exists(ARG_METADATA_BULK)) {
+            StringBuffer xml = new StringBuffer("<entries>\n");
+            for (String line :
+                    StringUtil.split(request.getString(ARG_METADATA_BULK,
+                        ""), "\n", true, true)) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                List<String> toks = StringUtil.split(line, ",");
+                if (toks.size() < 1) {
+                    continue;
+                }
+                String id    = toks.get(0);
+                String label = ((toks.size() > 1)
+                                ? toks.get(1)
+                                : id);
+                String type  = ((toks.size() > 2)
+                                ? toks.get(2)
+                                : "string");
+                xml.append(
+                    XmlUtil.tag(
+                        "entry",
+                        XmlUtil.attrs(
+                            ATTR_NAME, label, ATTR_TYPE,
+                            MetadataColumnTypeHandler.TYPE_METADATA_COLUMN,
+                            ATTR_PARENT, entry.getId()), XmlUtil.tag(
+                                "column_name", "",
+                                XmlUtil.getCdata(id)) + XmlUtil.tag(
+                                    "datatype", "", XmlUtil.getCdata(type))));
+
+
+                xml.append("\n");
+            }
+            xml.append("</entries>\n");
+            //Create them from XML
+            List<Entry> newEntries =
+                getEntryManager().processEntryXml(request,
+                    XmlUtil.getRoot(xml.toString()), entry, null);
+
+            //Now tell them to update again to update their sort order
+            for (Entry newEntry : newEntries) {
+                newEntry.getTypeHandler().initializeEntryFromForm(request,
+                        newEntry, entry, false);
+                //Insert the updates
+                getEntryManager().updateEntry(request, newEntry);
+            }
+
+        }
+
+
+        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+
+        return new Result(url);
+        //        return getEntryManager().addEntryHeader(request, entry, new Result("Metadata Definition", sb));
+    }
+
+
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props) throws Exception {
+                                 String tag, Hashtable props)
+            throws Exception {
 
-        if(tag.equals("metadata.bulkform")) {
-            if(!getEntryManager().canAddTo(request, entry)) return null;
-            //TODO:
-            return null;
-            //            return "XXX";
+        if (tag.equals("metadata.bulkform")) {
+            if ( !getEntryManager().canAddTo(request, entry)) {
+                return null;
+            }
+
+            StringBuffer sb = new StringBuffer();
+            sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
+            sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(
+                HtmlUtils.textArea(
+                    ARG_METADATA_BULK,
+                    "#column_id, label, type (e.g., string, int, double)", 8,
+                    70));
+            sb.append(HtmlUtils.br());
+            sb.append(HtmlUtils.submit("Create columns", "submit"));
+            sb.append(HtmlUtils.formClose());
+
+            return sb.toString();
         }
-        return super.getWikiInclude(wikiUtil, request,
-                                    originalEntry, entry,
+
+        return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
     }
 

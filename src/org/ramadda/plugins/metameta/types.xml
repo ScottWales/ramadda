@@ -10,10 +10,11 @@
      <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
 
      <column name="handler_class" type="string"     label="Handler Class"  showinhtml="true" />
-<wiki>
+<wiki><![CDATA[
 {{table}}
-
-{{metadata.bulkform}}
+<br>
+{{metadata.bulkform message=""}}
+]]>
 </wiki>
  </type>
 
@@ -39,10 +40,11 @@
      <column name="missing" type="string"     label="Missing Value" columns="10"  showinhtml="true" group="Fields for Data" canlist="false"/>
      <column name="unit" type="string"        label="Unit" columns="10"  showinhtml="true" canlist="false"/>
 
-<wiki>
+<wiki><![CDATA[
 {{information}}
 
 {{tree message=""}}
+]]>
 </wiki>
  </type>
 
