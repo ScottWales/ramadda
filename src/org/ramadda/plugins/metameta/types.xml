@@ -21,13 +21,13 @@
 
 
 
-  <type name="type_metadata_column"  description="RAMADDA Data Field" handler="org.ramadda.plugins.metameta.MetadataColumnTypeHandler">
+  <type name="type_metadata_field"  description="RAMADDA Data Field" handler="org.ramadda.plugins.metameta.MetadataColumnTypeHandler">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <column name="column_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>
-     <column name="column_name" type="string"     label="Column Name" columns="80"  showinhtml="true"/>
+     <column name="column_name" type="string"     label="Field Name" columns="80"  showinhtml="true"/>
      <column name="datatype"  type="enumeration"   label="Data Type" values="file:/org/ramadda/repository/resources/columntypes.properties"/>
 
      <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values" canlist="false"/>

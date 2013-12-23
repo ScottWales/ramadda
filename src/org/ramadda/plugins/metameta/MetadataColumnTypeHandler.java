@@ -47,8 +47,6 @@ import java.util.List;
 
 
 /**
- * Class TypeHandler _more_
- *
  *
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
@@ -57,7 +55,7 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /** _more_ */
-    public static final String TYPE_METADATA_COLUMN = "type_metadata_column";
+    public static final String TYPE_METADATA_FIELD = "type_metadata_field";
 
     /** _more_ */
     public static final int COL_INDEX = 0;
@@ -128,7 +126,7 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
             List<Entry> siblings = getEntryManager().getChildrenAll(request,
                                        parent);
             for (Entry sibling : siblings) {
-                if (sibling.isType(TYPE_METADATA_COLUMN)) {
+                if (sibling.isType(TYPE_METADATA_FIELD)) {
                     int siblingIndex =
                         ((Integer) getValues(sibling)[0]).intValue();
                     maxIndex = Math.max(maxIndex, siblingIndex);
