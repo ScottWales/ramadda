@@ -222,7 +222,7 @@ public class CsvOutputHandler extends OutputHandler {
                         entry.getTypeHandler().getColumns();
                     if (columns != null) {
                         Object[] values =
-                            entry.getTypeHandler().getValues(entry);
+                            entry.getTypeHandler().getEntryValues(entry);
                         int cnt = 0;
                         for (Column column : columns) {
                             if ( !column.getCanExport()) {

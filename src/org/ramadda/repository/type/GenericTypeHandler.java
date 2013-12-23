@@ -341,6 +341,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @return _more_
      */
+    @Override
     public Object[] makeValues(Hashtable map) {
         Object[] values = makeEntryValueArray();
         //For now we just assume each column has a single value
@@ -468,11 +469,15 @@ public class GenericTypeHandler extends TypeHandler {
         Hashtable<String, Element> nodes    = new Hashtable<String,
                                                   Element>();
 
+        System.err.println("init");
         NodeList                   elements = XmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
+            System.err.println("tag:" + child.getTagName());
             nodes.put(child.getTagName(), child);
         }
+
+
 
         for (Column column : columns) {
             String  value = null;
@@ -491,6 +496,7 @@ public class GenericTypeHandler extends TypeHandler {
                 //                System.err.println (" could not find column value:" + column);
                 continue;
             }
+            System.err.println("column.getName:" + column.getName() + " value:" + value);
             column.setValue(entry, values, value);
         }
     }
@@ -783,7 +789,7 @@ public class GenericTypeHandler extends TypeHandler {
                              boolean isNew)
             throws Exception {
         super.setStatement(entry, stmt, isNew);
-        setStatement(entry, getValues(entry), stmt, isNew);
+        setStatement(entry, getEntryValues(entry), stmt, isNew);
     }
 
 
@@ -1005,7 +1011,7 @@ public class GenericTypeHandler extends TypeHandler {
     @Override
     public String getFieldHtml(Request request, Entry entry, String name)
             throws Exception {
-        Object[] values = entry.getValues();
+        Object[] values = getEntryValues(entry);
         if (values != null) {
             for (Column column : getColumns()) {
                 if (column.isField(name)) {
@@ -1047,7 +1053,7 @@ public class GenericTypeHandler extends TypeHandler {
         //        if (shouldShowInHtml(request, entry, output)) {
         if (true) {
             StringBuffer myBuff = new StringBuffer();
-            Object[]     values = entry.getValues();
+            Object[]     values = getEntryValues(entry);
             if (values != null) {
                 String lastGroup = "";
                 for (Column column : getMyColumns()) {
@@ -1113,7 +1119,7 @@ public class GenericTypeHandler extends TypeHandler {
                                             String html)
             throws Exception {
         html = super.processDisplayTemplate(request, entry, html);
-        Object[]   values = entry.getValues();
+        Object[]   values = getEntryValues(entry);
         OutputType output = request.getOutput();
         if (values != null) {
             for (Column column : columns) {
@@ -1210,7 +1216,7 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
                 ? null
-                : entry.getValues()), formInfo);
+                                                           : getEntryValues(entry)), formInfo);
     }
 
 

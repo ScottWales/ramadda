@@ -164,7 +164,7 @@ public class DifImporter extends ImportHandler {
         String type = request.getString(ARG_DIF_TYPE, "project_project");
         Entry entry = getRepository().getTypeHandler(type).createEntry(
                           getRepository().getGUID());
-        Object[] values  = entry.getTypeHandler().getValues(entry);
+        Object[] values  = entry.getTypeHandler().getEntryValues(entry);
 
         Element  root    = XmlUtil.getRoot(xml);
         Element  difRoot = null;

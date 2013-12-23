@@ -447,7 +447,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public Object[] getValues(Entry entry) {
+    public Object[] getEntryValues(Entry entry) {
         Object[] values = entry.getValues();
         if (values == null) {
             values = this.makeValues(new Hashtable());
@@ -455,6 +455,14 @@ public class TypeHandler extends RepositoryManager {
         }
 
         return values;
+    }
+
+    public void setEntryValue(Entry entry, int index, Object value) {
+        getEntryValues(entry)[index] = value;
+    }
+
+    public Object getEntryValue(Entry entry, int index) {
+        return getEntryValues(entry)[index];
     }
 
 

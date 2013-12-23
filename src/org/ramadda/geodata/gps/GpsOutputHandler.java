@@ -1429,7 +1429,7 @@ public class GpsOutputHandler extends OutputHandler {
             return;
         }
         String   gpsMetadata = extractGpsMetadata(gpsFile, TEQC_FLAG_META);
-        Object[] values      = gpsTypeHandler.getValues(entry);
+        Object[] values      = gpsTypeHandler.getEntryValues(entry);
         //   2011-05-04 18:23:00.000
         //format,site_code,antenna_type,antenna_height
 
@@ -2039,7 +2039,7 @@ public class GpsOutputHandler extends OutputHandler {
         final Object     siteCode    = rinexEntry.getValue(IDX_SITE_CODE, "");
         EntryInitializer initializer = new EntryInitializer() {
             public void initEntry(Entry entry) {
-                entry.getTypeHandler().getValues(
+                entry.getTypeHandler().getEntryValues(
                     entry)[OpusTypeHandler.IDX_SITE_CODE] = siteCode;
                 entry.setStartDate(rinexEntry.getStartDate());
                 entry.setEndDate(rinexEntry.getEndDate());

@@ -745,7 +745,7 @@ public class PhoneHarvester extends Harvester {
             if (currentEntry.getTypeHandler().getType().equals("wikipage")) {
                 cleanedInputText = cleanedInputText.replaceAll("<br>", "\n");
                 Object[] values =
-                    currentEntry.getTypeHandler().getValues(currentEntry);
+                    currentEntry.getTypeHandler().getEntryValues(currentEntry);
                 if (values[0] == null) {
                     values[0] = cleanedInputText;
                 } else {

@@ -194,7 +194,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 String contents =
                     getStorageManager().readSystemResource(propertyFileName);
                 //Append the properties file contents
-                Object[] values = entry.getTypeHandler().getValues(entry);
+                Object[] values = entry.getTypeHandler().getEntryValues(entry);
                 if (values[1] != null) {
                     values[1] = "\n" + contents;
                 } else {
@@ -381,7 +381,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         //All point types should have at least:
         //pointCount, properties
-        Object[] values = entry.getTypeHandler().getValues(entry);
+        Object[] values = entry.getTypeHandler().getEntryValues(entry);
         values[0] = new Integer(metadata.getCount());
 
 

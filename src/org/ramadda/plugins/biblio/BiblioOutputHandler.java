@@ -235,7 +235,7 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
         GregorianCalendar cal =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
         cal.setTime(new Date(entry.getStartDate()));
-        Object[] values = entry.getTypeHandler().getValues(entry);
+        Object[] values = entry.getTypeHandler().getEntryValues(entry);
         int      idx    = 0;
         Object   author = values[idx++];
         Object   type   = values[idx++];

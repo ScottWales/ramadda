@@ -228,7 +228,7 @@ Easting (X)  [meters]      379359.228           836346.070
         //        List<String> 
         String   eol    = "($|\\r?\\n)";
 
-        Object[] values = entry.getTypeHandler().getValues(entry);
+        Object[] values = entry.getTypeHandler().getEntryValues(entry);
         String coordPattern =
             "[^\\r\\n]+\\s+(-?[0-9\\.]+)\\s*\\(m\\)\\s*[0-9\\.]+\\s*\\(m\\)"
             + eol;

@@ -51,14 +51,12 @@ import java.util.List;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
+public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /** _more_ */
     public static final String TYPE_METADATA_FIELD = "type_metadata_field";
 
-    /** _more_ */
-    public static final int COL_INDEX = 0;
 
 
     /**
@@ -69,7 +67,7 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public MetadataColumnTypeHandler(Repository repository, Element entryNode)
+    public MetadataFieldTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -117,7 +115,8 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
     private void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
 
-        Integer index = (Integer) getValues(entry)[0];
+        System.err.println ("VALUES:" +getEntryValue(entry,1));
+        Integer index = (Integer) getEntryValue(entry,0);
         int     idx   = ((index == null)
                          ? -1
                          : index.intValue());
@@ -128,11 +127,11 @@ public class MetadataColumnTypeHandler extends ExtensibleGroupTypeHandler {
             for (Entry sibling : siblings) {
                 if (sibling.isType(TYPE_METADATA_FIELD)) {
                     int siblingIndex =
-                        ((Integer) getValues(sibling)[0]).intValue();
+                        ((Integer) getEntryValue(sibling,0)).intValue();
                     maxIndex = Math.max(maxIndex, siblingIndex);
                 }
             }
-            getValues(entry)[0] = new Integer(maxIndex + 1);
+            setEntryValue(entry, 0, new Integer(maxIndex + 1));
         }
 
     }

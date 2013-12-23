@@ -251,7 +251,7 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
         //Make the properties string
         String   contents = makePropertiesString(properties);
-        Object[] values   = entry.getTypeHandler().getValues(entry);
+        Object[] values   = entry.getTypeHandler().getEntryValues(entry);
         //Append the properties file contents
         if (values[IDX_PROPERTIES] != null) {
             values[IDX_PROPERTIES] = "\n" + contents;
@@ -340,7 +340,7 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        Object[]   values           = entry.getTypeHandler().getValues(entry);
+        Object[]   values           = entry.getTypeHandler().getEntryValues(entry);
         String     propertiesString = (values[IDX_PROPERTIES] != null)
                                       ? values[IDX_PROPERTIES].toString()
                                       : "";

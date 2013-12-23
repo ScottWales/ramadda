@@ -127,12 +127,12 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
                 Entry e1 = (Entry) o1;
                 Entry e2 = (Entry) o2;
                 int   result;
-                if (e1.isType(MetadataColumnTypeHandler.TYPE_METADATA_FIELD)
+                if (e1.isType(MetadataFieldTypeHandler.TYPE_METADATA_FIELD)
                         && e2.isType(
-                            MetadataColumnTypeHandler.TYPE_METADATA_FIELD)) {
-                    Integer i1 = (Integer) e1.getValue(0);
-                    Integer i2 = (Integer) e2.getValue(0);
-                    result = i1.compareTo(i2);
+                            MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
+                    Integer i1 = (Integer) e1.getTypeHandler().getEntryValue(e1, 0);
+                    Integer i2 = (Integer) e2.getTypeHandler().getEntryValue(e2, 0);
+                     result = i1.compareTo(i2);
                 } else {
                     result = e1.getName().compareToIgnoreCase(e2.getName());
                 }
@@ -208,7 +208,7 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         subGroups.addAll(entries);
         int cnt = 0;
         for (Entry entry : subGroups) {
-            sb.append("<tr><td>");
+            sb.append("<tr valign=top><td>");
             if (cnt > 0) {
                 sb.append(HtmlUtils.submitImage(iconUrl(ICON_UPARROW),
                         ARG_METADATA_MOVE_UP + "." + entry.getId(),
@@ -266,7 +266,7 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         for (int i = 0; i < children.size(); i++) {
             Entry child = children.get(i);
             if ( !child.isType(
-                    MetadataColumnTypeHandler.TYPE_METADATA_FIELD)) {
+                    MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
                 continue;
             }
             if (request.exists(ARG_METADATA_MOVE_UP + "." + child.getId()
@@ -296,12 +296,11 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
             for (int i = 0; i < children.size(); i++) {
                 Entry child = children.get(i);
                 if ( !child.isType(
-                        MetadataColumnTypeHandler.TYPE_METADATA_FIELD)) {
+                        MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
                     continue;
                 }
                 index++;
-                child.getTypeHandler().getValues(child)[0] =
-                    new Integer(index);
+                child.getTypeHandler().setEntryValue(child,0, new Integer(index));
             }
             getEntryManager().updateEntries(request, children);
         }
@@ -331,20 +330,25 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
                         "entry",
                         XmlUtil.attrs(
                             ATTR_NAME, label, ATTR_TYPE,
-                            MetadataColumnTypeHandler.TYPE_METADATA_FIELD,
-                            ATTR_PARENT, entry.getId()), XmlUtil.tag(
-                                "column_name", "",
-                                XmlUtil.getCdata(id)) + XmlUtil.tag(
+                            MetadataFieldTypeHandler.TYPE_METADATA_FIELD,
+                            ATTR_PARENT, entry.getId()), 
+                        XmlUtil.tag(
+                                "field_id", "",
+                                XmlUtil.getCdata(id)) + 
+                        XmlUtil.tag(
                                     "datatype", "", XmlUtil.getCdata(type))));
-
-
+                
                 xml.append("\n");
             }
             xml.append("</entries>\n");
+
+            System.err.println ("xml:" + xml);
+
             //Create them from XML
             List<Entry> newEntries =
                 getEntryManager().processEntryXml(request,
                     XmlUtil.getRoot(xml.toString()), entry, null);
+
 
             //Now tell them to update again to update their sort order
             for (Entry newEntry : newEntries) {
@@ -416,13 +420,15 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.pre("column_id, label, type (e.g., string, int, double)"));
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.italics("column_id, label, type (e.g., string, int, double)"));
+        sb.append(HtmlUtils.br());
         sb.append(
             HtmlUtils.textArea(
                 ARG_METADATA_BULK,
                 "",5, 70));
         sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.submit("Create columns", "submit"));
+        sb.append(HtmlUtils.submit("Add fields", "submit"));
         sb.append(HtmlUtils.formClose());
 
         return sb.toString();

@@ -71,7 +71,7 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
      * @throws Exception _more_
      */
     public void initializeNewEntry(Entry entry) throws Exception {
-        Object[]   values = entry.getTypeHandler().getValues(entry);
+        Object[]   values = entry.getTypeHandler().getEntryValues(entry);
         File       f      = entry.getFile();
         NetcdfFile ncf    = NetcdfFile.open(f.toString());
         float[]    elev, aziv, disv, lonv, altv, latv;

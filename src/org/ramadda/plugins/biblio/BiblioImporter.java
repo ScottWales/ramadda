@@ -305,7 +305,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     entry = getRepository().getTypeHandler(
                         TYPE_BIBLIO).createEntry(getRepository().getGUID());
                     entry.setParentEntryId(parentId);
-                    values = entry.getTypeHandler().getValues(entry);
+                    values = entry.getTypeHandler().getEntryValues(entry);
                 }
                 lastLineBlank = false;
 
