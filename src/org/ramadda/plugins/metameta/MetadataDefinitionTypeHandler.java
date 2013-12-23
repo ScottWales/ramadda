@@ -60,6 +60,11 @@ import java.util.Properties;
 public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_ */
+    public static final String TYPE_METADATA_DEFINITION =
+        "type_metadata_definition";
+
+
+    /** _more_ */
     public static final String ARG_METADATA_BULK = "metadata.bulk";
 
     /** _more_ */
@@ -69,7 +74,7 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     public static final String ARG_METADATA_MOVE_DOWN = "metadata.move.down";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_METADATA_GENERATE_DB =
         "metadata.generate.db";
 
@@ -112,57 +117,8 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public List<Entry> postProcessEntries(Request request,
                                           List<Entry> entries) {
-        List<Entry> sorted = sortEntries(entries, false);
-
-        return sorted;
-    }
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    private List<Entry> sortEntries(List<Entry> entries,
-                                    final boolean descending) {
-        Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Entry e1 = (Entry) o1;
-                Entry e2 = (Entry) o2;
-                int   result;
-                if (e1.isType(MetadataFieldTypeHandler.TYPE_METADATA_FIELD)
-                        && e2.isType(
-                            MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
-                    Integer i1 =
-                        (Integer) e1.getTypeHandler().getEntryValue(e1, 0);
-                    Integer i2 =
-                        (Integer) e2.getTypeHandler().getEntryValue(e2, 0);
-                    result = i1.compareTo(i2);
-                } else {
-                    result = e1.getName().compareToIgnoreCase(e2.getName());
-                }
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
-
-                    return 0;
-                }
-
-                return result;
-            }
-            public boolean equals(Object obj) {
-                return obj == this;
-            }
-        };
-        Object[] array = entries.toArray();
-        Arrays.sort(array, comp);
-
-        return (List<Entry>) Misc.toList(array);
+        return MetadataCollectionTypeHandler.sortEntries(entries, false,
+                MetadataFieldTypeHandler.TYPE_METADATA_FIELD);
     }
 
 
@@ -399,7 +355,7 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public Hashtable getProperties(Entry entry) throws Exception {
-        String s = (String) getEntryValue(entry, 3);
+        String s = (String) getEntryValue(entry, 4);
         if (s == null) {
             s = "";
         }
@@ -426,9 +382,8 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
-        Object[]  parentValues = getEntryValues(parent);
-        String    shortName    = (String) getEntryValue(parent, 1);
-        String    handlerClass = (String) getEntryValue(parent, 2);
+        String    shortName    = (String) getEntryValue(parent, 2);
+        String    handlerClass = (String) getEntryValue(parent, 3);
         Hashtable props        = getProperties(parent);
         String    icon = Misc.getProperty(props, "icon", "/db/tasks.gif");
 

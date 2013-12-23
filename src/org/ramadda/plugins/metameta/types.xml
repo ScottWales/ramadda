@@ -1,11 +1,19 @@
 <types>
 
+  <type name="type_metadata_collection"  description="RAMADDA Data Definition Collection" handler="org.ramadda.plugins.metameta.MetadataCollectionTypeHandler" childtypes="type_metadata_definition">
+     <property name="icon" value="/icons/folder_database.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+  </type>
+
   <type name="type_metadata_definition"  description="RAMADDA Data Definition" handler="org.ramadda.plugins.metameta.MetadataDefinitionTypeHandler" childtypes="type_metadata_field">
      <property name="icon" value="/icons/folder_database.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
 
+     <column name="field_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>
      <column name="type"  type="enumeration"     label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
 
      <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
@@ -21,8 +29,6 @@
 ]]>
 </wiki>
  </type>
-
-
 
 
   <type name="type_metadata_field"  description="RAMADDA Data Field" handler="org.ramadda.plugins.metameta.MetadataFieldTypeHandler">
