@@ -44,6 +44,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -102,6 +103,31 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
         setSortOrder(request, entry, parent);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Hashtable getProperties(Entry entry) throws Exception {
+        String s = (String) getEntryValue(entry, 4);
+        if (s == null) {
+            s = "";
+        }
+        Properties props = new Properties();
+        props.load(new ByteArrayInputStream(s.getBytes()));
+        Hashtable table = new Hashtable();
+        table.putAll(props);
+
+        return table;
+    }
+
+
+
+
 
     /**
      * _more_
@@ -112,11 +138,10 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void setSortOrder(Request request, Entry entry, Entry parent)
+    public void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
-
-        System.err.println ("VALUES:" +getEntryValue(entry,1));
-        Integer index = (Integer) getEntryValue(entry,0);
+        System.err.println("VALUES:" + getEntryValue(entry, 1));
+        Integer index = (Integer) getEntryValue(entry, 0);
         int     idx   = ((index == null)
                          ? -1
                          : index.intValue());
@@ -126,8 +151,8 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
                                        parent);
             for (Entry sibling : siblings) {
                 if (sibling.isType(TYPE_METADATA_FIELD)) {
-                    int siblingIndex =
-                        ((Integer) getEntryValue(sibling,0)).intValue();
+                    int siblingIndex = ((Integer) getEntryValue(sibling,
+                                           0)).intValue();
                     maxIndex = Math.max(maxIndex, siblingIndex);
                 }
             }

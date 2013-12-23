@@ -25,8 +25,9 @@ package org.ramadda.plugins.metameta;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-
 import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
 
@@ -46,6 +47,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -58,15 +60,18 @@ import java.util.List;
 public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
 
     /** _more_ */
-
-
     public static final String ARG_METADATA_BULK = "metadata.bulk";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_METADATA_MOVE_UP = "metadata.move.up";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_METADATA_MOVE_DOWN = "metadata.move.down";
+
+
+    /** _more_          */
+    public static final String ARG_METADATA_GENERATE_DB =
+        "metadata.generate.db";
 
     /**
      * _more_
@@ -130,9 +135,11 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
                 if (e1.isType(MetadataFieldTypeHandler.TYPE_METADATA_FIELD)
                         && e2.isType(
                             MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
-                    Integer i1 = (Integer) e1.getTypeHandler().getEntryValue(e1, 0);
-                    Integer i2 = (Integer) e2.getTypeHandler().getEntryValue(e2, 0);
-                     result = i1.compareTo(i2);
+                    Integer i1 =
+                        (Integer) e1.getTypeHandler().getEntryValue(e1, 0);
+                    Integer i2 =
+                        (Integer) e2.getTypeHandler().getEntryValue(e2, 0);
+                    result = i1.compareTo(i2);
                 } else {
                     result = e1.getName().compareToIgnoreCase(e2.getName());
                 }
@@ -158,27 +165,6 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         return (List<Entry>) Misc.toList(array);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
-            throws Exception {
-        super.getEntryLinks(request, entry, links);
-        /*
-        links.add(
-            new Link(
-                request.entryUrl(
-                    getRepository().URL_ENTRY_ACCESS, entry, "type",
-                    "kml"), getRepository().iconUrl(ICON_KML),
-                    "Convert GPX to KML", OutputType.TYPE_FILE));*/
-    }
 
 
     /**
@@ -230,9 +216,17 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         sb.append(HtmlUtils.formTableClose());
+
+        sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.submit("Generate db.xml",
+                                   ARG_METADATA_GENERATE_DB));
         sb.append(HtmlUtils.formClose());
 
         sb.append(HtmlUtils.p());
+
+
+
+
         sb.append(HtmlUtils.hr());
 
         sb.append(getBulkForm(request, parent));
@@ -260,15 +254,31 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
 
-        boolean didMove = false;
+        List<Entry> recordFields = new ArrayList<Entry>();
+
+
+        boolean     didMove      = false;
         List<Entry> children = getEntryManager().getChildrenAll(request,
                                    entry);
+
         for (int i = 0; i < children.size(); i++) {
             Entry child = children.get(i);
             if ( !child.isType(
                     MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
                 continue;
             }
+            recordFields.add(child);
+        }
+
+        children = recordFields;
+
+        for (int i = 0; i < children.size(); i++) {
+            Entry child = children.get(i);
+            if ( !child.isType(
+                    MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
+                continue;
+            }
+
             if (request.exists(ARG_METADATA_MOVE_UP + "." + child.getId()
                                + ".x")) {
                 didMove = true;
@@ -295,19 +305,31 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
             int index = 0;
             for (int i = 0; i < children.size(); i++) {
                 Entry child = children.get(i);
-                if ( !child.isType(
-                        MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
-                    continue;
-                }
                 index++;
-                child.getTypeHandler().setEntryValue(child,0, new Integer(index));
+                child.getTypeHandler().setEntryValue(child, 0,
+                        new Integer(index));
             }
             getEntryManager().updateEntries(request, children);
         }
 
 
+        if (request.exists(ARG_METADATA_GENERATE_DB)) {
+            StringBuffer xml = new StringBuffer();
+            generateDbXml(request, xml, entry, children);
+            String filename =
+                IOUtil.stripExtension(IOUtil.getFileTail(entry.getName()))
+                + "_db.xml";
+            request.setReturnFilename(filename);
+            Result result = new Result("Query Results", xml, "text/xml");
+
+            return result;
+        }
+
+
         if (request.exists(ARG_METADATA_BULK)) {
-            StringBuffer xml = new StringBuffer("<entries>\n");
+
+            StringBuffer xml = new StringBuffer(XmlUtil.openTag(TAG_ENTRIES));
+            xml.append("\n");
             for (String line :
                     StringUtil.split(request.getString(ARG_METADATA_BULK,
                         ""), "\n", true, true)) {
@@ -327,35 +349,34 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
                                 : "string");
                 xml.append(
                     XmlUtil.tag(
-                        "entry",
+                        TAG_ENTRY,
                         XmlUtil.attrs(
                             ATTR_NAME, label, ATTR_TYPE,
                             MetadataFieldTypeHandler.TYPE_METADATA_FIELD,
-                            ATTR_PARENT, entry.getId()), 
-                        XmlUtil.tag(
+                            ATTR_PARENT, entry.getId()), XmlUtil.tag(
                                 "field_id", "",
-                                XmlUtil.getCdata(id)) + 
-                        XmlUtil.tag(
+                                XmlUtil.getCdata(id)) + XmlUtil.tag(
                                     "datatype", "", XmlUtil.getCdata(type))));
-                
+
                 xml.append("\n");
             }
-            xml.append("</entries>\n");
-
-            System.err.println ("xml:" + xml);
+            xml.append(XmlUtil.closeTag(TAG_ENTRIES));
+            System.out.println(xml);
 
             //Create them from XML
             List<Entry> newEntries =
                 getEntryManager().processEntryXml(request,
                     XmlUtil.getRoot(xml.toString()), entry, null);
 
-
             //Now tell them to update again to update their sort order
             for (Entry newEntry : newEntries) {
-                newEntry.getTypeHandler().initializeEntryFromForm(request,
-                        newEntry, entry, false);
-                //Insert the updates
-                getEntryManager().updateEntry(request, newEntry);
+                if (newEntry.getTypeHandler()
+                        instanceof MetadataFieldTypeHandler) {
+                    ((MetadataFieldTypeHandler) newEntry.getTypeHandler())
+                        .setSortOrder(request, newEntry, entry);
+                    //Insert the updates
+                    getEntryManager().updateEntry(request, newEntry);
+                }
             }
 
         }
@@ -368,8 +389,106 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Hashtable getProperties(Entry entry) throws Exception {
+        String s = (String) getEntryValue(entry, 3);
+        if (s == null) {
+            s = "";
+        }
+        Properties props = new Properties();
+        props.load(new ByteArrayInputStream(s.getBytes()));
+        Hashtable table = new Hashtable();
+        table.putAll(props);
+
+        return table;
+    }
 
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param xml _more_
+     * @param parent _more_
+     * @param children _more_
+     *
+     * @throws Exception _more_
+     */
+    public void generateDbXml(Request request, StringBuffer xml,
+                              Entry parent, List<Entry> children)
+            throws Exception {
+        Object[]  parentValues = getEntryValues(parent);
+        String    shortName    = (String) getEntryValue(parent, 1);
+        String    handlerClass = (String) getEntryValue(parent, 2);
+        Hashtable props        = getProperties(parent);
+        String    icon = Misc.getProperty(props, "icon", "/db/tasks.gif");
+
+        if ( !Utils.stringDefined(shortName)) {
+            shortName = parent.getName();
+        }
+        if ( !Utils.stringDefined(handlerClass)) {
+            handlerClass = "org.ramadda.plugins.db.DbTypeHandler";
+        }
+
+
+        xml.append(XmlUtil.openTag("table",
+                                   XmlUtil.attrs("id", shortName, "name",
+                                       parent.getName(), "handler",
+                                       handlerClass, "icon", icon)));
+
+        //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
+        for (Entry recordFieldEntry : children) {
+            MetadataFieldTypeHandler field =
+                (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
+            Object[]     values  = field.getEntryValues(recordFieldEntry);
+            String       id      = (String) values[1];
+            String       type    = (String) values[2];
+            String       enums   = (String) values[3];
+            Hashtable    fprops  = field.getProperties(recordFieldEntry);
+            int          rows    = ((Integer) values[5]).intValue();
+            int          columns = ((Integer) values[6]).intValue();
+            int          size    = ((Integer) values[7]).intValue();
+            StringBuffer attrs   = new StringBuffer();
+            StringBuffer inner   = new StringBuffer();
+            attrs.append(XmlUtil.attr("name", id));
+            attrs.append(XmlUtil.attr("label", recordFieldEntry.getName()));
+            attrs.append(XmlUtil.attr("type", type));
+            attrs.append(XmlUtil.attr("cansearch",
+                                      Misc.getProperty(fprops, "cansearch",
+                                          "true")));
+            attrs.append(XmlUtil.attr("canlist",
+                                      Misc.getProperty(fprops, "canlist",
+                                          "true")));
+            attrs.append(XmlUtil.attr("rows", "" + rows));
+            attrs.append(XmlUtil.attr("columns", "" + columns));
+            attrs.append(XmlUtil.attr("size", "" + size));
+
+            if (Misc.getProperty(fprops, "iscategory", false)) {
+                inner.append(XmlUtil.tag("property",
+                                         XmlUtil.attrs("name", "iscategory",
+                                             "value", "true")));
+            }
+
+            if (Misc.getProperty(fprops, "label", false)) {
+                inner.append(XmlUtil.tag("property",
+                                         XmlUtil.attrs("name", "label",
+                                             "value", "true")));
+            }
+
+            xml.append(XmlUtil.tag("column", attrs.toString(),
+                                   inner.toString()));
+        }
+        xml.append(XmlUtil.closeTag("table"));
+    }
 
 
 
@@ -421,12 +540,11 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.italics("column_id, label, type (e.g., string, int, double)"));
-        sb.append(HtmlUtils.br());
         sb.append(
-            HtmlUtils.textArea(
-                ARG_METADATA_BULK,
-                "",5, 70));
+            HtmlUtils.italics(
+                "column_id, label, type (e.g., string, int, double)"));
+        sb.append(HtmlUtils.br());
+        sb.append(HtmlUtils.textArea(ARG_METADATA_BULK, "", 5, 70));
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit("Add fields", "submit"));
         sb.append(HtmlUtils.formClose());

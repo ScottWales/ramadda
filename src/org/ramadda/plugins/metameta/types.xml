@@ -7,9 +7,13 @@
      <property name="form.date.show" value="false"/>
 
      <column name="type"  type="enumeration"     label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
+
      <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
 
      <column name="handler_class" type="string"     label="Handler Class"  showinhtml="true" />
+     <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;"/>
+
+
 <wiki><![CDATA[
 {{table}}
 <br>
