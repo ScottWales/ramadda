@@ -35,8 +35,6 @@ import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.RequestArgument;
 
 import org.ramadda.sql.Clause;
-
-
 import org.ramadda.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
@@ -49,9 +47,6 @@ import org.ramadda.util.WikiUtil;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.DateUtil;
-
-
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -60,21 +55,15 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.BufferedInputStream;
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 import java.sql.PreparedStatement;
-
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import java.text.DecimalFormat;
-
-
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,15 +71,14 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
- * Class TypeHandler _more_
+ * Provide the core services around the entry types.
+ *
  *
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
 public class TypeHandler extends RepositoryManager {
 
@@ -135,9 +123,6 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public static final String TYPE_CONTRIBUTION = "contribution";
-
-    /** _more_ */
-    public static final String TYPE_OPENDAPLINK = "opendaplink";
 
 
 
@@ -198,11 +183,9 @@ public class TypeHandler extends RepositoryManager {
         "{{name box.class=entry-page-name}}\n{{description box.class=\"entry-page-description\"}}";
 
 
-
     /** _more_ */
     public static final String PROP_CREATED_DISPLAY_MODE =
         "ramadda.created.display";
-
 
     /** _more_ */
     public static final TwoFacedObject ALL_OBJECT =
@@ -217,35 +200,26 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private static List<DateArgument> dateArgs;
 
-
-
-
-    /** _more_ */
-    private TypeHandler parent;
-
-    /** _more_ */
-    private SpecialSearch specialSearch;
-
-
     /** _more_ */
     private static String tinyMceTemplate;
 
-    /** _more_ */
+    /** for debugging */
+    static int cnt = 0;
+
+    /** for debugging */
+    int mycnt = cnt++;
+
+    /** the type id */
+    private String type;
+
+    /** The entry types hierarchy */
+    private TypeHandler parent;
+
+    /** The entry types hierarchy */
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
 
     /** _more_ */
-    private List<String> metadataTypes;
-
-    /** _more_ */
-    private List<String> childTypes;
-
-
-    /** _more_ */
-    private String type;
-
-    /** _more_ */
     private String description;
-
 
     /** _more_ */
     private String category = CATEGORY_DEFAULT;
@@ -254,23 +228,23 @@ public class TypeHandler extends RepositoryManager {
     private String superCategory = "";
 
     /** _more_ */
-    private Hashtable dontShowInForm = new Hashtable();
+    private Hashtable properties = new Hashtable();
 
-    /** _more_ */
-    public Hashtable properties = new Hashtable();
-
-    /** _more_ */
-    public String harvestPattern;
-
-    /** _more_ */
-    public String wikiTemplate;
+    /** every type has its own search service managed by the specialSearch */
+    private SpecialSearch specialSearch;
 
 
+    /**
+     *   the pattern= attribute in types.xml. Used when trying to figure out what entry type
+     *   to use for a file
+     */
+    private String filePattern;
+
+    /** the wiki tag in types.xml. If defined then use this as the default html display for entries of this type */
+    private String wikiTemplate;
 
     /** _more_ */
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
-
-
 
     /** _more_ */
     private String defaultCategory;
@@ -278,17 +252,23 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String displayTemplatePath;
 
+    /** Should users be shown this type when doing a New Entry... */
+    private boolean forUser = true;
+
+    /** Default metadata types to show in Edit->Add Property menu */
+    private List<String> metadataTypes;
+
+    /** The default child entry types to show in the File->New menu */
+    private List<String> childTypes;
 
     /** _more_ */
     private List<String[]> requiredMetadata = new ArrayList<String[]>();
 
-    /** _more_ */
-    private boolean forUser = true;
 
     /**
-     * _more_
+     * ctor
      *
-     * @param repository _more_
+     * @param repository ramadda
      */
     public TypeHandler(Repository repository) {
         super(repository);
@@ -296,10 +276,10 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * ctor
      *
-     * @param repository _more_
-     * @param entryNode _more_
+     * @param repository ramadda
+     * @param entryNode types.xml node
      */
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
@@ -312,8 +292,8 @@ public class TypeHandler extends RepositoryManager {
                     category);
             this.superCategory = XmlUtil.getAttribute(entryNode,
                     ATTR_SUPERCATEGORY, superCategory);
-            this.harvestPattern = XmlUtil.getAttribute(entryNode,
-                    ATTR_PATTERN, (String) null);
+            this.filePattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
+                    (String) null);
 
 
             wikiTemplate = XmlUtil.getAttribute(entryNode, ATTR_WIKI,
@@ -336,6 +316,80 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+
+    /**
+     * ctor
+     *
+     * @param repository ramadda
+     * @param type the type
+     */
+    public TypeHandler(Repository repository, String type) {
+        this(repository, type, "");
+
+    }
+
+
+    /**
+     * ctor
+     *
+     * @param repository ramadda
+     * @param type the type
+     * @param description type description
+     */
+    public TypeHandler(Repository repository, String type,
+                       String description) {
+        super(repository);
+        this.type        = type;
+        this.description = description;
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void init(Element entryNode) throws Exception {
+        this.metadataTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
+                ATTR_METADATA,
+                EnumeratedMetadataHandler.TYPE_TAG + ","
+                + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
+
+        this.childTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
+                ATTR_CHILDTYPES, ""));
+        forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
+        setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
+        if (getType().indexOf(".") > 0) {
+            //            System.err.println("DOT TYPE: " + getType());
+        }
+
+        setProperties(entryNode);
+        setDescription(XmlUtil.getAttribute(entryNode, ATTR_DB_DESCRIPTION,
+                                            getType()));
+
+        String superType = XmlUtil.getAttribute(entryNode, ATTR_SUPER,
+                               (String) null);
+        if (superType != null) {
+            parent = getRepository().getTypeHandler(superType, false, false);
+            if (parent == null) {
+                throw new IllegalArgumentException("Cannot find parent type:"
+                        + superType);
+            }
+            parent.addChildTypeHandler(this);
+        }
+
+        String llf = getProperty("location.format", (String) null);
+        if (llf != null) {
+            latLonFormat = new DecimalFormat(llf);
+        }
+
+
+    }
+
     /**
      * _more_
      *
@@ -350,32 +404,6 @@ public class TypeHandler extends RepositoryManager {
         }
 
         return metadataTypes;
-    }
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     */
-    public TypeHandler(Repository repository, String type) {
-        this(repository, type, "");
-
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     * @param description _more_
-     */
-    public TypeHandler(Repository repository, String type,
-                       String description) {
-        super(repository);
-        this.type        = type;
-        this.description = description;
     }
 
 
@@ -394,7 +422,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -450,17 +478,32 @@ public class TypeHandler extends RepositoryManager {
     public Object[] getEntryValues(Entry entry) {
         Object[] values = entry.getValues();
         if (values == null) {
-            values = this.makeValues(new Hashtable());
+            values = this.makeEntryValues(new Hashtable());
             entry.setValues(values);
         }
 
         return values;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param index _more_
+     * @param value _more_
+     */
     public void setEntryValue(Entry entry, int index, Object value) {
         getEntryValues(entry)[index] = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param index _more_
+     *
+     * @return _more_
+     */
     public Object getEntryValue(Entry entry, int index) {
         return getEntryValues(entry)[index];
     }
@@ -480,55 +523,10 @@ public class TypeHandler extends RepositoryManager {
         return 0;
     }
 
-
     /**
      * _more_
      *
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void init(Element entryNode) throws Exception {
-        this.metadataTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
-                ATTR_METADATA,
-                EnumeratedMetadataHandler.TYPE_TAG + ","
-                + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
-
-        this.childTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
-                ATTR_CHILDTYPES, ""));
-        forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
-        setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
-        if (getType().indexOf(".") > 0) {
-            //            System.err.println("DOT TYPE: " + getType());
-        }
-
-        setProperties(entryNode);
-        setDescription(XmlUtil.getAttribute(entryNode, ATTR_DB_DESCRIPTION,
-                                            getType()));
-
-        String superType = XmlUtil.getAttribute(entryNode, ATTR_SUPER,
-                               (String) null);
-        if (superType != null) {
-            parent = getRepository().getTypeHandler(superType, false, false);
-            if (parent == null) {
-                throw new IllegalArgumentException("Cannot find parent type:"
-                        + superType);
-            }
-            parent.addChildTypeHandler(this);
-        }
-
-        String llf = getProperty("location.format", (String) null);
-        if (llf != null) {
-            latLonFormat = new DecimalFormat(llf);
-        }
-
-
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -543,7 +541,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -596,14 +594,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     *  Set the Parent property.
-     *
-     *  @param value The new value for Parent
-     */
-    public void xxxsetParent(TypeHandler value) {
-        parent = value;
-    }
 
     /**
      *  Get the Parent property.
@@ -631,7 +621,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param oldEntry _more_
      * @param newEntry _more_
      *
@@ -663,7 +653,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param map _more_
      *
@@ -715,7 +705,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param sb _more_
      */
@@ -771,7 +761,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -790,7 +780,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param wikiTemplate _more_
      *
@@ -807,7 +797,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -823,7 +813,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param tabTitles _more_
      * @param tabContents _more_
@@ -836,7 +826,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -851,7 +841,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param group _more_
      * @param subGroups _more_
      * @param entries _more_
@@ -874,7 +864,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -894,7 +884,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -936,7 +926,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param mainEntry _more_
      * @param ancestor _more_
      * @param synthId _more_
@@ -959,7 +949,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param parentEntry _more_
      * @param id _more_
      *
@@ -981,7 +971,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param parentEntry _more_
      * @param entryNames _more_
      *
@@ -1100,12 +1090,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /** _more_ */
-    static int cnt = 0;
-
-    /** _more_ */
-    int mycnt = cnt++;
-
 
 
     /**
@@ -1219,7 +1203,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param node _more_
      *
@@ -1387,7 +1371,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param parent _more_
      * @param newEntry _more_
@@ -1420,9 +1404,9 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-     * _more_
+     * This gets called after the entry has been created and everything has been stored into the database
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      */
     public void doFinalEntryInitialization(Request request, Entry entry) {
@@ -1491,15 +1475,15 @@ public class TypeHandler extends RepositoryManager {
      * @return is this one of my files
      */
     public boolean canHandleResource(String fullPath, String name) {
-        if (harvestPattern != null) {
+        if (filePattern != null) {
             //If the pattern has file delimiters then use the whole path
-            if (harvestPattern.indexOf("/") >= 0) {
-                if (fullPath.matches(harvestPattern)) {
+            if (filePattern.indexOf("/") >= 0) {
+                if (fullPath.matches(filePattern)) {
                     return true;
                 }
             } else {
                 //Else, just use the name
-                if (name.matches(harvestPattern)) {
+                if (name.matches(filePattern)) {
                     return true;
                 }
             }
@@ -1587,7 +1571,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param html _more_
      *
@@ -1623,7 +1607,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param entry _more_
-     * @param request _more_
+     * @param request The request
      * @param showDescription _more_
      * @param showResource _more_
      *
@@ -1709,7 +1693,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param services _more_
      *
@@ -1736,7 +1720,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param entry _more_
-     * @param request _more_
+     * @param request The request
      * @param links _more_
      *
      *
@@ -2003,7 +1987,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param links _more_
      * @param types _more_
@@ -2052,7 +2036,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -2106,7 +2090,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -2149,7 +2133,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param entry _more_
-     * @param request _more_
+     * @param request The request
      * @param output _more_
      * @param showDescription _more_
      * @param showResource _more_
@@ -2509,7 +2493,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -2527,7 +2511,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -2556,7 +2540,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -2595,7 +2579,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param what _more_
      *
      * @return _more_
@@ -2638,7 +2622,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param what _more_
      * @param clause _more_
      * @param extra _more_
@@ -2660,7 +2644,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param what _more_
      * @param clauses _more_
      * @param extra _more_
@@ -2793,7 +2777,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
@@ -2823,7 +2807,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
@@ -2847,7 +2831,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
@@ -2935,7 +2919,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param sb _more_
      * @param formInfo _more_
@@ -2985,7 +2969,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      * @param entry _more_
      *
@@ -3064,7 +3048,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -3083,7 +3067,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      * @param parentEntry _more_
      * @param entry _more_
@@ -3518,7 +3502,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -3615,7 +3599,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param sb _more_
      */
     public void addTextSearch(Request request, StringBuffer sb) {
@@ -3656,7 +3640,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param formBuffer _more_
      *
      * @throws Exception _more_
@@ -3674,7 +3658,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param formBuffer _more_
-     * @param request _more_
+     * @param request The request
      * @param where _more_
      * @param advancedForm _more_
      *
@@ -3910,7 +3894,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param repository _more_
-     * @param request _more_
+     * @param request The request
      * @param basicSB _more_
      * @param arg _more_
      * @param showTime _more_
@@ -4005,7 +3989,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -4031,7 +4015,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param what _more_
      * @param sb _more_
      */
@@ -4063,7 +4047,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      *
@@ -4079,7 +4063,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param searchCriteria _more_
      *
      * @return _more_
@@ -4592,7 +4576,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -4639,7 +4623,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param group _more_
      * @param entries _more_
      * @param subGroups _more_
@@ -4676,7 +4660,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entries _more_
      *
      * @return _more_
@@ -4691,7 +4675,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param textToSearch _more_
      * @param searchCriteria _more_
      * @param where _more_
@@ -4832,7 +4816,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -4871,7 +4855,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param statement _more_
      * @param entry _more_
      *
@@ -4888,7 +4872,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param statement _more_
      * @param id _more_
      *
@@ -4904,7 +4888,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      *
      * @return _more_
      */
@@ -4915,7 +4899,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param initTables _more_
      *
      * @return _more_
@@ -4956,9 +4940,9 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public Object[] makeValues(Hashtable map) {
+    public Object[] makeEntryValues(Hashtable map) {
         if (parent != null) {
-            return parent.makeValues(map);
+            return parent.makeEntryValues(map);
         }
 
         return null;
@@ -5038,7 +5022,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -5141,7 +5125,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -5153,7 +5137,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param props _more_
      * @param entry _more_
      *
@@ -5225,7 +5209,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      *
      * @return _more_
@@ -5257,7 +5241,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param column _more_
      * @param entry _more_
      *
@@ -5284,7 +5268,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param name _more_
      *
@@ -5303,7 +5287,7 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      *
-     * @param request _more_
+     * @param request The request
      * @param column _more_
      * @param entry _more_
      *
@@ -5467,7 +5451,7 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request The request
      * @param entry _more_
      * @param date _more_
      * @param extra _more_
@@ -5561,17 +5545,20 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param wikiUtil _more_
-     * @param request _more_
+     * @param request The request
      * @param originalEntry _more_
      * @param entry _more_
      * @param tag _more_
      * @param props _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props) throws Exception {
+                                 String tag, Hashtable props)
+            throws Exception {
         return null;
     }
 

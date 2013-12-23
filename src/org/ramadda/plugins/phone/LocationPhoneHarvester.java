@@ -129,7 +129,7 @@ public class LocationPhoneHarvester extends PhoneHarvester {
         Entry       entry =
             typeHandler.createEntry(getRepository().getGUID());
         Date        date        = new Date();
-        Object[]    values      = typeHandler.makeValues(new Hashtable());
+        Object[]    values      = typeHandler.makeEntryValues(new Hashtable());
         String      desc        = "";
         String      name        = "";
         values[0] = info.getFromPhone();

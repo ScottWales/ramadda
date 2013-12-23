@@ -783,7 +783,7 @@ public class PhoneHarvester extends Harvester {
         Entry       entry =
             typeHandler.createEntry(getRepository().getGUID());
         Date        date        = new Date();
-        Object[]    values      = typeHandler.makeValues(new Hashtable());
+        Object[]    values      = typeHandler.makeEntryValues(new Hashtable());
         if (type.equals("phone_sms")) {
             values[0] = info.getFromPhone();
             values[1] = info.getToPhone();
@@ -904,7 +904,7 @@ public class PhoneHarvester extends Harvester {
         TypeHandler  typeHandler      = getRepository().getTypeHandler(type);
         Entry entry = typeHandler.createEntry(getRepository().getGUID());
         Date         date             = new Date();
-        Object[]     values = typeHandler.makeValues(new Hashtable());
+        Object[]     values = typeHandler.makeEntryValues(new Hashtable());
         StringBuffer descSB = new StringBuffer(info.getTranscription());
         String       cleanedInputText = cleanUpText(descSB.toString());
         File voiceFile = fetchVoiceFile(request,

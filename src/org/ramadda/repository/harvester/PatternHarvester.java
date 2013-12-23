@@ -1236,7 +1236,7 @@ public class PatternHarvester extends Harvester implements EntryInitializer {
 
         //        System.err.println("values:");
         //        System.err.println("map:" + map);
-        Object[] values = typeHandlerToUse.makeValues(map);
+        Object[] values = typeHandlerToUse.makeEntryValues(map);
         //        Date     createDate = new Date();
 
         String ext = IOUtil.getFileExtension(fileName);

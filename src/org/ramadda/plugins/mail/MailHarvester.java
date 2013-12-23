@@ -635,7 +635,7 @@ public class MailHarvester extends Harvester {
                         Date now  = new Date();
                         Date date = message.getReceivedDate();
                         Object[] values =
-                            typeHandler.makeValues(new Hashtable());
+                            typeHandler.makeEntryValues(new Hashtable());
                         Entry entry = typeHandler.createEntry(
                                           getRepository().getGUID());
 
@@ -765,7 +765,7 @@ public class MailHarvester extends Harvester {
                                          Resource.TYPE_STOREDFILE);
         Date     date   = new Date();
         Entry    entry  = typeHandler.createEntry(getRepository().getGUID());
-        Object[] values = typeHandler.makeValues(new Hashtable());
+        Object[] values = typeHandler.makeEntryValues(new Hashtable());
         entry.initEntry(name, "", parentEntry, getUser(), resource, "",
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);

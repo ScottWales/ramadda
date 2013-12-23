@@ -272,6 +272,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
+
     /**
      * _more_
      *
@@ -317,11 +318,11 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
     /**
-     * _more_
+     * Find the Column with the given name
      *
-     * @param columnName _more_
+     * @param columnName column name
      *
-     * @return _more_
+     * @return Column  or throws exception
      */
     public Column findColumn(String columnName) {
         for (Column column : columns) {
@@ -335,14 +336,14 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
     /**
-     * _more_
+     * create  the entry value array and populate it with any column values stored in the map argument
      *
-     * @param map _more_
+     * @param map column values
      *
-     * @return _more_
+     * @return entry vales array
      */
     @Override
-    public Object[] makeValues(Hashtable map) {
+    public Object[] makeEntryValues(Hashtable map) {
         Object[] values = makeEntryValueArray();
         //For now we just assume each column has a single value
         int idx = 0;

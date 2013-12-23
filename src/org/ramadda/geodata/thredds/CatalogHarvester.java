@@ -690,7 +690,7 @@ public class CatalogHarvester extends Harvester {
 
         TypeHandler typeHandler = repository.getTypeHandler(((isOpendap
                                       && !didDownload)
-                ? TypeHandler.TYPE_OPENDAPLINK
+                ? OpendapLinkTypeHandler.TYPE_OPENDAPLINK
                 : TypeHandler.TYPE_FILE));
 
         entryCnt++;
