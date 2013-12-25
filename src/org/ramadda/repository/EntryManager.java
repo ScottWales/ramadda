@@ -1327,12 +1327,10 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryForm(Request request) throws Exception {
 
-        Entry        group = null;
-        String       type  = null;
-        Entry        entry = null;
-        StringBuffer sb    = new StringBuffer();
-        //        sb.append(makeTabs(Misc.newList("title1","title2","title3"),
-        //                           Misc.newList("contents1","contents2","contents3")));
+        Entry  group = null;
+        String type  = null;
+        Entry  entry = null;
+
         if (request.defined(ARG_ENTRYID)) {
             entry = getEntry(request);
             type  = entry.getTypeHandler().getType();
@@ -1370,6 +1368,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        StringBuffer sb = new StringBuffer();
         if ((entry != null) && entry.getIsLocalFile()) {
             sb.append(msg("This is a local file and cannot be edited"));
 
@@ -5403,6 +5402,7 @@ public class EntryManager extends RepositoryManager {
      * @param typeMask _more_
      * @param links _more_
      * @param return NullIfNoneMatch _more_
+     * @param returnNullIfNoneMatch _more_
      * @param header _more_
      *
      * @return _more_
@@ -6940,7 +6940,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
-        return  parentEntry.getTypeHandler().postProcessEntries(request, children);
+
+        return parentEntry.getTypeHandler().postProcessEntries(request,
+                children);
     }
 
 
@@ -6975,7 +6977,9 @@ public class EntryManager extends RepositoryManager {
             }
         }
         children.addAll(entries);
-        return  parentEntry.getTypeHandler().postProcessEntries(request, children);
+
+        return parentEntry.getTypeHandler().postProcessEntries(request,
+                children);
     }
 
 
@@ -8562,16 +8566,16 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     private HashSet missingResources = new HashSet();
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DELETE_ENTRY_FILE_IS_MISSING =
         "ramadda.delete_entry_when_file_is_missing";
 
     /**
-     * This handles entries when their file is missing 
+     * This handles entries when their file is missing
      * If the property ramadda.delete_entry_when_file_is_missing is set to true
      * then the entry is deleted.
      * Else, if the user is not logged then the the entry isn't shown
-     * 
+     *
      *
      * @param request the request
      * @param entry the entry

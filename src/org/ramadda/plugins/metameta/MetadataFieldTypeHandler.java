@@ -58,6 +58,35 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static final String TYPE_METADATA_FIELD = "type_metadata_field";
 
+    /** _more_ */
+    public static final int IDX_FIELD_INDEX = 0;
+
+    /** _more_ */
+    public static final int IDX_FIELD_ID = 1;
+
+    /** _more_ */
+    public static final int IDX_DATATYPE = 2;
+
+    /** _more_ */
+    public static final int IDX_ENUMERATION_VALUES = 3;
+
+    /** _more_ */
+    public static final int IDX_PROPERTIES = 4;
+
+    /** _more_ */
+    public static final int IDX_TEXTFIELD_ROWS = 5;
+
+    /** _more_ */
+    public static final int IDX_TEXTFIELD_COLUMNS = 6;
+
+    /** _more_ */
+    public static final int IDX_DATABASE_COLUMN_SIZE = 7;
+
+    /** _more_ */
+    public static final int IDX_MISSING = 8;
+
+    /** _more_ */
+    public static final int IDX_UNIT = 9;
 
 
     /**
@@ -103,27 +132,6 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
         setSortOrder(request, entry, parent);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Hashtable getProperties(Entry entry) throws Exception {
-        String s = (String) getEntryValue(entry, 4);
-        if (s == null) {
-            s = "";
-        }
-        Properties props = new Properties();
-        props.load(new ByteArrayInputStream(s.getBytes()));
-        Hashtable table = new Hashtable();
-        table.putAll(props);
-
-        return table;
-    }
 
 
 
@@ -138,7 +146,6 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
-        System.err.println("VALUES:" + getEntryValue(entry, 1));
         Integer index = (Integer) getEntryValue(entry, 0);
         int     idx   = ((index == null)
                          ? -1
@@ -159,5 +166,92 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Hashtable getProperties(Entry entry) throws Exception {
+        int    index = 4;
+        String s     = (String) getEntryValue(entry, index);
+        if (s == null) {
+            s = "";
+        }
+        Properties props = new Properties();
+        props.load(new ByteArrayInputStream(s.getBytes()));
+        Hashtable table = new Hashtable();
+        table.putAll(props);
+
+        return table;
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param xml _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void generateDbXml(Request request, StringBuffer xml, Entry entry)
+            throws Exception {
+        //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
+        Object[]     values  = getEntryValues(entry);
+        String       id      = (String) values[1];
+        String       type    = (String) values[2];
+        String       enums   = (String) values[3];
+        Hashtable    props   = getProperties(entry);
+        int          rows    = ((Integer) values[5]).intValue();
+        int          columns = ((Integer) values[6]).intValue();
+        int          size    = ((Integer) values[7]).intValue();
+        StringBuffer attrs   = new StringBuffer();
+        StringBuffer inner   = new StringBuffer();
+        attrs.append(XmlUtil.attr("name", id));
+        attrs.append(XmlUtil.attr("label", entry.getName()));
+        attrs.append(XmlUtil.attr("type", type));
+
+
+        String[] attrProps = { ATTR_GROUP };
+        for (String attrProp : attrProps) {
+            String v = (String) props.get(attrProp);
+            if (v != null) {
+                attrs.append(XmlUtil.attr(attrProp, v));
+            }
+        }
+
+        attrs.append(XmlUtil.attr("cansearch",
+                                  Misc.getProperty(props, "cansearch",
+                                      "true")));
+        attrs.append(XmlUtil.attr("canlist",
+                                  Misc.getProperty(props, "canlist",
+                                      "true")));
+        attrs.append(XmlUtil.attr("rows", "" + rows));
+        attrs.append(XmlUtil.attr("columns", "" + columns));
+        attrs.append(XmlUtil.attr("size", "" + size));
+
+        if (Misc.getProperty(props, "iscategory", false)) {
+            inner.append(XmlUtil.tag("property",
+                                     XmlUtil.attrs("name", "iscategory",
+                                         "value", "true")));
+        }
+
+        if (Misc.getProperty(props, "label", false)) {
+            inner.append(XmlUtil.tag("property",
+                                     XmlUtil.attrs("name", "label", "value",
+                                         "true")));
+        }
+
+        xml.append(XmlUtil.tag("column", attrs.toString(), inner.toString()));
+
+    }
 
 }

@@ -227,7 +227,10 @@ public class GenericTypeHandler extends TypeHandler {
             //            throw new WrapperException(exc);
         }
 
-        int valuesOffset = getValuesOffset();
+        int     valuesOffset = getValuesOffset();
+
+        boolean showColumns  = false;
+        //        showColumns =getType().indexOf("_metadata_")>=0;
 
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
@@ -246,6 +249,11 @@ public class GenericTypeHandler extends TypeHandler {
             }
             colNames.addAll(column.getColumnNames());
             column.createTable(statement);
+            if (showColumns) {
+                String NAME = column.getName().toUpperCase();
+                System.out.println("public static final int IDX_" + NAME
+                                   + "  = " + colIdx + ";");
+            }
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
         //TODO: Run through the table and delete any columns and indices that aren't defined anymore
@@ -467,11 +475,10 @@ public class GenericTypeHandler extends TypeHandler {
         Object[] values = getEntryValues(entry);
         super.initializeEntryFromXml(request, entry, node);
 
-        Hashtable<String, Element> nodes    = new Hashtable<String,
-                                                  Element>();
+        Hashtable<String, Element> nodes = new Hashtable<String, Element>();
 
         System.err.println("init");
-        NodeList                   elements = XmlUtil.getElements(node);
+        NodeList elements = XmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
             System.err.println("tag:" + child.getTagName());
@@ -497,7 +504,8 @@ public class GenericTypeHandler extends TypeHandler {
                 //                System.err.println (" could not find column value:" + column);
                 continue;
             }
-            System.err.println("column.getName:" + column.getName() + " value:" + value);
+            System.err.println("column.getName:" + column.getName()
+                               + " value:" + value);
             column.setValue(entry, values, value);
         }
     }
@@ -1217,7 +1225,7 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         addColumnsToEntryForm(request, formBuffer, entry, ((entry == null)
                 ? null
-                                                           : getEntryValues(entry)), formInfo);
+                : getEntryValues(entry)), formInfo);
     }
 
 

@@ -24,59 +24,69 @@ package org.ramadda.plugins.metameta;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.Utils;
-import org.ramadda.util.WikiUtil;
-
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
-
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
- * Class TypeHandler _more_
+ * Holds a collection of fields
  *
  *
  * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
  */
-public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
+public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
 
     /** _more_ */
     public static final String TYPE_METADATA_DEFINITION =
         "type_metadata_definition";
 
-
     /** _more_ */
     public static final String ARG_METADATA_BULK = "metadata.bulk";
 
-    /** _more_ */
-    public static final String ARG_METADATA_MOVE_UP = "metadata.move.up";
+    /** _more_          */
+    private static int IDX = 0;
 
     /** _more_ */
-    public static final String ARG_METADATA_MOVE_DOWN = "metadata.move.down";
-
+    public static final int IDX_FIELD_INDEX = IDX++;
 
     /** _more_ */
-    public static final String ARG_METADATA_GENERATE_DB =
-        "metadata.generate.db";
+    public static final int IDX_TYPE = IDX++;
+
+    /** _more_ */
+    public static final int IDX_SHORT_NAME = IDX++;
+
+    /** _more_ */
+    public static final int IDX_SUPER_TYPE = IDX++;
+
+    /** _more_ */
+    public static final int IDX_IS_GROUP = IDX++;
+
+    /** _more_ */
+    public static final int IDX_HANDLER_CLASS = IDX++;
+
+    /** _more_ */
+    public static final int IDX_PROPERTIES = IDX++;
+
+    /** _more_ */
+    public static final int IDX_WIKI_TEXT = IDX++;
+
+
 
     /**
      * _more_
@@ -93,35 +103,14 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-
     /**
      * _more_
      *
-     * @param request _more_
-     *
      * @return _more_
      */
-    public boolean canBeCreatedBy(Request request) {
-        return request.getUser().getAdmin();
+    public String getChildType() {
+        return MetadataFieldTypeHandler.TYPE_METADATA_FIELD;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public List<Entry> postProcessEntries(Request request,
-                                          List<Entry> entries) {
-        return MetadataCollectionTypeHandler.sortEntries(entries, false,
-                MetadataFieldTypeHandler.TYPE_METADATA_FIELD);
-    }
-
-
 
     /**
      * _more_
@@ -143,49 +132,23 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, parent.getId()));
-        sb.append(HtmlUtils.formTable());
+        List<String> titles   = new ArrayList<String>();
+        List<String> contents = new ArrayList<String>();
+
+        StringBuffer sb       = new StringBuffer();
         subGroups.addAll(entries);
-        int cnt = 0;
-        for (Entry entry : subGroups) {
-            sb.append("<tr valign=top><td>");
-            if (cnt > 0) {
-                sb.append(HtmlUtils.submitImage(iconUrl(ICON_UPARROW),
-                        ARG_METADATA_MOVE_UP + "." + entry.getId(),
-                        "Move up"));
-            }
-            sb.append("</td><td>");
-            if (cnt < subGroups.size() - 1) {
-                sb.append(HtmlUtils.submitImage(iconUrl(ICON_DOWNARROW),
-                        ARG_METADATA_MOVE_DOWN + "." + entry.getId(),
-                        "Move down"));
-            }
-            sb.append("</td><td>");
-            cnt++;
-            EntryLink link = getEntryManager().getAjaxLink(request, entry,
-                                 entry.getName());
-            sb.append(link.getLink());
-            sb.append(link.getFolderBlock());
-            sb.append("</td></tr>");
-        }
+        addListForm(request, parent, subGroups, sb);
 
-        sb.append(HtmlUtils.formTableClose());
+        titles.add(msg("Fields"));
+        contents.add(sb.toString());
 
-        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit("Generate db.xml",
-                                   ARG_METADATA_GENERATE_DB));
-        sb.append(HtmlUtils.formClose());
-
-        sb.append(HtmlUtils.p());
-
-
-
-
-        sb.append(HtmlUtils.hr());
-
+        sb.setLength(0);
         sb.append(getBulkForm(request, parent));
+        titles.add(msg("Create new fields"));
+        contents.add(sb.toString());
+
+        sb.setLength(0);
+        sb.append(OutputHandler.makeTabs(titles, contents, false));
 
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metadata Definition", sb));
@@ -204,170 +167,126 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public Result processEntryAccess(Request request, Entry entry)
             throws Exception {
-
         if ( !getEntryManager().canAddTo(request, entry)) {
             return null;
         }
 
+        if (request.exists(ARG_METADATA_GENERATE_JAVA)) {
+            return handleGenerateEntryJava(request, entry);
 
-        List<Entry> recordFields = new ArrayList<Entry>();
-
-
-        boolean     didMove      = false;
-        List<Entry> children = getEntryManager().getChildrenAll(request,
-                                   entry);
-
-        for (int i = 0; i < children.size(); i++) {
-            Entry child = children.get(i);
-            if ( !child.isType(
-                    MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
-                continue;
-            }
-            recordFields.add(child);
         }
-
-        children = recordFields;
-
-        for (int i = 0; i < children.size(); i++) {
-            Entry child = children.get(i);
-            if ( !child.isType(
-                    MetadataFieldTypeHandler.TYPE_METADATA_FIELD)) {
-                continue;
-            }
-
-            if (request.exists(ARG_METADATA_MOVE_UP + "." + child.getId()
-                               + ".x")) {
-                didMove = true;
-                if (i > 0) {
-                    children.remove(child);
-                    children.add(i - 1, child);
-                }
-
-                break;
-            }
-            if (request.exists(ARG_METADATA_MOVE_DOWN + "." + child.getId()
-                               + ".x")) {
-                didMove = true;
-                if (i < children.size() - 1) {
-                    children.remove(child);
-                    children.add(i + 1, child);
-                }
-
-                break;
-            }
-        }
-
-        if (didMove) {
-            int index = 0;
-            for (int i = 0; i < children.size(); i++) {
-                Entry child = children.get(i);
-                index++;
-                child.getTypeHandler().setEntryValue(child, 0,
-                        new Integer(index));
-            }
-            getEntryManager().updateEntries(request, children);
-        }
-
-
-        if (request.exists(ARG_METADATA_GENERATE_DB)) {
-            StringBuffer xml = new StringBuffer();
-            generateDbXml(request, xml, entry, children);
-            String filename =
-                IOUtil.stripExtension(IOUtil.getFileTail(entry.getName()))
-                + "_db.xml";
-            request.setReturnFilename(filename);
-            Result result = new Result("Query Results", xml, "text/xml");
-
-            return result;
-        }
-
 
         if (request.exists(ARG_METADATA_BULK)) {
-
-            StringBuffer xml = new StringBuffer(XmlUtil.openTag(TAG_ENTRIES));
-            xml.append("\n");
-            for (String line :
-                    StringUtil.split(request.getString(ARG_METADATA_BULK,
-                        ""), "\n", true, true)) {
-                if (line.startsWith("#")) {
-                    continue;
-                }
-                List<String> toks = StringUtil.split(line, ",");
-                if (toks.size() < 1) {
-                    continue;
-                }
-                String id    = toks.get(0);
-                String label = ((toks.size() > 1)
-                                ? toks.get(1)
-                                : id);
-                String type  = ((toks.size() > 2)
-                                ? toks.get(2)
-                                : "string");
-                xml.append(
-                    XmlUtil.tag(
-                        TAG_ENTRY,
-                        XmlUtil.attrs(
-                            ATTR_NAME, label, ATTR_TYPE,
-                            MetadataFieldTypeHandler.TYPE_METADATA_FIELD,
-                            ATTR_PARENT, entry.getId()), XmlUtil.tag(
-                                "field_id", "",
-                                XmlUtil.getCdata(id)) + XmlUtil.tag(
-                                    "datatype", "", XmlUtil.getCdata(type))));
-
-                xml.append("\n");
-            }
-            xml.append(XmlUtil.closeTag(TAG_ENTRIES));
-            System.out.println(xml);
-
-            //Create them from XML
-            List<Entry> newEntries =
-                getEntryManager().processEntryXml(request,
-                    XmlUtil.getRoot(xml.toString()), entry, null);
-
-            //Now tell them to update again to update their sort order
-            for (Entry newEntry : newEntries) {
-                if (newEntry.getTypeHandler()
-                        instanceof MetadataFieldTypeHandler) {
-                    ((MetadataFieldTypeHandler) newEntry.getTypeHandler())
-                        .setSortOrder(request, newEntry, entry);
-                    //Insert the updates
-                    getEntryManager().updateEntry(request, newEntry);
-                }
-            }
-
+            return handleBulkCreate(request, entry);
         }
 
 
-        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-
-        return new Result(url);
-        //        return getEntryManager().addEntryHeader(request, entry, new Result("Metadata Definition", sb));
-
+        return super.processEntryAccess(request, entry);
     }
 
     /**
      * _more_
      *
+     * @param request _more_
      * @param entry _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Hashtable getProperties(Entry entry) throws Exception {
-        String s = (String) getEntryValue(entry, 4);
-        if (s == null) {
-            s = "";
-        }
-        Properties props = new Properties();
-        props.load(new ByteArrayInputStream(s.getBytes()));
-        Hashtable table = new Hashtable();
-        table.putAll(props);
+    public Result handleBulkCreate(Request request, Entry entry)
+            throws Exception {
+        StringBuffer xml = new StringBuffer(XmlUtil.openTag(TAG_ENTRIES));
+        xml.append("\n");
+        for (String line :
+                StringUtil.split(request.getString(ARG_METADATA_BULK, ""),
+                                 "\n", true, true)) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+            List<String> toks = StringUtil.split(line, ",");
+            if (toks.size() < 1) {
+                continue;
+            }
+            String id    = toks.get(0);
+            String label = ((toks.size() > 1)
+                            ? toks.get(1)
+                            : id);
+            String type  = ((toks.size() > 2)
+                            ? toks.get(2)
+                            : "string");
+            label = label.replace("_", " ");
 
-        return table;
+            StringBuffer properties = new StringBuffer();
+            for (int i = 3; i < toks.size(); i++) {
+                properties.append(toks.get(i));
+                properties.append("\n");
+            }
+
+            StringBuffer inner = new StringBuffer();
+            inner.append(XmlUtil.tag("field_id", "", XmlUtil.getCdata(id)));
+            inner.append(
+                XmlUtil.tag(
+                    "properties", "",
+                    XmlUtil.getCdata(properties.toString())));
+            inner.append(XmlUtil.tag("datatype", "", XmlUtil.getCdata(type)));
+            xml.append(
+                XmlUtil.tag(
+                    TAG_ENTRY,
+                    XmlUtil.attrs(
+                        ATTR_NAME, label, ATTR_TYPE,
+                        MetadataFieldTypeHandler.TYPE_METADATA_FIELD,
+                        ATTR_PARENT, entry.getId()), inner.toString()));
+            xml.append("\n");
+        }
+        xml.append(XmlUtil.closeTag(TAG_ENTRIES));
+        System.out.println(xml);
+
+        //Create them from XML
+        List<Entry> newEntries = getEntryManager().processEntryXml(request,
+                                     XmlUtil.getRoot(xml.toString()), entry,
+                                     null);
+
+        //Now tell them to update again to update their sort order
+        for (Entry newEntry : newEntries) {
+            if (newEntry.getTypeHandler()
+                    instanceof MetadataFieldTypeHandler) {
+                ((MetadataFieldTypeHandler) newEntry.getTypeHandler())
+                    .setSortOrder(request, newEntry, entry);
+                //Insert the updates
+                getEntryManager().updateEntry(request, newEntry);
+            }
+        }
+
+        //Redirect
+        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+
+        return new Result(url);
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleGenerateEntryJava(Request request, Entry entry)
+            throws Exception {
+        StringBuffer java   = new StringBuffer();
+        String handlerClass = (String) getEntryValue(entry,
+                                  IDX_HANDLER_CLASS);
+        int    idx       = handlerClass.lastIndexOf('.');
+        String pkg       = handlerClass.substring(0, idx);
+        String className = handlerClass.substring(idx);
+
+        return new Result("Query Results", java, "text/java");
+    }
 
     /**
      * _more_
@@ -382,10 +301,12 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
-        String    shortName    = (String) getEntryValue(parent, 2);
-        String    handlerClass = (String) getEntryValue(parent, 3);
-        Hashtable props        = getProperties(parent);
-        String    icon = Misc.getProperty(props, "icon", "/db/tasks.gif");
+        String shortName = (String) getEntryValue(parent, IDX_SHORT_NAME);
+        String handlerClass = (String) getEntryValue(parent,
+                                  IDX_HANDLER_CLASS);
+
+        Hashtable props = getProperties(parent, IDX_PROPERTIES);
+        String    icon  = Misc.getProperty(props, "icon", "/db/tasks.gif");
 
         if ( !Utils.stringDefined(shortName)) {
             shortName = parent.getName();
@@ -397,50 +318,12 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
 
         xml.append(XmlUtil.openTag("table",
                                    XmlUtil.attrs("id", shortName, "name",
-                                       parent.getName(), "handler",
+                                       parent.getName(), ATTR_HANDLER,
                                        handlerClass, "icon", icon)));
-
-        //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
         for (Entry recordFieldEntry : children) {
             MetadataFieldTypeHandler field =
                 (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
-            Object[]     values  = field.getEntryValues(recordFieldEntry);
-            String       id      = (String) values[1];
-            String       type    = (String) values[2];
-            String       enums   = (String) values[3];
-            Hashtable    fprops  = field.getProperties(recordFieldEntry);
-            int          rows    = ((Integer) values[5]).intValue();
-            int          columns = ((Integer) values[6]).intValue();
-            int          size    = ((Integer) values[7]).intValue();
-            StringBuffer attrs   = new StringBuffer();
-            StringBuffer inner   = new StringBuffer();
-            attrs.append(XmlUtil.attr("name", id));
-            attrs.append(XmlUtil.attr("label", recordFieldEntry.getName()));
-            attrs.append(XmlUtil.attr("type", type));
-            attrs.append(XmlUtil.attr("cansearch",
-                                      Misc.getProperty(fprops, "cansearch",
-                                          "true")));
-            attrs.append(XmlUtil.attr("canlist",
-                                      Misc.getProperty(fprops, "canlist",
-                                          "true")));
-            attrs.append(XmlUtil.attr("rows", "" + rows));
-            attrs.append(XmlUtil.attr("columns", "" + columns));
-            attrs.append(XmlUtil.attr("size", "" + size));
-
-            if (Misc.getProperty(fprops, "iscategory", false)) {
-                inner.append(XmlUtil.tag("property",
-                                         XmlUtil.attrs("name", "iscategory",
-                                             "value", "true")));
-            }
-
-            if (Misc.getProperty(fprops, "label", false)) {
-                inner.append(XmlUtil.tag("property",
-                                         XmlUtil.attrs("name", "label",
-                                             "value", "true")));
-            }
-
-            xml.append(XmlUtil.tag("column", attrs.toString(),
-                                   inner.toString()));
+            field.generateDbXml(request, xml, recordFieldEntry);
         }
         xml.append(XmlUtil.closeTag("table"));
     }
@@ -450,29 +333,129 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
     /**
      * _more_
      *
-     * @param wikiUtil _more_
      * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
+     * @param xml _more_
+     * @param parent _more_
+     * @param children _more_
      *
      * @throws Exception _more_
      */
-    @Override
-    public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
+    public void generateEntryXml(Request request, StringBuffer xml,
+                                 Entry parent, List<Entry> children)
             throws Exception {
 
-        if (tag.equals("metadata.bulkform")) {
-            return getBulkForm(request, entry);
+        String shortName = (String) getEntryValue(parent, IDX_SHORT_NAME);
+        String superType = (String) getEntryValue(parent, IDX_SUPER_TYPE);
+        String wikiText  = (String) getEntryValue(parent, IDX_WIKI_TEXT);
+        String handlerClass = (String) getEntryValue(parent,
+                                  IDX_HANDLER_CLASS);
+        boolean isGroup = ((Boolean) getEntryValue(parent,
+                              IDX_IS_GROUP)).booleanValue();
+        String propertiesString = (String) getEntryValue(parent,
+                                      IDX_PROPERTIES);
+        Hashtable props = getProperties(parent, IDX_PROPERTIES);
+        if ( !Utils.stringDefined(shortName)) {
+            shortName = parent.getName();
+        }
+        if ( !Utils.stringDefined(handlerClass)) {
+            if ( !isGroup) {
+                handlerClass = "org.ramadda.repository.type.TypeHandler";
+            } else {
+                handlerClass =
+                    "org.ramadda.repository.type.ExtensibleGroupTypeHandler";
+            }
         }
 
-        return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
-                                    tag, props);
+        StringBuffer attrs = new StringBuffer();
+        StringBuffer inner = new StringBuffer();
+        if (Utils.stringDefined(wikiText)) {
+            inner.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
+        }
+
+
+        attrs.append(XmlUtil.attrs(ATTR_NAME, shortName, ATTR_DESCRIPTION,
+                                   parent.getName(), ATTR_HANDLER,
+                                   handlerClass));
+
+        String[] attrProps = { ATTR_CHILDTYPES, };
+        for (String attrProp : attrProps) {
+            String v = (String) getAndRemoveProperty(props, attrProp, null);
+            if (v != null) {
+                attrs.append(XmlUtil.attr(attrProp, v));
+            }
+        }
+
+
+
+
+        xml.append(XmlUtil.openTag(TAG_TYPE, attrs.toString()));
+
+        for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = (String) props.get(key);
+            xml.append(propertyTag(key, value));
+        }
+        xml.append(inner);
+
+
+        for (Entry recordFieldEntry : children) {
+            MetadataFieldTypeHandler field =
+                (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
+            field.generateDbXml(request, xml, recordFieldEntry);
+        }
+        xml.append(XmlUtil.closeTag(TAG_TYPE));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param buttons _more_
+     */
+    public void addEntryButtons(Request request, Entry entry,
+                                List<String> buttons) {
+        super.addEntryButtons(request, entry, buttons);
+        String handlerClass = (String) getEntryValue(entry,
+                                  IDX_HANDLER_CLASS);
+        if (Utils.stringDefined(handlerClass)) {
+            //Not now
+            //            buttons.add(HtmlUtils.submit("Generate Java base class",
+            //                                         ARG_METADATA_GENERATE_JAVA));
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public String propertyTag(String name, String value) {
+        return XmlUtil.tag(TAG_PROPERTY,
+                           XmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
+    }
+
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    private String getAndRemoveProperty(Hashtable props, String key,
+                                        String dflt) {
+        String value = Misc.getProperty(props, key, dflt);
+        props.remove(key);
+
+        return value;
     }
 
     /**
@@ -501,7 +484,7 @@ public class MetadataDefinitionTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.textArea(ARG_METADATA_BULK, "", 5, 70));
         sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.submit("Add fields", "submit"));
+        sb.append(HtmlUtils.submit("Add Fields", "submit"));
         sb.append(HtmlUtils.formClose());
 
         return sb.toString();

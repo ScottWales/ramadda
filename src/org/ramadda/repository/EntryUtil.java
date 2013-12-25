@@ -277,6 +277,63 @@ public class EntryUtil extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     * @param type _more_
+     * @param sortOrderFieldIndex _more_
+     *
+     * @return _more_
+     */
+    public List<Entry> sortEntriesOnField(List<Entry> entries,
+                                          final boolean descending,
+                                          final String type,
+                                          final int sortOrderFieldIndex) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry   e1 = (Entry) o1;
+                Entry   e2 = (Entry) o2;
+                int     result;
+                boolean isType1 = e1.isType(type);
+                boolean isType2 = e2.isType(type);
+                if (isType1 && isType2) {
+                    Integer i1 =
+                        (Integer) e1.getTypeHandler().getEntryValue(e1,
+                            sortOrderFieldIndex);
+                    Integer i2 =
+                        (Integer) e2.getTypeHandler().getEntryValue(e2,
+                            sortOrderFieldIndex);
+                    result = i1.compareTo(i2);
+                } else if (isType1) {
+                    result = -1;
+                } else if (isType2) {
+                    result = 1;
+                } else {
+                    result = e1.getName().compareToIgnoreCase(e2.getName());
+                }
+                if (descending) {
+                    if (result >= 1) {
+                        return -1;
+                    } else if (result <= -1) {
+                        return 1;
+                    }
+
+                    return 0;
+                }
+
+                return result;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+
+        return (List<Entry>) Misc.toList(array);
+    }
 
 
 
@@ -369,6 +426,25 @@ public class EntryUtil extends RepositoryManager {
         }
 
         return cnt.intValue();
+    }
+
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    public List<Entry> getEntriesOfType(List<Entry> entries, String type) {
+        List<Entry> result = new ArrayList<Entry>();
+        for (Entry entry : entries) {
+            if (entry.isType(type)) {
+                result.add(entry);
+            }
+        }
+
+        return result;
     }
 
 

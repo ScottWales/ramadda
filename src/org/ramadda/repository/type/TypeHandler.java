@@ -164,7 +164,7 @@ public class TypeHandler extends RepositoryManager {
     public static final String TAG_METADATA = "metadata";
 
     /** _more_ */
-    public static final String TAG_HANDLER = "handler";
+    public static final String ATTR_HANDLER = "handler";
 
 
 

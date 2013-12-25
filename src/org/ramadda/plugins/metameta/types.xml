@@ -1,14 +1,14 @@
 <types>
 
   <type name="type_metadata_collection"  description="RAMADDA Data Definition Collection" handler="org.ramadda.plugins.metameta.MetadataCollectionTypeHandler" childtypes="type_metadata_definition">
-     <property name="icon" value="/icons/folder_database.png"/>
+     <property name="icon" value="/metameta/databases.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
   </type>
 
   <type name="type_metadata_definition"  description="RAMADDA Data Definition" handler="org.ramadda.plugins.metameta.MetadataDefinitionTypeHandler" childtypes="type_metadata_field">
-     <property name="icon" value="/icons/folder_database.png"/>
+     <property name="icon" value="/metameta/database_table.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
@@ -17,9 +17,13 @@
      <column name="type"  type="enumeration"     label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
 
      <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
+     <column name="super_type" type="string"     label="Super Type" columns="80"  showinhtml="true"/>
 
+     <column name="isgroup" type="boolean" default="false"    label="Is Group"  showinhtml="true" />
      <column name="handler_class" type="string"     label="Handler Class"  showinhtml="true" />
      <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;"/>
+
+     <column name="wiki_text" size="2000" rows="10"  type="string"     label="Wiki Text" suffix="" default=""/>
 
 
 <wiki><![CDATA[
@@ -32,8 +36,9 @@
 
 
   <type name="type_metadata_field"  description="RAMADDA Data Field" handler="org.ramadda.plugins.metameta.MetadataFieldTypeHandler">
-     <property name="icon" value="/icons/database.png"/>
      <property name="form.resource.show" value="false"/>
+     <property name="icon" value="/metameta/database_gear.png"/>
+
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <column name="field_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>

@@ -1294,7 +1294,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
                 String classPath = XmlUtil.getAttribute(entryNode,
-                                       TypeHandler.TAG_HANDLER,
+                                       TypeHandler.ATTR_HANDLER,
                                        (String) null);
 
                 if (classPath == null) {
@@ -3140,13 +3140,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String root : htdocRoots) {
             root = getStorageManager().localizePath(root);
             String fullPath = root + path;
-          
+
             try {
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
 
                 //If its just sitting on the server then don't decorate
-                if(new File(fullPath).exists()) {
+                if (new File(fullPath).exists()) {
                     decorate = false;
                 }
 

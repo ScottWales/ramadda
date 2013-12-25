@@ -420,53 +420,16 @@ public class Column implements DataTypes, Constants {
         }
 
         if (isEnumeration()) {
+            String bulkEnums = null;
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
                                      (String) null);
-            if (valueString != null) {
-                if (valueString.startsWith("file:")) {
-                    valueString =
-                        typeHandler.getStorageManager().readSystemResource(
-                            valueString.substring("file:".length()));
-                    List<String> tmp = StringUtil.split(valueString, "\n",
-                                           true, true);
-                    enumValues = new ArrayList<TwoFacedObject>();
-                    for (String tok : tmp) {
-                        if (tok.startsWith("#")) {
-                            continue;
-                        }
-                        String label = tok;
-                        String value = tok;
-                        if (tok.indexOf(":") >= 0) {
-                            List<String> toks = StringUtil.splitUpTo(tok,
-                                                    ":", 2);
-
-                            value = toks.get(0);
-                            label = toks.get(1);
-                        } else if (tok.indexOf("=") >= 0) {
-                            List<String> toks = StringUtil.splitUpTo(tok,
-                                                    "=", 2);
-
-                            value = toks.get(0);
-                            label = toks.get(1);
-                        }
-                        enumValues.add(new TwoFacedObject(label, value));
-                        enumMap.put(value, label);
-                    }
-
-                } else {
-                    enumValues = new ArrayList<TwoFacedObject>();
-                    for (String tok :
-                            StringUtil.split(valueString, ",", true, true)) {
-                        int    index = tok.indexOf(":");
-                        String value = tok;
-                        String label = tok;
-                        if (index > 0) {
-                            label = tok.substring(index + 1);
-                            value = tok.substring(0, index);
-                        }
-                        enumMap.put(value, label);
-                        enumValues.add(new TwoFacedObject(label, value));
-                    }
+            if(valueString!=null) {
+                setEnums(valueString, ",");
+            } else {
+                valueString = XmlUtil.getGrandChildText(element, ATTR_VALUES,
+                                     (String) null);
+                if(valueString!=null) {
+                    setEnums(valueString, "\n");
                 }
             }
             if (enumValues == null) {
@@ -480,6 +443,45 @@ public class Column implements DataTypes, Constants {
 
 
     }
+
+    private void setEnums(String valueString, String delimiter) throws Exception {
+
+        if (valueString.startsWith("file:")) {
+            valueString =
+                typeHandler.getStorageManager().readSystemResource(
+                                                                   valueString.substring("file:".length()));
+            delimiter  = "\n";
+        }
+
+
+        List<String> tmp = StringUtil.split(valueString, delimiter,
+                                            true, true);
+        enumValues = new ArrayList<TwoFacedObject>();
+        for (String tok : tmp) {
+            if (tok.startsWith("#")) {
+                continue;
+            }
+            String label = tok;
+            String value = tok;
+            if (tok.indexOf(":") >= 0) {
+                List<String> toks = StringUtil.splitUpTo(tok,
+                                                         ":", 2);
+                
+                value = toks.get(0);
+                label = toks.get(1);
+            } else if (tok.indexOf("=") >= 0) {
+                List<String> toks = StringUtil.splitUpTo(tok,
+                                                         "=", 2);
+                
+                value = toks.get(0);
+                label = toks.get(1);
+            }
+            enumValues.add(new TwoFacedObject(label, value));
+            enumMap.put(value, label);
+        }
+    }
+
+
 
     /**
      * _more_
