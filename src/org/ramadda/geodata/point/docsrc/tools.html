@@ -1,17 +1,15 @@
 [ht::head {Point Data Command Line Tools}]
 <%nochildlist%>
 
-The Point Data Tools package is a suite of tools for accessing and converting 
+The point data tools package is a suite of tools for accessing and converting 
 various point data formats.   They are implemented in pure Java
-so can run on any platform. They are available at the
-<a href="http://sourceforge.net/projects/nlas/">NLAS SourceForge site</a>.
+so can run on any platform. 
 
-<subhead intoc="false" id="requirements">Requirements and Installation</subhead>
-Download and unzip the latest nlastools.zip from 
-<a href="http://sourceforge.net/projects/nlas/">SourceForge</a>.
+First of all, download and unzip the 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.6a/">pointtools.zip</a> release.
 <p>
-All of the NLAS tools run as shell scripts that call Java programs. 
-You need to have JAVA JDK 1.6 installed.
+All of the point tools run as shell scripts that call Java programs. 
+You need to have JAVA JDK 1.6 or higher installed.
 <p>
 To make the scripts executable do:
 <pre>
@@ -19,36 +17,49 @@ To make the scripts executable do:
 </pre>
 
 
+If you are trying to read CSV or other text formats then you need to 
+<a href="textpoint.html">specify the metadata</a> for the file.
+If you are trying to read some other format then you need to specify
+the point reader class to use (I've given up guessing with data).
+
+The scripts take the form:
+<pre>
+  script -class &lt;file reader class&gt;
+e.g.:
+  point2csv.sh -class org.ramadda.data.point.amrc.AmrcFinalQCPointFile ...
+</pre>
+
+
 <subhead intoc="false" id="tools">Tools </subhead>
 
 <ul>
 
-<li>  <i>lidar2csv.sh </i><br>
-Convert a LiDAR file to csv.
+<li>  <i>point2csv.sh </i><br>
+Convert a point file to csv.
 For help do:
 <pre>
-    lidar2csv.sh -help
+    point2csv.sh -help
 </pre>
 
 <a name="tiler"></a>
-<li>  <i>lidartiler.sh</i><br>
-This takes one or more LiDAR files and a specification of a spatial grid (bounds and grid size) and tiles 
-the points in the input LiDAR files into separate files corresponding to the grid squares.
+<li>  <i>pointtiler.sh</i><br>
+This takes one or more point files and a specification of a spatial grid (bounds and grid size) and tiles 
+the points in the input point files into separate files corresponding to the grid squares.
 For help do:
 <pre>
-    lidartiler.sh -help
+    pointtiler.sh -help
 </pre>
 
 
 
 
-<li> <i>lidarbounds.sh</i><br>
-This takes one or more LiDAR files as arguments and prints to the stdout the spatial bounds in the form:
+<li> <i>pointbounds.sh</i><br>
+This takes one or more point files as arguments and prints to the stdout the spatial bounds in the form:
 <pre> 
      north west south east
 </pre>
 
-<li>  <i>lidarchecker.sh</i><br>
+<li>  <i>pointchecker.sh</i><br>
 Reads in a file and prints out the number of points, etc.
 
 </ul>
