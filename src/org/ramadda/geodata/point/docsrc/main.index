@@ -9,12 +9,12 @@ index.html
 
 >title:Miscellaneous
 >>datamodel.html
->>readers.html
 >>tools.html
->>api.html
+>>textdata.html
 >>pointreaders.html
+>>api.html
+
 >>record.html
->>install.html
 
 >title:Data Formats
 >>lidar.html
