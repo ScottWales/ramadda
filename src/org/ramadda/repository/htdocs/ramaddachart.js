@@ -97,7 +97,8 @@ function RamaddaChart(id, pointData) {
        
         //The first entry in the dataList is the array of names
         //The first field is the domain, e.g., time or index
-        var fieldNames = ["domain","depth"];
+        //        var fieldNames = ["domain","depth"];
+        var fieldNames = ["domain"];
         for(i=0;i<this.displayedFields.length;i++) { 
             var field = this.displayedFields[i];
             var name  = field.getLabel();
@@ -120,7 +121,7 @@ function RamaddaChart(id, pointData) {
             } else {
                 values.push(j);
             }
-            values.push(record.getElevation());
+            //            values.push(record.getElevation());
             for(i=0;i<this.displayedFields.length;i++) { 
                 var field = this.displayedFields[i];
                 values.push(record.getValue(field.getIndex()));
