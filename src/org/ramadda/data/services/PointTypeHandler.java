@@ -123,14 +123,19 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
 
-        File file = entry.getFile();
-        if ( !file.exists()) {
-            return;
-        }
-
         System.err.println("PointTypeHandler: initNewEntry");
         log("initializeNewEntry:" + entry.getResource());
-        initializeEntry(entry, file);
+
+        File file = entry.getFile();
+
+        if ( !file.exists()) {
+            //Maybe this is a URL?
+            //            return;
+        } else {
+            //This finds any properties files next to the file
+            initializeEntry(entry, file);
+        }
+
         PointOutputHandler outputHandler =
             (PointOutputHandler) getRecordOutputHandler();
         RecordVisitorGroup visitorGroup = new RecordVisitorGroup();
@@ -179,6 +184,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                                         Entry parent, boolean newEntry)
             throws Exception {
 
+        System.err.println ("ENTRY:" + entry.getResource());
         if (anySuperTypesOfThisType()) {
             super.initializeEntryFromForm(request, entry, parent, newEntry);
 

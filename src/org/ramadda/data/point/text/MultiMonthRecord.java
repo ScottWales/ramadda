@@ -68,6 +68,8 @@ public class MultiMonthRecord extends TextRecord {
     /** _more_ */
     double missingValue = 0;
 
+    private List<RecordField> fields;
+
     /**
      * _more_
      *
@@ -93,7 +95,7 @@ public class MultiMonthRecord extends TextRecord {
         super(file);
         this.missingValue = missingValue;
         sdf               = file.makeDateFormat("yyyy-MM");
-        List<RecordField> fields = new ArrayList<RecordField>();
+        fields = new ArrayList<RecordField>();
         RecordField dateField = new RecordField("date", "Date", "Date", 1,
                                     "");
         dateField.setType(RecordField.TYPE_DATE);
@@ -102,12 +104,18 @@ public class MultiMonthRecord extends TextRecord {
         RecordField valueField = new RecordField(shortName, longName,
                                      longName, 2, unit);
         DataRecord.initField(valueField);
+        valueField.setChartable(true);
+        valueField.setSearchable(true);
 
         fields.add(dateField);
         fields.add(valueField);
         initFields(fields);
     }
 
+
+    public  List<RecordField> getFields () {
+        return fields;
+    }
 
     /**
      * _more_

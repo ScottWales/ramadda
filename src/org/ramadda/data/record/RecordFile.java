@@ -23,7 +23,9 @@ package org.ramadda.data.record;
 
 import org.ramadda.data.record.filter.*;
 
+
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 
 import java.io.*;
 
@@ -151,6 +153,7 @@ public abstract class RecordFile {
     public RecordFile(String filename, Hashtable properties) {
         this.filename   = filename;
         this.properties = properties;
+        //        Misc.printStack("RecordFile.ctor:" + filename, 10);
     }
 
 
@@ -163,6 +166,7 @@ public abstract class RecordFile {
      */
     public RecordFile(String filename) {
         this.filename = filename;
+        //        Misc.printStack("RecordFile.ctor:" + filename, 10);
     }
 
 

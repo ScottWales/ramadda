@@ -1264,13 +1264,16 @@ public class PointFormHandler extends RecordFormHandler {
             } else {
                 unit = "null";
             }
+
             js.append("new RecordField(" + index +", " +HtmlUtils.quote(attr.getName()) +", "  +
                       HtmlUtils.quote(attr.getLabel()) +"," +
                       HtmlUtils.quote("double")+"," +
                       attr.getMissingValue() +"," + unit +")");
             index++;
         }
-        js.append("];\n");
+        if(fields.size()>0) {
+            js.append("];\n");
+        }
         js.append("var data =  [");
         final int[]          cnt            = { 0 };
 

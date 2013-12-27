@@ -165,7 +165,11 @@ public abstract class TextFile extends PointFile implements Fields {
         if (file.endsWith(".xls")) {
             reader = new StringReader(XlsUtil.xlsToCsv(file));
         } else {
-            reader = new FileReader(getFilename());
+            if(file.startsWith("http:") || file.startsWith("https:")) {
+                reader = new InputStreamReader(IOUtil.getInputStream(file));
+            } else {
+                reader = new FileReader(file);
+            }
         }
 
         return new RecordIO(new BufferedReader(reader));

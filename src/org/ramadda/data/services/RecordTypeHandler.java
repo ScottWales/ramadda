@@ -435,7 +435,7 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
         if (ctor != null) {
             return (RecordFile) ctor.newInstance(new Object[] {
-                entry.getFile().toString() });
+                    entry.getResource().getPath()});
 
         }
 
