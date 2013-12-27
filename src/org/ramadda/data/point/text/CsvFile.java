@@ -267,8 +267,25 @@ public class CsvFile extends TextFile {
             if (type != null) {
                 field.setType(type);
             }
+            //Check for a default fixed value
             String value = getProperty(field, properties, "value",
                                        (String) null);
+
+            if(value==null) {
+                String pattern = getProperty(field, properties, "pattern",
+                                             (String) null);
+                if(pattern!=null) {
+                    //"Lat:\\s(.*)Lon:"
+                    String header = StringUtil.join("\n", getHeaderLines());
+                    String patternMatch = StringUtil.findPattern(header,pattern);
+                    if(patternMatch!=null) {
+                        value = patternMatch;
+                    } else {
+                        throw new IllegalArgumentException("No match. pattern=" + pattern +" field=" + field);
+                    }
+                }
+            }
+
             if (value != null) {
                 if (field.isTypeString()) {
                     field.setDefaultStringValue(value);

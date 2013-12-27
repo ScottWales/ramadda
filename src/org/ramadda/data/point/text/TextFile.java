@@ -112,6 +112,7 @@ public abstract class TextFile extends PointFile implements Fields {
     protected String firstDataLine = null;
 
 
+
     /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 

@@ -23,9 +23,11 @@ package org.ramadda.util;
 
 import org.apache.commons.lang.text.StrTokenizer;
 
+import org.w3c.dom.*;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
-
+import ucar.unidata.xml.XmlUtil;
 
 import java.lang.reflect.Constructor;
 
@@ -526,9 +528,126 @@ public class Utils {
         return cal.get(cal.MONTH);
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String removeNonAscii(String s) {
         s = s.replaceAll("[^\r\n\\x20-\\x7E]+", "_");
+
         return s;
     }
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String getAttributeOrTag(Element node, String attrOrTag,
+                                           String dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            attrValue = XmlUtil.getGrandChildText(node, attrOrTag, dflt);
+        }
+
+        return attrValue;
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static boolean getAttributeOrTag(Element node, String attrOrTag,
+                                            boolean dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
+                    (String) null);
+        }
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return attrValue.equals("true");
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static int getAttributeOrTag(Element node, String attrOrTag,
+                                        int dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
+                    (String) null);
+        }
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return new Integer(attrValue).intValue();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static double getAttributeOrTag(Element node, String attrOrTag,
+                                           double dflt)
+            throws Exception {
+        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
+                               (String) null);
+        if (attrValue == null) {
+            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
+                    (String) null);
+        }
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return new Double(attrValue).doubleValue();
+    }
+
 
 }

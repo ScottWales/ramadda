@@ -1,4 +1,4 @@
-menutable, tr, th, td {
+input,textarea, menutable, tr, th, td {
       font-size: 100%;
       font: inherit;
       font-size: 11pt;
@@ -114,6 +114,12 @@ input, password, fileinput,textarea,select {
     color: #fff;
 }
 
+
+
+.chart-fields {
+   max-height: 500px; 
+   overflow-y: auto;
+}
 
 
 .search-list {

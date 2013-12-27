@@ -2807,6 +2807,25 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param request _more_
+     * @param entry _more_
+     * @param column _more_
+     * @param widget _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getFormWidget(Request request, Entry entry, Column column,
+                                String widget)
+            throws Exception {
+        return HtmlUtils.hbox(widget, HtmlUtils.inset(column.getSuffix(), 5));
+    }
+
+
+    /**
+     * _more_
+     *
      * @param request The request
      * @param sb _more_
      * @param parentEntry _more_

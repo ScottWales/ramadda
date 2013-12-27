@@ -253,7 +253,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean changeType = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showEmpty = true;
 
     /** _more_ */
@@ -294,6 +294,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String dflt;
 
+    /** _more_ */
     private double dfltDouble = Double.NaN;
 
     /** _more_ */
@@ -388,29 +389,33 @@ public class Column implements DataTypes, Constants {
         if (dttmFormat != null) {
             dateParser = new SimpleDateFormat(dttmFormat);
         }
-        description = XmlUtil.getAttribute(element, ATTR_DESCRIPTION, label);
-        type = XmlUtil.getAttribute(element, ATTR_TYPE, DATATYPE_STRING);
-        changeType     = XmlUtil.getAttribute(element, ATTR_CHANGETYPE,
+
+        description = Utils.getAttributeOrTag(element, ATTR_DESCRIPTION,
+                label);
+        type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
+        changeType = Utils.getAttributeOrTag(element, ATTR_CHANGETYPE, false);
+        showEmpty = Utils.getAttributeOrTag(element, "showempty", true);
+        dflt = Utils.getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
+        isIndex   = Utils.getAttributeOrTag(element, ATTR_ISINDEX, false);
+        isCategory = Utils.getAttributeOrTag(element, ATTR_ISCATEGORY, false);
+        canSearch = Utils.getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        advancedSearch = Utils.getAttributeOrTag(element, ATTR_ADVANCED,
                 false);
-        showEmpty      = XmlUtil.getAttribute(element, "showempty", true);
-        dflt = XmlUtil.getAttribute(element, ATTR_DEFAULT, "").trim();
-        isIndex        = XmlUtil.getAttribute(element, ATTR_ISINDEX, false);
-        isCategory     = XmlUtil.getAttribute(element, ATTR_ISCATEGORY,
-                false);
-        canSearch      = XmlUtil.getAttribute(element, ATTR_CANSEARCH, false);
-        advancedSearch = XmlUtil.getAttribute(element, ATTR_ADVANCED, false);
-        editable       = XmlUtil.getAttribute(element, ATTR_EDITABLE, true);
-        addToForm = XmlUtil.getAttribute(element, ATTR_ADDTOFORM, addToForm);
-        canShow = XmlUtil.getAttribute(element, ATTR_SHOWINHTML, canShow);
-        showLabel = XmlUtil.getAttribute(element, ATTR_SHOWLABEL, showLabel);
-        canExport = XmlUtil.getAttribute(element, ATTR_CANEXPORT, canExport);
-        canList        = XmlUtil.getAttribute(element, ATTR_CANLIST, true);
-        size           = XmlUtil.getAttribute(element, ATTR_SIZE, size);
-        min            = XmlUtil.getAttribute(element, ATTR_MIN, min);
-        max            = XmlUtil.getAttribute(element, ATTR_MAX, max);
-        required = XmlUtil.getAttribute(element, ATTR_REQUIRED, required);
-        rows           = XmlUtil.getAttribute(element, ATTR_ROWS, rows);
-        columns        = XmlUtil.getAttribute(element, ATTR_COLUMNS, columns);
+        editable = Utils.getAttributeOrTag(element, ATTR_EDITABLE, true);
+        addToForm = Utils.getAttributeOrTag(element, ATTR_ADDTOFORM,
+                                            addToForm);
+        canShow = Utils.getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
+        showLabel = Utils.getAttributeOrTag(element, ATTR_SHOWLABEL,
+                                            showLabel);
+        canExport = Utils.getAttributeOrTag(element, ATTR_CANEXPORT,
+                                            canExport);
+        canList  = Utils.getAttributeOrTag(element, ATTR_CANLIST, true);
+        size     = Utils.getAttributeOrTag(element, ATTR_SIZE, size);
+        min      = Utils.getAttributeOrTag(element, ATTR_MIN, min);
+        max      = Utils.getAttributeOrTag(element, ATTR_MAX, max);
+        required = Utils.getAttributeOrTag(element, ATTR_REQUIRED, required);
+        rows     = Utils.getAttributeOrTag(element, ATTR_ROWS, rows);
+        columns  = Utils.getAttributeOrTag(element, ATTR_COLUMNS, columns);
 
         List propNodes = XmlUtil.findChildren(element, "property");
         for (int i = 0; i < propNodes.size(); i++) {
@@ -423,12 +428,12 @@ public class Column implements DataTypes, Constants {
             String bulkEnums = null;
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
                                      (String) null);
-            if(valueString!=null) {
+            if (valueString != null) {
                 setEnums(valueString, ",");
             } else {
                 valueString = XmlUtil.getGrandChildText(element, ATTR_VALUES,
-                                     (String) null);
-                if(valueString!=null) {
+                        (String) null);
+                if (valueString != null) {
                     setEnums(valueString, "\n");
                 }
             }
@@ -437,25 +442,33 @@ public class Column implements DataTypes, Constants {
             }
         }
 
-        if(isNumeric() && Utils.stringDefined(dflt)) {
+        if (isNumeric() && Utils.stringDefined(dflt)) {
             dfltDouble = Double.parseDouble(dflt);
         }
 
 
     }
 
-    private void setEnums(String valueString, String delimiter) throws Exception {
+    /**
+     * _more_
+     *
+     * @param valueString _more_
+     * @param delimiter _more_
+     *
+     * @throws Exception _more_
+     */
+    private void setEnums(String valueString, String delimiter)
+            throws Exception {
 
         if (valueString.startsWith("file:")) {
-            valueString =
-                typeHandler.getStorageManager().readSystemResource(
-                                                                   valueString.substring("file:".length()));
-            delimiter  = "\n";
+            valueString = typeHandler.getStorageManager().readSystemResource(
+                valueString.substring("file:".length()));
+            delimiter = "\n";
         }
 
 
-        List<String> tmp = StringUtil.split(valueString, delimiter,
-                                            true, true);
+        List<String> tmp = StringUtil.split(valueString, delimiter, true,
+                                            true);
         enumValues = new ArrayList<TwoFacedObject>();
         for (String tok : tmp) {
             if (tok.startsWith("#")) {
@@ -464,15 +477,13 @@ public class Column implements DataTypes, Constants {
             String label = tok;
             String value = tok;
             if (tok.indexOf(":") >= 0) {
-                List<String> toks = StringUtil.splitUpTo(tok,
-                                                         ":", 2);
-                
+                List<String> toks = StringUtil.splitUpTo(tok, ":", 2);
+
                 value = toks.get(0);
                 label = toks.get(1);
             } else if (tok.indexOf("=") >= 0) {
-                List<String> toks = StringUtil.splitUpTo(tok,
-                                                         "=", 2);
-                
+                List<String> toks = StringUtil.splitUpTo(tok, "=", 2);
+
                 value = toks.get(0);
                 label = toks.get(1);
             }
@@ -779,7 +790,9 @@ public class Column implements DataTypes, Constants {
                 sb.append(toString(values, offset));
             } else {
                 double v = (Double) values[offset];
-                if(v == dfltDouble && !getShowEmpty()) return;
+                if ((v == dfltDouble) && !getShowEmpty()) {
+                    return;
+                }
                 sb.append(v);
             }
         } else if (isType(DATATYPE_DATETIME)) {
@@ -1900,8 +1913,7 @@ public class Column implements DataTypes, Constants {
             }
         }
 
-        return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
-
+        return typeHandler.getFormWidget(request, entry, this, widget);
     }
 
     /**
@@ -2852,5 +2864,13 @@ public class Column implements DataTypes, Constants {
         return editable;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSuffix() {
+        return suffix;
+    }
 
 }

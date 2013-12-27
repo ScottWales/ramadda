@@ -32,6 +32,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -59,7 +60,7 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
     /** _more_ */
     public static final String ARG_METADATA_BULK = "metadata.bulk";
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX = 0;
 
     /** _more_ */
@@ -278,14 +279,49 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
      */
     public Result handleGenerateEntryJava(Request request, Entry entry)
             throws Exception {
-        StringBuffer java   = new StringBuffer();
+        String java =
+            getStorageManager().readSystemResource(
+                "/org/ramadda/plugins/metameta/TypeHandler.template");
+        StringBuffer defines = new StringBuffer();
+        StringBuffer methods = new StringBuffer();
         String handlerClass = (String) getEntryValue(entry,
                                   IDX_HANDLER_CLASS);
+        boolean isGroup = ((Boolean) getEntryValue(entry,
+                              IDX_IS_GROUP)).booleanValue();
         int    idx       = handlerClass.lastIndexOf('.');
         String pkg       = handlerClass.substring(0, idx);
-        String className = handlerClass.substring(idx);
+        String className = handlerClass.substring(idx + 1) + "Base";
 
-        return new Result("Query Results", java, "text/java");
+        java = java.replace("${package}", pkg);
+        java = java.replace("${classname}", className);
+        java = java.replace("${parentclassname}", isGroup
+                ? "ExtensibleGroupTypeHandler"
+                : "GenericTypeHandler");
+
+
+        defines.append("\tprivate static INDEX_BASE = 0;\n");
+        int cnt = 0;
+        for (Entry child : getChildrenEntries(request, entry)) {
+            MetadataFieldTypeHandler field =
+                (MetadataFieldTypeHandler) child.getTypeHandler();
+            String fieldId = (String) field.getEntryValue(child,
+                                 field.IDX_FIELD_ID);
+            String FIELDID = fieldId.toUpperCase();
+            defines.append("\tprivate static INDEX_" + FIELDID
+                           + " = INDEX_BASE + " + cnt + ";\n");
+            //            methods.append("\tprivate static INDEX_" + FIELDID +" = INDEX_BASE + " + cnt +";\n");
+            cnt++;
+        }
+
+        java = java.replace("${defines}", defines.toString());
+        java = java.replace("${methods}", methods.toString());
+
+
+
+
+        request.setReturnFilename(className + ".java");
+
+        return new Result("Java", new StringBuffer(java), "text/java");
     }
 
     /**
@@ -414,15 +450,15 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
      * @param entry _more_
      * @param buttons _more_
      */
+    @Override
     public void addEntryButtons(Request request, Entry entry,
                                 List<String> buttons) {
         super.addEntryButtons(request, entry, buttons);
         String handlerClass = (String) getEntryValue(entry,
                                   IDX_HANDLER_CLASS);
         if (Utils.stringDefined(handlerClass)) {
-            //Not now
-            //            buttons.add(HtmlUtils.submit("Generate Java base class",
-            //                                         ARG_METADATA_GENERATE_JAVA));
+            buttons.add(HtmlUtils.submit("Generate Java base class",
+                                         ARG_METADATA_GENERATE_JAVA));
         }
     }
 

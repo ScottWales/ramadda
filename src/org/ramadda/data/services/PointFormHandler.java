@@ -49,6 +49,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.grid.*;
 
 import ucar.unidata.geoloc.Bearing;
@@ -1231,18 +1232,97 @@ public class PointFormHandler extends RecordFormHandler {
                                  PointEntry pointEntry)
             throws Exception {
 
-        StringBuffer js         = new StringBuffer();
         long         numRecords = pointEntry.getNumRecords();
         Entry        entry      = pointEntry.getEntry();
         int numPointsToPlot = request.get(ARG_NUMPOINTS, TIMESERIES_POINTS);
+        StringBuffer mysb         = new StringBuffer();
+        String chartDivId = HtmlUtils.getUniqueId("chartdiv");
+        mysb.append(HtmlUtils.div("", HtmlUtils.id(chartDivId)));
+        mysb.append(HtmlUtils.importJS("https://www.google.com/jsapi"));
+        mysb.append(HtmlUtils.script("google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});\n"));
+
+
+
+        mysb.append(HtmlUtils.comment("Import js libs");
+        mysb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
+        mysb.append(HtmlUtils.importJS(fileUrl("/ramaddachart.js")));
+
+        final List<RecordField> fields =
+            pointEntry.getRecordFile().getChartableFields();
+
+        final StringBuffer js         = new StringBuffer();
+        int index =0;
+        for (RecordField attr : fields) {
+            if(js.length()==0) {
+                js.append("var recordFields =  [");
+            } else {
+                js.append(",");
+            }
+            String unit = attr.getUnit();
+            if(Utils.stringDefined(unit)) {
+                unit = HtmlUtils.quote(unit);
+            } else {
+                unit = "null";
+            }
+            js.append("new RecordField(" + index +", " +HtmlUtils.quote(attr.getName()) +", "  +
+                      HtmlUtils.quote(attr.getLabel()) +"," +
+                      HtmlUtils.quote("double")+"," +
+                      attr.getMissingValue() +"," + unit +")");
+            index++;
+        }
+        js.append("];\n");
+        js.append("var data =  [");
+        final int[]          cnt            = { 0 };
+
+        RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
+            public boolean doVisitRecord(RecordFile file,
+                                         VisitInfo visitInfo, Record record) {
+                
+                if(cnt[0]>0) js.append(",\n");
+                PointRecord pointRecord = (PointRecord) record;
+                js.append("new Record(" );
+                js.append(pointRecord.getLatitude());
+                js.append(",");
+                js.append(pointRecord.getLongitude());
+                js.append(",");
+                js.append(pointRecord.getAltitude());
+                js.append(",");
+                js.append("null,[");
+
+                for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
+                    RecordField field = fields.get(fieldCnt);
+                    double      value   = record.getValue(field.getParamId());
+                    if(fieldCnt>0) js.append(",");
+                    js.append(value);
+                }
+                js.append("])");
+                cnt[0]++;
+                //                if(cnt[0]>3) return false;
+                return true;
+            }
+        };
+
+        int skip = (int) (numRecords / numPointsToPlot);
+        getRecordJobManager().visitSequential(request, pointEntry, visitor,
+                new VisitInfo(skip));
+
+
+
+
+        js.append("];\n");
+        js.append("var pointData = new  PointData(\"Test point data\",  recordFields, data);\n");
+        js.append("var chart = new  RamaddaChart(" + HtmlUtils.quote(chartDivId) +" , pointData);\n");
+
+        mysb.append(HtmlUtils.comment("time series data"));
+        mysb.append(HtmlUtils.script(js.toString()));
+
+        if(true) 
+            return  new Result("", mysb);
+        
+
         StringBuffer sb         = new StringBuffer();
 
-        sb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
 
-//        String script =
-             //            IOUtil.readContents(
-        //                "/org/unavco/projects/nlas/ramadda/htdocs/nlas/nlas.js", "");
-        //        sb.append(HtmlUtils.script(script));
 
         sb.append(HtmlUtils.script("var pointDataDomainBase = \""
                                    + getOutputHandler().getDomainBase()
@@ -1301,8 +1381,6 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                          + " " + msg("Hide");
         formSB.append(HtmlUtils.formEntry(msgLabel("Map"), mapShow));
 
-        List<RecordField> fields =
-            pointEntry.getRecordFile().getChartableFields();
         if (fields.size() > 0) {
             StringBuffer attrShow = new StringBuffer();
             attrShow.append("<table>");
@@ -1477,9 +1555,15 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                            formSB.toString(), false);
         sb.append(extra);
         sb.append("\n");
-        sb.append(HtmlUtils.script(js.toString()));
+
         sb.append("\n");
+
+
+
+
+
         Result result = new Result("", sb);
+
 
         return result;
 

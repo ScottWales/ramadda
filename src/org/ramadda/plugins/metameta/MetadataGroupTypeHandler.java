@@ -237,6 +237,24 @@ public abstract class MetadataGroupTypeHandler extends ExtensibleGroupTypeHandle
      *
      * @throws Exception _more_
      */
+    public List<Entry> getChildrenEntries(Request request, Entry entry)
+            throws Exception {
+        return getEntryUtil().getEntriesWithType(
+            getEntryManager().getChildrenAll(request, entry), getChildType());
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public Result processEntryAccess(Request request, Entry entry)
             throws Exception {
@@ -246,21 +264,8 @@ public abstract class MetadataGroupTypeHandler extends ExtensibleGroupTypeHandle
             return null;
         }
 
-        List<Entry> definitionFields = new ArrayList<Entry>();
-        List<Entry> children = getEntryManager().getChildrenAll(request,
-                                   entry);
-
-        for (int i = 0; i < children.size(); i++) {
-            Entry child = children.get(i);
-            if ( !child.isType(getChildType())) {
-                continue;
-            }
-            definitionFields.add(child);
-        }
-
-        children = definitionFields;
-
-        boolean didMove = false;
+        List<Entry> children = getChildrenEntries(request, entry);
+        boolean     didMove  = false;
         for (int i = 0; i < children.size(); i++) {
             Entry child = children.get(i);
             if ( !child.isType(getChildType())) {

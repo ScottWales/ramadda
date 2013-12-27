@@ -46,7 +46,7 @@
      <column name="datatype"  type="enumeration"   label="Data Type" values="file:/org/ramadda/repository/resources/columntypes.properties"/>
 
      <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values" canlist="false"/>
-     <column name="properties" size="500" rows="5"  type="string"     label="Properties" suffix="extra name=value pairs&lt;br&gt;group=,&lt;br&gt;isindex=true&lt;br&gt;cansearch, canshow, canlist"/>
+     <column name="properties" size="500" rows="5"  default="#name=value" type="string"     label="Properties" />
 
      <column name="textfield_rows" type="int"     default="1" label="Text Field Rows" columns="5"  showinhtml="true" xxxgroup="" canlist="false"/>
      <column name="textfield_columns" type="int"     default="60" label="Text Field Columns" columns="5"  showinhtml="true" canlist="false"/>

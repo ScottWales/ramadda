@@ -157,7 +157,7 @@ public class AmrcFinalQCPointFile extends CsvFile {
         String siteName = StringUtil.findPattern(headerLines.get(0),
                               "Name:\\s(.*)");
         String latString = StringUtil.findPattern(headerLines.get(1),
-                               "Lat:\\s(.*)Lon:");
+                                                  "Lat:\\s(.*)Lon:");
         String lonString = StringUtil.findPattern(headerLines.get(1),
                                "Lon:\\s(.*)Elev:");
         String elevString = StringUtil.findPattern(headerLines.get(1),

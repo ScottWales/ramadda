@@ -134,6 +134,28 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param column _more_
+     * @param widget _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getFormWidget(Request request, Entry entry, Column column,
+                                String widget)
+            throws Exception {
+        if (column.getName().equals("properties")) {
+            String suffix = "extra name=value pairs<br>group=Field display group<br>isindex=true<br>cansearch,canshow,canlist=true|false<br>suffix=label to show after form<br>";
+            HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
+        }
+
+        return super.getFormWidget(request, entry, column, widget);
+    }
 
     /**
      * _more_
@@ -146,7 +168,7 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
-        Integer index = (Integer) getEntryValue(entry, 0);
+        Integer index = (Integer) getEntryValue(entry, IDX_FIELD_INDEX);
         int     idx   = ((index == null)
                          ? -1
                          : index.intValue());
@@ -177,8 +199,7 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public Hashtable getProperties(Entry entry) throws Exception {
-        int    index = 4;
-        String s     = (String) getEntryValue(entry, index);
+        String s = (String) getEntryValue(entry, IDX_PROPERTIES);
         if (s == null) {
             s = "";
         }
@@ -205,53 +226,71 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
     public void generateDbXml(Request request, StringBuffer xml, Entry entry)
             throws Exception {
         //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
-        Object[]     values  = getEntryValues(entry);
-        String       id      = (String) values[1];
-        String       type    = (String) values[2];
-        String       enums   = (String) values[3];
-        Hashtable    props   = getProperties(entry);
-        int          rows    = ((Integer) values[5]).intValue();
-        int          columns = ((Integer) values[6]).intValue();
-        int          size    = ((Integer) values[7]).intValue();
-        StringBuffer attrs   = new StringBuffer();
-        StringBuffer inner   = new StringBuffer();
+        Object[]     values = getEntryValues(entry);
+
+        String       id     = (String) values[IDX_FIELD_ID];
+        String       type   = (String) values[IDX_DATATYPE];
+        String       enums  = (String) values[IDX_ENUMERATION_VALUES];
+        Hashtable    props  = getProperties(entry);
+        int          rows = ((Integer) values[IDX_TEXTFIELD_ROWS]).intValue();
+        int columns = ((Integer) values[IDX_TEXTFIELD_COLUMNS]).intValue();
+        int size = ((Integer) values[IDX_DATABASE_COLUMN_SIZE]).intValue();
+        StringBuffer attrs  = new StringBuffer();
+        StringBuffer inner  = new StringBuffer();
         attrs.append(XmlUtil.attr("name", id));
         attrs.append(XmlUtil.attr("label", entry.getName()));
         attrs.append(XmlUtil.attr("type", type));
 
+        if (type.equals(DataTypes.DATATYPE_ENUMERATION)
+                || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS)) {
+            inner.append(XmlUtil.tag("values", "", XmlUtil.getCdata(enums)));
+        }
 
-        String[] attrProps = { ATTR_GROUP };
+
+        String[] attrProps = { Column.ATTR_GROUP, Column.ATTR_SUFFIX,
+                               Column.ATTR_FORMAT};
         for (String attrProp : attrProps) {
             String v = (String) props.get(attrProp);
             if (v != null) {
+                props.remove(attrProp);
                 attrs.append(XmlUtil.attr(attrProp, v));
             }
         }
 
-        attrs.append(XmlUtil.attr("cansearch",
-                                  Misc.getProperty(props, "cansearch",
+        attrs.append(XmlUtil.attr(Column.ATTR_CANSEARCH,
+                                  Misc.getProperty(props, Column.ATTR_CANSEARCH,
                                       "true")));
-        attrs.append(XmlUtil.attr("canlist",
-                                  Misc.getProperty(props, "canlist",
+        attrs.append(XmlUtil.attr(Column.ATTR_CANLIST,
+                                  Misc.getProperty(props, Column.ATTR_CANLIST,
                                       "true")));
-        attrs.append(XmlUtil.attr("rows", "" + rows));
-        attrs.append(XmlUtil.attr("columns", "" + columns));
-        attrs.append(XmlUtil.attr("size", "" + size));
+        attrs.append(XmlUtil.attr(Column.ATTR_ROWS, "" + rows));
+        attrs.append(XmlUtil.attr(Column.ATTR_COLUMNS, "" + columns));
+        attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
 
-        if (Misc.getProperty(props, "iscategory", false)) {
-            inner.append(XmlUtil.tag("property",
-                                     XmlUtil.attrs("name", "iscategory",
-                                         "value", "true")));
+        if (Misc.getProperty(props, Column.ATTR_ISCATEGORY, false)) {
+            inner.append(propertyTag(Column.ATTR_ISCATEGORY, "true"));
         }
 
-        if (Misc.getProperty(props, "label", false)) {
-            inner.append(XmlUtil.tag("property",
-                                     XmlUtil.attrs("name", "label", "value",
-                                         "true")));
+        if (Misc.getProperty(props, Column.ATTR_LABEL, false)) {
+            inner.append(propertyTag(Column.ATTR_LABEL, "true"));
         }
 
-        xml.append(XmlUtil.tag("column", attrs.toString(), inner.toString()));
+        xml.append(XmlUtil.tag(TAG_COLUMN, attrs.toString(), inner.toString()));
 
     }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public String propertyTag(String name, String value) {
+        return XmlUtil.tag(TAG_PROPERTY,
+                           XmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
+    }
+
 
 }
