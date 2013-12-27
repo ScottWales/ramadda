@@ -756,7 +756,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if (outputType.equals(OUTPUT_CHART)) {
-            return getPointFormHandler().outputEntryMap(request, outputType,
+            return getPointFormHandler().outputEntryChart(request, outputType,
                     (PointEntry) doMakeEntry(request, entry));
         }
 

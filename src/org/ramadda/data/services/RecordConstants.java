@@ -248,6 +248,8 @@ public interface RecordConstants extends Constants {
     /** constants */
     public static final int TIMESERIES_POINTS = 500;
 
+    public static final int TIMESERIES_MAXPOINTS = 2000;
+
     /** constants */
     public static final int WAVEFORM_THRESHOLD = 25;
 

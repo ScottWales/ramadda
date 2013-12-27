@@ -231,30 +231,31 @@ public class NetcdfPointFile extends PointFile {
     }
 
 
-
-
     /**
-     * Overwrite the getRecord method so we just do the skip
-     * and not the final read that the RecordFile class does
-     *
-     * @param index _more_
+     * _more_
      *
      * @param visitInfo _more_
+     * @param record _more_
+     * @param howMany _more_
      *
      * @return _more_
      *
-     * @throws Exception _more_
-     *
      * @throws IOException _more_
      */
-    /*
-        public Record getRecord(int index) throws Exception {
-            RecordIO recordIO = doMakeInputIO(false);
-            Record   record   = (Record) makeRecord(new VisitInfo());
-            skip(new VisitInfo(recordIO), record, index);
-            return record;
+    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+            throws IOException {
+        visitInfo.addRecordIndex(howMany);
+        while (howMany-- >= 0) {
+            if (record.read(visitInfo.getRecordIO())
+                    == Record.ReadStatus.EOF) {
+                return false;
+            }
         }
-    */
+
+        return true;
+    }
+
+
 
 
     /**
@@ -266,6 +267,8 @@ public class NetcdfPointFile extends PointFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         visitInfo.setRecordIO(readHeader(visitInfo.getRecordIO()));

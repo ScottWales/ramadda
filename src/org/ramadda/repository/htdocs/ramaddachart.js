@@ -19,6 +19,25 @@
 */
 
 
+/*
+This package supports charting and mapping of georeferenced time series data
+
+Use:
+<div id="example"></div>
+...
+var recordFields  = [new RecordField(...), ... see below]
+var data  = [new Record(...), ...]
+var pointData = new  PointData("Example data set",  recordFields, data);
+var chart = new  RamaddaChart("example" , pointData);
+
+*/
+
+
+/*
+Create a chart
+id - the id of this chart. Has to correspond to a div tag id 
+pointData - A PointData object (see below)
+ */
 function RamaddaChart(id, pointData) {
     var theChart = this;
     this.pointData  = pointData;
@@ -26,14 +45,13 @@ function RamaddaChart(id, pointData) {
     this.chartDivId =id +"_chart";
 
     var fields = this.pointData.getRecordFields();
-
     var html = "<table width=100%><tr valign=top><td><div class=chart-fields>";
     this.displayedFields = [fields[0]];
 
     var checkboxClass = id +"_checkbox";
     for(i=0;i<fields.length;i++) { 
         var field = fields[i];
-        field.checkboxId  = this.chartDivId +"_cbx" + i;
+        field.checkboxId  = this.id +"_cbx" + i;
         html += "<input id=\"" + field.checkboxId +"\" class=\""  + checkboxClass +"\"  type=checkbox value=true ";
         if(this.displayedFields.indexOf(field)>=0) {
             html+= " checked ";
@@ -74,18 +92,35 @@ function RamaddaChart(id, pointData) {
 
     this.loadData = function() {
         this.setDisplayedFields();
+
         var dataList = [];
-        var fieldNames = ["index"];
+       
+        //The first entry in the dataList is the array of names
+        //The first field is the domain, e.g., time or index
+        var fieldNames = ["domain","depth"];
         for(i=0;i<this.displayedFields.length;i++) { 
             var field = this.displayedFields[i];
-            fieldNames.push(field.getId());
+            var name  = field.getLabel();
+            if(field.getUnit()!=null) {
+                name += " (" + field.getUnit()+")";
+            }
+            fieldNames.push(name);
         }
         dataList.push(fieldNames);
+
+        //These are Record objects
         var records = this.pointData.getData();
         for(j=0;j<records.length;j++) { 
             var record = records[j];
             var values = [];
-            values.push(j);
+            var date = record.getDate();
+            //Add the date or index field
+            if(date!=null) {
+                values.push(date);
+            } else {
+                values.push(j);
+            }
+            values.push(record.getElevation());
             for(i=0;i<this.displayedFields.length;i++) { 
                 var field = this.displayedFields[i];
                 values.push(record.getValue(field.getIndex()));
@@ -93,10 +128,18 @@ function RamaddaChart(id, pointData) {
             dataList.push(values);
         }
         var dataTable = google.visualization.arrayToDataTable(dataList);
+
+        //Not quite sure about the axis settings
         var options = {
-            series: [{targetAxisIndex:0},{targetAxisIndex:1},{targetAxisIndex:2},],
+            series: [
+        {targetAxisIndex:0},
+        {targetAxisIndex:1},
+        {targetAxisIndex:0},
+        {targetAxisIndex:1},
+        {targetAxisIndex:0},
+                     ],
             title: this.pointData.getName(),
-            chartArea:{xleft:20,xtop:0,xwidth:"50%",height:"85%"}
+            chartArea:{xxleft:20,xxtop:0,height:"85%"}
         };
         this.chart.draw(dataTable, options);
     }
@@ -108,6 +151,12 @@ function RamaddaChart(id, pointData) {
 }
 
 
+/*
+This encapsulates some instance of point data. 
+name - the name of this data
+recordFields - array of RecordField objects that define the metadata
+data - array of Record objects holding the data
+*/
 function PointData(name, recordFields, data) {
     this.name = name;
     this.recordFields = recordFields;
@@ -127,6 +176,16 @@ function PointData(name, recordFields, data) {
 }
 
 
+/*
+This class defines the metadata for a record column. 
+index - the index i the data array
+id - string id
+label - string label to show to user
+type - for now not used but once we have string or other column types we'll need it
+missing - the missing value forthis field. Probably not needed and isn't used
+as I think RAMADDA passes in NaN
+unit - the unit of the value
+ */
 function RecordField(index, id, label, type, missing, unit) {
     this.index = index;
     this.id = id;
@@ -135,29 +194,41 @@ function RecordField(index, id, label, type, missing, unit) {
     this.missing = missing;
     this.unit = unit;
 
-    this.getId = function() {
-        return this.id;
-    }
-
-    this.getLabel = function() {
-        return this.label;
-    }
-
     this.getIndex = function() {
         return this.index;
     }
+    this.getId = function() {
+        return this.id;
+    }
+    this.getLabel = function() {
+        return this.label;
+    }
+    this.getType = function() {
+        return this.type;
+    }
+    this.getMissing = function() {
+        return this.missing;
+    }
+    this.getUnit = function() {
+        return this.unit;
+    }
 }
 
+/*
+The main data record. This holds a lat/lon/elevation, time and an array of data
+The data array corresponds to the RecordField fields
+ */
 function Record(lat, lon, elevation, time, data) {
     this.latitude = lat;
     this.longitude = lon;
     this.elevation = elevation;
     this.time = time;
     this.data = data;
-    newRecord(this);
+    init_Record(this);
 }
 
-function newRecord(record) {
+//Add the Record class functions to the object
+function init_Record(record) {
     record.getData = function() {
         return this.data;
     }
@@ -170,11 +241,17 @@ function newRecord(record) {
     record.getLongitude = function() {
         return this.longitude;
     }
+    record.getElevation = function() {
+        return this.elevation;
+    }
+    record.getDate = function() {
+        return this.time;
+    }
     return record;
 }
 
 
-function makeTestData() {
+function makeTestPointData() {
     var recordFields =  [new RecordField(0, "Temperature","Temperature","double",-9999.99, "celsius"),
                          new RecordField(1, "Pressure","Pressure","double",-9999.99, "hPa")];
     var data =  [
@@ -185,4 +262,3 @@ function makeTestData() {
     return new  PointData("Test point data",  recordFields, data);
 }
 
-//var chart = new  RamaddaChart("chartdiv", makeTestData());

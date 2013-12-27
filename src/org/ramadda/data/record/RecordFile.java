@@ -828,7 +828,7 @@ public abstract class RecordFile {
             visitInfo = new VisitInfo();
         }
         int skip = getSkip(visitInfo);
-        //        System.err.println("doMakeInputIO: " + skip);
+        //        System.err.println("RecordFile.visit skip =" + skip);
         RecordIO recordIO = doMakeInputIO(skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
@@ -1009,6 +1009,7 @@ public abstract class RecordFile {
     public boolean skip(VisitInfo visitInfo, Record record, int howMany)
             throws IOException {
         visitInfo.addRecordIndex(howMany);
+        //        System.err.println ("RecordFile.skip: io.skip= " + howMany);
         visitInfo.getRecordIO().getDataInputStream().skipBytes(howMany
                 * record.getRecordSize());
 

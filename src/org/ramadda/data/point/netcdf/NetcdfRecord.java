@@ -95,6 +95,7 @@ public class NetcdfRecord extends DataRecord {
     public ReadStatus read(RecordIO recordIO) throws IOException {
 
 
+
         if ( !iterator.hasNext()) {
             return ReadStatus.EOF;
         }

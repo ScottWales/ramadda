@@ -1228,24 +1228,24 @@ public class PointFormHandler extends RecordFormHandler {
      *
      * @throws Exception on badness
      */
-    public Result outputEntryMap(Request request, OutputType outputType,
+    public Result outputEntryChart(Request request, OutputType outputType,
                                  PointEntry pointEntry)
             throws Exception {
 
         long         numRecords = pointEntry.getNumRecords();
         Entry        entry      = pointEntry.getEntry();
         int numPointsToPlot = request.get(ARG_NUMPOINTS, TIMESERIES_POINTS);
-        StringBuffer mysb         = new StringBuffer();
+        StringBuffer sb         = new StringBuffer();
         String chartDivId = HtmlUtils.getUniqueId("chartdiv");
-        mysb.append(HtmlUtils.div("", HtmlUtils.id(chartDivId)));
-        mysb.append(HtmlUtils.importJS("https://www.google.com/jsapi"));
-        mysb.append(HtmlUtils.script("google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});\n"));
+        sb.append(HtmlUtils.div("", HtmlUtils.id(chartDivId)));
+        sb.append(HtmlUtils.importJS("https://www.google.com/jsapi"));
+        sb.append(HtmlUtils.script("google.load(\"visualization\", \"1\", {packages:[\"corechart\"]});\n"));
 
 
 
-        mysb.append(HtmlUtils.comment("Import js libs"));
-        mysb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
-        mysb.append(HtmlUtils.importJS(fileUrl("/ramaddachart.js")));
+        sb.append(HtmlUtils.comment("Import js libs"));
+        sb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/ramaddachart.js")));
 
         final List<RecordField> fields =
             pointEntry.getRecordFile().getChartableFields();
@@ -1274,9 +1274,10 @@ public class PointFormHandler extends RecordFormHandler {
         js.append("var data =  [");
         final int[]          cnt            = { 0 };
 
+
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                        VisitInfo visitInfo, Record record) {
                 
                 if(cnt[0]>0) js.append(",\n");
                 PointRecord pointRecord = (PointRecord) record;
@@ -1287,7 +1288,16 @@ public class PointFormHandler extends RecordFormHandler {
                 js.append(",");
                 js.append(pointRecord.getAltitude());
                 js.append(",");
-                js.append("null,[");
+                if(pointRecord.hasRecordTime()) {
+                    //                    js.append(formatDate(new Date(pointRecord.getRecordTime())));
+                    js.append("new Date(");
+                    js.append(pointRecord.getRecordTime());
+                    js.append(")");
+                } else {
+                    js.append("null");
+                }
+
+                js.append(",[");
 
                 for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                     RecordField field = fields.get(fieldCnt);
@@ -1297,33 +1307,44 @@ public class PointFormHandler extends RecordFormHandler {
                 }
                 js.append("])");
                 cnt[0]++;
-                //                if(cnt[0]>3) return false;
+                //In case 
+                if(cnt[0]>TIMESERIES_MAXPOINTS) return false;
                 return true;
             }
         };
 
+
         int skip = (int) (numRecords / numPointsToPlot);
+        //        System.err.println("skip:" + skip + " " + numRecords);
         getRecordJobManager().visitSequential(request, pointEntry, visitor,
                 new VisitInfo(skip));
-
-
-
-
+        //        System.err.println("Final cnt:" + cnt[0]);
         js.append("];\n");
-        js.append("var pointData = new  PointData(\"Test point data\",  recordFields, data);\n");
+        js.append("var pointData = new  PointData(" + HtmlUtils.quote(entry.getName())+",  recordFields, data);\n");
         js.append("var chart = new  RamaddaChart(" + HtmlUtils.quote(chartDivId) +" , pointData);\n");
+        sb.append(HtmlUtils.comment("time series data"));
+        sb.append(HtmlUtils.script(js.toString()));
+        return  new Result("", sb);
+    }
 
-        mysb.append(HtmlUtils.comment("time series data"));
-        mysb.append(HtmlUtils.script(js.toString()));
 
-        if(true) 
-            return  new Result("", mysb);
-        
+
+    public Result outputEntryChartOldWay(Request request, OutputType outputType,
+                                 PointEntry pointEntry)
+            throws Exception {
+
+        long         numRecords = pointEntry.getNumRecords();
+        Entry        entry      = pointEntry.getEntry();
+        int numPointsToPlot = request.get(ARG_NUMPOINTS, TIMESERIES_POINTS);
 
         StringBuffer sb         = new StringBuffer();
+        sb.append(HtmlUtils.comment("Import js libs"));
+        sb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
 
+        final List<RecordField> fields =
+            pointEntry.getRecordFile().getChartableFields();
 
-
+        final StringBuffer js         = new StringBuffer();
         sb.append(HtmlUtils.script("var pointDataDomainBase = \""
                                    + getOutputHandler().getDomainBase()
                                    + "\";\n"));
