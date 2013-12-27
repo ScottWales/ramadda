@@ -1243,7 +1243,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 
 
-        mysb.append(HtmlUtils.comment("Import js libs");
+        mysb.append(HtmlUtils.comment("Import js libs"));
         mysb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
         mysb.append(HtmlUtils.importJS(fileUrl("/ramaddachart.js")));
 
