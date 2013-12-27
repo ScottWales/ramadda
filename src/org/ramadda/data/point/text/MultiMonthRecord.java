@@ -145,7 +145,7 @@ public class MultiMonthRecord extends TextRecord {
         try {
             Date dttm = sdf.parse(toks.get(0) + "-" + (currentMonth + 1));
             // Matias: Changed to 0 because the method setValue needs a double I wasn't able to compile (ask jeff)
-            setValue(1, 0);
+            setValue(1, dttm);
             double value = Double.parseDouble(toks.get(currentMonth + 1));
             if (value == missingValue) {
                 value = Double.NaN;
