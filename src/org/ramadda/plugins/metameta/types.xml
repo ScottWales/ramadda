@@ -7,6 +7,10 @@
      <property name="form.date.show" value="false"/>
   </type>
 
+
+<!--
+
+
   <type name="type_metadata_definition"  description="RAMADDA Data Definition" handler="org.ramadda.plugins.metameta.MetadataDefinitionTypeHandler" childtypes="type_metadata_field">
      <property name="icon" value="/metameta/database_table.png"/>
      <property name="form.resource.show" value="false"/>
@@ -14,7 +18,7 @@
      <property name="form.date.show" value="false"/>
 
      <column name="field_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>
-     <column name="type"  type="enumeration"     label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
+     <column name="type"  type="enumeration"  rows="5"   label="Type" values="entry,metadata,database,datafile"  showinhtml="true"/>
 
      <column name="short_name" type="string"     label="Short Name" columns="80"  showinhtml="true"/>
      <column name="super_type" type="string"     label="Super Type" columns="80"  showinhtml="true"/>
@@ -33,35 +37,40 @@
 ]]>
 </wiki>
  </type>
+-->
+
+<type  name="type_metadata_definition"  description="Metadata Definition"  handler="org.ramadda.plugins.metameta.MetadataDefinitionTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="icon"  value="/metameta/database_table.png" /><property  name="form.resource.show"  value="false" /><column  name="field_index"  label="Index"  type="int"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="type"  label="Type"  type="enumeration"  cansearch="true"  canlist="true"  rows="5"  columns="60"  size="200" ><values><![CDATA[entry
+metadata
+database
+datafile]]></values>
+</column>
+<column  name="short_name"  label="Short Name"  type="string"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="super_type"  label="Super Type"  type="string"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="isgroup"  label="Is Group"  type="boolean"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="handler_class"  label="Handler Class"  type="string"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="properties"  label="Properties"  type="string"  suffix="extra name=value pairs&amp;lt;br&amp;gt;"  cansearch="true"  canlist="true"  rows="5"  columns="60"  size="1000" ></column>
+<column  name="wiki_text"  label="Wiki Text"  type="string"  cansearch="true"  canlist="true"  rows="5"  columns="60"  size="1000" ></column>
+</type>
 
 
-  <type name="type_metadata_field"  description="RAMADDA Data Field" handler="org.ramadda.plugins.metameta.MetadataFieldTypeHandler">
-     <property name="form.resource.show" value="false"/>
-     <property name="icon" value="/metameta/database_gear.png"/>
 
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <column name="field_index"  type="int"   default="-1"   label="Index" columns="4"  showinhtml="true"/>
-     <column name="field_id" type="string"     label="Field ID" columns="80"  showinhtml="true"/>
-     <column name="datatype"  type="enumeration"   label="Data Type" values="file:/org/ramadda/repository/resources/columntypes.properties"/>
-
-     <column name="enumeration_values" size="500" rows="5"  type="string"     label="Enumeration Values" suffix="extra name=value enumeration values" canlist="false"/>
-     <column name="properties" size="500" rows="5"  default="#name=value" type="string"     label="Properties" />
-
-     <column name="textfield_rows" type="int"     default="1" label="Text Field Rows" columns="5"  showinhtml="true" xxxgroup="" canlist="false"/>
-     <column name="textfield_columns" type="int"     default="60" label="Text Field Columns" columns="5"  showinhtml="true" canlist="false"/>
-     <column name="database_column_size" type="int"   default="200"  label="Database Column Size" columns="5"  showinhtml="true" canlist="false"/>
-
-     <column name="missing" type="string"     label="Missing Value" columns="10"  showinhtml="true" group="Fields for Data" canlist="false"/>
-     <column name="unit" type="string"        label="Unit" columns="10"  showinhtml="true" canlist="false"/>
-
-<wiki><![CDATA[
-{{information}}
-
-{{tree message=""}}
-]]>
-</wiki>
- </type>
+<type  name="type_metadata_field"  description="Metadata Field"  handler="org.ramadda.plugins.metameta.MetadataFieldTypeHandler" >
+<property  name="form.date.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+<property  name="icon"  value="/metameta/blue-document-snippet.png" />
+<wiki><![CDATA[{{information}}
+{{tree message=""}}]]></wiki>
+<column  name="field_index"  label="Index"  type="int"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="field_id"  label="Field ID"  type="string"  cansearch="true"  canlist="true"  rows="1"  columns="60"  size="200" ></column>
+<column  name="datatype"  label="Data Type"  type="enumeration"  cansearch="true"  canlist="true"  values="file:/org/ramadda/repository/resources/columntypes.properties" rows="1"  columns="60"  size="200" ></column>
+<column  name="enumeration_values"  label="Enumeration Values"  type="string"  suffix="extra name=value enumeration values"  cansearch="true"  canlist="false"  rows="5"  columns="60"  size="1000" ></column>
+<column  name="properties"  label="Properties"  type="string"  cansearch="true"  canlist="true"  rows="5"  columns="60"  size="1000" ></column>
+<column  name="database_column_size"  label="Database Column Size"  type="int"  cansearch="true"  canlist="false"  rows="1"  columns="60"  size="200" ></column>
+<column  name="missing"  label="Missing Value"  type="string"  group="Fields for Data"  cansearch="true"  canlist="false"  rows="1"  columns="60"  size="200" ></column>
+<column  name="unit"  label="Unit"  type="string"  cansearch="true"  canlist="false"  rows="1"  columns="60"  size="200" ></column>
+</type>
 
 
 </types>

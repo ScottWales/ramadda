@@ -51,7 +51,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
+public class  MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandlerBase {
 
     /** _more_ */
     public static final String TYPE_METADATA_DEFINITION =
@@ -59,33 +59,6 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
 
     /** _more_ */
     public static final String ARG_METADATA_BULK = "metadata.bulk";
-
-    /** _more_ */
-    private static int IDX = 0;
-
-    /** _more_ */
-    public static final int IDX_FIELD_INDEX = IDX++;
-
-    /** _more_ */
-    public static final int IDX_TYPE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SHORT_NAME = IDX++;
-
-    /** _more_ */
-    public static final int IDX_SUPER_TYPE = IDX++;
-
-    /** _more_ */
-    public static final int IDX_IS_GROUP = IDX++;
-
-    /** _more_ */
-    public static final int IDX_HANDLER_CLASS = IDX++;
-
-    /** _more_ */
-    public static final int IDX_PROPERTIES = IDX++;
-
-    /** _more_ */
-    public static final int IDX_WIKI_TEXT = IDX++;
 
 
 
@@ -285,9 +258,9 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
         StringBuffer defines = new StringBuffer();
         StringBuffer methods = new StringBuffer();
         String handlerClass = (String) getEntryValue(entry,
-                                  IDX_HANDLER_CLASS);
+                                  INDEX_HANDLER_CLASS);
         boolean isGroup = ((Boolean) getEntryValue(entry,
-                              IDX_IS_GROUP)).booleanValue();
+                              INDEX_ISGROUP)).booleanValue();
         int    idx       = handlerClass.lastIndexOf('.');
         String pkg       = handlerClass.substring(0, idx);
         String className = handlerClass.substring(idx + 1) + "Base";
@@ -299,15 +272,15 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
                 : "GenericTypeHandler");
 
 
-        defines.append("\tprivate static INDEX_BASE = 0;\n");
+        defines.append("\tprivate static int INDEX_BASE = 0;\n");
         int cnt = 0;
         for (Entry child : getChildrenEntries(request, entry)) {
             MetadataFieldTypeHandler field =
                 (MetadataFieldTypeHandler) child.getTypeHandler();
             String fieldId = (String) field.getEntryValue(child,
-                                 field.IDX_FIELD_ID);
+                                 field.INDEX_FIELD_ID);
             String FIELDID = fieldId.toUpperCase();
-            defines.append("\tprivate static INDEX_" + FIELDID
+            defines.append("\tpublic static final int INDEX_" + FIELDID
                            + " = INDEX_BASE + " + cnt + ";\n");
             //            methods.append("\tprivate static INDEX_" + FIELDID +" = INDEX_BASE + " + cnt +";\n");
             cnt++;
@@ -337,11 +310,11 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
-        String shortName = (String) getEntryValue(parent, IDX_SHORT_NAME);
+        String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
         String handlerClass = (String) getEntryValue(parent,
-                                  IDX_HANDLER_CLASS);
+                                  INDEX_HANDLER_CLASS);
 
-        Hashtable props = getProperties(parent, IDX_PROPERTIES);
+        Hashtable props = getProperties(parent, INDEX_PROPERTIES);
         String    icon  = Misc.getProperty(props, "icon", "/db/tasks.gif");
 
         if ( !Utils.stringDefined(shortName)) {
@@ -380,16 +353,16 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
                                  Entry parent, List<Entry> children)
             throws Exception {
 
-        String shortName = (String) getEntryValue(parent, IDX_SHORT_NAME);
-        String superType = (String) getEntryValue(parent, IDX_SUPER_TYPE);
-        String wikiText  = (String) getEntryValue(parent, IDX_WIKI_TEXT);
+        String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
+        String superType = (String) getEntryValue(parent, INDEX_SUPER_TYPE);
+        String wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
         String handlerClass = (String) getEntryValue(parent,
-                                  IDX_HANDLER_CLASS);
+                                  INDEX_HANDLER_CLASS);
         boolean isGroup = ((Boolean) getEntryValue(parent,
-                              IDX_IS_GROUP)).booleanValue();
+                              INDEX_ISGROUP)).booleanValue();
         String propertiesString = (String) getEntryValue(parent,
-                                      IDX_PROPERTIES);
-        Hashtable props = getProperties(parent, IDX_PROPERTIES);
+                                      INDEX_PROPERTIES);
+        Hashtable props = getProperties(parent, INDEX_PROPERTIES);
         if ( !Utils.stringDefined(shortName)) {
             shortName = parent.getName();
         }
@@ -406,6 +379,7 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
         StringBuffer inner = new StringBuffer();
         if (Utils.stringDefined(wikiText)) {
             inner.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
+            inner.append("\n");
         }
 
 
@@ -438,6 +412,7 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
             MetadataFieldTypeHandler field =
                 (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
             field.generateDbXml(request, xml, recordFieldEntry);
+            xml.append("\n");
         }
         xml.append(XmlUtil.closeTag(TAG_TYPE));
     }
@@ -455,7 +430,7 @@ public class MetadataDefinitionTypeHandler extends MetadataGroupTypeHandler {
                                 List<String> buttons) {
         super.addEntryButtons(request, entry, buttons);
         String handlerClass = (String) getEntryValue(entry,
-                                  IDX_HANDLER_CLASS);
+                                  INDEX_HANDLER_CLASS);
         if (Utils.stringDefined(handlerClass)) {
             buttons.add(HtmlUtils.submit("Generate Java base class",
                                          ARG_METADATA_GENERATE_JAVA));

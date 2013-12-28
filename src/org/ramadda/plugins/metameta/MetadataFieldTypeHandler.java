@@ -29,7 +29,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
 
+
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -52,41 +54,12 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
+public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
 
 
     /** _more_ */
     public static final String TYPE_METADATA_FIELD = "type_metadata_field";
 
-    /** _more_ */
-    public static final int IDX_FIELD_INDEX = 0;
-
-    /** _more_ */
-    public static final int IDX_FIELD_ID = 1;
-
-    /** _more_ */
-    public static final int IDX_DATATYPE = 2;
-
-    /** _more_ */
-    public static final int IDX_ENUMERATION_VALUES = 3;
-
-    /** _more_ */
-    public static final int IDX_PROPERTIES = 4;
-
-    /** _more_ */
-    public static final int IDX_TEXTFIELD_ROWS = 5;
-
-    /** _more_ */
-    public static final int IDX_TEXTFIELD_COLUMNS = 6;
-
-    /** _more_ */
-    public static final int IDX_DATABASE_COLUMN_SIZE = 7;
-
-    /** _more_ */
-    public static final int IDX_MISSING = 8;
-
-    /** _more_ */
-    public static final int IDX_UNIT = 9;
 
 
     /**
@@ -151,7 +124,7 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         if (column.getName().equals("properties")) {
             String suffix = "extra name=value pairs<br>group=Field display group<br>isindex=true<br>cansearch,canshow,canlist=true|false<br>suffix=label to show after form<br>";
-            HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
+            return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
         }
 
         return super.getFormWidget(request, entry, column, widget);
@@ -168,7 +141,7 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
-        Integer index = (Integer) getEntryValue(entry, IDX_FIELD_INDEX);
+        Integer index = (Integer) getEntryValue(entry, INDEX_FIELD_INDEX);
         int     idx   = ((index == null)
                          ? -1
                          : index.intValue());
@@ -199,7 +172,7 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public Hashtable getProperties(Entry entry) throws Exception {
-        String s = (String) getEntryValue(entry, IDX_PROPERTIES);
+        String s = (String) getEntryValue(entry, INDEX_PROPERTIES);
         if (s == null) {
             s = "";
         }
@@ -228,27 +201,30 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
         //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
         Object[]     values = getEntryValues(entry);
 
-        String       id     = (String) values[IDX_FIELD_ID];
-        String       type   = (String) values[IDX_DATATYPE];
-        String       enums  = (String) values[IDX_ENUMERATION_VALUES];
+        String       id     = (String) values[INDEX_FIELD_ID];
+        String       type   = (String) values[INDEX_DATATYPE];
+        String       enums  = (String) values[INDEX_ENUMERATION_VALUES];
         Hashtable    props  = getProperties(entry);
-        int          rows = ((Integer) values[IDX_TEXTFIELD_ROWS]).intValue();
-        int columns = ((Integer) values[IDX_TEXTFIELD_COLUMNS]).intValue();
-        int size = ((Integer) values[IDX_DATABASE_COLUMN_SIZE]).intValue();
+        int size = (values[INDEX_DATABASE_COLUMN_SIZE]!=null?((Integer) values[INDEX_DATABASE_COLUMN_SIZE]).intValue():200);
         StringBuffer attrs  = new StringBuffer();
         StringBuffer inner  = new StringBuffer();
         attrs.append(XmlUtil.attr("name", id));
         attrs.append(XmlUtil.attr("label", entry.getName()));
         attrs.append(XmlUtil.attr("type", type));
 
-        if (type.equals(DataTypes.DATATYPE_ENUMERATION)
-                || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS)) {
-            inner.append(XmlUtil.tag("values", "", XmlUtil.getCdata(enums)));
+        if (Utils.stringDefined(enums) && (
+                                           type.equals(DataTypes.DATATYPE_ENUMERATION)
+                                           || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS))) {
+            if(enums.startsWith("file:")) {
+                attrs.append(XmlUtil.attr("values", enums.trim()));
+            } else {
+                inner.append(XmlUtil.tag("values", "", XmlUtil.getCdata(enums)));
+            }
         }
 
 
         String[] attrProps = { Column.ATTR_GROUP, Column.ATTR_SUFFIX,
-                               Column.ATTR_FORMAT};
+                               Column.ATTR_FORMAT, Column.ATTR_ROWS, Column.ATTR_COLUMNS};
         for (String attrProp : attrProps) {
             String v = (String) props.get(attrProp);
             if (v != null) {
@@ -263,9 +239,9 @@ public class MetadataFieldTypeHandler extends ExtensibleGroupTypeHandler {
         attrs.append(XmlUtil.attr(Column.ATTR_CANLIST,
                                   Misc.getProperty(props, Column.ATTR_CANLIST,
                                       "true")));
-        attrs.append(XmlUtil.attr(Column.ATTR_ROWS, "" + rows));
-        attrs.append(XmlUtil.attr(Column.ATTR_COLUMNS, "" + columns));
-        attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
+        if(type.equals("string")) {
+            attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
+        }
 
         if (Misc.getProperty(props, Column.ATTR_ISCATEGORY, false)) {
             inner.append(propertyTag(Column.ATTR_ISCATEGORY, "true"));
