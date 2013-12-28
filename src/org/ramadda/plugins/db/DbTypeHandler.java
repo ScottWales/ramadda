@@ -2005,7 +2005,6 @@ public class DbTypeHandler extends BlobTypeHandler {
             doStore(entry, tuple, true);
             cnt++;
         }
-        System.err.println("cnt:" + cnt);
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);
         request.remove(ARG_DB_BULK_TEXT);

@@ -310,6 +310,10 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
+        boolean first = xml.length()==0;
+        if(first) {
+            xml.append(XmlUtil.openTag("tables", ""));
+        }
         String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
         String handlerClass = (String) getEntryValue(parent,
                                   INDEX_HANDLER_CLASS);
@@ -335,6 +339,10 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
             field.generateDbXml(request, xml, recordFieldEntry);
         }
         xml.append(XmlUtil.closeTag("table"));
+
+        if(first) {
+            xml.append(XmlUtil.closeTag("tables"));
+        }
     }
 
 
