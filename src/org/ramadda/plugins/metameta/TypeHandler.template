@@ -50,7 +50,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class ${classname} extends  ${parentclassname} {
+public abstract class ${classname} extends  ${parentclassname} {
 
     ${defines}
 
