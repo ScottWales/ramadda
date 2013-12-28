@@ -1,1 +1,48 @@
-<entries></entries>
+<entries><type  name="type_metameta_collection"  description="Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="icon"  value="/metameta/databases.png" /><property  name="form.resource.show"  value="false" /></type>
+<type  name="type_metameta_definition"  description="Metadata Definition"  handler="org.ramadda.plugins.metameta.MetametaDefinitionTypeHandler"  childtypes="type_metadata_field" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="icon"  value="/metameta/database_table.png" /><property  name="form.resource.show"  value="false" /><wiki><![CDATA[{{table}}                                                                                                                                                          
+<br>                                                                                                                                                               
+{{metameta.bulkform message=""}} ]]></wiki>
+
+<column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true"  canlist="true" ></column>
+
+<column  name="type"  label="Type"  type="enumeration"  cansearch="true"  canlist="true" ><values><![CDATA[entry
+metadata
+database
+datafile]]></values>
+</column>
+
+<column  name="short_name"  label="Short Name"  type="string"  cansearch="true"  canlist="true"  size="200" ></column>
+
+<column  name="super_type"  label="Super Type"  type="string"  cansearch="true"  canlist="true"  size="200" ></column>
+
+<column  name="isgroup"  label="Is Group"  type="boolean"  cansearch="true"  canlist="true" ></column>
+
+<column  name="handler_class"  label="Handler Class"  type="string"  cansearch="true"  canlist="true"  size="200" ></column>
+
+<column  name="properties"  label="Properties"  type="string"  suffix="extra  name/value pairs"  rows="5"  cansearch="true"  canlist="true"  size="1000" ></column>
+
+<column  name="wiki_text"  label="Wiki Text"  type="string"  rows="10"  cansearch="true"  canlist="true"  size="2000" ></column>
+
+</type>
+<type  name="type_metameta_field"  description="Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/blue-document-snippet.png" /><wiki><![CDATA[{{information}}
+
+{{tree message=""}}]]></wiki>
+
+<column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true"  canlist="true" ></column>
+
+<column  name="field_id"  label="Field ID"  type="string"  columns="80"  cansearch="true"  canlist="true"  size="200" ></column>
+
+<column  name="datatype"  label="Data Type"  type="enumeration"  values="file:/org/ramadda/repository/resources/columntypes.properties"  cansearch="true"  canlist="true" ></column>
+
+<column  name="enumeration_values"  label="Enumeration Values"  type="string"  suffix="extra name=value enumeration values"  rows="5"  cansearch="true"  canlist="false"  size="1000" ></column>
+
+<column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  canlist="true"  size="1000" ></column>
+
+<column  name="database_column_size"  label="Database Column Size"  type="int"  columns="5"  cansearch="true"  canlist="false" ></column>
+
+<column  name="missing"  label="Missing Value"  type="string"  group="Fields for Data"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
+
+<column  name="unit"  label="Unit"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
+
+</type>
+</entries>
