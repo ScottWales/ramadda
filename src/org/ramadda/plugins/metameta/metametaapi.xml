@@ -1,5 +1,5 @@
 
-<api handler="org.ramadda.plugins.metameta.MetaMetaApiHandler" id="metameta">
+<api handler="org.ramadda.plugins.metameta.MetametaApiHandler" id="metameta">
      <api request="/metameta/type/*"           method="processTypeRequest"/>
 
 </api>

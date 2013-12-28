@@ -42,7 +42,7 @@ import java.util.List;
  * @version        $version$, Sat, Dec 28, '13
  * @author         Enter your name here...
  */
-public class MetaMetaApiHandler extends RepositoryManager implements RequestHandler {
+public class MetametaApiHandler extends RepositoryManager implements RequestHandler {
 
 
     /**
@@ -54,7 +54,7 @@ public class MetaMetaApiHandler extends RepositoryManager implements RequestHand
      *
      * @throws Exception _more_
      */
-    public MetaMetaApiHandler(Repository repository, Element node,
+    public MetametaApiHandler(Repository repository, Element node,
                               Hashtable props)
             throws Exception {
         super(repository);
