@@ -26,6 +26,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -36,7 +37,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -649,5 +652,30 @@ public class Utils {
         return new Double(attrValue).doubleValue();
     }
 
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     *
+     * @return _more_
+     */
+    public static String makeProperties(Hashtable properties) {
+        StringBuffer sb      = new StringBuffer();
+
+        List<String> keyList = new ArrayList<String>();
+        for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+            keyList.add((String) keys.nextElement());
+        }
+        keyList = (List<String>) Misc.sort(keyList);
+        for (String key : keyList) {
+            String value = (String) properties.get(key);
+            sb.append(key);
+            sb.append("=");
+            sb.append(value);
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
 
 }

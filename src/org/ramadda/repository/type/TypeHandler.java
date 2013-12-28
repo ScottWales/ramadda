@@ -1693,6 +1693,15 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public Hashtable getProperties() {
+        return properties;
+    }
+
+    /**
+     * _more_
+     *
      * @param request The request
      * @param entry _more_
      * @param services _more_
@@ -5583,7 +5592,22 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-
+    /**
+     * _more_
+     *
+     * @param properties _more_
+     * @param inner _more_
+     */
+    public static void addPropertyTags(Hashtable properties,
+                                       StringBuffer inner) {
+        for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+            String arg   = (String) keys.nextElement();
+            String value = (String) properties.get(arg);
+            inner.append(XmlUtil.tag(TypeHandler.TAG_PROPERTY,
+                                     XmlUtil.attrs(ATTR_NAME, arg,
+                                         TypeHandler.ATTR_VALUE, value)));
+        }
+    }
 
 
 }

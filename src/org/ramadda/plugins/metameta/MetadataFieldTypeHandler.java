@@ -54,7 +54,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
+public class MetadataFieldTypeHandler extends MetadataFieldTypeHandlerBase {
 
 
     /** _more_ */
@@ -123,7 +123,9 @@ public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
                                 String widget)
             throws Exception {
         if (column.getName().equals("properties")) {
-            String suffix = "extra name=value pairs<br>group=Field display group<br>isindex=true<br>cansearch,canshow,canlist=true|false<br>suffix=label to show after form<br>";
+            String suffix =
+                "extra name=value pairs<br>group=Field display group<br>isindex=true<br>cansearch,canshow,canlist=true|false<br>suffix=label to show after form<br>";
+
             return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
         }
 
@@ -199,32 +201,37 @@ public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
     public void generateDbXml(Request request, StringBuffer xml, Entry entry)
             throws Exception {
         //   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
-        Object[]     values = getEntryValues(entry);
+        Object[]  values = getEntryValues(entry);
 
-        String       id     = (String) values[INDEX_FIELD_ID];
-        String       type   = (String) values[INDEX_DATATYPE];
-        String       enums  = (String) values[INDEX_ENUMERATION_VALUES];
-        Hashtable    props  = getProperties(entry);
-        int size = (values[INDEX_DATABASE_COLUMN_SIZE]!=null?((Integer) values[INDEX_DATABASE_COLUMN_SIZE]).intValue():200);
-        StringBuffer attrs  = new StringBuffer();
-        StringBuffer inner  = new StringBuffer();
+        String    id     = (String) values[INDEX_FIELD_ID];
+        String    type   = (String) values[INDEX_DATATYPE];
+        String    enums  = (String) values[INDEX_ENUMERATION_VALUES];
+        Hashtable props  = getProperties(entry);
+        int       size   = ((values[INDEX_DATABASE_COLUMN_SIZE] != null)
+                            ? ((Integer) values[INDEX_DATABASE_COLUMN_SIZE])
+                                .intValue()
+                            : 200);
+        StringBuffer attrs = new StringBuffer();
+        StringBuffer inner = new StringBuffer();
         attrs.append(XmlUtil.attr("name", id));
         attrs.append(XmlUtil.attr("label", entry.getName()));
         attrs.append(XmlUtil.attr("type", type));
 
-        if (Utils.stringDefined(enums) && (
-                                           type.equals(DataTypes.DATATYPE_ENUMERATION)
-                                           || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS))) {
-            if(enums.startsWith("file:")) {
+        if (Utils.stringDefined(enums)
+                && (type.equals(DataTypes.DATATYPE_ENUMERATION)
+                    || type.equals(DataTypes.DATATYPE_ENUMERATIONPLUS))) {
+            if (enums.startsWith("file:")) {
                 attrs.append(XmlUtil.attr("values", enums.trim()));
             } else {
-                inner.append(XmlUtil.tag("values", "", XmlUtil.getCdata(enums)));
+                inner.append(XmlUtil.tag("values", "",
+                                         XmlUtil.getCdata(enums)));
             }
         }
 
 
         String[] attrProps = { Column.ATTR_GROUP, Column.ATTR_SUFFIX,
-                               Column.ATTR_FORMAT, Column.ATTR_ROWS, Column.ATTR_COLUMNS};
+                               Column.ATTR_FORMAT, Column.ATTR_ROWS,
+                               Column.ATTR_COLUMNS };
         for (String attrProp : attrProps) {
             String v = (String) props.get(attrProp);
             if (v != null) {
@@ -234,12 +241,12 @@ public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
         }
 
         attrs.append(XmlUtil.attr(Column.ATTR_CANSEARCH,
-                                  Misc.getProperty(props, Column.ATTR_CANSEARCH,
-                                      "true")));
+                                  Misc.getProperty(props,
+                                      Column.ATTR_CANSEARCH, "true")));
         attrs.append(XmlUtil.attr(Column.ATTR_CANLIST,
-                                  Misc.getProperty(props, Column.ATTR_CANLIST,
-                                      "true")));
-        if(type.equals("string")) {
+                                  Misc.getProperty(props,
+                                      Column.ATTR_CANLIST, "true")));
+        if (type.equals("string")) {
             attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
         }
 
@@ -251,7 +258,8 @@ public class MetadataFieldTypeHandler extends  MetadataFieldTypeHandlerBase {
             inner.append(propertyTag(Column.ATTR_LABEL, "true"));
         }
 
-        xml.append(XmlUtil.tag(TAG_COLUMN, attrs.toString(), inner.toString()));
+        xml.append(XmlUtil.tag(TAG_COLUMN, attrs.toString(),
+                               inner.toString()));
 
     }
 

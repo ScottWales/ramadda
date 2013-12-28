@@ -51,7 +51,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class  MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandlerBase {
+public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandlerBase {
 
     /** _more_ */
     public static final String TYPE_METADATA_DEFINITION =

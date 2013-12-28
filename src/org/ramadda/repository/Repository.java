@@ -54,6 +54,8 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.server.JettyServer;
+
+import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
@@ -106,6 +108,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -4315,18 +4318,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-       This will be the entry point for querying on the types
-     */
-    public Result processTypeRequest(Request request) throws Exception {
-        StringBuffer   sb      = new StringBuffer();
-        List<String> toks = StringUtil.split(request.getRequestPath(), "/",
-                                             true, true);
-        String      type        = toks.get(toks.size() - 1);
-        TypeHandler typeHandler = getRepository().getTypeHandler(type);
-        sb.append("type:" + typeHandler);
-        return new Result("Type", sb);
-    }
 
 
     /**

@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2014 Geode Systems LLC
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -17,7 +17,6 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
-
 
 package org.ramadda.plugins.metameta;
 
@@ -50,17 +49,34 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public abstract class MetadataDefinitionTypeHandlerBase extends  MetadataGroupTypeHandler {
+public abstract class MetadataDefinitionTypeHandlerBase extends MetadataGroupTypeHandler {
 
-    	private static int INDEX_BASE = 0;
-	public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
-	public static final int INDEX_TYPE = INDEX_BASE + 1;
-	public static final int INDEX_SHORT_NAME = INDEX_BASE + 2;
-	public static final int INDEX_SUPER_TYPE = INDEX_BASE + 3;
-	public static final int INDEX_ISGROUP = INDEX_BASE + 4;
-	public static final int INDEX_HANDLER_CLASS = INDEX_BASE + 5;
-	public static final int INDEX_PROPERTIES = INDEX_BASE + 6;
-	public static final int INDEX_WIKI_TEXT = INDEX_BASE + 7;
+    /** _more_          */
+    private static int INDEX_BASE = 0;
+
+    /** _more_          */
+    public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
+
+    /** _more_          */
+    public static final int INDEX_TYPE = INDEX_BASE + 1;
+
+    /** _more_          */
+    public static final int INDEX_SHORT_NAME = INDEX_BASE + 2;
+
+    /** _more_          */
+    public static final int INDEX_SUPER_TYPE = INDEX_BASE + 3;
+
+    /** _more_          */
+    public static final int INDEX_ISGROUP = INDEX_BASE + 4;
+
+    /** _more_          */
+    public static final int INDEX_HANDLER_CLASS = INDEX_BASE + 5;
+
+    /** _more_          */
+    public static final int INDEX_PROPERTIES = INDEX_BASE + 6;
+
+    /** _more_          */
+    public static final int INDEX_WIKI_TEXT = INDEX_BASE + 7;
 
 
 
@@ -74,13 +90,13 @@ public abstract class MetadataDefinitionTypeHandlerBase extends  MetadataGroupTy
      * @throws Exception _more_
      */
     public MetadataDefinitionTypeHandlerBase(Repository repository,
-                        Element entryNode)
+                                             Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
 
-    
+
 
 
     /**
@@ -102,6 +118,16 @@ public abstract class MetadataDefinitionTypeHandlerBase extends  MetadataGroupTy
         return super.getHtmlDisplay(request, parent, subGroups, entries);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {

@@ -519,6 +519,16 @@ public class Column implements DataTypes, Constants {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public Hashtable getProperties() {
+        return properties;
+    }
+
+
+    /**
+     * _more_
+     *
      * @param s _more_
      *
      * @return _more_
