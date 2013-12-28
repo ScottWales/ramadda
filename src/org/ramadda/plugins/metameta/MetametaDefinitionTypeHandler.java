@@ -54,11 +54,11 @@ import java.util.List;
 public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandlerBase {
 
     /** _more_ */
-    public static final String TYPE_METADATA_DEFINITION =
-        "type_metadata_definition";
+    public static final String TYPE_METAMETA_DEFINITION =
+        "type_metameta_definition";
 
     /** _more_ */
-    public static final String ARG_METADATA_BULK = "metadata.bulk";
+    public static final String ARG_METAMETA_BULK = "metameta.bulk";
 
 
 
@@ -83,7 +83,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
      * @return _more_
      */
     public String getChildType() {
-        return MetametaFieldTypeHandler.TYPE_METADATA_FIELD;
+        return MetametaFieldTypeHandler.TYPE_METAMETA_FIELD;
     }
 
     /**
@@ -125,7 +125,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         sb.append(OutputHandler.makeTabs(titles, contents, false));
 
         return getEntryManager().addEntryHeader(request, parent,
-                new Result("Metadata Definition", sb));
+                new Result("Metameta Definition", sb));
     }
 
     /**
@@ -145,12 +145,12 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
             return null;
         }
 
-        if (request.exists(ARG_METADATA_GENERATE_JAVA)) {
+        if (request.exists(ARG_METAMETA_GENERATE_JAVA)) {
             return handleGenerateEntryJava(request, entry);
 
         }
 
-        if (request.exists(ARG_METADATA_BULK)) {
+        if (request.exists(ARG_METAMETA_BULK)) {
             return handleBulkCreate(request, entry);
         }
 
@@ -173,7 +173,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         StringBuffer xml = new StringBuffer(XmlUtil.openTag(TAG_ENTRIES));
         xml.append("\n");
         for (String line :
-                StringUtil.split(request.getString(ARG_METADATA_BULK, ""),
+                StringUtil.split(request.getString(ARG_METAMETA_BULK, ""),
                                  "\n", true, true)) {
             if (line.startsWith("#")) {
                 continue;
@@ -209,7 +209,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
                     TAG_ENTRY,
                     XmlUtil.attrs(
                         ATTR_NAME, label, ATTR_TYPE,
-                        MetametaFieldTypeHandler.TYPE_METADATA_FIELD,
+                        MetametaFieldTypeHandler.TYPE_METAMETA_FIELD,
                         ATTR_PARENT, entry.getId()), inner.toString()));
             xml.append("\n");
         }
@@ -441,7 +441,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
                                   INDEX_HANDLER_CLASS);
         if (Utils.stringDefined(handlerClass)) {
             buttons.add(HtmlUtils.submit("Generate Java base class",
-                                         ARG_METADATA_GENERATE_JAVA));
+                                         ARG_METAMETA_GENERATE_JAVA));
         }
     }
 
@@ -501,7 +501,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
             HtmlUtils.italics(
                 "column_id, label, type (e.g., string, int, double)"));
         sb.append(HtmlUtils.br());
-        sb.append(HtmlUtils.textArea(ARG_METADATA_BULK, "", 5, 70));
+        sb.append(HtmlUtils.textArea(ARG_METAMETA_BULK, "", 5, 70));
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit("Add Fields", "submit"));
         sb.append(HtmlUtils.formClose());

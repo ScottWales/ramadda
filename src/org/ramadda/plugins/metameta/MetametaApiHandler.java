@@ -88,7 +88,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 TAG_ENTRY,
                 XmlUtil.attrs(
                     ATTR_NAME, typeHandler.getLabel(), ATTR_TYPE,
-                    "type_metadata_definition", ATTR_ID,
+                    "type_metameta_definition", ATTR_ID,
                     "definition"), inner.toString()));
 
         List<Column> columns = typeHandler.getColumns();
@@ -97,7 +97,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 inner = new StringBuffer();
                 StringBuffer attrs = new StringBuffer();
                 attrs.append(XmlUtil.attrs(ATTR_NAME, column.getLabel(),
-                                           ATTR_TYPE, "type_metadata_field",
+                                           ATTR_TYPE, "type_metameta_field",
                                            ATTR_PARENT, "definition"));
                 TypeHandler.addPropertyTags(column.getProperties(), inner);
                 xml.append(XmlUtil.tag(TAG_ENTRY, attrs.toString(),

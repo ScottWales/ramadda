@@ -35,7 +35,7 @@ import java.util.List;
 
 
 /**
- * This represents some collection of metadata field entries
+ * This represents some collection of metameta field entries
  *
  * @author RAMADDA Development Team
  */
@@ -63,7 +63,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
      * @return _more_
      */
     public String getChildType() {
-        return MetametaDefinitionTypeHandler.TYPE_METADATA_DEFINITION;
+        return MetametaDefinitionTypeHandler.TYPE_METAMETA_DEFINITION;
     }
 
 
@@ -93,7 +93,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
         addListForm(request, parent, subGroups, sb);
 
         return getEntryManager().addEntryHeader(request, parent,
-                new Result("Metadata Collection", sb));
+                new Result("Metameta Collection", sb));
     }
 
 

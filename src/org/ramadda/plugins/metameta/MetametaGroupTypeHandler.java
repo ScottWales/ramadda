@@ -61,23 +61,23 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
 
 
     /** _more_ */
-    public static final String ARG_METADATA_MOVE_UP = "metadata.move.up";
+    public static final String ARG_METAMETA_MOVE_UP = "metameta.move.up";
 
     /** _more_ */
-    public static final String ARG_METADATA_MOVE_DOWN = "metadata.move.down";
+    public static final String ARG_METAMETA_MOVE_DOWN = "metameta.move.down";
 
 
     /** _more_ */
-    public static final String ARG_METADATA_GENERATE_DB =
-        "metadata.generate.db";
+    public static final String ARG_METAMETA_GENERATE_DB =
+        "metameta.generate.db";
 
     /** _more_ */
-    public static final String ARG_METADATA_GENERATE_ENTRY =
-        "metadata.generate.entry";
+    public static final String ARG_METAMETA_GENERATE_ENTRY =
+        "metameta.generate.entry";
 
     /** _more_ */
-    public static final String ARG_METADATA_GENERATE_JAVA =
-        "metadata.generate.java";
+    public static final String ARG_METAMETA_GENERATE_JAVA =
+        "metameta.generate.java";
 
     /**
      * _more_
@@ -185,13 +185,13 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
             sb.append("<tr valign=top><td>");
             if (cnt > 0) {
                 sb.append(HtmlUtils.submitImage(iconUrl(ICON_UPARROW),
-                        ARG_METADATA_MOVE_UP + "." + entry.getId(),
+                        ARG_METAMETA_MOVE_UP + "." + entry.getId(),
                         "Move up"));
             }
             sb.append("</td><td>");
             if (cnt < entries.size() - 1) {
                 sb.append(HtmlUtils.submitImage(iconUrl(ICON_DOWNARROW),
-                        ARG_METADATA_MOVE_DOWN + "." + entry.getId(),
+                        ARG_METAMETA_MOVE_DOWN + "." + entry.getId(),
                         "Move down"));
             }
             sb.append("</td><td>");
@@ -208,7 +208,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
         List<String> buttons = new ArrayList<String>();
         addEntryButtons(request, parent, buttons);
         buttons.add(HtmlUtils.submit("Generate db.xml",
-                                     ARG_METADATA_GENERATE_DB));
+                                     ARG_METAMETA_GENERATE_DB));
         sb.append(HtmlUtils.buttons(buttons));
         sb.append(HtmlUtils.formClose());
     }
@@ -223,7 +223,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
     public void addEntryButtons(Request request, Entry entry,
                                 List<String> buttons) {
         buttons.add(HtmlUtils.submit("Generate entries types.xml",
-                                     ARG_METADATA_GENERATE_ENTRY));
+                                     ARG_METAMETA_GENERATE_ENTRY));
     }
 
 
@@ -271,7 +271,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
             if ( !child.isType(getChildType())) {
                 continue;
             }
-            if (request.exists(ARG_METADATA_MOVE_UP + "." + child.getId()
+            if (request.exists(ARG_METAMETA_MOVE_UP + "." + child.getId()
                                + ".x")) {
                 didMove = true;
                 if (i > 0) {
@@ -281,7 +281,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
 
                 break;
             }
-            if (request.exists(ARG_METADATA_MOVE_DOWN + "." + child.getId()
+            if (request.exists(ARG_METAMETA_MOVE_DOWN + "." + child.getId()
                                + ".x")) {
                 didMove = true;
                 if (i < children.size() - 1) {
@@ -305,7 +305,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
         }
 
 
-        if (request.exists(ARG_METADATA_GENERATE_DB)) {
+        if (request.exists(ARG_METAMETA_GENERATE_DB)) {
             StringBuffer xml = new StringBuffer();
             generateDbXml(request, xml, entry, children);
             String filename =
@@ -317,7 +317,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
         }
 
 
-        if (request.exists(ARG_METADATA_GENERATE_ENTRY)) {
+        if (request.exists(ARG_METAMETA_GENERATE_ENTRY)) {
             StringBuffer xml = new StringBuffer();
             generateEntryXml(request, xml, entry, children);
             String filename =
