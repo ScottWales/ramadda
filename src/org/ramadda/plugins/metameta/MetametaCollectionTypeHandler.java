@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetadataCollectionTypeHandler extends MetadataGroupTypeHandler {
+public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
 
     /**
      * ctor
@@ -49,7 +49,7 @@ public class MetadataCollectionTypeHandler extends MetadataGroupTypeHandler {
      *
      * @throws Exception on badness
      */
-    public MetadataCollectionTypeHandler(Repository repository,
+    public MetametaCollectionTypeHandler(Repository repository,
                                          Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -63,7 +63,7 @@ public class MetadataCollectionTypeHandler extends MetadataGroupTypeHandler {
      * @return _more_
      */
     public String getChildType() {
-        return MetadataDefinitionTypeHandler.TYPE_METADATA_DEFINITION;
+        return MetametaDefinitionTypeHandler.TYPE_METADATA_DEFINITION;
     }
 
 
@@ -112,8 +112,8 @@ public class MetadataCollectionTypeHandler extends MetadataGroupTypeHandler {
             throws Exception {
         xml.append(XmlUtil.openTag("tables", ""));
         for (Entry defEntry : children) {
-            MetadataDefinitionTypeHandler defTypeHandler =
-                (MetadataDefinitionTypeHandler) defEntry.getTypeHandler();
+            MetametaDefinitionTypeHandler defTypeHandler =
+                (MetametaDefinitionTypeHandler) defEntry.getTypeHandler();
             List<Entry> fields = getEntryManager().getChildrenAll(request,
                                      defEntry);
             defTypeHandler.generateDbXml(request, xml, defEntry, fields);
@@ -139,8 +139,8 @@ public class MetadataCollectionTypeHandler extends MetadataGroupTypeHandler {
             throws Exception {
         xml.append(XmlUtil.openTag(TAG_ENTRIES, ""));
         for (Entry defEntry : children) {
-            MetadataDefinitionTypeHandler defTypeHandler =
-                (MetadataDefinitionTypeHandler) defEntry.getTypeHandler();
+            MetametaDefinitionTypeHandler defTypeHandler =
+                (MetametaDefinitionTypeHandler) defEntry.getTypeHandler();
             List<Entry> fields = getEntryManager().getChildrenAll(request,
                                      defEntry);
             defTypeHandler.generateEntryXml(request, xml, defEntry, fields);

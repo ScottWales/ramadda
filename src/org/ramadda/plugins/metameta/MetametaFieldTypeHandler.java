@@ -54,7 +54,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MetadataFieldTypeHandler extends MetadataFieldTypeHandlerBase {
+public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
 
 
     /** _more_ */
@@ -70,7 +70,7 @@ public class MetadataFieldTypeHandler extends MetadataFieldTypeHandlerBase {
      *
      * @throws Exception _more_
      */
-    public MetadataFieldTypeHandler(Repository repository, Element entryNode)
+    public MetametaFieldTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }

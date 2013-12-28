@@ -57,7 +57,7 @@ import java.util.Properties;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public abstract class MetadataGroupTypeHandler extends ExtensibleGroupTypeHandler {
+public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /** _more_ */
@@ -87,7 +87,7 @@ public abstract class MetadataGroupTypeHandler extends ExtensibleGroupTypeHandle
      *
      * @throws Exception _more_
      */
-    public MetadataGroupTypeHandler(Repository repository, Element entryNode)
+    public MetametaGroupTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }

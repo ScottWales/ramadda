@@ -51,7 +51,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandlerBase {
+public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandlerBase {
 
     /** _more_ */
     public static final String TYPE_METADATA_DEFINITION =
@@ -70,7 +70,7 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
      *
      * @throws Exception _more_
      */
-    public MetadataDefinitionTypeHandler(Repository repository,
+    public MetametaDefinitionTypeHandler(Repository repository,
                                          Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -83,7 +83,7 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
      * @return _more_
      */
     public String getChildType() {
-        return MetadataFieldTypeHandler.TYPE_METADATA_FIELD;
+        return MetametaFieldTypeHandler.TYPE_METADATA_FIELD;
     }
 
     /**
@@ -209,7 +209,7 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
                     TAG_ENTRY,
                     XmlUtil.attrs(
                         ATTR_NAME, label, ATTR_TYPE,
-                        MetadataFieldTypeHandler.TYPE_METADATA_FIELD,
+                        MetametaFieldTypeHandler.TYPE_METADATA_FIELD,
                         ATTR_PARENT, entry.getId()), inner.toString()));
             xml.append("\n");
         }
@@ -224,8 +224,8 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
         //Now tell them to update again to update their sort order
         for (Entry newEntry : newEntries) {
             if (newEntry.getTypeHandler()
-                    instanceof MetadataFieldTypeHandler) {
-                ((MetadataFieldTypeHandler) newEntry.getTypeHandler())
+                    instanceof MetametaFieldTypeHandler) {
+                ((MetametaFieldTypeHandler) newEntry.getTypeHandler())
                     .setSortOrder(request, newEntry, entry);
                 //Insert the updates
                 getEntryManager().updateEntry(request, newEntry);
@@ -275,8 +275,8 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
         defines.append("\tprivate static int INDEX_BASE = 0;\n");
         int cnt = 0;
         for (Entry child : getChildrenEntries(request, entry)) {
-            MetadataFieldTypeHandler field =
-                (MetadataFieldTypeHandler) child.getTypeHandler();
+            MetametaFieldTypeHandler field =
+                (MetametaFieldTypeHandler) child.getTypeHandler();
             String fieldId = (String) field.getEntryValue(child,
                                  field.INDEX_FIELD_ID);
             String FIELDID = fieldId.toUpperCase();
@@ -334,8 +334,8 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
                                        parent.getName(), ATTR_HANDLER,
                                        handlerClass, "icon", icon)));
         for (Entry recordFieldEntry : children) {
-            MetadataFieldTypeHandler field =
-                (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
+            MetametaFieldTypeHandler field =
+                (MetametaFieldTypeHandler) recordFieldEntry.getTypeHandler();
             field.generateDbXml(request, xml, recordFieldEntry);
         }
         xml.append(XmlUtil.closeTag("table"));
@@ -417,8 +417,8 @@ public class MetadataDefinitionTypeHandler extends MetadataDefinitionTypeHandler
 
 
         for (Entry recordFieldEntry : children) {
-            MetadataFieldTypeHandler field =
-                (MetadataFieldTypeHandler) recordFieldEntry.getTypeHandler();
+            MetametaFieldTypeHandler field =
+                (MetametaFieldTypeHandler) recordFieldEntry.getTypeHandler();
             field.generateDbXml(request, xml, recordFieldEntry);
             xml.append("\n");
         }

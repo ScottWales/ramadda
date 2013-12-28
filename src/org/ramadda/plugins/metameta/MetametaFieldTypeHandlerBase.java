@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetadataFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
+public class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
 
     /** _more_          */
     private static int INDEX_BASE = 0;
@@ -89,7 +89,7 @@ public class MetadataFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public MetadataFieldTypeHandlerBase(Repository repository,
+    public MetametaFieldTypeHandlerBase(Repository repository,
                                         Element entryNode)
             throws Exception {
         super(repository, entryNode);
