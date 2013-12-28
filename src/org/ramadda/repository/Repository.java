@@ -4316,6 +4316,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /**
+       This will be the entry point for querying on the types
+     */
+    public Result processTypeRequest(Request request) throws Exception {
+        StringBuffer   sb      = new StringBuffer();
+        List<String> toks = StringUtil.split(request.getRequestPath(), "/",
+                                             true, true);
+        String      type        = toks.get(toks.size() - 1);
+        TypeHandler typeHandler = getRepository().getTypeHandler(type);
+        sb.append("type:" + typeHandler);
+        return new Result("Type", sb);
+    }
+
+
+    /**
      * _more_
      *
      * @param request The request

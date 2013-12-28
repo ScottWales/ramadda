@@ -8,6 +8,7 @@
      <api request="/robots.txt"       method="processRobotsTxt"/>
      <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
+     <api request="/type/*"           method="processTypeRequest"/>
   </group>
 
   <group handler="entrymanager">

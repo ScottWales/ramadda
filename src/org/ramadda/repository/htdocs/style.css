@@ -1,4 +1,5 @@
-input,textarea, menutable, tr, th, td {
+
+textarea, menutable, tr, th, td {
       font-size: 100%;
       font: inherit;
       font-size: 11pt;
