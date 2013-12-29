@@ -1326,24 +1326,51 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryForm(Request request) throws Exception {
-
-        Entry  group = null;
-        String type  = null;
-        Entry  entry = null;
+        Entry entry = null;
 
         if (request.defined(ARG_ENTRYID)) {
             entry = getEntry(request);
-            type  = entry.getTypeHandler().getType();
+        }
+        StringBuffer sb    = new StringBuffer();
+        Entry        group = addEntryForm(request, entry, sb);
+        if (entry == null) {
+            return addEntryHeader(request, group,
+                                  new Result(msg("Add Entry"), sb));
+        }
+
+        return makeEntryEditResult(request, entry, msg("Edit Entry"), sb);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Entry addEntryForm(Request request, Entry entry, StringBuffer sb)
+            throws Exception {
+
+        String type  = null;
+        Entry  group = null;
+
+        if (entry != null) {
+            type = entry.getTypeHandler().getType();
             if ( !entry.isTopEntry()) {
                 group = findGroup(request, entry.getParentEntryId());
             }
         }
+
         boolean isEntryTop = ((entry != null) && entry.isTopEntry());
-
-
         if ( !isEntryTop && (group == null)) {
             group = findGroup(request);
         }
+
 
         if (type == null) {
             type = request.getString(ARG_TYPE, (String) null);
@@ -1368,11 +1395,11 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        StringBuffer sb = new StringBuffer();
+
         if ((entry != null) && entry.getIsLocalFile()) {
             sb.append(msg("This is a local file and cannot be edited"));
 
-            return makeEntryEditResult(request, entry, "Entry Edit", sb);
+            return group;
         }
 
 
@@ -1488,11 +1515,7 @@ public class EntryManager extends RepositoryManager {
         }
         sb.append(HtmlUtils.formTableClose());
 
-        if (entry == null) {
-            return addEntryHeader(request, group, new Result(title, sb));
-        }
-
-        return makeEntryEditResult(request, entry, title, sb);
+        return group;
 
     }
 

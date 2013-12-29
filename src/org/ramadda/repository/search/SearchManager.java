@@ -1002,6 +1002,7 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
             throws Exception {
         CategoryBuffer cb = new CategoryBuffer();
 
+
         for (String preload : EntryManager.PRELOAD_CATEGORIES) {
             cb.append(preload, "");
         }
@@ -1041,34 +1042,13 @@ public class SearchManager extends RepositoryManager implements EntryChecker,
                                        + typeHandler.getType(), label));
             cb.append(typeHandler.getCategory(), buff);
         }
-        sb.append("<table width=100%><tr valign=top>");
-        int colCnt = 0;
-        for (String cat : cb.getCategories()) {
-            StringBuffer content = cb.get(cat);
-            if (content.length() == 0) {
-                continue;
-            }
-            colCnt++;
-            if (colCnt > 4) {
-                sb.append("</tr><tr valign=top>");
-                sb.append("<td colspan=4><hr></td>");
-                sb.append("</tr><tr valign=top>");
-                colCnt = 1;
-            }
 
-            sb.append("<td>");
-            sb.append(HtmlUtils.b(msg(cat)));
-            sb.append(
-                "<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
-            sb.append("<ul>");
-            sb.append(content);
-            sb.append("</ul>");
-            sb.append("</div>");
-            sb.append("</td>");
+        getPageHandler().doTableLayout(request, sb, cb);
 
-        }
-        sb.append("</table>");
     }
+
+
+
 
     /**
      * _more_

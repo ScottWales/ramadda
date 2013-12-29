@@ -30,6 +30,8 @@ import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.PageStyle;
+
+import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -446,9 +448,10 @@ public class PageHandler extends RepositoryManager {
 
         StringBuffer extra = new StringBuffer();
         String userLinks = getUserManager().getUserLinks(request,
-                                                         userLinkTemplate, separator, extra, makePopup);
+                               userLinkTemplate, separator, extra, makePopup);
 
-        if (makePopup && (userLinks != null && !userLinks.trim().isEmpty())) {
+        if (makePopup
+                && ((userLinks != null) && !userLinks.trim().isEmpty())) {
             String userImage =
                 HtmlUtils.img(iconUrl(ICON_USERLINKS),
                               msg("Login, user settings, help"),
@@ -457,7 +460,8 @@ public class PageHandler extends RepositoryManager {
             userLinks =
                 HtmlUtils.div(userLinks,
                               HtmlUtils.cssClass("ramadda-user-menu"));
-            userLinks = extra +makePopupLink(userImage, userLinks, false, true);
+            userLinks = extra
+                        + makePopupLink(userImage, userLinks, false, true);
 
         }
 
@@ -2952,9 +2956,9 @@ public class PageHandler extends RepositoryManager {
         boolean canComment = getAccessManager().canDoAction(request, entry,
                                  Permission.ACTION_COMMENT);
 
-        StringBuffer  sb       = new StringBuffer();
-        List<Comment> comments = getRepository().getCommentManager().getComments(request,
-                                     entry);
+        StringBuffer sb = new StringBuffer();
+        List<Comment> comments =
+            getRepository().getCommentManager().getComments(request, entry);
 
         if (canComment) {
             sb.append(
@@ -3091,6 +3095,47 @@ public class PageHandler extends RepositoryManager {
         }
 
         return wiki;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param cb _more_
+     */
+    public void doTableLayout(Request request, StringBuffer sb,
+                              CategoryBuffer cb) {
+
+        sb.append("<table width=100%><tr valign=top>");
+
+        int colCnt = 0;
+        for (String cat : cb.getCategories()) {
+            StringBuffer content = cb.get(cat);
+            if (content.length() == 0) {
+                continue;
+            }
+            colCnt++;
+            if (colCnt > 4) {
+                sb.append("</tr><tr valign=top>");
+                sb.append("<td colspan=4><hr></td>");
+                sb.append("</tr><tr valign=top>");
+                colCnt = 1;
+            }
+
+            sb.append("<td>");
+            sb.append(HtmlUtils.b(msg(cat)));
+            sb.append(
+                "<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
+            sb.append("<ul>");
+            sb.append(content);
+            sb.append("</ul>");
+            sb.append("</div>");
+            sb.append("</td>");
+
+        }
+        sb.append("</table>");
     }
 
 
