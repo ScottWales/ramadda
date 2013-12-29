@@ -77,6 +77,9 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
     public Result processTypeList(Request request) throws Exception {
         CategoryBuffer cb = new CategoryBuffer();
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
+            if ( !typeHandler.getForUser()) {
+                continue;
+            }
             StringBuffer buff  = new StringBuffer();
             String      icon = typeHandler.getProperty("icon", (String) null);
             if (icon != null) {
