@@ -23,7 +23,9 @@ package org.ramadda.plugins.metameta;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
 
 import org.w3c.dom.Element;
 
@@ -34,6 +36,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.util.Hashtable;
 import java.util.List;
+import org.ramadda.util.CategoryBuffer;
 
 
 /**
@@ -59,6 +62,41 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                               Hashtable props)
             throws Exception {
         super(repository);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processTypeList(Request request) throws Exception {
+        CategoryBuffer cb = new CategoryBuffer();
+        for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
+            StringBuffer buff  = new StringBuffer();
+            String      icon = typeHandler.getProperty("icon", (String) null);
+            if (icon != null) {
+                buff.append(HtmlUtils.img(getRepository().iconUrl(icon)));
+                buff.append(HtmlUtils.space(1));
+            }
+            buff.append(
+                HtmlUtils.href(
+                    getRepository().getUrlBase() + "/metameta/type/"
+                    + typeHandler.getType(), typeHandler.getLabel()));
+            buff.append("<br>\n");
+            cb.append(typeHandler.getCategory(), buff);
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("Below are RAMADDA entry import files that allow you to view and modify the entry metadata<p>");
+
+        getPageHandler().doTableLayout(request, sb, cb);
+
+        return new Result("Metameta", sb);
     }
 
 
@@ -113,7 +151,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
             XmlUtil.tag(
                 TAG_ENTRY,
                 XmlUtil.attrs(
-                    ATTR_NAME, typeHandler.getLabel(), ATTR_TYPE,
+                    ATTR_NAME, "Data Dictionary: " + typeHandler.getLabel(), ATTR_TYPE,
                     MetametaDefinitionTypeHandler.TYPE, ATTR_ID,
                     "definition"), inner.toString()));
 

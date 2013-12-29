@@ -118,12 +118,19 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         titles.add(msg("Create new fields"));
         contents.add(sb.toString());
 
-        sb.setLength(0);
-        sb.append(OutputHandler.makeTabs(titles, contents, false));
+        StringBuffer formSB = new StringBuffer();
+        getEntryManager().addEntryForm(request, parent, formSB);
+        titles.add(msg("Settings"));
+        contents.add(formSB.toString());
 
+        sb.setLength(0);
+        sb.append(getWikiManager().wikifyEntry(request, parent,"<div class=wiki-h2>{{name}}</div><p>{{description}} <p>\n"));
+        sb.append(OutputHandler.makeTabs(titles, contents, false));
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metameta Definition", sb));
     }
+
+
 
     /**
      * _more_
