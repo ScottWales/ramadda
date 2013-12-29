@@ -63,7 +63,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
      * @return _more_
      */
     public String getChildType() {
-        return MetametaDefinitionTypeHandler.TYPE;
+        return MetametaDictionaryTypeHandler.TYPE;
     }
 
 
@@ -112,8 +112,8 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
             throws Exception {
         xml.append(XmlUtil.openTag("tables", ""));
         for (Entry defEntry : children) {
-            MetametaDefinitionTypeHandler defTypeHandler =
-                (MetametaDefinitionTypeHandler) defEntry.getTypeHandler();
+            MetametaDictionaryTypeHandler defTypeHandler =
+                (MetametaDictionaryTypeHandler) defEntry.getTypeHandler();
             List<Entry> fields = getEntryManager().getChildrenAll(request,
                                      defEntry);
             defTypeHandler.generateDbXml(request, xml, defEntry, fields);
@@ -139,8 +139,8 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
             throws Exception {
         xml.append(XmlUtil.openTag(TAG_TYPES, ""));
         for (Entry defEntry : children) {
-            MetametaDefinitionTypeHandler defTypeHandler =
-                (MetametaDefinitionTypeHandler) defEntry.getTypeHandler();
+            MetametaDictionaryTypeHandler defTypeHandler =
+                (MetametaDictionaryTypeHandler) defEntry.getTypeHandler();
             List<Entry> fields = getEntryManager().getChildrenAll(request,
                                      defEntry);
             defTypeHandler.generateEntryXml(request, xml, defEntry, fields);

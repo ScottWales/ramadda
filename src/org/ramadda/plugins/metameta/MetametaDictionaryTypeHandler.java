@@ -51,7 +51,7 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandlerBase {
+public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandlerBase {
 
 
     /** _more_ */
@@ -67,7 +67,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
      *
      * @throws Exception _more_
      */
-    public MetametaDefinitionTypeHandler(Repository repository,
+    public MetametaDictionaryTypeHandler(Repository repository,
                                          Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -127,7 +127,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         sb.append(getWikiManager().wikifyEntry(request, parent,"<div class=wiki-h2>{{name}}</div><p>{{description}} <p>\n"));
         sb.append(OutputHandler.makeTabs(titles, contents, false));
         return getEntryManager().addEntryHeader(request, parent,
-                new Result("Metameta Definition", sb));
+                new Result("Metameta Dictionary", sb));
     }
 
 

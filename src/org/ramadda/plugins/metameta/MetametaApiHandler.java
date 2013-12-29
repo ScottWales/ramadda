@@ -120,30 +120,30 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
         StringBuffer inner = new StringBuffer();
         inner.append(
             XmlUtil.tag(
-                MetametaDefinitionTypeHandler.FIELD_PROPERTIES, "",
+                MetametaDictionaryTypeHandler.FIELD_PROPERTIES, "",
                 XmlUtil.getCdata(
                     Utils.makeProperties(typeHandler.getProperties()))));
 
 
         inner.append(
             XmlUtil.tag(
-                MetametaDefinitionTypeHandler.FIELD_SHORT_NAME, "",
+                MetametaDictionaryTypeHandler.FIELD_SHORT_NAME, "",
                 typeHandler.getType()));
 
         if (typeHandler.getParent() != null) {
             inner.append(
                 XmlUtil.tag(
-                    MetametaDefinitionTypeHandler.FIELD_SUPER_TYPE, "",
+                    MetametaDictionaryTypeHandler.FIELD_SUPER_TYPE, "",
                     typeHandler.getParent().getType()));
         }
         if (typeHandler.isGroup()) {
             inner.append(
                 XmlUtil.tag(
-                    MetametaDefinitionTypeHandler.FIELD_ISGROUP, "", "true"));
+                    MetametaDictionaryTypeHandler.FIELD_ISGROUP, "", "true"));
         }
         inner.append(
             XmlUtil.tag(
-                MetametaDefinitionTypeHandler.FIELD_HANDLER_CLASS, "",
+                MetametaDictionaryTypeHandler.FIELD_HANDLER_CLASS, "",
                 typeHandler.getClass().getName()));
 
 
@@ -152,8 +152,8 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 TAG_ENTRY,
                 XmlUtil.attrs(
                     ATTR_NAME, "Data Dictionary: " + typeHandler.getLabel(), ATTR_TYPE,
-                    MetametaDefinitionTypeHandler.TYPE, ATTR_ID,
-                    "definition"), inner.toString()));
+                    MetametaDictionaryTypeHandler.TYPE, ATTR_ID,
+                    "dictionary"), inner.toString()));
 
         List<Column> columns = typeHandler.getColumns();
         if (columns != null) {
@@ -200,7 +200,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 attrs.append(XmlUtil.attrs(ATTR_NAME, column.getLabel(),
                                            ATTR_TYPE,
                                            MetametaFieldTypeHandler.TYPE,
-                                           ATTR_PARENT, "definition"));
+                                           ATTR_PARENT, "dictionary"));
                 //                TypeHandler.addPropertyTags(column.getProperties(), inner);
                 xml.append(XmlUtil.tag(TAG_ENTRY, attrs.toString(),
                                        inner.toString()));
