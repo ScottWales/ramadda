@@ -390,32 +390,32 @@ public class Column implements DataTypes, Constants {
             dateParser = new SimpleDateFormat(dttmFormat);
         }
 
-        description = Utils.getAttributeOrTag(element, ATTR_DESCRIPTION,
-                label);
+        description    = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
+
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
-        changeType = Utils.getAttributeOrTag(element, ATTR_CHANGETYPE, false);
-        showEmpty = Utils.getAttributeOrTag(element, "showempty", true);
-        dflt = Utils.getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
-        isIndex   = Utils.getAttributeOrTag(element, ATTR_ISINDEX, false);
-        isCategory = Utils.getAttributeOrTag(element, ATTR_ISCATEGORY, false);
-        canSearch = Utils.getAttributeOrTag(element, ATTR_CANSEARCH, false);
-        advancedSearch = Utils.getAttributeOrTag(element, ATTR_ADVANCED,
-                false);
-        editable = Utils.getAttributeOrTag(element, ATTR_EDITABLE, true);
-        addToForm = Utils.getAttributeOrTag(element, ATTR_ADDTOFORM,
-                                            addToForm);
-        canShow = Utils.getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
-        showLabel = Utils.getAttributeOrTag(element, ATTR_SHOWLABEL,
-                                            showLabel);
-        canExport = Utils.getAttributeOrTag(element, ATTR_CANEXPORT,
-                                            canExport);
-        canList  = Utils.getAttributeOrTag(element, ATTR_CANLIST, true);
-        size     = Utils.getAttributeOrTag(element, ATTR_SIZE, size);
-        min      = Utils.getAttributeOrTag(element, ATTR_MIN, min);
-        max      = Utils.getAttributeOrTag(element, ATTR_MAX, max);
-        required = Utils.getAttributeOrTag(element, ATTR_REQUIRED, required);
-        rows     = Utils.getAttributeOrTag(element, ATTR_ROWS, rows);
-        columns  = Utils.getAttributeOrTag(element, ATTR_COLUMNS, columns);
+        changeType     = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
+
+        showEmpty      = getAttributeOrTag(element, "showempty", true);
+        dflt           = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
+        isIndex        = getAttributeOrTag(element, ATTR_ISINDEX, false);
+        isCategory     = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
+        canSearch      = getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
+        editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
+        addToForm      = getAttributeOrTag(element, ATTR_ADDTOFORM,
+                                           addToForm);
+        canShow        = getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
+        showLabel      = getAttributeOrTag(element, ATTR_SHOWLABEL,
+                                           showLabel);
+        canExport      = getAttributeOrTag(element, ATTR_CANEXPORT,
+                                           canExport);
+        canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
+        size           = getAttributeOrTag(element, ATTR_SIZE, size);
+        min            = getAttributeOrTag(element, ATTR_MIN, min);
+        max            = getAttributeOrTag(element, ATTR_MAX, max);
+        required       = getAttributeOrTag(element, ATTR_REQUIRED, required);
+        rows           = getAttributeOrTag(element, ATTR_ROWS, rows);
+        columns        = getAttributeOrTag(element, ATTR_COLUMNS, columns);
 
         List propNodes = XmlUtil.findChildren(element, "property");
         for (int i = 0; i < propNodes.size(); i++) {
@@ -2882,5 +2882,102 @@ public class Column implements DataTypes, Constants {
     public String getSuffix() {
         return suffix;
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getAttributeOrTag(Element node, String attrOrTag,
+                                    String dflt)
+            throws Exception {
+        String attrValue = Utils.getAttributeOrTag(node, attrOrTag,
+                               (String) null);
+        if (attrValue != null) {
+            properties.put(attrOrTag, attrValue);
+
+            return attrValue;
+        }
+
+        return dflt;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean getAttributeOrTag(Element node, String attrOrTag,
+                                      boolean dflt)
+            throws Exception {
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return attrValue.equals("true");
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private int getAttributeOrTag(Element node, String attrOrTag, int dflt)
+            throws Exception {
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return new Integer(attrValue).intValue();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param node _more_
+     * @param attrOrTag _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public double getAttributeOrTag(Element node, String attrOrTag,
+                                    double dflt)
+            throws Exception {
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
+        if (attrValue == null) {
+            return dflt;
+        }
+
+        return new Double(attrValue).doubleValue();
+    }
+
+
 
 }
