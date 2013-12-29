@@ -104,7 +104,6 @@ public class PositionTimeSeriesPointFile extends CsvFile {
                     + headerLines.size());
         }
 
-
         if (isPos) {
             return preparePosFile(visitInfo, headerLines);
         }
@@ -168,7 +167,7 @@ public class PositionTimeSeriesPointFile extends CsvFile {
             makeField(FIELD_VERTICAL_STD_DEVIATION, attrUnit("mm"),
                       attrChartable()),
             makeField(FIELD_QUALITY, attrType("string"), attrChartable()),
-            makeField("skip", "")
+            //            makeField("skip", "")
         });;
 
         return visitInfo;
