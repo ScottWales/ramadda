@@ -57,6 +57,9 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
     /** _more_ */
     public static final String ARG_METAMETA_BULK = "metameta.bulk";
 
+    /** _more_          */
+    public static final String ARG_METAMETA_ENTRY_ADD = "metameta.entry.add";
+
 
 
     /**
@@ -124,8 +127,10 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         contents.add(formSB.toString());
 
         sb.setLength(0);
-        sb.append(getWikiManager().wikifyEntry(request, parent,"<div class=wiki-h2>{{name}}</div><p>{{description}} <p>\n"));
+        sb.append(getWikiManager().wikifyEntry(request, parent,
+                "<div class=wiki-h2>{{name}}</div><p>{{description}} <p>\n"));
         sb.append(OutputHandler.makeTabs(titles, contents, false));
+
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metameta Dictionary", sb));
     }
@@ -154,12 +159,44 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         }
 
+        if (request.exists(ARG_METAMETA_ENTRY_ADD)) {
+            List<Entry> children = getChildrenEntries(request, entry);
+
+            return handleTypeHandlerAdd(request, entry);
+        }
+
+
         if (request.exists(ARG_METAMETA_BULK)) {
             return handleBulkCreate(request, entry);
         }
 
 
         return super.processEntryAccess(request, entry);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleTypeHandlerAdd(Request request, Entry entry)
+            throws Exception {
+        List<Entry>  children = getChildrenEntries(request, entry);
+
+        StringBuffer xml      = new StringBuffer();
+        generateEntryXml(request, xml, entry, children);
+
+        Element root = XmlUtil.getRoot(xml.toString());
+        getRepository().loadTypeHandlers(root, true);
+        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+
+        return new Result(url);
+
     }
 
     /**
@@ -458,11 +495,32 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
     public void addEntryButtons(Request request, Entry entry,
                                 List<String> buttons) {
         super.addEntryButtons(request, entry, buttons);
-        String handlerClass = (String) getEntryValue(entry,
-                                  INDEX_HANDLER_CLASS);
-        if (Utils.stringDefined(handlerClass)) {
-            buttons.add(HtmlUtils.submit("Generate Java base class",
-                                         ARG_METAMETA_GENERATE_JAVA));
+
+        try {
+
+            String handlerClass = (String) getEntryValue(entry,
+                                      INDEX_HANDLER_CLASS);
+            String type      = (String) getEntryValue(entry, INDEX_TYPE);
+            String shortName = (String) getEntryValue(entry,
+                                   INDEX_SHORT_NAME);
+            if (Misc.equals(type, "entry")) {
+                TypeHandler typeHandler =
+                    getRepository().getTypeHandler(shortName, false, false);
+                if (typeHandler == null) {
+                    buttons.add(HtmlUtils.submit("Add New Entry Type",
+                            ARG_METAMETA_ENTRY_ADD));
+                } else {
+                    buttons.add(HtmlUtils.submit("Update Entry Type",
+                            ARG_METAMETA_ENTRY_ADD));
+                }
+
+                if (Utils.stringDefined(handlerClass)) {
+                    buttons.add(HtmlUtils.submit("Generate Java base class",
+                            ARG_METAMETA_GENERATE_JAVA));
+                }
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
 

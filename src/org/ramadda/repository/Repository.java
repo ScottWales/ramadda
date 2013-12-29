@@ -1284,25 +1284,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void loadTypeHandlers() throws Exception {
         for (String file : getPluginManager().getTypeDefFiles()) {
-            file = getStorageManager().localizePath(file);
-            if (getPluginManager().haveSeen(file)) {
-                continue;
-            }
-            Element root = XmlUtil.getRoot(file, getClass());
-            if (root == null) {
-                continue;
-            }
             try {
-                List children = XmlUtil.findChildren(root,
-                                    TypeHandler.TAG_TYPE);
-                if ((children.size() == 0)
-                        && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
-                    loadTypeHandler(root);
+                file = getStorageManager().localizePath(file);
+                if (getPluginManager().haveSeen(file)) {
+                    continue;
                 }
-                for (int i = 0; i < children.size(); i++) {
-                    Element entryNode = (Element) children.get(i);
-                    loadTypeHandler(entryNode);
+                Element root = XmlUtil.getRoot(file, getClass());
+                if (root == null) {
+                    continue;
                 }
+                loadTypeHandlers(root, false);
+
             } catch (Exception exc) {
                 System.err.println("RAMADDA: Error loading type handler:"
                                    + " file=" + file);
@@ -1316,11 +1308,35 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
-     * @param entryNode _more_
+     * @param root _more_
+     * @param overwrite _more_
      *
      * @throws Exception _more_
      */
-    private void loadTypeHandler(Element entryNode) throws Exception {
+    public void loadTypeHandlers(Element root, boolean overwrite)
+            throws Exception {
+        List children = XmlUtil.findChildren(root, TypeHandler.TAG_TYPE);
+        if ((children.size() == 0)
+                && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
+            loadTypeHandler(root, overwrite);
+        }
+        for (int i = 0; i < children.size(); i++) {
+            Element entryNode = (Element) children.get(i);
+            loadTypeHandler(entryNode, overwrite);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param entryNode _more_
+     * @param overwrite _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadTypeHandler(Element entryNode, boolean overwrite)
+            throws Exception {
         String classPath = XmlUtil.getAttribute(entryNode,
                                TypeHandler.ATTR_HANDLER, (String) null);
 
@@ -1349,7 +1365,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         TypeHandler typeHandler =
             (TypeHandler) ctor.newInstance(new Object[] { this,
                 entryNode });
-        addTypeHandler(typeHandler.getType(), typeHandler);
+        addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
     }
 
 
@@ -3957,6 +3973,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param typeHandler _more_
      */
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
+        addTypeHandler(typeName, typeHandler, false);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param typeName _more_
+     * @param typeHandler _more_
+     * @param overwrite _more_
+     */
+    public void addTypeHandler(String typeName, TypeHandler typeHandler,
+                               boolean overwrite) {
+        if (typeHandlersMap.contains(typeName)) {
+            if ( !overwrite) {
+                return;
+            }
+            typeHandlersMap.remove(typeName);
+            allTypeHandlers.remove(typeHandler);
+        }
+
         if ( !typeHandlersMap.contains(typeName)) {
             typeHandlersMap.put(typeName, typeHandler);
             allTypeHandlers.add(typeHandler);
