@@ -1,10 +1,11 @@
 <types><type  name="type_metameta_collection"  description="Data Dictionary: Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/databases.png" /></type>
 <type  name="type_metameta_dictionary"  description="Data Dictionary: Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/database_table.png" /><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
 
-<column  name="type"  label="Type"  type="enumeration"  cansearch="true" ><values><![CDATA[database=database
+<column  name="type"  label="Type"  type="enumeration"  cansearch="true" ><values><![CDATA[entry=entry
+database=database
 datafile=datafile
-entry=entry
 metadata=metadata
+
 ]]></values>
 </column>
 
@@ -21,7 +22,14 @@ metadata=metadata
 <column  name="wiki_text"  label="Wiki Text"  type="string"  rows="10"  cansearch="true"  size="2000" ></column>
 
 </type>
-<type  name="type_metameta_field"  description="Data Dictionary: Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/blue-document-snippet.png" /><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
+<type  name="type_metameta_field"  description="Data Dictionary: Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/blue-document-snippet.png" /><wiki><![CDATA[
+=={{name}}==
+
+{{information}}
+
+]]></wiki>
+
+<column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
 
 <column  name="field_id"  label="Field ID"  type="string"  columns="80"  cansearch="true"  size="200" ></column>
 
