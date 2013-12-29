@@ -56,9 +56,15 @@ public class MultiMonthFile extends CsvFile {
         super(filename);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public List<RecordField> doMakeFields() {
         MultiMonthRecord record = new MultiMonthRecord(this, "temperature",
                                       "Temperature", "deg C", -99.9);
+
         return record.getFields();
     }
 

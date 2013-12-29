@@ -86,6 +86,9 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     public static final String ATTR_CHARTABLE = "chartable";
 
+    /** _more_ */
+    public static final String ATTR_PATTERN = "pattern";
+
 
     /** _more_ */
     public static final String TYPE_STRING = "string";
@@ -116,7 +119,8 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 
-    private  boolean headerStandard = false;
+    /** _more_ */
+    private boolean headerStandard = false;
 
     /**
      * _more_
@@ -165,7 +169,7 @@ public abstract class TextFile extends PointFile implements Fields {
         if (file.endsWith(".xls")) {
             reader = new StringReader(XlsUtil.xlsToCsv(file));
         } else {
-            if(file.startsWith("http:") || file.startsWith("https:")) {
+            if (file.startsWith("http:") || file.startsWith("https:")) {
                 reader = new InputStreamReader(IOUtil.getInputStream(file));
             } else {
                 reader = new FileReader(file);
@@ -248,7 +252,12 @@ public abstract class TextFile extends PointFile implements Fields {
         return headerStandard;
     }
 
-    public void setIsHeaderStandard (boolean v) {
+    /**
+     * _more_
+     *
+     * @param v _more_
+     */
+    public void setIsHeaderStandard(boolean v) {
         headerStandard = v;
     }
 
@@ -397,6 +406,7 @@ public abstract class TextFile extends PointFile implements Fields {
 
                 if ( !isHeaderLine(line)) {
                     firstDataLine = line;
+
                     break;
                 }
 
@@ -427,6 +437,7 @@ public abstract class TextFile extends PointFile implements Fields {
         }
 
         initProperties();
+
         return visitInfo;
     }
 
@@ -544,6 +555,8 @@ public abstract class TextFile extends PointFile implements Fields {
         return attrValue("" + d);
     }
 
+
+
     /**
      * _more_
      *
@@ -553,6 +566,18 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public String attrValue(String v) {
         return HtmlUtils.attr(ATTR_VALUE, v);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param pattern _more_
+     *
+     * @return _more_
+     */
+    public String attrPattern(String pattern) {
+        return HtmlUtils.attr(ATTR_PATTERN, pattern);
     }
 
 

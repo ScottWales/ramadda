@@ -25,7 +25,6 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -66,9 +65,6 @@ import java.util.List;
  */
 public class AmrcFinalQCPointFile extends CsvFile {
 
-    //Corresponds to the fields in the data
-    //We use the date field indices to get the obs date
-
     /** base index to count from */
     private static int IDX = 1;
 
@@ -99,14 +95,13 @@ public class AmrcFinalQCPointFile extends CsvFile {
     /** data index */
     public static final int IDX_TIME = IDX++;
 
+    /** missing value */
+    public static final double MISSING = 444.0;
 
     /** date formatter */
     private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
-    /** missing value */
-    public static final double MISSING = 444.0;
-
-    /** buffer         */
+    /** buffer */
     private StringBuffer dttm = new StringBuffer();
 
     /**
@@ -134,11 +129,8 @@ public class AmrcFinalQCPointFile extends CsvFile {
         putProperty(PROP_DELIMITER, " ");
         putProperty(PROP_SKIPLINES, "2");
 
-        //Process the header
-        super.prepareToVisit(visitInfo);
-
-
         //Read the header and make sure things are cool
+        super.prepareToVisit(visitInfo);
         List<String> headerLines = getHeaderLines();
         if (headerLines.size() != getSkipLines(visitInfo)) {
             throw new IllegalArgumentException("Bad number of header lines:"
@@ -156,44 +148,24 @@ public class AmrcFinalQCPointFile extends CsvFile {
                              "ARGOS:\\s*(.*)Name:");
         String siteName = StringUtil.findPattern(headerLines.get(0),
                               "Name:\\s(.*)");
-        String latString = StringUtil.findPattern(headerLines.get(1),
-                                                  "Lat:\\s(.*)Lon:");
-        String lonString = StringUtil.findPattern(headerLines.get(1),
-                               "Lon:\\s(.*)Elev:");
-        String elevString = StringUtil.findPattern(headerLines.get(1),
-                                "Elev:(.*)");
-
-        if ((latString == null) || (lonString == null) || (siteName == null)
-                || (siteId == null)) {
+        if ((siteName == null) || (siteId == null)) {
             throw new IllegalArgumentException("Could not read header:"
-                    + headerLines + " lat:" + latString + " lon:" + lonString
-                    + " elev" + elevString + " siteName:" + siteName
-                    + " site:" + siteId);
-
+                    + headerLines + " site name:" + siteName + " site id:"
+                    + siteId);
         }
-        if (elevString.endsWith("m")) {
-            elevString = elevString.substring(0, elevString.length() - 1);
-        }
-        double lat       = Misc.decodeLatLon(latString);
-        double lon       = Misc.decodeLatLon(lonString);
-        double elevation = Double.parseDouble(elevString);
-
-        setLocation(lat, lon, elevation);
 
         //This needs to be in the same order as the amrctypes.xml defines in the point plugin
         setFileMetadata(new Object[] { siteId, siteName, argosId });
 
-        //Define the fields
         //Note: The first fields (site, lat, lon, elev) aren't in the data rows
-        //We define that there are fields but they have a fixed value.
-
+        //We define that there are fields but they have a fixed value derived from
+        //a regexp pattern applied to the header 
         putFields(new String[] {
-            //Embed the values for site, lat, lon and elevation
             makeField(FIELD_SITE_ID, attrType(TYPE_STRING),
-                      attrValue(siteId.trim())),
-            makeField(FIELD_LATITUDE, attrValue(lat)),
-            makeField(FIELD_LONGITUDE, attrValue(lon)),
-            makeField(FIELD_ELEVATION, attrValue(elevString)),
+                      attrPattern("ID:\\s(.*)ARGOS:")),
+            makeField(FIELD_LATITUDE, attrPattern("Lat:\\s(.*)Lon:")),
+            makeField(FIELD_LONGITUDE, attrPattern("Lon:\\s(.*)Elev:")),
+            makeField(FIELD_ELEVATION, attrPattern("Elev:(.*)")),
             makeField(FIELD_YEAR, ""), makeField(FIELD_JULIAN_DAY, ""),
             makeField(FIELD_MONTH, ""), makeField(FIELD_DAY, ""),
             makeField(FIELD_TIME, attrType(TYPE_STRING)),
@@ -234,8 +206,6 @@ public class AmrcFinalQCPointFile extends CsvFile {
         }
         TextRecord textRecord = (TextRecord) record;
         dttm.setLength(0);
-
-        //Get the date from the values
         dttm.append((int) textRecord.getValue(IDX_YEAR));
         dttm.append("-");
         dttm.append((int) textRecord.getValue(IDX_MONTH));

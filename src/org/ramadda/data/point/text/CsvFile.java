@@ -23,8 +23,6 @@ package org.ramadda.data.point.text;
 
 import org.ramadda.data.point.*;
 
-
-
 import org.ramadda.data.record.*;
 
 import ucar.unidata.util.Misc;
@@ -46,21 +44,17 @@ import javax.swing.*;
 
 
 /**
- * Class description
+ * CSV file supports any form of column delimited files - comma, tab, space, etc
  *
- *
- * @version        Enter version here..., Fri, May 21, '10
- * @author         Enter your name here...
  */
 public class CsvFile extends TextFile {
 
-
-    /** _more_ */
+    /** column delimiter */
     private String delimiter = null;
 
 
     /**
-     * _more_
+     * ctor
      */
     public CsvFile() {}
 
@@ -71,19 +65,19 @@ public class CsvFile extends TextFile {
      *
      * @param filename _more_
      *
-     * @throws IOException _more_
+     * @throws IOException on badness
      */
     public CsvFile(String filename) throws IOException {
         super(filename);
     }
 
     /**
-     * _more_
+     * ctor
      *
      * @param filename _more_
      * @param properties _more_
      *
-     * @throws IOException _more_
+     * @throws IOException on badness
      */
     public CsvFile(String filename, Hashtable properties) throws IOException {
         super(filename, properties);
@@ -112,11 +106,11 @@ public class CsvFile extends TextFile {
     }
 
     /**
-     * _more_
+     * is this file capable of certain actions - gridding, decimation, etc
      *
-     * @param action _more_
+     * @param action action type
      *
-     * @return _more_
+     * @return is capable
      */
     public boolean isCapable(String action) {
         if (action.equals(ACTION_GRID)) {
@@ -262,26 +256,36 @@ public class CsvFile extends TextFile {
                 field.setDateFormat(new SimpleDateFormat(fmt));
             }
 
-            String type = getProperty(field, properties, "type",
+            String type = getProperty(field, properties, ATTR_TYPE,
                                       (String) null);
             if (type != null) {
                 field.setType(type);
             }
             //Check for a default fixed value
-            String value = getProperty(field, properties, "value",
+            String value = getProperty(field, properties, ATTR_VALUE,
                                        (String) null);
 
-            if(value==null) {
-                String pattern = getProperty(field, properties, "pattern",
+            if (value == null) {
+                String pattern = getProperty(field, properties, ATTR_PATTERN,
                                              (String) null);
-                if(pattern!=null) {
-                    //"Lat:\\s(.*)Lon:"
+                if (pattern != null) {
+                    //                    System.err.println("pattern:" + pattern);
                     String header = StringUtil.join("\n", getHeaderLines());
-                    String patternMatch = StringUtil.findPattern(header,pattern);
-                    if(patternMatch!=null) {
-                        value = patternMatch;
+                    String patternMatch = StringUtil.findPattern(header,
+                                              pattern);
+                    if (patternMatch == null) {
+                        throw new IllegalArgumentException(
+                            "No match. pattern=" + pattern + " field="
+                            + field);
+                    }
+
+                    if (name.equalsIgnoreCase(FIELD_LATITUDE)
+                            || name.equalsIgnoreCase(FIELD_LONGITUDE)) {
+                        value = "" + decodeLatLon(patternMatch);
+                    } else if (name.equalsIgnoreCase(FIELD_ELEVATION)) {
+                        value = "" + decodeElevation(patternMatch);
                     } else {
-                        throw new IllegalArgumentException("No match. pattern=" + pattern +" field=" + field);
+                        value = patternMatch;
                     }
                 }
             }
@@ -447,7 +451,7 @@ public class CsvFile extends TextFile {
      *
      * @param args _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public static void main(String[] args) throws Exception {
         if (true) {

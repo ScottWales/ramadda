@@ -789,6 +789,15 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         return gc.getTime();
     }
 
+    public double decodeLatLon(String s) {
+        return Misc.decodeLatLon(s);
+    }
 
+    public double decodeElevation(String s) {
+        if (s.endsWith("m")) {
+            s = s.substring(0, s.length() - 1);
+        }
+        return Double.parseDouble(s);
+    }
 
 }

@@ -18,35 +18,8 @@
 * DEALINGS IN THE SOFTWARE.
 */
 
-package org.ramadda.data.point.text;
+package org.ramadda.data.point;
 
-
-import org.ramadda.data.point.*;
-
-
-
-
-import org.ramadda.data.record.*;
-import org.ramadda.util.HtmlUtils;
-
-import org.ramadda.util.Station;
-import org.ramadda.util.XlsUtil;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-
-import java.awt.*;
-import java.awt.image.*;
-
-import java.io.*;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.swing.*;
 
 
 /**
@@ -57,7 +30,7 @@ public interface Fields {
     /** _more_ */
     public static final String FIELD_SITE_ID = "Site_Id";
 
-    /** _more_          */
+    /** _more_ */
     public static final String FIELD_STATION = "Station";
 
     /** _more_ */
