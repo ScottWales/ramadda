@@ -269,8 +269,7 @@ public class CsvFile extends TextFile {
                 String pattern = getProperty(field, properties, ATTR_PATTERN,
                                              (String) null);
                 if (pattern != null) {
-                    //                    System.err.println("pattern:" + pattern);
-                    String header = StringUtil.join("\n", getHeaderLines());
+                    String header = getTextHeader();
                     String patternMatch = StringUtil.findPattern(header,
                                               pattern);
                     if (patternMatch == null) {

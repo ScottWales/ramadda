@@ -119,6 +119,8 @@ public abstract class TextFile extends PointFile implements Fields {
     /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 
+
+
     /** _more_ */
     private boolean headerStandard = false;
 
@@ -442,6 +444,26 @@ public abstract class TextFile extends PointFile implements Fields {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getTextHeader() {
+        StringBuffer textHeader = new StringBuffer();
+        for (String line : getHeaderLines()) {
+            List<String> toks = StringUtil.splitUpTo(line, "=", 2);
+            if (toks.size() == 2) {
+                if (toks.get(0).trim().indexOf(" ") < 0) {
+                    continue;
+                }
+            }
+            textHeader.append(line);
+            textHeader.append("\n");
+        }
+
+        return textHeader.toString();
+    }
 
 
 
@@ -451,7 +473,9 @@ public abstract class TextFile extends PointFile implements Fields {
      * @param fields _more_
      */
     public void putFields(String[] fields) {
-        putProperty(PROP_FIELDS, makeFields(fields));
+        String f = makeFields(fields);
+        System.out.println(f);
+        putProperty(PROP_FIELDS, f);
     }
 
 
