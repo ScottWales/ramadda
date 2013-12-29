@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2013 Geode Systems LLC
+* Copyright 2008-2014 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -17,6 +17,7 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
+
 
 package org.ramadda.plugins.metameta;
 
@@ -49,34 +50,26 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
+public abstract class MetametaFieldTypeHandlerBase extends  ExtensibleGroupTypeHandler {
 
-    /** _more_          */
-    private static int INDEX_BASE = 0;
-
-    /** _more_          */
-    public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
-
-    /** _more_          */
-    public static final int INDEX_FIELD_ID = INDEX_BASE + 1;
-
-    /** _more_          */
-    public static final int INDEX_DATATYPE = INDEX_BASE + 2;
-
-    /** _more_          */
-    public static final int INDEX_ENUMERATION_VALUES = INDEX_BASE + 3;
-
-    /** _more_          */
-    public static final int INDEX_PROPERTIES = INDEX_BASE + 4;
-
-    /** _more_          */
-    public static final int INDEX_DATABASE_COLUMN_SIZE = INDEX_BASE + 5;
-
-    /** _more_          */
-    public static final int INDEX_MISSING = INDEX_BASE + 6;
-
-    /** _more_          */
-    public static final int INDEX_UNIT = INDEX_BASE + 7;
+    	public static final String TYPE = "type_metameta_field";
+	private static int INDEX_BASE = 0;
+	public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
+	public static final String FIELD_FIELD_INDEX = "field_index";
+	public static final int INDEX_FIELD_ID = INDEX_BASE + 1;
+	public static final String FIELD_FIELD_ID = "field_id";
+	public static final int INDEX_DATATYPE = INDEX_BASE + 2;
+	public static final String FIELD_DATATYPE = "datatype";
+	public static final int INDEX_ENUMERATION_VALUES = INDEX_BASE + 3;
+	public static final String FIELD_ENUMERATION_VALUES = "enumeration_values";
+	public static final int INDEX_PROPERTIES = INDEX_BASE + 4;
+	public static final String FIELD_PROPERTIES = "properties";
+	public static final int INDEX_DATABASE_COLUMN_SIZE = INDEX_BASE + 5;
+	public static final String FIELD_DATABASE_COLUMN_SIZE = "database_column_size";
+	public static final int INDEX_MISSING = INDEX_BASE + 6;
+	public static final String FIELD_MISSING = "missing";
+	public static final int INDEX_UNIT = INDEX_BASE + 7;
+	public static final String FIELD_UNIT = "unit";
 
 
 
@@ -90,13 +83,13 @@ public class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     public MetametaFieldTypeHandlerBase(Repository repository,
-                                        Element entryNode)
+                        Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
 
-
+    
 
 
     /**
@@ -118,16 +111,6 @@ public class MetametaFieldTypeHandlerBase extends ExtensibleGroupTypeHandler {
         return super.getHtmlDisplay(request, parent, subGroups, entries);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {

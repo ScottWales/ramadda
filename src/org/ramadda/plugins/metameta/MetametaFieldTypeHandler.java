@@ -57,10 +57,6 @@ import java.util.Properties;
 public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
 
 
-    /** _more_ */
-    public static final String TYPE_METAMETA_FIELD = "type_metameta_field";
-
-
 
     /**
      * _more_
@@ -152,7 +148,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
             List<Entry> siblings = getEntryManager().getChildrenAll(request,
                                        parent);
             for (Entry sibling : siblings) {
-                if (sibling.isType(TYPE_METAMETA_FIELD)) {
+                if (sibling.isType(TYPE)) {
                     int siblingIndex = ((Integer) getEntryValue(sibling,
                                            0)).intValue();
                     maxIndex = Math.max(maxIndex, siblingIndex);

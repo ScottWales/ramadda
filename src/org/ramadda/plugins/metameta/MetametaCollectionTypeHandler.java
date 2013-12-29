@@ -63,7 +63,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
      * @return _more_
      */
     public String getChildType() {
-        return MetametaDefinitionTypeHandler.TYPE_METAMETA_DEFINITION;
+        return MetametaDefinitionTypeHandler.TYPE;
     }
 
 

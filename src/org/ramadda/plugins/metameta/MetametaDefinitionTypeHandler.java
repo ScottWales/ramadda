@@ -53,9 +53,6 @@ import java.util.List;
  */
 public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandlerBase {
 
-    /** _more_ */
-    public static final String TYPE_METAMETA_DEFINITION =
-        "type_metameta_definition";
 
     /** _more_ */
     public static final String ARG_METAMETA_BULK = "metameta.bulk";
@@ -83,7 +80,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
      * @return _more_
      */
     public String getChildType() {
-        return MetametaFieldTypeHandler.TYPE_METAMETA_FIELD;
+        return MetametaFieldTypeHandler.TYPE;
     }
 
     /**
@@ -198,19 +195,19 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
             }
 
             StringBuffer inner = new StringBuffer();
-            inner.append(XmlUtil.tag("field_id", "", XmlUtil.getCdata(id)));
+            inner.append(XmlUtil.tag(MetametaFieldTypeHandler.FIELD_FIELD_ID,
+                                     "", XmlUtil.getCdata(id)));
             inner.append(
                 XmlUtil.tag(
-                    "properties", "",
+                    FIELD_PROPERTIES, "",
                     XmlUtil.getCdata(properties.toString())));
-            inner.append(XmlUtil.tag("datatype", "", XmlUtil.getCdata(type)));
-            xml.append(
-                XmlUtil.tag(
-                    TAG_ENTRY,
-                    XmlUtil.attrs(
-                        ATTR_NAME, label, ATTR_TYPE,
-                        MetametaFieldTypeHandler.TYPE_METAMETA_FIELD,
-                        ATTR_PARENT, entry.getId()), inner.toString()));
+            inner.append(XmlUtil.tag(MetametaFieldTypeHandler.FIELD_DATATYPE,
+                                     "", XmlUtil.getCdata(type)));
+            xml.append(XmlUtil.tag(TAG_ENTRY,
+                                   XmlUtil.attrs(ATTR_NAME, label, ATTR_TYPE,
+                                       MetametaFieldTypeHandler.TYPE,
+                                       ATTR_PARENT,
+                                       entry.getId()), inner.toString()));
             xml.append("\n");
         }
         xml.append(XmlUtil.closeTag(TAG_ENTRIES));
@@ -259,6 +256,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         StringBuffer methods = new StringBuffer();
         String handlerClass = (String) getEntryValue(entry,
                                   INDEX_HANDLER_CLASS);
+        String shortName = (String) getEntryValue(entry, INDEX_SHORT_NAME);
         boolean isGroup = ((Boolean) getEntryValue(entry,
                               INDEX_ISGROUP)).booleanValue();
         int    idx       = handlerClass.lastIndexOf('.');
@@ -272,6 +270,9 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
                 : "GenericTypeHandler");
 
 
+        defines.append("\tpublic static final String TYPE = "
+                       + HtmlUtils.quote(shortName) + ";\n");
+
         defines.append("\tprivate static int INDEX_BASE = 0;\n");
         int cnt = 0;
         for (Entry child : getChildrenEntries(request, entry)) {
@@ -282,6 +283,8 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
             String FIELDID = fieldId.toUpperCase();
             defines.append("\tpublic static final int INDEX_" + FIELDID
                            + " = INDEX_BASE + " + cnt + ";\n");
+            defines.append("\tpublic static final String FIELD_" + FIELDID
+                           + " = " + HtmlUtils.quote(fieldId) + ";\n");
             //            methods.append("\tprivate static INDEX_" + FIELDID +" = INDEX_BASE + " + cnt +";\n");
             cnt++;
         }
@@ -310,8 +313,8 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
     public void generateDbXml(Request request, StringBuffer xml,
                               Entry parent, List<Entry> children)
             throws Exception {
-        boolean first = xml.length()==0;
-        if(first) {
+        boolean first = xml.length() == 0;
+        if (first) {
             xml.append(XmlUtil.openTag("tables", ""));
         }
         String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
@@ -340,7 +343,7 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
         }
         xml.append(XmlUtil.closeTag("table"));
 
-        if(first) {
+        if (first) {
             xml.append(XmlUtil.closeTag("tables"));
         }
     }
