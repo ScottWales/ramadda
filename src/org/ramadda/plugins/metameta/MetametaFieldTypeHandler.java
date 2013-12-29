@@ -236,13 +236,16 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
             }
         }
 
-        attrs.append(XmlUtil.attr(Column.ATTR_CANSEARCH,
-                                  Misc.getProperty(props,
-                                      Column.ATTR_CANSEARCH, "true")));
-        attrs.append(XmlUtil.attr(Column.ATTR_CANLIST,
-                                  Misc.getProperty(props,
-                                      Column.ATTR_CANLIST, "true")));
-        if (type.equals("string")) {
+        if (Misc.getProperty(props, Column.ATTR_CANSEARCH, false)) {
+            attrs.append(XmlUtil.attr(Column.ATTR_CANSEARCH, "true"));
+        }
+
+        if ( !Misc.getProperty(props, Column.ATTR_CANLIST, true)) {
+            attrs.append(XmlUtil.attr(Column.ATTR_CANLIST, "false"));
+        }
+
+        if (type.equals(Column.DATATYPE_STRING)
+                || type.equals(Column.DATATYPE_LIST)) {
             attrs.append(XmlUtil.attr(Column.ATTR_SIZE, "" + size));
         }
 

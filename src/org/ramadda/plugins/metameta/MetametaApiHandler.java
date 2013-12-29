@@ -28,6 +28,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.Element;
 
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.TwoFacedObject;
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -71,6 +72,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
      * @throws Exception _more_
      */
     public Result processTypeRequest(Request request) throws Exception {
+
         List<String> toks = StringUtil.split(request.getRequestPath(), "/",
                                              true, true);
         String       type        = toks.get(toks.size() - 1);
@@ -80,26 +82,88 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
         StringBuffer inner = new StringBuffer();
         inner.append(
             XmlUtil.tag(
-                "properties", "",
+                MetametaDefinitionTypeHandler.FIELD_PROPERTIES, "",
                 XmlUtil.getCdata(
                     Utils.makeProperties(typeHandler.getProperties()))));
+
+
+        inner.append(
+            XmlUtil.tag(
+                MetametaDefinitionTypeHandler.FIELD_SHORT_NAME, "",
+                typeHandler.getType()));
+
+        if (typeHandler.getParent() != null) {
+            inner.append(
+                XmlUtil.tag(
+                    MetametaDefinitionTypeHandler.FIELD_SUPER_TYPE, "",
+                    typeHandler.getParent().getType()));
+        }
+        if (typeHandler.isGroup()) {
+            inner.append(
+                XmlUtil.tag(
+                    MetametaDefinitionTypeHandler.FIELD_ISGROUP, "", "true"));
+        }
+        inner.append(
+            XmlUtil.tag(
+                MetametaDefinitionTypeHandler.FIELD_HANDLER_CLASS, "",
+                typeHandler.getClass().getName()));
+
+
         xml.append(
             XmlUtil.tag(
                 TAG_ENTRY,
                 XmlUtil.attrs(
                     ATTR_NAME, typeHandler.getLabel(), ATTR_TYPE,
-                    "type_metameta_definition", ATTR_ID,
+                    MetametaDefinitionTypeHandler.TYPE, ATTR_ID,
                     "definition"), inner.toString()));
 
         List<Column> columns = typeHandler.getColumns();
         if (columns != null) {
+            int index = 0;
             for (Column column : columns) {
+                index++;
                 inner = new StringBuffer();
-                StringBuffer attrs = new StringBuffer();
+                StringBuffer              attrs = new StringBuffer();
+
+                Hashtable<String, String> enums = column.getEnumTable();
+                if ((enums != null) && (enums.size() > 0)) {
+                    inner.append(XmlUtil
+                        .tag(MetametaFieldTypeHandler
+                            .FIELD_ENUMERATION_VALUES, "",
+                                XmlUtil.getCdata(Utils
+                                    .makeProperties(enums))));
+                }
+
+                inner.append(
+                    XmlUtil.tag(
+                        MetametaFieldTypeHandler.FIELD_FIELD_INDEX, "",
+                        "" + index));
+                inner.append(
+                    XmlUtil.tag(
+                        MetametaFieldTypeHandler.FIELD_FIELD_ID, "",
+                        column.getName()));
+                inner.append(
+                    XmlUtil.tag(
+                        MetametaFieldTypeHandler.FIELD_DATATYPE, "",
+                        column.getType()));
+
+                inner.append(
+                    XmlUtil.tag(
+                        MetametaFieldTypeHandler.FIELD_PROPERTIES, "",
+                        XmlUtil.getCdata(
+                            Utils.makeProperties(column.getProperties()))));
+
+                inner.append(
+                    XmlUtil.tag(
+                        MetametaFieldTypeHandler.FIELD_DATABASE_COLUMN_SIZE,
+                        "", "" + column.getSize()));
+
+
                 attrs.append(XmlUtil.attrs(ATTR_NAME, column.getLabel(),
-                                           ATTR_TYPE, "type_metameta_field",
+                                           ATTR_TYPE,
+                                           MetametaFieldTypeHandler.TYPE,
                                            ATTR_PARENT, "definition"));
-                TypeHandler.addPropertyTags(column.getProperties(), inner);
+                //                TypeHandler.addPropertyTags(column.getProperties(), inner);
                 xml.append(XmlUtil.tag(TAG_ENTRY, attrs.toString(),
                                        inner.toString()));
 
@@ -109,6 +173,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
         xml.append(XmlUtil.closeTag(TAG_ENTRIES));
 
         return new Result("Type", xml, "text/xml");
+
     }
 
 }

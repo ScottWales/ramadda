@@ -475,13 +475,12 @@ public class GenericTypeHandler extends TypeHandler {
         Object[] values = getEntryValues(entry);
         super.initializeEntryFromXml(request, entry, node);
 
-        Hashtable<String, Element> nodes = new Hashtable<String, Element>();
+        Hashtable<String, Element> nodes    = new Hashtable<String,
+                                                  Element>();
 
-        System.err.println("init");
-        NodeList elements = XmlUtil.getElements(node);
+        NodeList                   elements = XmlUtil.getElements(node);
         for (int i = 0; i < elements.getLength(); i++) {
             Element child = (Element) elements.item(i);
-            System.err.println("tag:" + child.getTagName());
             nodes.put(child.getTagName(), child);
         }
 
@@ -504,8 +503,7 @@ public class GenericTypeHandler extends TypeHandler {
                 //                System.err.println (" could not find column value:" + column);
                 continue;
             }
-            System.err.println("column.getName:" + column.getName()
-                               + " value:" + value);
+
             column.setValue(entry, values, value);
         }
     }

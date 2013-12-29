@@ -137,7 +137,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
     public void generateEntryXml(Request request, StringBuffer xml,
                                  Entry parent, List<Entry> children)
             throws Exception {
-        xml.append(XmlUtil.openTag(TAG_ENTRIES, ""));
+        xml.append(XmlUtil.openTag(TAG_TYPES, ""));
         for (Entry defEntry : children) {
             MetametaDefinitionTypeHandler defTypeHandler =
                 (MetametaDefinitionTypeHandler) defEntry.getTypeHandler();
@@ -145,7 +145,7 @@ public class MetametaCollectionTypeHandler extends MetametaGroupTypeHandler {
                                      defEntry);
             defTypeHandler.generateEntryXml(request, xml, defEntry, fields);
         }
-        xml.append(XmlUtil.closeTag(TAG_ENTRIES));
+        xml.append(XmlUtil.closeTag(TAG_TYPES));
     }
 
 

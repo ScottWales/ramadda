@@ -583,12 +583,7 @@ public class Utils {
     public static boolean getAttributeOrTag(Element node, String attrOrTag,
                                             boolean dflt)
             throws Exception {
-        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
-                               (String) null);
-        if (attrValue == null) {
-            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
-                    (String) null);
-        }
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
         }
@@ -611,12 +606,7 @@ public class Utils {
     public static int getAttributeOrTag(Element node, String attrOrTag,
                                         int dflt)
             throws Exception {
-        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
-                               (String) null);
-        if (attrValue == null) {
-            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
-                    (String) null);
-        }
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
         }
@@ -639,12 +629,7 @@ public class Utils {
     public static double getAttributeOrTag(Element node, String attrOrTag,
                                            double dflt)
             throws Exception {
-        String attrValue = XmlUtil.getAttribute(node, attrOrTag,
-                               (String) null);
-        if (attrValue == null) {
-            attrValue = XmlUtil.getGrandChildText(node, attrOrTag,
-                    (String) null);
-        }
+        String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
         }

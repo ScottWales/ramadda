@@ -364,6 +364,12 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
                                  Entry parent, List<Entry> children)
             throws Exception {
 
+        boolean first = xml.length() == 0;
+        if (first) {
+            xml.append(XmlUtil.openTag(TAG_TYPES, ""));
+        }
+
+
         String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
         String superType = (String) getEntryValue(parent, INDEX_SUPER_TYPE);
         String wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
@@ -426,6 +432,11 @@ public class MetametaDefinitionTypeHandler extends MetametaDefinitionTypeHandler
             xml.append("\n");
         }
         xml.append(XmlUtil.closeTag(TAG_TYPE));
+
+        if (first) {
+            xml.append(XmlUtil.closeTag(TAG_TYPES));
+        }
+
     }
 
 

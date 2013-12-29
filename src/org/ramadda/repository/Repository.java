@@ -1288,60 +1288,68 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (getPluginManager().haveSeen(file)) {
                 continue;
             }
-            Element entriesRoot = XmlUtil.getRoot(file, getClass());
-            if (entriesRoot == null) {
+            Element root = XmlUtil.getRoot(file, getClass());
+            if (root == null) {
                 continue;
             }
-            List children = XmlUtil.findChildren(entriesRoot,
-                                TypeHandler.TAG_TYPE);
-            for (int i = 0; i < children.size(); i++) {
-                Element entryNode = (Element) children.get(i);
-                String classPath = XmlUtil.getAttribute(entryNode,
-                                       TypeHandler.ATTR_HANDLER,
-                                       (String) null);
-
-                if (classPath == null) {
-                    String superType = XmlUtil.getAttribute(entryNode,
-                                           TypeHandler.ATTR_SUPER,
-                                           (String) null);
-                    if (superType != null) {
-                        TypeHandler parent =
-                            getRepository().getTypeHandler(superType, false,
-                                false);
-                        if (parent == null) {
-                            throw new IllegalArgumentException(
-                                "Cannot find parent type:" + superType);
-                        }
-                        classPath = parent.getClass().getName();
-                        //                        System.err.println ("Using parent class:" +  classPath +" " + XmlUtil.toString(entryNode));
-                    } else {
-                        classPath =
-                            "org.ramadda.repository.type.GenericTypeHandler";
-                    }
+            try {
+                List children = XmlUtil.findChildren(root,
+                                    TypeHandler.TAG_TYPE);
+                if ((children.size() == 0)
+                        && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
+                    loadTypeHandler(root);
                 }
-
-                //System.err.println ("RAMADDA: loading type handler:" + classPath);
-                try {
-                    Class handlerClass = Misc.findClass(classPath);
-
-
-                    Constructor ctor = Misc.findConstructor(handlerClass,
-                                           new Class[] { Repository.class,
-                            Element.class });
-                    TypeHandler typeHandler =
-                        (TypeHandler) ctor.newInstance(new Object[] { this,
-                            entryNode });
-                    addTypeHandler(typeHandler.getType(), typeHandler);
-                } catch (Exception exc) {
-                    System.err.println("RAMADDA: Error loading type handler:"
-                                       + classPath + " file=" + file);
-                    exc.printStackTrace();
-
-                    throw exc;
+                for (int i = 0; i < children.size(); i++) {
+                    Element entryNode = (Element) children.get(i);
+                    loadTypeHandler(entryNode);
                 }
+            } catch (Exception exc) {
+                System.err.println("RAMADDA: Error loading type handler:"
+                                   + " file=" + file);
+                exc.printStackTrace();
+
+                throw exc;
+            }
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    private void loadTypeHandler(Element entryNode) throws Exception {
+        String classPath = XmlUtil.getAttribute(entryNode,
+                               TypeHandler.ATTR_HANDLER, (String) null);
+
+        if (classPath == null) {
+            String superType = XmlUtil.getAttribute(entryNode,
+                                   TypeHandler.ATTR_SUPER, (String) null);
+            if (superType != null) {
+                TypeHandler parent =
+                    getRepository().getTypeHandler(superType, false, false);
+                if (parent == null) {
+                    throw new IllegalArgumentException(
+                        "Cannot find parent type:" + superType);
+                }
+                classPath = parent.getClass().getName();
+                //                        System.err.println ("Using parent class:" +  classPath +" " + XmlUtil.toString(entryNode));
+            } else {
+                classPath = "org.ramadda.repository.type.GenericTypeHandler";
             }
         }
 
+
+        Class handlerClass = Misc.findClass(classPath);
+        Constructor ctor = Misc.findConstructor(handlerClass,
+                               new Class[] { Repository.class,
+                                             Element.class });
+        TypeHandler typeHandler =
+            (TypeHandler) ctor.newInstance(new Object[] { this,
+                entryNode });
+        addTypeHandler(typeHandler.getType(), typeHandler);
     }
 
 

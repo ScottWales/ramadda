@@ -1,5 +1,5 @@
 /*
-* Copyright 2008-2014 Geode Systems LLC
+* Copyright 2008-2013 Geode Systems LLC
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 * software and associated documentation files (the "Software"), to deal in the Software 
@@ -17,7 +17,6 @@
 * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 * DEALINGS IN THE SOFTWARE.
 */
-
 
 package org.ramadda.plugins.metameta;
 
@@ -50,26 +49,61 @@ import java.util.List;
  *
  * @author RAMADDA Development Team
  */
-public abstract class MetametaDefinitionTypeHandlerBase extends  MetametaGroupTypeHandler {
+public abstract class MetametaDefinitionTypeHandlerBase extends MetametaGroupTypeHandler {
 
-    	public static final String TYPE = "type_metameta_definition";
-	private static int INDEX_BASE = 0;
-	public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
-	public static final String FIELD_FIELD_INDEX = "field_index";
-	public static final int INDEX_TYPE = INDEX_BASE + 1;
-	public static final String FIELD_TYPE = "type";
-	public static final int INDEX_SHORT_NAME = INDEX_BASE + 2;
-	public static final String FIELD_SHORT_NAME = "short_name";
-	public static final int INDEX_SUPER_TYPE = INDEX_BASE + 3;
-	public static final String FIELD_SUPER_TYPE = "super_type";
-	public static final int INDEX_ISGROUP = INDEX_BASE + 4;
-	public static final String FIELD_ISGROUP = "isgroup";
-	public static final int INDEX_HANDLER_CLASS = INDEX_BASE + 5;
-	public static final String FIELD_HANDLER_CLASS = "handler_class";
-	public static final int INDEX_PROPERTIES = INDEX_BASE + 6;
-	public static final String FIELD_PROPERTIES = "properties";
-	public static final int INDEX_WIKI_TEXT = INDEX_BASE + 7;
-	public static final String FIELD_WIKI_TEXT = "wiki_text";
+    /** _more_ */
+    public static final String TYPE = "type_metameta_definition";
+
+    /** _more_ */
+    private static int INDEX_BASE = 0;
+
+    /** _more_ */
+    public static final int INDEX_FIELD_INDEX = INDEX_BASE + 0;
+
+    /** _more_ */
+    public static final String FIELD_FIELD_INDEX = "field_index";
+
+    /** _more_ */
+    public static final int INDEX_TYPE = INDEX_BASE + 1;
+
+    /** _more_ */
+    public static final String FIELD_TYPE = "type";
+
+    /** _more_ */
+    public static final int INDEX_SHORT_NAME = INDEX_BASE + 2;
+
+    /** _more_ */
+    public static final String FIELD_SHORT_NAME = "short_name";
+
+    /** _more_ */
+    public static final int INDEX_SUPER_TYPE = INDEX_BASE + 3;
+
+    /** _more_ */
+    public static final String FIELD_SUPER_TYPE = "super_type";
+
+    /** _more_ */
+    public static final int INDEX_ISGROUP = INDEX_BASE + 4;
+
+    /** _more_ */
+    public static final String FIELD_ISGROUP = "isgroup";
+
+    /** _more_ */
+    public static final int INDEX_HANDLER_CLASS = INDEX_BASE + 5;
+
+    /** _more_ */
+    public static final String FIELD_HANDLER_CLASS = "handler_class";
+
+    /** _more_ */
+    public static final int INDEX_PROPERTIES = INDEX_BASE + 6;
+
+    /** _more_ */
+    public static final String FIELD_PROPERTIES = "properties";
+
+    /** _more_ */
+    public static final int INDEX_WIKI_TEXT = INDEX_BASE + 7;
+
+    /** _more_ */
+    public static final String FIELD_WIKI_TEXT = "wiki_text";
 
 
 
@@ -83,13 +117,13 @@ public abstract class MetametaDefinitionTypeHandlerBase extends  MetametaGroupTy
      * @throws Exception _more_
      */
     public MetametaDefinitionTypeHandlerBase(Repository repository,
-                        Element entryNode)
+                                             Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
 
-    
+
 
 
     /**
@@ -111,6 +145,16 @@ public abstract class MetametaDefinitionTypeHandlerBase extends  MetametaGroupTy
         return super.getHtmlDisplay(request, parent, subGroups, entries);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
