@@ -284,7 +284,48 @@ public class TypeHandler extends RepositoryManager {
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
         if (entryNode != null) {
+            initTypeHandler(entryNode);
+        }
+    }
 
+
+    /**
+     * ctor
+     *
+     * @param repository ramadda
+     * @param type the type
+     */
+    public TypeHandler(Repository repository, String type) {
+        this(repository, type, "");
+    }
+
+
+    /**
+     * ctor
+     *
+     * @param repository ramadda
+     * @param type the type
+     * @param description type description
+     */
+    public TypeHandler(Repository repository, String type,
+                       String description) {
+        super(repository);
+        this.type        = type;
+        this.description = description;
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param entryNode _more_
+     *
+     * @throws Exception _more_
+     */
+    private void initTypeHandler(Element entryNode) {
+        try {
             displayTemplatePath = XmlUtil.getAttribute(entryNode,
                     "displaytemplate", (String) null);
 
@@ -313,80 +354,45 @@ public class TypeHandler extends RepositoryManager {
                     XmlUtil.getAttribute(metadataNode, "label",
                                          (String) null) });
             }
-        }
-    }
 
+            this.metadataTypes =
+                StringUtil.split(XmlUtil.getAttribute(entryNode,
+                    ATTR_METADATA,
+                    EnumeratedMetadataHandler.TYPE_TAG + ","
+                    + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
 
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     * @param type the type
-     */
-    public TypeHandler(Repository repository, String type) {
-        this(repository, type, "");
-
-    }
-
-
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     * @param type the type
-     * @param description type description
-     */
-    public TypeHandler(Repository repository, String type,
-                       String description) {
-        super(repository);
-        this.type        = type;
-        this.description = description;
-    }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
-    protected void init(Element entryNode) throws Exception {
-        this.metadataTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
-                ATTR_METADATA,
-                EnumeratedMetadataHandler.TYPE_TAG + ","
-                + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
-
-        this.childTypes = StringUtil.split(XmlUtil.getAttribute(entryNode,
-                ATTR_CHILDTYPES, ""));
-        forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
-        setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
-        if (getType().indexOf(".") > 0) {
-            //            System.err.println("DOT TYPE: " + getType());
-        }
-
-        setProperties(entryNode);
-        setDescription(XmlUtil.getAttribute(entryNode, ATTR_DB_DESCRIPTION,
-                                            getType()));
-
-        String superType = XmlUtil.getAttribute(entryNode, ATTR_SUPER,
-                               (String) null);
-        if (superType != null) {
-            parent = getRepository().getTypeHandler(superType, false, false);
-            if (parent == null) {
-                throw new IllegalArgumentException("Cannot find parent type:"
-                        + superType);
+            this.childTypes =
+                StringUtil.split(XmlUtil.getAttribute(entryNode,
+                    ATTR_CHILDTYPES, ""));
+            forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
+            setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
+            if (getType().indexOf(".") > 0) {
+                //            System.err.println("DOT TYPE: " + getType());
             }
-            parent.addChildTypeHandler(this);
-        }
 
-        String llf = getProperty("location.format", (String) null);
-        if (llf != null) {
-            latLonFormat = new DecimalFormat(llf);
-        }
+            setProperties(entryNode);
+            setDescription(XmlUtil.getAttribute(entryNode,
+                    ATTR_DB_DESCRIPTION, getType()));
 
+            String superType = XmlUtil.getAttribute(entryNode, ATTR_SUPER,
+                                   (String) null);
+            if (superType != null) {
+                parent = getRepository().getTypeHandler(superType, false,
+                        false);
+                if (parent == null) {
+                    throw new IllegalArgumentException(
+                        "Cannot find parent type:" + superType);
+                }
+                parent.addChildTypeHandler(this);
+            }
+
+            String llf = getProperty("location.format", (String) null);
+            if (llf != null) {
+                latLonFormat = new DecimalFormat(llf);
+            }
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
 
     }
 

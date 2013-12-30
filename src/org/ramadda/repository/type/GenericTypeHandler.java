@@ -124,7 +124,7 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         super(repository, entryNode);
         if (entryNode != null) {
-            init(entryNode);
+            initGenericTypeHandler(entryNode);
         }
     }
 
@@ -157,8 +157,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception on badness
      */
-    protected void init(Element entryNode) throws Exception {
-        super.init(entryNode);
+    private void initGenericTypeHandler(Element entryNode) throws Exception {
         if (getType().indexOf(".") >= 0) {
             //Were screwed - too may types had a . in them
             //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
