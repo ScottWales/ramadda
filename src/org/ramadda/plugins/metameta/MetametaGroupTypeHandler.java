@@ -75,9 +75,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
     public static final String ARG_METAMETA_GENERATE_ENTRY =
         "metameta.generate.entry";
 
-    /** _more_ */
-    public static final String ARG_METAMETA_GENERATE_JAVA =
-        "metameta.generate.java";
+
 
     /**
      * _more_
@@ -85,7 +83,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      * @param repository _more_
      * @param entryNode _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public MetametaGroupTypeHandler(Repository repository, Element entryNode)
             throws Exception {
@@ -101,7 +99,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public Hashtable getProperties(Entry entry, int index) throws Exception {
         String s = (String) getEntryValue(entry, index);
@@ -166,9 +164,8 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      * @param entries _more_
      * @param sb _more_
      *
-     * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public void addListForm(Request request, Entry parent,
                             List<Entry> entries, StringBuffer sb)
@@ -235,7 +232,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public List<Entry> getChildrenEntries(Request request, Entry entry)
             throws Exception {
@@ -253,7 +250,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      *
      * @return _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     @Override
     public Result processEntryAccess(Request request, Entry entry)
@@ -342,7 +339,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      * @param parent _more_
      * @param children _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public abstract void generateDbXml(Request request, StringBuffer xml,
                                        Entry parent, List<Entry> children)
@@ -358,7 +355,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
      * @param parent _more_
      * @param children _more_
      *
-     * @throws Exception _more_
+     * @throws Exception on badness
      */
     public abstract void generateEntryXml(Request request, StringBuffer xml,
                                           Entry parent, List<Entry> children)
