@@ -41,6 +41,8 @@ pointData - A PointData object (see below)
 function RamaddaChart(id, pointData) {
     var theChart = this;
     this.pointData  = pointData;
+    //    this.pointData = makeTestPointData();
+
     this.id = id;
     this.chartDivId =id +"_chart";
 
@@ -93,6 +95,10 @@ function RamaddaChart(id, pointData) {
     this.loadData = function() {
         this.setDisplayedFields();
 
+        if(this.displayedFields.length==0) {
+            $("#" + this.chartDivId).html("No fields selected");
+            return;
+        }
         var dataList = [];
        
         //The first entry in the dataList is the array of names
@@ -117,17 +123,20 @@ function RamaddaChart(id, pointData) {
             var date = record.getDate();
             //Add the date or index field
             if(date!=null) {
-                values.push(date);
+                values.push(j);
+                //                values.push(date);
             } else {
                 values.push(j);
             }
             //            values.push(record.getElevation());
-            for(i=0;i<this.displayedFields.length;i++) { 
+            for(var i=0;i<this.displayedFields.length;i++) { 
                 var field = this.displayedFields[i];
-                values.push(record.getValue(field.getIndex()));
+                var value = record.getValue(field.getIndex());
+                values.push(value);
             }
             dataList.push(values);
         }
+
         var dataTable = google.visualization.arrayToDataTable(dataList);
 
         //Not quite sure about the axis settings
@@ -194,26 +203,30 @@ function RecordField(index, id, label, type, missing, unit) {
     this.type = type;
     this.missing = missing;
     this.unit = unit;
+    init_RecordField(this);
+}
 
-    this.getIndex = function() {
+function init_RecordField(recordField) {
+    recordField.getIndex = function() {
         return this.index;
     }
-    this.getId = function() {
+    recordField.getId = function() {
         return this.id;
     }
-    this.getLabel = function() {
+    recordField.getLabel = function() {
         return this.label;
     }
-    this.getType = function() {
+    recordField.getType = function() {
         return this.type;
     }
-    this.getMissing = function() {
+    recordField.getMissing = function() {
         return this.missing;
     }
-    this.getUnit = function() {
-        return this.unit;
+    recordField.getUnit = function() {
+        return recordField.unit;
     }
 }
+
 
 /*
 The main data record. This holds a lat/lon/elevation, time and an array of data
@@ -253,13 +266,44 @@ function init_Record(record) {
 
 
 function makeTestPointData() {
-    var recordFields =  [new RecordField(0, "Temperature","Temperature","double",-9999.99, "celsius"),
-                         new RecordField(1, "Pressure","Pressure","double",-9999.99, "hPa")];
-    var data =  [
-                 new Record(-64.77,-64.06,45, null,[8.0,1000]),
-                 new Record(-65.77,-64.06,45, null,[8.0,1000])
-                 ];
+    var json = {
+        fields:
+        [{index:0,
+               id:"field1",
+               label:"Field 1",
+               type:"double",
+               missing:"-999.0",
+               unit:"m"},
 
-    return new  PointData("Test point data",  recordFields, data);
+        {index:1,
+               id:"field2",
+               label:"Field 2",
+               type:"double",
+               missing:"-999.0",
+               unit:"c"},
+            ],
+        data: [
+               [-64.77,-64.06,45, null,[8.0,1000]],
+               [-65.77,-64.06,45, null,[9.0,500]],
+               [-65.77,-64.06,45, null,[10.0,250]],
+               ]
+    };
+
+
+    var fields = [];
+    for(var i=0;i<json.fields.length;i++) {
+        var field  = json.fields[i];
+        init_RecordField(field);
+        fields.push(field);
+    }
+
+    var data =[];
+    for(var i=0;i<json.data.length;i++) {
+        var tuple = json.data[i];
+        //lat,lon,alt,time,data values
+        data.push(new Record(tuple[0],tuple[1],tuple[2],tuple[3],tuple[4]));
+    }
+
+    return new  PointData("Test point data",  fields, data);
 }
 
