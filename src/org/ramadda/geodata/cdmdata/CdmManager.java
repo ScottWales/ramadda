@@ -44,6 +44,7 @@ import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.util.DiskCache2;
 
 import ucar.unidata.util.Cache;
 import ucar.unidata.util.Counter;
@@ -221,6 +222,12 @@ public class CdmManager extends RepositoryManager {
         ucar.nc2.util.DiskCache.setCachePolicy(true);
         //        ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(true);
         ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache(true);
+        
+        // for ncj 4.3
+        DiskCache2 dc = new DiskCache2(nj22Dir.getDir().toString(), false, -1, -1);
+        dc.setAlwaysUseCache(true);
+        ucar.nc2.grib.GribCollection.setDiskCache2(dc);
+
 
         dataCacheDir =
             getRepository().getStorageManager().makeTempDir("visaddatacache");
