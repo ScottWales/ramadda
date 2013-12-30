@@ -3987,7 +3987,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void addTypeHandler(String typeName, TypeHandler typeHandler,
                                boolean overwrite) {
-        if (typeHandlersMap.contains(typeName)) {
+        if (typeHandlersMap.containsKey(typeName)) {
             if ( !overwrite) {
                 return;
             }
