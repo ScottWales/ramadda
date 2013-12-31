@@ -135,6 +135,11 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                 MetametaDictionaryTypeHandler.FIELD_SHORT_NAME, "",
                 typeHandler.getType()));
 
+        inner.append(
+            XmlUtil.tag(
+                MetametaDictionaryTypeHandler.FIELD_DICTIONARY_TYPE, "",
+                "entry"));
+
         if (typeHandler.getParent() != null) {
             inner.append(
                 XmlUtil.tag(
@@ -190,11 +195,22 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                         MetametaFieldTypeHandler.FIELD_DATATYPE, "",
                         column.getType()));
 
+                StringBuffer props = new StringBuffer();
+                String       dflt  = column.getDflt();
+                if (Utils.stringDefined(dflt)) {
+                    props.append(Column.ATTR_DEFAULT);
+                    props.append("=");
+                    props.append(dflt);
+                    props.append("\n");
+                }
+
+
+                props.append(Utils.makeProperties(column.getProperties()));
+
                 inner.append(
                     XmlUtil.tag(
                         MetametaFieldTypeHandler.FIELD_PROPERTIES, "",
-                        XmlUtil.getCdata(
-                            Utils.makeProperties(column.getProperties()))));
+                        XmlUtil.getCdata(props.toString())));
 
                 inner.append(
                     XmlUtil.tag(
@@ -206,7 +222,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
                                            ATTR_TYPE,
                                            MetametaFieldTypeHandler.TYPE,
                                            ATTR_PARENT, "dictionary"));
-                //                TypeHandler.addPropertyTags(column.getProperties(), inner);
+
                 xml.append(XmlUtil.tag(TAG_ENTRY, attrs.toString(),
                                        inner.toString()));
 

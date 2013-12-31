@@ -1,9 +1,9 @@
 <types><type  name="type_metameta_collection"  description="Data Dictionary: Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/databases.png" /><property  name="category"  value="Admin" /></type>
 <type  name="type_metameta_dictionary"  description="Data Dictionary: Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
-<column  name="type"  label="Type"  type="enumeration"  cansearch="true" ><values><![CDATA[entry=entry
-database=database
-datafile=datafile
-metadata=metadata
+<column  name="dictionary_type"  label="Type"  type="enumeration"  default="entry"  cansearch="true" ><values><![CDATA[entry=Entry
+database=DB Database
+datafile=Point Datafile
+metadata=Metadata
 
 ]]></values>
 </column>
@@ -44,7 +44,7 @@ wiki=wiki
 </column>
 <column  name="enumeration_values"  label="Enumeration Values"  type="string"  rows="5"  cansearch="true"  canlist="false"  size="1000" ></column>
 <column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  size="1000" ></column>
-<column  name="database_column_size"  label="Database Column Size"  type="int"  columns="5"  cansearch="true"  canlist="false" ></column>
+<column  name="database_column_size"  label="Database Column Size"  type="int"  default="200"  columns="5"  cansearch="true"  canlist="false" ></column>
 <column  name="missing"  label="Missing Value"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
 <column  name="unit"  label="Unit"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
 <wiki><![CDATA[=={{name}}==

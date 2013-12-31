@@ -633,7 +633,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @throws Exception _more_
      */
     public boolean isPoint(Request request, Entry entry) throws Exception {
-        String type = (String) getEntryValue(entry, INDEX_TYPE);
+        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
 
         return Misc.equals(type, "datafile");
     }
@@ -649,7 +649,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @throws Exception _more_
      */
     public boolean isDatabase(Request request, Entry entry) throws Exception {
-        String type = (String) getEntryValue(entry, INDEX_TYPE);
+        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
 
         return Misc.equals(type, "database");
     }
@@ -665,7 +665,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      * @throws Exception _more_
      */
     public boolean isEntry(Request request, Entry entry) throws Exception {
-        String type = (String) getEntryValue(entry, INDEX_TYPE);
+        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
 
         return Misc.equals(type, "entry");
     }
@@ -719,32 +719,32 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         super.addEntryButtons(request, entry, buttons);
 
         try {
-
             String handlerClass = (String) getEntryValue(entry,
                                       INDEX_HANDLER_CLASS);
             String shortName = (String) getEntryValue(entry,
                                    INDEX_SHORT_NAME);
-            String  type       = (String) getEntryValue(entry, INDEX_TYPE);
+            String type = (String) getEntryValue(entry,
+                              INDEX_DICTIONARY_TYPE);
             boolean isPoint    = isPoint(request, entry);
             boolean isEntry    = isEntry(request, entry);
             boolean isDatabase = isDatabase(request, entry);
+            if (isPoint || isEntry) {
+                TypeHandler typeHandler =
+                    getRepository().getTypeHandler(shortName, false, false);
+                if (typeHandler == null) {
+                    buttons.add(HtmlUtils.submit("Add new entry type",
+                            ARG_METAMETA_ENTRY_ADD));
+                } else {
+                    buttons.add(HtmlUtils.submit("Update entry type",
+                            ARG_METAMETA_ENTRY_ADD));
+                }
+            }
             if (isPoint) {
                 buttons.add(
                     HtmlUtils.submit(
                         "Generate point data dictionary",
                         ARG_METAMETA_GENERATE_POINT));
 
-            }
-            if (isPoint || isEntry) {
-                TypeHandler typeHandler =
-                    getRepository().getTypeHandler(shortName, false, false);
-                if (typeHandler == null) {
-                    buttons.add(HtmlUtils.submit("Add New Entry Type",
-                            ARG_METAMETA_ENTRY_ADD));
-                } else {
-                    buttons.add(HtmlUtils.submit("Update Entry Type",
-                            ARG_METAMETA_ENTRY_ADD));
-                }
             }
             if (isEntry) {
                 if (Utils.stringDefined(handlerClass)) {

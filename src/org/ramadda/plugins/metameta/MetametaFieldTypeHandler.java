@@ -243,9 +243,10 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
         }
 
 
-        String[] attrProps = { Column.ATTR_GROUP, Column.ATTR_SUFFIX,
-                               Column.ATTR_FORMAT, Column.ATTR_ROWS,
-                               Column.ATTR_COLUMNS };
+        String[] attrProps = {
+            Column.ATTR_GROUP, Column.ATTR_DEFAULT, Column.ATTR_SUFFIX,
+            Column.ATTR_FORMAT, Column.ATTR_ROWS, Column.ATTR_COLUMNS
+        };
         for (String attrProp : attrProps) {
             String v = (String) props.get(attrProp);
             if (v != null) {

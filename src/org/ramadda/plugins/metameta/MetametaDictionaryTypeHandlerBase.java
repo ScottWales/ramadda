@@ -64,10 +64,10 @@ public abstract class MetametaDictionaryTypeHandlerBase extends MetametaGroupTyp
     public static final String FIELD_FIELD_INDEX = "field_index";
 
     /** _more_ */
-    public static final int INDEX_TYPE = INDEX_BASE + 1;
+    public static final int INDEX_DICTIONARY_TYPE = INDEX_BASE + 1;
 
     /** _more_ */
-    public static final String FIELD_TYPE = "type";
+    public static final String FIELD_DICTIONARY_TYPE = "dictionary_type";
 
     /** _more_ */
     public static final int INDEX_SHORT_NAME = INDEX_BASE + 2;
