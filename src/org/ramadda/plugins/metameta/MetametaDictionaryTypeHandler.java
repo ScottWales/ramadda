@@ -21,13 +21,10 @@
 package org.ramadda.plugins.metameta;
 
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
@@ -200,6 +197,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      */
     public Result handleTypeHandlerAdd(Request request, Entry entry)
             throws Exception {
+        //        Repository.debugTypeHandler = true;
         List<Entry>  children = getChildrenEntries(request, entry);
 
         StringBuffer xml      = new StringBuffer();
@@ -270,7 +268,6 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             xml.append("\n");
         }
         xml.append(XmlUtil.closeTag(TAG_ENTRIES));
-        System.out.println(xml);
 
         //Create them from XML
         List<Entry> newEntries = getEntryManager().processEntryXml(request,
@@ -373,6 +370,26 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      */
     public Result handleGeneratePoint(Request request, Entry entry)
             throws Exception {
+        Hashtable    props  = getProperties(entry, INDEX_PROPERTIES);
+        StringBuffer propSB = getPointProperties(request, entry);
+        request.setReturnFilename(entry.getName() + ".properties");
+
+        return new Result("", propSB, "text/properties");
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public StringBuffer getPointProperties(Request request, Entry entry)
+            throws Exception {
         Hashtable props = getProperties(entry, INDEX_PROPERTIES);
         StringBuffer propSB = new StringBuffer("#\n#Generated from "
                                   + entry.getName() + " data dictionary\n");
@@ -380,15 +397,6 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         StringBuffer fields = new StringBuffer();
 
         propSB.append(getEntryValue(entry, INDEX_PROPERTIES));
-        for (String attr : new String[] { "delimiter" }) {
-            String value = (String) props.get(attr);
-            if (value != null) {
-                propSB.append(attr);
-                propSB.append("=");
-                propSB.append(value);
-                propSB.append("\n");
-            }
-        }
         for (Entry child : getChildrenEntries(request, entry)) {
             MetametaFieldTypeHandler field =
                 (MetametaFieldTypeHandler) child.getTypeHandler();
@@ -403,6 +411,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                               field.INDEX_UNIT);
 
             Hashtable fprops  = field.getProperties(child);
+
             String    FIELDID = fieldId.toUpperCase();
             if (cnt > 0) {
                 fields.append(", ");
@@ -418,6 +427,15 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                 fields.append(HtmlUtils.attr("unit", unit));
             }
 
+            for (String propAttr : new String[] { "format", "chartable",
+                    "searchable", "value", "pattern" }) {
+                String value = (String) fprops.get(propAttr);
+                if (value != null) {
+                    fields.append(XmlUtil.attr(propAttr, value));
+                }
+            }
+
+
             fields.append("]");
 
             cnt++;
@@ -425,9 +443,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         propSB.append("fields=" + fields);
         propSB.append("\n");
 
-        request.setReturnFilename("point.properties");
-
-        return new Result("", propSB, "text/properties");
+        return propSB;
     }
 
     /**
@@ -498,11 +514,12 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         if (first) {
             xml.append(XmlUtil.openTag(TAG_TYPES, ""));
         }
+        boolean isPoint   = isPoint(request, parent);
 
 
-        String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
-        String superType = (String) getEntryValue(parent, INDEX_SUPER_TYPE);
-        String wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
+        String  shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
+        String  superType = (String) getEntryValue(parent, INDEX_SUPER_TYPE);
+        String  wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
         String handlerClass = (String) getEntryValue(parent,
                                   INDEX_HANDLER_CLASS);
         boolean isGroup = ((Boolean) getEntryValue(parent,
@@ -514,12 +531,16 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             shortName = parent.getName();
         }
         if ( !Utils.stringDefined(handlerClass)) {
-            if ( !isGroup) {
-                handlerClass =
-                    "org.ramadda.repository.type.GenericTypeHandler";
+            if (isPoint) {
+                handlerClass = "org.ramadda.data.services.PointTypeHandler";
             } else {
-                handlerClass =
-                    "org.ramadda.repository.type.ExtensibleGroupTypeHandler";
+                if ( !isGroup) {
+                    handlerClass =
+                        "org.ramadda.repository.type.GenericTypeHandler";
+                } else {
+                    handlerClass =
+                        "org.ramadda.repository.type.ExtensibleGroupTypeHandler";
+                }
             }
         }
 
@@ -530,10 +551,15 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             inner.append("\n");
         }
 
+        if (Utils.stringDefined(superType)) {
+            attrs.append(XmlUtil.attrs(ATTR_SUPER, superType));
+        }
+
 
         attrs.append(XmlUtil.attrs(ATTR_NAME, shortName, ATTR_DESCRIPTION,
                                    parent.getName(), ATTR_HANDLER,
                                    handlerClass));
+
 
         String[] attrProps = { ATTR_CHILDTYPES, };
         for (String attrProp : attrProps) {
@@ -544,30 +570,71 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         }
 
 
-
-
         xml.append(XmlUtil.openTag(TAG_TYPE, attrs.toString()));
 
-        for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
-            String key   = (String) keys.nextElement();
-            String value = (String) props.get(key);
-            xml.append(propertyTag(key, value));
+        if (isPoint) {
+            StringBuffer propSB = getPointProperties(request, parent);
+            inner.append(propertyTextTag("record.properties",
+                                         propSB.toString()));
+            inner.append(propertyTag("record.file.class",
+                                     "org.ramadda.data.point.text.CsvFile"));
+        } else {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+                inner.append(propertyTag(key, value));
+            }
+            for (Entry recordFieldEntry : children) {
+                MetametaFieldTypeHandler field =
+                    (MetametaFieldTypeHandler) recordFieldEntry
+                        .getTypeHandler();
+                field.generateDbXml(request, xml, recordFieldEntry);
+                inner.append("\n");
+            }
         }
+
         xml.append(inner);
 
-
-        for (Entry recordFieldEntry : children) {
-            MetametaFieldTypeHandler field =
-                (MetametaFieldTypeHandler) recordFieldEntry.getTypeHandler();
-            field.generateDbXml(request, xml, recordFieldEntry);
-            xml.append("\n");
-        }
         xml.append(XmlUtil.closeTag(TAG_TYPE));
+
 
         if (first) {
             xml.append(XmlUtil.closeTag(TAG_TYPES));
         }
 
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean isPoint(Request request, Entry entry) throws Exception {
+        String type = (String) getEntryValue(entry, INDEX_TYPE);
+
+        return Misc.equals(type, "datafile");
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public boolean isEntry(Request request, Entry entry) throws Exception {
+        String type = (String) getEntryValue(entry, INDEX_TYPE);
+
+        return Misc.equals(type, "entry");
     }
 
 
@@ -587,17 +654,19 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
             String handlerClass = (String) getEntryValue(entry,
                                       INDEX_HANDLER_CLASS);
-            String type      = (String) getEntryValue(entry, INDEX_TYPE);
             String shortName = (String) getEntryValue(entry,
                                    INDEX_SHORT_NAME);
-            if (Misc.equals(type, "datafile")) {
+            String  type    = (String) getEntryValue(entry, INDEX_TYPE);
+            boolean isPoint = isPoint(request, entry);
+            boolean isEntry = isEntry(request, entry);
+            if (isPoint) {
                 buttons.add(
                     HtmlUtils.submit(
-                        "Generate Point Data Dictionary",
+                        "Generate point data dictionary",
                         ARG_METAMETA_GENERATE_POINT));
 
             }
-            if (Misc.equals(type, "entry")) {
+            if (isPoint || isEntry) {
                 TypeHandler typeHandler =
                     getRepository().getTypeHandler(shortName, false, false);
                 if (typeHandler == null) {
@@ -607,7 +676,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                     buttons.add(HtmlUtils.submit("Update Entry Type",
                             ARG_METAMETA_ENTRY_ADD));
                 }
-
+            }
+            if (isEntry) {
                 if (Utils.stringDefined(handlerClass)) {
                     buttons.add(HtmlUtils.submit("Generate Java base class",
                             ARG_METAMETA_GENERATE_JAVA));
@@ -631,6 +701,19 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
     public String propertyTag(String name, String value) {
         return XmlUtil.tag(TAG_PROPERTY,
                            XmlUtil.attrs(ATTR_NAME, name, ATTR_VALUE, value));
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public String propertyTextTag(String name, String value) {
+        return XmlUtil.tag(TAG_PROPERTY, XmlUtil.attrs("name", name),
+                           XmlUtil.getCdata(value));
     }
 
     /**
