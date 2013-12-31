@@ -279,7 +279,6 @@ public class PluginManager extends RepositoryManager {
                 continue;
             }
             String pluginFile = plugin.toString();
-            //            System.err.println ("plugin:" + pluginFile);
             if (haveSeen(pluginFile)) {
                 continue;
             }

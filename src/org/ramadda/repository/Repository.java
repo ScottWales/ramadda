@@ -1286,9 +1286,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String file : getPluginManager().getTypeDefFiles()) {
             try {
                 file = getStorageManager().localizePath(file);
-                if (getPluginManager().haveSeen(file)) {
+                if (getPluginManager().haveSeen("types:" + file)) {
                     continue;
                 }
+
                 Element root = XmlUtil.getRoot(file, getClass());
                 if (root == null) {
                     continue;
@@ -1318,14 +1319,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite)
             throws Exception {
         List children = XmlUtil.findChildren(root, TypeHandler.TAG_TYPE);
+        List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         if ((children.size() == 0)
                 && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
-            loadTypeHandler(root, overwrite);
-        }
-        List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
-        for (int i = 0; i < children.size(); i++) {
-            Element entryNode = (Element) children.get(i);
-            typeHandlers.add(loadTypeHandler(entryNode, overwrite));
+            typeHandlers.add(loadTypeHandler(root, overwrite));
+        } else {
+            for (int i = 0; i < children.size(); i++) {
+                Element entryNode = (Element) children.get(i);
+                typeHandlers.add(loadTypeHandler(entryNode, overwrite));
+            }
         }
 
         return typeHandlers;
