@@ -828,11 +828,21 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.p());
+        sb.append("<table><tr valign=top><td>");
         sb.append(
             HtmlUtils.italics(
-                "column_id, label, type (e.g., string, int, double)"));
+                "column_id, label, type,any number of name=value properties"));
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.textArea(ARG_METAMETA_BULK, "", 5, 70));
+        sb.append("</td><td>");
+        sb.append("type: string, int, double<br>");
+        sb.append("properties:<br>");
+        if (isPoint(request, entry)) {
+            sb.append(MetametaFieldTypeHandler.HELP_POINT);
+        } else {
+            sb.append(MetametaFieldTypeHandler.HELP_ENTRY);
+        }
+        sb.append("</td></tr></table>");
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.submit("Add Fields", "submit"));
         sb.append(HtmlUtils.formClose());

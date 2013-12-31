@@ -57,6 +57,13 @@ import java.util.Properties;
 public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
 
 
+    /** _more_          */
+    public static final String HELP_POINT =
+        "format=<i>date format</i><br>timezone=<i>timezone</i><br>utcoffset=<i>utc offset</i><br>chartable/searchable=true<br>value=<i>default value</i><br>pattern=<i>header pattern</i><br>precision=<br>isdate/istime=true<br>";
+
+    /** _more_          */
+    public static final String HELP_ENTRY =
+        "cansearch,canshow,canlist=true|false<br>group=<i>Field display group</i><br>isindex=true<br>suffix=label to show after form<br>";
 
     /**
      * _more_
@@ -128,11 +135,9 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
                 MetametaDictionaryTypeHandler mdth =
                     (MetametaDictionaryTypeHandler) parent.getTypeHandler();
                 if (mdth.isPoint(request, parent)) {
-                    suffix =
-                        "format=<i>date format</i><br>timezone=<i>timezone</i><br>utcoffset=<i>utc offset</i><br>chartable/searchable=true<br>value=<i>default value</i><br>pattern=<i>header pattern</i><br>precision=<br>isdate/istime=true<br>";
+                    suffix = HELP_POINT;
                 } else if (mdth.isEntry(request, parent)) {
-                    suffix =
-                        "cansearch,canshow,canlist=true|false<br>group=<i>Field display group</i><br>isindex=true<br>suffix=label to show after form<br>";
+                    suffix = HELP_ENTRY;
                 }
             }
 
