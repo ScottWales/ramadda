@@ -195,8 +195,7 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
             cnt++;
             EntryLink link = getEntryManager().getAjaxLink(request, entry,
                                  entry.getName());
-            sb.append(link.getLink());
-            sb.append(link.getFolderBlock());
+            addListLink(request, entry, link, sb);
             sb.append("</td></tr>");
         }
 
@@ -208,6 +207,51 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
                                      ARG_METAMETA_GENERATE_DB));
         sb.append(HtmlUtils.buttons(buttons));
         sb.append(HtmlUtils.formClose());
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param link _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addListLink(Request request, Entry entry, EntryLink link,
+                            StringBuffer sb)
+            throws Exception {
+        if ( !entry.getTypeHandler().isType(MetametaFieldTypeHandler.TYPE)) {
+            sb.append(link.getLink());
+            sb.append(link.getFolderBlock());
+
+            return;
+        }
+        MetametaFieldTypeHandler field =
+            (MetametaFieldTypeHandler) entry.getTypeHandler();
+        String fieldId = (String) field.getEntryValue(entry,
+                             field.INDEX_FIELD_ID);
+
+        String datatype = (String) field.getEntryValue(entry,
+                              field.INDEX_DATATYPE);
+
+        sb.append(
+            "<table cellpadding=0 cellspacing=0 border=0 style=\"min-width:600px;\" width=100%><tr valign=top>");
+        sb.append("<td width=33%>");
+        sb.append(link.getLink());
+        sb.append("</td>");
+
+        sb.append("<td width=33%>");
+        sb.append(fieldId);
+        sb.append("</td>");
+
+        sb.append("<td width=33%>");
+        sb.append(datatype);
+        sb.append("</td>");
+
+        sb.append("</tr></table>");
+        sb.append(link.getFolderBlock());
     }
 
     /**

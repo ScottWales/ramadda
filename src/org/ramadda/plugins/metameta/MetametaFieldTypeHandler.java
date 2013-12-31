@@ -115,12 +115,25 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
      *
      * @throws Exception _more_
      */
+    @Override
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
             throws Exception {
         if (column.getName().equals("properties")) {
-            String suffix =
-                "extra name=value pairs<br>group=Field display group<br>isindex=true<br>cansearch,canshow,canlist=true|false<br>suffix=label to show after form<br>";
+            String suffix = "";
+            Entry  parent = entry.getParentEntry();
+            if (parent.getTypeHandler().isType(
+                    MetametaDictionaryTypeHandler.TYPE)) {
+                MetametaDictionaryTypeHandler mdth =
+                    (MetametaDictionaryTypeHandler) parent.getTypeHandler();
+                if (mdth.isPoint(request, parent)) {
+                    suffix =
+                        "format=<i>date format</i><br>timezone=<i>timezone</i><br>utcoffset=<i>utc offset</i><br>chartable/searchable=true<br>value=<i>default value</i><br>pattern=<i>header pattern</i><br>precision=<br>isdate/istime=true<br>";
+                } else if (mdth.isEntry(request, parent)) {
+                    suffix =
+                        "cansearch,canshow,canlist=true|false<br>group=<i>Field display group</i><br>isindex=true<br>suffix=label to show after form<br>";
+                }
+            }
 
             return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
         }

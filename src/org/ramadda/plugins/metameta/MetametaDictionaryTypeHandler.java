@@ -561,6 +561,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                                    handlerClass));
 
 
+
+
         String[] attrProps = { ATTR_CHILDTYPES, };
         for (String attrProp : attrProps) {
             String v = (String) getAndRemoveProperty(props, attrProp, null);
@@ -636,6 +638,41 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         return Misc.equals(type, "entry");
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param column _more_
+     * @param widget _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getFormWidget(Request request, Entry entry, Column column,
+                                String widget)
+            throws Exception {
+        if (column.getName().equals("properties")) {
+            String suffix = "";
+            if (isPoint(request, entry)) {
+                suffix =
+                    "<a href=\"http://ramadda.org/repository/pointdocs/textdata.html\" target=_help>Point data properties</a><br>skiplines=<i>num lines in header to skip</i><br>delimiter=<i> column delimiter</i><br>crs=<i>coordinate reference system</i>";
+            } else if (isEntry(request, entry)) {
+                suffix =
+                    "icon=<i>/path/to/icon</i><br>category=<i>type category</i><br>form.(date,area,location,resource,file,url).show=<i>true|false</i><br>childtypes=<i>preferred child entry types</i><br>";
+            }
+
+            return HtmlUtils.hbox(widget, HtmlUtils.inset(suffix, 5));
+        }
+
+        return super.getFormWidget(request, entry, column, widget);
+    }
+
+
 
 
     /**
