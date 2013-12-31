@@ -326,15 +326,16 @@ public class TypeHandler extends RepositoryManager {
      */
     private void initTypeHandler(Element entryNode) {
         try {
-            displayTemplatePath = XmlUtil.getAttribute(entryNode,
+            displayTemplatePath = Utils.getAttributeOrTag(entryNode,
                     "displaytemplate", (String) null);
 
-            this.category = XmlUtil.getAttribute(entryNode, ATTR_CATEGORY,
+
+            this.category = Utils.getAttributeOrTag(entryNode, ATTR_CATEGORY,
                     category);
-            this.superCategory = XmlUtil.getAttribute(entryNode,
+            this.superCategory = Utils.getAttributeOrTag(entryNode,
                     ATTR_SUPERCATEGORY, superCategory);
-            this.filePattern = XmlUtil.getAttribute(entryNode, ATTR_PATTERN,
-                    (String) null);
+            this.filePattern = Utils.getAttributeOrTag(entryNode,
+                    ATTR_PATTERN, (String) null);
 
 
             wikiTemplate = XmlUtil.getAttribute(entryNode, ATTR_WIKI,
@@ -356,25 +357,26 @@ public class TypeHandler extends RepositoryManager {
             }
 
             this.metadataTypes =
-                StringUtil.split(XmlUtil.getAttribute(entryNode,
+                StringUtil.split(Utils.getAttributeOrTag(entryNode,
                     ATTR_METADATA,
                     EnumeratedMetadataHandler.TYPE_TAG + ","
                     + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
 
             this.childTypes =
-                StringUtil.split(XmlUtil.getAttribute(entryNode,
+                StringUtil.split(Utils.getAttributeOrTag(entryNode,
                     ATTR_CHILDTYPES, ""));
-            forUser = XmlUtil.getAttribute(entryNode, ATTR_FORUSER, forUser);
-            setType(XmlUtil.getAttribute(entryNode, ATTR_DB_NAME));
+            forUser = Utils.getAttributeOrTag(entryNode, ATTR_FORUSER,
+                    forUser);
+            setType(Utils.getAttributeOrTag(entryNode, ATTR_DB_NAME, ""));
             if (getType().indexOf(".") > 0) {
                 //            System.err.println("DOT TYPE: " + getType());
             }
 
             setProperties(entryNode);
-            setDescription(XmlUtil.getAttribute(entryNode,
+            setDescription(Utils.getAttributeOrTag(entryNode,
                     ATTR_DB_DESCRIPTION, getType()));
 
-            String superType = XmlUtil.getAttribute(entryNode, ATTR_SUPER,
+            String superType = Utils.getAttributeOrTag(entryNode, ATTR_SUPER,
                                    (String) null);
             if (superType != null) {
                 parent = getRepository().getTypeHandler(superType, false,
