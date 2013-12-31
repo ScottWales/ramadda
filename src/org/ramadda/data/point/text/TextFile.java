@@ -281,7 +281,9 @@ public abstract class TextFile extends PointFile implements Fields {
      * @return _more_
      *
      * @throws IOException _more_
+     *
      */
+    @Override
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         return recordIO;
     }
@@ -438,6 +440,7 @@ public abstract class TextFile extends PointFile implements Fields {
             }
         }
 
+
         initProperties();
 
         return visitInfo;
@@ -553,10 +556,11 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
+    @Override
     public boolean skip(VisitInfo visitInfo, Record record, int howMany)
-            throws IOException {
+            throws Exception {
         BufferedReader in = visitInfo.getRecordIO().getBufferedReader();
         for (int i = 0; i < howMany; i++) {
             String line = in.readLine();

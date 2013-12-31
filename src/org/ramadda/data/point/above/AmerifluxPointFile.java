@@ -54,7 +54,6 @@ public class AmerifluxPointFile extends SingleSiteTextFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -96,7 +95,6 @@ YEAR, GAP, DTIME, DOY, HRMIN, m/s, deg C, deg, m/s, umol/m2/s, umol/m2/s, umol/m
      *
      * @return visit info
      *
-     * @throws IOException on badness
      *
      * @throws Exception _more_
      */

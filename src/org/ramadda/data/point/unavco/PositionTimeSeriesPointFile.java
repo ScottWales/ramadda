@@ -55,7 +55,6 @@ public class PositionTimeSeriesPointFile extends CsvFile {
      * ctor
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -85,10 +84,10 @@ public class PositionTimeSeriesPointFile extends CsvFile {
      *
      * @return the visit info
      *
-     * @throws IOException on badness
      *
      * @throws Exception _more_
      */
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         putProperty(PROP_DELIMITER, isPos
                                     ? " "

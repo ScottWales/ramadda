@@ -277,10 +277,10 @@ public class TextRecord extends DataRecord {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public ReadStatus read(RecordIO recordIO) throws IOException {
-
+    @Override
+    public ReadStatus read(RecordIO recordIO) throws Exception {
         try {
             String line = null;
             while (true) {
@@ -300,7 +300,8 @@ public class TextRecord extends DataRecord {
                 //throw new IllegalArgumentException("Could not tokenize line:" + line);
                 return ReadStatus.SKIP;
             }
-            int tokenCnt = 0;
+            String tok      = null;
+            int    tokenCnt = 0;
             for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                 RecordField field = fields.get(fieldCnt);
                 if (skip[fieldCnt]) {
@@ -326,7 +327,7 @@ public class TextRecord extends DataRecord {
                 }
 
 
-                String tok = tokens[tokenCnt++];
+                tok = tokens[tokenCnt++];
                 if (field.isTypeString()) {
                     objectValues[fieldCnt] = tok;
 
@@ -368,7 +369,7 @@ public class TextRecord extends DataRecord {
         } catch (Exception exc) {
             System.err.println("Line:" + line);
 
-            throw new RuntimeException(exc);
+            throw exc;
         }
 
 

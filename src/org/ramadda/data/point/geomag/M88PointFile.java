@@ -118,8 +118,8 @@ public class M88PointFile extends CsvFile {
 
     /** _more_ */
     public static final String[] NOT_CHARTABLE_FIELDS = {
-        FIELD_DATE, FIELD_TIME, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ALT_BAROM,
-        FIELD_ALT_GPS, FIELD_ALT_RADAR
+        FIELD_DATE, FIELD_TIME, FIELD_LATITUDE, FIELD_LONGITUDE,
+        FIELD_ALT_BAROM, FIELD_ALT_GPS, FIELD_ALT_RADAR
     };
 
     /** _more_ */
@@ -159,7 +159,6 @@ public class M88PointFile extends CsvFile {
      *
      * @param visitInfo visit info
      * @return possible new visitinfo
-     * @throws IOException On badness
      *
      * @throws Exception _more_
      */

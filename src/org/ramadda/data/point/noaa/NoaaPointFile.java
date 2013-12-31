@@ -60,7 +60,6 @@ public class NoaaPointFile extends CsvFile {
      * ctor
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException On badness
      */

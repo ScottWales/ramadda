@@ -63,7 +63,6 @@ public class IdvPointFile extends CsvFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -125,9 +124,10 @@ public class IdvPointFile extends CsvFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public RecordIO readHeader(RecordIO recordIO) throws IOException {
+    @Override
+    public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
 
@@ -141,10 +141,10 @@ public class IdvPointFile extends CsvFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         List<String> headerLines = getHeaderLines();
@@ -218,6 +218,7 @@ public class IdvPointFile extends CsvFile {
      *
      * @throws Exception _more_
      */
+    @Override
     public PointRecord getRecord(int index) throws Exception {
         throw new IllegalArgumentException("Not implemented");
     }

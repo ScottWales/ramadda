@@ -52,7 +52,6 @@ public class CeopSfcPointFile extends CsvFile {
      *
      * @param visitInfo visit info
      * @return possible new visitinfo
-     * @throws IOException On badness
      *
      * @throws Exception _more_
      */

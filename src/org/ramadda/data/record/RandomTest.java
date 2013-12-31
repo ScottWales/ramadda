@@ -201,9 +201,10 @@ public class RandomTest extends Record {
      *
      *
      * @return _more_
-     * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
-    public ReadStatus read(RecordIO recordIO) throws IOException {
+    public ReadStatus read(RecordIO recordIO) throws Exception {
         super.read(recordIO);
         this.b   = readByte(recordIO.getDataInputStream());
         this.s   = readShort(recordIO.getDataInputStream());

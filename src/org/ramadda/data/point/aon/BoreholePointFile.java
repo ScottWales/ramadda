@@ -51,7 +51,6 @@ public class BoreholePointFile extends SingleSiteTextFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -147,7 +146,6 @@ YEAR,DATE,0.0,0.25,0.5,0.75,1.0,2.0,3.0,4.0
      *
      * @return visit info
      *
-     * @throws IOException on badness
      *
      * @throws Exception _more_
      */

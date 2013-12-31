@@ -81,7 +81,6 @@ public class NoaaFlaskMonthPointFile extends NoaaPointFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */

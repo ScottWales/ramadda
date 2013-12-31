@@ -199,6 +199,7 @@ public class AmrcFinalQCPointFile extends CsvFile {
      *
      * @throws Exception on badness
      */
+    @Override
     public boolean processAfterReading(VisitInfo visitInfo, Record record)
             throws Exception {
         if ( !super.processAfterReading(visitInfo, record)) {

@@ -74,7 +74,6 @@ public class NoaaFlaskEventPointFile extends NoaaPointFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException On badness
      */
@@ -91,10 +90,10 @@ public class NoaaFlaskEventPointFile extends NoaaPointFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String fields   = getFieldsFileContents();
@@ -111,8 +110,8 @@ public class NoaaFlaskEventPointFile extends NoaaPointFile {
         fields = fields.replace("${parameter}", parameter);
         putProperty(PROP_FIELDS, fields);
         setYMDHMSIndices(new int[] {
-                IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND
-            });
+            IDX_YEAR, IDX_MONTH, IDX_DAY, IDX_HOUR, IDX_MINUTE, IDX_SECOND
+        });
 
         return visitInfo;
     }

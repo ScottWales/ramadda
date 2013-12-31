@@ -571,14 +571,14 @@ proc generateRecordClass {class args} {
     append writes $A(-writePost)
     if {$A(-lineoriented)} {
         append writes "printWriter.print(\"\\n\");\n"
-        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws IOException" "ReadStatus status = ReadStatus.OK; \nString line = recordIO.readLine();\nif(line == null) return ReadStatus.EOF;\nline = line.trim();\nif(line.length()==0) return status;\n$extraRead[readHeader][indent $readCode]\nreturn status;"]
+        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws Exception" "ReadStatus status = ReadStatus.OK; \nString line = recordIO.readLine();\nif(line == null) return ReadStatus.EOF;\nline = line.trim();\nif(line.length()==0) return status;\n$extraRead[readHeader][indent $readCode]\nreturn status;"]
         puts $fp [method "public void write(RecordIO recordIO) throws IOException" "String delimiter = \"$delimiterString\";\nPrintWriter  printWriter= recordIO.getPrintWriter();\n${extraWrite}${writes}"]
     } else {
         if {!$baseClass} {
             set extraRead "ReadStatus status= super.read(recordIO);\nif(status!=ReadStatus.OK)  return status;\n"
             set extraWrite "super.write(recordIO);\n"
         }
-        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws IOException" "DataInputStream dis = recordIO.getDataInputStream();\n$extraRead[readHeader][indent $readCode]\nreturn ReadStatus.OK;"]
+        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws Exception" "DataInputStream dis = recordIO.getDataInputStream();\n$extraRead[readHeader][indent $readCode]\nreturn ReadStatus.OK;"]
         puts $fp [method "public void write(RecordIO recordIO) throws IOException" "DataOutputStream dos = recordIO.getDataOutputStream();\n${extraWrite}${writes}"]
     }
 

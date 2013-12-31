@@ -114,7 +114,6 @@ public class NoaaTowerPointFile extends NoaaPointFile {
      *
      * @return possible new visitinfo
      *
-     * @throws IOException On badness
      *
      * @throws Exception _more_
      */

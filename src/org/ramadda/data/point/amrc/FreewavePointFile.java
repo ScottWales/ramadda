@@ -44,7 +44,6 @@ public class FreewavePointFile extends CsvFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -69,7 +68,6 @@ public class FreewavePointFile extends CsvFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */

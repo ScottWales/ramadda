@@ -63,7 +63,6 @@ public class FloatLatLonBinaryFile extends PointFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */

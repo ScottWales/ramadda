@@ -26,6 +26,7 @@ import org.ramadda.data.record.filter.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
@@ -256,9 +257,23 @@ public abstract class RecordFile {
                 continue;
             }
             try {
-                FileInputStream fis = new FileInputStream(f);
-                p.load(fis);
-                fis.close();
+                String contents = IOUtil.readContents(f);
+                for (String line :
+                        StringUtil.split(contents, "\n", true, true)) {
+                    if (line.startsWith("#")) {
+                        continue;
+                    }
+                    List<String> toks = StringUtil.splitUpTo(line, "=", 2);
+                    if (toks.size() == 2) {
+                        p.put(toks.get(0), toks.get(1));
+                    } else if (toks.size() == 2) {
+                        p.put(toks.get(0), "");
+                    }
+                }
+                //                FileInputStream fis = new FileInputStream(f);
+                //                p.load(fis);
+                //                fis.close();
+                //                System.err.println (p.toString().replace(",","\n"));
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -758,11 +773,11 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws IOException On badness
+     * @throws Exception _more_
      */
     public Record.ReadStatus readNextRecord(VisitInfo visitInfo,
                                             Record record)
-            throws IOException {
+            throws Exception {
         visitInfo.addRecordIndex(1);
         Record.ReadStatus status =
             record.readNextRecord(visitInfo.getRecordIO());
@@ -1008,10 +1023,10 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws IOException On badness
+     * @throws Exception _more_
      */
     public boolean skip(VisitInfo visitInfo, Record record, int howMany)
-            throws IOException {
+            throws Exception {
         visitInfo.addRecordIndex(howMany);
         //        System.err.println ("RecordFile.skip: io.skip= " + howMany);
         visitInfo.getRecordIO().getDataInputStream().skipBytes(howMany
@@ -1047,9 +1062,9 @@ public abstract class RecordFile {
      *
      * @return _more_
      *
-     * @throws IOException On badness
+     * @throws Exception _more_
      */
-    public RecordIO readHeader(RecordIO recordIO) throws IOException {
+    public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
 
@@ -1315,8 +1330,6 @@ public abstract class RecordFile {
     /**
      * _more_
      *
-     * @param record _more_
-     * @param indices _more_
      *
      * @param ymdhmsIndices _more_
      *

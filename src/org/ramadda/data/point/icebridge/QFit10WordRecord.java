@@ -477,9 +477,9 @@ public class QFit10WordRecord extends org.ramadda.data.point.icebridge
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public ReadStatus read(RecordIO recordIO) throws IOException {
+    public ReadStatus read(RecordIO recordIO) throws Exception {
         DataInputStream dis    = recordIO.getDataInputStream();
         ReadStatus      status = super.read(recordIO);
         if (status != ReadStatus.OK) {

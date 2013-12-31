@@ -48,7 +48,6 @@ public class CmcSweMonthlyClimate extends CsvFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -100,7 +99,6 @@ public class CmcSweMonthlyClimate extends CsvFile {
      *
      * @return visit info
      *
-     * @throws IOException on badness
      *
      * @throws Exception _more_
      */

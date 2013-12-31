@@ -60,11 +60,7 @@ public class DoubleLatLonAltBinaryFile extends PointFile {
     /**
      * ctor
      *
-     *
-     *
-     *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -174,7 +170,6 @@ public class DoubleLatLonAltBinaryFile extends PointFile {
     /**
      * _more_
      *
-     * @param outputFile file to write to
      * @param pointFile file to read from
      * @param fos _more_
      * @param visitInfo _more_

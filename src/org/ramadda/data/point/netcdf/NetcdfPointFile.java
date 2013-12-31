@@ -240,10 +240,12 @@ public class NetcdfPointFile extends PointFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
+    @Override
     public boolean skip(VisitInfo visitInfo, Record record, int howMany)
-            throws IOException {
+            throws Exception {
         visitInfo.addRecordIndex(howMany);
         while (howMany-- >= 0) {
             if (record.read(visitInfo.getRecordIO())
@@ -261,12 +263,10 @@ public class NetcdfPointFile extends PointFile {
     /**
      * _more_
      *
-     * @param recordIO _more_
      * @param visitInfo _more_
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
@@ -304,6 +304,7 @@ public class NetcdfPointFile extends PointFile {
      *
      * @throws IOException _more_
      */
+    @Override
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         //        recordIO.getDataInputStream().read(header);
         return recordIO;

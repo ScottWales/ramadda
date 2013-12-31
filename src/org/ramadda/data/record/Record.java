@@ -339,9 +339,9 @@ public abstract class Record implements Cloneable {
      *
      *
      * @return _more_
-     * @throws IOException On badness
+     * @throws Exception _more_
      */
-    public ReadStatus read(RecordIO recordIO) throws IOException {
+    public ReadStatus read(RecordIO recordIO) throws Exception {
         return ReadStatus.OK;
     }
 
@@ -352,10 +352,11 @@ public abstract class Record implements Cloneable {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
     public final ReadStatus readNextRecord(RecordIO recordIO)
-            throws IOException {
+            throws Exception {
         ReadStatus status = read(recordIO);
         if (status != ReadStatus.OK) {
             return status;
@@ -574,20 +575,6 @@ public abstract class Record implements Cloneable {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param dis data input stream
-     * @param bytes _more_
-     *
-     *
-     * @throws IOException On badness
-     */
-    public void xxxreadBytes(DataInputStream dis, byte[] bytes)
-            throws IOException {
-        dis.read(bytes);
-    }
 
 
     /**

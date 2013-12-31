@@ -97,7 +97,7 @@ public class Iggrv1bAirGravityFile extends org.ramadda.data.point.text
      * Class description
      *
      *
-     * @version        $version$, Fri, Aug 23, '13
+     * @version        $version$, Tue, Dec 31, '13
      * @author         Enter your name here...
      */
     public static class Iggrv1bAirGravityRecord extends org.ramadda.data.point
@@ -884,9 +884,9 @@ public class Iggrv1bAirGravityFile extends org.ramadda.data.point.text
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         * @throws Exception _more_
          */
-        public ReadStatus read(RecordIO recordIO) throws IOException {
+        public ReadStatus read(RecordIO recordIO) throws Exception {
             ReadStatus status = ReadStatus.OK;
             String     line   = recordIO.readLine();
             if (line == null) {

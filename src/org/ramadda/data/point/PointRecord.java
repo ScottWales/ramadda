@@ -248,9 +248,11 @@ public abstract class PointRecord extends GeoRecord {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
-    public ReadStatus read(RecordIO recordIO) throws IOException {
+    @Override
+    public ReadStatus read(RecordIO recordIO) throws Exception {
         ReadStatus status = super.read(recordIO);
         if (status != ReadStatus.OK) {
             return status;

@@ -118,7 +118,6 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */

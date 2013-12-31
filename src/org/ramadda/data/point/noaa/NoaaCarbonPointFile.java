@@ -82,7 +82,6 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
      *
      *
      * @param filename _more_
-     * @throws Exception On badness
      *
      * @throws IOException On badness
      */
@@ -98,10 +97,10 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String filename = getOriginalFilename(getFilename());
@@ -127,7 +126,7 @@ public class NoaaCarbonPointFile extends NoaaPointFile {
                                        measurementGroup, });
         if (type == TYPE_HOURLY) {
             setYMDHMSIndices(new int[] { IDX_YEAR, IDX_MONTH, IDX_DAY,
-                                       IDX_HOUR });
+                                         IDX_HOUR });
             putFields(new String[] {
                 makeField(FIELD_SITE_ID, attrType(TYPE_STRING)),
                 makeField(FIELD_LATITUDE,

@@ -190,7 +190,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      *
      * @param filename point data file
      *
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -205,8 +204,6 @@ public abstract class PointFile extends RecordFile implements Cloneable {
      *
      * @param filename point data file
      * @param properties _more_
-     *
-     * @throws Exception On badness
      *
      * @throws IOException _more_
      */
@@ -789,14 +786,29 @@ public abstract class PointFile extends RecordFile implements Cloneable {
         return gc.getTime();
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public double decodeLatLon(String s) {
         return Misc.decodeLatLon(s);
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public double decodeElevation(String s) {
         if (s.endsWith("m")) {
             s = s.substring(0, s.length() - 1);
         }
+
         return Double.parseDouble(s);
     }
 

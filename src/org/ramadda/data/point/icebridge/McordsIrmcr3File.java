@@ -96,7 +96,7 @@ public class McordsIrmcr3File extends org.ramadda.data.point.text.TextFile {
      * Class description
      *
      *
-     * @version        $version$, Fri, Aug 23, '13
+     * @version        $version$, Tue, Dec 31, '13
      * @author         Enter your name here...
      */
     public static class McordsIrmcr3Record extends org.ramadda.data.point
@@ -579,9 +579,9 @@ public class McordsIrmcr3File extends org.ramadda.data.point.text.TextFile {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         * @throws Exception _more_
          */
-        public ReadStatus read(RecordIO recordIO) throws IOException {
+        public ReadStatus read(RecordIO recordIO) throws Exception {
             ReadStatus status = ReadStatus.OK;
             String     line   = recordIO.readLine();
             if (line == null) {

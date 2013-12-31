@@ -46,7 +46,7 @@ import java.util.Properties;
  */
 public class CzoHeader {
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable properties = new Hashtable();
 
     /** _more_ */
@@ -55,7 +55,7 @@ public class CzoHeader {
     /** _more_ */
     private List<String> description = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> vars = new ArrayList<String>();
 
     /** _more_ */
@@ -67,13 +67,13 @@ public class CzoHeader {
     /** _more_ */
     private List<String> variableNames = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> citations = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> publications = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List<String> lines;
 
     /**
@@ -87,7 +87,7 @@ public class CzoHeader {
         processHeader(hdr);
     }
 
-    /** _more_          */
+    /** _more_ */
     private int currentIdx;
 
     /**
