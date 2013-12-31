@@ -2181,6 +2181,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = request.getString(urlArg + "_hidden", "");
         } else {
+            //string
             if (request.exists(urlArg)) {
                 values[offset] = request.getAnonymousEncodedString(urlArg,
                         ((dflt != null)

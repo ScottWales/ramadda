@@ -122,12 +122,8 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-
-        System.err.println("PointTypeHandler: initNewEntry");
-        log("initializeNewEntry:" + entry.getResource());
-
+        log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
-
         if ( !file.exists()) {
             //Maybe this is a URL?
             //            return;
@@ -135,6 +131,8 @@ public class PointTypeHandler extends RecordTypeHandler {
             //This finds any properties files next to the file
             initializeEntry(entry, file);
         }
+
+
 
         PointOutputHandler outputHandler =
             (PointOutputHandler) getRecordOutputHandler();
@@ -159,14 +157,13 @@ public class PointTypeHandler extends RecordTypeHandler {
         //Make the latlon binary file when we ingest the  datafile
         visitorGroup.addVisitor(outputHandler.makeLatLonBinVisitor(request,
                 entry, pointEntries, null, dos, quickscanDouble));
-        log("initializeNewEntry: visting file");
-        System.err.println("PointTypeHandler: pointFile.visit:" + pointFile);
+        log("initialize new entry: visting file");
         pointFile.visit(visitorGroup, new VisitInfo(VisitInfo.QUICKSCAN_NO),
                         null);
         dos.close();
-        log("init new entry: count=" + metadataHarvester.getCount());
+        log("initialize new entry: count=" + metadataHarvester.getCount());
         handleHarvestedMetadata(pointEntry, metadataHarvester);
-        log("initializeNewEntry: done");
+        log("initialize new entry: done");
 
     }
 
@@ -180,11 +177,11 @@ public class PointTypeHandler extends RecordTypeHandler {
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
 
-        System.err.println("ENTRY:" + entry.getResource());
         if (anySuperTypesOfThisType()) {
             super.initializeEntryFromForm(request, entry, parent, newEntry);
 
@@ -192,24 +189,16 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
 
-        //Check for an uploaded properties file
-        if (newEntry) {
-            String propertyFileName =
-                request.getUploadedFile(ARG_PROPERTIES_FILE);
-            if (propertyFileName != null) {
-                String contents =
-                    getStorageManager().readSystemResource(propertyFileName);
-                //Append the properties file contents
-                Object[] values =
-                    entry.getTypeHandler().getEntryValues(entry);
-                if (values[1] != null) {
-                    values[1] = "\n" + contents;
-                } else {
-                    values[1] = contents;
-                }
-                //                System.err.println("value:" + values[1]);
-            }
+        //Check for an uploaded properties file and set the ARG_PROPERTIES 
+        String propertyFileName =
+            request.getUploadedFile(ARG_PROPERTIES_FILE);
+        if (propertyFileName != null) {
+            String contents =
+                getStorageManager().readSystemResource(propertyFileName);
+            request.put(getColumns().get(1).getEditArg(), contents);
         }
+
+        //        System.err.println ("Values after:" +         entry.getTypeHandler().getEntryValues(entry)[1]);
 
         super.initializeEntryFromForm(request, entry, parent, newEntry);
 
@@ -416,6 +405,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 values[1] = contents;
             }
         }
+
 
 
         //        xxxxx
