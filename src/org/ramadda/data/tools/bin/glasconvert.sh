@@ -2,4 +2,4 @@
 
 dirname=`dirname $0`
 
-java -Xmx1024m -jar ${dirname}/lib/glasconvert.jar $*
+java -Xmx1024m -jar ${dirname}/lib/glasconvert.jar "$@"

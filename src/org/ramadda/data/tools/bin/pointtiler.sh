@@ -2,4 +2,4 @@
 
 dirname=`dirname $0`
 
-java -Xmx1024m -jar ${dirname}/lib/pointtiler.jar $*
+java -Xmx1024m -jar ${dirname}/lib/pointtiler.jar "$@"
