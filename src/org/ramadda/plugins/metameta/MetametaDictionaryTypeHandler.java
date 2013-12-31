@@ -205,10 +205,25 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
         Element root = XmlUtil.getRoot(xml.toString());
         //true says to reload the typehandler if its already loaded
-        getRepository().loadTypeHandlers(root, true);
-        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        TypeHandler newTypeHandler = getRepository().loadTypeHandlers(root,
+                                         true).get(0);
 
-        return new Result(url);
+        request.put(ARG_TYPE, newTypeHandler.getType());
+
+        StringBuffer formSB = new StringBuffer();
+        formSB.append(getWikiManager().wikifyEntry(request, entry,
+                "<div class=wiki-h2>{{name}} -- {{field name=\"short_name\"}}</div><p>{{description}} <p>\n"));
+        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        formSB.append("You can try this out or "
+                      + HtmlUtils.href(url, "keep editing the dictionary"));
+        formSB.append(HtmlUtils.p());
+        getEntryManager().addEntryForm(request, null, formSB);
+
+        return getEntryManager().addEntryHeader(request, entry,
+                new Result("Metameta Dictionary", formSB));
+
+
+        //        return new Result(url);
 
     }
 
@@ -633,6 +648,22 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      *
      * @throws Exception _more_
      */
+    public boolean isDatabase(Request request, Entry entry) throws Exception {
+        String type = (String) getEntryValue(entry, INDEX_TYPE);
+
+        return Misc.equals(type, "database");
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean isEntry(Request request, Entry entry) throws Exception {
         String type = (String) getEntryValue(entry, INDEX_TYPE);
 
@@ -693,9 +724,10 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                                       INDEX_HANDLER_CLASS);
             String shortName = (String) getEntryValue(entry,
                                    INDEX_SHORT_NAME);
-            String  type    = (String) getEntryValue(entry, INDEX_TYPE);
-            boolean isPoint = isPoint(request, entry);
-            boolean isEntry = isEntry(request, entry);
+            String  type       = (String) getEntryValue(entry, INDEX_TYPE);
+            boolean isPoint    = isPoint(request, entry);
+            boolean isEntry    = isEntry(request, entry);
+            boolean isDatabase = isDatabase(request, entry);
             if (isPoint) {
                 buttons.add(
                     HtmlUtils.submit(
@@ -720,6 +752,12 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                             ARG_METAMETA_GENERATE_JAVA));
                 }
             }
+
+            if (isDatabase) {
+                buttons.add(HtmlUtils.submit("Generate db.xml",
+                                             ARG_METAMETA_GENERATE_DB));
+            }
+
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

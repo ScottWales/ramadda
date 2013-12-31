@@ -119,11 +119,12 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
             throws Exception {
-        if (column.getName().equals("properties")) {
+        if ((entry != null) && column.getName().equals("properties")) {
             String suffix = "";
             Entry  parent = entry.getParentEntry();
-            if (parent.getTypeHandler().isType(
-                    MetametaDictionaryTypeHandler.TYPE)) {
+            if ((parent != null)
+                    && parent.getTypeHandler().isType(
+                        MetametaDictionaryTypeHandler.TYPE)) {
                 MetametaDictionaryTypeHandler mdth =
                     (MetametaDictionaryTypeHandler) parent.getTypeHandler();
                 if (mdth.isPoint(request, parent)) {
@@ -220,6 +221,10 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
                             ? ((Integer) values[INDEX_DATABASE_COLUMN_SIZE])
                                 .intValue()
                             : 200);
+        if (size <= 0) {
+            size = 200;
+        }
+
         StringBuffer attrs = new StringBuffer();
         StringBuffer inner = new StringBuffer();
         attrs.append(XmlUtil.attr("name", id));

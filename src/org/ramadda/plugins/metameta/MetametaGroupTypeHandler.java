@@ -203,8 +203,6 @@ public abstract class MetametaGroupTypeHandler extends ExtensibleGroupTypeHandle
         sb.append(HtmlUtils.p());
         List<String> buttons = new ArrayList<String>();
         addEntryButtons(request, parent, buttons);
-        buttons.add(HtmlUtils.submit("Generate db.xml",
-                                     ARG_METAMETA_GENERATE_DB));
         sb.append(HtmlUtils.buttons(buttons));
         sb.append(HtmlUtils.formClose());
     }
