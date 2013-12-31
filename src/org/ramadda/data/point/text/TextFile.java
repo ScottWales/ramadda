@@ -284,7 +284,7 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      */
     @Override
-    public RecordIO readHeader(RecordIO recordIO) throws IOException {
+    public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
 
