@@ -66,7 +66,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -340,28 +339,30 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        Object[]   values           = entry.getTypeHandler().getEntryValues(entry);
-        String     propertiesString = (values[IDX_PROPERTIES] != null)
-                                      ? values[IDX_PROPERTIES].toString()
-                                      : "";
-        Properties p                = null;
+        Object[] values = entry.getTypeHandler().getEntryValues(entry);
+        String   propertiesString = (values[IDX_PROPERTIES] != null)
+                                    ? values[IDX_PROPERTIES].toString()
+                                    : "";
 
         String typeProperties = getProperty("record.properties",
                                             (String) null);
 
+        Hashtable p = null;
+
+
         if (typeProperties != null) {
             if (p == null) {
-                p = new Properties();
+                p = new Hashtable();
             }
-            p.load(new ByteArrayInputStream(typeProperties.getBytes()));
+            p.putAll(RecordFile.getProperties(typeProperties));
         }
 
 
         if (propertiesString != null) {
             if (p == null) {
-                p = new Properties();
+                p = new Hashtable();
             }
-            p.load(new ByteArrayInputStream(propertiesString.getBytes()));
+            p.putAll(RecordFile.getProperties(propertiesString));
         }
 
         return p;
@@ -435,7 +436,7 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
         if (ctor != null) {
             return (RecordFile) ctor.newInstance(new Object[] {
-                    entry.getResource().getPath()});
+                entry.getResource().getPath() });
 
         }
 

@@ -280,7 +280,8 @@ public abstract class TextFile extends PointFile implements Fields {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     *
+     * @throws Exception _more_
      *
      */
     @Override

@@ -184,7 +184,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                                         Entry parent, boolean newEntry)
             throws Exception {
 
-        System.err.println ("ENTRY:" + entry.getResource());
+        System.err.println("ENTRY:" + entry.getResource());
         if (anySuperTypesOfThisType()) {
             super.initializeEntryFromForm(request, entry, parent, newEntry);
 
@@ -200,7 +200,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                 String contents =
                     getStorageManager().readSystemResource(propertyFileName);
                 //Append the properties file contents
-                Object[] values = entry.getTypeHandler().getEntryValues(entry);
+                Object[] values =
+                    entry.getTypeHandler().getEntryValues(entry);
                 if (values[1] != null) {
                     values[1] = "\n" + contents;
                 } else {

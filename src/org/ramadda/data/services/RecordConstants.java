@@ -248,6 +248,7 @@ public interface RecordConstants extends Constants {
     /** constants */
     public static final int TIMESERIES_POINTS = 500;
 
+    /** _more_ */
     public static final int TIMESERIES_MAXPOINTS = 2000;
 
     /** constants */

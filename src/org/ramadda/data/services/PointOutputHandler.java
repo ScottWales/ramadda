@@ -159,7 +159,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** output type */
     public final OutputType OUTPUT_CSV;
 
-    /** _more_          */
+    /** _more_ */
     public final OutputType OUTPUT_JSON;
 
     /** output type */
@@ -555,8 +555,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param request The request
      * @param entry the entry
      * @param asynch Is this an asynchronous request
-     * @param pointEntries List of entries to process
-     * @param recordEntries _more_
+     * @param recordEntries List of entries to process
      * @param jobId The job ID
      *
      * @return the result
@@ -756,8 +755,8 @@ public class PointOutputHandler extends RecordOutputHandler {
         }
 
         if (outputType.equals(OUTPUT_CHART)) {
-            return getPointFormHandler().outputEntryChart(request, outputType,
-                    (PointEntry) doMakeEntry(request, entry));
+            return getPointFormHandler().outputEntryChart(request,
+                    outputType, (PointEntry) doMakeEntry(request, entry));
         }
 
         if (outputType.equals(OUTPUT_WAVEFORM)) {

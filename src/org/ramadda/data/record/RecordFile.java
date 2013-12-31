@@ -210,7 +210,7 @@ public abstract class RecordFile {
      * @throws CloneNotSupportedException On badness
      */
     public RecordFile cloneMe(String filename, Hashtable properties)
-            throws CloneNotSupportedException {
+        throws CloneNotSupportedException, Exception {
         RecordFile that = cloneMe();
         that.initAfterClone();
         that.setFilename(filename);
@@ -250,35 +250,35 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public static Hashtable getProperties(File[] files) {
-        Properties p = new Properties();
+    public static Hashtable getProperties(File[] files) throws Exception {
+        Hashtable p = new Hashtable();
         for (File f : files) {
             if ( !f.exists()) {
                 continue;
             }
-            try {
-                String contents = IOUtil.readContents(f);
-                for (String line :
-                        StringUtil.split(contents, "\n", true, true)) {
-                    if (line.startsWith("#")) {
-                        continue;
-                    }
-                    List<String> toks = StringUtil.splitUpTo(line, "=", 2);
-                    if (toks.size() == 2) {
-                        p.put(toks.get(0), toks.get(1));
-                    } else if (toks.size() == 2) {
-                        p.put(toks.get(0), "");
-                    }
-                }
-                //                FileInputStream fis = new FileInputStream(f);
-                //                p.load(fis);
-                //                fis.close();
-                //                System.err.println (p.toString().replace(",","\n"));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+            String contents = IOUtil.readContents(f);
+            p.putAll(getProperties(contents));
         }
 
+        return p;
+    }
+
+
+
+    public static Hashtable getProperties(String s) {
+        Hashtable p = new Hashtable();
+        for (String line :
+                 StringUtil.split(s, "\n", true, true)) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+            List<String> toks = StringUtil.splitUpTo(line, "=", 2);
+            if (toks.size() == 2) {
+                p.put(toks.get(0), toks.get(1));
+            } else if (toks.size() == 2) {
+                p.put(toks.get(0), "");
+            }
+        }
         return p;
     }
 
@@ -293,7 +293,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public static Hashtable getPropertiesForFile(String file,
-            String defaultCommonFile) {
+            String defaultCommonFile) throws Exception {
         File   f      = new File(file);
         File   parent = f.getParentFile();
         String commonFile;

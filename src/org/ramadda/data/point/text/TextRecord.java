@@ -63,7 +63,7 @@ public class TextRecord extends DataRecord {
     private String[] tokens;
 
     /** _more_ */
-    private String line = "";
+    private String currentLine = "";
 
     /** _more_ */
     private boolean bePickyAboutTokens = true;
@@ -129,7 +129,7 @@ public class TextRecord extends DataRecord {
      * @return _more_
      */
     public String getLine() {
-        return line;
+        return currentLine;
     }
 
     /**
@@ -242,20 +242,20 @@ public class TextRecord extends DataRecord {
     public String readNextLine(RecordIO recordIO) throws IOException {
         while (true) {
             if (firstDataLine != null) {
-                line          = firstDataLine;
+                currentLine   = firstDataLine;
                 firstDataLine = null;
             } else {
-                line = recordIO.readLine();
+                currentLine = recordIO.readLine();
             }
-            if (line == null) {
-                return line;
+            if (currentLine == null) {
+                return currentLine;
             }
-            line = line.trim();
-            if ( !lineOk(line)) {
+            currentLine = currentLine.trim();
+            if ( !lineOk(currentLine)) {
                 continue;
             }
 
-            return line;
+            return currentLine;
         }
     }
 
@@ -281,8 +281,9 @@ public class TextRecord extends DataRecord {
      */
     @Override
     public ReadStatus read(RecordIO recordIO) throws Exception {
+        String line = null;
         try {
-            String line = null;
+            int fieldCnt;
             while (true) {
                 line = readNextLine(recordIO);
                 if (line == null) {
@@ -293,6 +294,7 @@ public class TextRecord extends DataRecord {
                 }
             }
 
+
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = "";
             }
@@ -302,7 +304,7 @@ public class TextRecord extends DataRecord {
             }
             String tok      = null;
             int    tokenCnt = 0;
-            for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
+            for (fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                 RecordField field = fields.get(fieldCnt);
                 if (skip[fieldCnt]) {
                     continue;
@@ -551,10 +553,11 @@ public class TextRecord extends DataRecord {
                 System.err.println("bad token cnt: expected:" + tokens.length
                                    + " read:" + numTokensRead + " delimiter:"
                                    + delimiter + " is space:"
-                                   + delimiterIsSpace + "\nLine:" + line);
+                                   + delimiterIsSpace + "\nLine:"
+                                   + currentLine);
 
                 throw new IllegalArgumentException(
-                    "Could not tokenize line:\n" + line + "\n");
+                    "Could not tokenize line:\n" + currentLine + "\n");
             }
 
             return false;

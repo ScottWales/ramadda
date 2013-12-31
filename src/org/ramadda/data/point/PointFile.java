@@ -47,7 +47,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
 
