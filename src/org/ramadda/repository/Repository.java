@@ -1311,19 +1311,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param root _more_
      * @param overwrite _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public void loadTypeHandlers(Element root, boolean overwrite)
+    public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite)
             throws Exception {
         List children = XmlUtil.findChildren(root, TypeHandler.TAG_TYPE);
         if ((children.size() == 0)
                 && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
             loadTypeHandler(root, overwrite);
         }
+        List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         for (int i = 0; i < children.size(); i++) {
             Element entryNode = (Element) children.get(i);
-            loadTypeHandler(entryNode, overwrite);
+            typeHandlers.add(loadTypeHandler(entryNode, overwrite));
         }
+
+        return typeHandlers;
     }
 
 
@@ -1333,9 +1338,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param entryNode _more_
      * @param overwrite _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    private void loadTypeHandler(Element entryNode, boolean overwrite)
+    private TypeHandler loadTypeHandler(Element entryNode, boolean overwrite)
             throws Exception {
         String classPath = XmlUtil.getAttribute(entryNode,
                                TypeHandler.ATTR_HANDLER, (String) null);
@@ -1366,6 +1373,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             (TypeHandler) ctor.newInstance(new Object[] { this,
                 entryNode });
         addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
+
+        return typeHandler;
     }
 
 
