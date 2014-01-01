@@ -39,18 +39,24 @@ name - the name of this data
 recordFields - array of RecordField objects that define the metadata
 data - array of Record objects holding the data
 */
-function PointData(name, recordFields, data) {
+function PointData(name, recordFields, data, url) {
     this.name = name;
     this.recordFields = recordFields;
     this.data = data;
+    this.url = url;
+
+    this.hasData = function() {
+        return this.data!=null;
+    }
     this.getRecordFields = function() {
         return this.recordFields;
     }
-
     this.getData = function() {
         return this.data;
     }
-
+    this.getUrl = function() {
+        return this.url;
+    }
     this.getName = function() {
         return this.name;
     }
@@ -149,7 +155,7 @@ function makePointData(json) {
     for(var i=0;i<json.data.length;i++) {
         var tuple = json.data[i];
         //lat,lon,alt,time,data values
-        data.push(new Record(tuple[0],tuple[1],tuple[2],tuple[3],tuple[4]));
+        data.push(new Record(tuple.latitude, tuple.longitude,tuple.elevation,tuple.date, tuple.values));
     }
 
     return new  PointData("Test point data",  fields, data);

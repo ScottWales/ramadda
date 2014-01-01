@@ -39,7 +39,7 @@ Create a chart
 id - the id of this chart. Has to correspond to a div tag id 
 pointData - A PointData object (see below)
  */
-function RamaddaLineChart(id, pointData) {
+function RamaddaLineChart(id, pointDataArg) {
     var theChart  = this;
     this.id = id;
     this.pointData  = null;
@@ -49,21 +49,45 @@ function RamaddaLineChart(id, pointData) {
     init_RamaddaLineChart(this);
     this.createHtml();
     this.chart = new google.visualization.LineChart(document.getElementById(this.chartDivId));
-    this.setPointData(pointData);
-    //    setTimeout(function(){theChart.setPointData(null);},3000);
+    this.pointData  = null;
+
+    pointDataArg = new PointData("Test",null,null,"/repository/testpoint.json");
+    this.setPointData(pointDataArg, true);
 }
 
 function init_RamaddaLineChart(theChart) {
-    //        $.getJSON(url, function(data) {
+
     theChart.getId = function() {
         return this.id;
     }
 
+    theChart.loadJson = function(url) {
+        var theChart = this;
+        var jqxhr = $.getJSON( url, function(data) {
+                theChart.setPointData(makePointData(data),false);
+            })
+        .fail(function(jqxhr, textStatus, error) {
+                var err = textStatus + ", " + error;
+                alert("Error:" + err);
+                console.log(err);
+            });
 
-    theChart.setPointData = function(pointData) {
+
+    }
+
+    theChart.setPointData = function(pointData, checkUrl) {
+        var theChart = this;
         this.pointData = pointData;
-        this.addFields();
-        this.loadData();
+        if(this.hasData()) {
+            this.addFields();
+            this.loadData();
+        } else if(checkUrl) {
+            var jsonUrl = pointData.getUrl();
+
+            if(jsonUrl!=null) {
+                this.loadJson(jsonUrl);
+            }
+        }
     }
 
 
@@ -83,7 +107,7 @@ function init_RamaddaLineChart(theChart) {
 
 
     theChart.addFields = function() {
-        if(!this.haveData()) {
+        if(!this.hasData()) {
             $("#" + this.fieldsDivId).html("No fields selected");
             return;
         }
@@ -128,9 +152,8 @@ function init_RamaddaLineChart(theChart) {
     }
 
 
-
     theChart.loadData = function() {
-        if(!this.haveData()) {
+        if(!this.hasData()) {
             this.chart.clearChart();
             return;
         }
@@ -196,8 +219,8 @@ function init_RamaddaLineChart(theChart) {
         this.chart.draw(dataTable, options);
     }
 
-    theChart.haveData = function() {
-        return this.pointData!=null;
+    theChart.hasData = function() {
+        return this.pointData!=null && this.pointData.hasData();
     }
 }
 
