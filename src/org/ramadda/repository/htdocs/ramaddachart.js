@@ -33,6 +33,9 @@ var chart = new  RamaddaChart("example" , pointData);
 */
 
 
+var ramaddaGlobalChart;
+
+
 /*
 Create a chart
 id - the id of this chart. Has to correspond to a div tag id 
@@ -40,33 +43,72 @@ pointData - A PointData object (see below)
  */
 function RamaddaChart(id, pointData) {
     var theChart = this;
+    ramaddaGlobalChart = this;
     this.pointData  = pointData;
     //    this.pointData = makeTestPointData();
 
     this.id = id;
     this.chartDivId =id +"_chart";
+    this.jsTextArea =  id + "_js_textarea";
+    this.jsSubmit =  id + "_js_submit";
+    this.jsOutputId =  id + "_js_output";
+
+
+    var jsInput = "<textarea rows=10 cols=80 id=\"" + this.jsTextArea +"\"/><br><input value=\"Try it out\" type=submit id=\"" + this.jsSubmit +"\">";
+
+    var jsOutput = "<div id=\"" + this.jsOutputId +"\"/>";
+
+    var chartDiv =  "<div id=\"" + this.chartDivId +"\" style=\"width: 900px; height: 500px;\"></div>\n";
 
     var fields = this.pointData.getRecordFields();
-    var html = "<table width=100%><tr valign=top><td><div class=chart-fields>";
+    var chartFields = "<div class=chart-fields>";
+
+
     this.displayedFields = [fields[0]];
 
     var checkboxClass = id +"_checkbox";
     for(i=0;i<fields.length;i++) { 
         var field = fields[i];
         field.checkboxId  = this.id +"_cbx" + i;
-        html += "<input id=\"" + field.checkboxId +"\" class=\""  + checkboxClass +"\"  type=checkbox value=true ";
+        chartFields += "<input id=\"" + field.checkboxId +"\" class=\""  + checkboxClass +"\"  type=checkbox value=true ";
         if(this.displayedFields.indexOf(field)>=0) {
-            html+= " checked ";
+            chartFields+= " checked ";
         }
-        html += "/> ";
-        html += field.label;
-        html+= "<br>";
+        chartFields += "/> ";
+        chartFields += field.label;
+        chartFields+= "<br>";
     }
-    html += "</div></td><td>";
-    html += "<div id=\"" + this.chartDivId +"\" style=\"width: 900px; height: 500px;\"></div>\n";
+    chartFields += "</div>";
+
+
+    var html = "";
+    html += "<table width=100%>";
+    html += "<tr valign=top><td>";
+    html += chartFields;
+    html += "</td><td>";
+    html += chartDiv;
     html += "</td></tr></table>";
 
+    html += "<table width=100%>";
+    html += "<tr valign=top><td width=50%>";
+    html += jsInput;
+    html += "</td><td width=50%>";
+    html += jsOutput;
+    html += "</td></tr></table>";
+
+
     $("#" + this.id).html(html);
+
+
+    $("#" + this.jsSubmit).button().click(function(event){
+            var js = "var chart = ramaddaGlobalChart;\n";
+            js += "var data = chart.pointData.getData();\n";
+            js += "var fields= chart.pointData.getRecordFields();\n";
+            js += "var output= \"#" + theChart.jsOutputId  +"\";\n";
+            js += $("#" + theChart.jsTextArea).val();
+            eval(js);
+        });
+
 
     //Listen for changes to the checkboxes
     $("." + checkboxClass).change(function() {
@@ -306,4 +348,29 @@ function makeTestPointData() {
 
     return new  PointData("Test point data",  fields, data);
 }
+
+
+
+function getRanges(fields,data) {
+    var ranges = [];
+    var maxValues = [];
+    var minValues = [];
+    for(var i=0;i<fields.length;i++) {
+        maxValues.push(NaN);
+        minValues.push(NaN);
+    }
+
+    for(var row=0;row<data.length;row++) {
+        for(var col=0;col<fields.length;col++) {
+            var value  = data[row].getValue(col);
+            if(isNaN(value)) continue;    
+            maxValues[col] = (isNaN(maxValues[col])?value:Math.max(value, maxValues[col]));
+            minValues[col] = (isNaN(minValues[col])?value:Math.min(value, minValues[col]));
+        }
+    }
+    var tuple =[minValues,maxValues];
+    return tuple;
+}
+
+
 
