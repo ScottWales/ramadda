@@ -1336,7 +1336,7 @@ public class PointFormHandler extends RecordFormHandler {
         js.append("var pointData = new  PointData("
                   + HtmlUtils.quote(entry.getName())
                   + ",  recordFields, data);\n");
-        js.append("var chart = new  RamaddaChart("
+        js.append("var chart = new  RamaddaLineChart("
                   + HtmlUtils.quote(chartDivId) + " , pointData);\n");
         sb.append(HtmlUtils.comment("time series data"));
         sb.append(HtmlUtils.script(js.toString()));

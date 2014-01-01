@@ -34,30 +34,26 @@ var chart = new  RamaddaChart("example" , pointData);
 */
 
 
-var ramaddaGlobalChart;
-
-
 /*
 Create a chart
 id - the id of this chart. Has to correspond to a div tag id 
 pointData - A PointData object (see below)
  */
-function RamaddaChart(id, pointData) {
+function RamaddaLineChart(id, pointData) {
     var theChart  = this;
-    ramaddaGlobalChart = this;
     this.id = id;
-    this.realpointData  = pointData;
     this.pointData  = null;
     this.fieldsDivId =id +"_fields";
     this.chartDivId =id +"_chart";
-    init_RamaddaChart(this);
-    this.createChart();
+    //Init methods
+    init_RamaddaLineChart(this);
+    this.createHtml();
     this.chart = new google.visualization.LineChart(document.getElementById(this.chartDivId));
     this.setPointData(pointData);
     //    setTimeout(function(){theChart.setPointData(null);},3000);
 }
 
-function init_RamaddaChart(theChart) {
+function init_RamaddaLineChart(theChart) {
     //        $.getJSON(url, function(data) {
     theChart.getId = function() {
         return this.id;
@@ -71,7 +67,7 @@ function init_RamaddaChart(theChart) {
     }
 
 
-    theChart.createChart = function() {
+    theChart.createHtml = function() {
         var fieldsDiv =  "<div id=\"" + this.fieldsDivId +"\" class=chart-fields>";
         var chartDiv =  "<div id=\"" + this.chartDivId +"\" style=\"width: 900px; height: 500px;\"></div>\n";
 
@@ -83,8 +79,6 @@ function init_RamaddaChart(theChart) {
         html += chartDiv;
         html += "</td></tr></table>";
         $("#" + this.id).html(html);
-
-
     }
 
 
