@@ -1246,6 +1246,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         sb.append(HtmlUtils.comment("Import js libs"));
         sb.append(HtmlUtils.importJS(fileUrl("/point/selectform.js")));
+        sb.append(HtmlUtils.importJS(fileUrl("/pointdata.js")));
         sb.append(HtmlUtils.importJS(fileUrl("/ramaddachart.js")));
 
         final List<RecordField> fields =

@@ -22,6 +22,8 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.Json;
+import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.Misc;
 
@@ -217,6 +219,29 @@ public class RecordField {
     }
 
 
+
+
+    public void addJson(StringBuffer sb, int index)  {
+        String dataType = type;
+        if(type.equals(TYPE_NUMERIC)) dataType = "double";
+        sb.append(Json.map(new String[]{
+                    "index", ""+index,
+                    "id", HtmlUtils.quote(name),
+                    "label", HtmlUtils.quote(label),
+                    "type", HtmlUtils.quote(dataType),
+                    //                    "missing",""+missingValue,
+                    "unit", Utils.stringDefined(unit)?HtmlUtils.quote(unit):"null",
+                }, false));
+
+        /*
+{index:0,
+               id:"field1",
+               label:"Field 1",
+               type:"double",
+               missing:"-999.0",
+               unit:"m"}
+        */
+    }
 
 
     /**
