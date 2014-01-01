@@ -478,7 +478,6 @@ public abstract class TextFile extends PointFile implements Fields {
      */
     public void putFields(String[] fields) {
         String f = makeFields(fields);
-        System.out.println(f);
         putProperty(PROP_FIELDS, f);
     }
 
