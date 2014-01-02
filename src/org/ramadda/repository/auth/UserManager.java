@@ -2860,8 +2860,7 @@ public class UserManager extends RepositoryManager {
                                   StringBuffer loginFormExtra)
             throws Exception {
 
-
-
+        User user = null;
 
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
@@ -2870,46 +2869,40 @@ public class UserManager extends RepositoryManager {
 
         ResultSet results = statement.getResultSet();
 
-        //User is not in the database
-        if ( !results.next()) {
-            return null;
+        //User is in the database
+        if ( results.next()) {
+
+            String storedHash =
+                results.getString(Tables.USERS.COL_NODOT_PASSWORD);
+            if ( !Utils.stringDefined(storedHash)) {
+                return null;
+            }
+
+            //Call getPasswordToUse to add the system salt
+            boolean userOK =
+                PasswordHash.validatePassword(getPasswordToUse(password),
+                                              storedHash);
+
+            //Check for old formats of hashes
+            if ( !userOK) {
+                userOK = storedHash.equals(hashPassword_oldway(password));
+                //            System.err.println ("trying the old way:" + userOK);
+            }
+
+            if ( !userOK) {
+                userOK = storedHash.equals(hashPassword_oldoldway(password));
+                //            System.err.println ("trying the old old way:" + userOK);
+            }
+
+            if (userOK) {
+                user = getUser(results);
+            }
+            getDatabaseManager().closeAndReleaseConnection(statement);
         }
-
-        String storedHash =
-            results.getString(Tables.USERS.COL_NODOT_PASSWORD);
-        if ( !Utils.stringDefined(storedHash)) {
-            return null;
-        }
-
-        //Call getPasswordToUse to add the system salt
-        boolean userOK =
-            PasswordHash.validatePassword(getPasswordToUse(password),
-                                          storedHash);
-
-        //Check for old formats of hashes
-        if ( !userOK) {
-            userOK = storedHash.equals(hashPassword_oldway(password));
-            //            System.err.println ("trying the old way:" + userOK);
-        }
-
-        if ( !userOK) {
-            userOK = storedHash.equals(hashPassword_oldoldway(password));
-            //            System.err.println ("trying the old old way:" + userOK);
-        }
-
-        User user = null;
-
-        if (userOK) {
-            user = getUser(results);
-        }
-        getDatabaseManager().closeAndReleaseConnection(statement);
-
 
         if (user != null) {
             return user;
         }
-
-
 
         //Try the authenticators
         for (UserAuthenticator userAuthenticator : userAuthenticators) {
